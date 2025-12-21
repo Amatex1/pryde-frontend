@@ -117,9 +117,11 @@ export const connectSocket = (userId) => {
         });
 
         // Log transport upgrades
-        socket.io.engine.on('upgrade', (transport) => {
-            logger.debug('⬆️ Socket upgraded to:', transport.name);
-        });
+        if (socket.io && socket.io.engine && typeof socket.io.engine.on === 'function') {
+            socket.io.engine.on('upgrade', (transport) => {
+                logger.debug('⬆️ Socket upgraded to:', transport.name);
+            });
+        }
 
         // Handle page visibility changes for bfcache compatibility
         // IMPORTANT: Close WebSocket BEFORE page is cached to allow bfcache

@@ -74,14 +74,14 @@ function Lounge() {
     const socket = getSocket();
     socketRef.current = socket;
 
-    if (socket) {
+    if (socket && typeof socket.on === 'function' && typeof socket.emit === 'function') {
       // Join global chat room
       socket.emit('global_chat:join');
 
       // Listen for new messages
       socket.on('global_message:new', (message) => {
         setMessages(prev => [...prev, message]);
-        
+
         // Auto-scroll if user is near bottom
         if (isNearBottom()) {
           setTimeout(scrollToBottom, 100);
@@ -90,8 +90,8 @@ function Lounge() {
 
       // Listen for deleted messages
       socket.on('global_message:deleted', ({ messageId }) => {
-        setMessages(prev => prev.map(msg => 
-          msg._id === messageId 
+        setMessages(prev => prev.map(msg =>
+          msg._id === messageId
             ? { ...msg, isDeleted: true }
             : msg
         ));
@@ -117,7 +117,7 @@ function Lounge() {
     }
 
     return () => {
-      if (socket) {
+      if (socket && typeof socket.off === 'function') {
         socket.off('global_message:new');
         socket.off('global_message:deleted');
         socket.off('global_chat:online_count');

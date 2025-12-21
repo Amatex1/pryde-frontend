@@ -416,7 +416,7 @@ function Feed() {
       // Note: Online user presence is now managed by useOnlineUsers hook
 
       // Listen for real-time post reactions
-      if (socket) {
+      if (socket && typeof socket.on === 'function' && typeof socket.off === 'function') {
         const handlePostReaction = (data) => {
           logger.debug('💜 Real-time post reaction received:', data);
           setPosts((prevPosts) =>

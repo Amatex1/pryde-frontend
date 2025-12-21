@@ -68,7 +68,11 @@ export function setupSocketListeners(setupCallback, options = {}) {
         logger.debug('✅ Socket connected, setting up listeners');
         setupCallback(socket);
       };
-      socket.once('connect', onConnect);
+      if (typeof socket.once === 'function') {
+        socket.once('connect', onConnect);
+      } else {
+        logger.error('❌ Socket does not have .once() method!');
+      }
     }
   };
 
