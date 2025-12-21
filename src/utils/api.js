@@ -94,9 +94,18 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Handle CSRF token errors (403)
+    // Handle 403 errors
     if (error.response?.status === 403) {
       const errorMessage = error.response?.data?.message || '';
+      const errorCode = error.response?.data?.code || '';
+
+      // CRITICAL: Handle account deactivation - force logout
+      if (errorCode === 'ACCOUNT_DEACTIVATED' || errorMessage.includes('deactivated')) {
+        logger.warn('🔒 Account deactivated - forcing logout');
+        logout();
+        window.location.href = '/login?reason=deactivated';
+        return Promise.reject(new Error('Account deactivated'));
+      }
 
       // Check if it's a CSRF error
       if (errorMessage.includes('CSRF') || errorMessage.includes('csrf')) {
@@ -141,6 +150,17 @@ api.interceptors.response.use(
 
     // If error is 401 and we haven't tried to refresh yet
     if (error.response?.status === 401 && !originalRequest._retry) {
+      const errorCode = error.response?.data?.code || '';
+      const errorMessage = error.response?.data?.message || '';
+
+      // CRITICAL: Handle account deletion - force logout immediately, no refresh attempt
+      if (errorCode === 'ACCOUNT_DELETED' || errorMessage.includes('deleted')) {
+        logger.warn('🔒 Account deleted - forcing logout');
+        logout();
+        window.location.href = '/login?reason=deleted';
+        return Promise.reject(new Error('Account deleted'));
+      }
+
       // CRITICAL: Never attempt refresh on login/register pages
       const currentPath = window.location.pathname;
       if (currentPath === '/login' || currentPath === '/register' || currentPath === '/') {
