@@ -1427,6 +1427,8 @@ function Feed() {
             <h2 className="section-title">Share something</h2>
             <form onSubmit={handlePostSubmit}>
               <textarea
+                id="new-post-input"
+                name="newPost"
                 value={newPost}
                 onChange={(e) => setNewPost(e.target.value)}
                 placeholder={showPollCreator ? "Ask a question..." : "Share something, if you feel like it."}
@@ -1458,6 +1460,8 @@ function Feed() {
               {showContentWarning && (
                 <div className="content-warning-input">
                   <select
+                    id="content-warning-select"
+                    name="contentWarning"
                     value={contentWarning}
                     onChange={(e) => setContentWarning(e.target.value)}
                     className="cw-input glossy"
@@ -1490,6 +1494,8 @@ function Feed() {
               <div className="post-actions-bar">
                 <label className="btn-media-upload">
                   <input
+                    id="media-upload-input"
+                    name="mediaUpload"
                     type="file"
                     multiple
                     accept="image/*,video/*"
@@ -1520,6 +1526,8 @@ function Feed() {
 
                 <label className="hide-metrics-checkbox" title="Hide likes, comments, and shares count">
                   <input
+                    id="hide-metrics-checkbox"
+                    name="hideMetrics"
                     type="checkbox"
                     checked={hideMetrics}
                     onChange={(e) => setHideMetrics(e.target.checked)}
@@ -1801,6 +1809,8 @@ function Feed() {
                           {editingPostId === post._id ? (
                             <div className="post-edit-box">
                               <textarea
+                                id={`edit-post-${post._id}`}
+                                name="editPost"
                                 value={editPostText}
                                 onChange={(e) => setEditPostText(e.target.value)}
                                 className="post-edit-textarea"
@@ -2022,6 +2032,8 @@ function Feed() {
                             )}
                           </div>
                           <input
+                            id={`comment-input-${post._id}`}
+                            name="comment"
                             type="text"
                             value={commentText[post._id] || ''}
                             onChange={(e) => handleCommentChange(post._id, e.target.value)}
@@ -2140,6 +2152,8 @@ function Feed() {
             {/* Search Bar */}
             <div className="friends-search-bar">
               <input
+                id="friends-search-input"
+                name="friendSearch"
                 type="text"
                 placeholder="Search friends..."
                 value={friendSearchQuery}
@@ -2258,6 +2272,8 @@ function Feed() {
                   {friends.map(friend => (
                     <label key={friend._id} className="friend-checkbox-item">
                       <input
+                        id={`hide-from-${friend._id}`}
+                        name={`hideFrom-${friend._id}`}
                         type="checkbox"
                         checked={hiddenFromUsers.includes(friend._id)}
                         onChange={(e) => {
@@ -2297,6 +2313,8 @@ function Feed() {
                   {friends.map(friend => (
                     <label key={friend._id} className="friend-checkbox-item">
                       <input
+                        id={`share-with-${friend._id}`}
+                        name={`shareWith-${friend._id}`}
                         type="checkbox"
                         checked={sharedWithUsers.includes(friend._id)}
                         onChange={(e) => {
@@ -2402,6 +2420,8 @@ function Feed() {
                     )}
                   </div>
                   <textarea
+                    id={`modal-comment-${commentModalOpen}`}
+                    name="modalComment"
                     value={commentText[commentModalOpen] || ''}
                     onChange={(e) => {
                       handleCommentChange(commentModalOpen, e.target.value);

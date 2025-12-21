@@ -1578,6 +1578,8 @@ function Profile() {
                 <h2 className="section-title">✨ Share a thought...</h2>
                 <form onSubmit={handlePostSubmit}>
                   <textarea
+                    id="profile-new-post"
+                    name="newPost"
                     value={newPost}
                     onChange={(e) => setNewPost(e.target.value)}
                     placeholder="What are you reflecting on today?"
@@ -1613,6 +1615,8 @@ function Profile() {
                   {showContentWarning && (
                     <div className="content-warning-input">
                       <select
+                        id="profile-content-warning"
+                        name="contentWarning"
                         value={contentWarning}
                         onChange={(e) => setContentWarning(e.target.value)}
                         className="cw-input glossy"
@@ -1637,6 +1641,8 @@ function Profile() {
                   <div className="post-actions-bar">
                     <label className="btn-media-upload">
                       <input
+                        id="profile-media-upload"
+                        name="mediaUpload"
                         type="file"
                         multiple
                         accept="image/*,video/*"
@@ -1658,6 +1664,8 @@ function Profile() {
 
                     {/* PHASE 1 REFACTOR: Simplified privacy options */}
                     <select
+                      id="profile-post-privacy"
+                      name="postPrivacy"
                       value={postVisibility}
                       onChange={(e) => setPostVisibility(e.target.value)}
                       className="privacy-selector glossy"
@@ -1817,6 +1825,8 @@ function Profile() {
                         {editingPostId === post._id ? (
                           <div className="edit-post-container">
                             <textarea
+                              id={`profile-edit-post-${post._id}`}
+                              name="editPost"
                               ref={editTextareaRef}
                               value={editPostText}
                               onChange={(e) => setEditPostText(e.target.value)}
@@ -1827,6 +1837,8 @@ function Profile() {
                             <div className="edit-post-actions">
                               {/* PHASE 1 REFACTOR: Simplified privacy options */}
                               <select
+                                id={`profile-edit-privacy-${post._id}`}
+                                name="editPostPrivacy"
                                 value={editPostVisibility}
                                 onChange={(e) => setEditPostVisibility(e.target.value)}
                                 className="visibility-select"
@@ -2048,6 +2060,8 @@ function Profile() {
                         <form onSubmit={handleSubmitReply} className="reply-input-box">
                           <div className="reply-input-wrapper">
                             <input
+                              id={`profile-reply-${replyingToComment}`}
+                              name="reply"
                               type="text"
                               value={replyText}
                               onChange={(e) => setReplyText(e.target.value)}
@@ -2079,6 +2093,8 @@ function Profile() {
                               )}
                             </div>
                             <input
+                              id={`profile-comment-${post._id}`}
+                              name="comment"
                               type="text"
                               value={commentText[post._id] || ''}
                               onChange={(e) => handleCommentChange(post._id, e.target.value)}
