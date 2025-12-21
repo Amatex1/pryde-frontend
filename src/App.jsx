@@ -55,6 +55,7 @@ const Lounge = lazy(() => import('./pages/Lounge'));
 const Notifications = lazy(() => import('./pages/Notifications'));
 const Admin = lazy(() => import('./pages/Admin'));
 const Hashtag = lazy(() => import('./pages/Hashtag'));
+const ReactivateAccount = lazy(() => import('./pages/ReactivateAccount'));
 
 // Lazy load legal pages
 const Terms = lazy(() => import('./pages/legal/Terms'));
@@ -483,6 +484,12 @@ function App() {
             <Route path="/reset-password" element={
               authLoading ? <PageLoader /> :
               !isAuth ? <ResetPassword /> : <Navigate to="/feed" />
+            } />
+
+            {/* Reactivate Account - accessible with valid tokens but deactivated account */}
+            <Route path="/reactivate" element={
+              authLoading ? <PageLoader /> :
+              isAuth ? <ReactivateAccount /> : <Navigate to="/login" />
             } />
 
           {/* Protected Routes */}

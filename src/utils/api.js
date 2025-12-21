@@ -99,11 +99,14 @@ api.interceptors.response.use(
       const errorMessage = error.response?.data?.message || '';
       const errorCode = error.response?.data?.code || '';
 
-      // CRITICAL: Handle account deactivation - force logout
+      // CRITICAL: Handle account deactivation - redirect to reactivate screen
+      // DO NOT logout - keep tokens so user can reactivate
       if (errorCode === 'ACCOUNT_DEACTIVATED' || errorMessage.includes('deactivated')) {
-        logger.warn('🔒 Account deactivated - forcing logout');
-        logout();
-        window.location.href = '/login?reason=deactivated';
+        logger.warn('🔒 Account deactivated - redirecting to reactivate screen');
+        // Only redirect if not already on reactivate page
+        if (!window.location.pathname.includes('/reactivate')) {
+          window.location.href = '/reactivate';
+        }
         return Promise.reject(new Error('Account deactivated'));
       }
 
