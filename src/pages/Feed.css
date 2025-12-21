@@ -974,6 +974,22 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   opacity: 1;
 }
 
+.edited-indicator-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-style: italic;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.edited-indicator-btn:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
 .post-content {
   margin-bottom: 1.5rem;
   line-height: 1.6;

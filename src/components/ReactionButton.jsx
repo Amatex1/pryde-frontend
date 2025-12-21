@@ -18,7 +18,8 @@ const ReactionButton = ({
   targetType,
   targetId,
   currentUserId,
-  onReactionChange
+  onReactionChange,
+  onCountClick
 }) => {
   const [reactions, setReactions] = useState({});
   const [userReaction, setUserReaction] = useState(null);
@@ -234,7 +235,14 @@ const ReactionButton = ({
       </button>
 
       {totalCount > 0 && (
-        <span className="reaction-count">{totalCount}</span>
+        <button
+          type="button"
+          className="reaction-count"
+          onClick={onCountClick}
+          aria-label="View reactions"
+        >
+          {totalCount}
+        </button>
       )}
 
       {showPicker && (

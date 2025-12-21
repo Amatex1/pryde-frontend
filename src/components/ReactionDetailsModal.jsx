@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getImageUrl } from '../utils/imageUrl';
 import './ReactionDetailsModal.css';
