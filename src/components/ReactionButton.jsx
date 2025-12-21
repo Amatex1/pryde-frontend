@@ -12,20 +12,23 @@ import './ReactionButton.css';
  * - targetType: 'post' | 'comment'
  * - targetId: string (ID of the post or comment)
  * - currentUserId: string (current user's ID, for calculating user reaction)
+ * - initialUserReaction: string (optional, user's current reaction emoji from parent)
  * - onReactionChange: function (optional, callback when reaction changes)
+ * - onCountClick: function (optional, callback when reaction count is clicked)
  */
 const ReactionButton = ({
   targetType,
   targetId,
   currentUserId,
+  initialUserReaction,
   onReactionChange,
   onCountClick
 }) => {
   const [reactions, setReactions] = useState({});
-  const [userReaction, setUserReaction] = useState(null);
+  const [userReaction, setUserReaction] = useState(initialUserReaction || null);
   const [showPicker, setShowPicker] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(!!initialUserReaction);
 
   const pickerRef = useRef(null);
   const buttonRef = useRef(null);

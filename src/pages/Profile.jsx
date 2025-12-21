@@ -2017,6 +2017,7 @@ function Profile() {
                           targetType="post"
                           targetId={post._id}
                           currentUserId={currentUser?.id}
+                          initialUserReaction={getUserReactionEmoji(post.reactions)}
                           onReactionChange={(reactions, userReaction) => {
                             // Update post in state with new reactions
                             setPosts(prevPosts =>
