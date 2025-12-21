@@ -162,7 +162,7 @@ function Admin() {
 
     // Use shared socket helper with retry logic
     const cancelSocketRetry = setupSocketListeners((socket) => {
-      setupListeners();
+      setupListeners(socket);
     });
 
     return () => {

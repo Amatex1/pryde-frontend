@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import api from '../utils/api';
-import socket from '../utils/socket';
+import { getSocket } from '../utils/socket';
 import './ReactionButton.css';
 
 /**
@@ -49,6 +49,13 @@ const ReactionButton = ({
 
   // Listen for real-time reaction updates
   useEffect(() => {
+    const socket = getSocket();
+
+    // Skip if socket is not available
+    if (!socket || typeof socket.on !== 'function') {
+      return;
+    }
+
     const handleReactionAdded = (data) => {
       if (data.targetType === targetType && data.targetId === targetId) {
         setReactions(data.reactions);
@@ -73,8 +80,10 @@ const ReactionButton = ({
     socket.on('reaction_removed', handleReactionRemoved);
 
     return () => {
-      socket.off('reaction_added', handleReactionAdded);
-      socket.off('reaction_removed', handleReactionRemoved);
+      if (socket && typeof socket.off === 'function') {
+        socket.off('reaction_added', handleReactionAdded);
+        socket.off('reaction_removed', handleReactionRemoved);
+      }
     };
   }, [targetType, targetId, currentUserId]);
 
