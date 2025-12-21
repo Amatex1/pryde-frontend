@@ -27,7 +27,7 @@ import { convertEmojiShortcuts } from '../utils/textFormatting';
 import logger from '../utils/logger';
 import './Feed.css';
 
-function Feed() {`n  console.log('?? Feed component rendering...');
+function Feed() {
   const [searchParams] = useSearchParams();
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const { onlineUsers, isUserOnline } = useOnlineUsers();
