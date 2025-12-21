@@ -1054,7 +1054,8 @@ function Profile() {
   };
 
   const handleMessage = () => {
-    if (!canSendMessage) {
+    // Self-messaging is always allowed (Notes to self)
+    if (!isOwnProfile && !canSendMessage) {
       showToast('You cannot message this user due to their privacy settings', 'error');
       return;
     }
@@ -1306,6 +1307,19 @@ function Profile() {
               </div>
 
               {user.bio && <p className="profile-bio">{sanitizeBio(user.bio)}</p>}
+
+              {/* Notes to self button - own profile only */}
+              {isOwnProfile && (
+                <div className="profile-action-buttons self-profile-actions">
+                  <button
+                    className="btn-notes-to-self"
+                    onClick={handleMessage}
+                  >
+                    📝 Notes to self
+                  </button>
+                  <span className="notes-helper-text">Private notes only visible to you</span>
+                </div>
+              )}
 
               {!isOwnProfile && (
                 <div className="profile-action-buttons">
