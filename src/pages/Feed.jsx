@@ -1541,6 +1541,7 @@ function Feed() {
                 </label>
                 <select
                   id="post-privacy-selector"
+                  name="postPrivacy"
                   value={postVisibility}
                   onChange={(e) => setPostVisibility(e.target.value)}
                   className="privacy-selector glossy"
@@ -1827,6 +1828,7 @@ function Feed() {
                                 {/* PHASE 1 REFACTOR: Simplified privacy options */}
                                 <select
                                   id="edit-post-privacy-selector"
+                                  name="editPostPrivacy"
                                   value={editPostVisibility}
                                   onChange={(e) => setEditPostVisibility(e.target.value)}
                                   className="privacy-selector glossy"
