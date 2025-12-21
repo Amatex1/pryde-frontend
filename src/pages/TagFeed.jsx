@@ -8,6 +8,7 @@ import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import OptimizedImage from '../components/OptimizedImage';
 import api from '../utils/api';
+import { getCurrentUser } from '../utils/auth';
 import './TagFeed.css';
 
 function TagFeed() {
@@ -17,6 +18,7 @@ function TagFeed() {
   const [loading, setLoading] = useState(true);
   const [newPost, setNewPost] = useState('');
   const [posting, setPosting] = useState(false);
+  const currentUser = getCurrentUser();
 
   useEffect(() => {
     fetchTagAndPosts();
@@ -71,12 +73,35 @@ function TagFeed() {
 
       // The response should have populated author and tags
       setPosts([response.data, ...posts]);
+
+      // Update tag post count
+      setTag(prev => prev ? { ...prev, postCount: prev.postCount + 1 } : prev);
+
       setNewPost('');
     } catch (error) {
       console.error('Failed to create post:', error);
       alert('Failed to create post. Please try again.');
     } finally {
       setPosting(false);
+    }
+  };
+
+  const handleDelete = async (postId) => {
+    if (!window.confirm('Are you sure you want to delete this post?')) {
+      return;
+    }
+
+    try {
+      await api.delete(`/posts/${postId}`);
+
+      // Remove post from state
+      setPosts(prev => prev.filter(p => p._id !== postId));
+
+      // Update tag post count
+      setTag(prev => prev ? { ...prev, postCount: Math.max(0, prev.postCount - 1) } : prev);
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+      alert('Failed to delete post. Please try again.');
     }
   };
 
@@ -97,7 +122,7 @@ function TagFeed() {
         <h1>{tag.label}</h1>
         <p className="tag-feed-description">{tag.description}</p>
         <div className="tag-feed-stats">
-          <span>{tag.postCount} posts</span>
+          <span>{tag.postCount} post{tag.postCount !== 1 ? 's' : ''}</span>
         </div>
       </div>
 
@@ -163,7 +188,7 @@ function TagFeed() {
               </div>
 
               <div className="post-actions">
-                <button 
+                <button
                   className={`btn-action ${post.hasLiked ? 'liked' : ''}`}
                   onClick={() => handleLike(post._id)}
                 >
@@ -172,6 +197,14 @@ function TagFeed() {
                 <Link to={`/feed`} className="btn-action">
                   💬 Comment
                 </Link>
+                {currentUser && post.author._id === currentUser.id && (
+                  <button
+                    className="btn-action delete"
+                    onClick={() => handleDelete(post._id)}
+                  >
+                    🗑️ Delete
+                  </button>
+                )}
               </div>
 
               {post.tags && post.tags.length > 0 && (
