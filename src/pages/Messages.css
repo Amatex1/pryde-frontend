@@ -222,6 +222,13 @@
   color: var(--pryde-purple);
 }
 
+.conv-username {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+  margin-bottom: 0.15rem;
+}
+
 .conv-time {
   font-size: 0.75rem;
   color: var(--text-muted);
@@ -384,6 +391,12 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.chat-user-username {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  opacity: 0.6;
 }
 
 .muted-indicator {

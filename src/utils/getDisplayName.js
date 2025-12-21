@@ -29,5 +29,14 @@ export function getDisplayNameInitial(user) {
   return name.charAt(0).toUpperCase();
 }
 
+/**
+ * Get the formatted username with @ prefix
+ * @param {Object} user - User object with username field
+ * @returns {string|null} Username with @ prefix, or null if not available
+ */
+export function getUsername(user) {
+  return user?.username ? `@${user.username}` : null;
+}
+
 export default getDisplayName;
 

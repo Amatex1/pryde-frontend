@@ -14,7 +14,7 @@ import { getImageUrl } from '../utils/imageUrl';
 import { getUserChatColor, getSentMessageColor } from '../utils/chatColors';
 import logger from '../utils/logger';
 import { sanitizeMessage } from '../utils/sanitize';
-import { getDisplayName, getDisplayNameInitial } from '../utils/getDisplayName';
+import { getDisplayName, getDisplayNameInitial, getUsername } from '../utils/getDisplayName';
 import {
   onNewMessage,
   onMessageSent,
@@ -990,6 +990,8 @@ function Messages() {
                             ? conv.lastMessage?.recipient
                             : conv.lastMessage?.sender
                         );
+                        // Detect self-chat (Notes to self)
+                        const isSelfChat = otherUser?._id === currentUser?._id;
 
                         return (
                           <div
@@ -1006,26 +1008,30 @@ function Messages() {
                             >
                               <div className="conv-avatar">
                                 {otherUser?.profilePhoto ? (
-                                  <img src={getImageUrl(otherUser.profilePhoto)} alt={getDisplayName(otherUser)} />
+                                  <img src={getImageUrl(otherUser.profilePhoto)} alt={isSelfChat ? 'Notes to self' : getDisplayName(otherUser)} />
                                 ) : (
-                                  <span>{getDisplayNameInitial(otherUser)}</span>
+                                  <span>{isSelfChat ? '📝' : getDisplayNameInitial(otherUser)}</span>
                                 )}
                                 {/* Unread indicator (red dot) */}
                                 {conv.unread > 0 && (
                                   <span className="unread-indicator"></span>
                                 )}
-                                {/* Online status dot */}
-                                {onlineUsers.includes(conv._id) && (
+                                {/* Online status dot - hide for self-chat */}
+                                {!isSelfChat && onlineUsers.includes(conv._id) && (
                                   <span className="status-dot online"></span>
                                 )}
                               </div>
                               <div className="conv-info">
                                 <div className="conv-header">
-                                  <div className="conv-name">{getDisplayName(otherUser)}</div>
+                                  <div className="conv-name">{isSelfChat ? '📝 Notes to self' : getDisplayName(otherUser)}</div>
                                   <div className="conv-time">
                                     {conv.lastMessage?.createdAt ? new Date(conv.lastMessage.createdAt).toLocaleTimeString() : ''}
                                   </div>
                                 </div>
+                                {/* Show @username for others, not for self-chat */}
+                                {!isSelfChat && getUsername(otherUser) && (
+                                  <div className="conv-username">{getUsername(otherUser)}</div>
+                                )}
                                 <div className="conv-last-message">
                                   {mutedConversations.includes(conv._id) && '🔕 '}
                                   {conv.lastMessage?.voiceNote?.url ? '🎤 Voice note' : (conv.lastMessage?.content || 'No messages')}
@@ -1123,6 +1129,12 @@ function Messages() {
                           <div className="chat-avatar">
                             {selectedChatType === 'group' ? (
                               <span>{selectedGroup?.name?.charAt(0).toUpperCase() || 'G'}</span>
+                            ) : isSelfChat ? (
+                              selectedUser?.profilePhoto ? (
+                                <img src={getImageUrl(selectedUser.profilePhoto)} alt="Notes to self" />
+                              ) : (
+                                <span>📝</span>
+                              )
                             ) : selectedUser?.profilePhoto ? (
                               <img src={getImageUrl(selectedUser.profilePhoto)} alt={getDisplayName(selectedUser)} />
                             ) : (
@@ -1133,9 +1145,15 @@ function Messages() {
                             <div className="chat-user-name">
                               {selectedChatType === 'group'
                                 ? selectedGroup?.name || 'Group Chat'
-                                : getDisplayName(selectedUser)}
+                                : isSelfChat
+                                  ? '📝 Notes to self'
+                                  : getDisplayName(selectedUser)}
                               {mutedConversations.includes(selectedChat) && <span className="muted-indicator">🔕</span>}
                             </div>
+                            {/* Show @username for others, not for self-chat */}
+                            {selectedChatType !== 'group' && !isSelfChat && getUsername(selectedUser) && (
+                              <div className="chat-user-username">{getUsername(selectedUser)}</div>
+                            )}
                             {/* Hide online status for self-DMs */}
                             {selectedChatType !== 'group' && !isSelfChat && (
                               <div className={`chat-user-status ${onlineUsers.includes(selectedChat) ? 'online' : 'offline'}`}>
