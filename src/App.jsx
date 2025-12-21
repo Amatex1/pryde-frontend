@@ -141,9 +141,9 @@ function App() {
   // - "loading": Auth state unknown (initial state, checking token)
   // - "authenticated": User is confirmed logged in
   // - "unauthenticated": User is confirmed logged out
-  const [authStatus, setAuthStatusState] = useState(AUTH_STATUS.UNKNOWN);
-  const [initError, setInitError] = useState(false);
-
+const [authStatus, setAuthStatusState] = useState(AUTH_STATUS.UNKNOWN);
+const [authReady, setAuthReady] = useState(false);
+const [initError, setInitError] = useState(false);
   // Update banner state
   const updateAvailable = useAppVersion();
   const [showUpdateBanner, setShowUpdateBanner] = useState(true);
@@ -427,15 +427,15 @@ function App() {
     }
   }, [authStatus]);
 
-  const PrivateRoute = ({ children }) => {
-    // CRITICAL: Don't redirect while auth state is loading
-    // This prevents redirect loops
-    if (authLoading) {
-      return <PageLoader />;
-    }
+const PrivateRoute = ({ children }) => {
+  // CRITICAL: Don't redirect while auth state is not ready
+  // This prevents redirect loops
+  if (!authReady) {
+    return <PageLoader />;
+  }
 
-    return isAuth ? children : <Navigate to="/login" />;
-  };
+  return isAuth ? children : <Navigate to="/login" />;
+}
 
   return (
     <ErrorBoundary>
