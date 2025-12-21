@@ -40,11 +40,22 @@
 }
 
 [data-theme="dark"] .reaction-button:hover {
-  background: rgba(108, 92, 231, 0.15);
+  background: var(--accent-muted);
 }
 
 [data-theme="dark"] .reaction-button.has-reaction {
-  background: rgba(108, 92, 231, 0.2);
+  background: var(--accent-muted);
+}
+
+/* Quiet Mode - Use softer hover backgrounds */
+[data-quiet="true"] .reaction-button:hover,
+[data-quiet-mode="true"] .reaction-button:hover {
+  background: var(--reaction-hover-bg, rgba(255, 255, 255, 0.04));
+}
+
+[data-quiet="true"] .reaction-button.has-reaction,
+[data-quiet-mode="true"] .reaction-button.has-reaction {
+  background: var(--reaction-hover-bg, rgba(255, 255, 255, 0.04));
 }
 
 .reaction-count {
@@ -121,16 +132,26 @@
 }
 
 .reaction-emoji.selected {
-  background: var(--color-primary);
-  background: rgba(108, 92, 231, 0.2);
+  background: var(--accent-muted);
 }
 
 [data-theme="dark"] .reaction-emoji:hover {
-  background: rgba(108, 92, 231, 0.15);
+  background: var(--accent-muted);
 }
 
 [data-theme="dark"] .reaction-emoji.selected {
-  background: rgba(108, 92, 231, 0.3);
+  background: var(--accent-muted);
+}
+
+/* Quiet Mode - Softer emoji picker */
+[data-quiet="true"] .reaction-emoji:hover,
+[data-quiet-mode="true"] .reaction-emoji:hover {
+  background: var(--button-hover-bg, rgba(255, 255, 255, 0.05));
+}
+
+[data-quiet="true"] .reaction-emoji.selected,
+[data-quiet-mode="true"] .reaction-emoji.selected {
+  background: var(--button-hover-bg, rgba(255, 255, 255, 0.05));
 }
 
 /* Mobile adjustments */

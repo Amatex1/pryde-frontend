@@ -791,14 +791,32 @@
    QUIET MODE OVERRIDES
    ======================================== */
 
-[data-quiet="true"][data-theme="dark"] .user-profile-trigger {
-  background-color: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.06);
+[data-quiet="true"] .user-profile-trigger,
+[data-quiet-mode="true"] .user-profile-trigger {
+  background-color: var(--button-hover-bg, rgba(255, 255, 255, 0.03));
+  border-color: var(--border-default);
 }
 
-[data-quiet="true"][data-theme="dark"] .profile-dropdown {
-  background-color: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.06);
+[data-quiet="true"] .profile-dropdown,
+[data-quiet-mode="true"] .profile-dropdown {
+  background-color: var(--bg-surface);
+  border-color: var(--border-default);
+}
+
+[data-quiet="true"] .nav-link:hover,
+[data-quiet-mode="true"] .nav-link:hover {
+  background: var(--button-hover-bg, rgba(255, 255, 255, 0.05));
+}
+
+[data-quiet="true"] .nav-button:hover,
+[data-quiet-mode="true"] .nav-button:hover {
+  background: var(--button-hover-bg, rgba(255, 255, 255, 0.05));
+  border-color: var(--border-default);
+}
+
+[data-quiet="true"] .dropdown-item:hover,
+[data-quiet-mode="true"] .dropdown-item:hover {
+  background: var(--button-hover-bg, rgba(255, 255, 255, 0.05));
 }
 
 /* ========================================

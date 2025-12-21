@@ -134,25 +134,51 @@
 
 /* ========================================
    QUIET MODE MODIFIERS
-   Only adjust intensity, NEVER introduce new colors
-   Uses color-mix() to soften existing variables
+   Reduces visual intensity for a calmer experience
+   Matches both data-quiet and data-quiet-mode for compatibility
    ======================================== */
 
-[data-quiet="true"] {
-  /* Soften accents */
-  --accent-primary: color-mix(in srgb, var(--accent-primary) 65%, transparent);
-  --accent-hover: color-mix(in srgb, var(--accent-hover) 70%, transparent);
-  
-  /* Reduce text contrast slightly */
-  --text-primary: color-mix(in srgb, var(--text-primary) 92%, transparent);
-  --text-secondary: color-mix(in srgb, var(--text-secondary) 85%, transparent);
-  
-  /* Soften borders */
-  --border-default: color-mix(in srgb, var(--border-default) 60%, transparent);
-  --border-strong: color-mix(in srgb, var(--border-strong) 70%, transparent);
-  
-  /* Reduce shadows */
-  --shadow-soft: color-mix(in srgb, var(--shadow-soft) 50%, transparent);
-  --shadow-medium: color-mix(in srgb, var(--shadow-medium) 50%, transparent);
+[data-quiet="true"],
+[data-quiet-mode="true"] {
+  /* BACKGROUNDS - Slightly darker for less contrast */
+  --bg-page: #0b0b0f;
+  --bg-surface: #111118;
+  --bg-card: #151520;
+  --bg-hover: rgba(108, 92, 231, 0.04);
+  --bg-subtle: #18181f;
+
+  /* TEXT - Reduced contrast */
+  --text-primary: #e4e4ea;
+  --text-secondary: #9a9aa8;
+  --text-muted: #7a7a88;
+
+  /* BORDERS - Much softer */
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --border-default: rgba(255, 255, 255, 0.06);
+  --border-strong: rgba(255, 255, 255, 0.10);
+
+  /* ACCENTS - Desaturated, muted purple */
+  --accent-primary: #6b5aa6;
+  --accent-hover: #7a69b5;
+  --accent-muted: rgba(107, 90, 166, 0.15);
+  --accent-secondary: #5a7aa0;
+
+  /* SEMANTIC - Softer colors */
+  --color-success: #5ab89a;
+  --color-danger: #c88a8a;
+  --color-warning: #c9b06e;
+
+  /* SHADOWS - Very subtle or none */
+  --shadow-soft: none;
+  --shadow-medium: none;
+  --shadow-strong: none;
+
+  /* GRADIENTS - Muted */
+  --gradient-primary: linear-gradient(135deg, #5a4a90 0%, #4a6a8a 100%);
+
+  /* QUIET MODE SPECIFIC */
+  --reaction-hover-bg: rgba(255, 255, 255, 0.04);
+  --button-hover-bg: rgba(255, 255, 255, 0.05);
+  --quiet-leaf: #9BE7C4;
 }
 

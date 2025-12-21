@@ -3895,3 +3895,47 @@ select.privacy-selector:focus {
   margin: 0 !important;
   padding: 0 !important;
 }
+
+/* ========================================
+   QUIET MODE OVERRIDES
+   Reduce visual intensity for calmer experience
+   ======================================== */
+
+[data-quiet="true"] .post-card,
+[data-quiet-mode="true"] .post-card {
+  background: var(--bg-surface);
+  border-color: var(--border-default);
+  box-shadow: none;
+}
+
+[data-quiet="true"] .action-btn:hover,
+[data-quiet-mode="true"] .action-btn:hover {
+  background: var(--button-hover-bg, rgba(255, 255, 255, 0.05));
+}
+
+[data-quiet="true"] .feed-tab.active,
+[data-quiet-mode="true"] .feed-tab.active {
+  background: var(--accent-primary);
+  box-shadow: none;
+}
+
+[data-quiet="true"] .btn-post,
+[data-quiet-mode="true"] .btn-post {
+  background: var(--accent-muted);
+}
+
+[data-quiet="true"] .btn-post:hover,
+[data-quiet-mode="true"] .btn-post:hover {
+  background: var(--accent-primary);
+}
+
+[data-quiet="true"] .comment-text,
+[data-quiet-mode="true"] .comment-text {
+  background: var(--bg-subtle);
+}
+
+[data-quiet="true"] .post-input:focus,
+[data-quiet-mode="true"] .post-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: none;
+}

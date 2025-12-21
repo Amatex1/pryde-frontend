@@ -9,8 +9,11 @@
  */
 export const applyQuietMode = (isActive) => {
   if (isActive) {
+    // Set both attributes for compatibility
+    document.documentElement.setAttribute('data-quiet', 'true');
     document.documentElement.setAttribute('data-quiet-mode', 'true');
   } else {
+    document.documentElement.removeAttribute('data-quiet');
     document.documentElement.removeAttribute('data-quiet-mode');
   }
 };

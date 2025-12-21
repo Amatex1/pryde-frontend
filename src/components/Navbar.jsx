@@ -57,10 +57,12 @@ function Navbar() {
   const [quietMode, setQuietMode] = useState(() => {
     const saved = localStorage.getItem('quietMode');
     const isQuiet = saved === 'true';
-    // Apply quiet mode attribute on initial load
+    // Apply quiet mode attributes on initial load (both for compatibility)
     if (isQuiet) {
+      document.documentElement.setAttribute('data-quiet', 'true');
       document.documentElement.setAttribute('data-quiet-mode', 'true');
     } else {
+      document.documentElement.removeAttribute('data-quiet');
       document.documentElement.removeAttribute('data-quiet-mode');
     }
     return isQuiet;
