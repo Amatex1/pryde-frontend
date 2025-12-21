@@ -25,7 +25,9 @@ function OptimizedImage({
   fetchPriority, // 'high', 'low', or 'auto'
   responsiveSizes, // Object with avatar/feed/full sizes from backend (each with webp/avif)
   imageSize = 'feed', // Which size to use: 'avatar', 'feed', or 'full'
-  ...props
+  // Explicitly destructure and ignore any other props to prevent spreading unknown props to DOM
+  // This prevents production crashes like "t.on is not a function" when post objects are accidentally spread
+  ...ignoredProps // eslint-disable-line no-unused-vars
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -189,7 +191,6 @@ function OptimizedImage({
               loading={loading}
               decoding="async"
               fetchpriority={fetchPriority}
-              {...props}
             />
           </picture>
         ) : (
@@ -202,7 +203,6 @@ function OptimizedImage({
             loading={loading}
             decoding="async"
             fetchpriority={fetchPriority}
-            {...props}
           />
         )
       )}
