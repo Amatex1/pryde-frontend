@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import FocusTrap from 'focus-trap-react';
 import './CustomModal.css';
 
 /**
@@ -80,85 +79,75 @@ function CustomModal({
   };
 
   return (
-    <FocusTrap
-      active={isOpen}
-      focusTrapOptions={{
-        initialFocus: false,
-        allowOutsideClick: true,
-        escapeDeactivates: false, // We handle Escape manually
-        returnFocusOnDeactivate: true
-      }}
+    <div
+      className="custom-modal-overlay"
+      onClick={handleCancel}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={title ? "modal-title" : undefined}
+      aria-describedby="modal-message"
     >
-      <div
-        className="custom-modal-overlay"
-        onClick={handleCancel}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={title ? "modal-title" : undefined}
-        aria-describedby="modal-message"
-      >
-        <div className="custom-modal-content" onClick={(e) => e.stopPropagation()}>
-          {title && <h3 id="modal-title" className="custom-modal-title">{title}</h3>}
+      <div className="custom-modal-content" onClick={(e) => e.stopPropagation()}>
+        {title && <h3 id="modal-title" className="custom-modal-title">{title}</h3>}
 
-          {children ? (
-            // If children are provided, render them instead of the default modal content
-            children
-          ) : (
-            <>
-              <div id="modal-message" className="custom-modal-message">
-                {message}
-              </div>
+        {children ? (
+          // If children are provided, render them instead of the default modal content
+          children
+        ) : (
+          <>
+            <div id="modal-message" className="custom-modal-message">
+              {message}
+            </div>
 
-              {type === 'prompt' && (
-                <input
-                  type={inputType}
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder={placeholder}
-                  className="custom-modal-input"
+            {type === 'prompt' && (
+              <input
+                type={inputType}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder={placeholder}
+                className="custom-modal-input"
+                autoFocus
+                onKeyPress={(e) => e.key === 'Enter' && handleConfirm()}
+                aria-label={placeholder || 'Input field'}
+                aria-required="true"
+              />
+            )}
+
+            <div className="custom-modal-actions">
+              {type === 'alert' ? (
+                <button
+                  className="custom-modal-btn custom-modal-btn-primary"
+                  onClick={handleConfirm}
+                  onKeyPress={handleKeyPress}
                   autoFocus
-                  onKeyPress={(e) => e.key === 'Enter' && handleConfirm()}
-                  aria-label={placeholder || 'Input field'}
-                  aria-required="true"
-                />
-              )}
-
-              <div className="custom-modal-actions">
-                {type === 'alert' ? (
+                  aria-label="Close dialog"
+                >
+                  OK
+                </button>
+              ) : (
+                <>
+                  <button
+                    className="custom-modal-btn custom-modal-btn-secondary"
+                    onClick={handleCancel}
+                    aria-label={`Cancel ${type === 'confirm' ? 'action' : 'input'}`}
+                  >
+                    {cancelText}
+                  </button>
                   <button
                     className="custom-modal-btn custom-modal-btn-primary"
                     onClick={handleConfirm}
-                    onKeyPress={handleKeyPress}
                     autoFocus
-                    aria-label="Close dialog"
+                    aria-label={`${confirmText} ${type === 'confirm' ? 'action' : 'and submit'}`}
                   >
-                    OK
+                    {confirmText}
                   </button>
-                ) : (
-                  <>
-                    <button
-                      className="custom-modal-btn custom-modal-btn-secondary"
-                      onClick={handleCancel}
-                      aria-label={`Cancel ${type === 'confirm' ? 'action' : 'input'}`}
-                    >
-                      {cancelText}
-                    </button>
-                    <button
-                      className="custom-modal-btn custom-modal-btn-primary"
-                      onClick={handleConfirm}
-                      autoFocus
-                      aria-label={`${confirmText} ${type === 'confirm' ? 'action' : 'and submit'}`}
-                    >
-                      {confirmText}
-                    </button>
-                  </>
-                )}
-              </div>
-            </>
-          )}
-        </div>
+                </>
+              )}
+            </div>
+          </>
+        )}
       </div>
-    </FocusTrap>
+    </div>
   );
 }
 
