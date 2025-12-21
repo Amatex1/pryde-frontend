@@ -25,8 +25,10 @@ import SafetyWarning from './components/SafetyWarning';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
 import CookieBanner from './components/CookieBanner';
 import ErrorBoundary from './components/ErrorBoundary';
+import UpdateBanner from './components/UpdateBanner';
 import { AppReadyProvider } from './state/appReady';
 import LoadingGate from './components/LoadingGate';
+import useAppVersion from './hooks/useAppVersion';
 
 // Lazy load ALL pages (including Home, Login, Register) to avoid Router context errors
 const Home = lazy(() => import('./pages/Home'));
@@ -140,6 +142,10 @@ function App() {
   // - "unauthenticated": User is confirmed logged out
   const [authStatus, setAuthStatusState] = useState(AUTH_STATUS.UNKNOWN);
   const [initError, setInitError] = useState(false);
+
+  // Update banner state
+  const updateAvailable = useAppVersion();
+  const [showUpdateBanner, setShowUpdateBanner] = useState(true);
 
   // Derived state for backward compatibility
   const isAuth = authStatus === AUTH_STATUS.AUTHENTICATED;
@@ -439,6 +445,11 @@ function App() {
               <div className="app-container">
                 {/* Safety Warning for high-risk regions */}
                 {isAuth && <SafetyWarning />}
+
+                {/* Update banner for new deployments */}
+                {updateAvailable && showUpdateBanner && (
+                  <UpdateBanner onClose={() => setShowUpdateBanner(false)} />
+                )}
 
                 <main id="main-content">
                   <Routes>

@@ -126,3 +126,28 @@ export const clearManualLogoutFlag = () => {
 export const isAuthenticated = () => {
   return !!getAuthToken();
 };
+
+/**
+ * Refresh the access token before an update reload
+ * This ensures the user stays logged in after the app reloads
+ */
+export async function refreshAccessToken() {
+  try {
+    // Import api dynamically to avoid circular dependency
+    const { default: api } = await import('./api');
+    const response = await api.post('/auth/refresh');
+
+    // If new tokens are returned, store them
+    if (response.data?.token) {
+      setAuthToken(response.data.token);
+    }
+    if (response.data?.refreshToken) {
+      setRefreshToken(response.data.refreshToken);
+    }
+
+    console.log('✅ Token refreshed before update');
+  } catch (err) {
+    console.warn('⚠️ Token refresh failed during update:', err.message);
+    // Don't throw - we still want to reload even if refresh fails
+  }
+}
