@@ -20,7 +20,10 @@ class ErrorBoundary extends Component {
   componentDidCatch(error, errorInfo) {
     // Log error details
     logger.error('ErrorBoundary caught an error:', error, errorInfo);
-    
+    console.error('🔴 ERROR BOUNDARY CAUGHT:', error);
+    console.error('🔴 ERROR INFO:', errorInfo);
+    console.error('🔴 ERROR STACK:', error.stack);
+
     this.setState({
       error,
       errorInfo
@@ -85,9 +88,9 @@ class ErrorBoundary extends Component {
               Try refreshing the page or going back to the feed.
             </p>
 
-            {/* Error details (only in development) */}
-            {import.meta.env.DEV && this.state.error && (
-              <details style={{
+            {/* Error details - always show for debugging */}
+            {this.state.error && (
+              <details open style={{
                 marginBottom: '2rem',
                 textAlign: 'left',
                 background: '#f5f5f5',
@@ -96,12 +99,14 @@ class ErrorBoundary extends Component {
                 fontSize: '0.85rem'
               }}>
                 <summary style={{ cursor: 'pointer', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                  Error Details (Dev Only)
+                  Error Details
                 </summary>
-                <pre style={{ 
-                  overflow: 'auto', 
+                <pre style={{
+                  overflow: 'auto',
                   fontSize: '0.75rem',
-                  color: '#d32f2f'
+                  color: '#d32f2f',
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word'
                 }}>
                   {this.state.error.toString()}
                   {this.state.errorInfo && this.state.errorInfo.componentStack}
