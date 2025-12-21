@@ -1208,17 +1208,21 @@ function Profile() {
         <div className="profile-header glossy fade-in">
           <div className="cover-photo">
             {user.coverPhoto ? (
-              <OptimizedImage
-                src={getImageUrl(user.coverPhoto)}
-                alt="Cover"
+              <div
+                className="cover-photo-image"
                 onClick={() => setPhotoViewerImage(getImageUrl(user.coverPhoto))}
                 style={{
-                  cursor: 'pointer',
-                  objectPosition: user.coverPhotoPosition
-                    ? `${user.coverPhotoPosition.x}% ${user.coverPhotoPosition.y}%`
-                    : '50% 50%'
+                  backgroundImage: `url(${getImageUrl(user.coverPhoto)})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  width: '100%',
+                  height: '100%',
+                  transform: user.coverPhotoPosition
+                    ? `translate(${user.coverPhotoPosition.x}px, ${user.coverPhotoPosition.y}px) scale(${user.coverPhotoPosition.scale || 1})`
+                    : 'none',
+                  transformOrigin: 'center',
+                  cursor: 'pointer'
                 }}
-                loading="eager"
               />
             ) : (
               <div className="cover-placeholder shimmer"></div>
@@ -1243,17 +1247,21 @@ function Profile() {
             {/* Photo Upload Buttons - REMOVED: All image editing moved to Edit Profile modal */}
             <div className="profile-avatar">
               {user.profilePhoto ? (
-                <OptimizedImage
-                  src={getImageUrl(user.profilePhoto)}
-                  alt={user.username}
+                <div
+                  className="profile-avatar-image"
                   onClick={() => setPhotoViewerImage(getImageUrl(user.profilePhoto))}
                   style={{
-                    objectPosition: user.profilePhotoPosition
-                      ? `${user.profilePhotoPosition.x}% ${user.profilePhotoPosition.y}%`
-                      : '50% 50%',
+                    backgroundImage: `url(${getImageUrl(user.profilePhoto)})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    width: '100%',
+                    height: '100%',
+                    transform: user.profilePhotoPosition
+                      ? `translate(${user.profilePhotoPosition.x}px, ${user.profilePhotoPosition.y}px) scale(${user.profilePhotoPosition.scale || 1})`
+                      : 'none',
+                    transformOrigin: 'center',
                     cursor: 'pointer'
                   }}
-                  loading="eager"
                 />
               ) : (
                 <span>{user.displayName?.charAt(0).toUpperCase()}</span>
