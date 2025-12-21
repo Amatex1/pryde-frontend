@@ -1763,6 +1763,19 @@ function Profile() {
                             <div className="author-name">{post.author?.displayName || post.author?.username}</div>
                             <div className="post-time">
                               {new Date(post.createdAt).toLocaleDateString()}
+                              {post.edited && (
+                                <button
+                                  type="button"
+                                  className="edited-indicator-btn"
+                                  onClick={() => {
+                                    setEditHistoryPostId(post._id);
+                                    setShowEditHistory(true);
+                                  }}
+                                  aria-label="View edit history"
+                                >
+                                  (edited)
+                                </button>
+                              )}
                               <span className="post-privacy-icon" title={`Visible to: ${post.visibility || 'friends'}`}>
                                 {post.visibility === 'public' ? '🌍' : post.visibility === 'private' ? '🔒' : '👥'}
                               </span>
@@ -2014,6 +2027,11 @@ function Profile() {
                               )
                             );
                           }}
+                          onCountClick={() => setReactionDetailsModal({
+                            isOpen: true,
+                            reactions: post.reactions || [],
+                            likes: []
+                          })}
                         />
                         <button
                           className="action-btn"

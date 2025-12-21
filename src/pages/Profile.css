@@ -1899,6 +1899,22 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   margin-left: 0.25rem;
 }
 
+.profile-page .edited-indicator-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-style: italic;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.profile-page .edited-indicator-btn:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
 [data-theme="dark"] .profile-page .comment-text {
   color: var(--text-main);
   background: rgba(108, 92, 231, 0.15);
