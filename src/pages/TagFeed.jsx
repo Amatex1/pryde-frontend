@@ -9,6 +9,7 @@ import Navbar from '../components/Navbar';
 import OptimizedImage from '../components/OptimizedImage';
 import api from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
+import { getImageUrl } from '../utils/imageUrl';
 import './TagFeed.css';
 
 function TagFeed() {
@@ -156,16 +157,25 @@ function TagFeed() {
           posts.map(post => (
             <div key={post._id} className="post-card glossy">
               <div className="post-header">
-                <Link to={`/profile/${post.author._id}`} className="post-author">
-                  <img 
-                    src={post.author.profilePhoto || '/default-avatar.png'} 
-                    alt={post.author.displayName}
-                    className="author-avatar"
-                  />
+                <Link to={`/profile/${post.author?._id}`} className="post-author">
+                  <div className="author-avatar">
+                    {post.author?.profilePhoto ? (
+                      <OptimizedImage
+                        src={getImageUrl(post.author.profilePhoto)}
+                        alt={`${post.author?.username || 'User'} avatar`}
+                        className="avatar-image"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className="avatar-fallback">
+                        {post.author?.displayName?.charAt(0).toUpperCase() || post.author?.username?.charAt(0).toUpperCase() || 'U'}
+                      </span>
+                    )}
+                  </div>
                   <div className="author-info">
                     <span className="author-name">
-                      {post.author.displayName}
-                      {post.author.isVerified && <span className="verified-badge">✓</span>}
+                      {post.author?.displayName || post.author?.username || 'Unknown User'}
+                      {post.author?.isVerified && <span className="verified-badge">✓</span>}
                     </span>
                     <span className="post-date">{new Date(post.createdAt).toLocaleDateString()}</span>
                   </div>
