@@ -40,7 +40,13 @@ const ReactionButton = ({
       try {
         const response = await api.get(`/reactions/${targetType}/${targetId}`);
         setReactions(response.data.reactions || {});
-        setUserReaction(response.data.userReaction || null);
+        // Only update userReaction if API returns a valid value
+        // Preserve initialUserReaction if API returns null/undefined
+        setUserReaction(prev =>
+          response.data.userReaction !== undefined && response.data.userReaction !== null
+            ? response.data.userReaction
+            : prev
+        );
         setIsInitialized(true);
       } catch (error) {
         console.error('Failed to fetch reactions:', error);
