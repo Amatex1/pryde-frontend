@@ -352,6 +352,43 @@ function Profile() {
       };
       socket.on('comment_reaction_added', handleCommentReactionRT);
       cleanupFunctions.push(() => socket.off('comment_reaction_added', handleCommentReactionRT));
+
+      // Listen for real-time comments
+      const handleCommentAddedRT = (data) => {
+        logger.debug('💬 Real-time comment received:', data);
+        const newComment = data.comment;
+        const postId = data.postId;
+
+        if (newComment.parentCommentId) {
+          // It's a reply
+          setCommentReplies(prev => {
+            const existing = prev[newComment.parentCommentId] || [];
+            // Check if comment already exists to prevent duplicates
+            if (existing.some(c => c._id === newComment._id)) {
+              return prev;
+            }
+            return {
+              ...prev,
+              [newComment.parentCommentId]: [...existing, newComment]
+            };
+          });
+        } else {
+          // It's a top-level comment
+          setPostComments(prev => {
+            const existing = prev[postId] || [];
+            // Check if comment already exists to prevent duplicates
+            if (existing.some(c => c._id === newComment._id)) {
+              return prev;
+            }
+            return {
+              ...prev,
+              [postId]: [...existing, newComment]
+            };
+          });
+        }
+      };
+      socket.on('comment_added', handleCommentAddedRT);
+      cleanupFunctions.push(() => socket.off('comment_added', handleCommentAddedRT));
     };
 
     // Use shared socket helper with retry logic
@@ -731,16 +768,13 @@ function Profile() {
       // Convert emoji shortcuts before posting
       const contentWithEmojis = convertEmojiShortcuts(content);
 
-      const response = await api.post(`/posts/${postId}/comments`, {
+      await api.post(`/posts/${postId}/comments`, {
         content: contentWithEmojis,
         parentCommentId: null // Top-level comment
       });
 
-      // Add new comment to state
-      setPostComments(prev => ({
-        ...prev,
-        [postId]: [...(prev[postId] || []), response.data]
-      }));
+      // Socket event will add the comment to state - no optimistic update needed
+      // This prevents duplicate comments from appearing
 
       setCommentText(prev => ({ ...prev, [postId]: '' }));
       showToast('Comment added successfully', 'success');
@@ -859,29 +893,13 @@ function Profile() {
       // Convert emoji shortcuts before posting
       const contentWithEmojis = convertEmojiShortcuts(replyText);
 
-      const response = await api.post(`/posts/${postId}/comments`, {
+      await api.post(`/posts/${postId}/comments`, {
         content: contentWithEmojis,
         parentCommentId: commentId // Reply to comment
       });
 
-      // Add reply to state
-      setCommentReplies(prev => ({
-        ...prev,
-        [commentId]: [...(prev[commentId] || []), response.data]
-      }));
-
-      // Update parent comment's replyCount
-      setPostComments(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(pid => {
-          updated[pid] = updated[pid].map(comment =>
-            comment._id === commentId
-              ? { ...comment, replyCount: (comment.replyCount || 0) + 1 }
-              : comment
-          );
-        });
-        return updated;
-      });
+      // Socket event will add the reply to state - no optimistic update needed
+      // This prevents duplicate replies from appearing
 
       setReplyText('');
       setReplyingToComment(null);

@@ -1075,18 +1075,8 @@ function Feed() {
 
       logger.debug('✅ Comment created:', response.data);
 
-      // Add new comment to postComments
-      setPostComments(prev => ({
-        ...prev,
-        [postId]: [...(prev[postId] || []), response.data]
-      }));
-
-      // Update post comment count
-      setPosts(posts.map(p =>
-        p._id === postId
-          ? { ...p, commentCount: (p.commentCount || 0) + 1 }
-          : p
-      ));
+      // Socket event will add the comment to state - no optimistic update needed
+      // This prevents duplicate comments from appearing
 
       setCommentText(prev => ({ ...prev, [postId]: '' }));
       setCommentGif(prev => ({ ...prev, [postId]: null }));
@@ -1269,39 +1259,14 @@ function Feed() {
       // Convert emoji shortcuts before posting
       const contentWithEmojis = replyText ? convertEmojiShortcuts(replyText) : '';
 
-      const response = await api.post(`/posts/${postId}/comments`, {
+      await api.post(`/posts/${postId}/comments`, {
         content: contentWithEmojis,
         gifUrl: replyGif || null,
         parentCommentId: commentId // This makes it a reply
       });
 
-      const newReply = response.data;
-
-      // Add reply to commentReplies
-      setCommentReplies(prev => ({
-        ...prev,
-        [commentId]: [...(prev[commentId] || []), newReply]
-      }));
-
-      // Update parent comment's reply count
-      setPostComments(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(pId => {
-          updated[pId] = updated[pId].map(c =>
-            c._id === commentId
-              ? { ...c, replyCount: (c.replyCount || 0) + 1 }
-              : c
-          );
-        });
-        return updated;
-      });
-
-      // Update post comment count
-      setPosts(posts.map(p =>
-        p._id === postId
-          ? { ...p, commentCount: (p.commentCount || 0) + 1 }
-          : p
-      ));
+      // Socket event will add the reply to state - no optimistic update needed
+      // This prevents duplicate replies from appearing
 
       setReplyingToComment(null);
       setReplyText('');
