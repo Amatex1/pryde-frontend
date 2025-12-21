@@ -1,0 +1,38 @@
+services:
+  # Backend API Server
+  - type: web
+    name: pryde-backend
+    runtime: node
+    env: node
+    region: oregon
+    plan: starter
+    buildCommand: cd server && npm install
+    startCommand: cd server && node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # Add your other environment variables in Render Dashboard:
+      # - MONGODB_URI
+      # - JWT_SECRET
+      # - JWT_REFRESH_SECRET
+      # - CLOUDFLARE_ACCOUNT_ID
+      # - CLOUDFLARE_API_TOKEN
+      # - CLOUDFLARE_ZONE_ID
+      # - HCAPTCHA_SECRET_KEY
+      # - ADMIN_EMAIL
+      # - ADMIN_PASSWORD
+    healthCheckPath: /api/health
+
+  # Frontend Static Site
+  - type: web
+    name: pryde-frontend
+    env: static
+    buildCommand: npm install && npm run build:prod
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
