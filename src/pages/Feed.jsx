@@ -24,6 +24,7 @@ import { getCurrentUser } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
 import { getSocket, setupSocketListeners } from '../utils/socketHelpers';
 import { convertEmojiShortcuts } from '../utils/textFormatting';
+import { getDisplayName } from '../utils/getDisplayName';
 import logger from '../utils/logger';
 import './Feed.css';
 
@@ -2152,11 +2153,11 @@ function Feed() {
               {/* All Friends - Unified List */}
               {friends
                 .filter(friend =>
-                  (friend.displayName || friend.username).toLowerCase().includes(friendSearchQuery.toLowerCase())
+                  getDisplayName(friend).toLowerCase().includes(friendSearchQuery.toLowerCase())
                 )
                 .map((friend) => {
                   const isOnline = onlineUsers.includes(friend._id);
-                  logger.debug(`Friend ${friend.displayName} (${friend._id}):`, {
+                  logger.debug(`Friend ${getDisplayName(friend)} (${friend._id}):`, {
                     isOnline,
                     onlineUsers,
                     friendId: friend._id
@@ -2169,16 +2170,16 @@ function Feed() {
                           {friend.profilePhoto ? (
                             <OptimizedImage
                               src={getImageUrl(friend.profilePhoto)}
-                              alt={friend.displayName}
+                              alt={getDisplayName(friend)}
                               className="avatar-image"
                             />
                           ) : (
-                            <span>{friend.displayName?.charAt(0).toUpperCase() || 'U'}</span>
+                            <span>{getDisplayName(friend).charAt(0).toUpperCase()}</span>
                           )}
                           <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>
                         </div>
                         <div className="friend-sidebar-info">
-                          <div className="friend-sidebar-name">{friend.displayName || friend.username}</div>
+                          <div className="friend-sidebar-name">{getDisplayName(friend)}</div>
                           <div className={`friend-sidebar-status ${isOnline ? 'online-status' : 'offline-status'}`}>
                             {isOnline ? 'Online' : getTimeSince(friend.lastSeen)}
                           </div>
@@ -2207,7 +2208,7 @@ function Feed() {
                   );
                 })}
               {friends.filter(f =>
-                (f.displayName || f.username).toLowerCase().includes(friendSearchQuery.toLowerCase())
+                getDisplayName(f).toLowerCase().includes(friendSearchQuery.toLowerCase())
               ).length === 0 && friends.length > 0 && (
                 <div className="no-friends">
                   <p>No matching friends</p>
@@ -2276,14 +2277,14 @@ function Feed() {
                           {friend.profilePhoto ? (
                             <OptimizedImage
                               src={getImageUrl(friend.profilePhoto)}
-                              alt={friend.displayName}
+                              alt={getDisplayName(friend)}
                               className="avatar-image"
                             />
                           ) : (
-                            <span>{friend.displayName?.charAt(0).toUpperCase()}</span>
+                            <span>{getDisplayName(friend).charAt(0).toUpperCase()}</span>
                           )}
                         </div>
-                        <span>{friend.displayName || friend.username}</span>
+                        <span>{getDisplayName(friend)}</span>
                       </div>
                     </label>
                   ))}
@@ -2317,14 +2318,14 @@ function Feed() {
                           {friend.profilePhoto ? (
                             <OptimizedImage
                               src={getImageUrl(friend.profilePhoto)}
-                              alt={friend.displayName}
+                              alt={getDisplayName(friend)}
                               className="avatar-image"
                             />
                           ) : (
-                            <span>{friend.displayName?.charAt(0).toUpperCase()}</span>
+                            <span>{getDisplayName(friend).charAt(0).toUpperCase()}</span>
                           )}
                         </div>
-                        <span>{friend.displayName || friend.username}</span>
+                        <span>{getDisplayName(friend)}</span>
                       </div>
                     </label>
                   ))}

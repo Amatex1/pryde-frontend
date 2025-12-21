@@ -14,6 +14,7 @@ import { getImageUrl } from '../utils/imageUrl';
 import { getUserChatColor, getSentMessageColor } from '../utils/chatColors';
 import logger from '../utils/logger';
 import { sanitizeMessage } from '../utils/sanitize';
+import { getDisplayName, getDisplayNameInitial } from '../utils/getDisplayName';
 import {
   onNewMessage,
   onMessageSent,
@@ -1005,9 +1006,9 @@ function Messages() {
                             >
                               <div className="conv-avatar">
                                 {otherUser?.profilePhoto ? (
-                                  <img src={getImageUrl(otherUser.profilePhoto)} alt={otherUser.username} />
+                                  <img src={getImageUrl(otherUser.profilePhoto)} alt={getDisplayName(otherUser)} />
                                 ) : (
-                                  <span>{otherUser?.username?.charAt(0).toUpperCase() || '?'}</span>
+                                  <span>{getDisplayNameInitial(otherUser)}</span>
                                 )}
                                 {/* Unread indicator (red dot) */}
                                 {conv.unread > 0 && (
@@ -1020,7 +1021,7 @@ function Messages() {
                               </div>
                               <div className="conv-info">
                                 <div className="conv-header">
-                                  <div className="conv-name">{otherUser?.displayName || otherUser?.username || 'Unknown'}</div>
+                                  <div className="conv-name">{getDisplayName(otherUser)}</div>
                                   <div className="conv-time">
                                     {conv.lastMessage?.createdAt ? new Date(conv.lastMessage.createdAt).toLocaleTimeString() : ''}
                                   </div>
@@ -1114,28 +1115,37 @@ function Messages() {
                     ← Back
                   </button>
                   <div className="chat-user">
-                    <div className="chat-avatar">
-                      {selectedChatType === 'group' ? (
-                        <span>{selectedGroup?.name?.charAt(0).toUpperCase() || 'G'}</span>
-                      ) : selectedUser?.profilePhoto ? (
-                        <img src={getImageUrl(selectedUser.profilePhoto)} alt={selectedUser.username} />
-                      ) : (
-                        <span>{selectedUser?.displayName?.charAt(0).toUpperCase() || selectedUser?.username?.charAt(0).toUpperCase() || 'U'}</span>
-                      )}
-                    </div>
-                    <div className="chat-user-info">
-                      <div className="chat-user-name">
-                        {selectedChatType === 'group'
-                          ? selectedGroup?.name || 'Group Chat'
-                          : selectedUser?.displayName || selectedUser?.username || 'User'}
-                        {mutedConversations.includes(selectedChat) && <span className="muted-indicator">🔕</span>}
-                      </div>
-                      {selectedChatType !== 'group' && (
-                        <div className={`chat-user-status ${onlineUsers.includes(selectedChat) ? 'online' : 'offline'}`}>
-                          {onlineUsers.includes(selectedChat) ? 'Online' : 'Offline'}
-                        </div>
-                      )}
-                    </div>
+                    {/* Self-DM detection for visual adjustments */}
+                    {(() => {
+                      const isSelfChat = selectedUser?._id === currentUser?._id;
+                      return (
+                        <>
+                          <div className="chat-avatar">
+                            {selectedChatType === 'group' ? (
+                              <span>{selectedGroup?.name?.charAt(0).toUpperCase() || 'G'}</span>
+                            ) : selectedUser?.profilePhoto ? (
+                              <img src={getImageUrl(selectedUser.profilePhoto)} alt={getDisplayName(selectedUser)} />
+                            ) : (
+                              <span>{getDisplayNameInitial(selectedUser)}</span>
+                            )}
+                          </div>
+                          <div className="chat-user-info">
+                            <div className="chat-user-name">
+                              {selectedChatType === 'group'
+                                ? selectedGroup?.name || 'Group Chat'
+                                : getDisplayName(selectedUser)}
+                              {mutedConversations.includes(selectedChat) && <span className="muted-indicator">🔕</span>}
+                            </div>
+                            {/* Hide online status for self-DMs */}
+                            {selectedChatType !== 'group' && !isSelfChat && (
+                              <div className={`chat-user-status ${onlineUsers.includes(selectedChat) ? 'online' : 'offline'}`}>
+                                {onlineUsers.includes(selectedChat) ? 'Online' : 'Offline'}
+                              </div>
+                            )}
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
 
                   {/* Chat Settings Button */}
@@ -1179,12 +1189,12 @@ function Messages() {
                           <div className="message-header">
                             <div className="message-avatar-small">
                               {msg.sender.profilePhoto ? (
-                                <img src={getImageUrl(msg.sender.profilePhoto)} alt={msg.sender.username} />
+                                <img src={getImageUrl(msg.sender.profilePhoto)} alt={getDisplayName(msg.sender)} />
                               ) : (
-                                <span>{msg.sender.username?.charAt(0).toUpperCase() || 'U'}</span>
+                                <span>{getDisplayNameInitial(msg.sender)}</span>
                               )}
                             </div>
-                            <div className="message-sender-name">{msg.sender.displayName || msg.sender.username}</div>
+                            <div className="message-sender-name">{getDisplayName(msg.sender)}</div>
                           </div>
 
                           {isEditing ? (
@@ -1344,7 +1354,7 @@ function Messages() {
                   {replyingTo && (
                     <div className="reply-preview">
                       <div className="reply-preview-content">
-                        <div className="reply-preview-label">Replying to {replyingTo.sender.displayName || replyingTo.sender.username}</div>
+                        <div className="reply-preview-label">Replying to {getDisplayName(replyingTo.sender)}</div>
                         <div className="reply-preview-text">{replyingTo.content}</div>
                       </div>
                       <button
@@ -1526,13 +1536,13 @@ function Messages() {
                     >
                       <div className="user-avatar">
                         {user.profilePhoto ? (
-                          <img src={getImageUrl(user.profilePhoto)} alt={user.username} />
+                          <img src={getImageUrl(user.profilePhoto)} alt={getDisplayName(user)} />
                         ) : (
-                          <span>{user.displayName?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}</span>
+                          <span>{getDisplayNameInitial(user)}</span>
                         )}
                       </div>
                       <div className="user-info">
-                        <div className="user-name">{user.displayName || user.username}</div>
+                        <div className="user-name">{getDisplayName(user)}</div>
                         <div className="user-username">@{user.username}</div>
                       </div>
                     </div>
@@ -1560,14 +1570,14 @@ function Messages() {
                           {friend.isActive === false ? (
                             <span>?</span>
                           ) : friend.profilePhoto ? (
-                            <img src={getImageUrl(friend.profilePhoto)} alt={friend.username} />
+                            <img src={getImageUrl(friend.profilePhoto)} alt={getDisplayName(friend)} />
                           ) : (
-                            <span>{friend.displayName?.charAt(0).toUpperCase() || friend.username?.charAt(0).toUpperCase()}</span>
+                            <span>{getDisplayNameInitial(friend)}</span>
                           )}
                         </div>
                         <div className="user-info">
                           <div className={`user-name ${friend.isActive === false ? 'deactivated-text' : ''}`}>
-                            {friend.displayName || friend.username}
+                            {getDisplayName(friend)}
                           </div>
                           <div className={`user-username ${friend.isActive === false ? 'deactivated-text' : ''}`}>
                             @{friend.username}
@@ -1639,7 +1649,7 @@ function Messages() {
                     <div className="members-chips">
                       {searchResults.filter(u => selectedMembers.includes(u._id)).map(user => (
                         <div key={user._id} className="member-chip">
-                          {user.displayName || user.username}
+                          {getDisplayName(user)}
                           <button type="button" onClick={() => toggleMemberSelection(user._id)}>×</button>
                         </div>
                       ))}
@@ -1657,13 +1667,13 @@ function Messages() {
                       >
                         <div className="user-avatar">
                           {user.profilePhoto ? (
-                            <img src={getImageUrl(user.profilePhoto)} alt={user.username} />
+                            <img src={getImageUrl(user.profilePhoto)} alt={getDisplayName(user)} />
                           ) : (
-                            <span>{user.displayName?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}</span>
+                            <span>{getDisplayNameInitial(user)}</span>
                           )}
                         </div>
                         <div className="user-info">
-                          <div className="user-name">{user.displayName || user.username}</div>
+                          <div className="user-name">{getDisplayName(user)}</div>
                           <div className="user-username">@{user.username}</div>
                         </div>
                         {selectedMembers.includes(user._id) && <span className="check-mark">✓</span>}

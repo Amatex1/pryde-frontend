@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { sendMessage, onNewMessage, onMessageSent, onUserOnline, onUserOffline, onOnlineUsers } from '../utils/socket';
 import { getUserChatColor, getSentMessageColor } from '../utils/chatColors';
+import { getDisplayName, getDisplayNameInitial } from '../utils/getDisplayName';
 import api from '../utils/api';
 import './MiniChat.css';
 
@@ -342,10 +343,10 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
                   {isSent && (
                     <div className="message-avatar">
                       {currentUserData?.profilePhoto ? (
-                        <img src={getImageUrl(currentUserData.profilePhoto)} alt="You" />
+                        <img src={getImageUrl(currentUserData.profilePhoto)} alt={getDisplayName(currentUserData)} />
                       ) : (
                         <div className="avatar-placeholder-small">
-                          {currentUserData?.username?.charAt(0).toUpperCase() || 'U'}
+                          {getDisplayNameInitial(currentUserData)}
                         </div>
                       )}
                     </div>
