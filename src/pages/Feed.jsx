@@ -15,7 +15,7 @@ import GifPicker from '../components/GifPicker';
 import PollCreator from '../components/PollCreator';
 import Poll from '../components/Poll';
 import PinnedPostBadge from '../components/PinnedPostBadge';
-// import EditHistoryModal from '../components/EditHistoryModal';
+import EditHistoryModal from '../components/EditHistoryModal';
 import DraftManager from '../components/DraftManager';
 import { useModal } from '../hooks/useModal';
 import { useOnlineUsers } from '../hooks/useOnlineUsers';
@@ -2386,8 +2386,7 @@ function Feed() {
         />
       )}
 
-      {/* TEMPORARILY DISABLED TO ISOLATE ERROR */}
-      {/* {showEditHistory && (
+      {showEditHistory && (
         <EditHistoryModal
           isOpen={showEditHistory}
           onClose={() => {
@@ -2397,7 +2396,7 @@ function Feed() {
           postId={editHistoryPostId}
           contentType="post"
         />
-      )} */}
+      )}
 
       {/* Comment Modal for Mobile */}
       {commentModalOpen && (
