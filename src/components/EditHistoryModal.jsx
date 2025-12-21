@@ -7,12 +7,6 @@ const EditHistoryModal = ({ isOpen, onClose, postId, contentType = 'post' }) => 
   const [editHistory, setEditHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (isOpen && postId) {
-      fetchEditHistory();
-    }
-  }, [isOpen, postId]);
-
   const fetchEditHistory = async () => {
     try {
       const endpoint = contentType === 'post'
@@ -30,6 +24,18 @@ const EditHistoryModal = ({ isOpen, onClose, postId, contentType = 'post' }) => 
     }
   };
 
+  useEffect(() => {
+    if (isOpen && postId) {
+      setLoading(true);
+      fetchEditHistory();
+    } else if (!isOpen) {
+      // Reset state when modal closes
+      setEditHistory([]);
+      setLoading(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, postId, contentType]);
+
   const formatDate = (date) => {
     const d = new Date(date);
     const now = new Date();
@@ -42,7 +48,7 @@ const EditHistoryModal = ({ isOpen, onClose, postId, contentType = 'post' }) => 
     if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
     if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
     if (days < 7) return `${days} day${days === 1 ? '' : 's'} ago`;
-    
+
     return d.toLocaleDateString('en-GB', {
       day: '2-digit',
       month: '2-digit',
@@ -51,6 +57,9 @@ const EditHistoryModal = ({ isOpen, onClose, postId, contentType = 'post' }) => 
       minute: '2-digit'
     });
   };
+
+  // Don't render anything if modal is not open
+  if (!isOpen) return null;
 
   return (
     <CustomModal isOpen={isOpen} onClose={onClose} title="Edit History">

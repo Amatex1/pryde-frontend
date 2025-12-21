@@ -2386,15 +2386,17 @@ function Feed() {
         />
       )}
 
-      <EditHistoryModal
-        isOpen={showEditHistory}
-        onClose={() => {
-          setShowEditHistory(false);
-          setEditHistoryPostId(null);
-        }}
-        postId={editHistoryPostId}
-        contentType="post"
-      />
+      {showEditHistory && (
+        <EditHistoryModal
+          isOpen={showEditHistory}
+          onClose={() => {
+            setShowEditHistory(false);
+            setEditHistoryPostId(null);
+          }}
+          postId={editHistoryPostId}
+          contentType="post"
+        />
+      )}
 
       {/* Comment Modal for Mobile */}
       {commentModalOpen && (
