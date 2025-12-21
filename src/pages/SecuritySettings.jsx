@@ -217,48 +217,57 @@ function SecuritySettings() {
               Get notified when someone logs into your account from a new device or location.
             </p>
 
-            <div className="form-group">
-              <label className="checkbox-label">
+            <div className="setting-item toggle-item">
+              <div className="toggle-info">
+                <label>Enable login alerts</label>
+                <p className="setting-description">
+                  Receive email notifications when you log in
+                </p>
+              </div>
+              <label className="toggle-switch">
                 <input
                   type="checkbox"
                   checked={loginAlerts.enabled}
                   onChange={(e) => handleLoginAlertsChange('enabled', e.target.checked)}
                 />
-                <span>Enable login alerts</span>
+                <span className="toggle-slider"></span>
               </label>
-              <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginLeft: '24px' }}>
-                Receive email notifications when you log in
-              </p>
             </div>
 
-            <div className="form-group">
-              <label className="checkbox-label">
+            <div className={`setting-item toggle-item ${!loginAlerts.enabled ? 'disabled' : ''}`}>
+              <div className="toggle-info">
+                <label>Email on new device login</label>
+                <p className="setting-description">
+                  Get notified when you log in from a device we don't recognize
+                </p>
+              </div>
+              <label className="toggle-switch">
                 <input
                   type="checkbox"
                   checked={loginAlerts.emailOnNewDevice}
                   onChange={(e) => handleLoginAlertsChange('emailOnNewDevice', e.target.checked)}
                   disabled={!loginAlerts.enabled}
                 />
-                <span>Email on new device login</span>
+                <span className="toggle-slider"></span>
               </label>
-              <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginLeft: '24px' }}>
-                Get notified when you log in from a device we don't recognize
-              </p>
             </div>
 
-            <div className="form-group">
-              <label className="checkbox-label">
+            <div className={`setting-item toggle-item ${!loginAlerts.enabled ? 'disabled' : ''}`}>
+              <div className="toggle-info">
+                <label>Email on suspicious login</label>
+                <p className="setting-description">
+                  Get alerted if we detect unusual login activity
+                </p>
+              </div>
+              <label className="toggle-switch">
                 <input
                   type="checkbox"
                   checked={loginAlerts.emailOnSuspiciousLogin}
                   onChange={(e) => handleLoginAlertsChange('emailOnSuspiciousLogin', e.target.checked)}
                   disabled={!loginAlerts.enabled}
                 />
-                <span>Email on suspicious login</span>
+                <span className="toggle-slider"></span>
               </label>
-              <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginLeft: '24px' }}>
-                Get alerted if we detect unusual login activity
-              </p>
             </div>
           </div>
 

@@ -39,6 +39,20 @@
   margin-top: 12px;
 }
 
+/* Neutral info banner - less alarming than warning */
+.recovery-info-banner {
+  background: var(--bg-light);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .add-contact-btn {
   background: var(--pryde-purple);
   color: white;
@@ -252,6 +266,19 @@
    THEME SUPPORT
    All theming handled by CSS variables in variables.css
    ======================================== */
+
+/* Quiet mode support */
+[data-theme="quiet"] .recovery-info-banner {
+  border-color: var(--border-muted);
+}
+
+[data-theme="quiet"] .contact-item {
+  border-color: var(--border-muted);
+}
+
+[data-theme="quiet"] .add-contact-btn {
+  background: var(--text-muted);
+}
 
 /* ========================================
    REDUCED MOTION SUPPORT (ACCESSIBILITY)

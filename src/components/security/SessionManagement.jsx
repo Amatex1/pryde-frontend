@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import api from '../../utils/api';
+import CustomModal from '../CustomModal';
+import { useModal } from '../../hooks/useModal';
 import './SessionManagement.css';
 
 function SessionManagement() {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const [expandedSessions, setExpandedSessions] = useState({});
+  const { modalState, closeModal, showConfirm } = useModal();
 
   useEffect(() => {
     fetchSessions();
@@ -24,11 +28,41 @@ function SessionManagement() {
     }
   };
 
-  const handleLogoutSession = async (sessionId) => {
-    if (!window.confirm('Are you sure you want to logout this session?')) {
-      return;
-    }
+  // Deduplicate sessions by device fingerprint (browser + OS + IP)
+  // Keep the most recent session in each group, preserve current session
+  const dedupeSessionsByFingerprint = (sessionList) => {
+    const fingerprints = {};
 
+    sessionList.forEach(session => {
+      const fingerprint = `${session.browser}-${session.os}-${session.ipAddress}`;
+
+      // Always keep current session
+      if (session.isCurrent) {
+        fingerprints[fingerprint] = session;
+        return;
+      }
+
+      // Keep the most recent session for each fingerprint
+      if (!fingerprints[fingerprint] ||
+          new Date(session.lastActive) > new Date(fingerprints[fingerprint].lastActive)) {
+        // Don't overwrite current session
+        if (!fingerprints[fingerprint]?.isCurrent) {
+          fingerprints[fingerprint] = session;
+        }
+      }
+    });
+
+    return Object.values(fingerprints);
+  };
+
+  const toggleSessionExpand = (sessionId) => {
+    setExpandedSessions(prev => ({
+      ...prev,
+      [sessionId]: !prev[sessionId]
+    }));
+  };
+
+  const handleLogoutSession = async (sessionId) => {
     try {
       await api.delete(`/sessions/${sessionId}`);
       setMessage('Session logged out successfully');
@@ -41,10 +75,6 @@ function SessionManagement() {
   };
 
   const handleLogoutOthers = async () => {
-    if (!window.confirm('Are you sure you want to logout all other sessions? You will remain logged in on this device.')) {
-      return;
-    }
-
     try {
       await api.post('/sessions/logout-others');
       setMessage('All other sessions logged out successfully');
@@ -57,9 +87,14 @@ function SessionManagement() {
   };
 
   const handleLogoutAll = async () => {
-    if (!window.confirm('⚠️ WARNING: This will log you out from ALL devices, including this one. You will need to log in again. Continue?')) {
-      return;
-    }
+    const confirmed = await showConfirm(
+      'This will log you out from ALL devices, including this one. You will need to log in again.',
+      'Logout All Sessions',
+      'Logout All',
+      'Cancel'
+    );
+
+    if (!confirmed) return;
 
     try {
       await api.post('/sessions/logout-all');
@@ -108,6 +143,9 @@ function SessionManagement() {
     return '💻';
   };
 
+  // Deduplicate sessions for display
+  const uniqueSessions = dedupeSessionsByFingerprint(sessions);
+
   if (loading) {
     return <div className="sessions-loading">Loading active sessions...</div>;
   }
@@ -120,21 +158,21 @@ function SessionManagement() {
         </div>
       )}
 
-      {sessions.length > 1 && (
-        <div className="session-actions" style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
-          <button onClick={handleLogoutOthers} className="btn-secondary">
-            🚪 Logout Other Sessions
+      {uniqueSessions.length > 1 && (
+        <div className="session-actions">
+          <button onClick={handleLogoutOthers} className="btn-ghost">
+            Logout Other Sessions
           </button>
-          <button onClick={handleLogoutAll} className="btn-danger">
-            ⚠️ Logout All Sessions
+          <button onClick={handleLogoutAll} className="btn-danger-primary">
+            Logout All Sessions
           </button>
         </div>
       )}
 
       <div className="sessions-list">
-        {sessions.map((session) => (
-          <div 
-            key={session.sessionId} 
+        {uniqueSessions.map((session) => (
+          <div
+            key={session.sessionId}
             className={`session-card ${session.isCurrent ? 'current-session' : ''}`}
           >
             <div className="session-header">
@@ -145,31 +183,45 @@ function SessionManagement() {
                 <div className="session-device">
                   <strong>{session.browser}</strong> on {session.os}
                   {session.isCurrent && (
-                    <span className="current-badge">Current Session</span>
+                    <span className="current-badge">Current</span>
                   )}
                 </div>
-                <div className="session-details">
-                  <span className="session-ip">📍 {session.ipAddress}</span>
-                  {session.location?.city && (
-                    <span className="session-location">
-                      {session.location.city}, {session.location.country}
-                    </span>
-                  )}
+                <div className="session-meta">
+                  <span className="session-ip">{session.ipAddress}</span>
+                  <span className="session-separator">•</span>
+                  <span className="session-time-compact">Active {formatDate(session.lastActive)}</span>
                 </div>
-                <div className="session-time">
-                  <span>Last active: {formatDate(session.lastActive)}</span>
-                  <span style={{ color: '#999', fontSize: '13px' }}>
-                    • Created: {formatDate(session.createdAt)}
-                  </span>
-                </div>
+
+                {/* Expandable details */}
+                <button
+                  className="session-expand-btn"
+                  onClick={() => toggleSessionExpand(session.sessionId)}
+                >
+                  {expandedSessions[session.sessionId] ? '▼ Hide details' : '▶ Show details'}
+                </button>
+
+                {expandedSessions[session.sessionId] && (
+                  <div className="session-expanded-details">
+                    {session.location?.city && (
+                      <div className="session-detail-row">
+                        <span className="detail-label">Location:</span>
+                        <span>{session.location.city}, {session.location.country}</span>
+                      </div>
+                    )}
+                    <div className="session-detail-row">
+                      <span className="detail-label">Created:</span>
+                      <span>{formatDate(session.createdAt)}</span>
+                    </div>
+                  </div>
+                )}
               </div>
               {!session.isCurrent && (
                 <button
                   onClick={() => handleLogoutSession(session.sessionId)}
-                  className="btn-logout-session"
+                  className="btn-logout-session-ghost"
                   title="Logout this session"
                 >
-                  🚪 Logout
+                  Logout
                 </button>
               )}
             </div>
@@ -177,11 +229,22 @@ function SessionManagement() {
         ))}
       </div>
 
-      {sessions.length === 0 && (
+      {uniqueSessions.length === 0 && (
         <div className="no-sessions">
           <p>No active sessions found.</p>
         </div>
       )}
+
+      <CustomModal
+        isOpen={modalState.isOpen}
+        onClose={closeModal}
+        type={modalState.type}
+        title={modalState.title}
+        message={modalState.message}
+        confirmText={modalState.confirmText}
+        cancelText={modalState.cancelText}
+        onConfirm={modalState.onConfirm}
+      />
     </div>
   );
 }

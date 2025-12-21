@@ -200,6 +200,50 @@
   transform: translateX(30px);
 }
 
+/* Setting item with toggle layout */
+.setting-item.toggle-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: var(--card-surface);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  gap: 16px;
+}
+
+.setting-item.toggle-item.disabled {
+  opacity: 0.5;
+}
+
+.setting-item.toggle-item .toggle-info {
+  flex: 1;
+}
+
+.setting-item.toggle-item .toggle-info label {
+  font-weight: 600;
+  color: var(--text-main);
+  font-size: 1rem;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.setting-item.toggle-item .setting-description {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 4px 0 0 0;
+}
+
+/* Quiet mode support for toggles */
+[data-theme="quiet"] .toggle-switch input:checked + .toggle-slider {
+  background: var(--text-muted);
+}
+
+[data-theme="quiet"] .setting-item.toggle-item {
+  border-color: var(--border-muted);
+}
+
 .btn-test {
   padding: 0.875rem 1.5rem;
   border-radius: 12px;

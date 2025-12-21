@@ -16,129 +16,210 @@
 }
 
 .session-message.success {
-  background: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
+  background: rgba(76, 175, 80, 0.1);
+  color: var(--text-main);
+  border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
 .session-message.error {
-  background: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
+  background: rgba(244, 67, 54, 0.1);
+  color: var(--text-main);
+  border: 1px solid rgba(244, 67, 54, 0.3);
 }
 
 .session-actions {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+/* Ghost button for secondary actions */
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-light);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn-ghost:hover {
+  background: var(--bg-light);
+  color: var(--text-main);
+  border-color: var(--text-muted);
+}
+
+/* Danger primary button for destructive main action */
+.btn-danger-primary {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn-danger-primary:hover {
+  background: #c82333;
+  transform: translateY(-1px);
 }
 
 .sessions-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
 }
 
 .session-card {
   background: var(--card-surface);
-  border: 2px solid var(--border-light);
-  border-radius: 12px;
-  padding: 20px;
-  transition: all 0.3s ease;
-  animation: fadeIn 0.3s ease-in-out;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 16px;
+  transition: all 0.2s ease;
   color: var(--text-main);
 }
 
 .session-card:hover {
-  border-color: var(--pryde-purple);
-  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.1);
-  transform: translateY(-2px);
+  border-color: var(--border-light);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .session-card.current-session {
-  background: linear-gradient(135deg, var(--soft-lavender) 0%, var(--bg-light) 100%);
+  background: var(--card-surface);
   border-color: var(--pryde-purple);
-  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.15);
+  border-width: 2px;
 }
 
 .session-header {
   display: flex;
   align-items: flex-start;
-  gap: 15px;
+  gap: 12px;
 }
 
 .session-icon {
-  font-size: 32px;
+  font-size: 24px;
   flex-shrink: 0;
+  opacity: 0.8;
 }
 
 .session-info {
   flex: 1;
+  min-width: 0;
 }
 
 .session-device {
-  font-size: 16px;
-  margin-bottom: 8px;
+  font-size: 15px;
+  margin-bottom: 4px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
-.current-badge {
-  background: var(--gradient-primary);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.session-device strong {
+  color: var(--text-main);
 }
 
-.session-details {
+.current-badge {
+  background: var(--pryde-purple);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.session-meta {
   display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-bottom: 8px;
-  font-size: 14px;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
   color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.session-separator {
+  color: var(--border-light);
 }
 
 .session-ip {
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  font-family: monospace;
+  font-size: 12px;
 }
 
-.session-location {
-  color: var(--pryde-purple);
-  font-weight: 500;
-}
-
-.session-time {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
+.session-time-compact {
   font-size: 13px;
-  color: var(--text-muted);
 }
 
-.btn-logout-session {
-  background: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-  padding: 8px 16px;
-  border-radius: 8px;
+/* Expand button */
+.session-expand-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  padding: 4px 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s;
+}
+
+.session-expand-btn:hover {
+  color: var(--pryde-purple);
+}
+
+/* Expanded details */
+.session-expanded-details {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light);
+}
+
+.session-detail-row {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.session-detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.detail-label {
+  color: var(--text-muted);
+  min-width: 70px;
+}
+
+/* Ghost logout button for individual sessions */
+.btn-logout-session-ghost {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-light);
+  padding: 6px 12px;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
+  font-size: 13px;
   transition: all 0.2s;
   white-space: nowrap;
+  align-self: flex-start;
 }
 
-.btn-logout-session:hover {
-  background: #f5c6cb;
-  transform: scale(1.05);
+.btn-logout-session-ghost:hover {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+  border-color: #dc3545;
 }
 
 .no-sessions {
@@ -167,6 +248,19 @@
   }
 }
 
+/* Quiet mode support */
+[data-theme="quiet"] .session-card {
+  border-color: var(--border-muted);
+}
+
+[data-theme="quiet"] .current-badge {
+  background: var(--text-muted);
+}
+
+[data-theme="quiet"] .btn-danger-primary {
+  background: var(--text-muted);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .session-header {
@@ -181,7 +275,7 @@
     width: 100%;
   }
 
-  .btn-logout-session {
+  .btn-logout-session-ghost {
     width: 100%;
     margin-top: 10px;
   }

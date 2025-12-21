@@ -111,9 +111,11 @@ const RecoveryContacts = () => {
         <div className="recovery-info">
           <h3>Trusted Recovery Contacts</h3>
           <p>Add trusted friends who can help you recover your account if you lose access.</p>
-          <p className="recovery-note">
-            ⚠️ You need at least 2 accepted contacts. They can approve password reset requests.
-          </p>
+          {acceptedContacts.length < 2 && (
+            <p className="recovery-info-banner">
+              ℹ️ Add at least 2 trusted contacts to enable account recovery.
+            </p>
+          )}
         </div>
         {!showAddForm && acceptedContacts.length < 5 && (
           <button className="add-contact-btn" onClick={() => setShowAddForm(true)}>
