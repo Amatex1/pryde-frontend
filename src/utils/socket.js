@@ -200,26 +200,26 @@ export const sendMessage = (data) => {
 };
 
 export const onMessageSent = (callback) => {
-    if (socket) {
+    if (socket && typeof socket.on === 'function') {
         // Don't remove previous listeners - allow multiple components to listen
         socket.on("message_sent", callback);
     }
     // Return cleanup function
     return () => {
-        if (socket) {
+        if (socket && typeof socket.off === 'function') {
             socket.off("message_sent", callback);
         }
     };
 };
 
 export const onNewMessage = (callback) => {
-    if (socket) {
+    if (socket && typeof socket.on === 'function') {
         // Don't remove previous listeners - allow multiple components to listen
         socket.on("new_message", callback);
     }
     // Return cleanup function
     return () => {
-        if (socket) {
+        if (socket && typeof socket.off === 'function') {
             socket.off("new_message", callback);
         }
     };
@@ -233,13 +233,13 @@ export const emitTyping = (conversationId, userId) => {
 };
 
 export const onUserTyping = (callback) => {
-    if (socket) {
+    if (socket && typeof socket.on === 'function') {
         // Don't remove previous listeners - allow multiple components to listen
         socket.on("typing", callback);
     }
     // Return cleanup function
     return () => {
-        if (socket) {
+        if (socket && typeof socket.off === 'function') {
             socket.off("typing", callback);
         }
     };
@@ -257,10 +257,10 @@ export const emitFriendRequestAccepted = (data) => {
 };
 
 export const onFriendRequestReceived = (callback) => {
-    if (socket) {
+    if (socket && typeof socket.on === 'function') {
         socket.on("friendRequestReceived", callback);
         return () => {
-            if (socket) {
+            if (socket && typeof socket.off === 'function') {
                 socket.off("friendRequestReceived", callback);
             }
         };
@@ -269,10 +269,10 @@ export const onFriendRequestReceived = (callback) => {
 };
 
 export const onFriendRequestAccepted = (callback) => {
-    if (socket) {
+    if (socket && typeof socket.on === 'function') {
         socket.on("friendRequestAccepted", callback);
         return () => {
-            if (socket) {
+            if (socket && typeof socket.off === 'function') {
                 socket.off("friendRequestAccepted", callback);
             }
         };
@@ -294,7 +294,7 @@ export const requestOnlineUsers = () => {
 };
 
 export const onUserOnline = (callback) => {
-    if (socket) {
+    if (socket && typeof socket.on === 'function') {
         // Create a named handler function so we can remove it later
         const handler = (data) => {
             logger.debug('🔌 Socket received user_online event:', data);
@@ -304,7 +304,7 @@ export const onUserOnline = (callback) => {
 
         // Return cleanup function that removes THIS specific handler
         return () => {
-            if (socket) {
+            if (socket && typeof socket.off === 'function') {
                 socket.off("user_online", handler);
             }
         };
@@ -313,7 +313,7 @@ export const onUserOnline = (callback) => {
 };
 
 export const onUserOffline = (callback) => {
-    if (socket) {
+    if (socket && typeof socket.on === 'function') {
         // Create a named handler function so we can remove it later
         const handler = (data) => {
             logger.debug('🔌 Socket received user_offline event:', data);
@@ -323,7 +323,7 @@ export const onUserOffline = (callback) => {
 
         // Return cleanup function that removes THIS specific handler
         return () => {
-            if (socket) {
+            if (socket && typeof socket.off === 'function') {
                 socket.off("user_offline", handler);
             }
         };
@@ -332,7 +332,7 @@ export const onUserOffline = (callback) => {
 };
 
 export const onOnlineUsers = (callback) => {
-    if (socket) {
+    if (socket && typeof socket.on === 'function') {
         // Create a named handler function so we can remove it later
         const handler = (users) => {
             logger.debug('🔌 Socket received online_users event:', users);
@@ -342,7 +342,7 @@ export const onOnlineUsers = (callback) => {
 
         // Return cleanup function that removes THIS specific handler
         return () => {
-            if (socket) {
+            if (socket && typeof socket.off === 'function') {
                 socket.off("online_users", handler);
             }
         };
