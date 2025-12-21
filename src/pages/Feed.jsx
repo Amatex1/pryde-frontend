@@ -580,7 +580,7 @@ function Feed() {
 
     // Use shared socket helper with retry logic
     const cancelSocketRetry = setupSocketListeners((socket) => {
-      setupListeners();
+      setupListeners(socket);
     });
 
     // Refresh friends list every 30 seconds
