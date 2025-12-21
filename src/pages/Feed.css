@@ -3597,6 +3597,12 @@ select.privacy-selector:focus {
   font-size: 1rem;
 }
 
+/* Hashtag Feed Layout - Single Column (no sidebar) */
+.hashtag-feed {
+  grid-template-columns: minmax(0, 640px); /* Same as feed-main, no sidebar */
+  justify-content: center;
+}
+
 /* Trending Items */
 .trending-item {
   display: flex;

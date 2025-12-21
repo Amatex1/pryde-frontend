@@ -51,10 +51,10 @@ function Hashtag() {
   // };
 
   return (
-    <div className="page-container">
+    <div className="page-container feed-page">
       <Navbar />
-      <div className="feed-container">
-        <div className="feed-content">
+      <div className="feed-layout hashtag-feed">
+        <main className="feed-main">
           <div className="hashtag-header glossy">
             <h1 className="hashtag-title">#{tag}</h1>
             <p className="hashtag-subtitle">{posts.length} posts</p>
@@ -156,7 +156,7 @@ function Hashtag() {
               ))}
             </div>
           )}
-        </div>
+        </main>
       </div>
 
       {photoViewerImage && (
