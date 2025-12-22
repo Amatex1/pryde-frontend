@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { isAuthenticated, getCurrentUser, setAuthToken, setRefreshToken } from './utils/auth';
 import { initializeSocket, disconnectSocket, disconnectSocketForLogout, resetLogoutFlag, onNewMessage } from './utils/socket';
-import { playNotificationSound, requestNotificationPermission } from './utils/notifications';
+import { playNotificationSound } from './utils/notifications';
 import { initializeQuietMode } from './utils/quietMode';
 import { preloadCriticalResources, preloadFeedData } from './utils/resourcePreloader';
 import { startVersionCheck, checkForUpdate } from './utils/versionCheck';
@@ -407,10 +407,10 @@ function App() {
         try {
           initializeSocket(user.id || user._id);
 
-          // Request notification permission (non-blocking)
-          requestNotificationPermission().catch(err => {
-            logger.warn('Notification permission request failed:', err);
-          });
+          // NOTE: Notification permission is now requested only when user explicitly
+          // enables notifications in Settings, not automatically on login.
+          // This prevents browser console violations about requesting permission
+          // without user gesture.
 
           // Listen for new messages and play sound
           const cleanupNewMessage = onNewMessage((msg) => {
