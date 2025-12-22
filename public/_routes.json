@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "include": ["/*"],
+  "exclude": [
+    "/assets/*",
+    "/icons/*",
+    "/legal/*",
+    "/*.js",
+    "/*.css",
+    "/*.png",
+    "/*.jpg",
+    "/*.jpeg",
+    "/*.webp",
+    "/*.svg",
+    "/*.ico",
+    "/*.woff2",
+    "/*.woff",
+    "/*.ttf",
+    "/manifest.json",
+    "/robots.txt",
+    "/sw.js",
+    "/workbox-*.js",
+    "/notificationHelper.js",
+    "/clear-cache.html",
+    "/fix-cache.js"
+  ]
+}
+
