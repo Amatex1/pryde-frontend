@@ -76,11 +76,15 @@ function GlobalSearch() {
       <div className="search-input-wrapper">
         <input
           type="text"
+          id="global-search-input"
+          name="search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => searchQuery && setShowResults(true)}
           placeholder="Search users, posts, hashtags..."
           className="search-input"
+          autoComplete="off"
+          aria-label="Search users, posts, and hashtags"
         />
         {loading && <span className="search-loading">⏳</span>}
       </div>
