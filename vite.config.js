@@ -17,7 +17,8 @@ export default defineConfig({
       injectRegister: 'auto', // Automatically inject registration code
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
-        navigateFallback: null, // Disable navigate fallback to prevent caching issues
+        navigateFallback: 'index.html', // Ensure SPA routing works
+        navigateFallbackDenylist: [/^\/api/], // Exclude API routes
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/pryde-social\.onrender\.com\/api\/.*/i,
@@ -82,12 +83,18 @@ export default defineConfig({
     })
   ].filter(Boolean),
   server: {
-    port: 3000
+    port: 3000,
+    historyApiFallback: true // Ensure SPA routing works in development
   },
   publicDir: 'public',
   build: {
     // Output directory
     outDir: 'dist',
+
+    // Ensure all routes are handled by index.html
+    ssr: {
+      format: 'cjs'
+    },
 
     // Disable sourcemaps in production for smaller bundle
     sourcemap: false,
