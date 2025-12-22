@@ -40,21 +40,37 @@ export async function onRequest(context) {
 
   // For all other requests (SPA routes), serve index.html
   // This allows React Router to handle the routing
-  const response = await next();
-  
-  // If the response is a 404, serve index.html instead (SPA fallback)
-  if (response.status === 404) {
-    const indexResponse = await env.ASSETS.fetch(new URL('/index.html', request.url));
+  try {
+    const response = await next();
+
+    // If the response is a 404, serve index.html instead (SPA fallback)
+    if (response.status === 404) {
+      // Fetch index.html from the assets
+      const indexUrl = new URL('/index.html', request.url);
+      const indexResponse = await fetch(indexUrl);
+
+      return new Response(indexResponse.body, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Cache-Control': 'no-cache',
+        },
+      });
+    }
+
+    return response;
+  } catch (error) {
+    // If there's an error, try to serve index.html
+    const indexUrl = new URL('/index.html', request.url);
+    const indexResponse = await fetch(indexUrl);
+
     return new Response(indexResponse.body, {
-      ...indexResponse,
       status: 200,
       headers: {
-        ...Object.fromEntries(indexResponse.headers),
         'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'no-cache',
       },
     });
   }
-
-  return response;
 }
 
