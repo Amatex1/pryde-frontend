@@ -18,16 +18,7 @@ function Login({ setIsAuth }) {
   const [twoFactorCode, setTwoFactorCode] = useState('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-
-  // Apply user's dark mode preference
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem('darkMode');
-    if (savedDarkMode === 'true') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-    }
-  }, []);
+  // Theme is initialized in main.jsx - no need to set it here
 
   // Check if redirected due to expired token
   useEffect(() => {

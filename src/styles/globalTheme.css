@@ -1,0 +1,115 @@
+/* ========================================
+   PRYDE SOCIAL - GLOBAL THEMING SYSTEM
+   Root-level CSS tokens for all theme combinations
+   ======================================== */
+
+:root {
+  --motion-scale: 1;
+  --hover-opacity: 1;
+  --glow-strength: 1;
+}
+
+/* ============================= */
+/* 🌙 DARK MODE – QUIET OFF */
+/* ============================= */
+
+:root[data-theme="dark"] {
+  --bg-page: #0B1020;
+  --bg-card: #12192F;
+
+  --text-primary: #FFFFFF;
+  --text-secondary: #A8B0C2;
+
+  --accent-primary: #6D6AF8;
+  --accent-secondary: #4CC9F0;
+
+  --border-soft: rgba(255,255,255,0.08);
+  --shadow-card: 0 8px 24px rgba(0,0,0,0.35);
+}
+
+/* ============================= */
+/* 🌙 DARK MODE – QUIET ON */
+/* ============================= */
+
+:root[data-theme="dark"][data-quiet="true"] {
+  --bg-page: #0F1629;
+  --bg-card: #161E36;
+
+  --text-primary: #E6E9F2;
+  --text-secondary: #9AA3B8;
+
+  --border-soft: rgba(255,255,255,0.06);
+  --shadow-card: 0 4px 12px rgba(0,0,0,0.25);
+
+  --motion-scale: 0;
+  --hover-opacity: 0.85;
+  --glow-strength: 0;
+}
+
+/* ============================= */
+/* ☀️ LIGHT MODE – QUIET OFF */
+/* ============================= */
+
+:root[data-theme="light"] {
+  --bg-page: #F4F6FB;
+  --bg-card: #FFFFFF;
+
+  --text-primary: #1A1F36;
+  --text-secondary: #5F6C8B;
+
+  --accent-primary: #5A56E8;
+  --accent-secondary: #3FA9F5;
+
+  --border-soft: #E2E6F0;
+  --shadow-card: 0 4px 16px rgba(0,0,0,0.04);
+}
+
+/* ============================= */
+/* ☀️ LIGHT MODE – QUIET ON */
+/* ============================= */
+
+:root[data-theme="light"][data-quiet="true"] {
+  --bg-page: #F7F8FC;
+  --bg-card: #FAFBFF;
+
+  --text-primary: #2A2F45;
+  --text-secondary: #7A86A8;
+
+  --border-soft: #E6E9F3;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.03);
+
+  --motion-scale: 0;
+  --hover-opacity: 0.85;
+  --glow-strength: 0;
+}
+
+/* ============================= */
+/* GLOBAL APPLICATION */
+/* ============================= */
+
+body {
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+
+.card,
+.surface,
+.panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-card);
+}
+
+a,
+button {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+a:hover,
+button:hover {
+  opacity: var(--hover-opacity);
+  transform: scale(calc(1 + 0.02 * var(--motion-scale)));
+}
+

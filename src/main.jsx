@@ -9,6 +9,13 @@ import './styles/mobileFriendly.css' // Mobile-friendly layout fixes for PWA
 import { registerServiceWorker, setupInstallPrompt, requestPersistentStorage } from './utils/pwa'
 import { initWebVitals } from './utils/webVitals'
 import { initializePushNotifications } from './utils/pushNotifications'
+import { initializeTheme } from './utils/themeManager'
+
+// ========================================
+// INITIALIZE THEME IMMEDIATELY
+// Set data-theme and data-quiet attributes before React renders
+// ========================================
+initializeTheme();
 
 // Register service worker for PWA functionality (production only)
 if (import.meta.env.PROD) {

@@ -1,26 +1,24 @@
 /**
  * Quiet Mode Utility Functions
- * Handles manual quiet mode activation
+ * DEPRECATED: Use themeManager.js instead
+ * This file is kept for backward compatibility
  */
+
+import { setQuietMode, applyUserTheme } from './themeManager';
 
 /**
  * Apply quiet mode to the document
  * @param {boolean} isActive - Whether quiet mode should be active
+ * @deprecated Use setQuietMode from themeManager.js instead
  */
 export const applyQuietMode = (isActive) => {
-  if (isActive) {
-    // Set both attributes for compatibility
-    document.documentElement.setAttribute('data-quiet', 'true');
-    document.documentElement.setAttribute('data-quiet-mode', 'true');
-  } else {
-    document.documentElement.removeAttribute('data-quiet');
-    document.documentElement.removeAttribute('data-quiet-mode');
-  }
+  setQuietMode(isActive);
 };
 
 /**
  * Initialize quiet mode on app startup
  * @param {Object} user - User object with privacy settings
+ * @deprecated Use applyUserTheme from themeManager.js instead
  */
 export const initializeQuietMode = (user) => {
   if (!user || !user.privacySettings) {
@@ -28,10 +26,7 @@ export const initializeQuietMode = (user) => {
   }
 
   const quietModeEnabled = user.privacySettings.quietModeEnabled || false;
-  applyQuietMode(quietModeEnabled);
-
-  // Store in localStorage for persistence
-  localStorage.setItem('quietMode', quietModeEnabled);
+  setQuietMode(quietModeEnabled);
 
   return quietModeEnabled;
 };

@@ -1,27 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { getTheme, toggleTheme } from '../utils/themeManager';
 import './DarkModeToggle.css';
 
 function DarkModeToggle({ asIcon = false, onClick }) {
-  const [isDark, setIsDark] = useState(() => {
-    // Check localStorage for saved preference
-    const saved = localStorage.getItem('darkMode');
-    return saved === 'true';
-  });
-
-  useEffect(() => {
-    // Apply theme to document
-    if (isDark) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-    }
-
-    // Save preference
-    localStorage.setItem('darkMode', isDark);
-  }, [isDark]);
+  const [isDark, setIsDark] = useState(() => getTheme() === 'dark');
 
   const toggleDarkMode = () => {
-    setIsDark(!isDark);
+    const newTheme = toggleTheme();
+    setIsDark(newTheme === 'dark');
     if (onClick) onClick();
   };
 

@@ -5,7 +5,7 @@ import CustomModal from '../components/CustomModal';
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
 import { getCurrentUser, setCurrentUser, logout } from '../utils/auth';
-import { applyQuietMode } from '../utils/quietMode';
+import { setQuietMode } from '../utils/themeManager';
 import logger from '../utils/logger';
 import './Settings.css';
 
@@ -137,8 +137,7 @@ function Settings() {
       await api.patch('/users/me/settings', { quietModeEnabled: newValue });
       setQuietModeEnabled(newValue);
       setMessage(newValue ? 'Quiet Mode enabled' : 'Quiet Mode disabled');
-      applyQuietMode(newValue);
-      localStorage.setItem('quietMode', newValue);
+      setQuietMode(newValue);
     } catch (error) {
       logger.error('Failed to toggle quiet mode:', error);
       setMessage('Failed to update quiet mode');

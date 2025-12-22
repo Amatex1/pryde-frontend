@@ -6,33 +6,17 @@ import DarkModeToggle from './DarkModeToggle';
 import GlobalSearch from './GlobalSearch';
 import NotificationBell from './NotificationBell';
 import api from '../utils/api';
-import { applyQuietMode } from '../utils/quietMode';
+import { getTheme, toggleTheme as toggleThemeManager, getQuietMode, setQuietMode as setQuietModeManager } from '../utils/themeManager';
 import prydeLogo from '../assets/pryde-logo.png';
 import './Navbar.css';
 
-// Hook to get dark mode state
+// Hook to get dark mode state using centralized theme manager
 function useDarkMode() {
-  const [isDark, setIsDark] = useState(() => {
-    const saved = localStorage.getItem('darkMode');
-    const darkModeEnabled = saved === 'true';
-    // Apply immediately on mount to prevent flickering
-    if (darkModeEnabled) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-    }
-    return darkModeEnabled;
-  });
+  const [isDark, setIsDark] = useState(() => getTheme() === 'dark');
 
   const toggleDarkMode = () => {
-    const newValue = !isDark;
-    setIsDark(newValue);
-    localStorage.setItem('darkMode', newValue);
-    if (newValue) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-    }
+    const newTheme = toggleThemeManager();
+    setIsDark(newTheme === 'dark');
   };
 
   return [isDark, toggleDarkMode];
@@ -54,19 +38,7 @@ function Navbar() {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [totalUnreadMessages, setTotalUnreadMessages] = useState(0);
   const [isDark, toggleDarkMode] = useDarkMode();
-  const [quietMode, setQuietMode] = useState(() => {
-    const saved = localStorage.getItem('quietMode');
-    const isQuiet = saved === 'true';
-    // Apply quiet mode attributes on initial load (both for compatibility)
-    if (isQuiet) {
-      document.documentElement.setAttribute('data-quiet', 'true');
-      document.documentElement.setAttribute('data-quiet-mode', 'true');
-    } else {
-      document.documentElement.removeAttribute('data-quiet');
-      document.documentElement.removeAttribute('data-quiet-mode');
-    }
-    return isQuiet;
-  });
+  const [quietMode, setQuietMode] = useState(() => getQuietMode());
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
@@ -78,8 +50,7 @@ function Navbar() {
   const toggleQuietMode = async () => {
     const newValue = !quietMode;
     setQuietMode(newValue);
-    localStorage.setItem('quietMode', newValue);
-    applyQuietMode(newValue);
+    setQuietModeManager(newValue);
 
     // Sync with backend
     try {
