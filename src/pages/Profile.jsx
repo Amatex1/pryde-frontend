@@ -85,7 +85,7 @@ function Profile() {
   const [editingPostId, setEditingPostId] = useState(null);
   const [editPostText, setEditPostText] = useState('');
   const [editPostVisibility, setEditPostVisibility] = useState('friends');
-  const [reactionDetailsModal, setReactionDetailsModal] = useState({ isOpen: false, reactions: [], likes: [] });
+  const [reactionDetailsModal, setReactionDetailsModal] = useState({ isOpen: false, targetType: null, targetId: null });
   const [profileError, setProfileError] = useState(null); // Track profile loading errors
   const [searchResults, setSearchResults] = useState(null); // Search results from ProfilePostSearch
   const [showEditHistory, setShowEditHistory] = useState(false);
@@ -2052,8 +2052,8 @@ function Profile() {
                           }}
                           onCountClick={() => setReactionDetailsModal({
                             isOpen: true,
-                            reactions: post.reactions || [],
-                            likes: []
+                            targetType: 'post',
+                            targetId: post._id
                           })}
                         />
                         <button
@@ -2373,9 +2373,9 @@ function Profile() {
 
       {reactionDetailsModal.isOpen && (
         <ReactionDetailsModal
-          reactions={reactionDetailsModal.reactions}
-          likes={reactionDetailsModal.likes}
-          onClose={() => setReactionDetailsModal({ isOpen: false, reactions: [], likes: [] })}
+          targetType={reactionDetailsModal.targetType}
+          targetId={reactionDetailsModal.targetId}
+          onClose={() => setReactionDetailsModal({ isOpen: false, targetType: null, targetId: null })}
         />
       )}
 

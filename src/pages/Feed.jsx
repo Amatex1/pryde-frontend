@@ -75,7 +75,7 @@ function Feed() {
   const [trending, setTrending] = useState([]);
   const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const [reactionDetailsModal, setReactionDetailsModal] = useState({ isOpen: false, reactions: [], likes: [] });
+  const [reactionDetailsModal, setReactionDetailsModal] = useState({ isOpen: false, targetType: null, targetId: null });
   const [feedFilter, setFeedFilter] = useState('followers'); // 'followers', 'public'
   const [poll, setPoll] = useState(null); // Poll data for new post
   const [showPollCreator, setShowPollCreator] = useState(false); // Show/hide poll creator
@@ -1916,8 +1916,8 @@ function Feed() {
                         }}
                         onCountClick={() => setReactionDetailsModal({
                           isOpen: true,
-                          reactions: post.reactions || [],
-                          likes: []
+                          targetType: 'post',
+                          targetId: post._id
                         })}
                       />
                       <button
@@ -2365,9 +2365,9 @@ function Feed() {
 
       {reactionDetailsModal.isOpen && (
         <ReactionDetailsModal
-          reactions={reactionDetailsModal.reactions}
-          likes={reactionDetailsModal.likes}
-          onClose={() => setReactionDetailsModal({ isOpen: false, reactions: [], likes: [] })}
+          targetType={reactionDetailsModal.targetType}
+          targetId={reactionDetailsModal.targetId}
+          onClose={() => setReactionDetailsModal({ isOpen: false, targetType: null, targetId: null })}
         />
       )}
 
