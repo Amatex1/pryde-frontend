@@ -133,13 +133,56 @@
 }
 
 /* ========================================
-   QUIET MODE MODIFIERS
-   Reduces visual intensity for a calmer experience
-   Matches both data-quiet and data-quiet-mode for compatibility
+   LIGHT MODE + QUIET MODE
+   Softer, calmer colors for light mode
    ======================================== */
 
-[data-quiet="true"],
-[data-quiet-mode="true"] {
+:root[data-quiet="true"]:not([data-theme="dark"]),
+:root[data-quiet-mode="true"]:not([data-theme="dark"]) {
+  /* BACKGROUNDS - Softer, warmer tones */
+  --bg-page: #F8F9FA;
+  --bg-surface: #FFFFFF;
+  --bg-card: #FAFBFC;
+  --bg-hover: rgba(108, 92, 231, 0.03);
+  --bg-subtle: #F5F6F7;
+
+  /* TEXT - Slightly reduced contrast */
+  --text-primary: #374151;
+  --text-secondary: #6B7280;
+  --text-muted: #9CA3AF;
+
+  /* BORDERS - Softer */
+  --border-subtle: #E5E7EB;
+  --border-default: #D1D5DB;
+  --border-strong: #9CA3AF;
+
+  /* ACCENTS - Slightly desaturated */
+  --accent-primary: #7C6CE7;
+  --accent-hover: #8B7BF2;
+  --accent-muted: rgba(124, 108, 231, 0.12);
+  --accent-secondary: #3B9AED;
+
+  /* SEMANTIC - Softer colors */
+  --color-success: #10B981;
+  --color-success-soft: rgba(16, 185, 129, 0.12);
+  --color-danger: #EF4444;
+  --color-danger-soft: rgba(239, 68, 68, 0.12);
+  --color-warning: #F59E0B;
+  --color-warning-soft: rgba(245, 158, 11, 0.12);
+
+  /* SHADOWS - Softer */
+  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-strong: 0 4px 16px rgba(0, 0, 0, 0.10);
+}
+
+/* ========================================
+   DARK MODE + QUIET MODE
+   Reduces visual intensity for a calmer dark experience
+   ======================================== */
+
+[data-theme="dark"][data-quiet="true"],
+[data-theme="dark"][data-quiet-mode="true"] {
   /* BACKGROUNDS - Slightly darker for less contrast */
   --bg-page: #0b0b0f;
   --bg-surface: #111118;
