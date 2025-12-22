@@ -1,29 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
 import api from '../utils/api';
-import { getCurrentUser } from '../utils/auth';
+import { useToast } from '../hooks/useToast';
 import './PrivacySettings.css';
 
 const PrivacySettings = () => {
-  const navigate = useNavigate();
-  const currentUser = getCurrentUser();
-  const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState('');
   const [privacySettings, setPrivacySettings] = useState({
     profileVisibility: 'public',
-    isPrivateAccount: false,
     whoCanMessage: 'followers',
-    showOnlineStatus: true,
-    showLastSeen: true,
-    whoCanSeeMyPosts: 'public',
-    defaultPostVisibility: 'followers',
-    whoCanCommentOnMyPosts: 'everyone',
-    whoCanSeeFollowersList: 'everyone',
-    whoCanTagMe: 'followers',
-    autoHideContentWarnings: false
+    quietModeEnabled: false,
+    blockedUsers: []
   });
-  const [blockedUsers, setBlockedUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const { showToast } = useToast();
 
   useEffect(() => {
     fetchPrivacySettings();
@@ -32,300 +21,212 @@ const PrivacySettings = () => {
 
   const fetchPrivacySettings = async () => {
     try {
-      const response = await api.get('/privacy');
-      setPrivacySettings(response.data.privacySettings);
-      setLoading(false);
+      const response = await api.get('/privacy/settings');
+      setPrivacySettings(response.data);
     } catch (error) {
       console.error('Error fetching privacy settings:', error);
-      setMessage('Failed to load privacy settings');
-      setLoading(false);
+      showToast('Failed to load privacy settings', 'error');
     }
   };
 
   const fetchBlockedUsers = async () => {
     try {
-      const response = await api.get('/privacy/blocked');
-      setBlockedUsers(response.data.blockedUsers);
+      const response = await api.get('/privacy/blocked-users');
+      setPrivacySettings(prev => ({
+        ...prev,
+        blockedUsers: response.data.blockedUsers || []
+      }));
     } catch (error) {
       console.error('Error fetching blocked users:', error);
     }
   };
 
-  const handleSettingChange = (field, value) => {
-    setPrivacySettings(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleSave = async (e) => {
-    e.preventDefault();
+  const updatePrivacySetting = async (key, value) => {
     try {
-      await api.put('/privacy', { privacySettings });
-      setMessage('Privacy settings updated successfully!');
-      setTimeout(() => setMessage(''), 3000);
+      await api.patch('/privacy/settings', { [key]: value });
+      setPrivacySettings(prev => ({ ...prev, [key]: value }));
+      showToast(`${key} updated successfully`, 'success');
     } catch (error) {
-      console.error('Error updating privacy settings:', error);
-      setMessage('Failed to update privacy settings');
+      console.error(`Error updating ${key}:`, error);
+      showToast(`Failed to update ${key}`, 'error');
     }
   };
 
-  const handleUnblock = async (userId) => {
+  const searchUsers = async () => {
+    if (searchQuery.trim().length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
     try {
-      await api.post(`/privacy/unblock/${userId}`);
-      setBlockedUsers(prev => prev.filter(user => user._id !== userId));
-      setMessage('User unblocked successfully');
-      setTimeout(() => setMessage(''), 3000);
+      const response = await api.get('/users/search', {
+        params: { q: searchQuery, excludeBlocked: true }
+      });
+      setSearchResults(response.data.users || []);
+    } catch (error) {
+      console.error('Error searching users:', error);
+      showToast('Failed to search users', 'error');
+    }
+  };
+
+  const blockUser = async (userId) => {
+    try {
+      await api.post('/privacy/block', { userId });
+      fetchBlockedUsers();
+      showToast('User blocked successfully', 'success');
+    } catch (error) {
+      console.error('Error blocking user:', error);
+      showToast('Failed to block user', 'error');
+    }
+  };
+
+  const unblockUser = async (userId) => {
+    try {
+      await api.delete(`/privacy/block/${userId}`);
+      fetchBlockedUsers();
+      showToast('User unblocked successfully', 'success');
     } catch (error) {
       console.error('Error unblocking user:', error);
-      setMessage('Failed to unblock user');
+      showToast('Failed to unblock user', 'error');
     }
   };
 
-  if (loading) {
-    return (
-      <div className="page-container">
-        <Navbar />
-        <div className="privacy-settings-container">
-          <div className="loading">Loading privacy settings...</div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="page-container">
-      <Navbar />
-      
-      <div className="privacy-settings-container">
-        <div className="privacy-settings-card glossy fade-in">
-          <div className="privacy-header">
-            <button onClick={() => navigate('/settings')} className="back-button">
-              ← Back to Settings
-            </button>
-            <h1 className="privacy-title text-shadow">🔒 Privacy Settings</h1>
-          </div>
+    <div className="privacy-settings-container">
+      <h1>Privacy & Security</h1>
 
-          {message && (
-            <div className={`message ${message.includes('success') ? 'success' : 'error'}`}>
-              {message}
+      <section className="privacy-section">
+        <h2>Profile Visibility</h2>
+        <div className="setting-group">
+          <label>
+            <input
+              type="radio"
+              name="profileVisibility"
+              value="public"
+              checked={privacySettings.profileVisibility === 'public'}
+              onChange={() => updatePrivacySetting('profileVisibility', 'public')}
+            />
+            Public (Anyone can view)
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="profileVisibility"
+              value="followers"
+              checked={privacySettings.profileVisibility === 'followers'}
+              onChange={() => updatePrivacySetting('profileVisibility', 'followers')}
+            />
+            Followers Only
+          </label>
+        </div>
+      </section>
+
+      <section className="privacy-section">
+        <h2>Messaging</h2>
+        <div className="setting-group">
+          <label>
+            <input
+              type="radio"
+              name="whoCanMessage"
+              value="everyone"
+              checked={privacySettings.whoCanMessage === 'everyone'}
+              onChange={() => updatePrivacySetting('whoCanMessage', 'everyone')}
+            />
+            Everyone
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="whoCanMessage"
+              value="followers"
+              checked={privacySettings.whoCanMessage === 'followers'}
+              onChange={() => updatePrivacySetting('whoCanMessage', 'followers')}
+            />
+            Followers Only
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="whoCanMessage"
+              value="no-one"
+              checked={privacySettings.whoCanMessage === 'no-one'}
+              onChange={() => updatePrivacySetting('whoCanMessage', 'no-one')}
+            />
+            No One
+          </label>
+        </div>
+      </section>
+
+      <section className="privacy-section">
+        <h2>Quiet Mode</h2>
+        <div className="setting-group">
+          <label>
+            <input
+              type="checkbox"
+              checked={privacySettings.quietModeEnabled}
+              onChange={(e) => updatePrivacySetting('quietModeEnabled', e.target.checked)}
+            />
+            Enable Quiet Mode (Suppress non-critical notifications)
+          </label>
+        </div>
+      </section>
+
+      <section className="privacy-section">
+        <h2>Blocked Users</h2>
+        <div className="blocked-users-search">
+          <input
+            type="text"
+            placeholder="Search users to block"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              searchUsers();
+            }}
+          />
+          {searchResults.length > 0 && (
+            <div className="search-results">
+              {searchResults.map(user => (
+                <div key={user._id} className="search-result-item">
+                  <img 
+                    src={user.profilePhoto || '/default-avatar.png'} 
+                    alt={user.username} 
+                    className="user-avatar"
+                  />
+                  <div className="user-info">
+                    <span className="user-name">{user.displayName}</span>
+                    <span className="user-username">@{user.username}</span>
+                  </div>
+                  <button onClick={() => blockUser(user._id)}>Block</button>
+                </div>
+              ))}
             </div>
           )}
-
-          <form onSubmit={handleSave} className="privacy-form">
-            {/* Profile Visibility */}
-            <div className="privacy-section">
-              <h2 className="section-title">👤 Profile Visibility</h2>
-
-              <div className="setting-item">
-                <label>Who Can See My Profile?</label>
-                <select
-                  value={privacySettings.profileVisibility}
-                  onChange={(e) => handleSettingChange('profileVisibility', e.target.value)}
-                >
-                  <option value="public">Public</option>
-                  <option value="followers">Connections</option>
-                  <option value="private">Private</option>
-                </select>
-              </div>
-
-              <div className="setting-item checkbox-item">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={privacySettings.showOnlineStatus}
-                    onChange={(e) => handleSettingChange('showOnlineStatus', e.target.checked)}
-                  />
-                  Show my online status
-                </label>
-              </div>
-
-              <div className="setting-item checkbox-item">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={privacySettings.showLastSeen}
-                    onChange={(e) => handleSettingChange('showLastSeen', e.target.checked)}
-                  />
-                  Show when I was last seen
-                </label>
-              </div>
-            </div>
-
-            {/* Account Privacy */}
-            <div className="privacy-section">
-              <h2 className="section-title">🔐 Account Privacy</h2>
-
-              <div className="setting-item checkbox-item">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={privacySettings.isPrivateAccount}
-                    onChange={(e) => handleSettingChange('isPrivateAccount', e.target.checked)}
-                  />
-                  Private Account
-                </label>
-                <p className="setting-description">
-                  {privacySettings.isPrivateAccount
-                    ? "Your account is private. New connections need your approval."
-                    : "Your account is public. Anyone can connect with you instantly."}
-                </p>
-              </div>
-
-              <div className="setting-item" style={{ marginTop: '1rem' }}>
-                <button
-                  type="button"
-                  onClick={() => navigate(`/profile/${currentUser?.username}`)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--pryde-purple)',
-                    cursor: 'pointer',
-                    fontSize: '0.95rem',
-                    textDecoration: 'underline',
-                    padding: 0
-                  }}
-                >
-                  → Manage your connections
-                </button>
-              </div>
-            </div>
-
-            {/* Messaging */}
-            <div className="privacy-section">
-              <h2 className="section-title">💬 Messaging</h2>
-
-              <div className="setting-item">
-                <label>Who Can Send Me Messages?</label>
-                <select
-                  value={privacySettings.whoCanMessage}
-                  onChange={(e) => handleSettingChange('whoCanMessage', e.target.value)}
-                >
-                  <option value="everyone">Everyone</option>
-                  <option value="followers">Connections</option>
-                  <option value="no-one">No One</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Posts & Content */}
-            <div className="privacy-section">
-              <h2 className="section-title">📝 Posts & Content</h2>
-
-              <div className="setting-item">
-                <label>Default Post Visibility</label>
-                <p className="setting-description">
-                  Choose the default privacy level for new posts. You can change this for individual posts.
-                </p>
-                <select
-                  value={privacySettings.defaultPostVisibility}
-                  onChange={(e) => handleSettingChange('defaultPostVisibility', e.target.value)}
-                >
-                  <option value="public">🌍 Public</option>
-                  <option value="followers">👥 Connections</option>
-                  <option value="private">🔒 Private</option>
-                </select>
-              </div>
-
-              <div className="setting-item">
-                <label>Who Can See My Posts?</label>
-                <select
-                  value={privacySettings.whoCanSeeMyPosts}
-                  onChange={(e) => handleSettingChange('whoCanSeeMyPosts', e.target.value)}
-                >
-                  <option value="public">Public</option>
-                  <option value="followers">Connections</option>
-                  <option value="only-me">Private</option>
-                </select>
-              </div>
-
-              <div className="setting-item">
-                <label>Who Can Comment on My Posts?</label>
-                <select
-                  value={privacySettings.whoCanCommentOnMyPosts}
-                  onChange={(e) => handleSettingChange('whoCanCommentOnMyPosts', e.target.value)}
-                >
-                  <option value="everyone">Everyone</option>
-                  <option value="followers">Connections</option>
-                  <option value="no-one">No One</option>
-                </select>
-              </div>
-
-              <div className="setting-item">
-                <label>Who Can Tag Me in Posts?</label>
-                <select
-                  value={privacySettings.whoCanTagMe}
-                  onChange={(e) => handleSettingChange('whoCanTagMe', e.target.value)}
-                >
-                  <option value="everyone">Everyone</option>
-                  <option value="followers">Connections</option>
-                  <option value="no-one">No One</option>
-                </select>
-              </div>
-
-              <div className="setting-item toggle-item">
-                <div className="toggle-info">
-                  <label>Auto-Hide Content Warnings</label>
-                  <p className="setting-description">
-                    Automatically hide all posts with content warnings. You can still reveal them by clicking "Show Content".
-                  </p>
-                </div>
-                <label className="toggle-switch">
-                  <input
-                    type="checkbox"
-                    checked={privacySettings.autoHideContentWarnings}
-                    onChange={(e) => handleSettingChange('autoHideContentWarnings', e.target.checked)}
-                  />
-                  <span className="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            {/* Blocked Users */}
-            <div className="privacy-section">
-              <h2 className="section-title">🚫 Blocked Users</h2>
-
-              {blockedUsers.length === 0 ? (
-                <p className="no-blocked-users">You haven't blocked anyone yet.</p>
-              ) : (
-                <div className="blocked-users-list">
-                  {blockedUsers.map(user => (
-                    <div key={user._id} className="blocked-user-item">
-                      <div className="blocked-user-info">
-                        <img
-                          src={user.profilePhoto || '/default-avatar.png'}
-                          alt={user.username}
-                          className="blocked-user-avatar"
-                        />
-                        <div className="blocked-user-details">
-                          <span className="blocked-user-name">{user.displayName || user.username}</span>
-                          <span className="blocked-user-username">@{user.username}</span>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleUnblock(user._id)}
-                        className="unblock-button"
-                      >
-                        Unblock
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="privacy-actions">
-              <button type="submit" className="btn-primary">
-                💾 Save Privacy Settings
-              </button>
-            </div>
-          </form>
         </div>
-      </div>
+
+        <div className="blocked-users-list">
+          <h3>Currently Blocked Users</h3>
+          {privacySettings.blockedUsers.length === 0 ? (
+            <p>No users blocked</p>
+          ) : (
+            privacySettings.blockedUsers.map(user => (
+              <div key={user._id} className="blocked-user-item">
+                <img 
+                  src={user.profilePhoto || '/default-avatar.png'} 
+                  alt={user.username} 
+                  className="user-avatar"
+                />
+                <div className="user-info">
+                  <span className="user-name">{user.displayName}</span>
+                  <span className="user-username">@{user.username}</span>
+                </div>
+                <button onClick={() => unblockUser(user._id)}>Unblock</button>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
     </div>
   );
 };
 
 export default PrivacySettings;
-

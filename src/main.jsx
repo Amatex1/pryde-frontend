@@ -8,6 +8,7 @@ import './styles/quiet-mode.css' // MUST be loaded AFTER darkMode.css to overrid
 import './styles/mobileFriendly.css' // Mobile-friendly layout fixes for PWA
 import { registerServiceWorker, setupInstallPrompt, requestPersistentStorage } from './utils/pwa'
 import { initWebVitals } from './utils/webVitals'
+import { initializePushNotifications } from './utils/pushNotifications'
 
 // Register service worker for PWA functionality (production only)
 if (import.meta.env.PROD) {
@@ -23,6 +24,11 @@ if (import.meta.env.PROD) {
   // This replaces the deprecated StorageType.persistent API
   requestPersistentStorage().catch(err => {
     console.error('[PWA] Persistent storage request failed:', err);
+  });
+
+  // Initialize push notifications
+  initializePushNotifications().catch(err => {
+    console.error('[Push Notifications] Initialization failed:', err);
   });
 
   // Listen for PWA update events and show a brief notification
