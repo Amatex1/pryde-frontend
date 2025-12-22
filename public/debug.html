@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Pryde Social</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 { color: #6C5CE7; }
+        .section {
+            background: #2a2a3e;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        button {
+            background: #6C5CE7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #5a4bc7; }
+        pre {
+            background: #1a1a2e;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Pryde Social Debug Page</h1>
+    
+    <div class="section">
+        <h2>Service Worker Status</h2>
+        <div id="sw-status">Checking...</div>
+        <button onclick="unregisterAllSW()">Unregister All Service Workers</button>
+        <button onclick="checkSW()">Refresh Status</button>
+    </div>
+
+    <div class="section">
+        <h2>Cache Status</h2>
+        <div id="cache-status">Checking...</div>
+        <button onclick="clearAllCaches()">Clear All Caches</button>
+    </div>
+
+    <div class="section">
+        <h2>File Tests</h2>
+        <div id="file-tests">Testing...</div>
+    </div>
+
+    <div class="section">
+        <h2>Actions</h2>
+        <button onclick="fullReset()">🔥 FULL RESET (Clear Everything)</button>
+        <button onclick="location.reload(true)">🔄 Hard Reload</button>
+        <button onclick="location.href='/'">🏠 Go to Home</button>
+    </div>
+
+    <script>
+        async function checkSW() {
+            const status = document.getElementById('sw-status');
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                if (registrations.length === 0) {
+                    status.innerHTML = '<span class="success">✅ No service workers registered</span>';
+                } else {
+                    let html = '<span class="error">⚠️ Found ' + registrations.length + ' service worker(s):</span><br>';
+                    registrations.forEach((reg, i) => {
+                        html += `<pre>SW ${i + 1}: ${reg.scope}\nActive: ${reg.active ? reg.active.scriptURL : 'none'}</pre>`;
+                    });
+                    status.innerHTML = html;
+                }
+            } else {
+                status.innerHTML = '<span class="error">❌ Service Workers not supported</span>';
+            }
+        }
+
+        async function unregisterAllSW() {
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (const reg of registrations) {
+                    await reg.unregister();
+                }
+                alert('✅ All service workers unregistered!');
+                checkSW();
+            }
+        }
+
+        async function clearAllCaches() {
+            const cacheStatus = document.getElementById('cache-status');
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                for (const name of cacheNames) {
+                    await caches.delete(name);
+                }
+                cacheStatus.innerHTML = `<span class="success">✅ Cleared ${cacheNames.length} cache(s)</span>`;
+            } else {
+                cacheStatus.innerHTML = '<span class="error">❌ Cache API not supported</span>';
+            }
+        }
+
+        async function testFiles() {
+            const tests = document.getElementById('file-tests');
+            const files = [
+                '/sw.js',
+                '/service-worker.js',
+                '/index.html',
+                '/manifest.json'
+            ];
+            
+            let html = '';
+            for (const file of files) {
+                try {
+                    const response = await fetch(file, { cache: 'no-store' });
+                    const contentType = response.headers.get('content-type');
+                    const status = response.status;
+                    
+                    if (status === 200) {
+                        html += `<div class="success">✅ ${file} - ${status} - ${contentType}</div>`;
+                    } else {
+                        html += `<div class="error">⚠️ ${file} - ${status} - ${contentType}</div>`;
+                    }
+                } catch (e) {
+                    html += `<div class="error">❌ ${file} - Error: ${e.message}</div>`;
+                }
+            }
+            tests.innerHTML = html;
+        }
+
+        async function fullReset() {
+            if (confirm('This will clear ALL caches and service workers. Continue?')) {
+                await unregisterAllSW();
+                await clearAllCaches();
+                localStorage.clear();
+                sessionStorage.clear();
+                alert('✅ Full reset complete! The page will now reload.');
+                location.reload(true);
+            }
+        }
+
+        // Run checks on load
+        checkSW();
+        testFiles();
+        
+        // Check cache status
+        (async () => {
+            const cacheStatus = document.getElementById('cache-status');
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                cacheStatus.innerHTML = `<span class="success">Found ${cacheNames.length} cache(s)</span><br><pre>${cacheNames.join('\n')}</pre>`;
+            }
+        })();
+    </script>
+</body>
+</html>
+
