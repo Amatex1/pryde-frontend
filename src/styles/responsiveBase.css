@@ -1,0 +1,154 @@
+/* ========================================
+   RESPONSIVE BASE STABILIZATION LAYER
+   Global mobile-first foundation (loaded first)
+   Prevents layout breakage on all devices
+   ======================================== */
+
+/* ============================= */
+/* 📱 RESPONSIVE BASE RESET */
+/* ============================= */
+
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================= */
+/* 📐 FLUID CONTAINERS */
+/* ============================= */
+
+.container,
+.page,
+.layout,
+.main-content {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding-inline: clamp(12px, 4vw, 24px);
+}
+
+/* ============================= */
+/* 🧱 CARD NORMALIZATION */
+/* ============================= */
+
+.card,
+.surface,
+.panel {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* ============================= */
+/* 🧭 FLEX & GRID SAFETY */
+/* ============================= */
+
+.flex,
+.flex-row,
+.grid {
+  min-width: 0;
+}
+
+/* Prevent text overflow */
+p, h1, h2, h3, h4, h5, h6 {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ============================= */
+/* 📱 MOBILE LAYOUT OVERRIDES */
+/* ============================= */
+
+@media (max-width: 768px) {
+
+  /* Stack columns instead of squeezing */
+  .layout,
+  .two-column,
+  .three-column,
+  .profile-layout,
+  .feed-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Sidebars move below content */
+  .sidebar,
+  .right-column,
+  .left-column {
+    width: 100%;
+    max-width: 100%;
+    order: 2;
+  }
+
+  .main,
+  .content,
+  .feed {
+    order: 1;
+  }
+
+  /* Reduce padding for mobile */
+  .card,
+  .panel,
+  .surface {
+    padding: 12px;
+  }
+
+  /* Buttons & touch targets */
+  button,
+  a,
+  .icon-button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Inputs */
+  input,
+  textarea,
+  select {
+    font-size: 16px; /* Prevent iOS zoom */
+  }
+}
+
+/* ============================= */
+/* 📱 SMALL PHONE SAFETY */
+/* ============================= */
+
+@media (max-width: 480px) {
+
+  .card,
+  .panel,
+  .surface {
+    padding: 10px;
+  }
+
+  .nav,
+  .navbar {
+    padding-inline: 12px;
+  }
+
+}
+
+/* ============================= */
+/* 🧠 PWA SAFE AREAS (iOS) */
+/* ============================= */
+
+body {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ============================= */
+/* 📷 MEDIA STABILIZATION */
+/* ============================= */
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+  border-radius: inherit;
+}
+

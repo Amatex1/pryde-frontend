@@ -1,9 +1,10 @@
 /* ========================================
    PRYDE SOCIAL - MAIN STYLES
-   Import order matters: Global Theme → Variables → Design system → Theme → Components
+   Import order matters: Responsive Base → Global Theme → Variables → Design system → Theme → Components
    ======================================== */
 
-@import './styles/globalTheme.css';    /* CRITICAL: Global theming system (must be first) */
+@import './styles/responsiveBase.css'; /* CRITICAL: Responsive foundation (must be first) */
+@import './styles/globalTheme.css';    /* Global theming system */
 @import './styles/variables.css';      /* Unified variable system */
 @import './styles/design-system.css';  /* Unified mobile-first design system */
 @import './styles/theme.css';          /* Brand colors and theme variables */
