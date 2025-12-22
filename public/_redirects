@@ -1,6 +1,26 @@
 # SPA routing - redirect all non-asset requests to index.html
-# Note: Cloudflare Pages automatically serves files from /assets/ and other static directories
-# The catch-all rule should NOT have ! to allow static files to be served normally
+# Explicitly exclude static assets from redirects
+/assets/*  200
+/icons/*   200
+/legal/*   200
+/*.js      200
+/*.css     200
+/*.png     200
+/*.jpg     200
+/*.jpeg    200
+/*.webp    200
+/*.svg     200
+/*.ico     200
+/*.woff2   200
+/*.woff    200
+/*.ttf     200
+/manifest.json  200
+/robots.txt     200
+/sw.js          200
+/workbox-*.js   200
+/notificationHelper.js  200
+
+# SPA routes
 /login   /index.html   200
 /feed    /index.html   200
 /profile/*  /index.html  200

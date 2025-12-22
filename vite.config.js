@@ -18,10 +18,10 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
         navigateFallback: 'index.html', // Ensure SPA routing works
-        navigateFallbackDenylist: [/^\/api/], // Exclude API routes
+        navigateFallbackDenylist: [/^\/api/, /^\/assets\//, /\.(?:js|css|png|jpg|jpeg|svg|gif|webp|woff2?)$/], // Exclude API and static assets
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/pryde-social\.onrender\.com\/api\/.*/i,
+            urlPattern: /^https:\/\/pryde-backend\.onrender\.com\/api\/.*/i,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
@@ -33,7 +33,7 @@ export default defineConfig({
             }
           },
           {
-            urlPattern: /^https:\/\/pryde-social\.onrender\.com\/uploads\/.*/i,
+            urlPattern: /^https:\/\/pryde-backend\.onrender\.com\/uploads\/.*/i,
             handler: 'CacheFirst',
             options: {
               cacheName: 'image-cache',
@@ -90,11 +90,6 @@ export default defineConfig({
   build: {
     // Output directory
     outDir: 'dist',
-
-    // Ensure all routes are handled by index.html
-    ssr: {
-      format: 'cjs'
-    },
 
     // Disable sourcemaps in production for smaller bundle
     sourcemap: false,
