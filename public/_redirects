@@ -19,6 +19,8 @@
 /sw.js          200
 /workbox-*.js   200
 /notificationHelper.js  200
+/clear-cache.html  200
+/fix-cache.js  200
 
 # SPA routes
 /login   /index.html   200
