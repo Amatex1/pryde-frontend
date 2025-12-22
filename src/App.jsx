@@ -18,8 +18,9 @@ import {
   markAuthenticated,
   markUnauthenticated
 } from './state/authStatus';
+import useAppVersion from './hooks/useAppVersion'; // Import the hook
 
-// ... (previous imports remain the same)
+// ... (rest of the imports remain the same)
 
 function App() {
   // CRITICAL: Use 3-state auth model to prevent redirect loops
@@ -29,8 +30,9 @@ function App() {
   const [authStatus, setAuthStatusState] = useState(AUTH_STATUS.UNKNOWN);
   const [authReady, setAuthReady] = useState(false);
   const [initError, setInitError] = useState(false);
+  
   // Update banner state
-  const updateAvailable = useAppVersion();
+  const updateAvailable = useAppVersion(); // Use the imported hook
   const [showUpdateBanner, setShowUpdateBanner] = useState(true);
 
   // Derived state for backward compatibility
