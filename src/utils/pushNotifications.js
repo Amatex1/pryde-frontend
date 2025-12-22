@@ -7,7 +7,7 @@ let isSubscribed = false;
 --------------------------------------------*/
 export const isPushNotificationSubscribed = async () => {
   try {
-    const response = await api.get('/push-notifications/status');
+    const response = await api.get('/push/status');
     isSubscribed = response.data.hasSubscription;
     return isSubscribed;
   } catch (error) {
@@ -40,7 +40,7 @@ export const subscribeToPushNotifications = async () => {
     }
 
     // Get VAPID public key
-    const vapidResponse = await api.get('/push-notifications/vapid-public-key');
+    const vapidResponse = await api.get('/push/vapid-public-key');
     const publicKey = vapidResponse.data.publicKey;
 
     // Get service worker registration
@@ -53,7 +53,7 @@ export const subscribeToPushNotifications = async () => {
     });
 
     // Send subscription to backend
-    await api.post('/push-notifications/subscribe', { subscription });
+    await api.post('/push/subscribe', { subscription });
 
     isSubscribed = true;
     return true;
@@ -82,7 +82,7 @@ export const unsubscribeFromPushNotifications = async () => {
     }
 
     // Notify backend
-    await api.post('/push-notifications/unsubscribe');
+    await api.post('/push/unsubscribe');
 
     isSubscribed = false;
     return true;
@@ -100,7 +100,7 @@ export const sendTestNotification = async () => {
 
   try {
     // Send test notification request to backend
-    const response = await api.post('/push-notifications/test');
+    const response = await api.post('/push/test');
     
     if (response.data.success) {
       console.log("Test notification sent successfully");

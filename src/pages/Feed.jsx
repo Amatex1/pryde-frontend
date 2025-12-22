@@ -199,10 +199,10 @@ function Feed() {
 
   const fetchPrivacySettings = useCallback(async () => {
     try {
-      const response = await api.get('/privacy');
-      setAutoHideContentWarnings(response.data.privacySettings.autoHideContentWarnings || false);
+      const response = await api.get('/privacy/settings');
+      setAutoHideContentWarnings(response.data.autoHideContentWarnings || false);
       // Set default post visibility from user's privacy settings
-      const defaultVisibility = response.data.privacySettings.defaultPostVisibility || 'followers';
+      const defaultVisibility = response.data.defaultPostVisibility || 'followers';
       setPostVisibility(defaultVisibility);
     } catch (error) {
       logger.error('Failed to fetch privacy settings:', error);
