@@ -1,6 +1,7 @@
 {
   "name": "Pryde Social - LGBTQ+ Social Network",
   "short_name": "Pryde Social",
+  "version": "2.0.0",
   "description": "A calm, queer-first social platform built for introverts and deep thinkers. Connect with the LGBTQ+ community in a safe, supportive space.",
   "start_url": "/",
   "display": "standalone",

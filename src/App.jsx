@@ -30,46 +30,67 @@ import { AppReadyProvider } from './state/appReady';
 import LoadingGate from './components/LoadingGate';
 import useAppVersion from './hooks/useAppVersion';
 
-// Lazy load ALL pages (including Home, Login, Register) to avoid Router context errors
-const Home = lazy(() => import('./pages/Home'));
-const Login = lazy(() => import('./pages/Login'));
-const Register = lazy(() => import('./pages/Register'));
-const Footer = lazy(() => import('./components/Footer'));
-const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
-const ResetPassword = lazy(() => import('./pages/ResetPassword'));
-const Feed = lazy(() => import('./pages/Feed'));
-const FollowingFeed = lazy(() => import('./pages/FollowingFeed'));
-const Journal = lazy(() => import('./pages/Journal'));
-const Longform = lazy(() => import('./pages/Longform'));
-const Discover = lazy(() => import('./pages/Discover'));
-const TagFeed = lazy(() => import('./pages/TagFeed'));
-const PhotoEssay = lazy(() => import('./pages/PhotoEssay'));
-const Profile = lazy(() => import('./pages/Profile'));
-const Settings = lazy(() => import('./pages/Settings'));
-const SecuritySettings = lazy(() => import('./pages/SecuritySettings'));
-const PrivacySettings = lazy(() => import('./pages/PrivacySettings'));
-const Bookmarks = lazy(() => import('./pages/Bookmarks'));
-const Events = lazy(() => import('./pages/Events'));
-const Messages = lazy(() => import('./pages/Messages'));
-const Lounge = lazy(() => import('./pages/Lounge'));
-const Notifications = lazy(() => import('./pages/Notifications'));
-const Admin = lazy(() => import('./pages/Admin'));
-const Hashtag = lazy(() => import('./pages/Hashtag'));
-const ReactivateAccount = lazy(() => import('./pages/ReactivateAccount'));
+// Retry logic for dynamic imports to handle cache mismatches
+const retryImport = (importFn, retries = 3, delay = 1000) => {
+  return new Promise((resolve, reject) => {
+    importFn()
+      .then(resolve)
+      .catch((error) => {
+        if (retries === 0) {
+          // Last resort: reload the page to clear stale cache
+          console.error('Dynamic import failed after retries, reloading page...', error);
+          window.location.reload();
+          reject(error);
+        } else {
+          console.warn(`Dynamic import failed, retrying... (${retries} attempts left)`, error);
+          setTimeout(() => {
+            retryImport(importFn, retries - 1, delay).then(resolve, reject);
+          }, delay);
+        }
+      });
+  });
+};
 
-// Lazy load legal pages
-const Terms = lazy(() => import('./pages/legal/Terms'));
-const Privacy = lazy(() => import('./pages/legal/Privacy'));
-const Community = lazy(() => import('./pages/legal/Community'));
-const Safety = lazy(() => import('./pages/legal/Safety'));
-const Security = lazy(() => import('./pages/legal/Security'));
-const Contact = lazy(() => import('./pages/legal/Contact'));
-const FAQ = lazy(() => import('./pages/legal/FAQ'));
-const LegalRequests = lazy(() => import('./pages/legal/LegalRequests'));
-const DMCA = lazy(() => import('./pages/legal/DMCA'));
-const AcceptableUse = lazy(() => import('./pages/legal/AcceptableUse'));
-const CookiePolicy = lazy(() => import('./pages/legal/CookiePolicy'));
-const Helplines = lazy(() => import('./pages/legal/Helplines'));
+// Lazy load ALL pages with retry logic to handle cache mismatches
+const Home = lazy(() => retryImport(() => import('./pages/Home')));
+const Login = lazy(() => retryImport(() => import('./pages/Login')));
+const Register = lazy(() => retryImport(() => import('./pages/Register')));
+const Footer = lazy(() => retryImport(() => import('./components/Footer')));
+const ForgotPassword = lazy(() => retryImport(() => import('./pages/ForgotPassword')));
+const ResetPassword = lazy(() => retryImport(() => import('./pages/ResetPassword')));
+const Feed = lazy(() => retryImport(() => import('./pages/Feed')));
+const FollowingFeed = lazy(() => retryImport(() => import('./pages/FollowingFeed')));
+const Journal = lazy(() => retryImport(() => import('./pages/Journal')));
+const Longform = lazy(() => retryImport(() => import('./pages/Longform')));
+const Discover = lazy(() => retryImport(() => import('./pages/Discover')));
+const TagFeed = lazy(() => retryImport(() => import('./pages/TagFeed')));
+const PhotoEssay = lazy(() => retryImport(() => import('./pages/PhotoEssay')));
+const Profile = lazy(() => retryImport(() => import('./pages/Profile')));
+const Settings = lazy(() => retryImport(() => import('./pages/Settings')));
+const SecuritySettings = lazy(() => retryImport(() => import('./pages/SecuritySettings')));
+const PrivacySettings = lazy(() => retryImport(() => import('./pages/PrivacySettings')));
+const Bookmarks = lazy(() => retryImport(() => import('./pages/Bookmarks')));
+const Events = lazy(() => retryImport(() => import('./pages/Events')));
+const Messages = lazy(() => retryImport(() => import('./pages/Messages')));
+const Lounge = lazy(() => retryImport(() => import('./pages/Lounge')));
+const Notifications = lazy(() => retryImport(() => import('./pages/Notifications')));
+const Admin = lazy(() => retryImport(() => import('./pages/Admin')));
+const Hashtag = lazy(() => retryImport(() => import('./pages/Hashtag')));
+const ReactivateAccount = lazy(() => retryImport(() => import('./pages/ReactivateAccount')));
+
+// Lazy load legal pages with retry logic
+const Terms = lazy(() => retryImport(() => import('./pages/legal/Terms')));
+const Privacy = lazy(() => retryImport(() => import('./pages/legal/Privacy')));
+const Community = lazy(() => retryImport(() => import('./pages/legal/Community')));
+const Safety = lazy(() => retryImport(() => import('./pages/legal/Safety')));
+const Security = lazy(() => retryImport(() => import('./pages/legal/Security')));
+const Contact = lazy(() => retryImport(() => import('./pages/legal/Contact')));
+const FAQ = lazy(() => retryImport(() => import('./pages/legal/FAQ')));
+const LegalRequests = lazy(() => retryImport(() => import('./pages/legal/LegalRequests')));
+const DMCA = lazy(() => retryImport(() => import('./pages/legal/DMCA')));
+const AcceptableUse = lazy(() => retryImport(() => import('./pages/legal/AcceptableUse')));
+const CookiePolicy = lazy(() => retryImport(() => import('./pages/legal/CookiePolicy')));
+const Helplines = lazy(() => retryImport(() => import('./pages/legal/Helplines')));
 
 // Loading fallback component with timeout
 const PageLoader = () => {
