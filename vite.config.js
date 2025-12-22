@@ -17,8 +17,8 @@ export default defineConfig({
       injectRegister: 'auto', // Automatically inject registration code
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
-        navigateFallback: 'index.html', // Ensure SPA routing works
-        navigateFallbackDenylist: [/^\/api/, /^\/assets\//, /\.(?:html|js|css|png|jpg|jpeg|svg|gif|webp|woff2?)$/], // Exclude API, static assets, and HTML files
+        // navigateFallback removed - let Cloudflare _redirects handle SPA routing
+        // This prevents service worker redirect errors
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/pryde-backend\.onrender\.com\/api\/.*/i,
