@@ -139,8 +139,8 @@ function urlBase64ToUint8Array(base64String) {
 export const initializePushNotifications = async () => {
   if ('serviceWorker' in navigator && 'PushManager' in window) {
     try {
-      // Register service worker
-      const registration = await navigator.serviceWorker.register('/service-worker.js');
+      // Get existing service worker registration (already registered in main.jsx)
+      const registration = await navigator.serviceWorker.ready;
       
       // Check current subscription status
       const subscriptionStatus = await isPushNotificationSubscribed();
