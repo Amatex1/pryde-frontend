@@ -1,6 +1,3 @@
-# Redirect old service worker path to new one
-/service-worker.js  /sw.js  301
-
 # SPA routing - redirect all non-asset requests to index.html
 # Explicitly exclude static assets from redirects
 /assets/*  200
@@ -20,6 +17,7 @@
 /manifest.json  200
 /robots.txt     200
 /sw.js          200
+/service-worker.js  200
 /workbox-*.js   200
 /notificationHelper.js  200
 /clear-cache.html  200
