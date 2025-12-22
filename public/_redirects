@@ -22,6 +22,7 @@
 /notificationHelper.js  200
 /clear-cache.html  200
 /fix-cache.js  200
+/*.html    200
 
 # SPA routes
 /login   /index.html   200
