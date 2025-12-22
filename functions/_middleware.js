@@ -1,8 +1,26 @@
 // Cloudflare Pages Functions Middleware
 // This ensures static assets are served correctly and SPA routing works
 
+// Helper function to get correct MIME type
+function getMimeType(pathname) {
+  if (pathname.endsWith('.js')) return 'application/javascript; charset=utf-8';
+  if (pathname.endsWith('.mjs')) return 'application/javascript; charset=utf-8';
+  if (pathname.endsWith('.css')) return 'text/css; charset=utf-8';
+  if (pathname.endsWith('.json')) return 'application/json; charset=utf-8';
+  if (pathname.endsWith('.html')) return 'text/html; charset=utf-8';
+  if (pathname.endsWith('.png')) return 'image/png';
+  if (pathname.endsWith('.jpg') || pathname.endsWith('.jpeg')) return 'image/jpeg';
+  if (pathname.endsWith('.webp')) return 'image/webp';
+  if (pathname.endsWith('.svg')) return 'image/svg+xml';
+  if (pathname.endsWith('.ico')) return 'image/x-icon';
+  if (pathname.endsWith('.woff')) return 'font/woff';
+  if (pathname.endsWith('.woff2')) return 'font/woff2';
+  if (pathname.endsWith('.ttf')) return 'font/ttf';
+  return null;
+}
+
 export async function onRequest(context) {
-  const { request, next, env } = context;
+  const { request, next } = context;
   const url = new URL(request.url);
   const pathname = url.pathname;
 
@@ -12,6 +30,7 @@ export async function onRequest(context) {
     /^\/icons\//,
     /^\/legal\//,
     /\.js$/,
+    /\.mjs$/,
     /\.css$/,
     /\.png$/,
     /\.jpg$/,
@@ -34,8 +53,33 @@ export async function onRequest(context) {
   const isStaticAsset = staticPatterns.some(pattern => pattern.test(pathname));
 
   if (isStaticAsset) {
-    // Serve the static asset directly
-    return next();
+    // Serve the static asset directly with correct MIME type
+    const response = await next();
+
+    // Get the correct MIME type
+    const mimeType = getMimeType(pathname);
+
+    // If we have a MIME type and the response doesn't have the correct Content-Type, fix it
+    if (mimeType) {
+      const headers = new Headers(response.headers);
+
+      // Only set Content-Type if it's missing or incorrect
+      const currentContentType = headers.get('Content-Type');
+      if (!currentContentType || currentContentType.includes('text/html')) {
+        headers.set('Content-Type', mimeType);
+      }
+
+      // Ensure X-Content-Type-Options is set
+      headers.set('X-Content-Type-Options', 'nosniff');
+
+      return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: headers,
+      });
+    }
+
+    return response;
   }
 
   // For all other requests (SPA routes), serve index.html
