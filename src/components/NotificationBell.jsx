@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
+import { getCurrentUser } from '../utils/auth';
 import './NotificationBell.css';
 
 const NotificationBell = () => {
@@ -10,6 +11,7 @@ const NotificationBell = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const user = getCurrentUser();
 
   // NOTE: Push notification subscription is now handled in Settings page
   // where users can explicitly enable/disable notifications with a user gesture.
@@ -17,6 +19,11 @@ const NotificationBell = () => {
   // without user interaction.
 
   useEffect(() => {
+    // Only fetch if user is logged in
+    if (!user) {
+      return;
+    }
+
     fetchNotifications();
     // Poll for new notifications every 30 seconds
     const interval = setInterval(fetchNotifications, 30000);
@@ -42,6 +49,11 @@ const NotificationBell = () => {
       setNotifications(filteredNotifications.slice(0, 10)); // Show only latest 10
       setUnreadCount(filteredNotifications.filter(n => !n.read).length);
     } catch (error) {
+      // If 401, user session expired - silently fail
+      if (error.response?.status === 401) {
+        console.warn('Session expired - stopping notification polling');
+        return;
+      }
       console.error('Failed to fetch notifications:', error);
     }
   };

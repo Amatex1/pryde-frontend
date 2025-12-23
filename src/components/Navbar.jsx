@@ -62,6 +62,11 @@ function Navbar() {
 
   // Fetch current user data and sync quiet mode (only on mount, not continuously)
   useEffect(() => {
+    // Only fetch if user is logged in
+    if (!user) {
+      return;
+    }
+
     const fetchUserData = async () => {
       try {
         const response = await api.get('/auth/me');
@@ -76,10 +81,15 @@ function Navbar() {
           const backendQuietMode = response.data.privacySettings?.quietModeEnabled || false;
           setQuietMode(backendQuietMode);
           localStorage.setItem('quietMode', backendQuietMode);
-          applyQuietMode(backendQuietMode);
+          setQuietModeManager(backendQuietMode);
         }
         // If already set locally, don't override (user may have just toggled it)
       } catch (error) {
+        // If 401, user session expired - stop polling
+        if (error.response?.status === 401) {
+          console.warn('Session expired - stopping user data polling');
+          return;
+        }
         console.error('Failed to fetch user data:', error);
       }
     };
@@ -88,15 +98,25 @@ function Navbar() {
     // Poll every 60 seconds to keep profile updated
     const interval = setInterval(fetchUserData, 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [user]);
 
   // Fetch unread message counts
   useEffect(() => {
+    // Only fetch if user is logged in
+    if (!user) {
+      return;
+    }
+
     const fetchUnreadCounts = async () => {
       try {
         const response = await api.get('/messages/unread/counts');
         setTotalUnreadMessages(response.data.totalUnread);
       } catch (error) {
+        // If 401, user session expired - stop polling
+        if (error.response?.status === 401) {
+          console.warn('Session expired - stopping message count polling');
+          return;
+        }
         console.error('Failed to fetch unread message counts:', error);
       }
     };
@@ -105,7 +125,7 @@ function Navbar() {
     // Poll every 30 seconds
     const interval = setInterval(fetchUnreadCounts, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [user]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
