@@ -1167,19 +1167,21 @@ function Messages() {
                           </div>
                           <div className="chat-user-info">
                             <div className="chat-user-name">
-                              {selectedChatType === 'group'
-                                ? selectedGroup?.name || 'Group Chat'
-                                : isSelfChat
-                                  ? '📝 Notes to self'
-                                  : selectedUser?.isDeleted === true
-                                    ? 'Unknown User'
-                                    : getDisplayName(selectedUser)}
+                              <span className="display-name">
+                                {selectedChatType === 'group'
+                                  ? selectedGroup?.name || 'Group Chat'
+                                  : isSelfChat
+                                    ? '📝 Notes to self'
+                                    : selectedUser?.isDeleted === true
+                                      ? 'Unknown User'
+                                      : getDisplayName(selectedUser)}
+                              </span>
+                              {/* Show @username inline next to display name */}
+                              {selectedChatType !== 'group' && !isSelfChat && !selectedUser?.isDeleted && getUsername(selectedUser) && (
+                                <span className="username">@{getUsername(selectedUser)}</span>
+                              )}
                               {mutedConversations.includes(selectedChat) && <span className="muted-indicator">🔕</span>}
                             </div>
-                            {/* Show @username for others, not for self-chat */}
-                            {selectedChatType !== 'group' && !isSelfChat && !selectedUser?.isDeleted && getUsername(selectedUser) && (
-                              <div className="chat-user-username">{getUsername(selectedUser)}</div>
-                            )}
                             {/* Show account status subtitle */}
                             {selectedChatType !== 'group' && !isSelfChat && selectedUser?.isActive === false && !selectedUser?.isDeleted && (
                               <div className="chat-user-subtitle" style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '2px' }}>
