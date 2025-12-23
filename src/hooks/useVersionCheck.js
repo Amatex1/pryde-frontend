@@ -1,5 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
-import { APP_VERSION } from '../utils/version';
+import { useState, useEffect, useRef } from 'react';
 import api from '../utils/api';
 
 const CHECK_INTERVAL = 60_000; // 60 seconds
@@ -8,26 +7,23 @@ const CHECK_INTERVAL = 60_000; // 60 seconds
 let initialBackendVersion = null;
 let initialFrontendVersion = null;
 
-/**
- * Hook to detect when a new app version has been deployed
- * Polls both frontend (/version.json) and backend (/api/version) every 60 seconds
- * Returns true if a new version is available
- */
-export default function useAppVersion() {
+const useVersionCheck = () => {
   const [updateAvailable, setUpdateAvailable] = useState(false);
-  const hasDetectedUpdate = useRef(false);
+  const [updateType, setUpdateType] = useState(null); // 'backend' | 'frontend' | 'both'
+  const [dismissed, setDismissed] = useState(false);
   const intervalRef = useRef(null);
+  const hasDetectedUpdate = useRef(false);
 
+  // Initialize versions on mount
   useEffect(() => {
-    // Initialize versions on mount
     const initializeVersions = async () => {
       try {
         // Get backend version
         const backendResponse = await api.get('/version');
         initialBackendVersion = backendResponse.data.version;
 
-        // Get frontend version
-        initialFrontendVersion = APP_VERSION;
+        // Get frontend version from env or window
+        initialFrontendVersion = import.meta.env.VITE_APP_VERSION || window.__PRYDE_VERSION__?.version || '1.0.0';
 
         console.log('📦 Initial versions:', {
           backend: initialBackendVersion,
@@ -42,6 +38,7 @@ export default function useAppVersion() {
     initializeVersions();
   }, []);
 
+  // Start polling for version changes
   useEffect(() => {
     // Don't start polling until we have initial versions
     if (!initialBackendVersion || !initialFrontendVersion) {
@@ -53,24 +50,14 @@ export default function useAppVersion() {
       return;
     }
 
-    const checkVersion = async () => {
+    const checkForUpdates = async () => {
       try {
-        // Check backend version
+        // Fetch current backend version
         const backendResponse = await api.get('/version');
         const currentBackendVersion = backendResponse.data.version;
 
-        // Check frontend version
-        const frontendResponse = await fetch('/version.json', {
-          cache: 'no-store',
-        });
-
-        let currentFrontendVersion = initialFrontendVersion;
-        if (frontendResponse.ok) {
-          const frontendData = await frontendResponse.json();
-          if (frontendData.version && frontendData.version !== '__BUILD_VERSION__') {
-            currentFrontendVersion = frontendData.version;
-          }
-        }
+        // Get current frontend version
+        const currentFrontendVersion = import.meta.env.VITE_APP_VERSION || window.__PRYDE_VERSION__?.version || '1.0.0';
 
         // Check for version mismatches
         const backendChanged = currentBackendVersion !== initialBackendVersion;
@@ -82,6 +69,17 @@ export default function useAppVersion() {
             frontend: { old: initialFrontendVersion, new: currentFrontendVersion }
           });
 
+          // Determine update type
+          let type = null;
+          if (backendChanged && frontendChanged) {
+            type = 'both';
+          } else if (backendChanged) {
+            type = 'backend';
+          } else {
+            type = 'frontend';
+          }
+
+          setUpdateType(type);
           setUpdateAvailable(true);
           hasDetectedUpdate.current = true;
 
@@ -97,27 +95,61 @@ export default function useAppVersion() {
       }
     };
 
-    // Check immediately on mount
-    checkVersion();
+    // Start polling
+    intervalRef.current = setInterval(checkForUpdates, CHECK_INTERVAL);
 
-    // Check again on tab focus (user returning to app)
-    const onFocus = () => {
-      if (!hasDetectedUpdate.current) {
-        checkVersion();
-      }
-    };
-    window.addEventListener('focus', onFocus);
-
-    // Periodic background check every 60 seconds
-    intervalRef.current = setInterval(checkVersion, CHECK_INTERVAL);
-
+    // Cleanup on unmount
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
-      window.removeEventListener('focus', onFocus);
     };
   }, []);
 
-  return updateAvailable;
-}
+  const dismissUpdate = () => {
+    setDismissed(true);
+    // Persist dismissal for session only (not localStorage)
+    sessionStorage.setItem('updateDismissed', 'true');
+  };
+
+  const refreshApp = () => {
+    // Unregister service worker if present
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        registrations.forEach((registration) => {
+          registration.unregister();
+        });
+      });
+    }
+
+    // Clear service worker cache
+    if ('caches' in window) {
+      caches.keys().then((names) => {
+        names.forEach((name) => {
+          caches.delete(name);
+        });
+      });
+    }
+
+    // Force hard reload
+    window.location.reload(true);
+  };
+
+  // Check if update was dismissed this session
+  useEffect(() => {
+    const wasDismissed = sessionStorage.getItem('updateDismissed') === 'true';
+    if (wasDismissed) {
+      setDismissed(true);
+    }
+  }, []);
+
+  return {
+    updateAvailable: updateAvailable && !dismissed,
+    updateType,
+    dismissUpdate,
+    refreshApp
+  };
+};
+
+export default useVersionCheck;
+
