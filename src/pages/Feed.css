@@ -1243,15 +1243,27 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 }
 
 /* ========================================
-   COMMENT CONTAINER RHYTHM (COMPACT DENSITY)
+   COMMENT CONTAINER (FACEBOOK-STYLE CLEAN)
+   No cards, bubble-only, inline actions
    ======================================== */
 
 .comment {
   display: flex;
+  align-items: flex-start;
   gap: 8px;
-  margin-top: var(--space-sm);  /* Reduced from 12px */
+  margin-top: 8px;
   background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
   position: relative;
+}
+
+.reply {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
 }
 
 .comment-deleted {
@@ -1276,45 +1288,35 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 }
 
 /* ========================================
-   REPLY INDENTATION & VISUAL HIERARCHY
+   REPLY INDENTATION (FACEBOOK-STYLE CLEAN)
+   Indent only, no boxes or thread lines
    ======================================== */
 
 .comment-replies {
   margin-left: 40px;
-  padding-left: 16px;
-  padding-top: var(--space-3);
+  padding-left: 0;
+  padding-top: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  margin-top: var(--space-3);
-  border-left: 2px solid var(--border-subtle);
-}
-
-[data-theme="dark"] .comment-replies {
-  border-left-color: rgba(255, 255, 255, 0.15);
+  gap: 0;
+  margin-top: 0;
+  border-left: none;
 }
 
 .comment.reply {
   background: transparent;
   margin-left: 40px;
-  margin-top: 8px;
+  margin-top: 6px;
   position: relative;
 }
 
-/* Reply connector line */
+/* Remove vertical dividers / thread lines */
 .comment.reply::before {
-  content: '';
-  position: absolute;
-  left: -20px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: var(--border-soft, var(--border-subtle));
-  opacity: 0.6;
+  display: none;
 }
 
 /* ========================================
-   FACEBOOK-STYLE COMMENT REFINEMENTS
+   COMMENT CONTENT STACK (FACEBOOK-STYLE)
    ======================================== */
 
 /* Comment content wrapper - contains header and body */
@@ -1323,6 +1325,15 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  max-width: 100%;
+}
+
+/* Rename to .comment-content for consistency */
+.comment-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 100%;
 }
 
 /* ========================================
@@ -1438,18 +1449,21 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   background: rgba(229, 83, 61, 0.1);
 }
 
-/* Comment author link container */
+/* Comment author link container (Facebook-style inline) */
 .comment-author {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   flex-wrap: nowrap;
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 2px;
 }
 
 /* Author name */
 .comment-author .author-name {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.2;
   color: var(--text-main);
   transition: color 0.15s ease;
@@ -1477,8 +1491,9 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   font-weight: normal;
 }
 
-/* Comment timestamp */
-.comment-timestamp {
+/* Comment timestamp (Facebook-style inline & quiet) */
+.comment-timestamp,
+.comment-time {
   font-size: 12px;
   color: var(--text-secondary, var(--text-muted));
   margin-left: 6px;
@@ -1519,26 +1534,34 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 }
 
 /* ========================================
-   COMMENT TEXT SPACING (COMPACT DENSITY)
+   FACEBOOK-STYLE COMMENT BUBBLE
    ======================================== */
 
-/* Comment body - normalized bubble */
+/* Comment body - Facebook-style bubble */
 .comment-body {
+  display: inline-block;
   font-size: 14px;
-  line-height: 1.45;
-  margin-top: 2px;
-  padding: 6px 10px;  /* Reduced from 8px 12px */
-  border-radius: 14px;  /* Reduced from 16px */
-  max-width: 90%;
-  background: var(--bg-subtle);
+  line-height: 1.4;
+  margin-top: 0;
+  padding: 6px 10px;
+  border-radius: 18px;
+  max-width: 520px;
+  background: rgba(255, 255, 255, 0.08);
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Light mode adjustment */
+[data-theme="light"] .comment-body {
+  background: #F0F2F5;
 }
 
 [data-theme="dark"] .comment-body {
-  background: rgba(108, 92, 231, 0.15);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* ========================================
-   ACTION VISIBILITY (COMPACT DENSITY)
+   INLINE ACTIONS (FACEBOOK-STYLE)
    ======================================== */
 
 /* Hide inline edit/delete buttons (moved to 3-dot menu) */
@@ -1547,46 +1570,32 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   display: none !important;
 }
 
-/* Action row - Like / Reply / Edit / Delete */
+/* Action row - Like / Reply (Facebook-style inline) */
 .comment-actions {
   display: flex;
   gap: 12px;
-  margin-top: 2px;  /* Reduced from 4px */
-  font-size: 13px;
+  margin-left: 6px;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--text-secondary);
   align-items: center;
-  opacity: 0;
-  transition: opacity 0.15s ease;
+  opacity: 1;  /* Always visible like Facebook */
 }
 
-/* Show actions on hover */
-.comment:hover .comment-actions {
-  opacity: 1;
-}
-
-/* Always visible on mobile */
-@media (max-width: 768px) {
-  .comment-actions {
-    opacity: 1;
-  }
-}
-
-/* Replies quieter */
+/* Replies same style */
 .reply .comment-actions {
   font-size: 12px;
-  opacity: 0.6;
-}
-
-.reply:hover .comment-actions {
   opacity: 1;
 }
 
-.comment-action-btn {
+.comment-action-btn,
+.comment-actions button {
   padding: 0;
   background: none;
   border: none;
-  color: var(--text-secondary, #5a5c6e);
+  color: inherit;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
   transition: color 0.15s ease;
   display: inline-flex;
@@ -1594,9 +1603,9 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   gap: 4px;
 }
 
-.comment-action-btn:hover {
+.comment-action-btn:hover,
+.comment-actions button:hover {
   text-decoration: underline;
-  color: var(--color-primary);
 }
 
 /* Dark mode comment action buttons */
@@ -2895,7 +2904,7 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   }
 
   /* ========================================
-     MOBILE SAFETY (FACEBOOK-STYLE POLISH)
+     MOBILE TUNING (FACEBOOK-STYLE)
      ======================================== */
 
   .comment-body {
@@ -2903,7 +2912,12 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   }
 
   .reply {
-    margin-left: 24px;
+    margin-left: 32px;
+  }
+
+  .reply .comment-avatar {
+    width: 28px;
+    height: 28px;
   }
 
   /* Larger touch target for 3-dot menu on mobile */
