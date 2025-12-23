@@ -1583,19 +1583,32 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 /* Action row - Like / Reply (Facebook-style inline) */
 .comment-actions {
   display: flex;
-  gap: 12px;
+  gap: 10px;  /* Tightened from 12px */
   margin-left: 6px;
   margin-top: 2px;
   font-size: 12px;
   color: var(--text-secondary);
   align-items: center;
-  opacity: 1;  /* Always visible like Facebook */
+  opacity: 0;  /* Show on hover (desktop) */
+  transition: opacity 0.12s ease;
+}
+
+/* Show actions on hover (desktop) */
+.comment:hover .comment-actions,
+.comment:focus-within .comment-actions {
+  opacity: 1;
+}
+
+/* Always visible on mobile */
+@media (max-width: 768px) {
+  .comment-actions {
+    opacity: 1;
+  }
 }
 
 /* Replies same style */
 .reply .comment-actions {
   font-size: 12px;
-  opacity: 1;
 }
 
 .comment-action-btn,
