@@ -56,6 +56,8 @@ const Discover = lazyWithReload(() => import('./pages/Discover'));
 const TagFeed = lazyWithReload(() => import('./pages/TagFeed'));
 const PhotoEssay = lazyWithReload(() => import('./pages/PhotoEssay'));
 const Profile = lazyWithReload(() => import('./pages/Profile'));
+const Followers = lazyWithReload(() => import('./pages/Followers'));
+const Following = lazyWithReload(() => import('./pages/Following'));
 const Settings = lazyWithReload(() => import('./pages/Settings'));
 const SecuritySettings = lazyWithReload(() => import('./pages/SecuritySettings'));
 const PrivacySettings = lazyWithReload(() => import('./pages/PrivacySettings'));
@@ -513,6 +515,8 @@ function App() {
           <Route path="/photo-essay" element={<PrivateRoute><PhotoEssay /></PrivateRoute>} /> {/* OPTIONAL */}
           <Route path="/photo-essay/:id" element={<PrivateRoute><PhotoEssay /></PrivateRoute>} /> {/* OPTIONAL */}
           <Route path="/profile/:id" element={<PrivateRoute><Profile /></PrivateRoute>} />
+          <Route path="/profile/:username/followers" element={<PrivateRoute><Followers /></PrivateRoute>} />
+          <Route path="/profile/:username/following" element={<PrivateRoute><Following /></PrivateRoute>} />
           <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
           <Route path="/settings/security" element={<PrivateRoute><SecuritySettings /></PrivateRoute>} />
           <Route path="/settings/privacy" element={<PrivateRoute><PrivacySettings /></PrivateRoute>} />
