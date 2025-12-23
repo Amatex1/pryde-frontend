@@ -296,6 +296,12 @@ const CommentThread = ({
                           targetId={reply._id}
                           currentUserId={currentUser?.id}
                         />
+                        <button
+                          className="comment-action-btn reply-btn"
+                          onClick={() => handleReplyToComment(postId, comment._id)}
+                        >
+                          💬 Reply
+                        </button>
                         {isOwnReply ? (
                           <>
                             <button
