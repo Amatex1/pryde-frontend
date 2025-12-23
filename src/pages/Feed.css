@@ -1242,11 +1242,16 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   gap: var(--space-2);
 }
 
+/* ========================================
+   COMMENT CONTAINER RHYTHM (FACEBOOK-LEVEL POLISH)
+   ======================================== */
+
 .comment {
   display: flex;
-  gap: var(--space-2);
-  padding: var(--space-1) 0;
+  gap: 8px;
+  margin-top: 12px;
   background: transparent;
+  position: relative;
 }
 
 .comment-deleted {
@@ -1270,6 +1275,10 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   position: relative;
 }
 
+/* ========================================
+   REPLY INDENTATION & VISUAL HIERARCHY
+   ======================================== */
+
 .comment-replies {
   margin-left: 40px;
   padding-left: 16px;
@@ -1287,7 +1296,21 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 
 .comment.reply {
   background: transparent;
-  padding: var(--space-2) 0;
+  margin-left: 40px;
+  margin-top: 8px;
+  position: relative;
+}
+
+/* Reply connector line */
+.comment.reply::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border-soft, var(--border-subtle));
+  opacity: 0.6;
 }
 
 /* ========================================
@@ -1390,19 +1413,28 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   overflow-wrap: break-word;
 }
 
+/* ========================================
+   COMMENT TEXT SPACING
+   ======================================== */
+
 /* Comment body - normalized bubble */
 .comment-body {
-  margin-top: 4px;
+  font-size: 14px;
+  line-height: 1.45;
+  margin-top: 2px;
   padding: 8px 12px;
   border-radius: 16px;
   max-width: 90%;
-  line-height: 1.45;
   background: var(--bg-subtle);
 }
 
 [data-theme="dark"] .comment-body {
   background: rgba(108, 92, 231, 0.15);
 }
+
+/* ========================================
+   ACTION VISIBILITY (FACEBOOK STYLE)
+   ======================================== */
 
 /* Action row - Like / Reply / Edit / Delete */
 .comment-actions {
@@ -1411,6 +1443,30 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   margin-top: 4px;
   font-size: 13px;
   align-items: center;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+/* Show actions on hover */
+.comment:hover .comment-actions {
+  opacity: 1;
+}
+
+/* Always visible on mobile */
+@media (max-width: 768px) {
+  .comment-actions {
+    opacity: 1;
+  }
+}
+
+/* Replies quieter */
+.reply .comment-actions {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.reply:hover .comment-actions {
+  opacity: 1;
 }
 
 .comment-action-btn {
@@ -1608,8 +1664,9 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 }
 
 .comment-avatar {
-  width: 28px;
-  height: 28px;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: var(--bg-secondary);
   display: flex;
@@ -1618,7 +1675,6 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   font-weight: 500;
   color: var(--text-main);
   font-size: 12px;
-  flex-shrink: 0;
   overflow: hidden;
   transition: opacity 0.2s;
   align-self: flex-start;
@@ -1638,7 +1694,7 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 2px;
   min-width: 0;
   background: transparent;
 }
@@ -2727,9 +2783,16 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
     font-size: 0.7rem;
   }
 
-  /* Facebook-style comment refinements - mobile */
+  /* ========================================
+     MOBILE SAFETY (FACEBOOK-STYLE POLISH)
+     ======================================== */
+
   .comment-body {
     max-width: 100%;
+  }
+
+  .reply {
+    margin-left: 24px;
   }
 
   .reply-input-box,
@@ -3475,13 +3538,18 @@ label.btn-media-upload:disabled {
    REPLY COMPOSER - FACEBOOK STYLE
    ======================================== */
 
+/* ========================================
+   REPLY COMPOSER - FINAL FORM
+   ======================================== */
+
 .reply-input-box,
 .reply-composer {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-top: 6px;
   padding: 8px;
-  margin: 0.5rem 0 0.5rem 3rem;
+  margin-left: 3rem;
   background: rgba(108, 92, 231, 0.05);
   border-left: 3px solid var(--pryde-purple);
   border-radius: 16px;
@@ -3522,8 +3590,8 @@ label.btn-media-upload:disabled {
 .reply-input,
 .reply-composer input {
   flex: 1;
-  min-height: 36px;
-  padding: 8px 12px;
+  height: 36px;
+  padding: 0 12px;
   border-radius: 999px;
   border: 1px solid var(--border-light);
   outline: none;

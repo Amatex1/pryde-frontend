@@ -518,17 +518,25 @@
   color: #6B7280;
 }
 
-.message-group {
+/* ========================================
+   MESSAGE ROW (ALIGNED WITH COMMENT DESIGN)
+   ======================================== */
+
+.message-group,
+.message {
   display: flex;
-  gap: 1rem;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .message-group.received {
   align-self: flex-start;
 }
 
-.message-group.sent {
+.message-group.sent,
+.message.sent {
   align-self: flex-end;
+  justify-content: flex-end;
 }
 
 .message-group.sent .message-content {
@@ -610,20 +618,38 @@
   text-align: right;
 }
 
+/* ========================================
+   MESSAGE BUBBLES (ALIGNED WITH COMMENT DESIGN)
+   ======================================== */
+
 .message-bubble {
-  padding: 1rem 1.5rem;
-  border-radius: 18px;
-  line-height: 1.5;
+  max-width: 75%;
+  padding: 8px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.45;
   word-wrap: break-word;
   word-break: break-word;
   overflow-wrap: break-word;
   white-space: pre-wrap;
-  font-size: 0.95rem;
   width: fit-content;
-  max-width: 100%;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   /* Background and color are set dynamically via inline styles */
   /* DO NOT set background here - it will override inline styles */
+}
+
+/* Sent message bubble */
+.message-bubble.sent {
+  background: var(--accent-primary, #6C5CE7);
+  color: #fff;
+  border-bottom-right-radius: 6px;
+}
+
+/* Received message bubble */
+.message-bubble.received {
+  background: var(--bg-card, var(--card-surface));
+  color: var(--text-primary, var(--text-main));
+  border-bottom-left-radius: 6px;
 }
 
 .message-meta {
@@ -829,20 +855,27 @@
   font-size: 14px;
 }
 
-.chat-input-area {
-  padding: 1.5rem;
-  border-top: 1px solid var(--border-light);
+/* ========================================
+   MESSAGE INPUT (ALIGNED WITH COMMENT DESIGN)
+   ======================================== */
+
+.chat-input-area,
+.message-input-container,
+.message-composer {
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-top: 1px solid var(--border-light);
   background: var(--card-surface);
   flex-shrink: 0;
 }
 
 .chat-input-wrapper {
   display: flex;
-  gap: 1rem;
+  gap: 8px;
   align-items: center;
+  flex: 1;
 }
 
 .reply-preview {
@@ -1038,20 +1071,18 @@
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
-.chat-input {
+.chat-input,
+.message-composer input {
   flex: 1;
-  padding: 0.875rem 1.25rem;
-  border-radius: 12px;
-  border: 2px solid var(--border-light);
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-light);
   outline: none;
-  font-size: 1rem;
+  font-size: 14px;
   color: var(--text-main);
   background: var(--card-surface);
-  transition: all 0.3s ease;
-  resize: vertical;
-  min-height: 45px;
-  max-height: 150px;
-  overflow-y: auto;
+  transition: all 0.2s ease;
   overflow-wrap: break-word;
   word-wrap: break-word;
   word-break: break-word;
@@ -1059,20 +1090,41 @@
   line-height: 1.5;
 }
 
-.chat-input:focus {
+.chat-input:focus,
+.message-composer input:focus {
   border-color: var(--pryde-purple);
-  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+  box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.1);
 }
 
+/* Message action buttons */
+.message-actions,
+.message-composer-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.message-actions button,
+.message-composer-actions button,
 .btn-send {
-  padding: 0.875rem 1.75rem;
-  border-radius: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   border: none;
-  background: linear-gradient(135deg, #00B894 0%, #00D2A0 100%) !important;
-  color: white !important;
+  background: var(--pryde-purple);
+  color: white;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.message-actions button:hover,
+.message-composer-actions button:hover,
+.btn-send:hover {
+  background: var(--electric-blue);
+  transform: scale(1.05);
 }
 
 .btn-send:hover {
@@ -1545,10 +1597,14 @@
     border-radius: 12px;
   }
 
+  /* ========================================
+     MOBILE SAFETY (ALIGNED WITH COMMENT DESIGN)
+     ======================================== */
+
   .message-bubble {
     max-width: 90%;
-    font-size: 0.875rem;
-    padding: 0.625rem 0.875rem;
+    font-size: 14px;
+    padding: 8px 12px;
   }
 
   /* Fix sent messages alignment on mobile */
@@ -1567,6 +1623,10 @@
   /* Make message actions always visible on mobile (no hover needed) */
   .message-actions {
     opacity: 1;
+  }
+
+  .reply {
+    margin-left: 24px;
   }
 
   .chat-header {
