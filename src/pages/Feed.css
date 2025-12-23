@@ -1325,12 +1325,117 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   gap: 2px;
 }
 
-/* Comment header - name, pronouns, timestamp */
+/* ========================================
+   COMMENT HEADER (3-DOT MENU LAYOUT)
+   ======================================== */
+
+/* Comment header - name, pronouns, timestamp + menu */
 .comment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Left side - name/meta */
+.comment-header-left {
   display: flex;
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
+  flex: 1;
+}
+
+/* Right side - menu */
+.comment-header-right {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+/* ========================================
+   THREE-DOT MENU BUTTON (COMPACT + QUIET)
+   ======================================== */
+
+.comment-menu-btn,
+.post-menu-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.comment-menu-btn:hover,
+.post-menu-btn:hover {
+  background: var(--border-soft, var(--border-subtle));
+  opacity: 1;
+}
+
+/* Icon size */
+.comment-menu-btn svg,
+.post-menu-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ========================================
+   CONTEXT MENU (EDIT / DELETE)
+   ======================================== */
+
+.comment-menu,
+.post-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 4px;
+  min-width: 140px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 8px;
+  box-shadow: var(--shadow-card, var(--shadow-medium));
+  z-index: 10;
+  overflow: hidden;
+}
+
+.comment-menu button,
+.post-menu button {
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.comment-menu button:hover,
+.post-menu button:hover {
+  background: var(--border-soft, var(--border-subtle));
+}
+
+/* Destructive action */
+.comment-menu .delete,
+.post-menu .delete {
+  color: #E5533D;
+}
+
+.comment-menu .delete:hover,
+.post-menu .delete:hover {
+  background: rgba(229, 83, 61, 0.1);
 }
 
 /* Comment author link container */
@@ -1435,6 +1540,12 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 /* ========================================
    ACTION VISIBILITY (COMPACT DENSITY)
    ======================================== */
+
+/* Hide inline edit/delete buttons (moved to 3-dot menu) */
+.comment-actions .edit-btn,
+.comment-actions .delete-btn {
+  display: none !important;
+}
 
 /* Action row - Like / Reply / Edit / Delete */
 .comment-actions {
@@ -2793,6 +2904,13 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 
   .reply {
     margin-left: 24px;
+  }
+
+  /* Larger touch target for 3-dot menu on mobile */
+  .comment-menu-btn,
+  .post-menu-btn {
+    width: 32px;
+    height: 32px;
   }
 
   .reply-input-box,

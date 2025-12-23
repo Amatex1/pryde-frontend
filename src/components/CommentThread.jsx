@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import OptimizedImage from './OptimizedImage';
 import ReactionButton from './ReactionButton';
@@ -58,6 +58,24 @@ const CommentThread = ({
   // Reaction picker timeout ref
   const reactionPickerTimeoutRef = useRef(null);
 
+  // Menu state for 3-dot context menu
+  const [openMenuId, setOpenMenuId] = useState(null);
+  const menuRef = useRef(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpenMenuId(null);
+      }
+    };
+
+    if (openMenuId) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [openMenuId]);
+
   // Only render if comment has no parent (top-level comment)
   if (comment.parentCommentId !== null && comment.parentCommentId !== undefined) {
     return null;
@@ -98,21 +116,59 @@ const CommentThread = ({
             </Link>
             <div className="comment-content-wrapper">
               <div className="comment-header">
-                <Link
-                  to={`/profile/${comment.authorId?.username}`}
-                  className="comment-author"
-                  style={{ textDecoration: 'none' }}
-                >
-                  <span className="author-name">{comment.authorId?.displayName || comment.authorId?.username}</span>
-                  {comment.authorId?.isVerified && <span className="verified-badge">✓</span>}
-                  {comment.authorId?.pronouns && (
-                    <span className="author-pronouns">({comment.authorId.pronouns})</span>
-                  )}
-                </Link>
-                <span className="comment-timestamp">
-                  {new Date(comment.createdAt).toLocaleString()}
-                  {comment.isEdited && <span className="edited-indicator"> (edited)</span>}
-                </span>
+                <div className="comment-header-left">
+                  <Link
+                    to={`/profile/${comment.authorId?.username}`}
+                    className="comment-author"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <span className="author-name">{comment.authorId?.displayName || comment.authorId?.username}</span>
+                    {comment.authorId?.isVerified && <span className="verified-badge">✓</span>}
+                    {comment.authorId?.pronouns && (
+                      <span className="author-pronouns">({comment.authorId.pronouns})</span>
+                    )}
+                  </Link>
+                  <span className="comment-timestamp">
+                    {new Date(comment.createdAt).toLocaleString()}
+                    {comment.isEdited && <span className="edited-indicator"> (edited)</span>}
+                  </span>
+                </div>
+                {isOwnComment && (
+                  <div className="comment-header-right" ref={menuRef}>
+                    <button
+                      className="comment-menu-btn"
+                      onClick={() => setOpenMenuId(openMenuId === comment._id ? null : comment._id)}
+                      aria-label="Comment options"
+                    >
+                      <svg viewBox="0 0 16 16" fill="currentColor">
+                        <circle cx="8" cy="3" r="1.5" />
+                        <circle cx="8" cy="8" r="1.5" />
+                        <circle cx="8" cy="13" r="1.5" />
+                      </svg>
+                    </button>
+                    {openMenuId === comment._id && (
+                      <div className="comment-menu">
+                        <button
+                          onClick={() => {
+                            handleEditComment(comment._id, comment.content);
+                            setOpenMenuId(null);
+                          }}
+                        >
+                          ✏️ Edit
+                        </button>
+                        <button
+                          className="delete"
+                          onClick={() => {
+                            handleDeleteComment(postId, comment._id, false);
+                            setOpenMenuId(null);
+                          }}
+                        >
+                          🗑️ Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {isEditing ? (
@@ -172,14 +228,16 @@ const CommentThread = ({
                 {isOwnComment ? (
                   <>
                     <button
-                      className="comment-action-btn"
+                      className="comment-action-btn edit-btn"
                       onClick={() => handleEditComment(comment._id, comment.content)}
+                      style={{ display: 'none' }}
                     >
                       ✏️ Edit
                     </button>
                     <button
                       className="comment-action-btn delete-btn"
                       onClick={() => handleDeleteComment(postId, comment._id, false)}
+                      style={{ display: 'none' }}
                     >
                       🗑️ Delete
                     </button>
@@ -239,21 +297,59 @@ const CommentThread = ({
                     </Link>
                     <div className="comment-content-wrapper">
                       <div className="comment-header">
-                        <Link
-                          to={`/profile/${reply.authorId?.username}`}
-                          className="comment-author"
-                          style={{ textDecoration: 'none' }}
-                        >
-                          <span className="author-name">{reply.authorId?.displayName || reply.authorId?.username}</span>
-                          {reply.authorId?.isVerified && <span className="verified-badge">✓</span>}
-                          {reply.authorId?.pronouns && (
-                            <span className="author-pronouns">({reply.authorId.pronouns})</span>
-                          )}
-                        </Link>
-                        <span className="comment-timestamp">
-                          {new Date(reply.createdAt).toLocaleString()}
-                          {reply.isEdited && <span className="edited-indicator"> (edited)</span>}
-                        </span>
+                        <div className="comment-header-left">
+                          <Link
+                            to={`/profile/${reply.authorId?.username}`}
+                            className="comment-author"
+                            style={{ textDecoration: 'none' }}
+                          >
+                            <span className="author-name">{reply.authorId?.displayName || reply.authorId?.username}</span>
+                            {reply.authorId?.isVerified && <span className="verified-badge">✓</span>}
+                            {reply.authorId?.pronouns && (
+                              <span className="author-pronouns">({reply.authorId.pronouns})</span>
+                            )}
+                          </Link>
+                          <span className="comment-timestamp">
+                            {new Date(reply.createdAt).toLocaleString()}
+                            {reply.isEdited && <span className="edited-indicator"> (edited)</span>}
+                          </span>
+                        </div>
+                        {isOwnReply && (
+                          <div className="comment-header-right" ref={menuRef}>
+                            <button
+                              className="comment-menu-btn"
+                              onClick={() => setOpenMenuId(openMenuId === reply._id ? null : reply._id)}
+                              aria-label="Reply options"
+                            >
+                              <svg viewBox="0 0 16 16" fill="currentColor">
+                                <circle cx="8" cy="3" r="1.5" />
+                                <circle cx="8" cy="8" r="1.5" />
+                                <circle cx="8" cy="13" r="1.5" />
+                              </svg>
+                            </button>
+                            {openMenuId === reply._id && (
+                              <div className="comment-menu">
+                                <button
+                                  onClick={() => {
+                                    handleEditComment(reply._id, reply.content);
+                                    setOpenMenuId(null);
+                                  }}
+                                >
+                                  ✏️ Edit
+                                </button>
+                                <button
+                                  className="delete"
+                                  onClick={() => {
+                                    handleDeleteComment(postId, reply._id, true);
+                                    setOpenMenuId(null);
+                                  }}
+                                >
+                                  🗑️ Delete
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       {isEditingReply ? (
@@ -305,14 +401,16 @@ const CommentThread = ({
                         {isOwnReply ? (
                           <>
                             <button
-                              className="comment-action-btn"
+                              className="comment-action-btn edit-btn"
                               onClick={() => handleEditComment(reply._id, reply.content)}
+                              style={{ display: 'none' }}
                             >
                               ✏️ Edit
                             </button>
                             <button
                               className="comment-action-btn delete-btn"
                               onClick={() => handleDeleteComment(postId, reply._id, true)}
+                              style={{ display: 'none' }}
                             >
                               🗑️ Delete
                             </button>
