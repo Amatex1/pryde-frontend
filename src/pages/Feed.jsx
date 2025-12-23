@@ -757,7 +757,9 @@ function Feed() {
   const handlePostSubmit = async (e) => {
     e.preventDefault();
     // Allow posting with just a poll, or content, or media
-    if (!newPost.trim() && selectedMedia.length === 0 && !poll) {
+    // Check if content is empty (only whitespace) but preserve actual spaces/newlines
+    const hasContent = newPost && newPost.length > 0 && newPost.trim().length > 0;
+    if (!hasContent && selectedMedia.length === 0 && !poll) {
       showAlert('Please add some content, media, or a poll to your post', 'Empty Post');
       return;
     }
@@ -1396,10 +1398,16 @@ function Feed() {
                 id="new-post-input"
                 name="newPost"
                 value={newPost}
-                onChange={(e) => setNewPost(e.target.value)}
+                onChange={(e) => {
+                  const el = e.target;
+                  el.style.height = 'auto';
+                  el.style.height = el.scrollHeight + 'px';
+                  setNewPost(el.value);
+                }}
                 placeholder={showPollCreator ? "Ask a question..." : "Share something, if you feel like it."}
                 className="post-input glossy"
-                rows="4"
+                rows="1"
+                style={{ overflow: 'hidden', resize: 'none' }}
               />
 
               {selectedMedia.length > 0 && (

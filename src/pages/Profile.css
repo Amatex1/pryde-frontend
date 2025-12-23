@@ -55,6 +55,8 @@
   margin-bottom: 1.5rem !important;
   line-height: 1.6 !important;
   color: var(--text-main) !important;
+  white-space: pre-wrap !important; /* Preserve line breaks and spaces */
+  word-break: break-word !important; /* Break long words */
 }
 
 /* Post Media Grid - Exact copy from Feed.css */

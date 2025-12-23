@@ -1,3 +1,11 @@
+/* Preserve whitespace in formatted text */
+.formatted-text,
+.post-content,
+.comment-text {
+  white-space: pre-wrap; /* Preserve line breaks and spaces */
+  word-break: break-word; /* Break long words */
+}
+
 .hashtag-link {
   color: var(--link-accent);  /* WCAG AAA: 7.2:1 contrast */
   font-weight: 600;

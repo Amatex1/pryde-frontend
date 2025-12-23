@@ -133,10 +133,16 @@ function TagFeed() {
         <form onSubmit={handlePostSubmit}>
           <textarea
             value={newPost}
-            onChange={(e) => setNewPost(e.target.value)}
+            onChange={(e) => {
+              const el = e.target;
+              el.style.height = 'auto';
+              el.style.height = el.scrollHeight + 'px';
+              setNewPost(el.value);
+            }}
             placeholder={`What would you like to share with ${tag.label}?`}
             className="post-input"
-            rows="4"
+            rows="1"
+            style={{ overflow: 'hidden', resize: 'none' }}
           />
           <button
             type="submit"

@@ -1628,10 +1628,16 @@ function Profile() {
                     id="profile-new-post"
                     name="newPost"
                     value={newPost}
-                    onChange={(e) => setNewPost(e.target.value)}
+                    onChange={(e) => {
+                      const el = e.target;
+                      el.style.height = 'auto';
+                      el.style.height = el.scrollHeight + 'px';
+                      setNewPost(el.value);
+                    }}
                     placeholder="What are you reflecting on today?"
                     className="post-input glossy"
-                    rows="4"
+                    rows="1"
+                    style={{ overflow: 'hidden', resize: 'none' }}
                   />
 
                   {selectedMedia.length > 0 && (

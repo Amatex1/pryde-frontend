@@ -154,17 +154,17 @@
   border-radius: 10px; /* Softer corners */
   border: 1px solid rgba(255, 255, 255, 0.08); /* Subtle border */
   outline: none;
-  font-size: 1rem;
+  font-size: 16px; /* Prevent iOS zoom */
   color: var(--text-main);
   background: rgba(255, 255, 255, 0.02); /* Barely visible */
-  resize: none; /* NO resize - fixed height */
-  min-height: 72px; /* Reduced from 100px - less pressure */
-  max-height: 180px; /* Prevent dominating viewport */
+  resize: none; /* Disabled - auto-resize via JS */
+  min-height: 44px; /* Minimum touch target */
+  max-height: none; /* Allow expansion */
   font-family: inherit;
   margin-bottom: 1rem;
   transition: all 0.2s ease; /* Faster, calmer */
   box-sizing: border-box;
-  /* NO aggressive expansion, NO viewport dominance */
+  /* Auto-resize handled by JavaScript onChange */
 }
 
 .post-input:focus {
@@ -994,6 +994,8 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   margin-bottom: 1.5rem;
   line-height: 1.6;
   color: var(--text-main);
+  white-space: pre-wrap; /* Preserve line breaks and spaces */
+  word-break: break-word; /* Break long words */
 }
 
 /* ========================================

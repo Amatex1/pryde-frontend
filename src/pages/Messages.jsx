@@ -280,7 +280,7 @@ function Messages() {
             // Check if recipient is unavailable for messaging
             const isDeleted = user.isDeleted === true;
             const isDeactivated = user.isActive === false;
-            const hasBlocked = user.blockedUsers && user.blockedUsers.includes(currentUser?._id || currentUser?.id);
+            const hasBlocked = user.hasBlockedCurrentUser === true;
 
             if (isDeleted || isDeactivated || hasBlocked) {
               setIsRecipientUnavailable(true);
