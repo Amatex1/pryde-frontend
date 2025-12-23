@@ -951,6 +951,15 @@ function Profile() {
     setOpenDropdownId(null);
   };
 
+  // Auto-resize edit post textarea
+  useEffect(() => {
+    if (editTextareaRef.current && editingPostId) {
+      const textarea = editTextareaRef.current;
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+  }, [editPostText, editingPostId]);
+
   const handleSaveEditPost = async (postId) => {
     if (!editPostText.trim()) return;
 
@@ -1895,7 +1904,12 @@ function Profile() {
                               name="editPost"
                               ref={editTextareaRef}
                               value={editPostText}
-                              onChange={(e) => setEditPostText(e.target.value)}
+                              onChange={(e) => {
+                                setEditPostText(e.target.value);
+                                // Auto-resize on change
+                                e.target.style.height = 'auto';
+                                e.target.style.height = e.target.scrollHeight + 'px';
+                              }}
                               className="edit-post-textarea"
                               placeholder="What's on your mind?"
                               autoFocus

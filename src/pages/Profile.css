@@ -2779,10 +2779,13 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   color: var(--text-main);
   background: var(--card-surface);
   resize: none;
-  font-family: inherit;
-  min-height: 100px;
-  transition: all 0.3s ease;
   overflow: hidden;
+  font-family: inherit;
+  min-height: 0;
+  height: auto;
+  line-height: 1.5;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
 }
 
 .edit-post-textarea:focus {
@@ -2802,6 +2805,12 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   justify-content: space-between;
   gap: 1rem;
   margin-top: 0.75rem;
+}
+
+.edit-post-actions .visibility-select {
+  display: flex;
+  align-items: center;
+  line-height: 1;
 }
 
 .edit-post-buttons {

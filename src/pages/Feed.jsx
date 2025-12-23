@@ -97,6 +97,9 @@ function Feed() {
   // Scroll-to-top state
   const [showScrollTop, setShowScrollTop] = useState(false);
 
+  // Ref for edit post textarea auto-resize
+  const editPostTextareaRef = useRef(null);
+
   // Pull-to-refresh state
   const [pullStartY, setPullStartY] = useState(null);
   const [isPulling, setIsPulling] = useState(false);
@@ -1157,6 +1160,15 @@ function Feed() {
     setOpenDropdownId(null);
   };
 
+  // Auto-resize edit post textarea
+  useEffect(() => {
+    if (editPostTextareaRef.current && editingPostId) {
+      const textarea = editPostTextareaRef.current;
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+  }, [editPostText, editingPostId]);
+
   const handleSaveEditPost = async (postId) => {
     if (!editPostText.trim()) return;
 
@@ -1799,11 +1811,16 @@ function Feed() {
                               <textarea
                                 id={`edit-post-${post._id}`}
                                 name="editPost"
+                                ref={editPostTextareaRef}
                                 value={editPostText}
-                                onChange={(e) => setEditPostText(e.target.value)}
+                                onChange={(e) => {
+                                  setEditPostText(e.target.value);
+                                  // Auto-resize on change
+                                  e.target.style.height = 'auto';
+                                  e.target.style.height = e.target.scrollHeight + 'px';
+                                }}
                                 className="post-edit-textarea"
                                 autoFocus
-                                rows="4"
                               />
                               <div className="post-edit-privacy">
                                 <label
