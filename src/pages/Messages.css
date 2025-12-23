@@ -519,14 +519,14 @@
 }
 
 /* ========================================
-   MESSAGE ROW (ALIGNED WITH COMMENT DESIGN)
+   MESSAGE ROW (COMPACT DENSITY)
    ======================================== */
 
 .message-group,
 .message {
   display: flex;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;  /* Reduced from 8px */
 }
 
 .message-group.received {
@@ -619,13 +619,13 @@
 }
 
 /* ========================================
-   MESSAGE BUBBLES (ALIGNED WITH COMMENT DESIGN)
+   MESSAGE BUBBLES (COMPACT DENSITY)
    ======================================== */
 
 .message-bubble {
   max-width: 75%;
-  padding: 8px 12px;
-  border-radius: 16px;
+  padding: 6px 10px;  /* Reduced from 8px 12px */
+  border-radius: 14px;  /* Reduced from 16px */
   font-size: 14px;
   line-height: 1.45;
   word-wrap: break-word;

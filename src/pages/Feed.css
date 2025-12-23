@@ -28,10 +28,10 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-md);  /* Compact density: 12px */
   min-width: 0;
   overflow: visible; /* Allow emoji picker to show */
-  padding: 15px;
+  padding: var(--space-md);  /* Compact density: 12px */
 }
 
 .feed-sidebar {
@@ -47,8 +47,8 @@
    ======================================== */
 
 .create-post {
-  padding: 14px 16px; /* Reduced from var(--space-4) 18px - lighter weight */
-  border-radius: 10px; /* Softer corners */
+  padding: var(--space-md);  /* Compact density: 12px */
+  border-radius: var(--radius-md);  /* Compact density: 12px */
   background: rgba(255, 255, 255, 0.015); /* Barely visible - optional feel */
   border: 1px solid rgba(255, 255, 255, 0.06); /* Subtle border */
   box-shadow: none; /* NO shadow - composer ranks below feed cards */
@@ -205,8 +205,8 @@
 }
 
 .post-card {
-  padding: 14px 16px; /* Reduced vertical weight */
-  border-radius: 10px; /* Softer corners */
+  padding: var(--space-md);  /* Compact density: 12px */
+  border-radius: var(--radius-md);  /* Compact density: 12px */
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-soft);
@@ -217,7 +217,7 @@
   overflow: visible;
   word-wrap: break-word;
   contain: layout;
-  margin-bottom: 12px; /* Consistent spacing */
+  margin-bottom: var(--space-md);  /* Compact density: 12px */
 }
 
 .post-card:hover {
@@ -229,7 +229,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-sm);  /* Compact density: 8px */
 }
 
 .post-header-actions {
@@ -1243,13 +1243,13 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 }
 
 /* ========================================
-   COMMENT CONTAINER RHYTHM (FACEBOOK-LEVEL POLISH)
+   COMMENT CONTAINER RHYTHM (COMPACT DENSITY)
    ======================================== */
 
 .comment {
   display: flex;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: var(--space-sm);  /* Reduced from 12px */
   background: transparent;
   position: relative;
 }
@@ -1414,7 +1414,7 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 }
 
 /* ========================================
-   COMMENT TEXT SPACING
+   COMMENT TEXT SPACING (COMPACT DENSITY)
    ======================================== */
 
 /* Comment body - normalized bubble */
@@ -1422,8 +1422,8 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   font-size: 14px;
   line-height: 1.45;
   margin-top: 2px;
-  padding: 8px 12px;
-  border-radius: 16px;
+  padding: 6px 10px;  /* Reduced from 8px 12px */
+  border-radius: 14px;  /* Reduced from 16px */
   max-width: 90%;
   background: var(--bg-subtle);
 }
@@ -1433,14 +1433,14 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 }
 
 /* ========================================
-   ACTION VISIBILITY (FACEBOOK STYLE)
+   ACTION VISIBILITY (COMPACT DENSITY)
    ======================================== */
 
 /* Action row - Like / Reply / Edit / Delete */
 .comment-actions {
   display: flex;
   gap: 12px;
-  margin-top: 4px;
+  margin-top: 2px;  /* Reduced from 4px */
   font-size: 13px;
   align-items: center;
   opacity: 0;
@@ -2483,8 +2483,8 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 
   /* MOBILE: Composer feels even lighter, less dominant */
   .create-post {
-    padding: 12px 14px !important; /* Reduced from 14px 16px - lighter on mobile */
-    border-radius: 10px !important;
+    padding: var(--space-sm) !important;  /* Compact density: 8px on mobile */
+    border-radius: var(--radius-md) !important;
     /* Composer does NOT dominate above-the-fold */
     /* Feed posts remain immediately visible */
   }
