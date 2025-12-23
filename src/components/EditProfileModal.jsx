@@ -202,6 +202,12 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
     const file = e.target.files[0];
     if (!file) return;
 
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Only image files are allowed.');
+      return;
+    }
+
     setUploadingPhoto(true);
     const formDataUpload = new FormData();
     formDataUpload.append('photo', file);
@@ -211,6 +217,11 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
       const response = await api.post(endpoint, formDataUpload, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
+
+      // Validate response
+      if (!response.data || !response.data.url) {
+        throw new Error('Upload succeeded but no URL returned');
+      }
 
       if (type === 'profile') {
         setFormData(prev => ({ ...prev, profilePhoto: response.data.url }));
@@ -223,7 +234,13 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
       }
     } catch (error) {
       console.error('Failed to upload photo:', error);
-      alert('Failed to upload photo. Please try again.');
+
+      // Extract user-friendly error message
+      const errorMessage = error.response?.data?.message ||
+                          error.response?.data?.error ||
+                          'Image upload failed. Please try again or use a smaller image.';
+
+      alert(errorMessage);
     } finally {
       setUploadingPhoto(false);
     }

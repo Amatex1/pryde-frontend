@@ -58,14 +58,30 @@ function PhotoEssay() {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
 
+        // Validate response
+        if (!response.data || !response.data.media || response.data.media.length === 0) {
+          throw new Error('Upload succeeded but no media URLs returned');
+        }
+
         // Extract first media URL from response (post-media returns array)
         const mediaUrl = response.data.media?.[0]?.url || response.data.url;
+
+        if (!mediaUrl) {
+          throw new Error('No URL in upload response');
+        }
+
         setPhotos(prev => [...prev, { url: mediaUrl, caption: '' }]);
       }
       showToast('Photos uploaded successfully', 'success');
     } catch (error) {
       console.error('Failed to upload photos:', error);
-      showToast('Failed to upload photos', 'error');
+
+      // Extract user-friendly error message
+      const errorMessage = error.response?.data?.message ||
+                          error.response?.data?.error ||
+                          'Image upload failed. Please try again or use a smaller image.';
+
+      showToast(errorMessage, 'error');
     } finally {
       setUploadingPhoto(false);
     }

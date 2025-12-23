@@ -2785,7 +2785,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   height: auto;
   line-height: 1.5;
   box-sizing: border-box;
-  transition: all 0.3s ease;
+  transition: height 120ms ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .edit-post-textarea:focus {

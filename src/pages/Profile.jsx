@@ -577,10 +577,22 @@ function Profile() {
         }
       });
 
+      // Validate response
+      if (!response.data || !response.data.media || response.data.media.length === 0) {
+        throw new Error('Upload succeeded but no media URLs returned');
+      }
+
       setSelectedMedia([...selectedMedia, ...response.data.media]);
+      showToast('Media uploaded successfully', 'success');
     } catch (error) {
       logger.error('Failed to upload media:', error);
-      showAlert('Failed to upload media. Please try again.', 'Upload Failed');
+
+      // Extract user-friendly error message
+      const errorMessage = error.response?.data?.message ||
+                          error.response?.data?.error ||
+                          'Image upload failed. Please try again or use a smaller image.';
+
+      showAlert(errorMessage, 'Upload Failed');
     } finally {
       setUploadingMedia(false);
     }
@@ -983,6 +995,21 @@ function Profile() {
     setEditingPostId(null);
     setEditPostText('');
     setEditPostVisibility('friends');
+  };
+
+  // Keyboard shortcuts for edit post
+  const handleEditPostKeyDown = (e, postId) => {
+    // Save: Cmd/Ctrl + Enter
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      handleSaveEditPost(postId);
+    }
+
+    // Cancel: Esc
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      handleCancelEditPost();
+    }
   };
 
   const handleDeletePost = async (postId) => {
@@ -1910,6 +1937,7 @@ function Profile() {
                                 e.target.style.height = 'auto';
                                 e.target.style.height = e.target.scrollHeight + 'px';
                               }}
+                              onKeyDown={(e) => handleEditPostKeyDown(e, post._id)}
                               className="edit-post-textarea"
                               placeholder="What's on your mind?"
                               autoFocus
