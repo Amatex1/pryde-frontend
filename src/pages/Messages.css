@@ -1096,6 +1096,13 @@
   box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.1);
 }
 
+.chat-input:disabled,
+.message-composer input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--bg-disabled, #f5f5f5);
+}
+
 /* Message action buttons */
 .message-actions,
 .message-composer-actions {
@@ -1118,6 +1125,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.btn-send:disabled,
+.btn-gif:disabled,
+.btn-attachment:disabled,
+.btn-voice:disabled,
+.btn-content-warning:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+  cursor: not-allowed;
 }
 
 .message-actions button:hover,

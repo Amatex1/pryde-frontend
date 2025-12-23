@@ -86,6 +86,8 @@ function Messages() {
   const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
   const [contentWarning, setContentWarning] = useState('');
   const [showContentWarning, setShowContentWarning] = useState(false);
+  const [isRecipientUnavailable, setIsRecipientUnavailable] = useState(false);
+  const [recipientUnavailableReason, setRecipientUnavailableReason] = useState('');
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -267,10 +269,30 @@ function Messages() {
             const response = await api.get(`/groupchats/${selectedChat}`);
             setSelectedGroup(response.data);
             setSelectedUser(null);
+            setIsRecipientUnavailable(false);
+            setRecipientUnavailableReason('');
           } else {
             const response = await api.get(`/users/${selectedChat}`);
-            setSelectedUser(response.data);
+            const user = response.data;
+            setSelectedUser(user);
             setSelectedGroup(null);
+
+            // Check if recipient is unavailable for messaging
+            const isDeleted = user.isDeleted === true;
+            const isDeactivated = user.isActive === false;
+            const hasBlocked = user.blockedUsers && user.blockedUsers.includes(currentUser?._id || currentUser?.id);
+
+            if (isDeleted || isDeactivated || hasBlocked) {
+              setIsRecipientUnavailable(true);
+              if (isDeactivated) {
+                setRecipientUnavailableReason("You can't message this account while it's deactivated.");
+              } else {
+                setRecipientUnavailableReason("You can't message this account.");
+              }
+            } else {
+              setIsRecipientUnavailable(false);
+              setRecipientUnavailableReason('');
+            }
           }
         } catch (error) {
           logger.error('Error fetching chat info:', error);
@@ -1135,6 +1157,8 @@ function Messages() {
                               ) : (
                                 <span>📝</span>
                               )
+                            ) : selectedUser?.isDeleted === true ? (
+                              <span>👤</span>
                             ) : selectedUser?.profilePhoto ? (
                               <img src={getImageUrl(selectedUser.profilePhoto)} alt={getDisplayName(selectedUser)} />
                             ) : (
@@ -1147,15 +1171,23 @@ function Messages() {
                                 ? selectedGroup?.name || 'Group Chat'
                                 : isSelfChat
                                   ? '📝 Notes to self'
-                                  : getDisplayName(selectedUser)}
+                                  : selectedUser?.isDeleted === true
+                                    ? 'Unknown User'
+                                    : getDisplayName(selectedUser)}
                               {mutedConversations.includes(selectedChat) && <span className="muted-indicator">🔕</span>}
                             </div>
                             {/* Show @username for others, not for self-chat */}
-                            {selectedChatType !== 'group' && !isSelfChat && getUsername(selectedUser) && (
+                            {selectedChatType !== 'group' && !isSelfChat && !selectedUser?.isDeleted && getUsername(selectedUser) && (
                               <div className="chat-user-username">{getUsername(selectedUser)}</div>
                             )}
-                            {/* Hide online status for self-DMs */}
-                            {selectedChatType !== 'group' && !isSelfChat && (
+                            {/* Show account status subtitle */}
+                            {selectedChatType !== 'group' && !isSelfChat && selectedUser?.isActive === false && !selectedUser?.isDeleted && (
+                              <div className="chat-user-subtitle" style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                                Account deactivated
+                              </div>
+                            )}
+                            {/* Hide online status for self-DMs and unavailable users */}
+                            {selectedChatType !== 'group' && !isSelfChat && !isRecipientUnavailable && (
                               <div className={`chat-user-status ${onlineUsers.includes(selectedChat) ? 'online' : 'offline'}`}>
                                 {onlineUsers.includes(selectedChat) ? 'Online' : 'Offline'}
                               </div>
@@ -1429,7 +1461,7 @@ function Messages() {
                       type="button"
                       className="btn-attachment"
                       onClick={() => fileInputRef.current?.click()}
-                      disabled={uploadingFile || selectedGif}
+                      disabled={uploadingFile || selectedGif || isRecipientUnavailable}
                       title="Attach file"
                     >
                       {uploadingFile ? '⏳' : '📎'}
@@ -1438,7 +1470,7 @@ function Messages() {
                       type="button"
                       className="btn-gif"
                       onClick={() => setShowGifPicker(!showGifPicker)}
-                      disabled={selectedFile}
+                      disabled={selectedFile || isRecipientUnavailable}
                       title="Add GIF"
                     >
                       GIF
@@ -1447,7 +1479,7 @@ function Messages() {
                       type="button"
                       className="btn-voice"
                       onClick={() => setShowVoiceRecorder(!showVoiceRecorder)}
-                      disabled={selectedFile || selectedGif}
+                      disabled={selectedFile || selectedGif || isRecipientUnavailable}
                       title="Record voice note"
                     >
                       🎤
@@ -1456,6 +1488,7 @@ function Messages() {
                       type="button"
                       className={`btn-content-warning ${showContentWarning ? 'active' : ''}`}
                       onClick={() => setShowContentWarning(!showContentWarning)}
+                      disabled={isRecipientUnavailable}
                       title="Add content warning"
                     >
                       ⚠️
@@ -1464,10 +1497,11 @@ function Messages() {
                       type="text"
                       value={message}
                       onChange={handleTyping}
-                      placeholder={replyingTo ? "Type your reply..." : (selectedGif || selectedFile ? "Add a caption (optional)..." : "Type a message...")}
+                      placeholder={isRecipientUnavailable ? recipientUnavailableReason : (replyingTo ? "Type your reply..." : (selectedGif || selectedFile ? "Add a caption (optional)..." : "Type a message..."))}
                       className="chat-input glossy"
+                      disabled={isRecipientUnavailable}
                     />
-                    <button type="submit" className="btn-send glossy-gold" disabled={uploadingFile}>
+                    <button type="submit" className="btn-send glossy-gold" disabled={uploadingFile || isRecipientUnavailable}>
                       Send
                     </button>
                   </div>
