@@ -19,11 +19,15 @@ function SessionManagement() {
     try {
       setLoading(true);
       const response = await api.get('/sessions');
-      setSessions(response.data.sessions);
+      // Safe array default to prevent undefined errors
+      setSessions(response.data?.sessions ?? []);
     } catch (error) {
       console.error('Failed to fetch sessions:', error);
       setMessage('Failed to load active sessions');
+      // Set empty array on error to prevent crashes
+      setSessions([]);
     } finally {
+      // CRITICAL: Always set loading to false to prevent infinite loading
       setLoading(false);
     }
   };
@@ -31,6 +35,11 @@ function SessionManagement() {
   // Deduplicate sessions by device fingerprint (browser + OS + IP)
   // Keep the most recent session in each group, preserve current session
   const dedupeSessionsByFingerprint = (sessionList) => {
+    // Safe array handling - return empty array if input is invalid
+    if (!Array.isArray(sessionList)) {
+      return [];
+    }
+
     const fingerprints = {};
 
     sessionList.forEach(session => {

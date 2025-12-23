@@ -18,10 +18,14 @@ function PasskeyManager() {
     try {
       setLoading(true);
       const { data } = await api.get('/passkey/list');
-      setPasskeys(data.passkeys || []);
-      setLoading(false);
+      // Safe array default to prevent undefined errors
+      setPasskeys(data?.passkeys ?? []);
     } catch (err) {
       setError('Failed to load passkeys');
+      // Set empty array on error to prevent crashes
+      setPasskeys([]);
+    } finally {
+      // CRITICAL: Always set loading to false to prevent infinite loading
       setLoading(false);
     }
   };
@@ -29,7 +33,8 @@ function PasskeyManager() {
   const handleDeletePasskey = async (credentialId) => {
     try {
       await api.delete(`/passkey/${credentialId}`);
-      setPasskeys(passkeys.filter(pk => pk.id !== credentialId));
+      // Safe array filter with default
+      setPasskeys((passkeys ?? []).filter(pk => pk.id !== credentialId));
       setDeleteConfirm(null);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete passkey');
@@ -37,7 +42,8 @@ function PasskeyManager() {
   };
 
   const handlePasskeyAdded = (newPasskey) => {
-    setPasskeys([...passkeys, newPasskey]);
+    // Safe array spread with default
+    setPasskeys([...(passkeys ?? []), newPasskey]);
     setShowAddPasskey(false);
   };
 

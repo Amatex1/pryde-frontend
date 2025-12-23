@@ -22,7 +22,12 @@ const PrivacySettings = () => {
   const fetchPrivacySettings = async () => {
     try {
       const response = await api.get('/privacy/settings');
-      setPrivacySettings(response.data);
+      // Safely merge response with defaults to prevent undefined arrays
+      setPrivacySettings(prev => ({
+        ...prev,
+        ...response.data,
+        blockedUsers: response.data.blockedUsers ?? prev.blockedUsers
+      }));
     } catch (error) {
       console.error('Error fetching privacy settings:', error);
       showToast('Failed to load privacy settings', 'error');
@@ -205,14 +210,15 @@ const PrivacySettings = () => {
 
         <div className="blocked-users-list">
           <h3>Currently Blocked Users</h3>
-          {privacySettings.blockedUsers.length === 0 ? (
+          {/* Safe array access with nullish coalescing */}
+          {(privacySettings.blockedUsers ?? []).length === 0 ? (
             <p>No users blocked</p>
           ) : (
-            privacySettings.blockedUsers.map(user => (
+            (privacySettings.blockedUsers ?? []).map(user => (
               <div key={user._id} className="blocked-user-item">
-                <img 
-                  src={user.profilePhoto || '/default-avatar.png'} 
-                  alt={user.username} 
+                <img
+                  src={user.profilePhoto || '/default-avatar.png'}
+                  alt={user.username}
                   className="user-avatar"
                 />
                 <div className="user-info">

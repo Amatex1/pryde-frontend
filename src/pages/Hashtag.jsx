@@ -1,18 +1,24 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import FormattedText from '../components/FormattedText';
 import OptimizedImage from '../components/OptimizedImage';
 import api from '../utils/api';
+import { getCurrentUser } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
 import PhotoViewer from '../components/PhotoViewer';
 import './Feed.css';
 
 function Hashtag() {
   const { tag } = useParams();
+  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [photoViewerImage, setPhotoViewerImage] = useState(null);
+  const currentUser = getCurrentUser();
+
+  // Check if user is admin (can edit/delete any post)
+  const isAdmin = currentUser && ['moderator', 'admin', 'super_admin'].includes(currentUser.role);
 
   useEffect(() => {
     fetchHashtagPosts();
@@ -36,6 +42,21 @@ function Hashtag() {
       setPosts(posts.map(p => p._id === postId ? response.data : p));
     } catch (error) {
       console.error('Failed to like post:', error);
+    }
+  };
+
+  const handleDelete = async (postId) => {
+    if (!window.confirm('Are you sure you want to delete this post?')) {
+      return;
+    }
+
+    try {
+      await api.delete(`/posts/${postId}`);
+      // Remove post from state
+      setPosts(prev => prev.filter(p => p._id !== postId));
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+      alert('Failed to delete post. Please try again.');
     }
   };
 
@@ -123,9 +144,21 @@ function Hashtag() {
                     >
                       <span>❤️</span> Like ({post.likes?.length || 0})
                     </button>
-                    <button className="action-btn">
+                    <button
+                      className="action-btn"
+                      onClick={() => navigate(`/feed?post=${post._id}`)}
+                    >
                       <span>💬</span> Comment ({post.commentCount || 0})
                     </button>
+                    {/* Allow delete if user is post author OR admin */}
+                    {currentUser && (post.author._id === currentUser.id || isAdmin) && (
+                      <button
+                        className="action-btn delete"
+                        onClick={() => handleDelete(post._id)}
+                      >
+                        <span>🗑️</span> Delete
+                      </button>
+                    )}
                     {/* REMOVED: Share button - backend support incomplete (relies on deprecated Friends system) */}
                     {/* TODO: Reimplement when backend is updated to work with Followers system */}
                     {/* <button className="action-btn" onClick={() => handleShare(post._id)}>

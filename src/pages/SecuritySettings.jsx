@@ -33,20 +33,38 @@ function SecuritySettings() {
   const fetchSecuritySettings = async () => {
     try {
       setLoading(true);
-      
-      // Fetch 2FA status
-      const twoFactorResponse = await api.get('/2fa/status');
-      setTwoFactorStatus(twoFactorResponse.data);
 
-      // Fetch user data for login alerts
+      // Fetch 2FA status with safe defaults
+      const twoFactorResponse = await api.get('/2fa/status');
+      setTwoFactorStatus({
+        enabled: twoFactorResponse.data?.enabled ?? false,
+        backupCodesRemaining: twoFactorResponse.data?.backupCodesRemaining ?? 0
+      });
+
+      // Fetch user data for login alerts with safe defaults
       const userResponse = await api.get('/auth/me');
-      if (userResponse.data.loginAlerts) {
-        setLoginAlerts(userResponse.data.loginAlerts);
+      if (userResponse.data?.loginAlerts) {
+        setLoginAlerts({
+          enabled: userResponse.data.loginAlerts.enabled ?? true,
+          emailOnNewDevice: userResponse.data.loginAlerts.emailOnNewDevice ?? true,
+          emailOnSuspiciousLogin: userResponse.data.loginAlerts.emailOnSuspiciousLogin ?? true
+        });
       }
     } catch (error) {
       console.error('Failed to fetch security settings:', error);
-      setMessage('Failed to load security settings');
+      setMessage('Failed to load security settings. Using default values.');
+      // Set safe defaults on error
+      setTwoFactorStatus({
+        enabled: false,
+        backupCodesRemaining: 0
+      });
+      setLoginAlerts({
+        enabled: true,
+        emailOnNewDevice: true,
+        emailOnSuspiciousLogin: true
+      });
     } finally {
+      // CRITICAL: Always set loading to false to prevent infinite loading
       setLoading(false);
     }
   };

@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import OptimizedImage from '../components/OptimizedImage';
 import api from '../utils/api';
@@ -14,12 +14,16 @@ import './TagFeed.css';
 
 function TagFeed() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const [tag, setTag] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newPost, setNewPost] = useState('');
   const [posting, setPosting] = useState(false);
   const currentUser = getCurrentUser();
+
+  // Check if user is admin (can edit/delete any post)
+  const isAdmin = currentUser && ['moderator', 'admin', 'super_admin'].includes(currentUser.role);
 
   useEffect(() => {
     fetchTagAndPosts();
@@ -210,10 +214,14 @@ function TagFeed() {
                 >
                   {post.hasLiked ? '❤️' : '🤍'} Appreciate
                 </button>
-                <Link to={`/feed`} className="btn-action">
+                <button
+                  className="btn-action"
+                  onClick={() => navigate(`/feed?post=${post._id}`)}
+                >
                   💬 Comment
-                </Link>
-                {currentUser && post.author._id === currentUser.id && (
+                </button>
+                {/* Allow delete if user is post author OR admin */}
+                {currentUser && (post.author._id === currentUser.id || isAdmin) && (
                   <button
                     className="btn-action delete"
                     onClick={() => handleDelete(post._id)}
