@@ -3075,20 +3075,31 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
     margin-top: 0.5rem;
   }
 
+  .reply-composer-actions {
+    gap: 6px !important;
+  }
+
   .reply-composer-actions button,
   .reply-submit-btn {
     width: 32px;
     height: 32px;
   }
 
-  .btn-submit-reply,
   .btn-cancel-reply,
   .reply-cancel {
-    flex: 1;
-    padding: 0.5rem;
-    font-size: 0.8rem;
-    border-radius: 6px;
-    min-height: 44px;
+    font-size: 12px !important;
+    padding: 4px 6px !important;
+    min-height: auto !important;
+    flex: 0 !important;
+  }
+
+  .btn-gif,
+  .reply-gif,
+  .reply-gif-btn {
+    height: 32px !important;
+    min-width: 32px !important;
+    font-size: 0.75rem !important;
+    padding: 0 10px !important;
   }
 
   /* Optimize emoji picker for mobile */
@@ -3803,8 +3814,8 @@ label.btn-media-upload:disabled {
 .reply-input-box,
 .reply-composer {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 0;
   margin-top: 6px;
   padding: 8px;
   margin-left: 3rem;
@@ -3818,7 +3829,7 @@ label.btn-media-upload:disabled {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex: 1;
+  width: 100%;
 }
 
 .reply-user-avatar {
@@ -3865,16 +3876,79 @@ label.btn-media-upload:disabled {
   box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.1);
 }
 
+/* ========================================
+   REPLY COMPOSER ACTIONS - HORIZONTAL ROW
+   ======================================== */
+
 .reply-composer-actions {
-  display: flex;
+  display: flex !important;
   align-items: center;
-  gap: 6px;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  margin-top: 8px;
 }
 
+/* Position Cancel button (LEFT) */
+.btn-cancel-reply,
+.reply-cancel {
+  order: 1;
+  font-size: 13px;
+  color: var(--text-secondary, var(--text-muted));
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.btn-cancel-reply:hover,
+.reply-cancel:hover {
+  color: var(--text-main);
+  text-decoration: underline;
+}
+
+/* Position GIF button (CENTER) */
+.btn-gif,
+.reply-gif,
+.reply-gif-btn,
+button[data-action="gif"] {
+  order: 2;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--pryde-purple);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  padding: 0 12px;
+}
+
+.btn-gif:hover:not(:disabled),
+.reply-gif:hover:not(:disabled),
+.reply-gif-btn:hover:not(:disabled) {
+  background: var(--electric-blue);
+  transform: scale(1.05);
+}
+
+/* Position Send button (RIGHT) */
 .reply-submit-btn,
-.reply-composer-actions button {
+.reply-send,
+.reply-send-btn {
+  order: 3;
   height: 36px;
   width: 36px;
+  min-width: 36px;
   border-radius: 50%;
   border: none;
   background: var(--pryde-purple);
@@ -3889,35 +3963,20 @@ label.btn-media-upload:disabled {
 }
 
 .reply-submit-btn:hover:not(:disabled),
-.reply-composer-actions button:hover:not(:disabled) {
+.reply-send:hover:not(:disabled),
+.reply-send-btn:hover:not(:disabled) {
   background: var(--electric-blue);
   transform: scale(1.05);
 }
 
 .reply-submit-btn:disabled,
-.reply-composer-actions button:disabled {
+.reply-send:disabled,
+.reply-send-btn:disabled,
+.btn-gif:disabled,
+.reply-gif:disabled,
+.reply-gif-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-/* Cancel button inline */
-.btn-cancel-reply,
-.reply-cancel {
-  margin-left: 44px;
-  margin-top: 4px;
-  font-size: 13px;
-  color: var(--text-secondary, var(--text-muted));
-  cursor: pointer;
-  background: none;
-  border: none;
-  padding: 4px 8px;
-  transition: color 0.2s ease;
-}
-
-.btn-cancel-reply:hover,
-.reply-cancel:hover {
-  color: var(--text-main);
-  text-decoration: underline;
 }
 
 .reply-gif-preview {
@@ -3946,6 +4005,40 @@ label.btn-media-upload:disabled {
   width: 100%;
   display: block;
   border-radius: 12px;
+}
+
+/* ========================================
+   MOBILE SAFETY - REPLY COMPOSER
+   ======================================== */
+
+@media (max-width: 480px) {
+  .reply-composer-actions {
+    gap: 6px;
+  }
+
+  .btn-cancel-reply,
+  .reply-cancel {
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+
+  .btn-gif,
+  .reply-gif,
+  .reply-gif-btn {
+    height: 32px;
+    min-width: 32px;
+    font-size: 0.75rem;
+    padding: 0 10px;
+  }
+
+  .reply-submit-btn,
+  .reply-send,
+  .reply-send-btn {
+    height: 32px;
+    width: 32px;
+    min-width: 32px;
+    font-size: 1rem;
+  }
 }
 
 /* Privacy Selector - Use design system variables */

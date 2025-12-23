@@ -2028,6 +2028,15 @@ function Feed() {
                             className="reply-input"
                             autoFocus
                           />
+                        </div>
+                        <div className="reply-composer-actions">
+                          <button
+                            type="button"
+                            onClick={handleCancelReply}
+                            className="btn-cancel-reply"
+                          >
+                            Cancel
+                          </button>
                           <button
                             type="button"
                             className="btn-gif"
@@ -2042,13 +2051,6 @@ function Feed() {
                             disabled={!replyText.trim() && !replyGif}
                           >
                             ➤
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleCancelReply}
-                            className="btn-cancel-reply"
-                          >
-                            Cancel
                           </button>
                         </div>
                         {replyGif && (
