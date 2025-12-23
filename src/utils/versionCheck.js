@@ -225,6 +225,13 @@ export const startVersionCheck = () => {
   // Check immediately on load
   checkForUpdate();
 
+  // Check on tab focus (user returning to app)
+  const onFocus = () => {
+    console.log('👁️ Tab focused - checking for updates...');
+    checkForUpdate();
+  };
+  window.addEventListener('focus', onFocus);
+
   // Then check periodically by fetching fresh index.html
   setInterval(() => {
     console.log('🔍 Periodic version check...');
