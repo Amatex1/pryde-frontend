@@ -1416,11 +1416,11 @@ function Profile() {
                   <span className="stat-value">{posts.length}</span>
                   <span className="stat-label">Posts</span>
                 </div>
-                <Link to={`/profile/${username}/followers`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Link to={`/profile/${user.username}/followers`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
                   <span className="stat-value">{user.followers?.length || 0}</span>
                   <span className="stat-label">Followers</span>
                 </Link>
-                <Link to={`/profile/${username}/following`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Link to={`/profile/${user.username}/following`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
                   <span className="stat-value">{user.following?.length || 0}</span>
                   <span className="stat-label">Following</span>
                 </Link>
