@@ -2003,6 +2003,78 @@ function Feed() {
                       </div>
                     )}
 
+                    {/* Reply Input Box - Shown when replying to a comment */}
+                    {replyingToComment?.postId === post._id && (
+                      <form onSubmit={handleSubmitReply} className="reply-input-box">
+                        <div className="reply-input-wrapper">
+                          <div className="reply-user-avatar">
+                            {currentUser?.profilePhoto ? (
+                              <OptimizedImage
+                                src={getImageUrl(currentUser.profilePhoto)}
+                                alt="You"
+                                className="avatar-image"
+                              />
+                            ) : (
+                              <span>{currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
+                            )}
+                          </div>
+                          <input
+                            id={`feed-reply-${replyingToComment.commentId}`}
+                            name="reply"
+                            type="text"
+                            value={replyText}
+                            onChange={(e) => setReplyText(e.target.value)}
+                            placeholder={replyGif ? "Caption, if you'd like" : "Write a reply..."}
+                            className="reply-input"
+                            autoFocus
+                          />
+                          <button
+                            type="button"
+                            className="btn-gif"
+                            onClick={() => setShowGifPicker(showGifPicker === `reply-${replyingToComment.commentId}` ? null : `reply-${replyingToComment.commentId}`)}
+                            title="Add GIF"
+                          >
+                            GIF
+                          </button>
+                          <button
+                            type="submit"
+                            className="reply-submit-btn"
+                            disabled={!replyText.trim() && !replyGif}
+                          >
+                            ➤
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleCancelReply}
+                            className="btn-cancel-reply"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                        {replyGif && (
+                          <div className="reply-gif-preview">
+                            <img src={replyGif} alt="Selected GIF" />
+                            <button
+                              type="button"
+                              className="btn-remove-gif"
+                              onClick={() => setReplyGif(null)}
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                        {showGifPicker === `reply-${replyingToComment.commentId}` && (
+                          <GifPicker
+                            onGifSelect={(gifUrl) => {
+                              setReplyGif(gifUrl);
+                              setShowGifPicker(null);
+                            }}
+                            onClose={() => setShowGifPicker(null)}
+                          />
+                        )}
+                      </form>
+                    )}
+
                     {/* Comment Input Box */}
                     {showCommentBox[post._id] && (
                       <form onSubmit={(e) => handleCommentSubmit(post._id, e)} className="comment-input-box">

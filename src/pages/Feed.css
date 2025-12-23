@@ -3379,6 +3379,122 @@ label.btn-media-upload:disabled {
   transform: scale(1.1);
 }
 
+/* Reply Input Box */
+.reply-input-box {
+  padding: 1rem;
+  margin: 0.5rem 0 0.5rem 3rem;
+  background: rgba(108, 92, 231, 0.05);
+  border-left: 3px solid var(--pryde-purple);
+  border-radius: 12px;
+}
+
+.reply-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.reply-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--soft-lavender);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reply-user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reply-user-avatar span {
+  color: var(--pryde-purple);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.reply-input {
+  flex: 1;
+  padding: 0.625rem 1rem;
+  border-radius: 18px;
+  border: 2px solid var(--pryde-purple);
+  outline: none;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  background: var(--card-surface);
+  transition: all 0.3s ease;
+}
+
+.reply-input:focus {
+  border-color: var(--electric-blue);
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+}
+
+.reply-submit-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--pryde-purple);
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.reply-submit-btn:hover:not(:disabled) {
+  background: var(--electric-blue);
+  transform: scale(1.1);
+}
+
+.reply-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-cancel-reply {
+  padding: 0.5rem 0.875rem;
+  border-radius: 16px;
+  border: 2px solid var(--border-subtle);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-cancel-reply:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-light);
+  color: var(--text-main);
+}
+
+.reply-gif-preview {
+  position: relative;
+  margin-top: 0.75rem;
+  margin-left: 48px;
+  max-width: 250px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.reply-gif-preview img {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+}
+
 .comment-gif {
   margin-top: 0.5rem;
   max-width: 300px;
