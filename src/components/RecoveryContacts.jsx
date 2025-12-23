@@ -145,16 +145,22 @@ const RecoveryContacts = () => {
           />
           {searching && <div className="searching">Searching...</div>}
           <div className="search-results-list">
-            {searchResults.map(user => (
-              <div key={user._id} className="user-result">
-                <img src={user.profilePhoto || '/default-avatar.png'} alt={user.username} />
-                <div className="user-info">
-                  <div className="user-name">{user.displayName || user.username}</div>
-                  <div className="user-username">@{user.username}</div>
+            {searchResults.length > 0 ? (
+              searchResults.map(user => (
+                <div key={user._id} className="user-result">
+                  <img src={user.profilePhoto || '/default-avatar.png'} alt={user.username} />
+                  <div className="user-info">
+                    <div className="user-name">{user.displayName || user.username}</div>
+                    <div className="user-username">@{user.username}</div>
+                  </div>
+                  <button onClick={() => addContact(user._id)}>Add</button>
                 </div>
-                <button onClick={() => addContact(user._id)}>Add</button>
-              </div>
-            ))}
+              ))
+            ) : (
+              searchQuery.trim().length >= 2 && !searching && (
+                <div className="no-results">No matching users found</div>
+              )
+            )}
           </div>
         </div>
       )}

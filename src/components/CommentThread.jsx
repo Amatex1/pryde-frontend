@@ -94,7 +94,7 @@ const CommentThread = ({
         {comment.isDeleted ? (
           <div className="comment-deleted">
             <span className="deleted-icon">🗑️</span>
-            <span className="deleted-text">This reply was removed</span>
+            <span className="deleted-text">This comment was deleted.</span>
           </div>
         ) : (
           <>
@@ -275,7 +275,7 @@ const CommentThread = ({
                 {reply.isDeleted ? (
                   <div className="comment-deleted">
                     <span className="deleted-icon">🗑️</span>
-                    <span className="deleted-text">This reply was removed</span>
+                    <span className="deleted-text">This comment was deleted.</span>
                   </div>
                 ) : (
                   <>
