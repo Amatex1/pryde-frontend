@@ -1255,8 +1255,18 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   background: transparent;
   border: none;
   box-shadow: none;
-  padding: 0;
+  padding: 2px 0;
   position: relative;
+}
+
+/* Row-level hover (not bubble) */
+.comment:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+}
+
+[data-theme="light"] .comment:hover {
+  background: rgba(0, 0, 0, 0.03);
 }
 
 .reply {
