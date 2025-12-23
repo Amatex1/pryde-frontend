@@ -1130,7 +1130,7 @@ function Messages() {
           <div className={`chat-area ${selectedChat ? 'active' : ''}`}>
             {selectedChat ? (
               <>
-                <div className="chat-header">
+                <div className="chat-header" key={`${selectedChat}-${selectedChatType}`}>
                   {/* Mobile Back Button */}
                   <button
                     className="mobile-back-btn"
