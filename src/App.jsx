@@ -6,6 +6,8 @@ import { playNotificationSound } from './utils/notifications';
 import { initializeQuietMode } from './utils/quietMode';
 import { preloadCriticalResources, preloadFeedData } from './utils/resourcePreloader';
 import { startVersionCheck, checkForUpdate } from './utils/versionCheck';
+import { checkVersion } from './utils/versionChecker';
+import { useUpdateStore } from './state/updateStore';
 import { registerSW } from 'virtual:pwa-register';
 import api from './utils/api';
 import axios from 'axios';
@@ -157,8 +159,8 @@ function App() {
   const [authStatus, setAuthStatusState] = useState(AUTH_STATUS.UNKNOWN);
   const [initError, setInitError] = useState(false);
 
-  // Update banner state
-  const updateAvailable = useAppVersion();
+  // Update banner state - using new version checker
+  const [updateAvailable, setUpdateAvailable] = useState(false);
   const [showUpdateBanner, setShowUpdateBanner] = useState(true);
 
   // Derived state for backward compatibility
@@ -361,6 +363,41 @@ function App() {
     // Expose checkForUpdate globally for testing in console
     // Usage: window.checkForUpdate()
     window.checkForUpdate = checkForUpdate;
+
+    // 🆕 New version checker - checks backend API endpoint
+    // Subscribe to update notifications
+    const unsubscribe = useUpdateStore(setUpdateAvailable);
+
+    // Check immediately on load
+    checkVersion();
+
+    // Check every 60 seconds
+    const versionCheckInterval = setInterval(checkVersion, 60000);
+
+    // Check on window focus
+    const onFocus = () => checkVersion();
+    window.addEventListener('focus', onFocus);
+
+    // Check on visibility change
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        checkVersion();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisible);
+
+    // Check when coming back online
+    const onOnline = () => checkVersion();
+    window.addEventListener('online', onOnline);
+
+    // Cleanup
+    return () => {
+      unsubscribe();
+      clearInterval(versionCheckInterval);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('online', onOnline);
+    };
 
     // Initialize Quiet Mode globally - only when authenticated
     const initQuietMode = async (retries = 3) => {

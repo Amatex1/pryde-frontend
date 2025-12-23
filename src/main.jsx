@@ -38,6 +38,14 @@ if (import.meta.env.PROD) {
     console.error('[Push Notifications] Initialization failed:', err);
   });
 
+  // Listen for service worker controller change (new version installed)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      console.log('[PWA] Service worker controller changed - dispatching update event');
+      window.dispatchEvent(new Event('pryde-update-detected'));
+    });
+  }
+
   // Listen for PWA update events and show a brief notification
   window.addEventListener('pwa-update-available', (event) => {
     // Create a simple toast notification
