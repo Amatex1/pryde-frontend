@@ -19,6 +19,7 @@ import EditHistoryModal from '../components/EditHistoryModal';
 import DraftManager from '../components/DraftManager';
 import { useModal } from '../hooks/useModal';
 import { useOnlineUsers } from '../hooks/useOnlineUsers';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import api, { getCsrfToken } from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
@@ -35,6 +36,7 @@ function Feed() {
   const [searchParams] = useSearchParams();
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const { onlineUsers, isUserOnline } = useOnlineUsers();
+  const isMobile = useMediaQuery('(max-width: 768px)');
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
   const [loading, setLoading] = useState(false);
@@ -92,6 +94,7 @@ function Feed() {
   const [showDraftManager, setShowDraftManager] = useState(false); // Show/hide draft manager
   const [currentDraftId, setCurrentDraftId] = useState(null); // Track current draft being edited
   const [draftSaveStatus, setDraftSaveStatus] = useState(''); // 'saving', 'saved', or ''
+  const [showMobileComposer, setShowMobileComposer] = useState(false); // Mobile composer bottom sheet
 
   // Pagination state
   const [page, setPage] = useState(1);
@@ -1524,7 +1527,7 @@ function Feed() {
         </button>
       )}
 
-      <div className="feed-layout">
+      <div className={`feed-layout ${isMobile ? 'feed-mobile' : 'feed-desktop'}`}>
         <main className="feed-main">
           {/* Feed Filter Tabs */}
           <div className="feed-tabs glossy">
@@ -1554,7 +1557,8 @@ function Feed() {
             </button>
           </div>
 
-          {/* Create Post Section */}
+          {/* Create Post Section - Hidden on mobile */}
+          {!isMobile && (
           <div className="create-post glossy fade-in">
             <h2 className="section-title">Share something</h2>
             <form onSubmit={handlePostSubmit}>
@@ -1712,6 +1716,7 @@ function Feed() {
               </div>
             </form>
           </div>
+          )}
 
           {/* Draft Manager Modal */}
           {showDraftManager && (
@@ -2342,6 +2347,163 @@ function Feed() {
             <div className="end-of-feed">
               <p className="end-of-feed-primary">🎉 You're all caught up!</p>
               <p className="end-of-feed-secondary">Take a break, or check back later.</p>
+            </div>
+          )}
+
+          {/* Mobile Floating Create Post Button */}
+          {isMobile && (
+            <button
+              className="mobile-create-post"
+              onClick={() => setShowMobileComposer(true)}
+              aria-label="Create post"
+            >
+              ＋
+            </button>
+          )}
+
+          {/* Mobile Composer Bottom Sheet */}
+          {isMobile && showMobileComposer && (
+            <div className="mobile-composer-sheet">
+              <div className="mobile-composer-header">
+                <button
+                  className="mobile-composer-close"
+                  onClick={() => setShowMobileComposer(false)}
+                  aria-label="Close composer"
+                >
+                  ✕
+                </button>
+                <h2 className="mobile-composer-title">Share something</h2>
+                <button
+                  type="button"
+                  onClick={handlePostSubmit}
+                  disabled={loading || uploadingMedia}
+                  className="mobile-composer-post"
+                >
+                  {loading ? 'Publishing...' : 'Publish'}
+                </button>
+              </div>
+
+              <div className="mobile-composer-content">
+                <form onSubmit={handlePostSubmit}>
+                  <textarea
+                    id="mobile-post-input"
+                    name="mobileNewPost"
+                    value={newPost}
+                    onChange={(e) => {
+                      const el = e.target;
+                      el.style.height = 'auto';
+                      el.style.height = el.scrollHeight + 'px';
+                      setNewPost(el.value);
+                    }}
+                    placeholder={showPollCreator ? "Ask a question..." : "Share something, if you feel like it."}
+                    className="mobile-post-input"
+                    rows="3"
+                    autoFocus
+                    style={{ overflow: 'hidden', resize: 'none' }}
+                  />
+
+                  {selectedMedia.length > 0 && (
+                    <div className="media-preview">
+                      {selectedMedia.map((media, index) => (
+                        <div key={index} className="media-preview-item">
+                          {media.type === 'video' ? (
+                            <video src={getImageUrl(media.url)} controls />
+                          ) : (
+                            <img src={getImageUrl(media.url)} alt={`Upload ${index + 1}`} />
+                          )}
+                          <button
+                            type="button"
+                            className="remove-media"
+                            onClick={() => removeMedia(index)}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {showContentWarning && (
+                    <div className="content-warning-input">
+                      <select
+                        id="mobile-content-warning-select"
+                        name="mobileContentWarning"
+                        value={contentWarning}
+                        onChange={(e) => setContentWarning(e.target.value)}
+                        className="cw-input"
+                      >
+                        <option value="">Select a content warning...</option>
+                        <option value="Mental Health">Mental Health</option>
+                        <option value="Violence">Violence</option>
+                        <option value="Sexual Content">Sexual Content</option>
+                        <option value="Substance Use">Substance Use</option>
+                        <option value="Self-Harm">Self-Harm</option>
+                        <option value="Death/Grief">Death/Grief</option>
+                        <option value="Eating Disorders">Eating Disorders</option>
+                        <option value="Abuse">Abuse</option>
+                        <option value="Discrimination">Discrimination</option>
+                        <option value="Medical Content">Medical Content</option>
+                        <option value="Flashing Lights">Flashing Lights</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  )}
+
+                  {showPollCreator && (
+                    <PollCreator
+                      onPollChange={setPoll}
+                      initialPoll={poll}
+                    />
+                  )}
+
+                  <div className="mobile-composer-actions">
+                    <label className="mobile-btn-media">
+                      <input
+                        id="mobile-media-upload-input"
+                        name="mobileMediaUpload"
+                        type="file"
+                        multiple
+                        accept="image/*,video/*"
+                        onChange={handleMediaSelect}
+                        disabled={uploadingMedia || selectedMedia.length >= 3}
+                        style={{ display: 'none' }}
+                      />
+                      📷
+                    </label>
+
+                    <button
+                      type="button"
+                      className={`mobile-btn-action ${showPollCreator ? 'active' : ''}`}
+                      onClick={() => setShowPollCreator(!showPollCreator)}
+                      title="Add poll"
+                    >
+                      📊
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`mobile-btn-action ${showContentWarning ? 'active' : ''}`}
+                      onClick={() => setShowContentWarning(!showContentWarning)}
+                      title="Add content warning"
+                    >
+                      ⚠️
+                    </button>
+
+                    <select
+                      id="mobile-post-privacy-selector"
+                      name="mobilePostPrivacy"
+                      value={postVisibility}
+                      onChange={(e) => setPostVisibility(e.target.value)}
+                      className="mobile-privacy-selector"
+                      aria-label="Select post privacy"
+                    >
+                      <option value="public">🌍 Public</option>
+                      <option value="followers">👥 Connections</option>
+                      <option value="private">🔒 Private</option>
+                    </select>
+                  </div>
+                </form>
+              </div>
             </div>
           )}
         </main>
