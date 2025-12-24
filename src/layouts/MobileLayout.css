@@ -1,5 +1,5 @@
 /* ========================================
-   MOBILE LAYOUT - CLEAN SKELETON
+   MOBILE LAYOUT - POLISHED & APP-LIKE
    ======================================== */
 
 .mobile-app {
@@ -10,26 +10,66 @@
   overflow: hidden;
 }
 
+/* ========================================
+   MOBILE HEADER - COMPACT & CONTEXT-AWARE
+   ======================================== */
+
 .mobile-header {
   position: sticky;
   top: 0;
-  height: 52px;
-  display: flex;
+  height: 48px;
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
   align-items: center;
-  justify-content: center;
   border-bottom: 1px solid var(--border-subtle, #e0e0e0);
   background: var(--surface-primary, #ffffff);
   z-index: 10;
   flex-shrink: 0;
+  padding: 0 4px;
+}
+
+.mobile-header-left,
+.mobile-header-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mobile-header-title {
-  font-size: 18px;
+  text-align: center;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary, #2b2b2b);
-  cursor: pointer;
   user-select: none;
+  letter-spacing: -0.01em;
 }
+
+.mobile-back {
+  background: none;
+  border: none;
+  font-size: 20px;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--text-primary, #2b2b2b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-back:hover {
+  background-color: var(--bg-hover, rgba(0, 0, 0, 0.05));
+}
+
+.mobile-back:active {
+  background-color: var(--bg-active, rgba(0, 0, 0, 0.1));
+}
+
+/* ========================================
+   MOBILE CONTENT AREA
+   ======================================== */
 
 .mobile-content {
   flex: 1;
@@ -39,15 +79,18 @@
   padding-bottom: calc(56px + env(safe-area-inset-bottom));
 }
 
+/* ========================================
+   MOBILE NAV - POLISHED BOTTOM BAR
+   ======================================== */
+
 .mobile-nav {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   height: 56px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
   border-top: 1px solid var(--border-subtle, #e0e0e0);
   background: var(--surface-primary, #ffffff);
   padding-bottom: env(safe-area-inset-bottom);
@@ -56,30 +99,48 @@
 }
 
 .mobile-nav a {
-  font-size: 12px;
-  text-decoration: none;
-  color: var(--text-secondary, #616161);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 8px 12px;
-  transition: color 0.2s ease;
-  min-width: 60px;
-  text-align: center;
+  text-decoration: none;
+  color: var(--text-secondary, #616161);
+  gap: 2px;
+  padding: 6px 4px;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+
+.mobile-nav a .nav-icon {
+  font-size: 20px;
+  line-height: 1;
+  display: block;
+}
+
+.mobile-nav a small {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1;
 }
 
 .mobile-nav a.active {
   color: var(--accent, #6C5CE7);
+}
+
+.mobile-nav a.active small {
   font-weight: 600;
 }
 
-.mobile-nav a:hover {
-  color: var(--text-primary, #2b2b2b);
+.mobile-nav a:active {
+  transform: scale(0.95);
 }
 
-/* Dark mode support */
+/* ========================================
+   DARK MODE SUPPORT
+   ======================================== */
+
 @media (prefers-color-scheme: dark) {
   .mobile-app {
     background: var(--bg-primary, #1a1a1a);
@@ -91,8 +152,17 @@
     border-color: var(--border-subtle, #3a3a3a);
   }
 
-  .mobile-header-title {
+  .mobile-header-title,
+  .mobile-back {
     color: var(--text-primary, #f7f7f7);
+  }
+
+  .mobile-back:hover {
+    background-color: var(--bg-hover, rgba(255, 255, 255, 0.05));
+  }
+
+  .mobile-back:active {
+    background-color: var(--bg-active, rgba(255, 255, 255, 0.1));
   }
 
   .mobile-nav a {
@@ -102,9 +172,28 @@
   .mobile-nav a.active {
     color: var(--accent, #8B7FE8);
   }
+}
 
-  .mobile-nav a:hover {
-    color: var(--text-primary, #f7f7f7);
+/* ========================================
+   ACCESSIBILITY & TOUCH IMPROVEMENTS
+   ======================================== */
+
+/* Ensure minimum touch target size */
+.mobile-nav a,
+.mobile-back {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav a,
+  .mobile-back {
+    transition: none;
+  }
+
+  .mobile-nav a:active {
+    transform: none;
   }
 }
 
