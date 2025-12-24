@@ -161,19 +161,3 @@ export function clearCachePattern(pattern) {
   }
   logger.debug(`[API] Cleared ${cleared} cache entries matching: ${pattern}`);
 }
-
-/**
- * Clear cache for specific URL pattern
- * @param {string} pattern - URL pattern to match
- */
-export function clearCachePattern(pattern) {
-  let cleared = 0;
-  for (const key of cache.keys()) {
-    if (key.includes(pattern)) {
-      cache.delete(key);
-      cleared++;
-    }
-  }
-  logger.debug(`[API] Cleared ${cleared} cache entries matching: ${pattern}`);
-}
-
