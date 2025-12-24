@@ -612,6 +612,46 @@ function Feed() {
         };
         socket.on('comment_deleted', handleCommentDeletedRT);
         cleanupFunctions.push(() => socket.off('comment_deleted', handleCommentDeletedRT));
+
+        // ✅ Listen for new posts
+        const handlePostCreatedRT = (data) => {
+          logger.debug('📝 Real-time post created:', data);
+          const newPost = data.post;
+
+          // Only add if not already in feed (prevent duplicates)
+          setPosts(prevPosts => {
+            if (prevPosts.some(p => p._id === newPost._id)) {
+              logger.debug('⚠️ Post already exists, skipping duplicate:', newPost._id);
+              return prevPosts;
+            }
+            // Add to top of feed
+            return [newPost, ...prevPosts];
+          });
+        };
+        socket.on('post_created', handlePostCreatedRT);
+        cleanupFunctions.push(() => socket.off('post_created', handlePostCreatedRT));
+
+        // ✅ Listen for post updates
+        const handlePostUpdatedRT = (data) => {
+          logger.debug('✏️ Real-time post updated:', data);
+          const updatedPost = data.post;
+
+          setPosts(prevPosts =>
+            prevPosts.map(p => p._id === updatedPost.postId || p._id === updatedPost._id ? updatedPost : p)
+          );
+        };
+        socket.on('post_updated', handlePostUpdatedRT);
+        cleanupFunctions.push(() => socket.off('post_updated', handlePostUpdatedRT));
+
+        // ✅ Listen for post deletions
+        const handlePostDeletedRT = (data) => {
+          logger.debug('🗑️ Real-time post deleted:', data);
+          const { postId } = data;
+
+          setPosts(prevPosts => prevPosts.filter(p => p._id !== postId));
+        };
+        socket.on('post_deleted', handlePostDeletedRT);
+        cleanupFunctions.push(() => socket.off('post_deleted', handlePostDeletedRT));
       }
     };
 

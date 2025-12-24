@@ -10,6 +10,7 @@ const NotificationBell = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
+  const intervalRef = useRef(null); // ✅ Prevent duplicate intervals
   const navigate = useNavigate();
   const user = getCurrentUser();
 
@@ -18,17 +19,41 @@ const NotificationBell = () => {
   // This prevents browser console violations about requesting permission
   // without user interaction.
 
+  const fetchNotifications = async () => {
+    try {
+      const response = await api.get('/notifications');
+      // Filter out message notifications - they should only appear in Messages page
+      const filteredNotifications = response.data.filter(n => n.type !== 'message');
+      setNotifications(filteredNotifications.slice(0, 10)); // Show only latest 10
+      setUnreadCount(filteredNotifications.filter(n => !n.read).length);
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error);
+    }
+  };
+
   useEffect(() => {
     // Only fetch if user is logged in
     if (!user) {
       return;
     }
 
+    // ✅ Prevent duplicate intervals in React Strict Mode
+    if (intervalRef.current) {
+      console.warn('[NotificationBell] Interval already exists, skipping duplicate setup');
+      return;
+    }
+
     fetchNotifications();
     // Poll for new notifications every 30 seconds
-    const interval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(interval);
-  }, []);
+    intervalRef.current = setInterval(fetchNotifications, 30000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [user]); // ✅ Added user dependency
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -40,23 +65,6 @@ const NotificationBell = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const fetchNotifications = async () => {
-    try {
-      const response = await api.get('/notifications');
-      // Filter out message notifications - they should only appear in Messages page
-      const filteredNotifications = response.data.filter(n => n.type !== 'message');
-      setNotifications(filteredNotifications.slice(0, 10)); // Show only latest 10
-      setUnreadCount(filteredNotifications.filter(n => !n.read).length);
-    } catch (error) {
-      // If 401, user session expired - silently fail
-      if (error.response?.status === 401) {
-        console.warn('Session expired - stopping notification polling');
-        return;
-      }
-      console.error('Failed to fetch notifications:', error);
-    }
-  };
 
   const markAsRead = async (id) => {
     try {
