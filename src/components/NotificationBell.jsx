@@ -12,6 +12,7 @@ const NotificationBell = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
+  const listenersSetupRef = useRef(false); // Prevent duplicate listener setup
   const navigate = useNavigate();
   const user = getCurrentUser();
   const userId = user?.id; // Extract userId to use as dependency
@@ -39,6 +40,12 @@ const NotificationBell = () => {
       return;
     }
 
+    // ✅ Prevent duplicate listener setup (React Strict Mode protection)
+    if (listenersSetupRef.current) {
+      logger.debug('⚠️ NotificationBell listeners already set up, skipping');
+      return;
+    }
+
     // ✅ Fetch once on mount (NO POLLING!)
     fetchNotifications();
 
@@ -49,6 +56,9 @@ const NotificationBell = () => {
       logger.debug('⏳ Socket not initialized yet, skipping notification listeners');
       return;
     }
+
+    logger.debug('🔔 Setting up NotificationBell socket listeners');
+    listenersSetupRef.current = true;
 
     // ✅ Listen for real-time notification events
     const handleNewNotification = (data) => {
@@ -89,6 +99,9 @@ const NotificationBell = () => {
     socket.on('notification:deleted', handleNotificationDeleted);
 
     return () => {
+      logger.debug('🧹 Cleaning up NotificationBell socket listeners');
+      listenersSetupRef.current = false;
+
       if (socket && typeof socket.off === 'function') {
         socket.off('notification:new', handleNewNotification);
         socket.off('notification:read', handleNotificationRead);
