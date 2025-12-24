@@ -9,6 +9,7 @@ import VoiceRecorder from '../components/VoiceRecorder';
 import AudioPlayer from '../components/AudioPlayer';
 import { useModal } from '../hooks/useModal';
 import { useOnlineUsers } from '../hooks/useOnlineUsers';
+import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import { getUserChatColor, getSentMessageColor } from '../utils/chatColors';
@@ -35,6 +36,7 @@ function Messages() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const { onlineUsers, isUserOnline } = useOnlineUsers();
+  const { user: currentUser } = useAuth(); // Use centralized auth context
 
   // Don't restore selected chat on mobile - always show conversation list first
   const [selectedChat, setSelectedChat] = useState(() => {
@@ -60,7 +62,6 @@ function Messages() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
   const [showNewChatModal, setShowNewChatModal] = useState(false);
   const [showNewGroupModal, setShowNewGroupModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -171,19 +172,8 @@ function Messages() {
     }
   }, [selectedChat, selectedChatType]);
 
-  // Fetch current user
+  // Log socket connection status on mount
   useEffect(() => {
-    const fetchCurrentUser = async () => {
-      try {
-        const response = await api.get('/auth/me');
-        setCurrentUser(response.data);
-      } catch (error) {
-        logger.error('Error fetching user:', error);
-      }
-    };
-    fetchCurrentUser();
-
-    // Log socket connection status (but don't add listeners here - they're added in the other useEffect)
     logger.debug('🔌 Socket connection status:', isSocketConnected());
     const socket = getSocket();
     if (socket) {

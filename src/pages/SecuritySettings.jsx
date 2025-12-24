@@ -7,12 +7,14 @@ import PasskeyManager from '../components/PasskeyManager';
 import RecoveryContacts from '../components/RecoveryContacts';
 import CustomModal from '../components/CustomModal';
 import { useModal } from '../hooks/useModal';
+import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import './Settings.css';
 
 function SecuritySettings() {
   const navigate = useNavigate();
   const { modalState, closeModal, showPrompt } = useModal();
+  const { user: currentUser, refreshUser } = useAuth(); // Use centralized auth context
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [twoFactorStatus, setTwoFactorStatus] = useState({
@@ -41,13 +43,15 @@ function SecuritySettings() {
         backupCodesRemaining: twoFactorResponse.data?.backupCodesRemaining ?? 0
       });
 
-      // Fetch user data for login alerts with safe defaults
-      const userResponse = await api.get('/auth/me');
-      if (userResponse.data?.loginAlerts) {
+      // Refresh user data from API (bypasses cache)
+      await refreshUser();
+
+      // Use user data from context for login alerts
+      if (currentUser?.loginAlerts) {
         setLoginAlerts({
-          enabled: userResponse.data.loginAlerts.enabled ?? true,
-          emailOnNewDevice: userResponse.data.loginAlerts.emailOnNewDevice ?? true,
-          emailOnSuspiciousLogin: userResponse.data.loginAlerts.emailOnSuspiciousLogin ?? true
+          enabled: currentUser.loginAlerts.enabled ?? true,
+          emailOnNewDevice: currentUser.loginAlerts.emailOnNewDevice ?? true,
+          emailOnSuspiciousLogin: currentUser.loginAlerts.emailOnSuspiciousLogin ?? true
         });
       }
     } catch (error) {

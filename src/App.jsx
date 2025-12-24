@@ -13,6 +13,7 @@ import api from './utils/api';
 import axios from 'axios';
 import { API_BASE_URL } from './config/api';
 import logger from './utils/logger';
+import { apiFetch } from './utils/apiClient';
 import {
   AUTH_STATUS,
   getAuthStatus,
@@ -20,6 +21,7 @@ import {
   markAuthenticated,
   markUnauthenticated
 } from './state/authStatus';
+import { AuthProvider } from './context/AuthContext';
 
 // Eager load critical components (needed immediately)
 // IMPORTANT: Only load components that DON'T use React Router hooks
@@ -424,10 +426,16 @@ function App() {
       }
 
       try {
-        const response = await api.get('/auth/me', {
-          timeout: 10000 // 10 second timeout
-        });
-        const user = response.data;
+        // Use apiFetch with cache to prevent duplicate requests
+        const user = await apiFetch(
+          '/auth/me',
+          {},
+          { cacheTtl: 300_000 } // 5 minutes cache
+        );
+
+        if (!user) {
+          throw new Error('Failed to fetch user data');
+        }
 
         // Initialize quiet mode with user settings
         initializeQuietMode(user);
@@ -508,11 +516,12 @@ function App() {
     <ErrorBoundary>
       <AppReadyProvider>
         <LoadingGate>
-          <Router>
-            <Suspense fallback={<PageLoader />}>
-              <div className="app-container">
-                {/* Safety Warning for high-risk regions */}
-                {isAuth && <SafetyWarning />}
+          <AuthProvider>
+            <Router>
+              <Suspense fallback={<PageLoader />}>
+                <div className="app-container">
+                  {/* Safety Warning for high-risk regions */}
+                  {isAuth && <SafetyWarning />}
 
                 {/* Update banner for new deployments */}
                 {updateAvailable && showUpdateBanner && (
@@ -616,6 +625,7 @@ function App() {
             </div>
           </Suspense>
         </Router>
+      </AuthProvider>
       </LoadingGate>
     </AppReadyProvider>
     </ErrorBoundary>

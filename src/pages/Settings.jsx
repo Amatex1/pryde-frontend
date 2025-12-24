@@ -4,15 +4,16 @@ import Navbar from '../components/Navbar';
 import CustomModal from '../components/CustomModal';
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
-import { getCurrentUser, setCurrentUser, logout } from '../utils/auth';
+import { logout } from '../utils/auth';
 import { setQuietMode } from '../utils/themeManager';
+import { useAuth } from '../context/AuthContext';
 import logger from '../utils/logger';
 import './Settings.css';
 
 function Settings() {
   const { modalState, closeModal, showAlert, showConfirm, showPrompt } = useModal();
   const navigate = useNavigate();
-  const currentUser = getCurrentUser();
+  const { user: currentUser, refreshUser } = useAuth(); // Use centralized auth context
   const [formData, setFormData] = useState({
     fullName: '',
     displayName: '',
@@ -52,33 +53,37 @@ function Settings() {
   };
 
   const fetchUserData = async () => {
-    try {
-      const response = await api.get('/auth/me');
-      const user = response.data;
-      setFormData({
-        fullName: user.fullName || '',
-        displayName: user.displayName || '',
-        nickname: user.nickname || '',
-        pronouns: user.pronouns || '',
-        customPronouns: user.customPronouns || '',
-        gender: user.gender || '',
-        customGender: user.customGender || '',
-        relationshipStatus: user.relationshipStatus || '',
-        bio: user.bio || '',
-        location: user.location || '',
-        website: user.website || '',
-        socialLinks: user.socialLinks || []
-      });
-      // PHASE 2: Load quiet mode settings
-      const quietMode = user.privacySettings?.quietModeEnabled || false;
-      setQuietModeEnabled(quietMode);
-      setQuietMode(quietMode);
+    // Refresh user data from API (bypasses cache)
+    await refreshUser();
 
-      // PHASE 5: Load creator mode setting
-      setIsCreator(user.isCreator || false);
-    } catch (error) {
-      logger.error('Failed to fetch user data:', error);
+    // Use the user from context
+    if (!currentUser) {
+      logger.warn('No user data available');
+      return;
     }
+
+    setFormData({
+      fullName: currentUser.fullName || '',
+      displayName: currentUser.displayName || '',
+      nickname: currentUser.nickname || '',
+      pronouns: currentUser.pronouns || '',
+      customPronouns: currentUser.customPronouns || '',
+      gender: currentUser.gender || '',
+      customGender: currentUser.customGender || '',
+      relationshipStatus: currentUser.relationshipStatus || '',
+      bio: currentUser.bio || '',
+      location: currentUser.location || '',
+      website: currentUser.website || '',
+      socialLinks: currentUser.socialLinks || []
+    });
+
+    // PHASE 2: Load quiet mode settings
+    const quietMode = currentUser.privacySettings?.quietModeEnabled || false;
+    setQuietModeEnabled(quietMode);
+    setQuietMode(quietMode);
+
+    // PHASE 5: Load creator mode setting
+    setIsCreator(currentUser.isCreator || false);
   };
 
   const handleChange = (e) => {

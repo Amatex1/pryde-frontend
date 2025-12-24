@@ -14,6 +14,7 @@
  */
 
 import api from './api';
+import { apiFetch } from './apiClient';
 import logger from './logger';
 
 // Cache for preloaded data
@@ -44,26 +45,20 @@ export async function preloadCriticalResources() {
   try {
     logger.debug('🚀 Preloading critical resources...');
 
-    // Preload in parallel for speed
-    const [userResponse, notificationsResponse] = await Promise.allSettled([
-      api.get('/auth/me').catch(err => {
-        logger.debug('User preload failed (non-critical):', err);
-        return null;
-      }),
-      api.get('/notifications?limit=10').catch(err => {
-        logger.debug('Notifications preload failed (non-critical):', err);
-        return null;
-      })
-    ]);
+    // NOTE: /auth/me is now handled by AuthContext, so we skip it here
+    // Preload notifications only
+    const notificationsResponse = await apiFetch(
+      '/notifications?limit=10',
+      {},
+      { cacheTtl: 60_000 } // 1 minute cache
+    ).catch(err => {
+      logger.debug('Notifications preload failed (non-critical):', err);
+      return null;
+    });
 
     // Cache successful responses
-    if (userResponse.status === 'fulfilled' && userResponse.value) {
-      cache.user = userResponse.value.data;
-      logger.debug('✅ User data preloaded');
-    }
-
-    if (notificationsResponse.status === 'fulfilled' && notificationsResponse.value) {
-      cache.notifications = notificationsResponse.value.data;
+    if (notificationsResponse) {
+      cache.notifications = notificationsResponse;
       logger.debug('✅ Notifications preloaded');
     }
 

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
-import { getCurrentUser, logout } from '../utils/auth';
+import { logout } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
 import DarkModeToggle from './DarkModeToggle';
 import GlobalSearch from './GlobalSearch';
@@ -8,6 +8,7 @@ import NotificationBell from './NotificationBell';
 import api from '../utils/api';
 import { getTheme, toggleTheme as toggleThemeManager, getQuietMode, setQuietMode as setQuietModeManager } from '../utils/themeManager';
 import prydeLogo from '../assets/pryde-logo.png';
+import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 // Hook to get dark mode state using centralized theme manager
@@ -24,16 +25,7 @@ function useDarkMode() {
 
 function Navbar() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(() => {
-    try {
-      return getCurrentUser();
-    } catch (error) {
-      console.error('Error loading user from localStorage:', error);
-      // Clear corrupted data
-      localStorage.removeItem('user');
-      return null;
-    }
-  });
+  const { user, updateUser } = useAuth(); // Use centralized auth context
   const [showDropdown, setShowDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [totalUnreadMessages, setTotalUnreadMessages] = useState(0);
@@ -60,44 +52,23 @@ function Navbar() {
     }
   };
 
-  // Fetch current user data and sync quiet mode (only on mount, not continuously)
+  // Sync quiet mode from user data (only on mount)
   useEffect(() => {
-    // Only fetch if user is logged in
+    // Only sync if user is logged in
     if (!user) {
       return;
     }
 
-    const fetchUserData = async () => {
-      try {
-        const response = await api.get('/auth/me');
-        setUser(response.data);
-        // Update localStorage with fresh data
-        localStorage.setItem('user', JSON.stringify(response.data));
-
-        // Only sync quiet mode from backend on initial load if not already set locally
-        const localQuietMode = localStorage.getItem('quietMode');
-        if (localQuietMode === null) {
-          // First time loading - use backend value
-          const backendQuietMode = response.data.privacySettings?.quietModeEnabled || false;
-          setQuietMode(backendQuietMode);
-          localStorage.setItem('quietMode', backendQuietMode);
-          setQuietModeManager(backendQuietMode);
-        }
-        // If already set locally, don't override (user may have just toggled it)
-      } catch (error) {
-        // If 401, user session expired - stop polling
-        if (error.response?.status === 401) {
-          console.warn('Session expired - stopping user data polling');
-          return;
-        }
-        console.error('Failed to fetch user data:', error);
-      }
-    };
-
-    fetchUserData();
-    // Poll every 60 seconds to keep profile updated
-    const interval = setInterval(fetchUserData, 60000);
-    return () => clearInterval(interval);
+    // Only sync quiet mode from backend on initial load if not already set locally
+    const localQuietMode = localStorage.getItem('quietMode');
+    if (localQuietMode === null) {
+      // First time loading - use backend value
+      const backendQuietMode = user.privacySettings?.quietModeEnabled || false;
+      setQuietMode(backendQuietMode);
+      localStorage.setItem('quietMode', backendQuietMode);
+      setQuietModeManager(backendQuietMode);
+    }
+    // If already set locally, don't override (user may have just toggled it)
   }, [user]);
 
   // Fetch unread message counts

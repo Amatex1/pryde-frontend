@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { sendMessage, onNewMessage, onMessageSent, onUserOnline, onUserOffline, onOnlineUsers } from '../utils/socket';
 import { getUserChatColor, getSentMessageColor } from '../utils/chatColors';
 import { getDisplayName, getDisplayNameInitial } from '../utils/getDisplayName';
+import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import './MiniChat.css';
 
@@ -11,10 +12,10 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
   const [isLoading, setIsLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(false);
   const [lastSeen, setLastSeen] = useState(null);
-  const [currentUserData, setCurrentUserData] = useState(null);
   const [currentTheme, setCurrentTheme] = useState(document.documentElement.getAttribute('data-theme') || 'light');
   const messagesEndRef = useRef(null);
-  const currentUserId = localStorage.getItem('userId');
+  const { user: currentUserData } = useAuth(); // Use centralized auth context
+  const currentUserId = currentUserData?._id || currentUserData?.id;
 
   // Helper function to get image URL
   const getImageUrl = (path) => {
@@ -86,16 +87,6 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
   }, []);
 
   useEffect(() => {
-    // Fetch current user data
-    const fetchCurrentUser = async () => {
-      try {
-        const response = await api.get('/auth/me');
-        setCurrentUserData(response.data);
-      } catch (error) {
-        console.error('Error fetching current user:', error);
-      }
-    };
-
     // Fetch friend data for online status
     const fetchFriendData = async () => {
       try {
@@ -128,7 +119,6 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
     setMessages([]);
     setIsLoading(true);
 
-    fetchCurrentUser();
     fetchFriendData();
     fetchMessages();
 
