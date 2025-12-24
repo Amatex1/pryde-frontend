@@ -736,12 +736,12 @@ function Feed() {
         }
       });
 
-      // Validate response
-      if (!response.data || !response.data.media || response.data.media.length === 0) {
+      // Validate response - uploadMultipleWithProgress returns the JSON directly, not wrapped in .data
+      if (!response || !response.media || response.media.length === 0) {
         throw new Error('Upload succeeded but no media URLs returned');
       }
 
-      setSelectedMedia([...selectedMedia, ...response.data.media]);
+      setSelectedMedia([...selectedMedia, ...response.media]);
       showToast('Media uploaded successfully', 'success');
     } catch (error) {
       logger.error('Media upload failed:', error);

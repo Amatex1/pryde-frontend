@@ -81,13 +81,13 @@ function PhotoEssay() {
           }
         });
 
-        // Validate response
-        if (!response.data || !response.data.media || response.data.media.length === 0) {
+        // Validate response - uploadWithProgress returns the JSON directly, not wrapped in .data
+        if (!response || !response.media || response.media.length === 0) {
           throw new Error('Upload succeeded but no media URLs returned');
         }
 
         // Extract first media URL from response (post-media returns array)
-        const mediaUrl = response.data.media?.[0]?.url || response.data.url;
+        const mediaUrl = response.media?.[0]?.url || response.url;
 
         if (!mediaUrl) {
           throw new Error('No URL in upload response');
