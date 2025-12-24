@@ -33,6 +33,7 @@ function Navbar() {
   const [quietMode, setQuietMode] = useState(() => getQuietMode());
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
+  const intervalRef = useRef(null); // ✅ Prevent duplicate intervals in Strict Mode
 
   const handleLogout = () => {
     logout();
@@ -78,6 +79,12 @@ function Navbar() {
       return;
     }
 
+    // ✅ Prevent duplicate intervals in React Strict Mode
+    if (intervalRef.current) {
+      console.warn('[Navbar] Interval already exists, skipping duplicate setup');
+      return;
+    }
+
     const fetchUnreadCounts = async () => {
       try {
         const response = await api.get('/messages/unread/counts');
@@ -94,8 +101,14 @@ function Navbar() {
 
     fetchUnreadCounts();
     // Poll every 30 seconds
-    const interval = setInterval(fetchUnreadCounts, 30000);
-    return () => clearInterval(interval);
+    intervalRef.current = setInterval(fetchUnreadCounts, 30000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [user]);
 
   // Close dropdown when clicking outside

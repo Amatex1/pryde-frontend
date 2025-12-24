@@ -23,7 +23,7 @@
   align-items: center;
   border-bottom: 1px solid var(--border-subtle, #e0e0e0);
   background: var(--surface-primary, #ffffff);
-  z-index: 10;
+  z-index: var(--z-sticky);
   flex-shrink: 0;
   padding: 0 4px;
 }
@@ -94,7 +94,7 @@
   border-top: 1px solid var(--border-subtle, #e0e0e0);
   background: var(--surface-primary, #ffffff);
   padding-bottom: env(safe-area-inset-bottom);
-  z-index: 10;
+  z-index: var(--z-sticky);
   flex-shrink: 0;
 }
 

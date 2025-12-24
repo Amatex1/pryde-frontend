@@ -259,17 +259,19 @@ function Messages() {
 
       const fetchChatInfo = async () => {
         try {
+          // ✅ Clear previous chat info IMMEDIATELY when switching conversations
+          setSelectedUser(null);
+          setSelectedGroup(null);
+          setIsRecipientUnavailable(false);
+          setRecipientUnavailableReason('');
+
           if (selectedChatType === 'group') {
             const response = await api.get(`/groupchats/${selectedChat}`);
             setSelectedGroup(response.data);
-            setSelectedUser(null);
-            setIsRecipientUnavailable(false);
-            setRecipientUnavailableReason('');
           } else {
             const response = await api.get(`/users/${selectedChat}`);
             const user = response.data;
             setSelectedUser(user);
-            setSelectedGroup(null);
 
             // Check if recipient is unavailable for messaging
             const isDeleted = user.isDeleted === true;
@@ -290,6 +292,9 @@ function Messages() {
           }
         } catch (error) {
           logger.error('Error fetching chat info:', error);
+          // ✅ Clear state on error too
+          setSelectedUser(null);
+          setSelectedGroup(null);
         }
       };
 
@@ -297,6 +302,13 @@ function Messages() {
       setMessages([]);
       fetchMessages();
       fetchChatInfo();
+    } else {
+      // ✅ Clear everything when no chat is selected
+      setSelectedUser(null);
+      setSelectedGroup(null);
+      setMessages([]);
+      setIsRecipientUnavailable(false);
+      setRecipientUnavailableReason('');
     }
   }, [selectedChat, selectedChatType]);
 

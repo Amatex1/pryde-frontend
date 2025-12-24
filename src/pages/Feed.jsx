@@ -121,6 +121,7 @@ function Feed() {
   const listenersSetUpRef = useRef(false);
   const friendsIntervalRef = useRef(null); // Store interval ID for cleanup
   const autoSaveTimerRef = useRef(null); // Auto-save timer
+  const unreadCountsIntervalRef = useRef(null); // ✅ Prevent duplicate intervals in Strict Mode
 
   // Define all fetch functions BEFORE useEffects that use them
   const fetchPosts = useCallback(async (pageNum = 1, append = false) => {
@@ -360,15 +361,26 @@ function Feed() {
       setInitializing(false);
     });
 
+    // ✅ Prevent duplicate intervals in React Strict Mode
+    if (unreadCountsIntervalRef.current) {
+      logger.warn('[Feed] Unread counts interval already exists, skipping duplicate setup');
+      return () => {}; // Return empty cleanup
+    }
+
     // Poll for unread message counts every 30 seconds
-    const interval = setInterval(() => {
+    unreadCountsIntervalRef.current = setInterval(() => {
       fetchUnreadMessageCounts().catch(err => {
         logger.warn('Failed to fetch unread counts:', err);
       });
     }, 30000);
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      if (unreadCountsIntervalRef.current) {
+        clearInterval(unreadCountsIntervalRef.current);
+        unreadCountsIntervalRef.current = null;
+      }
+    };
+  }, [fetchUnreadMessageCounts]); // ✅ Add dependency to prevent stale closures
 
   // Restore localStorage draft on mount (fallback if backend draft fails)
   useEffect(() => {
