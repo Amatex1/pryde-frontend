@@ -292,9 +292,24 @@ function Messages() {
           }
         } catch (error) {
           logger.error('Error fetching chat info:', error);
-          // ✅ Clear state on error too
-          setSelectedUser(null);
-          setSelectedGroup(null);
+
+          // ✅ Handle 404 for deactivated/deleted users gracefully
+          if (error.response?.status === 404) {
+            // Set a generic placeholder user for deactivated/deleted accounts
+            setSelectedUser({
+              _id: selectedChat,
+              username: 'Deactivated User',
+              displayName: 'Deactivated User',
+              profilePhoto: null, // Will show default avatar
+              isDeleted: true
+            });
+            setIsRecipientUnavailable(true);
+            setRecipientUnavailableReason("This account is no longer available.");
+          } else {
+            // ✅ Clear state on other errors
+            setSelectedUser(null);
+            setSelectedGroup(null);
+          }
         }
       };
 

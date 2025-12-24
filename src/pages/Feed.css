@@ -244,15 +244,15 @@
 .btn-dropdown {
   background: var(--soft-lavender);
   border: 1px solid var(--border-light);
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   color: var(--text-main);
   cursor: pointer;
-  padding: 0.5rem 0.75rem;
+  padding: 0.35rem 0.5rem;
   border-radius: 50%;
   transition: all 0.2s ease;
   line-height: 1;
-  min-width: 40px;
-  min-height: 40px;
+  min-width: 32px;
+  min-height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -499,6 +499,21 @@
     flex-wrap: nowrap !important;
     flex-direction: row !important;
   }
+}
+
+/* New meta row for pronouns, date, and privacy */
+.post-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.post-time-inline {
+  color: var(--text-muted);
+  font-size: 0.875rem;
 }
 
 .author-name,

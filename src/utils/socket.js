@@ -56,13 +56,21 @@ export const connectSocket = (userId) => {
             timeout: 20000, // 20 second timeout for better stability
             forceNew: true, // Force new connection to use new token
             upgrade: true, // Allow upgrade to websocket after polling connects
-            withCredentials: true // Enable cookies for cross-origin
+            withCredentials: true, // Enable cookies for cross-origin
+            // ✅ Enhanced stability settings
+            autoConnect: true, // Auto-connect on initialization
+            randomizationFactor: 0.5, // Randomize reconnection delay to prevent thundering herd
+            closeOnBeforeunload: false, // Don't close on page navigation (better for SPA)
+            // ✅ Connection state recovery (matches server config)
+            ackTimeout: 10000, // 10 seconds - timeout for acknowledgements
+            retries: 3 // Number of retries for failed packets
         });
 
         // Add connection event listeners
         socket.on('connect', () => {
             logger.debug('✅ Socket connected successfully!');
             logger.debug('🔌 Transport:', socket.io.engine.transport.name);
+            logger.debug('🆔 Socket ID:', socket.id);
         });
 
         socket.on('connect_error', (error) => {
@@ -84,6 +92,32 @@ export const connectSocket = (userId) => {
                 logger.debug('🚫 Preventing reconnection - logout in progress');
                 socket.io.opts.reconnection = false;
             }
+        });
+
+        // ✅ Enhanced stability: Handle reconnection attempts
+        socket.io.on('reconnect_attempt', (attemptNumber) => {
+            logger.debug(`🔄 Reconnection attempt #${attemptNumber}`);
+        });
+
+        socket.io.on('reconnect', (attemptNumber) => {
+            logger.debug(`✅ Reconnected after ${attemptNumber} attempts`);
+        });
+
+        socket.io.on('reconnect_error', (error) => {
+            logger.error('❌ Reconnection error:', error.message);
+        });
+
+        socket.io.on('reconnect_failed', () => {
+            logger.error('❌ Reconnection failed - max attempts reached');
+        });
+
+        // ✅ Enhanced stability: Handle transport changes
+        socket.io.engine.on('upgrade', (transport) => {
+            logger.debug(`⬆️ Transport upgraded to: ${transport.name}`);
+        });
+
+        socket.io.engine.on('upgradeError', (error) => {
+            logger.warn('⚠️ Transport upgrade error:', error.message);
         });
 
         // Listen for force logout (session terminated from another device or manual logout)

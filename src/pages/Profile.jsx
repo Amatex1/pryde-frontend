@@ -1881,9 +1881,17 @@ function Profile() {
                             )}
                           </div>
                           <div className="author-info">
-                            <div className="author-name">{post.author?.displayName || post.author?.username}</div>
-                            <div className="post-time">
-                              {new Date(post.createdAt).toLocaleDateString()}
+                            <div className="author-name-row">
+                              <span className="author-name">{post.author?.displayName || post.author?.username}</span>
+                              {post.author?.isVerified && <span className="verified-badge" title="Verified">✓</span>}
+                            </div>
+                            <div className="post-meta-row">
+                              {post.author?.pronouns && (
+                                <span className="author-pronouns">({post.author.pronouns})</span>
+                              )}
+                              <span className="post-time-inline">
+                                {new Date(post.createdAt).toLocaleDateString()}
+                              </span>
                               {post.edited && (
                                 <button
                                   type="button"
