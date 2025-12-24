@@ -86,6 +86,10 @@ const AcceptableUse = lazyWithReload(() => import('./pages/legal/AcceptableUse')
 const CookiePolicy = lazyWithReload(() => import('./pages/legal/CookiePolicy'));
 const Helplines = lazyWithReload(() => import('./pages/legal/Helplines'));
 
+// Layout components - eager load for immediate layout switching
+import MobileLayout from './layouts/MobileLayout';
+import DesktopLayout from './layouts/DesktopLayout';
+
 // Loading fallback component with timeout
 const PageLoader = () => {
   const [showReload, setShowReload] = useState(false);
@@ -166,6 +170,19 @@ function App() {
   // Derived state for backward compatibility
   const isAuth = authStatus === AUTH_STATUS.AUTHENTICATED;
   const authLoading = authStatus === AUTH_STATUS.UNKNOWN;
+
+  // Detect mobile vs desktop for layout switching
+  const [isMobile, setIsMobile] = useState(
+    window.matchMedia('(max-width: 768px)').matches
+  );
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 768px)');
+    const handleResize = (e) => setIsMobile(e.matches);
+
+    mediaQuery.addEventListener('change', handleResize);
+    return () => mediaQuery.removeEventListener('change', handleResize);
+  }, []);
 
   useEffect(() => {
     // 🔥 PRE-WARM BACKEND: Wake backend immediately on app load
@@ -504,11 +521,13 @@ function App() {
 
                 <main id="main-content">
                   <Routes>
-            {/* Public Home Page - Redirect to feed if logged in */}
-            <Route path="/" element={
-              authLoading ? <PageLoader /> :
-              !isAuth ? <Home /> : <Navigate to="/feed" />
-            } />
+            {/* Layout wrapper - switches between mobile and desktop */}
+            <Route element={isMobile ? <MobileLayout /> : <DesktopLayout />}>
+              {/* Public Home Page - Redirect to feed if logged in */}
+              <Route path="/" element={
+                authLoading ? <PageLoader /> :
+                !isAuth ? <Home /> : <Navigate to="/feed" />
+              } />
 
             {/* Auth Pages - Don't redirect while loading */}
             <Route path="/login" element={
@@ -584,6 +603,8 @@ function App() {
           <Route path="/acceptable-use" element={<><AcceptableUse /><Footer /></>} />
           <Route path="/cookie-policy" element={<><CookiePolicy /><Footer /></>} />
           <Route path="/helplines" element={<><Helplines /><Footer /></>} />
+            </Route>
+            {/* End layout wrapper */}
           </Routes>
           </main>
 
