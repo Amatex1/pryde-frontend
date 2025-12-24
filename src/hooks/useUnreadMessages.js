@@ -19,7 +19,10 @@ import logger from '../utils/logger';
  */
 
 // Shared state across all hook instances (SINGLETON)
-let unreadCache = 0;
+let unreadCache = {
+  totalUnread: 0,
+  unreadByUser: []
+};
 let lastFetch = 0;
 const listeners = new Set();
 let globalInterval = null;
@@ -50,12 +53,16 @@ async function fetchUnread() {
     return;
   }
 
-  const newCount = data.count || 0;
+  const newData = {
+    totalUnread: data.totalUnread || 0,
+    unreadByUser: data.unreadByUser || []
+  };
 
-  // Only update if count changed
-  if (newCount !== unreadCache) {
-    unreadCache = newCount;
-    logger.debug(`[useUnreadMessages] Count updated: ${newCount}`);
+  // Only update if data changed
+  if (newData.totalUnread !== unreadCache.totalUnread ||
+      JSON.stringify(newData.unreadByUser) !== JSON.stringify(unreadCache.unreadByUser)) {
+    unreadCache = newData;
+    logger.debug(`[useUnreadMessages] Data updated:`, newData);
 
     // Notify all listeners
     listeners.forEach(fn => fn(unreadCache));
@@ -84,14 +91,15 @@ function stopPolling() {
 }
 
 /**
- * Hook to access unread message count
+ * Hook to access unread message data
+ * @returns {{ totalUnread: number, unreadByUser: Array }} Unread message data
  */
 export function useUnreadMessages() {
-  const [count, setCount] = useState(unreadCache);
+  const [data, setData] = useState(unreadCache);
 
   useEffect(() => {
     // Register listener
-    listeners.add(setCount);
+    listeners.add(setData);
     logger.debug(`[useUnreadMessages] Listener added (total: ${listeners.size})`);
 
     // Fetch immediately if cache is stale
@@ -104,7 +112,7 @@ export function useUnreadMessages() {
 
     return () => {
       // Unregister listener
-      listeners.delete(setCount);
+      listeners.delete(setData);
       logger.debug(`[useUnreadMessages] Listener removed (remaining: ${listeners.size})`);
 
       // Stop polling if no more listeners
@@ -114,7 +122,7 @@ export function useUnreadMessages() {
     };
   }, []);
 
-  return count;
+  return data;
 }
 
 /**

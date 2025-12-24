@@ -9,6 +9,7 @@ import api from '../utils/api';
 import { getTheme, toggleTheme as toggleThemeManager, getQuietMode, setQuietMode as setQuietModeManager } from '../utils/themeManager';
 import prydeLogo from '../assets/pryde-logo.png';
 import { useAuth } from '../context/AuthContext';
+import { useUnreadMessages } from '../hooks/useUnreadMessages'; // ✅ Use singleton hook
 import './Navbar.css';
 
 // Hook to get dark mode state using centralized theme manager
@@ -28,12 +29,13 @@ function Navbar() {
   const { user, updateUser } = useAuth(); // Use centralized auth context
   const [showDropdown, setShowDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [totalUnreadMessages, setTotalUnreadMessages] = useState(0);
   const [isDark, toggleDarkMode] = useDarkMode();
   const [quietMode, setQuietMode] = useState(() => getQuietMode());
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
-  const intervalRef = useRef(null); // ✅ Prevent duplicate intervals in Strict Mode
+
+  // ✅ Use singleton hook instead of creating own interval
+  const { totalUnread } = useUnreadMessages();
 
   const handleLogout = () => {
     logout();
@@ -70,45 +72,6 @@ function Navbar() {
       setQuietModeManager(backendQuietMode);
     }
     // If already set locally, don't override (user may have just toggled it)
-  }, [user]);
-
-  // Fetch unread message counts
-  useEffect(() => {
-    // Only fetch if user is logged in
-    if (!user) {
-      return;
-    }
-
-    // ✅ Prevent duplicate intervals in React Strict Mode
-    if (intervalRef.current) {
-      console.warn('[Navbar] Interval already exists, skipping duplicate setup');
-      return;
-    }
-
-    const fetchUnreadCounts = async () => {
-      try {
-        const response = await api.get('/messages/unread/counts');
-        setTotalUnreadMessages(response.data.totalUnread);
-      } catch (error) {
-        // If 401, user session expired - stop polling
-        if (error.response?.status === 401) {
-          console.warn('Session expired - stopping message count polling');
-          return;
-        }
-        console.error('Failed to fetch unread message counts:', error);
-      }
-    };
-
-    fetchUnreadCounts();
-    // Poll every 30 seconds
-    intervalRef.current = setInterval(fetchUnreadCounts, 30000);
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
   }, [user]);
 
   // Close dropdown when clicking outside
@@ -209,8 +172,8 @@ function Navbar() {
             <Link to="/messages" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
               <span className="mobile-menu-icon">💬</span>
               <span>Messages</span>
-              {totalUnreadMessages > 0 && (
-                <span className="mobile-menu-badge">{totalUnreadMessages}</span>
+              {totalUnread > 0 && (
+                <span className="mobile-menu-badge">{totalUnread}</span>
               )}
             </Link>
             <Link to="/notifications" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
@@ -303,8 +266,8 @@ function Navbar() {
           <Link to="/messages" className="nav-button" title="Messages">
             <span className="nav-icon">💬</span>
             <span className="nav-label">Messages</span>
-            {totalUnreadMessages > 0 && (
-              <span className="nav-badge">{totalUnreadMessages > 99 ? '99+' : totalUnreadMessages}</span>
+            {totalUnread > 0 && (
+              <span className="nav-badge">{totalUnread > 99 ? '99+' : totalUnread}</span>
             )}
           </Link>
           <NotificationBell />

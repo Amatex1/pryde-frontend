@@ -20,6 +20,7 @@ import DraftManager from '../components/DraftManager';
 import { useModal } from '../hooks/useModal';
 import { useOnlineUsers } from '../hooks/useOnlineUsers';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import { useUnreadMessages } from '../hooks/useUnreadMessages'; // ✅ Use singleton hook
 import api, { getCsrfToken } from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
@@ -77,8 +78,17 @@ function Feed() {
   const [editSharedWithUsers, setEditSharedWithUsers] = useState([]);
   const [friends, setFriends] = useState([]);
   const [friendSearchQuery, setFriendSearchQuery] = useState('');
-  const [unreadMessageCounts, setUnreadMessageCounts] = useState({});
   const [trending, setTrending] = useState([]);
+
+  // ✅ Use singleton hook for unread message counts
+  const { unreadByUser } = useUnreadMessages();
+
+  // Convert unreadByUser array to map format { userId: count }
+  const unreadMessageCounts = unreadByUser.reduce((acc, item) => {
+    acc[item.userId] = item.count;
+    return acc;
+  }, {});
+
   const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [reactionDetailsModal, setReactionDetailsModal] = useState({ isOpen: false, targetType: null, targetId: null });
@@ -121,7 +131,6 @@ function Feed() {
   const listenersSetUpRef = useRef(false);
   const friendsIntervalRef = useRef(null); // Store interval ID for cleanup
   const autoSaveTimerRef = useRef(null); // Auto-save timer
-  const unreadCountsIntervalRef = useRef(null); // ✅ Prevent duplicate intervals in Strict Mode
 
   // Define all fetch functions BEFORE useEffects that use them
   const fetchPosts = useCallback(async (pageNum = 1, append = false) => {
@@ -192,19 +201,6 @@ function Feed() {
       setBookmarkedPosts(response.data.bookmarks.map(post => post._id));
     } catch (error) {
       logger.error('Failed to fetch bookmarks:', error);
-    }
-  }, []);
-
-  const fetchUnreadMessageCounts = useCallback(async () => {
-    try {
-      const response = await api.get('/messages/unread/counts');
-      const countsMap = {};
-      response.data.unreadByUser.forEach(item => {
-        countsMap[item.userId] = item.count;
-      });
-      setUnreadMessageCounts(countsMap);
-    } catch (error) {
-      logger.error('Failed to fetch unread message counts:', error);
     }
   }, []);
 
@@ -342,13 +338,12 @@ function Feed() {
       fetchFriends(),
       fetchTrending(),
       fetchBookmarkedPosts(),
-      fetchUnreadMessageCounts(),
       fetchPrivacySettings()
     ]).then(results => {
       // Log any failures but don't block the app
       results.forEach((result, index) => {
         if (result.status === 'rejected') {
-          const names = ['posts', 'blocked users', 'friends', 'trending', 'bookmarks', 'unread counts', 'privacy settings'];
+          const names = ['posts', 'blocked users', 'friends', 'trending', 'bookmarks', 'privacy settings'];
           logger.warn(`Failed to load ${names[index]}:`, result.reason);
         }
       });
@@ -360,27 +355,7 @@ function Feed() {
       // Don't throw - let the app continue with partial data
       setInitializing(false);
     });
-
-    // ✅ Prevent duplicate intervals in React Strict Mode
-    if (unreadCountsIntervalRef.current) {
-      logger.warn('[Feed] Unread counts interval already exists, skipping duplicate setup');
-      return () => {}; // Return empty cleanup
-    }
-
-    // Poll for unread message counts every 30 seconds
-    unreadCountsIntervalRef.current = setInterval(() => {
-      fetchUnreadMessageCounts().catch(err => {
-        logger.warn('Failed to fetch unread counts:', err);
-      });
-    }, 30000);
-
-    return () => {
-      if (unreadCountsIntervalRef.current) {
-        clearInterval(unreadCountsIntervalRef.current);
-        unreadCountsIntervalRef.current = null;
-      }
-    };
-  }, [fetchUnreadMessageCounts]); // ✅ Add dependency to prevent stale closures
+  }, []); // ✅ No dependencies - only run once on mount
 
   // Restore localStorage draft on mount (fallback if backend draft fails)
   useEffect(() => {
