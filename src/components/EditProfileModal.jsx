@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
+import { compressAvatar, compressCoverPhoto } from '../utils/compressImage';
 import './EditProfileModal.css';
 
 function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
@@ -209,10 +210,23 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
     }
 
     setUploadingPhoto(true);
-    const formDataUpload = new FormData();
-    formDataUpload.append('photo', file);
 
     try {
+      // Compress image before upload
+      let compressedFile = file;
+      try {
+        if (type === 'profile') {
+          compressedFile = await compressAvatar(file);
+        } else {
+          compressedFile = await compressCoverPhoto(file);
+        }
+      } catch (error) {
+        console.warn('Image compression failed, using original:', error);
+      }
+
+      const formDataUpload = new FormData();
+      formDataUpload.append('photo', compressedFile);
+
       const endpoint = type === 'profile' ? '/upload/profile-photo' : '/upload/cover-photo';
       const response = await api.post(endpoint, formDataUpload, {
         headers: { 'Content-Type': 'multipart/form-data' }

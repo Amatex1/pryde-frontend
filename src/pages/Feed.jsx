@@ -26,6 +26,7 @@ import { getSocket, setupSocketListeners } from '../utils/socketHelpers';
 import { convertEmojiShortcuts } from '../utils/textFormatting';
 import { getDisplayName } from '../utils/getDisplayName';
 import logger from '../utils/logger';
+import { compressPostMedia } from '../utils/compressImage';
 import './Feed.css';
 
 function Feed() {
@@ -637,8 +638,24 @@ function Feed() {
 
     setUploadingMedia(true);
     try {
+      // Compress images before upload
+      const compressedFiles = await Promise.all(
+        files.map(async (file) => {
+          if (file.type.startsWith('image/')) {
+            try {
+              const compressed = await compressPostMedia(file);
+              return compressed;
+            } catch (error) {
+              logger.warn('Image compression failed, using original:', error);
+              return file;
+            }
+          }
+          return file; // Return videos/other files as-is
+        })
+      );
+
       const formData = new FormData();
-      files.forEach(file => {
+      compressedFiles.forEach(file => {
         formData.append('media', file);
       });
 

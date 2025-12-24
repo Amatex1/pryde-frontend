@@ -25,6 +25,7 @@ import {
   getSocket
 } from '../utils/socket';
 import { setupSocketListeners } from '../utils/socketHelpers';
+import { compressImage } from '../utils/compressImage';
 import './Messages.css';
 import '../styles/themes/messages.css';
 
@@ -493,8 +494,22 @@ function Messages() {
 
     setUploadingFile(true);
     try {
+      // Compress image before upload
+      let finalFile = file;
+      if (file.type.startsWith('image/')) {
+        try {
+          finalFile = await compressImage(file, {
+            maxWidth: 1920,
+            maxHeight: 1920,
+            quality: 0.85
+          });
+        } catch (error) {
+          logger.warn('Image compression failed, using original:', error);
+        }
+      }
+
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', finalFile);
 
       const response = await api.post('/upload/chat-attachment', formData, {
         headers: {
@@ -505,7 +520,13 @@ function Messages() {
       setSelectedFile({ url: response.data.url, name: file.name, type: file.type });
     } catch (error) {
       logger.error('File upload failed:', error);
-      showAlert('Failed to upload file. Please try again.', 'Upload Failed');
+
+      // Extract user-friendly error message
+      const errorMessage = error.response?.data?.message ||
+                          error.response?.data?.error ||
+                          'Failed to upload file. Please try again.';
+
+      showAlert(errorMessage, 'Upload Failed');
     } finally {
       setUploadingFile(false);
     }

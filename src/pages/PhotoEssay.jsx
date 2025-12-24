@@ -7,6 +7,7 @@ import { useToast } from '../hooks/useToast';
 import api, { getCsrfToken } from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
+import { compressPostMedia } from '../utils/compressImage';
 import './PhotoEssay.css';
 
 function PhotoEssay() {
@@ -50,8 +51,18 @@ function PhotoEssay() {
     setUploadingPhoto(true);
     try {
       for (const file of files) {
+        // Compress image before upload
+        let finalFile = file;
+        if (file.type.startsWith('image/')) {
+          try {
+            finalFile = await compressPostMedia(file);
+          } catch (error) {
+            console.warn('Image compression failed, using original:', error);
+          }
+        }
+
         const formData = new FormData();
-        formData.append('media', file);
+        formData.append('media', finalFile);
 
         // CRITICAL: Use correct upload endpoint for post media
         const response = await api.post('/upload/post-media', formData, {
