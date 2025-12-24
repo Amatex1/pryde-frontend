@@ -284,6 +284,7 @@
 .dropdown-item {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-md);
@@ -293,7 +294,7 @@
   border: none;
   background: transparent;
   width: 100%;
-  text-align: left;
+  text-align: center;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;

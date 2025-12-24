@@ -38,10 +38,10 @@ const NotificationBell = () => {
       return;
     }
 
-    const socket = getSocket();
-
     // ✅ Fetch once on mount (NO POLLING!)
     fetchNotifications();
+
+    const socket = getSocket();
 
     // ✅ Check if socket is available before setting up listeners
     if (!socket) {

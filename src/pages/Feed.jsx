@@ -1834,15 +1834,21 @@ function Feed() {
                               {post.author?.displayName || post.author?.username || 'User'}
                             </Link>
                             {post.author?.isVerified && <span className="verified-badge" title="Verified">✓</span>}
-                          </div>
-                          <div className="post-meta-row">
                             {post.author?.pronouns && (
                               <span className="author-pronouns">({post.author.pronouns})</span>
                             )}
                             <span className="post-time-inline">
                               {new Date(post.createdAt).toLocaleDateString()}
                             </span>
-                            {post.edited && (
+                            <span className="post-privacy-icon" title={`Visible to: ${post.visibility || 'followers'}`}>
+                              {post.visibility === 'public' ? '🌍' :
+                               post.visibility === 'private' ? '🔒' :
+                               post.visibility === 'followers' ? '👥' :
+                               post.visibility === 'friends' ? '👫' : '👥'}
+                            </span>
+                          </div>
+                          {post.edited && (
+                            <div className="post-edited-row">
                               <button
                                 type="button"
                                 className="edited-indicator-btn"
@@ -1854,14 +1860,8 @@ function Feed() {
                               >
                                 (edited)
                               </button>
-                            )}
-                            <span className="post-privacy-icon" title={`Visible to: ${post.visibility || 'followers'}`}>
-                              {post.visibility === 'public' ? '🌍' :
-                               post.visibility === 'private' ? '🔒' :
-                               post.visibility === 'followers' ? '👥' :
-                               post.visibility === 'friends' ? '👫' : '👥'}
-                            </span>
-                          </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="post-header-actions">

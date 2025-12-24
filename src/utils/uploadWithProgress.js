@@ -28,12 +28,16 @@ export function uploadWithProgress({
 
     xhr.open('POST', url);
 
+    // Enable credentials (cookies) for cross-origin requests
+    xhr.withCredentials = true;
+
     // Set headers
     if (token) {
       xhr.setRequestHeader('x-auth-token', token);
     }
     if (csrfToken) {
       xhr.setRequestHeader('X-CSRF-Token', csrfToken);
+      xhr.setRequestHeader('X-XSRF-TOKEN', csrfToken);
     }
 
     // Track upload progress
@@ -112,12 +116,16 @@ export function uploadMultipleWithProgress({
 
     xhr.open('POST', url);
 
+    // Enable credentials (cookies) for cross-origin requests
+    xhr.withCredentials = true;
+
     // Set headers
     if (token) {
       xhr.setRequestHeader('x-auth-token', token);
     }
     if (csrfToken) {
       xhr.setRequestHeader('X-CSRF-Token', csrfToken);
+      xhr.setRequestHeader('X-XSRF-TOKEN', csrfToken);
     }
 
     // Track upload progress

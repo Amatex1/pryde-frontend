@@ -487,8 +487,7 @@
   display: flex !important;
   align-items: center !important;
   gap: 0.5rem !important;
-  flex-wrap: nowrap !important;
-  white-space: nowrap !important;
+  flex-wrap: wrap !important;
   overflow: visible !important;
 }
 
@@ -496,23 +495,26 @@
 @supports (-webkit-appearance: none) {
   .author-name-row {
     display: inline-flex !important;
-    flex-wrap: nowrap !important;
+    flex-wrap: wrap !important;
     flex-direction: row !important;
   }
 }
 
-/* New meta row for pronouns, date, and privacy */
-.post-meta-row {
+/* Edited row for edited indicator */
+.post-edited-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
   color: var(--text-muted);
-  flex-wrap: wrap;
 }
 
 .post-time-inline {
   color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.post-privacy-icon {
   font-size: 0.875rem;
 }
 
@@ -532,6 +534,22 @@
   color: var(--text-muted);
   font-size: 0.875rem;
   font-weight: normal;
+}
+
+/* Add separator before pronouns */
+.author-pronouns::before {
+  content: '•';
+  margin-right: 0.5rem;
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+/* Add separator before timestamp */
+.post-time-inline::before {
+  content: '•';
+  margin-right: 0.5rem;
+  color: var(--text-muted);
+  opacity: 0.5;
 }
 
 .verified-badge {
@@ -1023,10 +1041,14 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 
 .post-content {
   margin-bottom: 1.5rem;
+  padding: 1rem;
   line-height: 1.6;
   color: var(--text-main);
   white-space: pre-wrap; /* Preserve line breaks and spaces */
   word-break: break-word; /* Break long words */
+  background: var(--bg-light);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
 }
 
 /* ========================================

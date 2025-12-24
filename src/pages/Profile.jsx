@@ -1884,15 +1884,18 @@ function Profile() {
                             <div className="author-name-row">
                               <span className="author-name">{post.author?.displayName || post.author?.username}</span>
                               {post.author?.isVerified && <span className="verified-badge" title="Verified">✓</span>}
-                            </div>
-                            <div className="post-meta-row">
                               {post.author?.pronouns && (
                                 <span className="author-pronouns">({post.author.pronouns})</span>
                               )}
                               <span className="post-time-inline">
                                 {new Date(post.createdAt).toLocaleDateString()}
                               </span>
-                              {post.edited && (
+                              <span className="post-privacy-icon" title={`Visible to: ${post.visibility || 'friends'}`}>
+                                {post.visibility === 'public' ? '🌍' : post.visibility === 'private' ? '🔒' : '👥'}
+                              </span>
+                            </div>
+                            {post.edited && (
+                              <div className="post-edited-row">
                                 <button
                                   type="button"
                                   className="edited-indicator-btn"
@@ -1904,11 +1907,8 @@ function Profile() {
                                 >
                                   (edited)
                                 </button>
-                              )}
-                              <span className="post-privacy-icon" title={`Visible to: ${post.visibility || 'friends'}`}>
-                                {post.visibility === 'public' ? '🌍' : post.visibility === 'private' ? '🔒' : '👥'}
-                              </span>
-                            </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="post-header-actions">
