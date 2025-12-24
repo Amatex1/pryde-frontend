@@ -14,6 +14,7 @@ const NotificationBell = () => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const user = getCurrentUser();
+  const userId = user?.id; // Extract userId to use as dependency
 
   // NOTE: Push notification subscription is now handled in Settings page
   // where users can explicitly enable/disable notifications with a user gesture.
@@ -34,7 +35,7 @@ const NotificationBell = () => {
 
   useEffect(() => {
     // Only fetch if user is logged in
-    if (!user) {
+    if (!userId) {
       return;
     }
 
@@ -95,7 +96,7 @@ const NotificationBell = () => {
         socket.off('notification:deleted', handleNotificationDeleted);
       }
     };
-  }, [user]);
+  }, [userId]); // ✅ Use userId instead of user object to prevent infinite loop
 
   useEffect(() => {
     const handleClickOutside = (event) => {
