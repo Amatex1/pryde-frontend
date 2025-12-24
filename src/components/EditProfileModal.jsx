@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import { compressAvatar, compressCoverPhoto } from '../utils/compressImage';
+import { uploadWithProgress } from '../utils/uploadWithProgress';
 import './EditProfileModal.css';
 
 function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
@@ -34,6 +35,7 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
   const [newSocialLink, setNewSocialLink] = useState({ platform: '', url: '' });
   const [loading, setLoading] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [locationSuggestions, setLocationSuggestions] = useState([]);
 
   // Photo positioning and zoom state
@@ -210,6 +212,7 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
     }
 
     setUploadingPhoto(true);
+    setUploadProgress(0);
 
     try {
       // Compress image before upload
@@ -224,25 +227,29 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
         console.warn('Image compression failed, using original:', error);
       }
 
-      const formDataUpload = new FormData();
-      formDataUpload.append('photo', compressedFile);
-
       const endpoint = type === 'profile' ? '/upload/profile-photo' : '/upload/cover-photo';
-      const response = await api.post(endpoint, formDataUpload, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+
+      // Upload with progress tracking
+      const response = await uploadWithProgress({
+        url: `${api.defaults.baseURL}${endpoint}`,
+        file: compressedFile,
+        fieldName: 'photo',
+        onProgress: (percent) => {
+          setUploadProgress(percent);
+        }
       });
 
       // Validate response
-      if (!response.data || !response.data.url) {
+      if (!response || !response.url) {
         throw new Error('Upload succeeded but no URL returned');
       }
 
       if (type === 'profile') {
-        setFormData(prev => ({ ...prev, profilePhoto: response.data.url }));
+        setFormData(prev => ({ ...prev, profilePhoto: response.url }));
         // Reset avatar position for new photo
         setAvatarPos({ x: 0, y: 0, scale: 1 });
       } else {
-        setFormData(prev => ({ ...prev, coverPhoto: response.data.url }));
+        setFormData(prev => ({ ...prev, coverPhoto: response.url }));
         // Reset cover position for new photo
         setCoverPos({ x: 0, y: 0, scale: 1 });
       }
@@ -250,13 +257,13 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
       console.error('Failed to upload photo:', error);
 
       // Extract user-friendly error message
-      const errorMessage = error.response?.data?.message ||
-                          error.response?.data?.error ||
+      const errorMessage = error.message ||
                           'Image upload failed. Please try again or use a smaller image.';
 
       alert(errorMessage);
     } finally {
       setUploadingPhoto(false);
+      setUploadProgress(0);
     }
   };
 
@@ -358,6 +365,11 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                         disabled={uploadingPhoto}
                         style={{ marginTop: '8px' }}
                       />
+                      {uploadingPhoto && (
+                        <div className="upload-progress" style={{ marginTop: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                          Uploading... {uploadProgress}%
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -415,6 +427,11 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                         disabled={uploadingPhoto}
                         style={{ marginTop: '8px' }}
                       />
+                      {uploadingPhoto && (
+                        <div className="upload-progress" style={{ marginTop: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                          Uploading... {uploadProgress}%
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

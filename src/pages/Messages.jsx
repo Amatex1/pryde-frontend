@@ -26,6 +26,7 @@ import {
 } from '../utils/socket';
 import { setupSocketListeners } from '../utils/socketHelpers';
 import { compressImage } from '../utils/compressImage';
+import { uploadWithProgress } from '../utils/uploadWithProgress';
 import './Messages.css';
 import '../styles/themes/messages.css';
 
@@ -81,6 +82,7 @@ function Messages() {
   const [currentTheme, setCurrentTheme] = useState(document.documentElement.getAttribute('data-theme') || 'light');
   const [quietMode, setQuietMode] = useState(document.documentElement.getAttribute('data-quiet-mode') === 'true');
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState(null);
   const [showGifPicker, setShowGifPicker] = useState(false);
   const [selectedGif, setSelectedGif] = useState(null);
@@ -493,6 +495,7 @@ function Messages() {
     }
 
     setUploadingFile(true);
+    setUploadProgress(0);
     try {
       // Compress image before upload
       let finalFile = file;
@@ -508,27 +511,28 @@ function Messages() {
         }
       }
 
-      const formData = new FormData();
-      formData.append('file', finalFile);
-
-      const response = await api.post('/upload/chat-attachment', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      // Upload with progress tracking
+      const response = await uploadWithProgress({
+        url: `${api.defaults.baseURL}/upload/chat-attachment`,
+        file: finalFile,
+        fieldName: 'file',
+        onProgress: (percent) => {
+          setUploadProgress(percent);
         }
       });
 
-      setSelectedFile({ url: response.data.url, name: file.name, type: file.type });
+      setSelectedFile({ url: response.url, name: file.name, type: file.type });
     } catch (error) {
       logger.error('File upload failed:', error);
 
       // Extract user-friendly error message
-      const errorMessage = error.response?.data?.message ||
-                          error.response?.data?.error ||
+      const errorMessage = error.message ||
                           'Failed to upload file. Please try again.';
 
       showAlert(errorMessage, 'Upload Failed');
     } finally {
       setUploadingFile(false);
+      setUploadProgress(0);
     }
   };
 
@@ -1485,9 +1489,9 @@ function Messages() {
                       className="btn-attachment"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={uploadingFile || selectedGif || isRecipientUnavailable}
-                      title="Attach file"
+                      title={uploadingFile ? `Uploading... ${uploadProgress}%` : "Attach file"}
                     >
-                      {uploadingFile ? '⏳' : '📎'}
+                      {uploadingFile ? `⏳ ${uploadProgress}%` : '📎'}
                     </button>
                     <button
                       type="button"

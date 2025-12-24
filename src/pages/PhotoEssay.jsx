@@ -8,6 +8,7 @@ import api, { getCsrfToken } from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
 import { compressPostMedia } from '../utils/compressImage';
+import { uploadWithProgress } from '../utils/uploadWithProgress';
 import './PhotoEssay.css';
 
 function PhotoEssay() {
@@ -19,6 +20,7 @@ function PhotoEssay() {
   const [visibility, setVisibility] = useState('public');
   const [loading, setLoading] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [editMode, setEditMode] = useState(false);
   const [showDraftManager, setShowDraftManager] = useState(false);
   const [currentDraftId, setCurrentDraftId] = useState(null);
@@ -49,8 +51,14 @@ function PhotoEssay() {
     if (files.length === 0) return;
 
     setUploadingPhoto(true);
+    setUploadProgress(0);
     try {
-      for (const file of files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+
+        // Update progress for current file
+        const baseProgress = Math.floor((i / files.length) * 100);
+
         // Compress image before upload
         let finalFile = file;
         if (file.type.startsWith('image/')) {
@@ -61,12 +69,16 @@ function PhotoEssay() {
           }
         }
 
-        const formData = new FormData();
-        formData.append('media', finalFile);
-
-        // CRITICAL: Use correct upload endpoint for post media
-        const response = await api.post('/upload/post-media', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+        // Upload with progress tracking
+        const response = await uploadWithProgress({
+          url: `${api.defaults.baseURL}/upload/post-media`,
+          file: finalFile,
+          fieldName: 'media',
+          onProgress: (percent) => {
+            // Calculate overall progress across all files
+            const fileProgress = Math.floor(percent / files.length);
+            setUploadProgress(baseProgress + fileProgress);
+          }
         });
 
         // Validate response
@@ -88,13 +100,13 @@ function PhotoEssay() {
       console.error('Failed to upload photos:', error);
 
       // Extract user-friendly error message
-      const errorMessage = error.response?.data?.message ||
-                          error.response?.data?.error ||
+      const errorMessage = error.message ||
                           'Image upload failed. Please try again or use a smaller image.';
 
       showToast(errorMessage, 'error');
     } finally {
       setUploadingPhoto(false);
+      setUploadProgress(0);
     }
   };
 
@@ -249,7 +261,7 @@ function PhotoEssay() {
                   disabled={uploadingPhoto}
                   style={{ display: 'none' }}
                 />
-                {uploadingPhoto ? '⏳ Uploading...' : '📷 Add Photos'}
+                {uploadingPhoto ? `⏳ Uploading... ${uploadProgress}%` : '📷 Add Photos'}
               </label>
             </div>
 

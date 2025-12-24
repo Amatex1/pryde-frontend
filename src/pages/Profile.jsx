@@ -27,6 +27,7 @@ import { setupSocketListeners } from '../utils/socketHelpers';
 import logger from '../utils/logger';
 import { sanitizeBio, sanitizeURL, sanitizeText } from '../utils/sanitize';
 import { compressPostMedia } from '../utils/compressImage';
+import { uploadMultipleWithProgress } from '../utils/uploadWithProgress';
 import './Profile.css';
 
 function Profile() {
@@ -71,6 +72,7 @@ function Profile() {
   const [newPost, setNewPost] = useState('');
   const [selectedMedia, setSelectedMedia] = useState([]);
   const [uploadingMedia, setUploadingMedia] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [postVisibility, setPostVisibility] = useState('followers');
   const [contentWarning, setContentWarning] = useState('');
   const [showContentWarning, setShowContentWarning] = useState(false);
@@ -566,6 +568,7 @@ function Profile() {
     }
 
     setUploadingMedia(true);
+    setUploadProgress(0);
     try {
       // Compress images before upload
       const compressedFiles = await Promise.all(
@@ -583,14 +586,13 @@ function Profile() {
         })
       );
 
-      const formData = new FormData();
-      compressedFiles.forEach(file => {
-        formData.append('media', file);
-      });
-
-      const response = await api.post('/upload/post-media', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      // Upload with progress tracking
+      const response = await uploadMultipleWithProgress({
+        url: `${api.defaults.baseURL}/upload/post-media`,
+        files: compressedFiles,
+        fieldName: 'media',
+        onProgress: (percent) => {
+          setUploadProgress(percent);
         }
       });
 
@@ -605,13 +607,13 @@ function Profile() {
       logger.error('Failed to upload media:', error);
 
       // Extract user-friendly error message
-      const errorMessage = error.response?.data?.message ||
-                          error.response?.data?.error ||
+      const errorMessage = error.message ||
                           'Image upload failed. Please try again or use a smaller image.';
 
       showAlert(errorMessage, 'Upload Failed');
     } finally {
       setUploadingMedia(false);
+      setUploadProgress(0);
     }
   };
 
@@ -1756,7 +1758,7 @@ function Profile() {
                         disabled={uploadingMedia || selectedMedia.length >= 3}
                         style={{ display: 'none' }}
                       />
-                      {uploadingMedia ? '⏳ Uploading...' : '📷 Add Photos/Videos'}
+                      {uploadingMedia ? `⏳ Uploading... ${uploadProgress}%` : '📷 Add Photos/Videos'}
                     </label>
 
                     <button
