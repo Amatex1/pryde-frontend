@@ -35,8 +35,97 @@
   .notification-card,
   .event-card {
     border-radius: 10px !important; /* Soft corners */
-    padding: 14px 16px !important; /* Reduced vertical weight */
-    margin-bottom: 12px !important; /* Consistent spacing */
+    padding: 10px 12px !important; /* More compact for mobile */
+    margin-bottom: 8px !important; /* Tighter spacing */
+  }
+
+  /* ========================================
+     MOBILE POST HEADER - COMPACT LAYOUT
+     ======================================== */
+
+  /* Make post header more compact on mobile */
+  .post-header {
+    margin-bottom: 8px !important;
+    gap: 8px !important;
+  }
+
+  /* Reduce avatar size on mobile */
+  .post-author .author-avatar,
+  .post-author-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+
+  /* Compact author info layout */
+  .author-info {
+    gap: 2px !important;
+  }
+
+  /* Make author name row more compact and inline */
+  .author-name-row {
+    gap: 6px !important;
+    font-size: 14px !important;
+    line-height: 1.3 !important;
+  }
+
+  /* Move three dots menu next to pronouns */
+  .post-header {
+    display: grid !important;
+    grid-template-columns: auto 1fr auto !important;
+    align-items: start !important;
+  }
+
+  .post-author {
+    grid-column: 1 / 3 !important;
+    gap: 10px !important;
+  }
+
+  .post-header-actions {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    align-self: start !important;
+    margin-top: 0 !important;
+  }
+
+  /* Make dropdown button smaller on mobile */
+  .btn-dropdown {
+    min-width: 28px !important;
+    min-height: 28px !important;
+    padding: 4px !important;
+    font-size: 18px !important;
+  }
+
+  /* Compact timestamp and pronouns */
+  .author-pronouns,
+  .post-time-inline {
+    font-size: 12px !important;
+  }
+
+  /* Remove separators on mobile for cleaner look */
+  .author-pronouns::before,
+  .post-time-inline::before {
+    display: none !important;
+  }
+
+  /* Stack name, pronouns, and timestamp more compactly */
+  .author-name-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+  }
+
+  .author-name {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+  }
+
+  .verified-badge {
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 10px !important;
+    margin-left: 4px !important;
   }
 
   /* ========================================
@@ -87,13 +176,83 @@
   }
 
   /* ========================================
+     MOBILE POST ACTIONS - COMPACT LAYOUT
+     ======================================== */
+
+  /* Make post actions more compact */
+  .post-actions {
+    gap: 12px !important;
+    padding-top: 8px !important;
+  }
+
+  /* Compact action buttons */
+  .action-btn {
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+    gap: 6px !important;
+  }
+
+  /* Make reaction button container inline */
+  .reaction-button-container {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+
+  /* Position reaction count next to button */
+  .reaction-count {
+    position: static !important;
+    margin-left: 0 !important;
+    font-size: 13px !important;
+    padding: 4px 8px !important;
+  }
+
+  /* Compact reaction button */
+  .reaction-button {
+    min-width: 36px !important;
+    min-height: 36px !important;
+    font-size: 18px !important;
+    padding: 6px !important;
+  }
+
+  /* Compact reaction picker */
+  .reaction-picker {
+    bottom: 100% !important;
+    margin-bottom: 8px !important;
+    padding: 6px !important;
+    gap: 6px !important;
+  }
+
+  .reaction-emoji {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 20px !important;
+  }
+
+  /* ========================================
+     POST CONTENT - LESS BULKY
+     ======================================== */
+
+  /* Reduce post content padding */
+  .post-content {
+    padding: 8px 10px !important;
+    margin-bottom: 10px !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Compact post media */
+  .post-media {
+    margin: 8px 0 !important;
+  }
+
+  /* ========================================
      BUTTONS - TOUCH-FRIENDLY
      ======================================== */
 
   /* All buttons must be at least 44x44px (Apple HIG) */
   button,
   .btn,
-  .action-btn,
   .pryde-btn,
   a.button,
   input[type="button"],
@@ -104,6 +263,14 @@
     font-size: 15px !important;
     border-radius: 12px !important;
     touch-action: manipulation; /* Prevent double-tap zoom */
+  }
+
+  /* Exception for action buttons - they can be smaller */
+  .action-btn {
+    min-height: 36px !important;
+    min-width: auto !important;
+    padding: 6px 10px !important;
+    font-size: 13px !important;
   }
 
   /* Icon buttons */
