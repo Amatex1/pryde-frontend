@@ -98,12 +98,23 @@ function PhotoEssay() {
       showToast('Photos uploaded successfully', 'success');
     } catch (error) {
       console.error('Failed to upload photos:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        response: error.response
+      });
 
       // Extract user-friendly error message
       const errorMessage = error.message ||
                           'Image upload failed. Please try again or use a smaller image.';
 
-      showToast(errorMessage, 'error');
+      // Safely call showToast
+      try {
+        showToast(errorMessage, 'error');
+      } catch (toastError) {
+        console.error('Failed to show toast:', toastError);
+        alert(errorMessage); // Fallback to alert
+      }
     } finally {
       setUploadingPhoto(false);
       setUploadProgress(0);
