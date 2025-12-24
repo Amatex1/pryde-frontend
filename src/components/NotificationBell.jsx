@@ -43,6 +43,12 @@ const NotificationBell = () => {
     // ✅ Fetch once on mount (NO POLLING!)
     fetchNotifications();
 
+    // ✅ Check if socket is available before setting up listeners
+    if (!socket) {
+      logger.debug('⏳ Socket not initialized yet, skipping notification listeners');
+      return;
+    }
+
     // ✅ Listen for real-time notification events
     const handleNewNotification = (data) => {
       logger.debug('🔔 Real-time notification received:', data);
@@ -82,10 +88,12 @@ const NotificationBell = () => {
     socket.on('notification:deleted', handleNotificationDeleted);
 
     return () => {
-      socket.off('notification:new', handleNewNotification);
-      socket.off('notification:read', handleNotificationRead);
-      socket.off('notification:read_all', handleNotificationReadAll);
-      socket.off('notification:deleted', handleNotificationDeleted);
+      if (socket && typeof socket.off === 'function') {
+        socket.off('notification:new', handleNewNotification);
+        socket.off('notification:read', handleNotificationRead);
+        socket.off('notification:read_all', handleNotificationReadAll);
+        socket.off('notification:deleted', handleNotificationDeleted);
+      }
     };
   }, [user]);
 
