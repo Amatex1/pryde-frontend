@@ -375,47 +375,38 @@ function App() {
       }
     });
 
-    // 🔄 Start version checking for auto-refresh on new deployments
-    // This will check every 5 minutes and prompt user to refresh if new version is available
-    startVersionCheck();
+    // ✅ FIXED: Use ONLY ONE version checker (backend API)
+    // Removed duplicate startVersionCheck() to prevent banner spam
 
     // Expose checkForUpdate globally for testing in console
     // Usage: window.checkForUpdate()
     window.checkForUpdate = checkForUpdate;
 
-    // 🆕 New version checker - checks backend API endpoint
     // Subscribe to update notifications
     const unsubscribe = useUpdateStore(setUpdateAvailable);
 
     // Check immediately on load
     checkVersion();
 
-    // Check every 60 seconds
-    const versionCheckInterval = setInterval(checkVersion, 60000);
+    // ✅ FIXED: Reduced from 60s to 5 minutes to prevent spam
+    const versionCheckInterval = setInterval(checkVersion, 5 * 60 * 1000); // 5 minutes
 
-    // Check on window focus
-    const onFocus = () => checkVersion();
+    // ✅ FIXED: Debounced focus check to prevent rapid checks
+    let focusTimeout;
+    const onFocus = () => {
+      clearTimeout(focusTimeout);
+      focusTimeout = setTimeout(checkVersion, 2000); // Wait 2s after focus
+    };
     window.addEventListener('focus', onFocus);
 
-    // Check on visibility change
-    const onVisible = () => {
-      if (document.visibilityState === 'visible') {
-        checkVersion();
-      }
-    };
-    document.addEventListener('visibilitychange', onVisible);
-
-    // Check when coming back online
-    const onOnline = () => checkVersion();
-    window.addEventListener('online', onOnline);
+    // ✅ REMOVED: visibility and online checks - redundant with focus check
 
     // Cleanup
     return () => {
+      clearTimeout(focusTimeout);
       unsubscribe();
       clearInterval(versionCheckInterval);
       window.removeEventListener('focus', onFocus);
-      document.removeEventListener('visibilitychange', onVisible);
-      window.removeEventListener('online', onOnline);
     };
 
     // Initialize Quiet Mode globally - only when authenticated

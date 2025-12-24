@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import { getCurrentUser } from '../utils/auth';
+import { getSocket } from '../utils/socket';
+import logger from '../utils/logger';
 import './NotificationBell.css';
 
 const NotificationBell = () => {
@@ -10,7 +12,6 @@ const NotificationBell = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
-  const intervalRef = useRef(null); // ✅ Prevent duplicate intervals
   const navigate = useNavigate();
   const user = getCurrentUser();
 
@@ -37,23 +38,56 @@ const NotificationBell = () => {
       return;
     }
 
-    // ✅ Prevent duplicate intervals in React Strict Mode
-    if (intervalRef.current) {
-      console.warn('[NotificationBell] Interval already exists, skipping duplicate setup');
-      return;
-    }
+    const socket = getSocket();
 
+    // ✅ Fetch once on mount (NO POLLING!)
     fetchNotifications();
-    // Poll for new notifications every 30 seconds
-    intervalRef.current = setInterval(fetchNotifications, 30000);
+
+    // ✅ Listen for real-time notification events
+    const handleNewNotification = (data) => {
+      logger.debug('🔔 Real-time notification received:', data);
+
+      // Filter out message notifications
+      if (data.notification.type === 'message') {
+        return;
+      }
+
+      setNotifications(prev => [data.notification, ...prev].slice(0, 10));
+      setUnreadCount(prev => prev + 1);
+    };
+
+    const handleNotificationRead = (data) => {
+      logger.debug('✅ Notification marked as read:', data);
+      setNotifications(prev =>
+        prev.map(n => n._id === data.notificationId ? { ...n, read: true } : n)
+      );
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    };
+
+    const handleNotificationReadAll = () => {
+      logger.debug('✅ All notifications marked as read');
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      setUnreadCount(0);
+    };
+
+    const handleNotificationDeleted = (data) => {
+      logger.debug('🗑️ Notification deleted:', data);
+      setNotifications(prev => prev.filter(n => n._id !== data.notificationId));
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    };
+
+    socket.on('notification:new', handleNewNotification);
+    socket.on('notification:read', handleNotificationRead);
+    socket.on('notification:read_all', handleNotificationReadAll);
+    socket.on('notification:deleted', handleNotificationDeleted);
 
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
+      socket.off('notification:new', handleNewNotification);
+      socket.off('notification:read', handleNotificationRead);
+      socket.off('notification:read_all', handleNotificationReadAll);
+      socket.off('notification:deleted', handleNotificationDeleted);
     };
-  }, [user]); // ✅ Added user dependency
+  }, [user]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

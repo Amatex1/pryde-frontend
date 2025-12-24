@@ -129,7 +129,6 @@ function Feed() {
   const postRefs = useRef({});
   const commentRefs = useRef({});
   const listenersSetUpRef = useRef(false);
-  const friendsIntervalRef = useRef(null); // Store interval ID for cleanup
   const autoSaveTimerRef = useRef(null); // Auto-save timer
 
   // Define all fetch functions BEFORE useEffects that use them
@@ -636,19 +635,41 @@ function Feed() {
     // Use shared socket helper with retry logic
     const cancelSocketRetry = setupSocketListeners((socket) => {
       setupListeners(socket);
+
+      // ✅ Listen for friend update events (NO POLLING!)
+      const handleFriendAdded = () => {
+        logger.debug('👥 Friend added - refreshing friend list');
+        fetchFriends();
+      };
+
+      const handleFriendRemoved = () => {
+        logger.debug('👥 Friend removed - refreshing friend list');
+        fetchFriends();
+      };
+
+      const handleFriendRequestReceived = () => {
+        logger.debug('👥 Friend request received - refreshing friend list');
+        fetchFriends();
+      };
+
+      socket.on('friend:added', handleFriendAdded);
+      socket.on('friend:removed', handleFriendRemoved);
+      socket.on('friend:request_received', handleFriendRequestReceived);
+
+      // Add cleanup for friend events
+      cleanupFunctions.push(() => {
+        socket.off('friend:added', handleFriendAdded);
+        socket.off('friend:removed', handleFriendRemoved);
+        socket.off('friend:request_received', handleFriendRequestReceived);
+      });
     });
 
-    // Refresh friends list every 30 seconds
-    friendsIntervalRef.current = setInterval(fetchFriends, 30000);
+    // ✅ REMOVED: Friend list polling interval - now using Socket.IO events!
 
     return () => {
       // Cancel pending socket retries
       cancelSocketRetry();
 
-      if (friendsIntervalRef.current) {
-        clearInterval(friendsIntervalRef.current);
-        friendsIntervalRef.current = null;
-      }
       // Clean up all socket listeners
       cleanupFunctions.forEach(cleanup => cleanup?.());
       // DON'T reset the flag - keep it true to prevent duplicate setup in React Strict Mode

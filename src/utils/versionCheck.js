@@ -51,6 +51,14 @@ export const isNewVersionAvailable = () => {
  * Show a toast notification prompting user to refresh
  */
 export const promptUserToRefresh = () => {
+  // ✅ Check if user already dismissed this version
+  const dismissed = localStorage.getItem('version_update_dismissed');
+  const currentVersion = getCurrentBuildVersion();
+  if (dismissed === currentVersion) {
+    console.log('⏰ User already dismissed this version update');
+    return;
+  }
+
   // Prevent duplicate toasts
   const existingToast = document.getElementById('version-update-toast');
   if (existingToast) {
@@ -178,6 +186,8 @@ export const promptUserToRefresh = () => {
     if (refreshLaterBtn) {
       refreshLaterBtn.addEventListener('click', () => {
         console.log('⏰ User chose to refresh later');
+        // ✅ Store dismissed version to prevent showing again
+        localStorage.setItem('version_update_dismissed', getCurrentBuildVersion());
         toast.remove();
       });
     }
