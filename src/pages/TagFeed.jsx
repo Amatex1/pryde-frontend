@@ -10,6 +10,7 @@ import OptimizedImage from '../components/OptimizedImage';
 import api from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
+import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
 import './TagFeed.css';
 
 function TagFeed() {
@@ -28,6 +29,23 @@ function TagFeed() {
   useEffect(() => {
     fetchTagAndPosts();
   }, [slug]);
+
+  // Restore localStorage draft on mount
+  useEffect(() => {
+    const draftKey = `tag-feed-${slug}`;
+    const localDraft = loadDraft(draftKey);
+    if (localDraft) {
+      setNewPost(localDraft);
+    }
+  }, [slug]);
+
+  // Auto-save draft to localStorage
+  useEffect(() => {
+    if (newPost) {
+      const draftKey = `tag-feed-${slug}`;
+      saveDraft(draftKey, newPost);
+    }
+  }, [newPost, slug]);
 
   const fetchTagAndPosts = async () => {
     try {
@@ -81,6 +99,10 @@ function TagFeed() {
 
       // Update tag post count
       setTag(prev => prev ? { ...prev, postCount: prev.postCount + 1 } : prev);
+
+      // Clear localStorage draft
+      const draftKey = `tag-feed-${slug}`;
+      clearDraft(draftKey);
 
       setNewPost('');
     } catch (error) {

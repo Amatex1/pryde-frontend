@@ -111,6 +111,15 @@ export const logout = async () => {
   localStorage.removeItem('user');
   sessionStorage.clear();
 
+  // Clear all draft data
+  try {
+    const { clearAllDrafts } = await import('./draftStore');
+    clearAllDrafts();
+    console.log('🗑️ Cleared all draft data on logout');
+  } catch (error) {
+    console.error('Failed to clear drafts:', error);
+  }
+
   // Immediately redirect to login to prevent flash of protected content
   window.location.href = '/login';
 };

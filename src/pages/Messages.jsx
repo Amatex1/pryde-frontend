@@ -27,6 +27,7 @@ import {
 import { setupSocketListeners } from '../utils/socketHelpers';
 import { compressImage } from '../utils/compressImage';
 import { uploadWithProgress } from '../utils/uploadWithProgress';
+import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
 import './Messages.css';
 import '../styles/themes/messages.css';
 
@@ -458,6 +459,10 @@ function Messages() {
           contentWarning: contentWarning
         });
       }
+      // Clear localStorage draft
+      const draftKey = `message-${selectedChatType}-${selectedChat}`;
+      clearDraft(draftKey);
+
       setMessage('');
       setSelectedFile(null);
       setSelectedGif(null);
@@ -546,6 +551,12 @@ function Messages() {
   const handleTyping = (e) => {
     setMessage(e.target.value);
 
+    // Auto-save message draft
+    if (selectedChat && e.target.value) {
+      const draftKey = `message-${selectedChatType}-${selectedChat}`;
+      saveDraft(draftKey, e.target.value);
+    }
+
     if (!selectedChat || !currentUser) return;
 
     // Emit typing indicator
@@ -562,10 +573,35 @@ function Messages() {
     }, 1000);
   };
 
+  // Restore message draft when chat changes
+  useEffect(() => {
+    if (selectedChat) {
+      const draftKey = `message-${selectedChatType}-${selectedChat}`;
+      const localDraft = loadDraft(draftKey);
+      if (localDraft) {
+        setMessage(localDraft);
+      } else {
+        setMessage('');
+      }
+    }
+  }, [selectedChat, selectedChatType]);
+
   const handleEditMessage = (messageId, content) => {
     setEditingMessageId(messageId);
-    setEditMessageText(content);
+
+    // Try to restore draft first, otherwise use original content
+    const draftKey = `edit-message-${messageId}`;
+    const localDraft = loadDraft(draftKey);
+    setEditMessageText(localDraft || content);
   };
+
+  // Auto-save message edit draft
+  useEffect(() => {
+    if (editingMessageId && editMessageText) {
+      const draftKey = `edit-message-${editingMessageId}`;
+      saveDraft(draftKey, editMessageText);
+    }
+  }, [editMessageText, editingMessageId]);
 
   const handleSaveEditMessage = async (messageId) => {
     if (!editMessageText.trim()) return;
@@ -580,6 +616,10 @@ function Messages() {
         prev.map((msg) => (msg._id === messageId ? response.data : msg))
       );
 
+      // Clear localStorage draft
+      const draftKey = `edit-message-${messageId}`;
+      clearDraft(draftKey);
+
       setEditingMessageId(null);
       setEditMessageText('');
     } catch (error) {
@@ -589,6 +629,12 @@ function Messages() {
   };
 
   const handleCancelEdit = () => {
+    // Clear localStorage draft when canceling
+    if (editingMessageId) {
+      const draftKey = `edit-message-${editingMessageId}`;
+      clearDraft(draftKey);
+    }
+
     setEditingMessageId(null);
     setEditMessageText('');
   };

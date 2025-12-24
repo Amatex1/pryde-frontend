@@ -28,6 +28,7 @@ import { getDisplayName } from '../utils/getDisplayName';
 import logger from '../utils/logger';
 import { compressPostMedia } from '../utils/compressImage';
 import { uploadMultipleWithProgress } from '../utils/uploadWithProgress';
+import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
 import './Feed.css';
 
 function Feed() {
@@ -365,6 +366,23 @@ function Feed() {
 
     return () => clearInterval(interval);
   }, []);
+
+  // Restore localStorage draft on mount (fallback if backend draft fails)
+  useEffect(() => {
+    const localDraft = loadDraft('feed-create-post');
+    if (localDraft && !currentDraftId) {
+      // Only restore if there's no backend draft loaded
+      setNewPost(localDraft.content || '');
+      setSelectedMedia(localDraft.media || []);
+      setPostVisibility(localDraft.visibility || 'followers');
+      setContentWarning(localDraft.contentWarning || '');
+      setHideMetrics(localDraft.hideMetrics || false);
+      setPoll(localDraft.poll || null);
+      setShowContentWarning(!!localDraft.contentWarning);
+      setShowPollCreator(!!localDraft.poll);
+      logger.debug('📝 Restored draft from localStorage');
+    }
+  }, []); // Only run on mount
 
   // Listen for quiet mode changes
   useEffect(() => {
@@ -731,6 +749,9 @@ function Feed() {
         poll: poll
       };
 
+      // Save to localStorage as backup (works offline)
+      saveDraft('feed-create-post', draftData);
+
       const response = await api.post('/drafts', draftData);
 
       // Set draft ID if this is a new draft
@@ -744,6 +765,7 @@ function Feed() {
       setTimeout(() => setDraftSaveStatus(''), 2000);
     } catch (error) {
       logger.error('Failed to auto-save draft:', error);
+      // Even if backend fails, localStorage backup is already saved
       setDraftSaveStatus('');
     }
   }, [newPost, selectedMedia, postVisibility, contentWarning, hideMetrics, poll, currentDraftId]);
@@ -839,6 +861,9 @@ function Feed() {
         await deleteDraft(currentDraftId);
         setCurrentDraftId(null);
       }
+
+      // Clear localStorage draft
+      clearDraft('feed-create-post');
 
       setNewPost('');
       setSelectedMedia([]);
@@ -1115,6 +1140,10 @@ function Feed() {
       // Socket event will add the comment to state - no optimistic update needed
       // This prevents duplicate comments from appearing
 
+      // Clear localStorage draft
+      const draftKey = `comment-${postId}`;
+      clearDraft(draftKey);
+
       setCommentText(prev => ({ ...prev, [postId]: '' }));
       setCommentGif(prev => ({ ...prev, [postId]: null }));
     } catch (error) {
@@ -1126,12 +1155,41 @@ function Feed() {
 
   const handleCommentChange = (postId, value) => {
     setCommentText(prev => ({ ...prev, [postId]: value }));
+
+    // Auto-save comment draft
+    if (value) {
+      const draftKey = `comment-${postId}`;
+      saveDraft(draftKey, value);
+    }
   };
+
+  // Restore comment drafts on mount
+  useEffect(() => {
+    posts.forEach(post => {
+      const draftKey = `comment-${post._id}`;
+      const localDraft = loadDraft(draftKey);
+      if (localDraft) {
+        setCommentText(prev => ({ ...prev, [post._id]: localDraft }));
+      }
+    });
+  }, [posts.length]); // Only run when posts are loaded
 
   const handleEditComment = (commentId, content) => {
     setEditingCommentId(commentId);
-    setEditCommentText(content);
+
+    // Try to restore draft first, otherwise use original content
+    const draftKey = `edit-comment-${commentId}`;
+    const localDraft = loadDraft(draftKey);
+    setEditCommentText(localDraft || content);
   };
+
+  // Auto-save comment edit draft
+  useEffect(() => {
+    if (editingCommentId && editCommentText) {
+      const draftKey = `edit-comment-${editingCommentId}`;
+      saveDraft(draftKey, editCommentText);
+    }
+  }, [editCommentText, editingCommentId]);
 
   const handleSaveEditComment = async (commentId) => {
     if (!editCommentText.trim()) return;
@@ -1165,6 +1223,10 @@ function Feed() {
         return updated;
       });
 
+      // Clear localStorage draft
+      const draftKey = `edit-comment-${commentId}`;
+      clearDraft(draftKey);
+
       setEditingCommentId(null);
       setEditCommentText('');
     } catch (error) {
@@ -1174,6 +1236,12 @@ function Feed() {
   };
 
   const handleCancelEditComment = () => {
+    // Clear localStorage draft when canceling
+    if (editingCommentId) {
+      const draftKey = `edit-comment-${editingCommentId}`;
+      clearDraft(draftKey);
+    }
+
     setEditingCommentId(null);
     setEditCommentText('');
   };
@@ -1184,10 +1252,23 @@ function Feed() {
 
   const handleEditPost = (post) => {
     setEditingPostId(post._id);
-    setEditPostText(post.content);
-    setEditPostVisibility(post.visibility || 'friends');
-    setEditHiddenFromUsers(post.hiddenFrom?.map(u => u._id || u) || []);
-    setEditSharedWithUsers(post.sharedWith?.map(u => u._id || u) || []);
+
+    // Try to restore draft first, otherwise use original content
+    const draftKey = `edit-post-${post._id}`;
+    const localDraft = loadDraft(draftKey);
+
+    if (localDraft) {
+      setEditPostText(localDraft.content || post.content);
+      setEditPostVisibility(localDraft.visibility || post.visibility || 'friends');
+      setEditHiddenFromUsers(localDraft.hiddenFrom || post.hiddenFrom?.map(u => u._id || u) || []);
+      setEditSharedWithUsers(localDraft.sharedWith || post.sharedWith?.map(u => u._id || u) || []);
+    } else {
+      setEditPostText(post.content);
+      setEditPostVisibility(post.visibility || 'friends');
+      setEditHiddenFromUsers(post.hiddenFrom?.map(u => u._id || u) || []);
+      setEditSharedWithUsers(post.sharedWith?.map(u => u._id || u) || []);
+    }
+
     setOpenDropdownId(null);
   };
 
@@ -1199,6 +1280,20 @@ function Feed() {
       textarea.style.height = textarea.scrollHeight + 'px';
     }
   }, [editPostText, editingPostId]);
+
+  // Auto-save edit post draft
+  useEffect(() => {
+    if (editingPostId && editPostText) {
+      const draftKey = `edit-post-${editingPostId}`;
+      const draftData = {
+        content: editPostText,
+        visibility: editPostVisibility,
+        hiddenFrom: editHiddenFromUsers,
+        sharedWith: editSharedWithUsers
+      };
+      saveDraft(draftKey, draftData);
+    }
+  }, [editPostText, editPostVisibility, editHiddenFromUsers, editSharedWithUsers, editingPostId]);
 
   const handleSaveEditPost = async (postId) => {
     if (!editPostText.trim()) return;
@@ -1225,6 +1320,11 @@ function Feed() {
 
       const response = await api.put(`/posts/${postId}`, updateData);
       setPosts(posts.map(p => p._id === postId ? response.data : p));
+
+      // Clear localStorage draft
+      const draftKey = `edit-post-${postId}`;
+      clearDraft(draftKey);
+
       setEditingPostId(null);
       setEditPostText('');
       setEditPostVisibility('friends');
@@ -1238,6 +1338,12 @@ function Feed() {
   };
 
   const handleCancelEditPost = () => {
+    // Clear localStorage draft when canceling
+    if (editingPostId) {
+      const draftKey = `edit-post-${editingPostId}`;
+      clearDraft(draftKey);
+    }
+
     setEditingPostId(null);
     setEditPostText('');
     setEditPostVisibility('friends');

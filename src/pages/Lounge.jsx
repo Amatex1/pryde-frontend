@@ -5,6 +5,7 @@ import GifPicker from '../components/GifPicker';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import { getSocket } from '../utils/socket';
+import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
 import './Lounge.css';
 
 function Lounge() {
@@ -68,6 +69,29 @@ function Lounge() {
     const user = JSON.parse(localStorage.getItem('user'));
     setCurrentUser(user);
   }, []);
+
+  // Restore localStorage draft on mount
+  useEffect(() => {
+    const localDraft = loadDraft('lounge-message');
+    if (localDraft) {
+      setNewMessage(localDraft.text || '');
+      setSelectedGif(localDraft.gifUrl || null);
+      setContentWarning(localDraft.contentWarning || '');
+      setShowCWInput(!!localDraft.contentWarning);
+    }
+  }, []);
+
+  // Auto-save draft to localStorage
+  useEffect(() => {
+    if (newMessage || selectedGif || contentWarning) {
+      const draftData = {
+        text: newMessage,
+        gifUrl: selectedGif,
+        contentWarning: contentWarning
+      };
+      saveDraft('lounge-message', draftData);
+    }
+  }, [newMessage, selectedGif, contentWarning]);
 
   // Socket.IO setup
   useEffect(() => {
@@ -182,6 +206,9 @@ function Lounge() {
           contentWarning: contentWarning.trim() || null
         });
       }
+
+      // Clear localStorage draft
+      clearDraft('lounge-message');
 
       // Clear input
       setNewMessage('');

@@ -28,6 +28,7 @@ import logger from '../utils/logger';
 import { sanitizeBio, sanitizeURL, sanitizeText } from '../utils/sanitize';
 import { compressPostMedia } from '../utils/compressImage';
 import { uploadMultipleWithProgress } from '../utils/uploadWithProgress';
+import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
 import './Profile.css';
 
 function Profile() {
@@ -406,6 +407,32 @@ function Profile() {
     };
   }, []);
 
+  // Restore localStorage draft on mount
+  useEffect(() => {
+    const localDraft = loadDraft('profile-create-post');
+    if (localDraft) {
+      setNewPost(localDraft.content || '');
+      setSelectedMedia(localDraft.media || []);
+      setPostVisibility(localDraft.visibility || 'followers');
+      setContentWarning(localDraft.contentWarning || '');
+      setShowContentWarning(!!localDraft.contentWarning);
+      logger.debug('📝 Restored draft from localStorage');
+    }
+  }, []); // Only run on mount
+
+  // Auto-save draft to localStorage
+  useEffect(() => {
+    if (newPost || selectedMedia.length > 0 || contentWarning) {
+      const draftData = {
+        content: newPost,
+        media: selectedMedia,
+        visibility: postVisibility,
+        contentWarning: contentWarning
+      };
+      saveDraft('profile-create-post', draftData);
+    }
+  }, [newPost, selectedMedia, postVisibility, contentWarning]);
+
   // Auto-resize edit textarea based on content
   useEffect(() => {
     if (editTextareaRef.current && editingPostId) {
@@ -642,6 +669,10 @@ function Profile() {
 
       const response = await api.post('/posts', postData);
       setPosts((prevPosts) => [response.data, ...prevPosts]);
+
+      // Clear localStorage draft
+      clearDraft('profile-create-post');
+
       setNewPost('');
       setSelectedMedia([]);
       setContentWarning('');
