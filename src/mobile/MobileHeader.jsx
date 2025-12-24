@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import { ChevronLeft } from 'lucide-react';
 
 /**
  * MobileHeader - Context-aware mobile header
@@ -49,7 +50,7 @@ export default function MobileHeader() {
             onClick={() => navigate(-1)}
             aria-label="Go back"
           >
-            ←
+            <ChevronLeft size={20} strokeWidth={2} />
           </button>
         )}
       </div>

@@ -115,7 +115,10 @@
 .mobile-nav a .nav-icon {
   font-size: 20px;
   line-height: 1;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
 .mobile-nav a small {
@@ -135,6 +138,33 @@
 
 .mobile-nav a:active {
   transform: scale(0.95);
+}
+
+/* ========================================
+   UNREAD MESSAGE BADGE
+   ======================================== */
+
+.mobile-nav-messages .nav-icon {
+  position: relative;
+}
+
+.nav-badge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--accent, #6C5CE7);
+  color: #fff;
+  font-size: 10px;
+  line-height: 16px;
+  text-align: center;
+  font-style: normal;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 1;
 }
 
 /* ========================================
@@ -171,6 +201,11 @@
 
   .mobile-nav a.active {
     color: var(--accent, #8B7FE8);
+  }
+
+  .nav-badge {
+    background: var(--accent, #8B7FE8);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   }
 }
 
