@@ -76,6 +76,8 @@ function Feed() {
   const [editPostVisibility, setEditPostVisibility] = useState('friends');
   const [editHiddenFromUsers, setEditHiddenFromUsers] = useState([]);
   const [editSharedWithUsers, setEditSharedWithUsers] = useState([]);
+  const [editPostMedia, setEditPostMedia] = useState([]); // Current media for post being edited
+  const [deletedMedia, setDeletedMedia] = useState([]); // Track media marked for deletion
   const [friends, setFriends] = useState([]);
   const [friendSearchQuery, setFriendSearchQuery] = useState('');
   const [trending, setTrending] = useState([]);
@@ -1313,14 +1315,28 @@ function Feed() {
       setEditPostVisibility(localDraft.visibility || post.visibility || 'friends');
       setEditHiddenFromUsers(localDraft.hiddenFrom || post.hiddenFrom?.map(u => u._id || u) || []);
       setEditSharedWithUsers(localDraft.sharedWith || post.sharedWith?.map(u => u._id || u) || []);
+      // Restore media from draft if available, otherwise from post
+      setEditPostMedia(localDraft.media || post.media || []);
+      setDeletedMedia(localDraft.deletedMedia || []);
     } else {
       setEditPostText(post.content);
       setEditPostVisibility(post.visibility || 'friends');
       setEditHiddenFromUsers(post.hiddenFrom?.map(u => u._id || u) || []);
       setEditSharedWithUsers(post.sharedWith?.map(u => u._id || u) || []);
+      // Load existing media for editing
+      setEditPostMedia(post.media || []);
+      setDeletedMedia([]);
     }
 
     setOpenDropdownId(null);
+  };
+
+  // Handle removing media during edit
+  const handleRemoveEditMedia = (mediaUrl) => {
+    // Add to deleted list for backend cleanup
+    setDeletedMedia(prev => [...prev, mediaUrl]);
+    // Remove from current media list
+    setEditPostMedia(prev => prev.filter(m => m.url !== mediaUrl));
   };
 
   // Auto-resize edit post textarea
@@ -1334,26 +1350,35 @@ function Feed() {
 
   // Auto-save edit post draft
   useEffect(() => {
-    if (editingPostId && editPostText) {
+    if (editingPostId && (editPostText || editPostMedia.length > 0)) {
       const draftKey = `edit-post-${editingPostId}`;
       const draftData = {
         content: editPostText,
         visibility: editPostVisibility,
         hiddenFrom: editHiddenFromUsers,
-        sharedWith: editSharedWithUsers
+        sharedWith: editSharedWithUsers,
+        media: editPostMedia,
+        deletedMedia: deletedMedia
       };
       saveDraft(draftKey, draftData);
     }
-  }, [editPostText, editPostVisibility, editHiddenFromUsers, editSharedWithUsers, editingPostId]);
+  }, [editPostText, editPostVisibility, editHiddenFromUsers, editSharedWithUsers, editingPostId, editPostMedia, deletedMedia]);
 
   const handleSaveEditPost = async (postId) => {
-    if (!editPostText.trim()) return;
+    // Allow saving if there's content OR media remaining
+    if (!editPostText.trim() && editPostMedia.length === 0) return;
 
     try {
       const updateData = {
         content: editPostText,
-        visibility: editPostVisibility
+        visibility: editPostVisibility,
+        media: editPostMedia
       };
+
+      // Add deleted media for backend cleanup
+      if (deletedMedia.length > 0) {
+        updateData.deletedMedia = deletedMedia;
+      }
 
       // Add custom privacy settings if applicable
       if (editPostVisibility === 'custom') {
@@ -1381,6 +1406,8 @@ function Feed() {
       setEditPostVisibility('friends');
       setEditHiddenFromUsers([]);
       setEditSharedWithUsers([]);
+      setEditPostMedia([]);
+      setDeletedMedia([]);
       showAlert('Post updated successfully!', 'Success');
     } catch (error) {
       logger.error('Failed to edit post:', error);
@@ -1400,6 +1427,8 @@ function Feed() {
     setEditPostVisibility('friends');
     setEditHiddenFromUsers([]);
     setEditSharedWithUsers([]);
+    setEditPostMedia([]);
+    setDeletedMedia([]);
   };
 
   // Keyboard shortcuts for edit post
@@ -2030,6 +2059,28 @@ function Feed() {
                                 className="post-edit-textarea"
                                 autoFocus
                               />
+                              {/* Show existing media with delete buttons */}
+                              {editPostMedia.length > 0 && (
+                                <div className="edit-media-preview">
+                                  {editPostMedia.map((media, index) => (
+                                    <div key={index} className="edit-media-item">
+                                      {media.type === 'video' ? (
+                                        <video src={getImageUrl(media.url)} />
+                                      ) : (
+                                        <img src={getImageUrl(media.url)} alt={`Media ${index + 1}`} />
+                                      )}
+                                      <button
+                                        type="button"
+                                        className="btn-remove-media"
+                                        onClick={() => handleRemoveEditMedia(media.url)}
+                                        title="Remove this media"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                               <div className="post-edit-privacy">
                                 <label
                                   htmlFor="edit-post-privacy-selector"

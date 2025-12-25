@@ -96,6 +96,7 @@ function Messages() {
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const fileInputRef = useRef(null);
+  const textareaRef = useRef(null);
 
   // Helper function to format date headers
   const formatDateHeader = (date) => {
@@ -568,6 +569,11 @@ function Messages() {
   const handleTyping = (e) => {
     setMessage(e.target.value);
 
+    // Auto-grow textarea
+    const textarea = e.target;
+    textarea.style.height = 'auto';
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 140)}px`;
+
     // Auto-save message draft
     if (selectedChat && e.target.value) {
       const draftKey = `message-${selectedChatType}-${selectedChat}`;
@@ -589,6 +595,13 @@ function Messages() {
       emitTyping(selectedChat, currentUser._id);
     }, 1000);
   };
+
+  // Reset textarea height when message is cleared (after send)
+  useEffect(() => {
+    if (!message && textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
+  }, [message]);
 
   // Restore message draft when chat changes
   useEffect(() => {
@@ -1539,7 +1552,7 @@ function Messages() {
                       </button>
                     </div>
                   )}
-                  <div className="chat-input-wrapper">
+                  <div className="message-composer">
                     <input
                       type="file"
                       ref={fileInputRef}
@@ -1547,51 +1560,67 @@ function Messages() {
                       accept="image/*,video/*"
                       style={{ display: 'none' }}
                     />
-                    <button
-                      type="button"
-                      className="btn-attachment"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploadingFile || selectedGif || isRecipientUnavailable}
-                      title={uploadingFile ? `Uploading... ${uploadProgress}%` : "Attach file"}
-                    >
-                      {uploadingFile ? `⏳ ${uploadProgress}%` : '📎'}
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-gif"
-                      onClick={() => setShowGifPicker(!showGifPicker)}
-                      disabled={selectedFile || isRecipientUnavailable}
-                      title="Add GIF"
-                    >
-                      GIF
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-voice"
-                      onClick={() => setShowVoiceRecorder(!showVoiceRecorder)}
-                      disabled={selectedFile || selectedGif || isRecipientUnavailable}
-                      title="Record voice note"
-                    >
-                      🎤
-                    </button>
-                    <button
-                      type="button"
-                      className={`btn-content-warning ${showContentWarning ? 'active' : ''}`}
-                      onClick={() => setShowContentWarning(!showContentWarning)}
-                      disabled={isRecipientUnavailable}
-                      title="Add content warning"
-                    >
-                      ⚠️
-                    </button>
-                    <input
-                      type="text"
+                    {/* Attachment buttons - left side */}
+                    <div className="composer-actions-left">
+                      <button
+                        type="button"
+                        className="icon-btn"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploadingFile || selectedGif || isRecipientUnavailable}
+                        title={uploadingFile ? `Uploading... ${uploadProgress}%` : "Attach file"}
+                      >
+                        {uploadingFile ? `${uploadProgress}%` : '📎'}
+                      </button>
+                      <button
+                        type="button"
+                        className="icon-btn"
+                        onClick={() => setShowGifPicker(!showGifPicker)}
+                        disabled={selectedFile || isRecipientUnavailable}
+                        title="Add GIF"
+                      >
+                        GIF
+                      </button>
+                      <button
+                        type="button"
+                        className="icon-btn"
+                        onClick={() => setShowVoiceRecorder(!showVoiceRecorder)}
+                        disabled={selectedFile || selectedGif || isRecipientUnavailable}
+                        title="Record voice note"
+                      >
+                        🎤
+                      </button>
+                      <button
+                        type="button"
+                        className={`icon-btn ${showContentWarning ? 'active' : ''}`}
+                        onClick={() => setShowContentWarning(!showContentWarning)}
+                        disabled={isRecipientUnavailable}
+                        title="Add content warning"
+                      >
+                        ⚠️
+                      </button>
+                    </div>
+                    {/* Auto-growing textarea */}
+                    <textarea
+                      ref={textareaRef}
+                      rows="1"
                       value={message}
                       onChange={handleTyping}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSendMessage(e);
+                        }
+                      }}
                       placeholder={isRecipientUnavailable ? recipientUnavailableReason : (replyingTo ? "Type your reply..." : (selectedGif || selectedFile ? "Add a caption (optional)..." : "Type a message..."))}
-                      className="chat-input glossy"
+                      className="message-input"
                       disabled={isRecipientUnavailable}
                     />
-                    <button type="submit" className="btn-send glossy-gold" disabled={uploadingFile || isRecipientUnavailable}>
+                    {/* Send button - right side */}
+                    <button
+                      type="submit"
+                      className="send-btn"
+                      disabled={uploadingFile || isRecipientUnavailable || (!message.trim() && !selectedFile && !selectedGif)}
+                    >
                       Send
                     </button>
                   </div>

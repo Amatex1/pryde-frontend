@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { Home, Search, Plus, MessageCircle, User } from 'lucide-react';
 import { useUnreadMessages } from '../hooks/useUnreadMessages';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * MobileNav - Polished bottom navigation bar
@@ -10,6 +11,7 @@ import { useUnreadMessages } from '../hooks/useUnreadMessages';
  */
 export default function MobileNav() {
   const unread = useUnreadMessages();
+  const { user } = useAuth();
 
   return (
     <nav className="mobile-nav" role="navigation" aria-label="Main navigation">
@@ -20,7 +22,7 @@ export default function MobileNav() {
         <small>Home</small>
       </NavLink>
 
-      <NavLink to="/discover" aria-label="Search">
+      <NavLink to="/search" aria-label="Search">
         <span className="nav-icon">
           <Search size={20} strokeWidth={2} />
         </span>
@@ -46,7 +48,7 @@ export default function MobileNav() {
         <small>Messages</small>
       </NavLink>
 
-      <NavLink to="/profile/me" aria-label="Profile">
+      <NavLink to={user?.username ? `/profile/${user.username}` : '/feed'} aria-label="Profile">
         <span className="nav-icon">
           <User size={20} strokeWidth={2} />
         </span>

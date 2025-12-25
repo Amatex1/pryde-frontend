@@ -89,6 +89,8 @@ function Profile() {
   const [editingPostId, setEditingPostId] = useState(null);
   const [editPostText, setEditPostText] = useState('');
   const [editPostVisibility, setEditPostVisibility] = useState('friends');
+  const [editPostMedia, setEditPostMedia] = useState([]); // Current media for post being edited
+  const [deletedMedia, setDeletedMedia] = useState([]); // Track media marked for deletion
   const [reactionDetailsModal, setReactionDetailsModal] = useState({ isOpen: false, targetType: null, targetId: null });
   const [profileError, setProfileError] = useState(null); // Track profile loading errors
   const [searchResults, setSearchResults] = useState(null); // Search results from ProfilePostSearch
@@ -1010,7 +1012,15 @@ function Profile() {
     setEditingPostId(post._id);
     setEditPostText(post.content);
     setEditPostVisibility(post.visibility || 'friends');
+    setEditPostMedia(post.media || []);
+    setDeletedMedia([]);
     setOpenDropdownId(null);
+  };
+
+  // Handle removing media during edit
+  const handleRemoveEditMedia = (mediaUrl) => {
+    setDeletedMedia(prev => [...prev, mediaUrl]);
+    setEditPostMedia(prev => prev.filter(m => m.url !== mediaUrl));
   };
 
   // Auto-resize edit post textarea
@@ -1023,17 +1033,28 @@ function Profile() {
   }, [editPostText, editingPostId]);
 
   const handleSaveEditPost = async (postId) => {
-    if (!editPostText.trim()) return;
+    // Allow saving if there's content OR media remaining
+    if (!editPostText.trim() && editPostMedia.length === 0) return;
 
     try {
-      const response = await api.put(`/posts/${postId}`, {
+      const updateData = {
         content: editPostText,
-        visibility: editPostVisibility
-      });
+        visibility: editPostVisibility,
+        media: editPostMedia
+      };
+
+      // Add deleted media for backend cleanup
+      if (deletedMedia.length > 0) {
+        updateData.deletedMedia = deletedMedia;
+      }
+
+      const response = await api.put(`/posts/${postId}`, updateData);
       setPosts((prevPosts) => prevPosts.map(p => p._id === postId ? response.data : p));
       setEditingPostId(null);
       setEditPostText('');
       setEditPostVisibility('friends');
+      setEditPostMedia([]);
+      setDeletedMedia([]);
       showToast('Post updated successfully!', 'success');
     } catch (error) {
       logger.error('Failed to edit post:', error);
@@ -1045,6 +1066,8 @@ function Profile() {
     setEditingPostId(null);
     setEditPostText('');
     setEditPostVisibility('friends');
+    setEditPostMedia([]);
+    setDeletedMedia([]);
   };
 
   // Keyboard shortcuts for edit post
@@ -2000,6 +2023,28 @@ function Profile() {
                               placeholder="What's on your mind?"
                               autoFocus
                             />
+                            {/* Show existing media with delete buttons */}
+                            {editPostMedia.length > 0 && (
+                              <div className="edit-media-preview">
+                                {editPostMedia.map((media, index) => (
+                                  <div key={index} className="edit-media-item">
+                                    {media.type === 'video' ? (
+                                      <video src={getImageUrl(media.url)} />
+                                    ) : (
+                                      <img src={getImageUrl(media.url)} alt={`Media ${index + 1}`} />
+                                    )}
+                                    <button
+                                      type="button"
+                                      className="btn-remove-media"
+                                      onClick={() => handleRemoveEditMedia(media.url)}
+                                      title="Remove this media"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                             <div className="edit-post-actions">
                               {/* PHASE 1 REFACTOR: Simplified privacy options */}
                               <select

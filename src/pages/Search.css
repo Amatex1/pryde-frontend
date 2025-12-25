@@ -1,0 +1,234 @@
+/**
+ * Mobile Search Page Styles
+ */
+
+.search-page {
+  min-height: 100vh;
+  background: var(--bg-main);
+  padding-bottom: calc(70px + env(safe-area-inset-bottom, 0)); /* Space for bottom nav */
+}
+
+.search-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  padding-top: calc(0.75rem + env(safe-area-inset-top, 0)); /* Safe area for notch */
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: var(--text-main);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.back-btn:hover {
+  background: var(--bg-hover);
+}
+
+.search-input-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-main);
+  border-radius: 24px;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-light);
+}
+
+.search-input-container .search-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  color: var(--text-main);
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.clear-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.search-results {
+  padding: 1rem;
+}
+
+.search-loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+}
+
+.no-results {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+}
+
+.no-results-hint {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.search-hints {
+  padding: 1.5rem;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  line-height: 2;
+}
+
+.results-section {
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  padding: 0 0.25rem;
+}
+
+.result-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  background: var(--bg-card);
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.result-item:hover {
+  background: var(--bg-hover);
+}
+
+.hashtag-item .hashtag-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-primary);
+  color: white;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.hashtag-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.hashtag-name {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  overflow: hidden;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-username {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.post-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow: hidden;
+}
+
+.post-author {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--pryde-purple);
+}
+
+.post-content {
+  font-size: 0.875rem;
+  color: var(--text-main);
+  line-height: 1.4;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hashtag-count {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
