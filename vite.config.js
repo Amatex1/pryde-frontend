@@ -15,54 +15,31 @@ export default defineConfig({
       includeAssets: ['pryde-logo.png', 'robots.txt', 'favicon.ico', 'icons/*.png', 'offline.html'],
       manifest: false, // Use existing manifest.json
       injectRegister: 'auto', // Automatically inject registration code
+
+      // Use generateSW mode with custom strategies
+      strategies: 'generateSW',
+
       workbox: {
+        // Import custom service worker code BEFORE Workbox routing
+        importScripts: ['sw-bypass-api.js'],
+        // Only precache static assets (JS, CSS, HTML, icons, fonts)
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
-        // navigateFallback removed - let Cloudflare _redirects handle SPA routing
-        // This prevents service worker redirect errors
+
+        // 🔥 CRITICAL: Exclude ALL API requests from service worker
+        // This prevents CORS errors, ERR_FAILED loops, and auth issues
+        navigateFallbackDenylist: [
+          /^\/api\/.*/,
+          /^\/auth\/.*/,
+          /^\/status/,
+          /^\/me/,
+          /^\/notifications/,
+          /^\/counts/
+        ],
+
+        // Runtime caching ONLY for static assets
+        // NO API caching, NO JSON caching, NO authenticated endpoints
         runtimeCaching: [
-          // 🔥 CRITICAL: NEVER cache auth responses (prevents stale auth loops)
-          {
-            urlPattern: /^https:\/\/pryde-backend\.onrender\.com\/api\/auth\/.*/i,
-            handler: 'NetworkOnly', // Never cache auth endpoints
-            options: {
-              cacheName: 'auth-no-cache'
-            }
-          },
-          {
-            urlPattern: /^https:\/\/pryde-backend\.onrender\.com\/api\/refresh/i,
-            handler: 'NetworkOnly', // Never cache refresh endpoint
-            options: {
-              cacheName: 'refresh-no-cache'
-            }
-          },
-          {
-            urlPattern: /^https:\/\/pryde-backend\.onrender\.com\/api\/push\/status/i,
-            handler: 'NetworkOnly', // Never cache push status
-            options: {
-              cacheName: 'push-no-cache'
-            }
-          },
-          // 🔥 CRITICAL: NEVER cache user-specific JSON (prevents stale user data)
-          {
-            urlPattern: /^https:\/\/pryde-backend\.onrender\.com\/api\/users\/me/i,
-            handler: 'NetworkOnly', // Never cache current user endpoint
-            options: {
-              cacheName: 'user-no-cache'
-            }
-          },
-          // General API calls (safe to cache with short TTL)
-          {
-            urlPattern: /^https:\/\/pryde-backend\.onrender\.com\/api\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 5 // 🔥 REDUCED: 5 minutes (was 1 hour)
-              },
-              networkTimeoutSeconds: 10
-            }
-          },
+          // 🔥 STATIC ASSETS ONLY: Images from uploads
           {
             urlPattern: /^https:\/\/pryde-backend\.onrender\.com\/uploads\/.*/i,
             handler: 'CacheFirst',
@@ -71,20 +48,28 @@ export default defineConfig({
               expiration: {
                 maxEntries: 200,
                 maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
               }
             }
           },
+          // 🔥 STATIC ASSETS ONLY: Images (same-origin)
           {
-            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'static-image-cache',
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
               }
             }
           },
+          // 🔥 STATIC ASSETS ONLY: Fonts
           {
             urlPattern: /\.(?:woff2?|ttf|eot)$/,
             handler: 'CacheFirst',
@@ -93,13 +78,55 @@ export default defineConfig({
               expiration: {
                 maxEntries: 20,
                 maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          // 🔥 STATIC ASSETS ONLY: JS/CSS bundles
+          {
+            urlPattern: /\.(?:js|css)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'static-resources',
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
               }
             }
           }
         ],
+
+        // Clean up outdated caches automatically
         cleanupOutdatedCaches: true,
+
+        // Skip waiting to activate new service worker immediately
         skipWaiting: true,
-        clientsClaim: true
+
+        // Claim clients immediately
+        clientsClaim: true,
+
+        // 🔥 CRITICAL: Add custom fetch handler to bypass ALL API requests
+        // This is injected BEFORE Workbox routing to ensure API requests never hit cache
+        additionalManifestEntries: [],
+
+        // Custom navigation route handler
+        // This ensures API requests are NEVER intercepted by service worker
+        ignoreURLParametersMatching: [/.*/],
+
+        // Exclude API requests from being handled by service worker
+        exclude: [
+          /\/api\/.*/,
+          /\/auth\/.*/,
+          /\/status$/,
+          /\/me$/,
+          /\/notifications$/,
+          /\/counts$/
+        ]
       },
       devOptions: {
         enabled: false // Disable in development

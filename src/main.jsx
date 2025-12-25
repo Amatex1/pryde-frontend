@@ -12,6 +12,8 @@ import { initializePushNotifications } from './utils/pushNotifications'
 import { initializeTheme } from './utils/themeManager'
 import { logMobileEnvironment } from './utils/mobileDebug'
 import { initServiceWorkerDebug } from './utils/serviceWorkerDebug'
+import { clearStaleSWAndCaches } from './utils/clearStaleSW'
+import { initSwApiCollisionDetector } from './utils/swApiCollisionDetector'
 
 // ========================================
 // INITIALIZE THEME IMMEDIATELY
@@ -26,12 +28,25 @@ initializeTheme();
 if (import.meta.env.DEV) {
   logMobileEnvironment();
   initServiceWorkerDebug();
+
+  // 🔥 CRITICAL: Initialize SW-API collision detector
+  // This detects if service worker intercepts API requests (should NEVER happen)
+  initSwApiCollisionDetector();
 }
 
 // Register service worker for PWA functionality (production only)
 if (import.meta.env.PROD) {
-  // Register service worker
-  registerServiceWorker().catch(err => {
+  // 🔥 CRITICAL: Clear stale service workers and caches BEFORE registering new one
+  // This prevents CORS errors, ERR_FAILED loops, and zombie PWA state
+  clearStaleSWAndCaches().then(result => {
+    if (!result.alreadyCleared) {
+      console.log('[PWA] 🧹 Cleared stale service workers and caches');
+      console.log(`[PWA] 📊 Unregistered ${result.serviceWorkersUnregistered} SW(s), deleted ${result.cachesDeleted} cache(s)`);
+    }
+
+    // Register service worker
+    return registerServiceWorker();
+  }).catch(err => {
     console.error('[PWA] Service worker registration failed:', err);
   });
 
