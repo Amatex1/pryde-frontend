@@ -973,6 +973,61 @@
   }
 
   /* ========================================
+     REPLY INPUT BOX - MODAL STYLE ON MOBILE
+     Must appear ABOVE mobile nav bar (z-index 200)
+     ======================================== */
+
+  .reply-input-box,
+  .reply-composer {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+    padding: 16px !important;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+    border-radius: 20px 20px 0 0 !important;
+    background: var(--bg-card, #1A1B30) !important;
+    border-top: 2px solid var(--pryde-purple) !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3) !important;
+    z-index: 1500 !important; /* Above mobile nav (200) and modals (1001) */
+    animation: slideUpReply 0.25s ease-out;
+  }
+
+  @keyframes slideUpReply {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .reply-input-wrapper,
+  .reply-composer-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  .reply-input,
+  .reply-composer input {
+    flex: 1 !important;
+    min-height: 48px !important;
+    font-size: 16px !important;
+    border-radius: 24px !important;
+    padding: 12px 16px !important;
+  }
+
+  .reply-actions {
+    margin-top: 10px !important;
+    display: flex !important;
+    gap: 10px !important;
+  }
+
+  /* ========================================
      COMMENTS/REPLIES - FIX OVERFLOW
      ======================================== */
 
