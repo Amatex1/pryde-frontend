@@ -40,45 +40,23 @@
   }
 
   /* ========================================
-     MOBILE POST HEADER - COMPACT LAYOUT
+     MOBILE POST HEADER - STACKED LAYOUT
+     Name on top, meta below for better readability
      ======================================== */
 
-  /* Make post header more compact on mobile */
-  .post-header {
-    margin-bottom: 8px !important;
-    gap: 8px !important;
-  }
-
-  /* Reduce avatar size on mobile */
-  .post-author .author-avatar,
-  .post-author-avatar {
-    width: 40px !important;
-    height: 40px !important;
-    min-width: 40px !important;
-    min-height: 40px !important;
-  }
-
-  /* Compact author info layout */
-  .author-info {
-    gap: 2px !important;
-  }
-
-  /* Make author name row more compact and inline */
-  .author-name-row {
-    gap: 6px !important;
-    font-size: 14px !important;
-    line-height: 1.3 !important;
-  }
-
-  /* Move three dots menu next to pronouns */
+  /* Post header grid: avatar | info | menu */
   .post-header {
     display: grid !important;
     grid-template-columns: auto 1fr auto !important;
     align-items: start !important;
+    margin-bottom: 8px !important;
+    gap: 10px !important;
   }
 
   .post-author {
     grid-column: 1 / 3 !important;
+    display: flex !important;
+    align-items: flex-start !important;
     gap: 10px !important;
   }
 
@@ -89,43 +67,120 @@
     margin-top: 0 !important;
   }
 
-  /* Make dropdown button smaller on mobile */
-  .btn-dropdown {
-    min-width: 28px !important;
-    min-height: 28px !important;
-    padding: 4px !important;
-    font-size: 18px !important;
+  /* Reduce avatar size on mobile */
+  .post-author .author-avatar,
+  .post-author-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    flex-shrink: 0 !important;
   }
 
-  /* Compact timestamp and pronouns */
-  .author-pronouns,
-  .post-time-inline {
-    font-size: 12px !important;
+  /* Author info - STACKED layout on mobile */
+  .author-info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    min-width: 0 !important; /* Allow text truncation */
+    flex: 1 !important;
   }
 
-  /* Remove separators on mobile for cleaner look */
-  .author-pronouns::before,
-  .post-time-inline::before {
-    display: none !important;
-  }
-
-  /* Stack name, pronouns, and timestamp more compactly */
+  /* Name row - just name and verified badge */
   .author-name-row {
     display: flex !important;
-    flex-wrap: wrap !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
     align-items: center !important;
+    gap: 6px !important;
+    font-size: 15px !important;
+    line-height: 1.3 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
   }
 
+  /* Author name - allow full display, truncate with ellipsis */
   .author-name {
     font-size: 15px !important;
     font-weight: 600 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: none !important; /* Remove max-width limit */
+    flex-shrink: 1 !important;
   }
 
   .verified-badge {
     width: 16px !important;
     height: 16px !important;
     font-size: 10px !important;
-    margin-left: 4px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Move pronouns and timestamp to their own row below name */
+  .post-meta-row,
+  .author-name-row .author-pronouns,
+  .author-name-row .post-time-inline,
+  .author-name-row .post-privacy-icon {
+    font-size: 12px !important;
+    color: var(--text-muted) !important;
+  }
+
+  /* Hide inline meta from name row - show in post-meta-row instead */
+  .author-name-row .author-pronouns,
+  .author-name-row .post-time-inline,
+  .author-name-row .post-privacy-icon,
+  .author-name-row .edited-indicator-btn {
+    display: none !important;
+  }
+
+  /* Show post-meta-row on mobile */
+  .post-meta-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 12px !important;
+    color: var(--text-muted) !important;
+    margin-top: 2px !important;
+  }
+
+  /* Remove separators on mobile for cleaner look */
+  .post-meta-row .author-pronouns::before,
+  .post-meta-row .post-time-inline::before {
+    display: none !important;
+  }
+
+  /* Hide desktop edited row on mobile - shown in post-meta-row */
+  .post-edited-row {
+    display: none !important;
+  }
+
+  /* Make dropdown button smaller on mobile */
+  .btn-dropdown {
+    min-width: 28px !important;
+    min-height: 28px !important;
+    width: 28px !important;
+    height: 28px !important;
+    padding: 4px !important;
+    font-size: 18px !important;
+  }
+
+  /* ========================================
+     POST CARD - FIT CONTENT PROPERLY
+     ======================================== */
+
+  .post-card {
+    min-height: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .post-content,
+  .post-text {
+    overflow: visible !important;
+    max-height: none !important;
+    -webkit-line-clamp: unset !important;
   }
 
   /* ========================================
@@ -805,6 +860,71 @@
     min-height: 44px !important;
     padding: 10px 16px !important;
     font-size: 14px !important;
+  }
+
+  /* ========================================
+     COMMENTS/REPLIES - FIX OVERFLOW
+     ======================================== */
+
+  .comment,
+  .comment.reply {
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .comment-replies {
+    margin-left: 20px !important; /* Reduced indent on mobile */
+    max-width: calc(100% - 20px) !important;
+    overflow: visible !important;
+  }
+
+  .comment.reply {
+    margin-left: 0 !important; /* Remove extra margin, parent handles indent */
+  }
+
+  .comment-content,
+  .comment-content-wrapper {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .comment-bubble {
+    max-width: 100% !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .comment-text,
+  .comment-content-text {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: pre-wrap !important;
+  }
+
+  /* Comment header - stack on mobile for long names */
+  .comment-header {
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+
+  .comment-header-left {
+    flex-wrap: wrap !important;
+    max-width: 100% !important;
+  }
+
+  .comment-author-name {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  /* Fix comment actions row */
+  .comment-actions {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
   }
 }
 

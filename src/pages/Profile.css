@@ -37,7 +37,7 @@
   box-shadow: var(--shadow-soft) !important;
   transition: all 0.2s ease !important;
   min-width: 0 !important;
-  min-height: 150px !important;
+  min-height: auto !important; /* Let content define height */
   overflow: visible !important;
   word-wrap: break-word !important;
   contain: layout !important;
@@ -2767,45 +2767,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     flex: 1;
   }
 
-  /* Mobile author row - keep elements inline on one line */
-  .author-name-row {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    gap: 0.35rem !important;
-    overflow: hidden !important;
-    white-space: nowrap !important;
-    max-width: 100%;
-  }
-
-  .author-name-row .author-name {
-    flex-shrink: 0;
-    max-width: 45%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .author-name-row .author-pronouns {
-    flex-shrink: 0;
-    font-size: 0.7rem;
-  }
-
-  .author-name-row .post-time-inline {
-    flex-shrink: 1;
-    font-size: 0.65rem;
-    opacity: 0.8;
-  }
-
-  .author-name-row .post-privacy-icon {
-    flex-shrink: 0;
-    font-size: 0.75rem;
-  }
-
-  .author-name-row .verified-badge {
-    flex-shrink: 0;
-    font-size: 0.75rem;
-  }
+  /* Mobile author row - STACKED layout handled by mobileFriendly.css */
+  /* Remove conflicting styles - let global mobile styles handle this */
 }
 
 /* Edit Post Styles */

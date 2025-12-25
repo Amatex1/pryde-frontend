@@ -2022,6 +2022,7 @@ function Feed() {
                               {post.author?.displayName || post.author?.username || 'User'}
                             </Link>
                             {post.author?.isVerified && <span className="verified-badge" title="Verified">✓</span>}
+                            {/* Desktop: show inline */}
                             {post.author?.pronouns && (
                               <span className="author-pronouns">({post.author.pronouns})</span>
                             )}
@@ -2034,6 +2035,34 @@ function Feed() {
                                post.visibility === 'followers' ? '👥' :
                                post.visibility === 'friends' ? '👫' : '👥'}
                             </span>
+                          </div>
+                          {/* Mobile: meta row below name */}
+                          <div className="post-meta-row">
+                            {post.author?.pronouns && (
+                              <span className="author-pronouns">({post.author.pronouns})</span>
+                            )}
+                            <span className="post-time-inline">
+                              {new Date(post.createdAt).toLocaleDateString()}
+                            </span>
+                            <span className="post-privacy-icon" title={`Visible to: ${post.visibility || 'followers'}`}>
+                              {post.visibility === 'public' ? '🌍' :
+                               post.visibility === 'private' ? '🔒' :
+                               post.visibility === 'followers' ? '👥' :
+                               post.visibility === 'friends' ? '👫' : '👥'}
+                            </span>
+                            {post.edited && (
+                              <button
+                                type="button"
+                                className="edited-indicator-btn"
+                                onClick={() => {
+                                  setEditHistoryPostId(post._id);
+                                  setShowEditHistory(true);
+                                }}
+                                aria-label="View edit history"
+                              >
+                                (edited)
+                              </button>
+                            )}
                           </div>
                           {post.edited && (
                             <div className="post-edited-row">

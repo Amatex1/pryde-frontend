@@ -568,6 +568,21 @@
   color: var(--text-muted);
 }
 
+/* Post meta row - HIDDEN on desktop, shown on mobile */
+.post-meta-row {
+  display: none; /* Hidden on desktop - inline meta shown in author-name-row */
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.post-meta-row .author-pronouns::before,
+.post-meta-row .post-time-inline::before {
+  content: none; /* No separators in meta row */
+}
+
 .post-time-inline {
   color: var(--text-muted);
   font-size: 0.875rem;
@@ -3406,45 +3421,8 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
     font-size: 0.7rem;
   }
 
-  /* Mobile author row - keep elements inline */
-  .author-name-row {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    gap: 0.35rem !important;
-    overflow: hidden !important;
-    white-space: nowrap !important;
-    max-width: 100%;
-  }
-
-  .author-name-row .author-name {
-    flex-shrink: 0;
-    max-width: 45%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .author-name-row .author-pronouns {
-    flex-shrink: 0;
-    font-size: 0.7rem;
-  }
-
-  .author-name-row .post-time-inline {
-    flex-shrink: 1;
-    font-size: 0.65rem;
-    opacity: 0.8;
-  }
-
-  .author-name-row .post-privacy-icon {
-    flex-shrink: 0;
-    font-size: 0.75rem;
-  }
-
-  .author-name-row .verified-badge {
-    flex-shrink: 0;
-    font-size: 0.75rem;
-  }
+  /* Mobile author row - STACKED layout handled by mobileFriendly.css */
+  /* Conflicting styles removed - global mobile styles handle this */
 
   .reply-input-box {
     padding: 0.75rem;
