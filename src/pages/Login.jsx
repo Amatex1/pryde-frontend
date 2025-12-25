@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../utils/api';
 import { setAuthToken, setRefreshToken, setCurrentUser, clearManualLogoutFlag } from '../utils/auth';
-import { disconnectSocket, initializeSocket } from '../utils/socket';
+import { disconnectSocket, initializeSocket, resetLogoutFlag } from '../utils/socket';
+import { useAuth } from '../context/AuthContext';
 import PasskeyLogin from '../components/PasskeyLogin';
 import './Auth.css';
 
@@ -18,12 +19,16 @@ function Login({ setIsAuth }) {
   const [twoFactorCode, setTwoFactorCode] = useState('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { refreshUser } = useAuth(); // Get refreshUser from AuthContext
   // Theme is initialized in main.jsx - no need to set it here
 
   // Check if redirected due to expired token
   useEffect(() => {
     // Clear manual logout flag when login page loads
     clearManualLogoutFlag();
+
+    // Reset socket logout flag
+    resetLogoutFlag();
 
     if (searchParams.get('expired') === 'true') {
       setError('Your session timed out. You can sign in again when ready.');
@@ -59,6 +64,9 @@ function Login({ setIsAuth }) {
       setAuthToken(response.data.accessToken || response.data.token);
       setRefreshToken(response.data.refreshToken); // Store refresh token
       setCurrentUser(response.data.user);
+
+      // 🔥 CRITICAL: Refresh AuthContext to populate user data
+      await refreshUser();
 
       // Disconnect old socket and reconnect with new token
       disconnectSocket();
@@ -101,6 +109,9 @@ function Login({ setIsAuth }) {
       setAuthToken(response.data.accessToken || response.data.token);
       setRefreshToken(response.data.refreshToken); // Store refresh token
       setCurrentUser(response.data.user);
+
+      // 🔥 CRITICAL: Refresh AuthContext to populate user data
+      await refreshUser();
 
       // Disconnect old socket and reconnect with new token
       disconnectSocket();

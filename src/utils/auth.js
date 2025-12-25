@@ -72,62 +72,117 @@ export const getCurrentUser = () => {
   }
 };
 
+// Global flag to track logout state
+let isLoggingOut = false;
+
 export const logout = async () => {
+  // Prevent duplicate logout calls
+  if (isLoggingOut) {
+    console.log('🚫 Logout already in progress');
+    return;
+  }
+
+  isLoggingOut = true;
+  console.log('🚪 Starting logout process...');
+
   // Set flag to indicate manual logout (not session expiration)
   sessionStorage.setItem('manualLogout', 'true');
 
-  // 🔥 CRITICAL: Mark as unauthenticated FIRST to prevent redirects
+  // 🔥 STEP 1: Mark as unauthenticated FIRST to prevent new requests
   try {
     const { markUnauthenticated } = await import('../state/authStatus');
     markUnauthenticated();
+    console.log('✅ Marked as unauthenticated');
   } catch (error) {
     console.error('Failed to mark unauthenticated:', error);
   }
 
-  // 🔥 CRITICAL: Disconnect socket SECOND to prevent zombie sockets
+  // 🔥 STEP 2: Clear AuthContext to stop authenticated effects
+  try {
+    // This will be called by components using useAuth
+    console.log('✅ Auth context will be cleared by components');
+  } catch (error) {
+    console.error('Failed to clear auth context:', error);
+  }
+
+  // 🔥 STEP 3: Abort all in-flight requests
+  try {
+    const { abortAllRequests } = await import('./apiClient');
+    if (abortAllRequests) {
+      abortAllRequests();
+      console.log('✅ Aborted in-flight requests');
+    }
+  } catch (error) {
+    // Function might not exist yet - that's okay
+    console.debug('No abort function available');
+  }
+
+  // 🔥 STEP 4: Disconnect socket to prevent reconnection
   try {
     const { disconnectSocketForLogout } = await import('./socket');
     disconnectSocketForLogout();
+    console.log('✅ Socket disconnected');
   } catch (error) {
     // Silently fail - socket might not be initialized
+    console.debug('Socket disconnect skipped');
   }
 
-  // Call backend logout endpoint to invalidate refresh token
-  // Backend will also force disconnect the socket from server side
-  try {
-    // Import api dynamically to avoid circular dependency
-    const { default: api } = await import('./api');
-    await api.post('/auth/logout').catch(() => {
-      // Silently fail - we'll clear local state anyway
-    });
-  } catch (error) {
-    // Silently fail - we'll clear local state anyway
-  }
-
-  // Clear all local auth state
+  // 🔥 STEP 5: Clear all local auth state BEFORE backend call
   localStorage.removeItem('token');
   localStorage.removeItem('tokenSetTime');
   localStorage.removeItem('refreshToken');
   localStorage.removeItem('user');
-  sessionStorage.clear();
+  console.log('✅ Local auth state cleared');
 
-  // Clear all draft data
+  // 🔥 STEP 6: Call backend logout endpoint (best effort)
+  try {
+    const { default: api } = await import('./api');
+    await api.post('/auth/logout').catch(() => {
+      // Silently fail - we've already cleared local state
+    });
+    console.log('✅ Backend logout called');
+  } catch (error) {
+    // Silently fail - we've already cleared local state
+    console.debug('Backend logout skipped');
+  }
+
+  // 🔥 STEP 7: Clear all caches
+  try {
+    const { clearCache } = await import('./apiClient');
+    if (clearCache) {
+      clearCache();
+      console.log('✅ API cache cleared');
+    }
+  } catch (error) {
+    console.debug('Cache clear skipped');
+  }
+
+  // 🔥 STEP 8: Clear all draft data
   try {
     const { clearAllDrafts } = await import('./draftStore');
     clearAllDrafts();
-    console.log('🗑️ Cleared all draft data on logout');
+    console.log('✅ Draft data cleared');
   } catch (error) {
     console.error('Failed to clear drafts:', error);
   }
 
-  // Clear all mutation guard tracked entities
+  // 🔥 STEP 9: Clear all mutation guard tracked entities
   try {
     const { clearAllEntities } = await import('./mutationGuard');
     clearAllEntities();
-    console.log('🗑️ Cleared mutation guard entities on logout');
+    console.log('✅ Mutation guard cleared');
   } catch (error) {
-    console.error('Failed to clear mutation guard entities:', error);
+    console.error('Failed to clear mutation guard:', error);
   }
+
+  // 🔥 STEP 10: Clear session storage
+  sessionStorage.clear();
+  console.log('✅ Session storage cleared');
+
+  console.log('🎉 Logout complete - redirecting to login');
+
+  // Reset logout flag before redirect
+  isLoggingOut = false;
 
   // Immediately redirect to login to prevent flash of protected content
   window.location.href = '/login';
@@ -139,6 +194,10 @@ export const isManualLogout = () => {
 
 export const clearManualLogoutFlag = () => {
   sessionStorage.removeItem('manualLogout');
+};
+
+export const getIsLoggingOut = () => {
+  return isLoggingOut;
 };
 
 export const isAuthenticated = () => {

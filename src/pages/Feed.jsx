@@ -21,6 +21,7 @@ import { useModal } from '../hooks/useModal';
 import { useOnlineUsers } from '../hooks/useOnlineUsers';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useUnreadMessages } from '../hooks/useUnreadMessages'; // ✅ Use singleton hook
+import { useAuth } from '../context/AuthContext'; // ✅ Use auth context for authReady gate
 import api, { getCsrfToken } from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
@@ -38,6 +39,7 @@ function Feed() {
   const [searchParams] = useSearchParams();
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const { onlineUsers, isUserOnline } = useOnlineUsers();
+  const { authReady, isAuthenticated } = useAuth(); // ✅ Get auth ready state
   const isMobile = useMediaQuery('(max-width: 768px)');
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
@@ -342,6 +344,21 @@ function Feed() {
   };
 
   useEffect(() => {
+    // 🔥 AUTH READY GATE: Wait for auth to be ready before fetching data
+    if (!authReady) {
+      logger.debug('[Feed] Waiting for auth to be ready...');
+      return;
+    }
+
+    // Skip fetching if not authenticated
+    if (!isAuthenticated) {
+      logger.debug('[Feed] Not authenticated - skipping data fetch');
+      setInitializing(false);
+      return;
+    }
+
+    logger.debug('[Feed] Auth ready - fetching initial data');
+
     // Fetch all data in parallel for faster initial load
     // Use Promise.allSettled to continue even if some requests fail
     Promise.allSettled([
@@ -367,7 +384,7 @@ function Feed() {
       // Don't throw - let the app continue with partial data
       setInitializing(false);
     });
-  }, []); // ✅ No dependencies - only run once on mount
+  }, [authReady, isAuthenticated]); // ✅ Run when auth state changes
 
   // Restore localStorage draft on mount (fallback if backend draft fails)
   useEffect(() => {

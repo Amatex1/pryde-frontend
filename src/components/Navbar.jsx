@@ -26,7 +26,7 @@ function useDarkMode() {
 
 function Navbar() {
   const navigate = useNavigate();
-  const { user, updateUser } = useAuth(); // Use centralized auth context
+  const { user, updateUser, clearUser } = useAuth(); // Use centralized auth context
   const [showDropdown, setShowDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isDark, toggleDarkMode] = useDarkMode();
@@ -38,6 +38,9 @@ function Navbar() {
   const { totalUnread } = useUnreadMessages();
 
   const handleLogout = () => {
+    // Clear AuthContext first
+    clearUser();
+    // Then call logout (which handles everything else)
     logout();
     // logout() now handles redirect internally with window.location.href
   };

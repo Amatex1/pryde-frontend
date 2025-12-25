@@ -34,6 +34,8 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [authReady, setAuthReady] = useState(false); // NEW: Auth ready gate
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // NEW: Auth state
 
   /**
    * Hydrate user data from API
@@ -42,7 +44,18 @@ export function AuthProvider({ children }) {
   const hydrate = useCallback(async () => {
     try {
       logger.debug('[AuthContext] Hydrating user data...');
-      
+
+      // Check if we have a token before making the request
+      const token = localStorage.getItem('token');
+      if (!token) {
+        logger.debug('[AuthContext] No token found - skipping hydration');
+        setUser(null);
+        setIsAuthenticated(false);
+        setAuthReady(true);
+        setLoading(false);
+        return;
+      }
+
       const data = await apiFetch(
         '/auth/me',
         {},
@@ -51,16 +64,22 @@ export function AuthProvider({ children }) {
 
       if (data) {
         setUser(data);
+        setIsAuthenticated(true);
+        setAuthReady(true); // Auth is ready after successful fetch
         setError(null);
         logger.debug('[AuthContext] User hydrated:', data.username);
       } else {
         setUser(null);
+        setIsAuthenticated(false);
+        setAuthReady(true);
         logger.debug('[AuthContext] No user data (not authenticated)');
       }
     } catch (err) {
       logger.error('[AuthContext] Hydration failed:', err);
       setError(err);
       setUser(null);
+      setIsAuthenticated(false);
+      setAuthReady(true); // Still mark as ready even on error
     } finally {
       setLoading(false);
     }
@@ -88,6 +107,8 @@ export function AuthProvider({ children }) {
    */
   const clearUser = useCallback(() => {
     setUser(null);
+    setIsAuthenticated(false);
+    setAuthReady(false); // Reset auth ready on logout
     setLoading(false);
     clearCachePattern('/auth/me');
     logger.debug('[AuthContext] User cleared');
@@ -113,6 +134,8 @@ export function AuthProvider({ children }) {
     user,
     loading,
     error,
+    authReady, // NEW: Expose auth ready state
+    isAuthenticated, // NEW: Expose auth state
     refreshUser,
     updateUser,
     clearUser,

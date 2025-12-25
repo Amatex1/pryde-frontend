@@ -430,20 +430,20 @@ div.profile-layout,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.1rem; /* Reduced from 1.5rem */
+  height: 1.1rem; /* Reduced from 1.5rem */
   background: linear-gradient(135deg, var(--pryde-purple) 0%, var(--electric-blue) 100%);
   color: white !important;
   border-radius: 50%;
-  font-size: 0.75rem;
+  font-size: 0.6rem; /* Reduced from 0.75rem */
   font-weight: 900;
   line-height: 1;
   flex-shrink: 0;
   box-shadow:
-    0 0 0 2px rgba(108, 92, 231, 0.2),
-    0 2px 8px rgba(108, 92, 231, 0.3);
+    0 0 0 1px rgba(108, 92, 231, 0.15), /* Reduced glow */
+    0 1px 4px rgba(108, 92, 231, 0.2); /* Reduced glow */
   position: relative;
-  margin-left: 0.35rem;
+  margin-left: 0.25rem; /* Reduced from 0.35rem */
   transition: all 0.3s ease;
 }
 
@@ -454,29 +454,29 @@ div.profile-layout,
   left: 3px;
   right: 3px;
   height: 40%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, transparent 100%); /* Reduced glow */
   border-radius: 50% 50% 0 0;
   pointer-events: none;
 }
 
 .verified-badge:hover {
-  transform: scale(1.1);
+  transform: scale(1.05); /* Reduced from 1.1 */
   box-shadow:
-    0 0 0 2px rgba(108, 92, 231, 0.3),
-    0 4px 12px rgba(108, 92, 231, 0.4);
+    0 0 0 1px rgba(108, 92, 231, 0.2), /* Reduced glow */
+    0 2px 6px rgba(108, 92, 231, 0.25); /* Reduced glow */
 }
 
 [data-theme="dark"] .verified-badge {
   background: linear-gradient(135deg, var(--electric-blue) 0%, var(--pryde-purple) 100%);
   box-shadow:
-    0 0 0 2px rgba(9, 132, 227, 0.2),
-    0 2px 8px rgba(9, 132, 227, 0.3);
+    0 0 0 1px rgba(9, 132, 227, 0.15), /* Reduced glow */
+    0 1px 4px rgba(9, 132, 227, 0.2); /* Reduced glow */
 }
 
 [data-theme="dark"] .verified-badge:hover {
   box-shadow:
-    0 0 0 2px rgba(9, 132, 227, 0.3),
-    0 4px 12px rgba(9, 132, 227, 0.4);
+    0 0 0 1px rgba(9, 132, 227, 0.2), /* Reduced glow */
+    0 2px 6px rgba(9, 132, 227, 0.25); /* Reduced glow */
 }
 
 .nickname {

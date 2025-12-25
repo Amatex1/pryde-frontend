@@ -27,6 +27,9 @@ const cache = new Map();
 let rateLimitedUntil = 0;
 let backoffDelay = 1000; // Start with 1 second
 
+// AbortController for canceling in-flight requests
+const abortControllers = new Map();
+
 /**
  * Global fetch coordinator with deduplication and caching
  * 
@@ -39,6 +42,26 @@ let backoffDelay = 1000; // Start with 1 second
  */
 export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = false } = {}) {
   const now = Date.now();
+
+  // 🔥 AUTH GUARD: Check if we're logging out or not authenticated
+  if (!skipAuth) {
+    try {
+      const { getIsLoggingOut } = await import('./auth');
+      if (getIsLoggingOut()) {
+        logger.debug(`[API] Skipping request during logout: ${url}`);
+        return null;
+      }
+    } catch (error) {
+      // Function might not exist - continue
+    }
+
+    // Check if we have a token for authenticated requests
+    const token = localStorage.getItem('token');
+    if (!token) {
+      logger.debug(`[API] Skipping authenticated request without token: ${url}`);
+      return null;
+    }
+  }
 
   // Check if we're rate limited
   if (rateLimitedUntil > now) {
@@ -67,6 +90,10 @@ export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = fal
     return inflight.get(cacheKey);
   }
 
+  // Create AbortController for this request
+  const abortController = new AbortController();
+  abortControllers.set(cacheKey, abortController);
+
   // Add auth token if not skipped
   if (!skipAuth) {
     const token = getAuthToken();
@@ -86,6 +113,9 @@ export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = fal
 
   // Add credentials for cookies
   options.credentials = options.credentials || 'include';
+
+  // Add abort signal
+  options.signal = abortController.signal;
 
   const request = fetch(fullUrl, options)
     .then(async (res) => {
@@ -128,15 +158,53 @@ export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = fal
       return data;
     })
     .catch((error) => {
+      // Silence AbortError (expected during logout)
+      if (error.name === 'AbortError') {
+        logger.debug(`[API] Request aborted: ${url}`);
+        return null;
+      }
+
+      // Silence 401 errors if we're logging out (expected)
+      try {
+        const { getIsLoggingOut } = require('./auth');
+        if (getIsLoggingOut() && error.message?.includes('401')) {
+          logger.debug(`[API] Suppressing 401 during logout: ${url}`);
+          return null;
+        }
+      } catch (e) {
+        // Continue with normal error handling
+      }
+
       logger.error(`[API] Request failed: ${url}`, error);
       return null;
     })
     .finally(() => {
       inflight.delete(cacheKey);
+      abortControllers.delete(cacheKey);
     });
 
   inflight.set(cacheKey, request);
   return request;
+}
+
+/**
+ * Abort all in-flight requests
+ * Called during logout to cancel pending API calls
+ */
+export function abortAllRequests() {
+  logger.debug(`[API] Aborting ${abortControllers.size} in-flight requests`);
+
+  abortControllers.forEach((controller, key) => {
+    try {
+      controller.abort();
+    } catch (error) {
+      logger.warn(`[API] Failed to abort request: ${key}`, error);
+    }
+  });
+
+  abortControllers.clear();
+  inflight.clear();
+  logger.debug('[API] All requests aborted');
 }
 
 /**
