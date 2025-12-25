@@ -14,6 +14,8 @@ import { logMobileEnvironment } from './utils/mobileDebug'
 import { initServiceWorkerDebug } from './utils/serviceWorkerDebug'
 import { clearStaleSWAndCaches } from './utils/clearStaleSW'
 import { initSwApiCollisionDetector } from './utils/swApiCollisionDetector'
+import { initSWTestingInfrastructure } from './utils/swTestingInfrastructure'
+import { initSWAutoDisable, isSWDisabledForRecovery } from './utils/swAutoDisable'
 
 // ========================================
 // INITIALIZE THEME IMMEDIATELY
@@ -29,26 +31,41 @@ if (import.meta.env.DEV) {
   logMobileEnvironment();
   initServiceWorkerDebug();
 
+  // 🔥 PHASE 2: Initialize SW testing infrastructure
+  // Provides manual test hooks and interception logging
+  initSWTestingInfrastructure();
+
   // 🔥 CRITICAL: Initialize SW-API collision detector
   // This detects if service worker intercepts API requests (should NEVER happen)
   initSwApiCollisionDetector();
 }
 
-// Register service worker for PWA functionality (production only)
+// ========================================
+// SERVICE WORKER REGISTRATION (PRODUCTION ONLY)
+// ========================================
 if (import.meta.env.PROD) {
-  // 🔥 CRITICAL: Clear stale service workers and caches BEFORE registering new one
-  // This prevents CORS errors, ERR_FAILED loops, and zombie PWA state
-  clearStaleSWAndCaches().then(result => {
-    if (!result.alreadyCleared) {
-      console.log('[PWA] 🧹 Cleared stale service workers and caches');
-      console.log(`[PWA] 📊 Unregistered ${result.serviceWorkersUnregistered} SW(s), deleted ${result.cachesDeleted} cache(s)`);
-    }
+  // 🔥 PHASE 3: Initialize auto-disable protection
+  // This monitors auth failures and auto-disables SW if needed
+  initSWAutoDisable();
 
-    // Register service worker
-    return registerServiceWorker();
-  }).catch(err => {
-    console.error('[PWA] Service worker registration failed:', err);
-  });
+  // 🔥 PHASE 3: Check if SW is disabled for recovery
+  if (isSWDisabledForRecovery()) {
+    console.warn('[PWA] ⚠️ Service worker disabled for recovery - skipping registration');
+  } else {
+    // 🔥 CRITICAL: Clear stale service workers and caches BEFORE registering new one
+    // This prevents CORS errors, ERR_FAILED loops, and zombie PWA state
+    clearStaleSWAndCaches().then(result => {
+      if (!result.alreadyCleared) {
+        console.log('[PWA] 🧹 Cleared stale service workers and caches');
+        console.log(`[PWA] 📊 Unregistered ${result.serviceWorkersUnregistered} SW(s), deleted ${result.cachesDeleted} cache(s)`);
+      }
+
+      // Register service worker
+      return registerServiceWorker();
+    }).catch(err => {
+      console.error('[PWA] Service worker registration failed:', err);
+    });
+  }
 
   // Setup install prompt
   setupInstallPrompt();
