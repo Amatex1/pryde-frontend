@@ -6,7 +6,11 @@ import './styles/breakpoints.css' // Responsive breakpoint system + PWA utilitie
 import './styles/darkMode.css'
 import './styles/quiet-mode.css' // MUST be loaded AFTER darkMode.css to override properly
 import './styles/mobileFriendly.css' // Mobile-friendly layout fixes for PWA
+// NOTE: Service worker lifecycle is centrally managed by serviceWorkerManager.
+// All production SW registration must flow through initializeServiceWorker() to
+// avoid double registration and PWA refresh loops.
 import { registerServiceWorker, setupInstallPrompt, requestPersistentStorage } from './utils/pwa'
+import { initializeServiceWorker } from './utils/serviceWorkerManager'
 import { initWebVitals } from './utils/webVitals'
 import { initializePushNotifications } from './utils/pushNotifications'
 import { initializeTheme } from './utils/themeManager'
@@ -59,18 +63,16 @@ if (import.meta.env.PROD) {
   if (isSWDisabledForRecovery()) {
     console.warn('[PWA] ⚠️ Service worker disabled for recovery - skipping registration');
   } else {
-    // 🔥 CRITICAL: Clear stale service workers and caches BEFORE registering new one
-    // This prevents CORS errors, ERR_FAILED loops, and zombie PWA state
-    clearStaleSWAndCaches().then(result => {
-      if (!result.alreadyCleared) {
-        console.log('[PWA] 🧹 Cleared stale service workers and caches');
-        console.log(`[PWA] 📊 Unregistered ${result.serviceWorkersUnregistered} SW(s), deleted ${result.cachesDeleted} cache(s)`);
-      }
-
-      // Register service worker
-      return registerServiceWorker();
-    }).catch(err => {
-      console.error('[PWA] Service worker registration failed:', err);
+    // 🔥 CRITICAL: Service worker lifecycle is now fully owned by
+    // serviceWorkerManager.initializeServiceWorker(). This helper:
+    //   - Unregisters ALL existing SWs
+    //   - Clears orphaned caches on version mismatch
+    //   - Registers EXACTLY ONE SW at scope "/"
+    //   - Logs active controller state
+    //
+    // No other code path should register/unregister service workers directly.
+    initializeServiceWorker().catch(err => {
+      console.error('[PWA] Service worker initialization failed:', err);
     });
   }
 

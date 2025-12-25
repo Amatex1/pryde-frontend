@@ -192,9 +192,24 @@ export function initializeUpdateNotifications(registration) {
   }
 
   // Check for updates periodically (every 60 seconds)
-  setInterval(() => {
+  setInterval(async () => {
     console.log('[Update Manager] 🔍 Checking for updates...');
-    registration.update();
+    try {
+      // Guard: Check if registration is still valid before calling update()
+      if (!registration || !registration.active) {
+        console.warn('[Update Manager] ⚠️ Service worker registration invalid, skipping update check');
+        return;
+      }
+      await registration.update();
+    } catch (error) {
+      // Handle InvalidStateError gracefully - SW may be in invalid state
+      // This can happen during transitions, unregistration, or page navigation
+      if (error.name === 'InvalidStateError') {
+        console.warn('[Update Manager] ⚠️ Service worker in invalid state, skipping update');
+      } else {
+        console.error('[Update Manager] ❌ Failed to check for updates:', error);
+      }
+    }
   }, 60000);
 
   console.log('[Update Manager] ✅ Update notification manager initialized');

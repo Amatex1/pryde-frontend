@@ -1,19 +1,33 @@
 /**
  * Custom Service Worker Extensions
- * 
+ *
  * This file extends the Workbox-generated service worker with:
+ * - Navigation bypass (NEVER intercept navigation requests)
  * - Version checking
  * - Cache invalidation on version mismatch
  * - Dev logging for cache hits/misses
- * 
+ *
  * 🔥 CRITICAL: This prevents stale JS bundles from running against new backend
+ * 🔥 CRITICAL: Navigation bypass prevents ERR_FAILED on reload
  */
 
 // Import Workbox (will be injected by vite-plugin-pwa)
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js');
 
 const CACHE_VERSION = '{{BUILD_VERSION}}'; // Replaced at build time
-const isDev = false; // Always false in service worker
+const isDev = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
+
+/**
+ * Check if request is a navigation request
+ * Navigation requests MUST bypass SW completely
+ */
+function isNavigationRequest(request) {
+  if (request.mode === 'navigate') return true;
+  const accept = request.headers.get('Accept');
+  if (accept && accept.includes('text/html')) return true;
+  if (request.destination === 'document') return true;
+  return false;
+}
 
 /**
  * Check if cached response is stale
@@ -45,11 +59,25 @@ async function notifyClients(message) {
  * Intercept fetch events for dev logging
  */
 self.addEventListener('fetch', (event) => {
-  const url = event.request.url;
-  
+  const request = event.request;
+  const url = request.url;
+
+  // ========================================
+  // 🔥 CRITICAL: HARD BYPASS ALL NAVIGATION REQUESTS
+  // ========================================
+  // DO NOT call event.respondWith()
+  // Let browser handle navigation completely
+  // This fixes ERR_FAILED on reload and auth redirect failures
+  if (isNavigationRequest(request)) {
+    if (isDev) {
+      console.warn('[SW Custom] ⚠️ Navigation request - bypassing:', url);
+    }
+    return; // Browser handles it
+  }
+
   // Skip non-GET requests
-  if (event.request.method !== 'GET') return;
-  
+  if (request.method !== 'GET') return;
+
   // Check if this is an auth endpoint (should NEVER be cached)
   const authPatterns = [
     '/api/auth/',
@@ -57,13 +85,13 @@ self.addEventListener('fetch', (event) => {
     '/api/push/status',
     '/api/users/me'
   ];
-  
+
   const isAuthEndpoint = authPatterns.some(pattern => url.includes(pattern));
-  
+
   if (isAuthEndpoint) {
     // Force network-only for auth endpoints
     event.respondWith(
-      fetch(event.request)
+      fetch(request, { redirect: 'follow' })
         .then(response => {
           // Notify clients in dev mode
           if (isDev) {

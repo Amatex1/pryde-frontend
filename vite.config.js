@@ -23,10 +23,16 @@ export default defineConfig({
       workbox: {
         // Import custom service worker code BEFORE Workbox routing
         importScripts: ['sw-bypass-api.js'],
-        // Only precache static assets (JS, CSS, HTML, icons, fonts)
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
 
-        // 🔥 CRITICAL: Exclude ALL API requests from service worker
+        // 🔥 CRITICAL: Only precache static assets (NO HTML!)
+        // HTML must ALWAYS come from network to prevent ERR_FAILED on navigation
+        globPatterns: ['**/*.{js,css,ico,png,svg,webp,woff2}'],
+
+        // 🔥 CRITICAL: Disable navigation fallback completely
+        // Navigation requests are handled by browser, not SW
+        navigateFallback: null,
+
+        // 🔥 CRITICAL: Exclude ALL API requests and navigation from service worker
         // This prevents CORS errors, ERR_FAILED loops, and auth issues
         navigateFallbackDenylist: [
           /^\/api\/.*/,
@@ -34,7 +40,8 @@ export default defineConfig({
           /^\/status/,
           /^\/me/,
           /^\/notifications/,
-          /^\/counts/
+          /^\/counts/,
+          /.*/ // Deny all navigation fallback as safety measure
         ],
 
         // Runtime caching ONLY for static assets

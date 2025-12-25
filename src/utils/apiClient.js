@@ -222,7 +222,7 @@ export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = fal
 
       return data;
     })
-    .catch((error) => {
+    .catch(async (error) => {
       // Silence AbortError (expected during logout)
       if (error.name === 'AbortError') {
         logger.debug(`[API] Request aborted: ${url}`);
@@ -231,13 +231,13 @@ export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = fal
 
       // Silence 401 errors if we're logging out (expected)
       try {
-        const { getIsLoggingOut } = require('./auth');
-        if (getIsLoggingOut() && error.message?.includes('401')) {
+        const { getIsLoggingOut } = await import('./auth');
+        if (getIsLoggingOut && getIsLoggingOut() && error.message?.includes('401')) {
           logger.debug(`[API] Suppressing 401 during logout: ${url}`);
           return null;
         }
       } catch (e) {
-        // Continue with normal error handling
+        // If auth module isn't available for any reason, continue with normal error handling
       }
 
       logger.error(`[API] Request failed: ${url}`, error);

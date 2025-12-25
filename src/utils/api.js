@@ -1,5 +1,16 @@
 import { API_BASE_URL } from "../config/api.js"; // include .js extension
 import axios from "axios";
+// NOTE FOR MAINTAINERS:
+// - api.js is the canonical Axios-based client used for auth-critical flows
+//   (login, refresh, CSRF handling, sockets).
+// - apiClient.js implements a fetch-based client with dedup/caching and
+//   circuit-breaker semantics for non-auth-critical endpoints.
+//
+// When adding new API calls:
+// - Use api.js for anything that depends on JWT/refresh/CSRF or runs during
+//   auth bootstrap.
+// - Use apiClient.js (apiFetch) for background/fan-out requests that should
+//   respect the authCircuitBreaker and front-end version pinning.
 import { getAuthToken, logout, isManualLogout, setAuthToken, getRefreshToken, setRefreshToken, getCurrentUser } from "./auth";
 import logger from './logger';
 import { disconnectSocket, initializeSocket } from './socket';

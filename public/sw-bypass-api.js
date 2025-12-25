@@ -4,8 +4,11 @@
  * 🔥 PHASE 1: EXACT WORKBOX EXCLUSION RULES (MANDATORY)
  *
  * RULE: Service Worker must NEVER intercept API or auth traffic.
+ * RULE: Service Worker must NEVER intercept NAVIGATION requests.
  *
  * This plugin ensures:
+ * - ALL navigation requests bypass service worker (ERR_FAILED fix)
+ * - ALL HTML requests bypass service worker
  * - ALL API requests bypass service worker
  * - ALL auth requests bypass service worker
  * - ALL requests with Authorization header bypass service worker
@@ -13,11 +16,13 @@
  *
  * Prevents:
  * - CORS errors from Workbox
- * - ERR_FAILED loops
+ * - ERR_FAILED loops on reload
+ * - Auth redirect failures
  * - Auth request interception
  * - Stale API responses
  *
  * Strategy:
+ * - FIRST: Check if navigation request - DO NOT call respondWith
  * - Intercept ALL fetch events BEFORE Workbox routing
  * - Check if request should bypass
  * - If yes, return fetch(event.request) directly
@@ -66,6 +71,38 @@ const STATIC_ASSET_PATTERNS = [
   /\.webp$/,
   /\.ico$/
 ];
+
+// Dev mode detection
+const isDev = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
+
+/**
+ * 🔥 CRITICAL: Check if request is a navigation request
+ *
+ * Navigation requests MUST bypass service worker completely:
+ * - DO NOT call event.respondWith()
+ * - Let browser handle redirects, auth, etc.
+ *
+ * This fixes ERR_FAILED on reload and auth redirect failures.
+ */
+function isNavigationRequest(request) {
+  // Primary check: request.mode === 'navigate'
+  if (request.mode === 'navigate') {
+    return true;
+  }
+
+  // Secondary check: Accept header includes 'text/html'
+  const acceptHeader = request.headers.get('Accept');
+  if (acceptHeader && acceptHeader.includes('text/html')) {
+    return true;
+  }
+
+  // Tertiary check: request.destination === 'document'
+  if (request.destination === 'document') {
+    return true;
+  }
+
+  return false;
+}
 
 /**
  * Check if request should bypass service worker
@@ -152,12 +189,28 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-// 🔥 PHASE 1: Fetch event - bypass API requests BEFORE Workbox routing
+// 🔥 PHASE 1: Fetch event - bypass navigation and API requests BEFORE Workbox routing
 // This listener is registered FIRST to ensure it runs before Workbox
 self.addEventListener('fetch', (event) => {
   const request = event.request;
 
-  // Check if request should bypass service worker
+  // ========================================
+  // 🔥 CRITICAL: HARD BYPASS ALL NAVIGATION REQUESTS
+  // ========================================
+  // DO NOT call event.respondWith()
+  // DO NOT fetch
+  // DO NOT cache
+  // Let browser handle navigation completely
+  // This fixes ERR_FAILED on reload and auth redirect failures
+  if (isNavigationRequest(request)) {
+    if (isDev) {
+      console.warn('[SW Bypass] ⚠️ NAVIGATION REQUEST DETECTED - bypassing SW completely:', request.url);
+    }
+    // Simply return - browser handles everything
+    return;
+  }
+
+  // Check if request should bypass service worker (API, auth, etc.)
   const bypassResult = shouldBypassServiceWorker(request);
 
   if (bypassResult.bypass) {

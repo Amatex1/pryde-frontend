@@ -2,46 +2,42 @@
 import logger from './logger';
 
 /**
- * Register the service worker
+ * LEGACY SERVICE WORKER REGISTRATION (DEPRECATED)
+ *
+ * NOTE: The authoritative service worker lifecycle is now managed by
+ * src/utils/serviceWorkerManager.js (initializeServiceWorker).
+ *
+ * This helper is retained ONLY for backward compatibility and should not be
+ * used by new code paths. Production SW registration must flow through the
+ * ServiceWorkerManager to avoid double registration and PWA refresh loops.
  */
 export async function registerServiceWorker() {
+  logger.warn('[PWA] registerServiceWorker() is deprecated. Use initializeServiceWorker() from serviceWorkerManager instead.');
+
   if ('serviceWorker' in navigator) {
     try {
       const registration = await navigator.serviceWorker.register('/sw.js', {
         scope: '/'
       });
 
-      logger.info('[PWA] Service Worker registered successfully:', registration.scope);
+      logger.info('[PWA] Service Worker registered successfully (legacy path):', registration.scope);
 
-      // Check for updates
+      // Basic update handling retained for backwards compatibility
       registration.addEventListener('updatefound', () => {
         const newWorker = registration.installing;
-        logger.info('[PWA] New Service Worker found, installing...');
+        logger.info('[PWA] New Service Worker found, installing (legacy)...');
 
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            // New service worker available, automatically reload after a short delay
-            logger.info('[PWA] New version available! Auto-updating...');
+            logger.info('[PWA] New version available (legacy)! Auto-updating...');
             showUpdateNotification();
           }
         });
       });
 
-      // Check for updates every 5 minutes (more frequent for faster updates)
-      setInterval(() => {
-        registration.update();
-      }, 5 * 60 * 1000);
-
-      // Also check for updates when page becomes visible (user switches back to tab)
-      document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) {
-          registration.update();
-        }
-      });
-
       return registration;
     } catch (error) {
-      logger.error('[PWA] Service Worker registration failed:', error);
+      logger.error('[PWA] Service Worker registration failed (legacy):', error);
     }
   } else {
     logger.debug('[PWA] Service Workers not supported in this browser');
@@ -260,12 +256,19 @@ export async function subscribeToPushNotifications() {
   }
 
   try {
+    const vapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+
+    if (!vapidKey) {
+      logger.warn('[PWA] VITE_VAPID_PUBLIC_KEY is not configured. Skipping push subscription.');
+      return null;
+    }
+
     const registration = await navigator.serviceWorker.ready;
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(
-        // Replace with your VAPID public key
-        'YOUR_VAPID_PUBLIC_KEY'
+        // VAPID public key is provided via VITE_VAPID_PUBLIC_KEY at build time
+        vapidKey
       )
     });
 
