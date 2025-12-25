@@ -431,31 +431,32 @@ function App() {
     // Usage: window.checkForUpdate()
     window.checkForUpdate = checkForUpdate;
 
+    // 🔥 TEMPORARILY DISABLED FOR DEBUGGING
     // Subscribe to update notifications
-    const unsubscribe = useUpdateStore(setUpdateAvailable);
+    // const unsubscribe = useUpdateStore(setUpdateAvailable);
 
     // Check immediately on load
-    checkVersion();
+    // checkVersion();
 
     // ✅ FIXED: Reduced from 60s to 5 minutes to prevent spam
-    const versionCheckInterval = setInterval(checkVersion, 5 * 60 * 1000); // 5 minutes
+    // const versionCheckInterval = setInterval(checkVersion, 5 * 60 * 1000); // 5 minutes
 
     // ✅ FIXED: Debounced focus check to prevent rapid checks
-    let focusTimeout;
-    const onFocus = () => {
-      clearTimeout(focusTimeout);
-      focusTimeout = setTimeout(checkVersion, 2000); // Wait 2s after focus
-    };
-    window.addEventListener('focus', onFocus);
+    // let focusTimeout;
+    // const onFocus = () => {
+    //   clearTimeout(focusTimeout);
+    //   focusTimeout = setTimeout(checkVersion, 2000); // Wait 2s after focus
+    // };
+    // window.addEventListener('focus', onFocus);
 
     // ✅ REMOVED: visibility and online checks - redundant with focus check
 
     // Cleanup
     return () => {
-      clearTimeout(focusTimeout);
-      unsubscribe();
-      clearInterval(versionCheckInterval);
-      window.removeEventListener('focus', onFocus);
+      // clearTimeout(focusTimeout);
+      // unsubscribe();
+      // clearInterval(versionCheckInterval);
+      // window.removeEventListener('focus', onFocus);
     };
 
     // Initialize Quiet Mode globally - only when authenticated
