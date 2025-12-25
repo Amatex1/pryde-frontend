@@ -37,7 +37,7 @@ function Messages() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const { onlineUsers, isUserOnline } = useOnlineUsers();
-  const { user: currentUser } = useAuth(); // Use centralized auth context
+  const { user: currentUser, authReady } = useAuth(); // Use centralized auth context
 
   // Don't restore selected chat on mobile - always show conversation list first
   const [selectedChat, setSelectedChat] = useState(() => {
@@ -198,6 +198,12 @@ function Messages() {
 
   // Fetch conversations and group chats
   useEffect(() => {
+    // 🔒 AUTH GUARD: Wait for auth to be ready before making API calls
+    if (!authReady) {
+      logger.debug('[Messages] Waiting for auth to be ready...');
+      return;
+    }
+
     const fetchConversations = async () => {
       try {
         const [messagesRes, groupsRes] = await Promise.all([
@@ -213,7 +219,7 @@ function Messages() {
       }
     };
     fetchConversations();
-  }, []);
+  }, [authReady]);
 
   // Fetch messages and user/group info for selected chat
   useEffect(() => {
@@ -293,10 +299,9 @@ function Messages() {
             }
           }
         } catch (error) {
-          logger.error('Error fetching chat info:', error);
-
-          // ✅ Handle 404 for deactivated/deleted users gracefully
+          // ✅ Handle 404 for deactivated/deleted users gracefully (expected case - don't log as error)
           if (error.response?.status === 404) {
+            logger.debug('[Messages] User not found (404) - showing deactivated placeholder');
             // Set a generic placeholder user for deactivated/deleted accounts
             setSelectedUser({
               _id: selectedChat,
@@ -308,6 +313,8 @@ function Messages() {
             setIsRecipientUnavailable(true);
             setRecipientUnavailableReason("This account is no longer available.");
           } else {
+            // Log actual errors (not 404s)
+            logger.error('Error fetching chat info:', error);
             // ✅ Clear state on other errors
             setSelectedUser(null);
             setSelectedGroup(null);
