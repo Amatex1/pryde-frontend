@@ -116,17 +116,7 @@ export default defineConfig({
 
         // Custom navigation route handler
         // This ensures API requests are NEVER intercepted by service worker
-        ignoreURLParametersMatching: [/.*/],
-
-        // Exclude API requests from being handled by service worker
-        exclude: [
-          /\/api\/.*/,
-          /\/auth\/.*/,
-          /\/status$/,
-          /\/me$/,
-          /\/notifications$/,
-          /\/counts$/
-        ]
+        ignoreURLParametersMatching: [/.*/]
       },
       devOptions: {
         enabled: false // Disable in development
