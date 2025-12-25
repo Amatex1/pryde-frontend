@@ -3,6 +3,8 @@
  * Detects updates automatically without requiring manual refresh
  */
 
+import { API_BASE_URL } from '../config/api';
+
 let currentVersion = null;
 let updateDetected = false;
 const listeners = new Set();
@@ -30,7 +32,7 @@ function notify() {
  */
 export async function checkVersion() {
   try {
-    const res = await fetch('/api/version', { 
+    const res = await fetch(`${API_BASE_URL}/version`, {
       cache: 'no-store',
       headers: {
         'Cache-Control': 'no-cache',
