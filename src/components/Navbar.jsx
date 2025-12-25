@@ -209,13 +209,13 @@ function Navbar() {
               aria-pressed={isDark}
             >
               <span className="mobile-menu-icon" aria-hidden="true">{isDark ? '☀️' : '🌙'}</span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                <span>Dark Mode</span>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              <div className="mobile-menu-item-content">
+                <span className="mobile-menu-item-title">Dark Mode</span>
+                <span className="mobile-menu-item-description">
                   {isDark ? 'Switch to light theme' : 'Switch to dark theme'}
                 </span>
               </div>
-              {isDark && <span className="mode-indicator" style={{ marginLeft: 'auto' }} aria-hidden="true">✓</span>}
+              {isDark && <span className="mode-indicator" aria-hidden="true">✓</span>}
             </button>
             <button
               className="mobile-menu-item"
@@ -224,13 +224,13 @@ function Navbar() {
               aria-pressed={quietMode}
             >
               <span className="mobile-menu-icon" aria-hidden="true">🍃</span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                <span>Quiet Mode</span>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              <div className="mobile-menu-item-content">
+                <span className="mobile-menu-item-title">Quiet Mode</span>
+                <span className="mobile-menu-item-description">
                   Peaceful browsing with softer colors
                 </span>
               </div>
-              {quietMode && <span className="mode-indicator" style={{ marginLeft: 'auto' }} aria-hidden="true">✓</span>}
+              {quietMode && <span className="mode-indicator" aria-hidden="true">✓</span>}
             </button>
             <div className="mobile-menu-divider" role="separator"></div>
             <button
