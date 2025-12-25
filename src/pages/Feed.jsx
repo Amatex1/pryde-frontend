@@ -17,10 +17,12 @@ import Poll from '../components/Poll';
 import PinnedPostBadge from '../components/PinnedPostBadge';
 import EditHistoryModal from '../components/EditHistoryModal';
 import DraftManager from '../components/DraftManager';
+import Toast from '../components/Toast';
 import { useModal } from '../hooks/useModal';
 import { useOnlineUsers } from '../hooks/useOnlineUsers';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useUnreadMessages } from '../hooks/useUnreadMessages'; // ✅ Use singleton hook
+import { useToast } from '../hooks/useToast';
 import { useAuth } from '../context/AuthContext'; // ✅ Use auth context for authReady gate
 import api, { getCsrfToken } from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
@@ -40,6 +42,7 @@ function Feed() {
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const { onlineUsers, isUserOnline } = useOnlineUsers();
   const { authReady, isAuthenticated } = useAuth(); // ✅ Get auth ready state
+  const { toasts, showToast, removeToast } = useToast();
   const isMobile = useMediaQuery('(max-width: 768px)');
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
@@ -3145,6 +3148,17 @@ function Feed() {
           </div>
         </div>
       )}
+
+      {/* Toast Notifications */}
+      {toasts.map(toast => (
+        <Toast
+          key={toast.id}
+          message={toast.message}
+          type={toast.type}
+          duration={toast.duration}
+          onClose={() => removeToast(toast.id)}
+        />
+      ))}
     </div>
   );
 }
