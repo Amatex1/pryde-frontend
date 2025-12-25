@@ -1,10 +1,13 @@
 import { getSocket } from './socket';
 import logger from './logger';
 import SOCKET_EVENTS from '../constants/socketEvents';
+import api from './api';
 
 // Re-export getSocket for convenience (components can import from socketHelpers)
 export { getSocket };
 export { SOCKET_EVENTS };
+
+const isDev = import.meta.env.DEV;
 
 /**
  * Waits for socket to be initialized and connected, then executes a setup callback.
@@ -205,5 +208,156 @@ export function emitWithAck(event, data, timeout = 5000) {
       }
     });
   });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SOCKET CONSISTENCY VERIFICATION
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * Verify socket event data refers to an entity that exists in backend
+ * CRITICAL: Prevents applying socket updates for ghost/non-existent entities
+ *
+ * @param {string} entityType - Type of entity ('post', 'draft', 'comment', etc.)
+ * @param {string} entityId - ID of the entity to verify
+ * @param {Object} eventData - Original socket event data
+ * @returns {Promise<{verified: boolean, exists: boolean, entity?: Object}>}
+ */
+export async function verifySocketEntity(entityType, entityId, eventData) {
+  if (!isDev) {
+    // In production, trust socket events for performance
+    return { verified: true, exists: true };
+  }
+
+  if (!entityId) {
+    console.warn(
+      `⚠️ [SOCKET CONSISTENCY] Received ${entityType} event with no ID\n`,
+      eventData
+    );
+    return { verified: false, exists: false, reason: 'missing_id' };
+  }
+
+  try {
+    // Use dev verify endpoint to check entity exists
+    const response = await api.get(`/dev/verify/${entityType}/${entityId}`);
+
+    if (response.data?.existsInDB) {
+      logger.debug(`✅ [SOCKET VERIFY] ${entityType} ${entityId} verified in database`);
+      return {
+        verified: true,
+        exists: true,
+        entity: response.data.comparison?.rawDocument
+      };
+    } else {
+      console.warn(
+        `⚠️ [SOCKET CONSISTENCY] ${entityType} ${entityId} from socket event does not exist in DB!\n` +
+        `This could indicate a race condition or ghost entity.`
+      );
+      return { verified: true, exists: false, reason: 'not_in_db' };
+    }
+  } catch (error) {
+    // 404 means entity doesn't exist
+    if (error.response?.status === 404) {
+      console.warn(
+        `⚠️ [SOCKET CONSISTENCY] ${entityType} ${entityId} not found in database\n` +
+        `Rejecting socket update for non-existent entity.`
+      );
+      return { verified: true, exists: false, reason: 'not_found' };
+    }
+
+    // Other errors - log but don't block (could be network issue)
+    logger.warn(`⚠️ [SOCKET VERIFY] Could not verify ${entityType} ${entityId}:`, error.message);
+    return { verified: false, exists: null, reason: 'verification_failed' };
+  }
+}
+
+/**
+ * Create a verified socket event handler
+ * Wraps a handler to verify entity exists before processing
+ *
+ * @param {string} entityType - Entity type to verify
+ * @param {Function} idExtractor - Function to extract entity ID from event data
+ * @param {Function} handler - Original event handler
+ * @param {Object} options - Options
+ * @param {boolean} options.blockIfMissing - If true, don't call handler if entity missing
+ * @returns {Function} Wrapped handler
+ *
+ * @example
+ * const verifiedHandler = createVerifiedSocketHandler(
+ *   'post',
+ *   (data) => data.postId,
+ *   (data) => addPostToFeed(data.post),
+ *   { blockIfMissing: true }
+ * );
+ * socket.on('post_created', verifiedHandler);
+ */
+export function createVerifiedSocketHandler(entityType, idExtractor, handler, options = {}) {
+  const { blockIfMissing = true } = options;
+
+  return async (eventData) => {
+    const entityId = idExtractor(eventData);
+    const mutationId = eventData?._mutationId;
+
+    if (isDev) {
+      logger.debug(`📡 [SOCKET] Received ${entityType} event`, { entityId, mutationId });
+    }
+
+    // Verify entity exists
+    const verification = await verifySocketEntity(entityType, entityId, eventData);
+
+    if (!verification.exists && blockIfMissing) {
+      console.warn(
+        `🚫 [SOCKET] Blocking update for non-existent ${entityType}: ${entityId}\n` +
+        `Mutation ID: ${mutationId || 'unknown'}`
+      );
+      return;
+    }
+
+    // Call original handler
+    handler(eventData);
+  };
+}
+
+/**
+ * Subscribe to verified socket events
+ * Like subscribeToEvents but with entity verification
+ *
+ * @param {Object} eventConfigs - Map of event names to config objects
+ * @returns {Function} Cleanup function
+ *
+ * @example
+ * const cleanup = subscribeToVerifiedEvents({
+ *   'post_created': {
+ *     entityType: 'post',
+ *     idExtractor: (data) => data.post?._id,
+ *     handler: (data) => addPost(data.post)
+ *   },
+ *   'post_deleted': {
+ *     entityType: 'post',
+ *     idExtractor: (data) => data.postId,
+ *     handler: (data) => removePost(data.postId),
+ *     verify: false // Skip verification for deletes
+ *   }
+ * });
+ */
+export function subscribeToVerifiedEvents(eventConfigs) {
+  const handlers = {};
+
+  Object.entries(eventConfigs).forEach(([event, config]) => {
+    if (config.verify === false) {
+      // No verification needed (e.g., for delete events)
+      handlers[event] = config.handler;
+    } else {
+      // Wrap with verification
+      handlers[event] = createVerifiedSocketHandler(
+        config.entityType,
+        config.idExtractor,
+        config.handler,
+        { blockIfMissing: config.blockIfMissing ?? true }
+      );
+    }
+  });
+
+  return subscribeToEvents(handlers);
 }
 

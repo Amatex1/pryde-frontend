@@ -951,31 +951,38 @@ function Feed() {
     setShowPollCreator(!!draft.poll);
   };
 
-  // Delete draft after successful post
-  const deleteDraft = async (draftId) => {
+  // Delete draft after successful post (fire-and-forget, non-blocking)
+  const deleteDraft = (draftId) => {
     // CRITICAL: Only attempt delete if draft ID exists (backend confirmed)
     if (!draftId) {
       if (import.meta.env.DEV) {
-        console.warn('⚠️ Attempted DELETE on draft with no ID (ghost entity)');
-        console.warn('This action would fail. Skipping.');
+        setTimeout(() => {
+          console.warn('⚠️ Attempted DELETE on draft with no ID (ghost entity)');
+          console.warn('This action would fail. Skipping.');
+        }, 0);
       }
       return;
     }
 
-    try {
-      await api.delete(`/drafts/${draftId}`);
-    } catch (error) {
-      // Handle 404 gracefully - draft may have already been deleted
-      if (error.response?.status === 404) {
+    // Fire-and-forget: Schedule delete in background, don't block main flow
+    setTimeout(async () => {
+      try {
+        await api.delete(`/drafts/${draftId}`);
         if (import.meta.env.DEV) {
-          console.warn(`⚠️ DELETE 404: Draft ${draftId} not found on server`);
-          console.warn('Draft may have been already deleted or never persisted.');
+          console.log(`✅ Draft ${draftId} deleted after successful post`);
         }
-        // Don't throw - treat as success since the draft no longer exists
-        return;
+      } catch (error) {
+        // Handle 404 gracefully - draft may have already been deleted
+        if (error.response?.status === 404) {
+          if (import.meta.env.DEV) {
+            console.warn(`⚠️ DELETE 404: Draft ${draftId} not found on server`);
+            console.warn('Draft may have been already deleted or never persisted.');
+          }
+          return;
+        }
+        logger.error('Failed to delete draft:', error);
       }
-      logger.error('Failed to delete draft:', error);
-    }
+    }, 0);
   };
 
   const handlePostSubmit = async (e) => {

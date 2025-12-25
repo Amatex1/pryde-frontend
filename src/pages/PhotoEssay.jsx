@@ -193,14 +193,20 @@ function PhotoEssay() {
     setCurrentDraftId(draft._id);
   };
 
-  // Delete draft after successful post
-  const deleteDraft = async (draftId) => {
+  // Delete draft after successful post (fire-and-forget, non-blocking)
+  const deleteDraft = (draftId) => {
     if (!draftId) return;
-    try {
-      await api.delete(`/drafts/${draftId}`);
-    } catch (error) {
-      console.error('Failed to delete draft:', error);
-    }
+    // Fire-and-forget: Schedule delete in background, don't block main flow
+    setTimeout(async () => {
+      try {
+        await api.delete(`/drafts/${draftId}`);
+        if (import.meta.env.DEV) {
+          console.log(`✅ Photo essay draft ${draftId} deleted after successful post`);
+        }
+      } catch (error) {
+        console.error('Failed to delete draft:', error);
+      }
+    }, 0);
   };
 
   const handleSubmit = async (e) => {
