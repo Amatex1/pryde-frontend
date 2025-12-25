@@ -384,45 +384,46 @@ function App() {
       await bootstrapAuth();
     })();
 
-    // 🔄 Register service worker with auto-update handling
+    // 🔥 TEMPORARILY DISABLED FOR DEBUGGING
+    // Register service worker with auto-update handling
     // This will automatically reload the page when a new service worker is installed
-    const updateSW = registerSW({
-      immediate: true,
-      async onNeedRefresh() {
-        console.log('🔄 New service worker available - clearing caches and reloading...');
+    // const updateSW = registerSW({
+    //   immediate: true,
+    //   async onNeedRefresh() {
+    //     console.log('🔄 New service worker available - clearing caches and reloading...');
 
-        // Clear all caches before updating to ensure fresh content
-        try {
-          if ('caches' in window) {
-            const cacheNames = await caches.keys();
-            console.log(`🗑️ Clearing ${cacheNames.length} caches before update...`);
-            await Promise.all(cacheNames.map(name => caches.delete(name)));
-          }
-        } catch (error) {
-          console.error('⚠️ Error clearing caches:', error);
-        }
+    //     // Clear all caches before updating to ensure fresh content
+    //     try {
+    //       if ('caches' in window) {
+    //         const cacheNames = await caches.keys();
+    //         console.log(`🗑️ Clearing ${cacheNames.length} caches before update...`);
+    //         await Promise.all(cacheNames.map(name => caches.delete(name)));
+    //       }
+    //     } catch (error) {
+    //       console.error('⚠️ Error clearing caches:', error);
+    //     }
 
-        // Automatically reload when new service worker is ready
-        // This ensures users always get the latest version
-        updateSW(true);
-      },
-      onOfflineReady() {
-        console.log('✅ App ready to work offline');
-      },
-      onRegistered(registration) {
-        console.log('✅ Service worker registered');
-        // Check for updates every 5 minutes (more frequent for faster updates)
-        if (registration) {
-          setInterval(() => {
-            console.log('🔍 Checking for service worker updates...');
-            registration.update();
-          }, 5 * 60 * 1000); // 5 minutes (changed from 1 hour)
-        }
-      },
-      onRegisterError(error) {
-        console.error('❌ Service worker registration failed:', error);
-      }
-    });
+    //     // Automatically reload when new service worker is ready
+    //     // This ensures users always get the latest version
+    //     updateSW(true);
+    //   },
+    //   onOfflineReady() {
+    //     console.log('✅ App ready to work offline');
+    //   },
+    //   onRegistered(registration) {
+    //     console.log('✅ Service worker registered');
+    //     // Check for updates every 5 minutes (more frequent for faster updates)
+    //     if (registration) {
+    //       setInterval(() => {
+    //         console.log('🔍 Checking for service worker updates...');
+    //         registration.update();
+    //       }, 5 * 60 * 1000); // 5 minutes (changed from 1 hour)
+    //     }
+    //   },
+    //   onRegisterError(error) {
+    //     console.error('❌ Service worker registration failed:', error);
+    //   }
+    // });
 
     // ✅ FIXED: Use ONLY ONE version checker (backend API)
     // Removed duplicate startVersionCheck() to prevent banner spam

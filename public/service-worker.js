@@ -1,27 +1,19 @@
-// Legacy service worker file for backward compatibility
-// This redirects old registrations to the new /sw.js location
+// EMERGENCY: Service worker completely disabled to fix refresh loop
+// This service worker does nothing and will unregister itself
 
-// Unregister this old service worker and register the new one
 self.addEventListener('install', () => {
+  // Skip waiting to activate immediately
   self.skipWaiting();
 });
 
-self.addEventListener('activate', async (event) => {
-  event.waitUntil(
-    (async () => {
-      // Unregister this service worker
-      const registration = await self.registration;
-      await registration.unregister();
+self.addEventListener('activate', (event) => {
+  // Take control of all clients immediately
+  event.waitUntil(self.clients.claim());
+});
 
-      // Tell all clients to reload and register the new service worker
-      const clients = await self.clients.matchAll({ type: 'window' });
-      clients.forEach(client => {
-        client.postMessage({
-          type: 'REDIRECT_TO_NEW_SW',
-          newSwUrl: '/sw.js'
-        });
-      });
-    })()
-  );
+// Don't cache anything - let everything go to network
+self.addEventListener('fetch', (event) => {
+  // Just pass through to network, no caching
+  event.respondWith(fetch(event.request));
 });
 
