@@ -6,19 +6,18 @@ import './styles/breakpoints.css' // Responsive breakpoint system + PWA utilitie
 import './styles/darkMode.css'
 import './styles/quiet-mode.css' // MUST be loaded AFTER darkMode.css to override properly
 import './styles/mobileFriendly.css' // Mobile-friendly layout fixes for PWA
-// NOTE: PWA/SW is DISABLED in vite.config.js to fix navigation issues
-// Only cleanup of stale SWs is performed - no new SWs are registered
+// NOTE: Using PUSH-ONLY service worker - NO fetch, NO cache, NO navigation
+// This is safe by design and only handles push notifications
 import { setupInstallPrompt, requestPersistentStorage } from './utils/pwa'
 import { initWebVitals } from './utils/webVitals'
 import { initializePushNotifications } from './utils/pushNotifications'
 import { initializeTheme } from './utils/themeManager'
 import { logMobileEnvironment } from './utils/mobileDebug'
-import { initCircuitBreaker } from './utils/authCircuitBreaker' // 🔥 NEW: Circuit breaker
+import { initCircuitBreaker } from './utils/authCircuitBreaker'
 import { initServiceWorkerDebug } from './utils/serviceWorkerDebug'
 import { clearStaleSWAndCaches } from './utils/clearStaleSW'
 import { initSwApiCollisionDetector } from './utils/swApiCollisionDetector'
 import { initSWTestingInfrastructure } from './utils/swTestingInfrastructure'
-import { initSWAutoDisable } from './utils/swAutoDisable'
 
 // ========================================
 // INITIALIZE CIRCUIT BREAKER IMMEDIATELY
@@ -53,30 +52,26 @@ if (import.meta.env.DEV) {
 // SERVICE WORKER REGISTRATION (PRODUCTION ONLY)
 // ========================================
 if (import.meta.env.PROD) {
-  // 🔥 PHASE 3: Initialize auto-disable protection
-  // This monitors auth failures and auto-disables SW if needed
-  initSWAutoDisable();
-
-  // 🔥 CRITICAL: PWA/SW is DISABLED in vite.config.js
-  // Only clean up stale SWs - do NOT register any new ones
-  // This prevents ERR_FAILED on /feed and other navigation issues
-  console.log('[PWA] 🧹 Cleaning up stale service workers (PWA disabled)...');
-
-  // Unregister ALL service workers and clear caches
-  clearStaleSWAndCaches().then(() => {
-    console.log('[PWA] ✅ Stale service workers cleaned up');
-  }).catch(err => {
-    console.error('[PWA] Service worker cleanup failed:', err);
-  });
-
-  // Also unregister any currently controlling service worker
+  // 🔥 CRITICAL: Register PUSH-ONLY service worker
+  // This SW only handles push notifications - NO fetch, NO cache, NO navigation
+  // Safe by design - cannot cause ERR_FAILED or stale content issues
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(registrations => {
-      registrations.forEach(registration => {
-        registration.unregister();
-        console.log('[PWA] 🗑️ Unregistered service worker:', registration.scope);
-      });
+    // First, clean up old caches from previous SW versions
+    clearStaleSWAndCaches().then(() => {
+      console.log('[PWA] ✅ Old caches cleaned up');
+    }).catch(err => {
+      console.error('[PWA] Cache cleanup failed:', err);
     });
+
+    // Register the push-only service worker
+    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+      .then(registration => {
+        console.log('[PWA] ✅ Push-only service worker registered');
+        console.log('[PWA] 📍 Scope:', registration.scope);
+      })
+      .catch(err => {
+        console.error('[PWA] Service worker registration failed:', err);
+      });
   }
 
   // Setup install prompt
