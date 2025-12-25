@@ -1,10 +1,26 @@
 /* =====================================================
-   PRYDE — PUSH-ONLY SERVICE WORKER
-   Safe by design: NO fetch, NO cache, NO navigation
+   PRYDE — MINIMAL SERVICE WORKER
+   Safe by design: NO cache, NO navigation interception
+
+   Features:
+   - Push notifications
+   - PWA install prompt (requires fetch handler to exist)
+   - Notification click handling
+
+   Does NOT:
+   - Cache anything
+   - Intercept/modify any requests
+   - Handle navigation
    ===================================================== */
 
 self.addEventListener('install', () => {
   self.skipWaiting(); // Activate immediately
+});
+
+/* 📱 No-op fetch handler - required for PWA install prompt
+   Does NOT call event.respondWith() - browser handles everything */
+self.addEventListener('fetch', () => {
+  // Empty - just satisfies Chrome's installability requirement
 });
 
 self.addEventListener('activate', (event) => {
