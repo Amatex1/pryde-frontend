@@ -375,14 +375,26 @@ function Feed() {
     if (localDraft && !currentDraftId) {
       // Only restore if there's no backend draft loaded
       setNewPost(localDraft.content || '');
-      setSelectedMedia(localDraft.media || []);
+      // CRITICAL: Do NOT restore media from localStorage
+      // Media should only come from backend drafts to prevent ghost media
+      // localStorage media URLs may reference deleted files
+      if (localDraft.media && localDraft.media.length > 0) {
+        if (import.meta.env.DEV) {
+          console.warn('⚠️ Local draft had media but it was NOT restored');
+          console.warn('⚠️ Media should only be loaded from backend drafts to prevent ghost media');
+          console.warn('⚠️ The media may have been deleted or never persisted properly');
+        }
+        // Clear media from localStorage draft to prevent future confusion
+        saveDraft('feed-create-post', { ...localDraft, media: [] });
+      }
+      // setSelectedMedia([]); // Explicitly don't restore media
       setPostVisibility(localDraft.visibility || 'followers');
       setContentWarning(localDraft.contentWarning || '');
       setHideMetrics(localDraft.hideMetrics || false);
       setPoll(localDraft.poll || null);
       setShowContentWarning(!!localDraft.contentWarning);
       setShowPollCreator(!!localDraft.poll);
-      logger.debug('📝 Restored draft from localStorage');
+      logger.debug('📝 Restored draft from localStorage (without media)');
     }
   }, []); // Only run on mount
 
@@ -770,8 +782,43 @@ function Feed() {
     }
   };
 
-  const removeMedia = (index) => {
-    setSelectedMedia(selectedMedia.filter((_, i) => i !== index));
+  const removeMedia = async (index) => {
+    const mediaToRemove = selectedMedia[index];
+
+    if (!mediaToRemove) return;
+
+    // CRITICAL: Delete from backend FIRST, then update UI
+    // This prevents ghost media that reappears after refresh
+    try {
+      // Try to delete by tempMediaId first (preferred)
+      if (mediaToRemove.tempMediaId) {
+        await api.delete(`/upload/post-media/${mediaToRemove.tempMediaId}`);
+        logger.debug('[TEMP MEDIA] Deleted by ID:', mediaToRemove.tempMediaId);
+      } else if (mediaToRemove.url) {
+        // Fallback: delete by URL for legacy uploads
+        await api.delete('/upload/post-media/by-url', { data: { url: mediaToRemove.url } });
+        logger.debug('[TEMP MEDIA] Deleted by URL:', mediaToRemove.url);
+      }
+
+      // Only remove from UI after successful backend delete
+      setSelectedMedia(selectedMedia.filter((_, i) => i !== index));
+    } catch (error) {
+      logger.error('[TEMP MEDIA] Delete failed:', error);
+
+      // Dev mode warning
+      if (import.meta.env.DEV) {
+        console.warn('⚠️ Temporary media removed in UI but still exists server-side');
+        console.warn('⚠️ This media will reappear after refresh');
+      }
+
+      // Still remove from UI to not block the user, but warn
+      setSelectedMedia(selectedMedia.filter((_, i) => i !== index));
+
+      // Don't show error to user for non-critical failures (404 means already deleted)
+      if (error.response?.status !== 404) {
+        showToast('Media removed locally. May reappear on refresh.', 'warning');
+      }
+    }
   };
 
   // Auto-save draft
@@ -879,7 +926,22 @@ function Feed() {
     }
 
     setNewPost(draft.content || '');
-    setSelectedMedia(draft.media || []);
+
+    // Restore media from backend draft - this is the authoritative source
+    // Media in backend drafts has been properly tracked and persisted
+    const draftMedia = draft.media || [];
+    setSelectedMedia(draftMedia);
+
+    if (import.meta.env.DEV && draftMedia.length > 0) {
+      console.log(`📷 Restored ${draftMedia.length} media item(s) from backend draft`);
+      // Verify media has tempMediaId for proper tracking
+      const missingIds = draftMedia.filter(m => !m.tempMediaId);
+      if (missingIds.length > 0) {
+        console.warn('⚠️ Some media missing tempMediaId - may be legacy uploads');
+        console.warn('⚠️ Deletion may fall back to URL-based cleanup');
+      }
+    }
+
     setPostVisibility(draft.visibility || 'followers');
     setContentWarning(draft.contentWarning || '');
     setHideMetrics(draft.hideMetrics || false);

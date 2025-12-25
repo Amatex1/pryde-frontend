@@ -647,8 +647,43 @@ function Profile() {
     }
   };
 
-  const removeMedia = (index) => {
-    setSelectedMedia(selectedMedia.filter((_, i) => i !== index));
+  const removeMedia = async (index) => {
+    const mediaToRemove = selectedMedia[index];
+
+    if (!mediaToRemove) return;
+
+    // CRITICAL: Delete from backend FIRST, then update UI
+    // This prevents ghost media that reappears after refresh
+    try {
+      // Try to delete by tempMediaId first (preferred)
+      if (mediaToRemove.tempMediaId) {
+        await api.delete(`/upload/post-media/${mediaToRemove.tempMediaId}`);
+        logger.debug('[TEMP MEDIA] Deleted by ID:', mediaToRemove.tempMediaId);
+      } else if (mediaToRemove.url) {
+        // Fallback: delete by URL for legacy uploads
+        await api.delete('/upload/post-media/by-url', { data: { url: mediaToRemove.url } });
+        logger.debug('[TEMP MEDIA] Deleted by URL:', mediaToRemove.url);
+      }
+
+      // Only remove from UI after successful backend delete
+      setSelectedMedia(selectedMedia.filter((_, i) => i !== index));
+    } catch (error) {
+      logger.error('[TEMP MEDIA] Delete failed:', error);
+
+      // Dev mode warning
+      if (import.meta.env.DEV) {
+        console.warn('⚠️ Temporary media removed in UI but still exists server-side');
+        console.warn('⚠️ This media will reappear after refresh');
+      }
+
+      // Still remove from UI to not block the user, but warn
+      setSelectedMedia(selectedMedia.filter((_, i) => i !== index));
+
+      // Don't show error to user for non-critical failures (404 means already deleted)
+      if (error.response?.status !== 404) {
+        showToast('Media removed locally. May reappear on refresh.', 'warning');
+      }
+    }
   };
 
   const handlePostSubmit = async (e) => {
