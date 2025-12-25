@@ -19,7 +19,10 @@ const circuitBreakerState = {
   authReady: false,
   hasTriggeredRecovery: false,
   bootstrapComplete: false,
-  allowedEndpoints: new Set(['/api/auth/me']),
+  allowedEndpoints: new Set([
+    '/api/auth/me',      // Bootstrap auth check
+    '/version/status',   // PWA safety checks (must run before auth)
+  ]),
   blockedEndpoints: new Set([
     '/api/push/status',
     '/api/notifications',

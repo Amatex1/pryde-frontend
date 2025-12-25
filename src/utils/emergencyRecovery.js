@@ -16,33 +16,57 @@ import logger from './logger';
 
 /**
  * Disable PWA and force full reload
- * 
+ *
  * This is the nuclear option - clears everything and reloads
  */
 export async function disablePWAAndReload(message = 'PWA disabled - reloading...') {
+  // 🔥 LOOP PROTECTION: Prevent infinite reload loops
+  const reloadCount = parseInt(sessionStorage.getItem('emergencyReloadCount') || '0', 10);
+  const lastReloadTime = parseInt(sessionStorage.getItem('lastEmergencyReload') || '0', 10);
+  const now = Date.now();
+
+  // Reset counter if last reload was more than 5 minutes ago
+  if (now - lastReloadTime > 300000) {
+    sessionStorage.setItem('emergencyReloadCount', '0');
+  }
+
+  // If we've reloaded 3+ times in 5 minutes, STOP
+  if (reloadCount >= 3) {
+    logger.error('[Emergency Recovery] 🚨 RELOAD LOOP DETECTED - ABORTING');
+    logger.error(`   Reloaded ${reloadCount} times in the last 5 minutes`);
+    logger.error(`   Reason: ${message}`);
+    alert('App is stuck in a reload loop. Please clear your browser cache manually or contact support.');
+    return;
+  }
+
+  // Increment reload counter
+  sessionStorage.setItem('emergencyReloadCount', String(reloadCount + 1));
+  sessionStorage.setItem('lastEmergencyReload', String(now));
+
   logger.warn('[Emergency Recovery] 🔥 Disabling PWA and forcing reload');
   logger.warn(`   Reason: ${message}`);
-  
+  logger.warn(`   Reload count: ${reloadCount + 1}/3`);
+
   try {
     // Step 1: Unregister all service workers
     await unregisterAllServiceWorkers();
-    
+
     // Step 2: Clear all caches
     await clearAllCaches();
-    
+
     // Step 3: Clear all storage
     clearAllStorage();
-    
+
     // Step 4: Show message to user
     showEmergencyMessage(message);
-    
+
     // Step 5: Force reload (no cache)
     setTimeout(() => {
       window.location.reload(true);
     }, 1000);
   } catch (error) {
     logger.error('[Emergency Recovery] Failed to disable PWA:', error);
-    
+
     // Force reload anyway
     window.location.reload(true);
   }
@@ -50,27 +74,51 @@ export async function disablePWAAndReload(message = 'PWA disabled - reloading...
 
 /**
  * Force reload with cache clear
- * 
+ *
  * Less aggressive than disablePWAAndReload - keeps service worker
  */
 export async function forceReloadWithCacheClear(message = 'Updating app...') {
+  // 🔥 LOOP PROTECTION: Prevent infinite reload loops
+  const reloadCount = parseInt(sessionStorage.getItem('emergencyReloadCount') || '0', 10);
+  const lastReloadTime = parseInt(sessionStorage.getItem('lastEmergencyReload') || '0', 10);
+  const now = Date.now();
+
+  // Reset counter if last reload was more than 5 minutes ago
+  if (now - lastReloadTime > 300000) {
+    sessionStorage.setItem('emergencyReloadCount', '0');
+  }
+
+  // If we've reloaded 3+ times in 5 minutes, STOP
+  if (reloadCount >= 3) {
+    logger.error('[Emergency Recovery] 🚨 RELOAD LOOP DETECTED - ABORTING');
+    logger.error(`   Reloaded ${reloadCount} times in the last 5 minutes`);
+    logger.error(`   Reason: ${message}`);
+    alert('App is stuck in a reload loop. Please clear your browser cache manually or contact support.');
+    return;
+  }
+
+  // Increment reload counter
+  sessionStorage.setItem('emergencyReloadCount', String(reloadCount + 1));
+  sessionStorage.setItem('lastEmergencyReload', String(now));
+
   logger.warn('[Emergency Recovery] 🔄 Forcing reload with cache clear');
   logger.warn(`   Reason: ${message}`);
-  
+  logger.warn(`   Reload count: ${reloadCount + 1}/3`);
+
   try {
     // Step 1: Clear all caches
     await clearAllCaches();
-    
+
     // Step 2: Show message to user
     showEmergencyMessage(message);
-    
+
     // Step 3: Force reload (no cache)
     setTimeout(() => {
       window.location.reload(true);
     }, 1000);
   } catch (error) {
     logger.error('[Emergency Recovery] Failed to clear caches:', error);
-    
+
     // Force reload anyway
     window.location.reload(true);
   }
