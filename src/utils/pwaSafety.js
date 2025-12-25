@@ -101,18 +101,29 @@ export async function checkVersionCompatibility() {
     return { compatible: true, reason: null };
   }
   
-  // Compare versions (simple string comparison for now)
-  // TODO: Use semver library for proper version comparison
-  const currentVersion = FRONTEND_VERSION;
-  const minVersion = status.minFrontendVersion;
-  
-  if (currentVersion === 'dev') {
-    // Dev builds always compatible
-    return { compatible: true, reason: null };
-  }
-  
-  // Simple version comparison (assumes x.y.z format)
-  const isCompatible = compareVersions(currentVersion, minVersion) >= 0;
+	  // Compare versions (simple string comparison for now)
+	  // TODO: Use semver library for proper version comparison
+	  const currentVersion = FRONTEND_VERSION;
+	  const minVersion = status.minFrontendVersion;
+	  
+	  if (currentVersion === 'dev') {
+	    // Dev builds always compatible
+	    return { compatible: true, reason: null };
+	  }
+	  
+	  // If either version is not in simple semver format (x.y.z), skip strict check
+	  // This prevents false "incompatible" results when using date-based versions
+	  const semverRegex = /^\d+(?:\.\d+)*$/;
+	  if (!semverRegex.test(currentVersion) || !semverRegex.test(minVersion)) {
+	    logger.warn('[PWA Safety] Non-semver version format detected; skipping strict compatibility check', {
+	      currentVersion,
+	      minVersion
+	    });
+	    return { compatible: true, reason: null };
+	  }
+	  
+	  // Simple version comparison (assumes x.y.z format)
+	  const isCompatible = compareVersions(currentVersion, minVersion) >= 0;
   
   if (!isCompatible) {
     return {
