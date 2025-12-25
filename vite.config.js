@@ -9,12 +9,13 @@ export default defineConfig({
     react(),
     // Inject build version into HTML for auto-refresh detection
     buildVersionPlugin(),
+    // 🔥 EMERGENCY: PWA Plugin DISABLED to fix refresh loop
     // PWA Plugin with Workbox
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['pryde-logo.png', 'robots.txt', 'favicon.ico', 'icons/*.png', 'offline.html'],
       manifest: false, // Use existing manifest.json
-      injectRegister: 'auto', // Automatically inject registration code
+      injectRegister: null, // 🔥 DISABLED: Don't inject registration code
 
       // Use generateSW mode with custom strategies
       strategies: 'generateSW',
@@ -120,7 +121,9 @@ export default defineConfig({
       },
       devOptions: {
         enabled: false // Disable in development
-      }
+      },
+      // 🔥 EMERGENCY: Disable service worker generation completely
+      disable: true
     }),
     // Bundle analyzer (only in build mode)
     process.env.ANALYZE && visualizer({
