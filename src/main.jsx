@@ -6,11 +6,9 @@ import './styles/breakpoints.css' // Responsive breakpoint system + PWA utilitie
 import './styles/darkMode.css'
 import './styles/quiet-mode.css' // MUST be loaded AFTER darkMode.css to override properly
 import './styles/mobileFriendly.css' // Mobile-friendly layout fixes for PWA
-// NOTE: Service worker lifecycle is centrally managed by serviceWorkerManager.
-// All production SW registration must flow through initializeServiceWorker() to
-// avoid double registration and PWA refresh loops.
-import { registerServiceWorker, setupInstallPrompt, requestPersistentStorage } from './utils/pwa'
-import { initializeServiceWorker } from './utils/serviceWorkerManager'
+// NOTE: PWA/SW is DISABLED in vite.config.js to fix navigation issues
+// Only cleanup of stale SWs is performed - no new SWs are registered
+import { setupInstallPrompt, requestPersistentStorage } from './utils/pwa'
 import { initWebVitals } from './utils/webVitals'
 import { initializePushNotifications } from './utils/pushNotifications'
 import { initializeTheme } from './utils/themeManager'
@@ -20,7 +18,7 @@ import { initServiceWorkerDebug } from './utils/serviceWorkerDebug'
 import { clearStaleSWAndCaches } from './utils/clearStaleSW'
 import { initSwApiCollisionDetector } from './utils/swApiCollisionDetector'
 import { initSWTestingInfrastructure } from './utils/swTestingInfrastructure'
-import { initSWAutoDisable, isSWDisabledForRecovery } from './utils/swAutoDisable'
+import { initSWAutoDisable } from './utils/swAutoDisable'
 
 // ========================================
 // INITIALIZE CIRCUIT BREAKER IMMEDIATELY
@@ -59,20 +57,25 @@ if (import.meta.env.PROD) {
   // This monitors auth failures and auto-disables SW if needed
   initSWAutoDisable();
 
-  // 🔥 PHASE 3: Check if SW is disabled for recovery
-  if (isSWDisabledForRecovery()) {
-    console.warn('[PWA] ⚠️ Service worker disabled for recovery - skipping registration');
-  } else {
-    // 🔥 CRITICAL: Service worker lifecycle is now fully owned by
-    // serviceWorkerManager.initializeServiceWorker(). This helper:
-    //   - Unregisters ALL existing SWs
-    //   - Clears orphaned caches on version mismatch
-    //   - Registers EXACTLY ONE SW at scope "/"
-    //   - Logs active controller state
-    //
-    // No other code path should register/unregister service workers directly.
-    initializeServiceWorker().catch(err => {
-      console.error('[PWA] Service worker initialization failed:', err);
+  // 🔥 CRITICAL: PWA/SW is DISABLED in vite.config.js
+  // Only clean up stale SWs - do NOT register any new ones
+  // This prevents ERR_FAILED on /feed and other navigation issues
+  console.log('[PWA] 🧹 Cleaning up stale service workers (PWA disabled)...');
+
+  // Unregister ALL service workers and clear caches
+  clearStaleSWAndCaches().then(() => {
+    console.log('[PWA] ✅ Stale service workers cleaned up');
+  }).catch(err => {
+    console.error('[PWA] Service worker cleanup failed:', err);
+  });
+
+  // Also unregister any currently controlling service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      registrations.forEach(registration => {
+        registration.unregister();
+        console.log('[PWA] 🗑️ Unregistered service worker:', registration.scope);
+      });
     });
   }
 
