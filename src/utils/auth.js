@@ -120,6 +120,15 @@ export const logout = async () => {
     console.error('Failed to clear drafts:', error);
   }
 
+  // Clear all mutation guard tracked entities
+  try {
+    const { clearAllEntities } = await import('./mutationGuard');
+    clearAllEntities();
+    console.log('🗑️ Cleared mutation guard entities on logout');
+  } catch (error) {
+    console.error('Failed to clear mutation guard entities:', error);
+  }
+
   // Immediately redirect to login to prevent flash of protected content
   window.location.href = '/login';
 };

@@ -134,6 +134,16 @@ function Feed() {
   const listenersSetUpRef = useRef(false);
   const autoSaveTimerRef = useRef(null); // Auto-save timer
 
+  // Handler to block Enter key submission when GIF picker is open
+  const handleKeyDown = useCallback((e) => {
+    // If GIF picker is open, block Enter from submitting form
+    if (showGifPicker !== null && e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+  }, [showGifPicker]);
+
   // Define all fetch functions BEFORE useEffects that use them
   const fetchPosts = useCallback(async (pageNum = 1, append = false) => {
     try {
@@ -808,9 +818,16 @@ function Feed() {
 
       const response = await api.post('/drafts', draftData);
 
-      // Set draft ID if this is a new draft
-      if (!currentDraftId && response.data._id) {
-        setCurrentDraftId(response.data._id);
+      // CRITICAL: Only set draft ID after backend confirms creation
+      // This prevents ghost drafts that only exist client-side
+      if (response.data?._id) {
+        // Only update if different (new draft or updated ID)
+        if (!currentDraftId || currentDraftId !== response.data._id) {
+          setCurrentDraftId(response.data._id);
+          if (import.meta.env.DEV) {
+            logger.debug('✅ Draft confirmed by backend:', response.data._id);
+          }
+        }
       }
 
       setDraftSaveStatus('saved');
@@ -819,6 +836,15 @@ function Feed() {
       setTimeout(() => setDraftSaveStatus(''), 2000);
     } catch (error) {
       logger.error('Failed to auto-save draft:', error);
+
+      // DEV-MODE WARNING: Draft creation failed
+      if (import.meta.env.DEV) {
+        console.warn('⚠️ Draft creation failed - draft only exists locally');
+        console.warn('Dependent actions (delete, edit) will fail on this draft.');
+      }
+
+      // CRITICAL: Do NOT set currentDraftId on failure
+      // This prevents ghost entity issues
       // Even if backend fails, localStorage backup is already saved
       setDraftSaveStatus('');
     }
@@ -841,8 +867,17 @@ function Feed() {
     };
   }, [newPost, selectedMedia, postVisibility, contentWarning, hideMetrics, poll, autoSaveDraft]);
 
-  // Restore draft
+  // Restore draft - ONLY restore drafts that were confirmed by backend
   const handleRestoreDraft = (draft) => {
+    // CRITICAL: Only restore drafts that have a valid _id (confirmed by backend)
+    if (!draft._id) {
+      if (import.meta.env.DEV) {
+        console.warn('⚠️ Attempted to restore draft without valid ID');
+        console.warn('This draft was never confirmed by the backend.');
+      }
+      return;
+    }
+
     setNewPost(draft.content || '');
     setSelectedMedia(draft.media || []);
     setPostVisibility(draft.visibility || 'followers');
@@ -856,10 +891,27 @@ function Feed() {
 
   // Delete draft after successful post
   const deleteDraft = async (draftId) => {
-    if (!draftId) return;
+    // CRITICAL: Only attempt delete if draft ID exists (backend confirmed)
+    if (!draftId) {
+      if (import.meta.env.DEV) {
+        console.warn('⚠️ Attempted DELETE on draft with no ID (ghost entity)');
+        console.warn('This action would fail. Skipping.');
+      }
+      return;
+    }
+
     try {
       await api.delete(`/drafts/${draftId}`);
     } catch (error) {
+      // Handle 404 gracefully - draft may have already been deleted
+      if (error.response?.status === 404) {
+        if (import.meta.env.DEV) {
+          console.warn(`⚠️ DELETE 404: Draft ${draftId} not found on server`);
+          console.warn('Draft may have been already deleted or never persisted.');
+        }
+        // Don't throw - treat as success since the draft no longer exists
+        return;
+      }
       logger.error('Failed to delete draft:', error);
     }
   };
@@ -1177,6 +1229,12 @@ function Feed() {
 
   const handleCommentSubmit = async (postId, e) => {
     e.preventDefault();
+
+    // Block submission if GIF picker is open
+    if (showGifPicker !== null) {
+      return;
+    }
+
     const content = commentText[postId];
     const gifUrl = commentGif[postId];
 
@@ -1503,6 +1561,11 @@ function Feed() {
 
   const handleSubmitReply = async (e) => {
     e.preventDefault();
+
+    // Block submission if GIF picker is open
+    if (showGifPicker !== null) {
+      return;
+    }
 
     // Either text or GIF must be provided
     if ((!replyText || !replyText.trim()) && !replyGif) return;
@@ -2315,6 +2378,7 @@ function Feed() {
                             type="text"
                             value={replyText}
                             onChange={(e) => setReplyText(e.target.value)}
+                            onKeyDown={handleKeyDown}
                             placeholder={replyGif ? "Caption, if you'd like" : "Write a reply..."}
                             className="reply-input"
                             autoFocus
@@ -2389,6 +2453,7 @@ function Feed() {
                             type="text"
                             value={commentText[post._id] || ''}
                             onChange={(e) => handleCommentChange(post._id, e.target.value)}
+                            onKeyDown={handleKeyDown}
                             placeholder={commentGif[post._id] ? "Caption, if you'd like" : "Reply, if you feel like it."}
                             className="comment-input glossy"
                           />
@@ -2915,6 +2980,11 @@ function Feed() {
             </div>
             <div className="comment-modal-body">
               <form onSubmit={(e) => {
+                // Block submission if GIF picker is open
+                if (showGifPicker !== null) {
+                  e.preventDefault();
+                  return;
+                }
                 handleCommentSubmit(commentModalOpen, e);
                 setCommentModalOpen(null);
               }}>
@@ -2940,6 +3010,7 @@ function Feed() {
                       e.target.style.height = 'auto';
                       e.target.style.height = e.target.scrollHeight + 'px';
                     }}
+                    onKeyDown={handleKeyDown}
                     placeholder={commentGif[commentModalOpen] ? "Caption, if you'd like" : "Reply, if you feel like it."}
                     className="comment-modal-textarea"
                     autoFocus

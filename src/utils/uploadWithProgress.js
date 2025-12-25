@@ -1,4 +1,16 @@
 import { getCsrfToken } from './api';
+import { getAuthToken } from './auth';
+
+/**
+ * DEV-MODE WARNING: Log warning for unauthenticated upload attempts
+ */
+const warnUnauthenticatedUpload = (url) => {
+  if (import.meta.env.DEV) {
+    console.warn('⚠️ Attempted upload without authentication token.');
+    console.warn('📍 URL:', url);
+    console.warn('This upload will likely fail with 401/403.');
+  }
+};
 
 /**
  * Upload a file with progress tracking using XMLHttpRequest
@@ -18,23 +30,32 @@ export function uploadWithProgress({
   additionalData = {}
 }) {
   return new Promise((resolve, reject) => {
+    // Get auth token using centralized auth utility
+    const token = getAuthToken();
+
+    // CRITICAL: Block upload if no auth token
+    if (!token) {
+      warnUnauthenticatedUpload(url);
+      reject(new Error('Authentication required. Please log in to upload files.'));
+      return;
+    }
+
     const xhr = new XMLHttpRequest();
 
     // Get CSRF token for security
     const csrfToken = getCsrfToken();
-
-    // Get auth token from localStorage
-    const token = localStorage.getItem('token');
 
     xhr.open('POST', url);
 
     // Enable credentials (cookies) for cross-origin requests
     xhr.withCredentials = true;
 
-    // Set headers
-    if (token) {
-      xhr.setRequestHeader('x-auth-token', token);
-    }
+    // CRITICAL: Set Authorization header with Bearer token (matches backend auth middleware)
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
+    // Also set x-auth-token for backwards compatibility
+    xhr.setRequestHeader('x-auth-token', token);
+
     if (csrfToken) {
       xhr.setRequestHeader('X-CSRF-Token', csrfToken);
       xhr.setRequestHeader('X-XSRF-TOKEN', csrfToken);
@@ -56,6 +77,29 @@ export function uploadWithProgress({
           resolve(response);
         } catch (error) {
           reject(new Error('Invalid upload response'));
+        }
+      } else if (xhr.status === 401) {
+        // Auth failure - surface clearly
+        if (import.meta.env.DEV) {
+          console.error('❌ Upload auth failed (401):', url);
+          console.error('📋 Token was:', token ? 'Present' : 'Missing');
+        }
+        reject(new Error('Authentication failed. Please log in again.'));
+      } else if (xhr.status === 403) {
+        // Forbidden - could be CSRF or permission issue
+        if (import.meta.env.DEV) {
+          console.error('❌ Upload forbidden (403):', url);
+          console.error('📋 CSRF Token:', csrfToken ? 'Present' : 'Missing');
+          try {
+            const errorData = JSON.parse(xhr.responseText);
+            console.error('📋 Error details:', errorData);
+          } catch {}
+        }
+        try {
+          const errorData = JSON.parse(xhr.responseText);
+          reject(new Error(errorData.message || 'Upload forbidden. Please try again.'));
+        } catch {
+          reject(new Error('Upload forbidden. Please refresh the page and try again.'));
         }
       } else {
         // Try to parse error response
@@ -106,23 +150,32 @@ export function uploadMultipleWithProgress({
   additionalData = {}
 }) {
   return new Promise((resolve, reject) => {
+    // Get auth token using centralized auth utility
+    const token = getAuthToken();
+
+    // CRITICAL: Block upload if no auth token
+    if (!token) {
+      warnUnauthenticatedUpload(url);
+      reject(new Error('Authentication required. Please log in to upload files.'));
+      return;
+    }
+
     const xhr = new XMLHttpRequest();
 
     // Get CSRF token for security
     const csrfToken = getCsrfToken();
-
-    // Get auth token from localStorage
-    const token = localStorage.getItem('token');
 
     xhr.open('POST', url);
 
     // Enable credentials (cookies) for cross-origin requests
     xhr.withCredentials = true;
 
-    // Set headers
-    if (token) {
-      xhr.setRequestHeader('x-auth-token', token);
-    }
+    // CRITICAL: Set Authorization header with Bearer token (matches backend auth middleware)
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
+    // Also set x-auth-token for backwards compatibility
+    xhr.setRequestHeader('x-auth-token', token);
+
     if (csrfToken) {
       xhr.setRequestHeader('X-CSRF-Token', csrfToken);
       xhr.setRequestHeader('X-XSRF-TOKEN', csrfToken);
@@ -145,6 +198,29 @@ export function uploadMultipleWithProgress({
         } catch (error) {
           reject(new Error('Invalid upload response'));
         }
+      } else if (xhr.status === 401) {
+        // Auth failure - surface clearly
+        if (import.meta.env.DEV) {
+          console.error('❌ Upload auth failed (401):', url);
+          console.error('📋 Token was:', token ? 'Present' : 'Missing');
+        }
+        reject(new Error('Authentication failed. Please log in again.'));
+      } else if (xhr.status === 403) {
+        // Forbidden - could be CSRF or permission issue
+        if (import.meta.env.DEV) {
+          console.error('❌ Upload forbidden (403):', url);
+          console.error('📋 CSRF Token:', csrfToken ? 'Present' : 'Missing');
+          try {
+            const errorData = JSON.parse(xhr.responseText);
+            console.error('📋 Error details:', errorData);
+          } catch {}
+        }
+        try {
+          const errorData = JSON.parse(xhr.responseText);
+          reject(new Error(errorData.message || 'Upload forbidden. Please try again.'));
+        } catch {
+          reject(new Error('Upload forbidden. Please refresh the page and try again.'));
+        }
       } else {
         // Try to parse error response
         try {
@@ -164,7 +240,7 @@ export function uploadMultipleWithProgress({
 
     // Build form data
     const formData = new FormData();
-    
+
     // Append all files
     files.forEach(file => {
       formData.append(fieldName, file);

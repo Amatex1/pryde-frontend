@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import GifPicker from '../components/GifPicker';
@@ -29,6 +29,15 @@ function Lounge() {
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const socketRef = useRef(null);
+
+  // Handler to block Enter key submission when GIF picker is open
+  const handleKeyDown = useCallback((e) => {
+    if (showGifPicker && e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+  }, [showGifPicker]);
 
   // Scroll to bottom
   const scrollToBottom = () => {
@@ -185,6 +194,11 @@ function Lounge() {
   // Send message
   const handleSendMessage = async (e) => {
     e.preventDefault();
+
+    // Block submission if GIF picker is open
+    if (showGifPicker) {
+      return;
+    }
 
     if (!newMessage.trim() && !selectedGif) return;
 
@@ -396,6 +410,7 @@ function Lounge() {
                         <div className="lounge-message-actions">
                           {msg.sender?.id !== currentUser?._id && (
                             <button
+                              type="button"
                               className="lounge-action-btn"
                               onClick={() => handleMessageUser(msg.sender?.id)}
                               title="Send private message"
@@ -406,6 +421,7 @@ function Lounge() {
 
                           {isAdmin && (
                             <button
+                              type="button"
                               className="lounge-action-btn lounge-action-delete"
                               onClick={() => handleDeleteMessage(msg._id)}
                               title="Delete message"
@@ -487,6 +503,7 @@ function Lounge() {
               placeholder={selectedGif ? "Add a caption (optional)..." : "Type a message..."}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
               maxLength={2000}
               className="lounge-input"
               disabled={sending}
@@ -525,7 +542,7 @@ function Lounge() {
           <div className="modal-content online-users-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Online Members ({onlineUsers.length})</h2>
-              <button className="modal-close" onClick={closeOnlineUsersModal}>✕</button>
+              <button type="button" className="modal-close" onClick={closeOnlineUsersModal}>✕</button>
             </div>
 
             <div className="modal-body">
@@ -561,6 +578,7 @@ function Lounge() {
                         <div className="online-user-username">@{user.username}</div>
                       </div>
                       <button
+                        type="button"
                         className="btn-message-user"
                         onClick={() => {
                           handleMessageUser(user.id);

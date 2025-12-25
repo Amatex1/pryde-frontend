@@ -79,6 +79,7 @@ const GifPicker = ({ onGifSelect, onClose }) => {
 
   const handleSearch = (e) => {
     e.preventDefault();
+    e.stopPropagation(); // Prevent bubbling to parent form
     searchGifs(searchQuery);
   };
 
@@ -106,10 +107,15 @@ const GifPicker = ({ onGifSelect, onClose }) => {
       <div className="gif-picker" ref={pickerRef}>
         <div className="gif-picker-header">
           <h4>Choose a GIF</h4>
-          <button className="gif-picker-close" onClick={onClose}>✕</button>
+          <button type="button" className="gif-picker-close" onClick={onClose}>✕</button>
         </div>
 
-        <form onSubmit={handleSearch} className="gif-search-form">
+        {/* Separate form to prevent bubbling to parent post form */}
+        <form
+          onSubmit={handleSearch}
+          className="gif-search-form"
+          onClick={(e) => e.stopPropagation()}
+        >
           <input
             type="text"
             placeholder="Search GIFs..."
@@ -117,12 +123,19 @@ const GifPicker = ({ onGifSelect, onClose }) => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="gif-search-input"
           />
-          <button type="submit" className="gif-search-btn">🔍</button>
+          <button
+            type="submit"
+            className="gif-search-btn"
+            onClick={(e) => e.stopPropagation()}
+          >
+            🔍
+          </button>
         </form>
 
         <div className="gif-categories">
           {categories.map(category => (
             <button
+              type="button"
               key={category.id}
               className={`gif-category-btn ${selectedCategory === category.id ? 'active' : ''}`}
               onClick={() => handleCategoryClick(category)}

@@ -2,15 +2,30 @@ import { useState, useEffect } from 'react';
 import api from '../utils/api';
 import './DraftManager.css';
 
+/**
+ * DEV-MODE WARNING: Log warning for operations on non-persisted entities
+ */
+const warnNonPersistedEntity = (action, draftId) => {
+  if (import.meta.env.DEV) {
+    console.warn(`⚠️ Attempted ${action} on non-persisted entity.`);
+    console.warn(`📍 Draft ID: ${draftId}`);
+    console.warn('This action will fail on refresh.');
+  }
+};
+
 const DraftManager = ({ draftType, onRestoreDraft, onClose }) => {
   const [drafts, setDrafts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deleteError, setDeleteError] = useState(null);
 
   const fetchDrafts = async () => {
     try {
       setLoading(true);
+      setDeleteError(null);
       const params = draftType ? { type: draftType } : {};
       const response = await api.get('/drafts', { params });
+      // CRITICAL: Only show drafts that exist on the backend
+      // This prevents ghost drafts from being displayed
       setDrafts(response.data.drafts || []);
     } catch (error) {
       console.error('Error fetching drafts:', error);
@@ -25,11 +40,40 @@ const DraftManager = ({ draftType, onRestoreDraft, onClose }) => {
   }, [draftType]);
 
   const deleteDraft = async (draftId) => {
+    // CRITICAL: Validate draft ID exists before attempting delete
+    if (!draftId) {
+      warnNonPersistedEntity('DELETE', draftId);
+      return;
+    }
+
+    // Check if this draft exists in our local state (came from backend)
+    const draftExists = drafts.some(d => d._id === draftId);
+    if (!draftExists) {
+      warnNonPersistedEntity('DELETE', draftId);
+      console.warn('⚠️ Draft not found in fetched drafts - may be a ghost entity');
+    }
+
     try {
+      setDeleteError(null);
       await api.delete(`/drafts/${draftId}`);
       setDrafts(drafts.filter(d => d._id !== draftId));
     } catch (error) {
-      console.error('Error deleting draft:', error);
+      // Handle 404 - draft doesn't exist on server (ghost entity)
+      if (error.response?.status === 404) {
+        if (import.meta.env.DEV) {
+          console.warn(`⚠️ DELETE 404: Draft ${draftId} not found on server (ghost entity)`);
+          console.warn('Removing from local state to sync with server truth.');
+        }
+        // Remove from local state anyway - sync with server truth
+        setDrafts(drafts.filter(d => d._id !== draftId));
+        setDeleteError('Draft was already deleted or never saved.');
+        // Clear error after 3 seconds
+        setTimeout(() => setDeleteError(null), 3000);
+      } else {
+        console.error('Error deleting draft:', error);
+        setDeleteError('Failed to delete draft. Please try again.');
+        setTimeout(() => setDeleteError(null), 3000);
+      }
     }
   };
 
@@ -84,6 +128,13 @@ const DraftManager = ({ draftType, onRestoreDraft, onClose }) => {
         <button className="close-btn" onClick={onClose}>×</button>
       </div>
 
+      {/* Show delete error if any */}
+      {deleteError && (
+        <div className="draft-error">
+          ⚠️ {deleteError}
+        </div>
+      )}
+
       {drafts.length === 0 ? (
         <div className="no-drafts">
           <p>No drafts saved</p>
@@ -98,7 +149,7 @@ const DraftManager = ({ draftType, onRestoreDraft, onClose }) => {
                 <span className="draft-time">{formatDate(draft.lastAutoSaved)}</span>
               </div>
               <div className="draft-actions">
-                <button 
+                <button
                   className="restore-btn"
                   onClick={() => {
                     onRestoreDraft(draft);
@@ -107,7 +158,7 @@ const DraftManager = ({ draftType, onRestoreDraft, onClose }) => {
                 >
                   Restore
                 </button>
-                <button 
+                <button
                   className="delete-btn"
                   onClick={() => {
                     if (window.confirm('Delete this draft?')) {
