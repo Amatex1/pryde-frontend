@@ -28,6 +28,7 @@ import { createContext, useContext, useEffect, useState, useCallback } from 'rea
 import { apiFetch, clearCachePattern } from '../utils/apiClient';
 import { listenForAuthEvents, closeAuthSync } from '../utils/authSync'; // 🔥 NEW: Cross-tab sync
 import logger from '../utils/logger';
+import { markAuthReady, resetAuthReady } from '../utils/authCircuitBreaker'; // 🔥 NEW: Circuit breaker
 
 const AuthContext = createContext(null);
 
@@ -74,6 +75,7 @@ export function AuthProvider({ children }) {
         setAuthReady(true); // Auth is ready after successful fetch
         setAuthLoading(false); // 🔥 Auth verification complete
         sessionStorage.setItem('authReady', 'true'); // 🔥 DEV: Set flag for dev warnings
+        markAuthReady(); // 🔥 CIRCUIT BREAKER: Mark auth as ready
         setError(null);
         logger.debug('[AuthContext] ✅ User authenticated:', data.username);
       } else {
@@ -82,6 +84,7 @@ export function AuthProvider({ children }) {
         setAuthReady(true);
         setAuthLoading(false); // 🔥 Auth verification complete
         sessionStorage.setItem('authReady', 'true'); // 🔥 DEV: Set flag for dev warnings
+        markAuthReady(); // 🔥 CIRCUIT BREAKER: Mark auth as ready (even if not authenticated)
         logger.debug('[AuthContext] ❌ Not authenticated');
       }
     } catch (err) {
@@ -92,6 +95,7 @@ export function AuthProvider({ children }) {
       setAuthReady(true); // Still mark as ready even on error
       setAuthLoading(false); // 🔥 Auth verification complete (even on error)
       sessionStorage.setItem('authReady', 'true'); // 🔥 DEV: Set flag for dev warnings
+      markAuthReady(); // 🔥 CIRCUIT BREAKER: Mark auth as ready (even on error)
     } finally {
       setLoading(false);
     }
@@ -125,6 +129,7 @@ export function AuthProvider({ children }) {
     setLoading(false);
     sessionStorage.removeItem('authReady'); // 🔥 DEV: Clear flag for dev warnings
     clearCachePattern('/auth/me');
+    resetAuthReady(); // 🔥 CIRCUIT BREAKER: Reset auth ready state on logout
     logger.debug('[AuthContext] User cleared');
   }, []);
 

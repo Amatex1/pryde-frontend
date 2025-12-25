@@ -1,4 +1,5 @@
 import api from './api';
+import { isAuthReady } from './authCircuitBreaker';
 
 let isSubscribed = false;
 
@@ -6,12 +7,19 @@ let isSubscribed = false;
    CHECK SUBSCRIPTION STATE
 --------------------------------------------*/
 export const isPushNotificationSubscribed = async () => {
+  // 🔥 CIRCUIT BREAKER: Don't check push status before auth is ready
+  if (!isAuthReady()) {
+    console.debug('[Push] Skipping status check - auth not ready');
+    return false;
+  }
+
   try {
     const response = await api.get('/push/status');
     isSubscribed = response.data.hasSubscription;
     return isSubscribed;
   } catch (error) {
-    console.error("Failed to check push notification subscription:", error);
+    // Silently fail - push is optional
+    console.debug("Failed to check push notification subscription:", error);
     return false;
   }
 };
@@ -137,12 +145,18 @@ function urlBase64ToUint8Array(base64String) {
    INITIALIZE PUSH NOTIFICATIONS
 --------------------------------------------*/
 export const initializePushNotifications = async () => {
+  // 🔥 CIRCUIT BREAKER: Don't initialize push before auth is ready
+  if (!isAuthReady()) {
+    console.debug('[Push] Skipping initialization - auth not ready');
+    return false;
+  }
+
   if ('serviceWorker' in navigator && 'PushManager' in window) {
     try {
       // Get existing service worker registration (already registered in main.jsx)
       const registration = await navigator.serviceWorker.ready;
-      
-      // Check current subscription status
+
+      // Check current subscription status (will respect circuit breaker)
       const subscriptionStatus = await isPushNotificationSubscribed();
       
       // Set up push event listener

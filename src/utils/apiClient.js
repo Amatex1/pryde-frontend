@@ -18,6 +18,12 @@ import { getAuthToken } from './auth';
 import logger from './logger';
 import { FRONTEND_VERSION } from './pwaSafety';
 import { forceReloadWithCacheClear } from './emergencyRecovery';
+import {
+  shouldBlockRequest,
+  recordAuthFailure,
+  isPushEndpoint,
+  handlePushFailure
+} from './authCircuitBreaker';
 
 // In-flight request tracking (prevents duplicate requests)
 const inflight = new Map();
@@ -44,6 +50,12 @@ const abortControllers = new Map();
  */
 export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = false } = {}) {
   const now = Date.now();
+
+  // 🔥 CIRCUIT BREAKER: Block non-critical requests before auth ready
+  if (shouldBlockRequest(url)) {
+    logger.warn(`[API] 🚫 Request blocked by circuit breaker: ${url}`);
+    return null;
+  }
 
   // 🔥 DEV WARNING: Check if protected request is made before authReady
   if (!skipAuth && import.meta.env.DEV) {
@@ -182,6 +194,16 @@ export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = fal
 
       // Handle non-OK responses
       if (!res.ok) {
+        // 🔥 CIRCUIT BREAKER: Record auth failures (but not during bootstrap)
+        if (res.status === 401) {
+          // Check if this is a push endpoint (should not affect auth)
+          if (isPushEndpoint(url)) {
+            handlePushFailure(url, new Error(`HTTP ${res.status}`));
+          } else {
+            recordAuthFailure(url, res.status);
+          }
+        }
+
         logger.warn(`[API] Error ${res.status}: ${url}`);
         throw new Error(`API error ${res.status}`);
       }

@@ -11,11 +11,18 @@ import { initWebVitals } from './utils/webVitals'
 import { initializePushNotifications } from './utils/pushNotifications'
 import { initializeTheme } from './utils/themeManager'
 import { logMobileEnvironment } from './utils/mobileDebug'
+import { initCircuitBreaker } from './utils/authCircuitBreaker' // 🔥 NEW: Circuit breaker
 import { initServiceWorkerDebug } from './utils/serviceWorkerDebug'
 import { clearStaleSWAndCaches } from './utils/clearStaleSW'
 import { initSwApiCollisionDetector } from './utils/swApiCollisionDetector'
 import { initSWTestingInfrastructure } from './utils/swTestingInfrastructure'
 import { initSWAutoDisable, isSWDisabledForRecovery } from './utils/swAutoDisable'
+
+// ========================================
+// INITIALIZE CIRCUIT BREAKER IMMEDIATELY
+// Must run before any API calls
+// ========================================
+initCircuitBreaker();
 
 // ========================================
 // INITIALIZE THEME IMMEDIATELY
