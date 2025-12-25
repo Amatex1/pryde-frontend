@@ -14,7 +14,7 @@
  */
 
 import { API_BASE_URL } from '../config/api.js';
-import { getAuthToken } from './auth';
+import { getAuthToken, getRefreshToken, setAuthToken, setRefreshToken } from './auth';
 import logger from './logger';
 import { FRONTEND_VERSION } from './pwaSafety';
 import { forceReloadWithCacheClear } from './emergencyRecovery';
@@ -37,6 +37,71 @@ let backoffDelay = 1000; // Start with 1 second
 
 // AbortController for canceling in-flight requests
 const abortControllers = new Map();
+
+// Token refresh state (single-flight pattern to prevent race conditions)
+let isRefreshing = false;
+let refreshPromise = null;
+
+/**
+ * Attempt to refresh the access token
+ * Uses single-flight pattern to prevent multiple simultaneous refreshes
+ * @returns {Promise<string|null>} New access token or null if refresh failed
+ */
+async function refreshAccessToken() {
+  // If already refreshing, wait for existing promise
+  if (isRefreshing && refreshPromise) {
+    logger.debug('[API] 🔄 Token refresh already in progress, awaiting...');
+    return refreshPromise;
+  }
+
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) {
+    logger.debug('[API] ❌ No refresh token available');
+    return null;
+  }
+
+  isRefreshing = true;
+  refreshPromise = (async () => {
+    try {
+      logger.debug('[API] 🔄 Attempting token refresh...');
+
+      const response = await fetch(`${API_BASE_URL}/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ refreshToken })
+      });
+
+      if (!response.ok) {
+        logger.warn(`[API] ❌ Token refresh failed: ${response.status}`);
+        return null;
+      }
+
+      const data = await response.json();
+
+      if (data.accessToken) {
+        logger.debug('[API] ✅ Token refreshed successfully');
+        setAuthToken(data.accessToken);
+
+        if (data.refreshToken) {
+          setRefreshToken(data.refreshToken);
+        }
+
+        return data.accessToken;
+      }
+
+      return null;
+    } catch (error) {
+      logger.error('[API] ❌ Token refresh error:', error.message);
+      return null;
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
 
 /**
  * Global fetch coordinator with deduplication and caching
@@ -194,9 +259,69 @@ export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = fal
 
       // Handle non-OK responses
       if (!res.ok) {
-        // 🔥 CIRCUIT BREAKER: Record auth failures (but not during bootstrap)
-        if (res.status === 401) {
-          // Check if this is a push endpoint (should not affect auth)
+        // 🔥 TOKEN REFRESH: On 401, try to refresh token and retry (once)
+        if (res.status === 401 && !skipAuth && !options._retried) {
+          logger.debug(`[API] 🔄 Got 401 for ${url}, attempting token refresh...`);
+
+          const newToken = await refreshAccessToken();
+
+          if (newToken) {
+            logger.debug(`[API] ✅ Token refreshed, retrying request: ${url}`);
+
+            // Remove abort controller for retry
+            abortControllers.delete(cacheKey);
+            inflight.delete(cacheKey);
+
+            // Retry with new token (mark as retried to prevent infinite loop)
+            const retryOptions = {
+              ...options,
+              _retried: true,
+              headers: {
+                ...options.headers,
+                'Authorization': `Bearer ${newToken}`,
+              }
+            };
+            delete retryOptions.signal; // New request needs new signal
+
+            // Direct fetch without going through cache/dedup again
+            const retryResponse = await fetch(fullUrl, {
+              ...retryOptions,
+              signal: new AbortController().signal
+            });
+
+            if (retryResponse.ok) {
+              const retryData = await retryResponse.json();
+
+              // Cache successful retry response
+              if (cacheTtl) {
+                cache.set(cacheKey, {
+                  data: retryData,
+                  expires: Date.now() + cacheTtl,
+                });
+              }
+
+              return retryData;
+            } else {
+              // Retry also failed - record failure
+              logger.warn(`[API] ❌ Retry failed: ${retryResponse.status}`);
+              if (isPushEndpoint(url)) {
+                handlePushFailure(url, new Error(`HTTP ${retryResponse.status}`));
+              } else {
+                recordAuthFailure(url, retryResponse.status);
+              }
+              throw new Error(`API error ${retryResponse.status}`);
+            }
+          } else {
+            // Refresh failed - record auth failure
+            logger.warn(`[API] ❌ Token refresh failed for ${url}`);
+            if (isPushEndpoint(url)) {
+              handlePushFailure(url, new Error(`HTTP ${res.status}`));
+            } else {
+              recordAuthFailure(url, res.status);
+            }
+          }
+        } else if (res.status === 401) {
+          // 🔥 CIRCUIT BREAKER: Record auth failures (already retried or push endpoint)
           if (isPushEndpoint(url)) {
             handlePushFailure(url, new Error(`HTTP ${res.status}`));
           } else {
