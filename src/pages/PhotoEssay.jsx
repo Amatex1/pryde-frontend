@@ -3,7 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Toast from '../components/Toast';
 import DraftManager from '../components/DraftManager';
+import CustomModal from '../components/CustomModal';
 import { useToast } from '../hooks/useToast';
+import { useModal } from '../hooks/useModal';
 import api, { getCsrfToken } from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
@@ -15,6 +17,7 @@ function PhotoEssay() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toasts, showToast, removeToast } = useToast();
+  const { modalState, closeModal, showAlert } = useModal();
   const [title, setTitle] = useState('');
   const [photos, setPhotos] = useState([]);
   const [visibility, setVisibility] = useState('public');
@@ -42,7 +45,7 @@ function PhotoEssay() {
       setEditMode(true);
     } catch (error) {
       console.error('Failed to fetch photo essay:', error);
-      showToast('Failed to load photo essay', 'error');
+      showAlert('Failed to load photo essay. Please try again.', 'Error');
     }
   };
 
@@ -108,13 +111,8 @@ function PhotoEssay() {
       const errorMessage = error.message ||
                           'Image upload failed. Please try again or use a smaller image.';
 
-      // Safely call showToast
-      try {
-        showToast(errorMessage, 'error');
-      } catch (toastError) {
-        console.error('Failed to show toast:', toastError);
-        alert(errorMessage); // Fallback to alert
-      }
+      // Use showAlert for consistent error handling across the app
+      showAlert(errorMessage, 'Upload Failed');
     } finally {
       setUploadingPhoto(false);
       setUploadProgress(0);
@@ -212,7 +210,7 @@ function PhotoEssay() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim() || photos.length === 0) {
-      showToast('Please add a title and at least one photo', 'error');
+      showAlert('Please add a title and at least one photo', 'Missing Information');
       return;
     }
 
@@ -237,7 +235,7 @@ function PhotoEssay() {
       navigate('/profile');
     } catch (error) {
       console.error('Failed to save photo essay:', error);
-      showToast('Failed to save photo essay', 'error');
+      showAlert('Failed to save photo essay. Please try again.', 'Save Failed');
     } finally {
       setLoading(false);
     }
@@ -372,6 +370,21 @@ function PhotoEssay() {
           onClose={() => removeToast(toast.id)}
         />
       ))}
+
+      {/* Custom Modal for alerts */}
+      <CustomModal
+        isOpen={modalState.isOpen}
+        onClose={closeModal}
+        type={modalState.type}
+        title={modalState.title}
+        message={modalState.message}
+        onConfirm={modalState.onConfirm}
+        placeholder={modalState.placeholder}
+        confirmText={modalState.confirmText}
+        cancelText={modalState.cancelText}
+        inputType={modalState.inputType}
+        defaultValue={modalState.defaultValue}
+      />
     </div>
   );
 }
