@@ -22,6 +22,11 @@ import {
   markUnauthenticated
 } from './state/authStatus';
 import { AuthProvider } from './context/AuthContext';
+import { executePWASafetyChecks } from './utils/pwaSafety';
+import { disablePWAAndReload, forceReloadWithCacheClear } from './utils/emergencyRecovery';
+import { initOfflineManager } from './utils/offlineManager';
+import DebugOverlay from './components/DebugOverlay';
+import OfflineBanner from './components/OfflineBanner';
 
 // Eager load critical components (needed immediately)
 // IMPORTANT: Only load components that DON'T use React Router hooks
@@ -30,6 +35,8 @@ import PWAInstallPrompt from './components/PWAInstallPrompt';
 import CookieBanner from './components/CookieBanner';
 import ErrorBoundary from './components/ErrorBoundary';
 import UpdateBanner from './components/UpdateBanner';
+import AuthLoadingScreen from './components/AuthLoadingScreen'; // 🔥 NEW: Global auth loading screen
+import AuthGate from './components/AuthGate'; // 🔥 NEW: Auth gate wrapper
 import { AppReadyProvider } from './state/appReady';
 import LoadingGate from './components/LoadingGate';
 import useAppVersion from './hooks/useAppVersion';
@@ -188,8 +195,47 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // 🔥 PRE-WARM BACKEND: Wake backend immediately on app load
-    // This prevents cold start delays on first API call
+    // 🛡️ STEP 1: PWA SAFETY CHECKS (BEFORE EVERYTHING ELSE)
+    // This must run BEFORE auth bootstrap to catch kill-switch and version mismatches
+    const runPWASafetyChecks = async () => {
+      try {
+        logger.info('[App] 🛡️ Running PWA safety checks...');
+        const safetyResult = await executePWASafetyChecks();
+
+        if (!safetyResult.safe) {
+          logger.warn('[App] 🔥 PWA safety check failed:', safetyResult.action);
+
+          // Handle different safety actions
+          switch (safetyResult.action) {
+            case 'disable_pwa':
+              disablePWAAndReload(safetyResult.message);
+              return; // Stop execution
+
+            case 'force_reload':
+              forceReloadWithCacheClear(safetyResult.message);
+              return; // Stop execution
+
+            case 'version_mismatch':
+              forceReloadWithCacheClear(safetyResult.message);
+              return; // Stop execution
+
+            default:
+              logger.warn('[App] Unknown safety action:', safetyResult.action);
+          }
+        }
+
+        logger.info('[App] ✅ PWA safety checks passed');
+      } catch (error) {
+        logger.error('[App] PWA safety checks failed:', error);
+        // Continue anyway (fail open)
+      }
+    };
+
+    // 🌐 STEP 2: Initialize offline manager
+    initOfflineManager();
+
+    // 🔥 STEP 3: PRE-WARM BACKEND
+    // Wake backend immediately on app load to prevent cold start delays
     const preWarmBackend = async () => {
       try {
         // Use lightweight health endpoint to wake backend
@@ -205,10 +251,7 @@ function App() {
       }
     };
 
-    // Start pre-warming immediately (non-blocking)
-    preWarmBackend();
-
-    // CRITICAL: Bootstrap auth state on app load
+    // 🔐 STEP 4: Bootstrap auth state
     // This prevents refresh loops and ensures CSRF token is available
     const bootstrapAuth = async () => {
       try {
@@ -334,7 +377,12 @@ function App() {
       }
     };
 
-    bootstrapAuth();
+    // Execute in order: Safety checks → Pre-warm → Auth bootstrap
+    (async () => {
+      await runPWASafetyChecks();
+      preWarmBackend(); // Non-blocking
+      await bootstrapAuth();
+    })();
 
     // 🔄 Register service worker with auto-update handling
     // This will automatically reload the page when a new service worker is installed
@@ -509,11 +557,13 @@ function App() {
       <AppReadyProvider>
         <LoadingGate>
           <AuthProvider>
-            <Router>
-              <Suspense fallback={<PageLoader />}>
-                <div className="app-container">
-                  {/* Safety Warning for high-risk regions */}
-                  {isAuth && <SafetyWarning />}
+            {/* 🔥 AUTH GATE: Block ALL UI until auth verification completes */}
+            <AuthGate>
+              <Router>
+                <Suspense fallback={<PageLoader />}>
+                  <div className="app-container">
+                    {/* Safety Warning for high-risk regions */}
+                    {isAuth && <SafetyWarning />}
 
                 {/* Update banner for new deployments */}
                 {updateAvailable && showUpdateBanner && (
@@ -618,6 +668,15 @@ function App() {
             </div>
           </Suspense>
         </Router>
+      </AuthGate>
+      {/* End of AuthGate - Auth verification complete */}
+
+      {/* 🔍 Debug Overlay - Toggle with ?debug=true or Ctrl+Shift+D */}
+      <DebugOverlay />
+
+      {/* 📴 Offline Banner - Shows when app is offline */}
+      <OfflineBanner />
+
       </AuthProvider>
       </LoadingGate>
     </AppReadyProvider>

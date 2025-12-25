@@ -31,7 +31,6 @@ function Settings() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [quietModeEnabled, setQuietModeEnabled] = useState(false); // PHASE 2: Quiet Mode
-  const [isCreator, setIsCreator] = useState(false); // PHASE 5: Creator Mode
   const [verificationStatus, setVerificationStatus] = useState({
     isVerified: false,
     verificationRequested: false,
@@ -81,9 +80,6 @@ function Settings() {
     const quietMode = currentUser.privacySettings?.quietModeEnabled || false;
     setQuietModeEnabled(quietMode);
     setQuietMode(quietMode);
-
-    // PHASE 5: Load creator mode setting
-    setIsCreator(currentUser.isCreator || false);
   };
 
   const handleChange = (e) => {
@@ -145,19 +141,6 @@ function Settings() {
     } catch (error) {
       logger.error('Failed to toggle quiet mode:', error);
       setMessage('Failed to update quiet mode');
-    }
-  };
-
-  // PHASE 5: Handle Creator Mode toggle
-  const handleCreatorModeToggle = async () => {
-    try {
-      const newValue = !isCreator;
-      await api.patch('/users/me/creator', { isCreator: newValue });
-      setIsCreator(newValue);
-      setMessage(newValue ? 'Creator Mode enabled' : 'Creator Mode disabled');
-    } catch (error) {
-      logger.error('Failed to toggle creator mode:', error);
-      setMessage('Failed to update creator mode');
     }
   };
 
@@ -412,30 +395,6 @@ function Settings() {
                     name="quietMode"
                     checked={quietModeEnabled}
                     onChange={handleQuietModeToggle}
-                  />
-                  <span className="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          {/* PHASE 5: Creator Mode */}
-          <div className="settings-section">
-            <h2 className="section-title">🎨 Creator Mode</h2>
-
-            <div className="notification-settings">
-              <div className="notification-item">
-                <div className="notification-info">
-                  <h3>Enable Creator Mode</h3>
-                  <p>Unlock creator features like photo essays, featured posts, and a dedicated creator profile. Perfect for artists, writers, and content creators.</p>
-                </div>
-                <label className="toggle-switch">
-                  <input
-                    type="checkbox"
-                    id="creator-mode-toggle"
-                    name="creatorMode"
-                    checked={isCreator}
-                    onChange={handleCreatorModeToggle}
                   />
                   <span className="toggle-slider"></span>
                 </label>

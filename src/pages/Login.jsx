@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../utils/api';
 import { setAuthToken, setRefreshToken, setCurrentUser, clearManualLogoutFlag } from '../utils/auth';
 import { disconnectSocket, initializeSocket, resetLogoutFlag } from '../utils/socket';
+import { broadcastLogin } from '../utils/authSync'; // 🔥 NEW: Cross-tab sync
 import { useAuth } from '../context/AuthContext';
 import PasskeyLogin from '../components/PasskeyLogin';
 import './Auth.css';
@@ -68,6 +69,9 @@ function Login({ setIsAuth }) {
       // 🔥 CRITICAL: Refresh AuthContext to populate user data
       await refreshUser();
 
+      // 🔥 CROSS-TAB SYNC: Broadcast login to other tabs
+      broadcastLogin();
+
       // Disconnect old socket and reconnect with new token
       disconnectSocket();
       const userId = response.data.user.id || response.data.user._id;
@@ -112,6 +116,9 @@ function Login({ setIsAuth }) {
 
       // 🔥 CRITICAL: Refresh AuthContext to populate user data
       await refreshUser();
+
+      // 🔥 CROSS-TAB SYNC: Broadcast login to other tabs
+      broadcastLogin();
 
       // Disconnect old socket and reconnect with new token
       disconnectSocket();

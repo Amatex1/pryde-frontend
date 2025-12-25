@@ -88,6 +88,15 @@ export const logout = async () => {
   // Set flag to indicate manual logout (not session expiration)
   sessionStorage.setItem('manualLogout', 'true');
 
+  // 🔥 STEP 0: Broadcast logout to other tabs
+  try {
+    const { broadcastLogout } = await import('./authSync');
+    broadcastLogout();
+    console.log('✅ Broadcasted logout to other tabs');
+  } catch (error) {
+    console.error('Failed to broadcast logout:', error);
+  }
+
   // 🔥 STEP 1: Mark as unauthenticated FIRST to prevent new requests
   try {
     const { markUnauthenticated } = await import('../state/authStatus');

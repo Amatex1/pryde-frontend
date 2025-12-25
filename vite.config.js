@@ -20,6 +20,37 @@ export default defineConfig({
         // navigateFallback removed - let Cloudflare _redirects handle SPA routing
         // This prevents service worker redirect errors
         runtimeCaching: [
+          // 🔥 CRITICAL: NEVER cache auth responses (prevents stale auth loops)
+          {
+            urlPattern: /^https:\/\/pryde-backend\.onrender\.com\/api\/auth\/.*/i,
+            handler: 'NetworkOnly', // Never cache auth endpoints
+            options: {
+              cacheName: 'auth-no-cache'
+            }
+          },
+          {
+            urlPattern: /^https:\/\/pryde-backend\.onrender\.com\/api\/refresh/i,
+            handler: 'NetworkOnly', // Never cache refresh endpoint
+            options: {
+              cacheName: 'refresh-no-cache'
+            }
+          },
+          {
+            urlPattern: /^https:\/\/pryde-backend\.onrender\.com\/api\/push\/status/i,
+            handler: 'NetworkOnly', // Never cache push status
+            options: {
+              cacheName: 'push-no-cache'
+            }
+          },
+          // 🔥 CRITICAL: NEVER cache user-specific JSON (prevents stale user data)
+          {
+            urlPattern: /^https:\/\/pryde-backend\.onrender\.com\/api\/users\/me/i,
+            handler: 'NetworkOnly', // Never cache current user endpoint
+            options: {
+              cacheName: 'user-no-cache'
+            }
+          },
+          // General API calls (safe to cache with short TTL)
           {
             urlPattern: /^https:\/\/pryde-backend\.onrender\.com\/api\/.*/i,
             handler: 'NetworkFirst',
@@ -27,7 +58,7 @@ export default defineConfig({
               cacheName: 'api-cache',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 // 1 hour
+                maxAgeSeconds: 60 * 5 // 🔥 REDUCED: 5 minutes (was 1 hour)
               },
               networkTimeoutSeconds: 10
             }

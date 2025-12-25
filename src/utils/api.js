@@ -10,8 +10,10 @@ const api = axios.create({
   timeout: 10000 // 10 second timeout for better UX
 });
 
+// 🔥 TOKEN REFRESH RACE PROTECTION
 // Track if we're currently refreshing the token
 let isRefreshing = false;
+let refreshPromise = null; // 🔥 NEW: Single-flight refresh promise
 let failedQueue = [];
 
 const processQueue = (error, token = null) => {
@@ -178,24 +180,26 @@ api.interceptors.response.use(
         return Promise.reject(error);
       }
 
-      if (isRefreshing) {
-        // If already refreshing, queue this request
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        }).then(token => {
+      // 🔥 SINGLE-FLIGHT REFRESH: If already refreshing, await existing promise
+      if (isRefreshing && refreshPromise) {
+        logger.debug('🔄 Refresh already in progress - awaiting existing promise');
+        try {
+          const token = await refreshPromise;
           originalRequest.headers.Authorization = `Bearer ${token}`;
           return api(originalRequest);
-        }).catch(err => {
+        } catch (err) {
           return Promise.reject(err);
-        });
+        }
       }
 
       originalRequest._retry = true;
       isRefreshing = true;
 
-      try {
-        // Try to refresh the token
-        logger.debug('🔄 Token expired, refreshing...');
+      // 🔥 Create single-flight refresh promise
+      refreshPromise = (async () => {
+        try {
+          // Try to refresh the token
+          logger.debug('🔄 Token expired, refreshing...');
 
         // Get refresh token from localStorage (for cross-domain setups)
         const refreshToken = getRefreshToken();
@@ -235,38 +239,50 @@ api.interceptors.response.use(
           processQueue(null, accessToken);
 
           isRefreshing = false;
+          refreshPromise = null; // 🔥 Clear refresh promise
 
-          // Retry the original request
-          return api(originalRequest);
+          // 🔥 Return token for awaiting requests
+          return accessToken;
         }
-      } catch (refreshError) {
-        logger.error('❌ Token refresh failed:', refreshError.message);
-        logger.error('📍 Refresh error response:', refreshError.response?.data);
-        logger.error('📍 Refresh error status:', refreshError.response?.status);
-        logger.error('📍 Current cookies at failure:', document.cookie);
+        } catch (refreshError) {
+          logger.error('❌ Token refresh failed:', refreshError.message);
+          logger.error('📍 Refresh error response:', refreshError.response?.data);
+          logger.error('📍 Refresh error status:', refreshError.response?.status);
+          logger.error('📍 Current cookies at failure:', document.cookie);
 
-        processQueue(refreshError, null);
-        isRefreshing = false;
+          processQueue(refreshError, null);
+          isRefreshing = false;
+          refreshPromise = null; // 🔥 Clear refresh promise
 
-        // Check if this is a manual logout or session expiration
-        const wasManualLogout = isManualLogout();
+          // Check if this is a manual logout or session expiration
+          const wasManualLogout = isManualLogout();
 
-        // Token refresh failed - logout
-        logger.warn('🔒 Authentication failed - logging out');
-        logout();
+          // Token refresh failed - logout
+          logger.warn('🔒 Authentication failed - logging out');
+          logout();
 
-        // Only redirect if not already on login/register page
-        const currentPath = window.location.pathname;
-        if (currentPath !== '/login' && currentPath !== '/register') {
-          // Only add expired=true if it was NOT a manual logout
-          if (wasManualLogout) {
-            window.location.href = '/login';
-          } else {
-            window.location.href = '/login?expired=true';
+          // Only redirect if not already on login/register page
+          const currentPath = window.location.pathname;
+          if (currentPath !== '/login' && currentPath !== '/register') {
+            // Only add expired=true if it was NOT a manual logout
+            if (wasManualLogout) {
+              window.location.href = '/login';
+            } else {
+              window.location.href = '/login?expired=true';
+            }
           }
-        }
 
-        return Promise.reject(refreshError);
+          throw refreshError; // 🔥 Throw to reject promise
+        }
+      })();
+
+      // 🔥 Await refresh promise and retry original request
+      try {
+        const token = await refreshPromise;
+        originalRequest.headers.Authorization = `Bearer ${token}`;
+        return api(originalRequest);
+      } catch (err) {
+        return Promise.reject(err);
       }
     }
 

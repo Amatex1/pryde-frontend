@@ -16,6 +16,8 @@
 import { API_BASE_URL } from '../config/api.js';
 import { getAuthToken } from './auth';
 import logger from './logger';
+import { FRONTEND_VERSION } from './pwaSafety';
+import { forceReloadWithCacheClear } from './emergencyRecovery';
 
 // In-flight request tracking (prevents duplicate requests)
 const inflight = new Map();
@@ -42,6 +44,26 @@ const abortControllers = new Map();
  */
 export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = false } = {}) {
   const now = Date.now();
+
+  // 🔥 DEV WARNING: Check if protected request is made before authReady
+  if (!skipAuth && import.meta.env.DEV) {
+    try {
+      // Check if AuthContext is ready
+      const authReadyFlag = sessionStorage.getItem('authReady');
+      if (authReadyFlag !== 'true' && url !== '/auth/me') {
+        // Get stack trace
+        const stack = new Error().stack;
+        logger.warn(`⚠️ [DEV] Protected request fired before authReady!`);
+        logger.warn(`   Endpoint: ${url}`);
+        logger.warn(`   Stack trace:`, stack);
+
+        // In dev mode, we still allow the request but log the warning
+        // In production, this check is skipped for performance
+      }
+    } catch (error) {
+      // Ignore errors in dev check
+    }
+  }
 
   // 🔥 AUTH GUARD: Check if we're logging out or not authenticated
   if (!skipAuth) {
@@ -108,6 +130,7 @@ export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = fal
   // Add default headers
   options.headers = {
     'Content-Type': 'application/json',
+    'X-Frontend-Version': FRONTEND_VERSION, // 🔥 Version pinning
     ...options.headers,
   };
 
@@ -119,14 +142,34 @@ export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = fal
 
   const request = fetch(fullUrl, options)
     .then(async (res) => {
+      // 🔥 Handle 426 Upgrade Required (version mismatch)
+      if (res.status === 426) {
+        logger.error('[API] 🔥 Version mismatch detected (426 Upgrade Required)');
+
+        try {
+          const errorData = await res.json();
+          logger.error(`   Backend version: ${errorData.backendVersion || 'unknown'}`);
+          logger.error(`   Frontend version: ${FRONTEND_VERSION}`);
+          logger.error(`   Message: ${errorData.message || 'Update required'}`);
+
+          // Force reload with cache clear
+          forceReloadWithCacheClear(errorData.message || 'App update required');
+        } catch (error) {
+          // If we can't parse the error, just force reload
+          forceReloadWithCacheClear('App update required');
+        }
+
+        return null;
+      }
+
       // Handle 429 Rate Limit
       if (res.status === 429) {
         const retryAfter = res.headers.get('Retry-After');
         const delay = retryAfter ? parseInt(retryAfter) * 1000 : backoffDelay;
-        
+
         rateLimitedUntil = now + delay;
         backoffDelay = Math.min(backoffDelay * 2, 60000); // Max 60 seconds
-        
+
         logger.warn(`[API] Rate limited (429): ${url}, backing off for ${delay}ms`);
         return null;
       }

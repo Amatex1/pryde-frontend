@@ -26,6 +26,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { apiFetch, clearCachePattern } from '../utils/apiClient';
+import { listenForAuthEvents, closeAuthSync } from '../utils/authSync'; // 🔥 NEW: Cross-tab sync
 import logger from '../utils/logger';
 
 const AuthContext = createContext(null);
@@ -34,28 +35,33 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [authReady, setAuthReady] = useState(false); // NEW: Auth ready gate
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // NEW: Auth state
+  const [authReady, setAuthReady] = useState(false); // Auth ready gate
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Auth state
+  const [authLoading, setAuthLoading] = useState(true); // 🔥 NEW: Global auth loading state
 
   /**
    * Hydrate user data from API
    * Uses apiFetch with 5-minute cache to prevent duplicate requests
+   * 🔥 CRITICAL: This is the FIRST protected call - sets authLoading = false when done
    */
   const hydrate = useCallback(async () => {
     try {
-      logger.debug('[AuthContext] Hydrating user data...');
+      logger.debug('[AuthContext] 🔐 Starting auth verification...');
+      setAuthLoading(true); // Start loading
 
       // Check if we have a token before making the request
       const token = localStorage.getItem('token');
       if (!token) {
-        logger.debug('[AuthContext] No token found - skipping hydration');
+        logger.debug('[AuthContext] No token found - marking unauthenticated');
         setUser(null);
         setIsAuthenticated(false);
         setAuthReady(true);
+        setAuthLoading(false); // 🔥 Auth verification complete
         setLoading(false);
         return;
       }
 
+      // 🔥 CRITICAL: /auth/me is ALWAYS the first protected call
       const data = await apiFetch(
         '/auth/me',
         {},
@@ -66,20 +72,26 @@ export function AuthProvider({ children }) {
         setUser(data);
         setIsAuthenticated(true);
         setAuthReady(true); // Auth is ready after successful fetch
+        setAuthLoading(false); // 🔥 Auth verification complete
+        sessionStorage.setItem('authReady', 'true'); // 🔥 DEV: Set flag for dev warnings
         setError(null);
-        logger.debug('[AuthContext] User hydrated:', data.username);
+        logger.debug('[AuthContext] ✅ User authenticated:', data.username);
       } else {
         setUser(null);
         setIsAuthenticated(false);
         setAuthReady(true);
-        logger.debug('[AuthContext] No user data (not authenticated)');
+        setAuthLoading(false); // 🔥 Auth verification complete
+        sessionStorage.setItem('authReady', 'true'); // 🔥 DEV: Set flag for dev warnings
+        logger.debug('[AuthContext] ❌ Not authenticated');
       }
     } catch (err) {
-      logger.error('[AuthContext] Hydration failed:', err);
+      logger.error('[AuthContext] Auth verification failed:', err);
       setError(err);
       setUser(null);
       setIsAuthenticated(false);
       setAuthReady(true); // Still mark as ready even on error
+      setAuthLoading(false); // 🔥 Auth verification complete (even on error)
+      sessionStorage.setItem('authReady', 'true'); // 🔥 DEV: Set flag for dev warnings
     } finally {
       setLoading(false);
     }
@@ -109,7 +121,9 @@ export function AuthProvider({ children }) {
     setUser(null);
     setIsAuthenticated(false);
     setAuthReady(false); // Reset auth ready on logout
+    setAuthLoading(false); // Reset auth loading
     setLoading(false);
+    sessionStorage.removeItem('authReady'); // 🔥 DEV: Clear flag for dev warnings
     clearCachePattern('/auth/me');
     logger.debug('[AuthContext] User cleared');
   }, []);
@@ -130,12 +144,42 @@ export function AuthProvider({ children }) {
     };
   }, [hydrate]);
 
+  // 🔥 CROSS-TAB AUTH SYNC: Listen for auth events from other tabs
+  useEffect(() => {
+    const cleanup = listenForAuthEvents(async (type, data) => {
+      logger.debug(`[AuthContext] Received cross-tab event: ${type}`);
+
+      if (type === 'auth:login') {
+        // Another tab logged in - rehydrate auth
+        logger.debug('[AuthContext] Another tab logged in - rehydrating...');
+        await refreshUser();
+      } else if (type === 'auth:logout') {
+        // Another tab logged out - clear auth
+        logger.debug('[AuthContext] Another tab logged out - clearing auth...');
+        clearUser();
+
+        // Redirect to login if not already there
+        const currentPath = window.location.pathname;
+        if (currentPath !== '/login' && currentPath !== '/register' && currentPath !== '/') {
+          window.location.href = '/login';
+        }
+      }
+    });
+
+    // Cleanup on unmount
+    return () => {
+      cleanup();
+      closeAuthSync();
+    };
+  }, [refreshUser, clearUser]);
+
   const value = {
     user,
     loading,
     error,
-    authReady, // NEW: Expose auth ready state
-    isAuthenticated, // NEW: Expose auth state
+    authReady, // Expose auth ready state
+    isAuthenticated, // Expose auth state
+    authLoading, // 🔥 NEW: Expose global auth loading state
     refreshUser,
     updateUser,
     clearUser,

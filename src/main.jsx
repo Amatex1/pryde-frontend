@@ -10,12 +10,23 @@ import { registerServiceWorker, setupInstallPrompt, requestPersistentStorage } f
 import { initWebVitals } from './utils/webVitals'
 import { initializePushNotifications } from './utils/pushNotifications'
 import { initializeTheme } from './utils/themeManager'
+import { logMobileEnvironment } from './utils/mobileDebug'
+import { initServiceWorkerDebug } from './utils/serviceWorkerDebug'
 
 // ========================================
 // INITIALIZE THEME IMMEDIATELY
 // Set data-theme and data-quiet attributes before React renders
 // ========================================
 initializeTheme();
+
+// ========================================
+// MOBILE DEBUG (DEV MODE ONLY)
+// Log mobile environment and initialize service worker debug
+// ========================================
+if (import.meta.env.DEV) {
+  logMobileEnvironment();
+  initServiceWorkerDebug();
+}
 
 // Register service worker for PWA functionality (production only)
 if (import.meta.env.PROD) {
