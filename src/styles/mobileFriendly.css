@@ -4,6 +4,102 @@
    ======================================== */
 
 /* ========================================
+   TABLET/NARROW SCREENS - POST HEADER STACKED
+   Applies to screens up to 900px for post headers
+   ======================================== */
+
+@media (max-width: 900px) {
+  /* Post header grid: avatar | info | menu */
+  .post-header {
+    display: grid !important;
+    grid-template-columns: auto 1fr auto !important;
+    align-items: start !important;
+    margin-bottom: 8px !important;
+    gap: 10px !important;
+  }
+
+  .post-author {
+    grid-column: 1 / 3 !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+
+  .post-header-actions {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    align-self: start !important;
+    margin-top: 0 !important;
+  }
+
+  /* Author info - STACKED layout */
+  .author-info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    min-width: 0 !important;
+    flex: 1 !important;
+  }
+
+  /* Name row - just name and verified badge */
+  .author-name-row {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 15px !important;
+    line-height: 1.3 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  /* Author name - full display with ellipsis */
+  .author-name {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: none !important;
+    flex-shrink: 1 !important;
+  }
+
+  .verified-badge {
+    flex-shrink: 0 !important;
+  }
+
+  /* Hide inline meta from name row */
+  .author-name-row .author-pronouns,
+  .author-name-row .post-time-inline,
+  .author-name-row .post-privacy-icon,
+  .author-name-row .edited-indicator-btn {
+    display: none !important;
+  }
+
+  /* Show post-meta-row below name */
+  .post-meta-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 12px !important;
+    color: var(--text-muted) !important;
+    margin-top: 2px !important;
+  }
+
+  .post-meta-row .author-pronouns::before,
+  .post-meta-row .post-time-inline::before {
+    display: none !important;
+  }
+
+  /* Hide desktop edited row */
+  .post-edited-row {
+    display: none !important;
+  }
+}
+
+/* ========================================
    GLOBAL MOBILE FIXES
    ======================================== */
 
