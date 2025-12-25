@@ -37,13 +37,18 @@ const API_PATTERNS = [
   /\/users\//,
   /\/posts\//,
   /\/messages\//,
-  /\/feed\//,
+  /\/feed$/,        // Match /feed exactly
+  /\/feed\//,       // Match /feed/ and anything after
   /\/search\//,
   /\/upload\//,
   /\/admin\//,
   /\/stability\//,
   /\/session-inspector\//,
-  /\/safe-mode\//
+  /\/safe-mode\//,
+  /\/login$/,       // Login page
+  /\/register$/,    // Register page
+  /\/profile\//,    // Profile pages
+  /\/settings\//    // Settings pages
 ];
 
 // 🔥 ALLOWED: Static asset patterns (same-origin only)
@@ -175,7 +180,13 @@ self.addEventListener('fetch', (event) => {
     // DO NOT cache
     // DO NOT fallback
     event.respondWith(
-      fetch(request).catch(error => {
+      fetch(request, {
+        redirect: 'follow',  // ✅ Fix: Allow redirects
+        credentials: request.credentials,
+        headers: request.headers,
+        method: request.method,
+        mode: request.mode
+      }).catch(error => {
         console.error('[SW Bypass] Network fetch failed:', error);
         // Return network error (do NOT use cache fallback for API requests)
         return new Response('Network error', {
