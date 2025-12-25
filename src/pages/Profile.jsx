@@ -29,6 +29,7 @@ import { sanitizeBio, sanitizeURL, sanitizeText } from '../utils/sanitize';
 import { compressPostMedia } from '../utils/compressImage';
 import { uploadMultipleWithProgress } from '../utils/uploadWithProgress';
 import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
+import { withOptimisticUpdate } from '../utils/consistencyGuard';
 import './Profile.css';
 
 function Profile() {
@@ -1122,7 +1123,9 @@ function Profile() {
     try {
       await api.post(`/friends/accept/${friendRequestId}`);
       setFriendStatus('friends');
-      fetchUserProfile(); // Refresh to update friend count
+      // Update friend count immediately without full refetch
+      setUser(prev => prev ? { ...prev, friendCount: (prev.friendCount || 0) + 1 } : prev);
+      setFriendRequestId(null);
       showToast('Friend request accepted! 🎉', 'success');
     } catch (error) {
       showToast(error.response?.data?.message || 'Failed to accept friend request', 'error');
@@ -1153,7 +1156,8 @@ function Profile() {
       }
       await api.delete(`/friends/${user._id}`);
       setFriendStatus('none');
-      fetchUserProfile(); // Refresh to update friend count
+      // Update friend count immediately without full refetch
+      setUser(prev => prev ? { ...prev, friendCount: Math.max(0, (prev.friendCount || 0) - 1) } : prev);
       showToast('Friend removed', 'success');
       setShowUnfriendModal(false);
     } catch (error) {

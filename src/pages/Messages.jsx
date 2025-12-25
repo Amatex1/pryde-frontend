@@ -29,6 +29,7 @@ import { setupSocketListeners } from '../utils/socketHelpers';
 import { compressImage } from '../utils/compressImage';
 import { uploadWithProgress } from '../utils/uploadWithProgress';
 import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
+import { withOptimisticUpdate } from '../utils/consistencyGuard';
 import './Messages.css';
 import '../styles/themes/messages.css';
 

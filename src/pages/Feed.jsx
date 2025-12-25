@@ -31,6 +31,7 @@ import logger from '../utils/logger';
 import { compressPostMedia } from '../utils/compressImage';
 import { uploadMultipleWithProgress } from '../utils/uploadWithProgress';
 import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
+import { withOptimisticUpdate } from '../utils/consistencyGuard';
 import './Feed.css';
 
 function Feed() {
@@ -1061,6 +1062,10 @@ function Feed() {
   };
 
   const handleCommentReaction = async (commentId, emoji) => {
+    // Save original state for rollback
+    const originalPostComments = { ...postComments };
+    const originalCommentReplies = { ...commentReplies };
+
     try {
       // Optimistic update
       const updateCommentReaction = (comment) => {
@@ -1105,7 +1110,7 @@ function Feed() {
       // Make API call
       const response = await api.post(`/comments/${commentId}/react`, { emoji });
 
-      // Update with server response
+      // Update with server response (source of truth)
       const serverComment = response.data;
       setPostComments(prev => {
         const updated = { ...prev };
@@ -1130,8 +1135,10 @@ function Feed() {
       setShowReactionPicker(null);
     } catch (error) {
       logger.error('Failed to react to comment:', error);
-      // Revert optimistic update on error
-      // Re-fetch to get correct state
+      // Rollback optimistic update on error
+      setPostComments(originalPostComments);
+      setCommentReplies(originalCommentReplies);
+      showAlert('Failed to add reaction. Please try again.', 'Reaction Failed');
     }
   };
 

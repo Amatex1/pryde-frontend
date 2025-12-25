@@ -1,8 +1,10 @@
 import { getSocket } from './socket';
 import logger from './logger';
+import SOCKET_EVENTS from '../constants/socketEvents';
 
 // Re-export getSocket for convenience (components can import from socketHelpers)
 export { getSocket };
+export { SOCKET_EVENTS };
 
 /**
  * Waits for socket to be initialized and connected, then executes a setup callback.
@@ -92,9 +94,9 @@ export function setupSocketListeners(setupCallback, options = {}) {
 /**
  * Simplified version for components that don't need retry logic.
  * Returns socket immediately if available, null otherwise.
- * 
+ *
  * @returns {Object|null} Socket instance or null
- * 
+ *
  * @example
  * const socket = getSocketOrNull();
  * if (!socket) return;
@@ -107,5 +109,101 @@ export function getSocketOrNull() {
     return null;
   }
   return socket;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TYPED EVENT LISTENERS (using standardized events)
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * Subscribe to multiple socket events with automatic cleanup
+ *
+ * @param {Object} eventHandlers - Map of event names to handler functions
+ * @returns {Function} Cleanup function to remove all listeners
+ *
+ * @example
+ * const cleanup = subscribeToEvents({
+ *   [SOCKET_EVENTS.POST.CREATED]: (data) => addPost(data),
+ *   [SOCKET_EVENTS.POST.DELETED]: (data) => removePost(data.postId),
+ * });
+ */
+export function subscribeToEvents(eventHandlers) {
+  const cleanupFns = [];
+
+  const setup = (socket) => {
+    Object.entries(eventHandlers).forEach(([event, handler]) => {
+      socket.on(event, handler);
+      cleanupFns.push(() => socket.off(event, handler));
+      logger.debug(`📡 Subscribed to ${event}`);
+    });
+  };
+
+  const cancelRetry = setupSocketListeners(setup);
+
+  return () => {
+    cancelRetry();
+    cleanupFns.forEach(fn => fn());
+    logger.debug(`🔌 Unsubscribed from ${Object.keys(eventHandlers).length} events`);
+  };
+}
+
+/**
+ * Subscribe to a single event with automatic cleanup
+ *
+ * @param {string} event - Event name (use SOCKET_EVENTS constants)
+ * @param {Function} handler - Event handler
+ * @returns {Function} Cleanup function
+ */
+export function subscribeToEvent(event, handler) {
+  return subscribeToEvents({ [event]: handler });
+}
+
+/**
+ * Emit a socket event (fire and forget)
+ *
+ * @param {string} event - Event name
+ * @param {any} data - Event data
+ */
+export function emitEvent(event, data) {
+  const socket = getSocketOrNull();
+  if (!socket) {
+    logger.warn(`⚠️ Cannot emit ${event}: socket not connected`);
+    return false;
+  }
+
+  socket.emit(event, data);
+  logger.debug(`📤 Emitted ${event}`, data);
+  return true;
+}
+
+/**
+ * Emit an event and wait for acknowledgment
+ *
+ * @param {string} event - Event name
+ * @param {any} data - Event data
+ * @param {number} timeout - Timeout in ms (default 5000)
+ * @returns {Promise<any>} Response from server
+ */
+export function emitWithAck(event, data, timeout = 5000) {
+  return new Promise((resolve, reject) => {
+    const socket = getSocketOrNull();
+    if (!socket) {
+      reject(new Error('Socket not connected'));
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      reject(new Error(`Socket event ${event} timed out`));
+    }, timeout);
+
+    socket.emit(event, data, (response) => {
+      clearTimeout(timeoutId);
+      if (response?.error) {
+        reject(new Error(response.error));
+      } else {
+        resolve(response);
+      }
+    });
+  });
 }
 
