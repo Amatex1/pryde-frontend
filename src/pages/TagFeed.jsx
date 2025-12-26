@@ -124,7 +124,7 @@ function TagFeed() {
     );
   }
 
-  // Migration Phase 1: Group mapping exists - show handoff CTA
+  // Phase 2: Group mapping exists - show handoff CTA with improved copy
   if (groupMapping) {
     return (
       <div className="page-container">
@@ -137,12 +137,14 @@ function TagFeed() {
               <p className="tag-description">{tag.description}</p>
             )}
             <div className="migration-stub-divider"></div>
-            <h2 className="migration-stub-title">This topic now lives as a private group</h2>
+            <h2 className="migration-stub-title">This topic has moved to a private group</h2>
             <p className="migration-stub-message">
-              Join the <strong>{groupMapping.name}</strong> group to view and participate in discussions.
+              Groups are join-based spaces for focused discussion.
+              <br />
+              You'll need to join the group to view and participate.
             </p>
             <Link to={`/groups/${groupMapping.slug}`} className="btn-go-to-group">
-              Go to Group →
+              Go to Group
             </Link>
           </div>
         </div>

@@ -151,10 +151,8 @@ function Navbar() {
               <span className="mobile-menu-icon">🏠</span>
               <span>Feed</span>
             </Link>
-            <Link to="/discover" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon">🏷️</span>
-              <span>Tags</span>
-            </Link>
+            {/* Phase 2: Tags removed from navigation - legacy entry points only */}
+            {/* Tag routes still work for deep links, but not promoted in nav */}
             <Link to="/journal" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
               <span className="mobile-menu-icon">📔</span>
               <span>Journal</span>
@@ -246,10 +244,8 @@ function Navbar() {
 
         <div className="navbar-user" ref={dropdownRef}>
           {/* Main Navigation Buttons */}
-          <Link to="/discover" className="nav-button" title="Tags">
-            <span className="nav-icon">🏷️</span>
-            <span className="nav-label">Tags</span>
-          </Link>
+          {/* Phase 2: Tags removed from navigation - legacy entry points only */}
+          {/* Tag routes still work for deep links, but not promoted in nav */}
           <Link to="/journal" className="nav-button" title="Journal">
             <span className="nav-icon">📔</span>
             <span className="nav-label">Journal</span>

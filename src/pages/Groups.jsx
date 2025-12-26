@@ -1,15 +1,19 @@
 /**
- * Migration Phase: TAGS → GROUPS (Phase 0 - Foundation)
- * 
+ * Phase 2: Group-only posting
+ *
  * Groups Page - Private, join-gated community groups
- * 
+ *
  * Behavior:
  * - Shows name + description to everyone
- * - Non-members: "Join Group" CTA, NO posts fetched
- * - Members: Posts list + post composer
- * 
- * Reuses existing Post and Feed component patterns where possible.
- * NOTE: Tags are still legacy-active. This is a new, isolated page.
+ * - Non-members: "Join Group" CTA, NO posts visible
+ * - Members: Post composer + group feed
+ *
+ * ISOLATION:
+ * - Group posts are intentionally isolated from global feeds
+ * - Posts created here use visibility: 'group' and groupId
+ * - These posts NEVER appear in /feed, /profile, bookmarks, etc.
+ *
+ * Tags are legacy entry points only.
  */
 
 import { useState, useEffect } from 'react';
@@ -31,6 +35,10 @@ function Groups() {
   const [leaving, setLeaving] = useState(false);
   const [error, setError] = useState(null);
   const currentUser = getCurrentUser();
+
+  // Phase 2: Group post composer state
+  const [newPost, setNewPost] = useState('');
+  const [posting, setPosting] = useState(false);
 
   useEffect(() => {
     fetchGroup();
@@ -121,6 +129,35 @@ function Groups() {
     }
   };
 
+  /**
+   * Phase 2: Group-only posting
+   * Submit post scoped to this group via POST /api/groups/:slug/posts
+   * Group posts are intentionally isolated from global feeds.
+   */
+  const handlePostSubmit = async (e) => {
+    e.preventDefault();
+    if (!newPost.trim() || posting) return;
+
+    try {
+      setPosting(true);
+      const response = await api.post(`/groups/${slug}/posts`, {
+        content: newPost.trim()
+      });
+
+      if (response.data.success && response.data.post) {
+        // Add new post to top of feed
+        setPosts(prev => [response.data.post, ...prev]);
+        setNewPost('');
+      }
+    } catch (err) {
+      console.error('Failed to create post:', err);
+      const message = err.response?.data?.message || 'Failed to create post. Please try again.';
+      alert(message);
+    } finally {
+      setPosting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="page-container">
@@ -194,18 +231,40 @@ function Groups() {
         {/* Member-only content */}
         {group.isMember && (
           <>
-            {/* Post Composer - Phase 0: Placeholder, posts not yet associated with groups */}
+            {/* Phase 2: Group Post Composer */}
             <div className="group-composer glossy">
-              <h2 className="section-title">✨ Share with {group.name}</h2>
-              <p className="coming-soon">Post composer coming in Phase 1</p>
+              <h2 className="section-title">✨ Posting to {group.name}</h2>
+              <form onSubmit={handlePostSubmit}>
+                <textarea
+                  value={newPost}
+                  onChange={(e) => {
+                    const el = e.target;
+                    el.style.height = 'auto';
+                    el.style.height = el.scrollHeight + 'px';
+                    setNewPost(el.value);
+                  }}
+                  placeholder={`What would you like to share with ${group.name}?`}
+                  className="post-input"
+                  rows="1"
+                  style={{ overflow: 'hidden', resize: 'none' }}
+                  disabled={posting}
+                />
+                <button
+                  type="submit"
+                  disabled={posting || !newPost.trim()}
+                  className="btn-post"
+                >
+                  {posting ? 'Posting...' : 'Post ✨'}
+                </button>
+              </form>
             </div>
 
-            {/* Posts List */}
+            {/* Phase 2: Group Posts Feed */}
             <div className="group-posts">
               {posts.length === 0 ? (
                 <div className="empty-state glossy">
                   <p>No posts in this group yet.</p>
-                  <p className="coming-soon">Posting to groups coming in Phase 1</p>
+                  <p className="empty-hint">Be the first to share something!</p>
                 </div>
               ) : (
                 posts.map(post => (
