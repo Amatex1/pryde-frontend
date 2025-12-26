@@ -1,309 +1,195 @@
 /**
- * PHASE 4: Tag Feed Page
- * Shows posts for a specific community tag
+ * Migration Phase 1: Tags → Groups (UI Handoff)
  *
- * Migration Phase: TAGS → GROUPS (Phase 0 - Foundation)
- * NOTE: Tags are still legacy-active. This page now detects if a tag
- * has been migrated to a group and shows a banner with CTA.
- * Posting is disabled for migrated tags.
+ * LEGACY TAG FEED PAGE - READ-ONLY MIGRATION STUB
+ *
+ * This page is a legacy entry point only.
+ * Tags are no longer active for new content.
+ * No posting is permitted here by design.
+ *
+ * Behavior:
+ * - If group mapping exists: Show handoff CTA to /groups/:slug
+ * - If no group mapping: Show "topic no longer active" message
+ * - No posts are displayed (privacy: posts live in groups now)
+ * - No composer is rendered
+ * - No API calls to create posts with tags
  */
 
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import OptimizedImage from '../components/OptimizedImage';
 import api from '../utils/api';
-import { getCurrentUser } from '../utils/auth';
-import { getImageUrl } from '../utils/imageUrl';
-import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
 import './TagFeed.css';
 
 function TagFeed() {
   const { slug } = useParams();
-  const navigate = useNavigate();
+
+  // Migration Phase 1: Tags → Groups
+  // Only track tag metadata and group mapping - NO posts
   const [tag, setTag] = useState(null);
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [newPost, setNewPost] = useState('');
-  const [posting, setPosting] = useState(false);
-  const currentUser = getCurrentUser();
-
-  // Migration Phase: TAGS → GROUPS - Track if tag is migrated
   const [groupMapping, setGroupMapping] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-  // Check if user is admin (can edit/delete any post)
-  const isAdmin = currentUser && ['moderator', 'admin', 'super_admin'].includes(currentUser.role);
+  // Migration Phase 1: POSTING DISABLED
+  // This flag ensures no posting UI is ever rendered
+  const POSTING_DISABLED = true;
 
   useEffect(() => {
-    fetchTagAndPosts();
+    fetchTagInfo();
   }, [slug]);
 
-  // Restore localStorage draft on mount
-  useEffect(() => {
-    const draftKey = `tag-feed-${slug}`;
-    const localDraft = loadDraft(draftKey);
-    if (localDraft) {
-      setNewPost(localDraft);
-    }
-  }, [slug]);
-
-  // Auto-save draft to localStorage
-  useEffect(() => {
-    if (newPost) {
-      const draftKey = `tag-feed-${slug}`;
-      saveDraft(draftKey, newPost);
-    }
-  }, [newPost, slug]);
-
-  const fetchTagAndPosts = async () => {
+  /**
+   * Migration Phase 1: Fetch only tag metadata and group mapping
+   * NO posts are fetched - they now live in private groups
+   */
+  const fetchTagInfo = async () => {
     try {
       setLoading(true);
+      setNotFound(false);
 
-      // Migration Phase: Check if this tag has been migrated to a group
+      // Check if this tag has been migrated to a group
       try {
         const mappingResponse = await api.get(`/tags/${slug}/group-mapping`);
         if (mappingResponse.data.hasMigrated) {
           setGroupMapping(mappingResponse.data.group);
         }
       } catch (mappingError) {
-        // Ignore mapping errors - tag might not exist or API not available
-        console.debug('Group mapping check failed:', mappingError);
+        // Migration Phase 1: Mapping not found is expected for non-migrated tags
+        console.debug('Group mapping check:', mappingError.message);
       }
 
-      // Fetch tag details
-      const tagResponse = await api.get(`/tags/${slug}`);
-      setTag(tagResponse.data);
-
-      // Fetch posts with this tag
-      const postsResponse = await api.get(`/tags/${slug}/posts`);
-      setPosts(postsResponse.data);
+      // Fetch basic tag metadata only (for title/description display)
+      try {
+        const tagResponse = await api.get(`/tags/${slug}`);
+        setTag(tagResponse.data);
+      } catch (tagError) {
+        if (tagError.response?.status === 404) {
+          setNotFound(true);
+        }
+        console.debug('Tag fetch error:', tagError.message);
+      }
     } catch (error) {
-      console.error('Failed to fetch tag feed:', error);
+      console.error('Failed to fetch tag info:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLike = async (postId) => {
-    try {
-      await api.post(`/posts/${postId}/like`);
-
-      // Update local state
-      setPosts(posts.map(post => {
-        if (post._id === postId) {
-          return { ...post, hasLiked: !post.hasLiked };
-        }
-        return post;
-      }));
-    } catch (error) {
-      console.error('Failed to like post:', error);
-    }
+  /**
+   * Humanize slug for display when tag data unavailable
+   * Example: "deep-thoughts" → "Deep Thoughts"
+   */
+  const humanizeSlug = (s) => {
+    if (!s) return '';
+    return s
+      .split(/[-_]/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   };
 
-  const handlePostSubmit = async (e) => {
-    e.preventDefault();
-    if (!newPost.trim()) return;
-
-    setPosting(true);
-    try {
-      const response = await api.post('/posts', {
-        content: newPost,
-        tags: [tag.slug], // Use slug instead of _id
-        visibility: 'public',
-        tagOnly: true // Mark as tag-only post (won't appear in main feed or profile)
-      });
-
-      // The response should have populated author and tags
-      setPosts([response.data, ...posts]);
-
-      // Update tag post count
-      setTag(prev => prev ? { ...prev, postCount: prev.postCount + 1 } : prev);
-
-      // Clear localStorage draft
-      const draftKey = `tag-feed-${slug}`;
-      clearDraft(draftKey);
-
-      setNewPost('');
-    } catch (error) {
-      console.error('Failed to create post:', error);
-      alert('Failed to create post. Please try again.');
-    } finally {
-      setPosting(false);
-    }
-  };
-
-  const handleDelete = async (postId) => {
-    if (!window.confirm('Are you sure you want to delete this post?')) {
-      return;
-    }
-
-    try {
-      await api.delete(`/posts/${postId}`);
-
-      // Remove post from state
-      setPosts(prev => prev.filter(p => p._id !== postId));
-
-      // Update tag post count
-      setTag(prev => prev ? { ...prev, postCount: Math.max(0, prev.postCount - 1) } : prev);
-    } catch (error) {
-      console.error('Failed to delete post:', error);
-      alert('Failed to delete post. Please try again.');
-    }
-  };
-
+  // Loading state
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <div className="page-container">
+        <Navbar />
+        <div className="tag-feed-container">
+          <div className="loading">Loading...</div>
+        </div>
+      </div>
+    );
   }
 
-  if (!tag) {
-    return <div className="error">Tag not found</div>;
+  // Tag not found - show generic inactive message
+  if (notFound) {
+    return (
+      <div className="page-container">
+        <Navbar />
+        <div className="tag-feed-container">
+          <div className="tag-migration-stub glossy">
+            <div className="migration-stub-icon">🏷️</div>
+            <h1>{humanizeSlug(slug)}</h1>
+            <p className="migration-stub-message">
+              This topic is no longer active.
+            </p>
+            <p className="migration-stub-hint">
+              Browse the main feed or discover new groups to connect with your community.
+            </p>
+            <Link to="/feed" className="btn-go-to-feed">
+              Go to Feed
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  return (
-    <div className="page-container">
-      <Navbar />
-      <div className="tag-feed-container">
-        {/* Migration Phase: TAGS → GROUPS - Show banner if tag is migrated */}
-        {groupMapping && (
-          <div className="migration-banner glossy">
-            <div className="migration-banner-icon">🚀</div>
-            <div className="migration-banner-content">
-              <h3>This topic now lives as a private group</h3>
-              <p>Join the <strong>{groupMapping.name}</strong> group for new discussions and posts.</p>
-            </div>
+  // Migration Phase 1: Group mapping exists - show handoff CTA
+  if (groupMapping) {
+    return (
+      <div className="page-container">
+        <Navbar />
+        <div className="tag-feed-container">
+          <div className="tag-migration-stub glossy">
+            <div className="migration-stub-icon">🚀</div>
+            <h1>{tag?.label || humanizeSlug(slug)}</h1>
+            {tag?.description && (
+              <p className="tag-description">{tag.description}</p>
+            )}
+            <div className="migration-stub-divider"></div>
+            <h2 className="migration-stub-title">This topic now lives as a private group</h2>
+            <p className="migration-stub-message">
+              Join the <strong>{groupMapping.name}</strong> group to view and participate in discussions.
+            </p>
             <Link to={`/groups/${groupMapping.slug}`} className="btn-go-to-group">
               Go to Group →
             </Link>
           </div>
-        )}
+        </div>
+      </div>
+    );
+  }
 
-        <div className="tag-feed-header glossy">
-          <div className="tag-feed-icon">{tag.icon}</div>
-          <h1>{tag.label}</h1>
-          <p className="tag-feed-description">{tag.description}</p>
-          <div className="tag-feed-stats">
-            <span>{tag.postCount} post{tag.postCount !== 1 ? 's' : ''}</span>
-          </div>
+  // Migration Phase 1: No group mapping - show inactive message
+  // NO posts displayed, NO composer rendered
+  return (
+    <div className="page-container">
+      <Navbar />
+      <div className="tag-feed-container">
+        <div className="tag-migration-stub glossy">
+          <div className="migration-stub-icon">{tag?.icon || '🏷️'}</div>
+          <h1>{tag?.label || humanizeSlug(slug)}</h1>
+          {tag?.description && (
+            <p className="tag-description">{tag.description}</p>
+          )}
+          <div className="migration-stub-divider"></div>
+          <p className="migration-stub-message">
+            This topic is no longer active.
+          </p>
+          <p className="migration-stub-hint">
+            New discussions have moved to private groups. Browse the main feed or discover new communities.
+          </p>
+          <Link to="/feed" className="btn-go-to-feed">
+            Go to Feed
+          </Link>
         </div>
 
-        {/* Create Post Box - Hidden if tag is migrated to group */}
-        {!groupMapping && (
-          <div className="create-post glossy">
-            <h2 className="section-title">✨ Share with {tag.label}</h2>
-            <form onSubmit={handlePostSubmit}>
-              <textarea
-                value={newPost}
-                onChange={(e) => {
-                  const el = e.target;
-                  el.style.height = 'auto';
-                  el.style.height = el.scrollHeight + 'px';
-                  setNewPost(el.value);
-                }}
-                placeholder={`What would you like to share with ${tag.label}?`}
-                className="post-input"
-                rows="1"
-                style={{ overflow: 'hidden', resize: 'none' }}
-              />
-              <button
-                type="submit"
-                disabled={posting || !newPost.trim()}
-                className="btn-post"
-              >
-                {posting ? 'Posting...' : 'Post ✨'}
-              </button>
-            </form>
+        {/*
+          Migration Phase 1: POSTING DISABLED BY DESIGN
+          No composer is rendered. The POSTING_DISABLED constant
+          ensures this section is never accidentally enabled.
+        */}
+        {!POSTING_DISABLED && (
+          <div className="create-post glossy" style={{ display: 'none' }}>
+            {/* Composer intentionally removed - Migration Phase 1 */}
           </div>
         )}
 
-      <div className="tag-feed-posts">
-        {posts.length === 0 ? (
-          <div className="empty-state">
-            <p>No posts in this community yet. Be the first to post!</p>
-          </div>
-        ) : (
-          posts.map(post => (
-            <div key={post._id} className="post-card glossy">
-              <div className="post-header">
-                <Link to={`/profile/${post.author?._id}`} className="post-author">
-                  <div className="author-avatar">
-                    {post.author?.profilePhoto ? (
-                      <OptimizedImage
-                        src={getImageUrl(post.author.profilePhoto)}
-                        alt={`${post.author?.username || 'User'} avatar`}
-                        className="avatar-image"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <span className="avatar-fallback">
-                        {post.author?.displayName?.charAt(0).toUpperCase() || post.author?.username?.charAt(0).toUpperCase() || 'U'}
-                      </span>
-                    )}
-                  </div>
-                  <div className="author-info">
-                    <span className="author-name">
-                      {post.author?.displayName || post.author?.username || 'Unknown User'}
-                      {post.author?.isVerified && <span className="verified-badge">✓</span>}
-                    </span>
-                    <span className="post-date">{new Date(post.createdAt).toLocaleDateString()}</span>
-                  </div>
-                </Link>
-              </div>
-
-              <div className="post-content">
-                <p>{post.content}</p>
-                {post.images && post.images.length > 0 && (
-                  <div className="post-images">
-                    {post.images.map((img, idx) => (
-                      <OptimizedImage
-                        key={idx}
-                        src={img}
-                        alt="Post"
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="post-actions">
-                <button
-                  className={`btn-action ${post.hasLiked ? 'liked' : ''}`}
-                  onClick={() => handleLike(post._id)}
-                >
-                  {post.hasLiked ? '❤️' : '🤍'} Appreciate
-                </button>
-                <button
-                  className="btn-action"
-                  onClick={() => navigate(`/feed?post=${post._id}`)}
-                >
-                  💬 Comment
-                </button>
-                {/* Allow delete if user is post author OR admin */}
-                {currentUser && (post.author._id === currentUser.id || isAdmin) && (
-                  <button
-                    className="btn-action delete"
-                    onClick={() => handleDelete(post._id)}
-                  >
-                    🗑️ Delete
-                  </button>
-                )}
-              </div>
-
-              {/* Tags Display - Only render tags with valid slugs */}
-              {post.tags && post.tags.length > 0 && post.tags.some(t => t?.slug) && (
-                <div className="post-tags">
-                  {post.tags
-                    .filter(t => t && t.slug && t._id)
-                    .map(t => (
-                      <Link key={t._id} to={`/tags/${t.slug}`} className="post-tag">
-                        {t.icon} {t.label || t.slug}
-                      </Link>
-                    ))}
-                </div>
-              )}
-            </div>
-          ))
-        )}
-      </div>
+        {/*
+          Migration Phase 1: POSTS NOT DISPLAYED BY DESIGN
+          Posts now live in private groups. Showing them here
+          would bypass group membership requirements.
+        */}
       </div>
     </div>
   );

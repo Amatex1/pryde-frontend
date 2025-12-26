@@ -1,10 +1,20 @@
 /**
- * PHASE 4: Discover Page
- * Community tags for discovery and browsing
+ * Migration Phase 1: Tags → Groups
+ *
+ * DISCOVER PAGE - Community discovery and browsing
+ *
+ * Tags are legacy entry points only.
+ * When a user clicks on a tag, they are taken to /tags/:slug
+ * which shows a handoff stub pointing them to /groups/:slug.
+ *
+ * Admin tag creation still works but is NOT recommended.
+ * New communities should be created as Groups directly.
+ *
+ * No posting is permitted through tags by design.
  */
 
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
 import Navbar from '../components/Navbar';
@@ -135,10 +145,33 @@ function Discover() {
         <div className="discover-header">
           <h1>🏷️ Community Tags</h1>
           <p className="discover-subtitle">Find your space and connect with like-minded people</p>
+
+          {/* Migration Phase 1: Tags → Groups - Info notice */}
+          <div className="migration-notice" style={{
+            background: 'linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(162, 155, 254, 0.1))',
+            border: '1px solid var(--pryde-purple)',
+            borderRadius: '12px',
+            padding: '1rem 1.5rem',
+            marginTop: '1.5rem',
+            maxWidth: '600px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            textAlign: 'center'
+          }}>
+            <p style={{ margin: 0, color: 'var(--text-main)', fontSize: '0.95rem' }}>
+              <strong>🚀 New:</strong> Communities are now <strong>Private Groups</strong>.
+              Click any tag below to find its corresponding group.
+            </p>
+          </div>
         </div>
 
-        {/* Admin Create Tag Button */}
-        {isAdmin && (
+        {/*
+          Migration Phase 1: Admin tag creation is deprecated.
+          New communities should be created as Groups directly via /groups.
+          Keeping this button hidden - admins should use Group creation instead.
+        */}
+        {/* Admin Create Tag Button - DEPRECATED */}
+        {isAdmin && false && (
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <button
               onClick={openCreateModal}

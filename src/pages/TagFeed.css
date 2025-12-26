@@ -289,7 +289,86 @@
   color: var(--text-muted);
 }
 
-/* Migration Phase: TAGS → GROUPS - Migration Banner */
+/* ============================================
+   Migration Phase 1: Tags → Groups
+   Tags are legacy entry points only.
+   No posting permitted here by design.
+   ============================================ */
+
+/* Migration Stub - Full page handoff UI */
+.tag-migration-stub {
+  text-align: center;
+  padding: 3rem 2rem;
+  border-radius: 16px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.migration-stub-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.tag-migration-stub h1 {
+  font-size: 2rem;
+  color: var(--pryde-purple);
+  margin-bottom: 0.5rem;
+}
+
+.tag-migration-stub .tag-description {
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.migration-stub-divider {
+  width: 60px;
+  height: 3px;
+  background: var(--gradient-primary);
+  margin: 1.5rem auto;
+  border-radius: 2px;
+}
+
+.migration-stub-title {
+  font-size: 1.25rem;
+  color: var(--pryde-purple);
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.migration-stub-message {
+  color: var(--text-main);
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.migration-stub-hint {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn-go-to-group,
+.btn-go-to-feed {
+  display: inline-block;
+  padding: 0.875rem 2rem;
+  border-radius: 12px;
+  background: var(--gradient-primary);
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.btn-go-to-group:hover,
+.btn-go-to-feed:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(108, 92, 231, 0.35);
+}
+
+/* Legacy migration banner (kept for backwards compatibility) */
 .migration-banner {
   display: flex;
   align-items: center;
@@ -322,30 +401,27 @@
   font-size: 0.9rem;
 }
 
-.btn-go-to-group {
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  background: var(--gradient-primary);
-  color: white;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: all 0.3s ease;
-}
-
-.btn-go-to-group:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
-}
-
 @media (max-width: 600px) {
-  .migration-banner {
-    flex-direction: column;
+  .tag-migration-stub {
+    padding: 2rem 1.5rem;
+  }
+
+  .tag-migration-stub h1 {
+    font-size: 1.5rem;
+  }
+
+  .migration-stub-icon {
+    font-size: 3rem;
+  }
+
+  .btn-go-to-group,
+  .btn-go-to-feed {
+    width: 100%;
     text-align: center;
   }
 
-  .btn-go-to-group {
-    width: 100%;
+  .migration-banner {
+    flex-direction: column;
     text-align: center;
   }
 }
