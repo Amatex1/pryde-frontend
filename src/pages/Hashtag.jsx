@@ -1,75 +1,19 @@
-import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import FormattedText from '../components/FormattedText';
-import OptimizedImage from '../components/OptimizedImage';
-import api from '../utils/api';
-import { getCurrentUser } from '../utils/auth';
-import { getImageUrl } from '../utils/imageUrl';
-import PhotoViewer from '../components/PhotoViewer';
 import './Feed.css';
 
+/**
+ * Hashtag Page - DEPRECATED
+ * Hashtag search functionality has been removed as of 2025-12-26 (Phase 5)
+ * This page now shows a deprecation notice and offers to redirect to Feed
+ */
 function Hashtag() {
   const { tag } = useParams();
   const navigate = useNavigate();
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [photoViewerImage, setPhotoViewerImage] = useState(null);
-  const currentUser = getCurrentUser();
 
-  // Check if user is admin (can edit/delete any post)
-  const isAdmin = currentUser && ['moderator', 'admin', 'super_admin'].includes(currentUser.role);
-
-  useEffect(() => {
-    fetchHashtagPosts();
-  }, [tag]);
-
-  const fetchHashtagPosts = async () => {
-    setLoading(true);
-    try {
-      const response = await api.get(`/search/hashtag/${tag}`);
-      setPosts(response.data.posts);
-    } catch (error) {
-      console.error('Failed to fetch hashtag posts:', error);
-    } finally {
-      setLoading(false);
-    }
+  const handleGoToFeed = () => {
+    navigate('/feed');
   };
-
-  const handleLike = async (postId) => {
-    try {
-      const response = await api.post(`/posts/${postId}/like`);
-      setPosts(posts.map(p => p._id === postId ? response.data : p));
-    } catch (error) {
-      console.error('Failed to like post:', error);
-    }
-  };
-
-  const handleDelete = async (postId) => {
-    if (!window.confirm('Are you sure you want to delete this post?')) {
-      return;
-    }
-
-    try {
-      await api.delete(`/posts/${postId}`);
-      // Remove post from state
-      setPosts(prev => prev.filter(p => p._id !== postId));
-    } catch (error) {
-      console.error('Failed to delete post:', error);
-      alert('Failed to delete post. Please try again.');
-    }
-  };
-
-  // REMOVED: Share/Repost feature - backend support incomplete (relies on deprecated Friends system)
-  // TODO: Reimplement when backend is updated to work with Followers system
-  // const handleShare = async (postId) => {
-  //   try {
-  //     await api.post(`/posts/${postId}/share`);
-  //     alert('Post shared successfully!');
-  //   } catch (error) {
-  //     console.error('Failed to share post:', error);
-  //   }
-  // };
 
   return (
     <div className="page-container feed-page">
@@ -78,123 +22,35 @@ function Hashtag() {
         <main className="feed-main">
           <div className="hashtag-header glossy">
             <h1 className="hashtag-title">#{tag}</h1>
-            <p className="hashtag-subtitle">{posts.length} posts</p>
+            <p className="hashtag-subtitle">Feature Removed</p>
           </div>
 
-          {loading ? (
-            <div className="loading-spinner">Loading posts...</div>
-          ) : posts.length === 0 ? (
-            <div className="no-posts glossy">
-              <p className="no-posts-primary">No posts with #{tag} yet.</p>
-              <p className="no-posts-secondary">Tags appear as people share what matters to them.</p>
-            </div>
-          ) : (
-            <div className="posts-list">
-              {posts.map((post) => (
-                <div key={post._id} className="post-card glossy">
-                  <div className="post-header">
-                    <Link to={`/profile/${post.author._id}`} className="post-author-link">
-                      <div className="post-author-avatar">
-                        {post.author.profilePhoto ? (
-                          <OptimizedImage
-                            src={getImageUrl(post.author.profilePhoto)}
-                            alt={post.author.username}
-                            className="avatar-image"
-                          />
-                        ) : (
-                          <span>{post.author.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                        )}
-                      </div>
-                      <div className="post-author-info">
-                        <div className="post-author-name">{post.author.displayName || post.author.username}</div>
-                        <div className="post-timestamp">{new Date(post.createdAt).toLocaleDateString()}</div>
-                      </div>
-                    </Link>
-                  </div>
-
-                  {post.content && (
-                    <div className="post-content">
-                      <FormattedText text={post.content} />
-                    </div>
-                  )}
-
-                  {post.media && post.media.length > 0 && (
-                    <div className={`post-media-grid ${post.media.length > 1 ? 'multiple' : 'single'}`}>
-                      {post.media.map((mediaItem, index) => (
-                        <div key={index} className="post-media-item">
-                          {mediaItem.type === 'image' ? (
-                            <OptimizedImage
-                              src={getImageUrl(mediaItem.url)}
-                              alt="Post media"
-                              onClick={() => setPhotoViewerImage(getImageUrl(mediaItem.url))}
-                              style={{ cursor: 'pointer' }}
-                            />
-                          ) : (
-                            <video src={getImageUrl(mediaItem.url)} controls />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="post-actions">
-                    <button
-                      className={`action-btn ${post.likes?.includes(localStorage.getItem('userId')) ? 'liked' : ''}`}
-                      onClick={() => handleLike(post._id)}
-                    >
-                      <span>❤️</span> Like ({post.likes?.length || 0})
-                    </button>
-                    <button
-                      className="action-btn"
-                      onClick={() => navigate(`/feed?post=${post._id}`)}
-                    >
-                      <span>💬</span> Comment ({post.commentCount || 0})
-                    </button>
-                    {/* Allow delete if user is post author OR admin */}
-                    {currentUser && (post.author._id === currentUser.id || isAdmin) && (
-                      <button
-                        className="action-btn delete"
-                        onClick={() => handleDelete(post._id)}
-                      >
-                        <span>🗑️</span> Delete
-                      </button>
-                    )}
-                    {/* REMOVED: Share button - backend support incomplete (relies on deprecated Friends system) */}
-                    {/* TODO: Reimplement when backend is updated to work with Followers system */}
-                    {/* <button className="action-btn" onClick={() => handleShare(post._id)}>
-                      <span>🔗</span> Share ({post.shares?.length || 0})
-                    </button> */}
-                  </div>
-
-                  {post.comments && post.comments.length > 0 && (
-                    <div className="post-comments">
-                      {post.comments.slice(-3).map((comment) => (
-                        <div key={comment._id} className="comment">
-                          <div className="comment-avatar">
-                            {comment.user?.profilePhoto ? (
-                              <img src={getImageUrl(comment.user.profilePhoto)} alt={comment.user.username} />
-                            ) : (
-                              <span>{comment.user?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                            )}
-                          </div>
-                          <div className="comment-content">
-                            <div className="comment-author">{comment.user?.displayName || comment.user?.username}</div>
-                            <div className="comment-text"><FormattedText text={comment.content} /></div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+          <div className="no-posts glossy" style={{ textAlign: 'center', padding: '3rem' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏷️</div>
+            <p className="no-posts-primary" style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+              Hashtag Search Has Been Removed
+            </p>
+            <p className="no-posts-secondary" style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
+              We've simplified the platform to focus on what matters most - connecting with people you care about.
+            </p>
+            <button
+              onClick={handleGoToFeed}
+              style={{
+                padding: '0.75rem 1.5rem',
+                background: 'var(--primary-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%))',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                fontWeight: 500,
+                cursor: 'pointer'
+              }}
+            >
+              Go to Feed
+            </button>
+          </div>
         </main>
       </div>
-
-      {photoViewerImage && (
-        <PhotoViewer imageUrl={photoViewerImage} onClose={() => setPhotoViewerImage(null)} />
-      )}
     </div>
   );
 }

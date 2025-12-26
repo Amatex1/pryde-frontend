@@ -6,7 +6,8 @@ import './GlobalSearch.css';
 
 function GlobalSearch() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState({ users: [], posts: [], hashtags: [] });
+  // REMOVED 2025-12-26: hashtags removed (Phase 5)
+  const [searchResults, setSearchResults] = useState({ users: [], posts: [] });
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(false);
   const searchRef = useRef(null);
@@ -28,7 +29,7 @@ function GlobalSearch() {
       if (searchQuery.trim().length > 0) {
         performSearch();
       } else {
-        setSearchResults({ users: [], posts: [], hashtags: [] });
+        setSearchResults({ users: [], posts: [] });
         setShowResults(false);
       }
     }, 300);
@@ -55,21 +56,14 @@ function GlobalSearch() {
     setSearchQuery('');
   };
 
-  const handleHashtagClick = (hashtag) => {
-    navigate(`/hashtag/${hashtag.replace('#', '')}`);
-    setShowResults(false);
-    setSearchQuery('');
-  };
-
   const handlePostClick = (postId) => {
     navigate(`/feed?post=${postId}`);
     setShowResults(false);
     setSearchQuery('');
   };
 
-  const hasResults = searchResults.users.length > 0 || 
-                     searchResults.posts.length > 0 || 
-                     searchResults.hashtags.length > 0;
+  const hasResults = searchResults.users.length > 0 ||
+                     searchResults.posts.length > 0;
 
   return (
     <div className="global-search" ref={searchRef}>
@@ -81,10 +75,10 @@ function GlobalSearch() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => searchQuery && setShowResults(true)}
-          placeholder="Search users, posts, hashtags..."
+          placeholder="Search users and posts..."
           className="search-input"
           autoComplete="off"
-          aria-label="Search users, posts, and hashtags"
+          aria-label="Search users and posts"
         />
         {loading && <span className="search-loading">⏳</span>}
       </div>
@@ -95,24 +89,7 @@ function GlobalSearch() {
             <div className="no-search-results">No results found</div>
           )}
 
-          {searchResults.hashtags.length > 0 && (
-            <div className="search-section">
-              <div className="search-section-title">Hashtags</div>
-              {searchResults.hashtags.map((item, index) => (
-                <div
-                  key={index}
-                  className="search-result-item hashtag-item"
-                  onClick={() => handleHashtagClick(item.hashtag)}
-                >
-                  <span className="hashtag-icon">#</span>
-                  <div className="hashtag-info">
-                    <div className="hashtag-name">{item.hashtag}</div>
-                    <div className="hashtag-count">{item.count} posts</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          {/* REMOVED 2025-12-26: Hashtag search removed (Phase 5) */}
 
           {searchResults.users.length > 0 && (
             <div className="search-section">

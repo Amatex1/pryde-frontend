@@ -85,7 +85,7 @@ function Feed() {
   const [deletedMedia, setDeletedMedia] = useState([]); // Track media marked for deletion
   const [friends, setFriends] = useState([]);
   const [friendSearchQuery, setFriendSearchQuery] = useState('');
-  const [trending, setTrending] = useState([]);
+  // REMOVED 2025-12-26: trending state removed (Phase 5)
 
   // ✅ Use singleton hook for unread message counts
   const { unreadByUser } = useUnreadMessages();
@@ -202,14 +202,15 @@ function Feed() {
     }
   }, []);
 
-  const fetchTrending = useCallback(async () => {
-    try {
-      const response = await api.get('/search/trending');
-      setTrending(response.data);
-    } catch (error) {
-      logger.error('Failed to fetch trending:', error);
-    }
-  }, []);
+  // REMOVED 2025-12-26: Trending hashtags removed (Phase 5)
+  // const fetchTrending = useCallback(async () => {
+  //   try {
+  //     const response = await api.get('/search/trending');
+  //     setTrending(response.data);
+  //   } catch (error) {
+  //     logger.error('Failed to fetch trending:', error);
+  //   }
+  // }, []);
 
   const fetchBookmarkedPosts = useCallback(async () => {
     try {
@@ -363,18 +364,18 @@ function Feed() {
 
     // Fetch all data in parallel for faster initial load
     // Use Promise.allSettled to continue even if some requests fail
+    // REMOVED 2025-12-26: fetchTrending removed (Phase 5)
     Promise.allSettled([
       fetchPosts(),
       fetchBlockedUsers(),
       fetchFriends(),
-      fetchTrending(),
       fetchBookmarkedPosts(),
       fetchPrivacySettings()
     ]).then(results => {
       // Log any failures but don't block the app
       results.forEach((result, index) => {
         if (result.status === 'rejected') {
-          const names = ['posts', 'blocked users', 'friends', 'trending', 'bookmarks', 'privacy settings'];
+          const names = ['posts', 'blocked users', 'friends', 'bookmarks', 'privacy settings'];
           logger.warn(`Failed to load ${names[index]}:`, result.reason);
         }
       });
@@ -2730,28 +2731,7 @@ function Feed() {
         </main>
 
         <aside className={`feed-sidebar ${showMobileSidebar ? 'mobile-visible' : ''}`}>
-          {/* Featured Tags */}
-          <div className="sidebar-card glossy">
-            <h3 className="sidebar-title">Featured Tags</h3>
-            <div className="trending-list">
-              {trending.length > 0 ? (
-                trending.map((item, index) => (
-                  <Link
-                    key={index}
-                    to={`/hashtag/${item.hashtag.replace('#', '')}`}
-                    className="trending-item"
-                  >
-                    {item.hashtag}
-                    <span className="trending-count">{item.count} posts</span>
-                  </Link>
-                ))
-              ) : (
-                <div className="no-trending">
-                  <p className="no-trending-primary">Nothing is trending right now — and that's okay.</p>
-                </div>
-              )}
-            </div>
-          </div>
+          {/* REMOVED 2025-12-26: Featured Tags / Trending removed (Phase 5) */}
 
           {/* Need Support */}
           <div className="sidebar-card support-card glossy">
