@@ -1,11 +1,16 @@
 import { Outlet } from 'react-router-dom';
+import PageErrorBoundary from '../components/PageErrorBoundary';
 
 /**
- * DesktopLayout - Preserves existing desktop layout
- * Simply passes through to child routes without modification
+ * DesktopLayout - Desktop layout with error boundary protection
+ * PHASE 3: Wraps content in error boundary to prevent white screens
  * Used when viewport width > 768px
  */
 export default function DesktopLayout() {
-  return <Outlet />;
+  return (
+    <PageErrorBoundary pageName="Desktop Layout">
+      <Outlet />
+    </PageErrorBoundary>
+  );
 }
 

@@ -1,0 +1,120 @@
+/**
+ * PageErrorBoundary Styles
+ * PHASE 3: Error boundary fallback UI styling
+ */
+
+.page-error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: var(--space-6, 1.5rem);
+  background: var(--bg-card, #ffffff);
+  border-radius: var(--radius-lg, 12px);
+  margin: var(--space-4, 1rem);
+}
+
+.page-error-content {
+  text-align: center;
+  max-width: 400px;
+}
+
+.page-error-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-4, 1rem);
+}
+
+.page-error-title {
+  font-size: var(--text-lg, 1.125rem);
+  font-weight: 600;
+  color: var(--text-primary, #1a1a2e);
+  margin-bottom: var(--space-2, 0.5rem);
+}
+
+.page-error-message {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #666);
+  margin-bottom: var(--space-4, 1rem);
+  line-height: 1.5;
+}
+
+.page-error-details {
+  text-align: left;
+  background: var(--bg-subtle, #f5f5f5);
+  padding: var(--space-3, 0.75rem);
+  border-radius: var(--radius-md, 8px);
+  margin-bottom: var(--space-4, 1rem);
+  font-size: var(--text-xs, 0.75rem);
+}
+
+.page-error-details summary {
+  cursor: pointer;
+  font-weight: 500;
+  margin-bottom: var(--space-2, 0.5rem);
+}
+
+.page-error-details pre {
+  margin: 0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--color-error, #dc2626);
+}
+
+.page-error-actions {
+  display: flex;
+  gap: var(--space-3, 0.75rem);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.page-error-actions button {
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-retry {
+  background: var(--color-primary, #6366f1);
+  color: white;
+}
+
+.btn-retry:hover {
+  background: var(--color-primary-hover, #4f46e5);
+}
+
+.btn-back {
+  background: var(--bg-subtle, #f5f5f5);
+  color: var(--text-primary, #1a1a2e);
+  border: 1px solid var(--border-default, #e5e5e5);
+}
+
+.btn-back:hover {
+  background: var(--bg-hover, #ebebeb);
+}
+
+.btn-home {
+  background: transparent;
+  color: var(--text-secondary, #666);
+  text-decoration: underline;
+}
+
+.btn-home:hover {
+  color: var(--text-primary, #1a1a2e);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .page-error-boundary {
+    background: var(--bg-card, #2a2a3e);
+  }
+
+  .page-error-details {
+    background: var(--bg-subtle, #1a1a2e);
+  }
+}
+
