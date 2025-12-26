@@ -1,0 +1,167 @@
+/* ================================
+   PRYDE — Professional Layout Pass
+   Calm + Confident Edition
+   MOBILE-FIRST RESPONSIVE
+   ================================ */
+
+/* ---------- 1️⃣ LAYOUT: Mobile-First → Wide App ---------- */
+
+/* MOBILE: Full width with padding */
+.app-container,
+.page-container,
+.feed-layout {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* TABLET: Increase padding */
+@media (min-width: 768px) {
+  .app-container,
+  .page-container,
+  .feed-layout {
+    padding: 0 24px;
+  }
+}
+
+/* DESKTOP: Constrained width */
+@media (min-width: 1024px) {
+  .app-container,
+  .page-container,
+  .feed-layout {
+    max-width: 1280px;
+  }
+}
+
+/* WIDE DESKTOP: Expand to 1440px */
+@media (min-width: 1440px) {
+  .app-container,
+  .page-container,
+  .feed-layout {
+    max-width: 1440px;
+  }
+}
+
+/* Remove "nervous centering" */
+.feed-column {
+  max-width: none;
+}
+
+/* ---------- 2️⃣ CARDS: Flat & Matte ---------- */
+
+.card,
+.post-card,
+.feed-item,
+.sidebar-card {
+  background: var(--bg-card) !important;
+  background-image: none !important;
+  border-radius: 14px;
+  box-shadow: none !important;
+  border: 1px solid var(--border-soft);
+}
+
+/* Kill decorative gradients everywhere by default */
+.card *,
+.post-card *,
+.feed-item * {
+  background-image: none;
+}
+
+/* ---------- 3️⃣ HEADER: Quiet & Framing ---------- */
+
+.app-header,
+.top-nav {
+  height: 56px;
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,0.15),
+    rgba(0,0,0,0)
+  );
+  backdrop-filter: blur(8px);
+  box-shadow: none;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+/* Reduce header noise */
+.app-header *,
+.top-nav * {
+  text-shadow: none !important;
+}
+
+/* ---------- 4️⃣ TYPOGRAPHY: Contrast Hierarchy ---------- */
+
+/* Post content = confident */
+.post-content,
+.post-text {
+  color: var(--text-primary);
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+/* Metadata = quieter */
+.post-meta,
+.timestamp,
+.subtle-text {
+  color: var(--text-muted);
+  font-size: 12.5px;
+}
+
+/* Actions = clear but restrained */
+.post-actions button {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.post-actions button:hover {
+  color: var(--accent-primary);
+}
+
+/* ---------- 5️⃣ GRADIENT RULES (ONLY WHERE ALLOWED) ---------- */
+
+/* Primary CTA buttons */
+button.primary,
+.button-primary {
+  background: linear-gradient(
+    135deg,
+    var(--accent-primary),
+    var(--color-primary)
+  );
+  color: #fff;
+  border: none;
+}
+
+/* Active tabs only */
+.tab.active {
+  background: linear-gradient(
+    135deg,
+    rgba(108,92,231,0.15),
+    rgba(108,92,231,0.05)
+  );
+}
+
+/* Brand accents only */
+.brand-accent {
+  background: linear-gradient(
+    135deg,
+    var(--accent-primary),
+    var(--accent-secondary)
+  );
+}
+
+/* ---------- 6️⃣ REMOVE "ART PROJECT" EFFECTS ---------- */
+
+.glow,
+.neon,
+.fancy-shadow {
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* ---------- 7️⃣ QUIET MODE COMPATIBILITY ---------- */
+
+html[data-quiet-mode="true"] * {
+  transition: none !important;
+  animation: none !important;
+}
+

@@ -3,12 +3,13 @@
    Import order matters: Responsive Base → Global Theme → Variables → Design system → Theme → Components
    ======================================== */
 
-@import './styles/responsiveBase.css'; /* CRITICAL: Responsive foundation (must be first) */
-@import './styles/globalTheme.css';    /* Global theming system */
-@import './styles/variables.css';      /* Unified variable system */
-@import './styles/design-system.css';  /* Unified mobile-first design system */
-@import './styles/theme.css';          /* Brand colors and theme variables */
-@import './styles/components.css';     /* Reusable component styles */
+@import './styles/responsiveBase.css';      /* CRITICAL: Responsive foundation (must be first) */
+@import './styles/globalTheme.css';         /* Global theming system */
+@import './styles/variables.css';           /* Unified variable system */
+@import './styles/design-system.css';       /* Unified mobile-first design system */
+@import './styles/theme.css';               /* Brand colors and theme variables */
+@import './styles/professional-layout.css'; /* Professional layout pass - calm + confident */
+@import './styles/components.css';          /* Reusable component styles */
 
 /* ========================================
    RESPONSIVE FOUNDATION (MOBILE-FIRST)
