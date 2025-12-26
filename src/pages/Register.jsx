@@ -412,9 +412,9 @@ function Register({ setIsAuth }) {
                   aria-invalid={error && error.toLowerCase().includes('password') ? 'true' : 'false'}
                   aria-describedby={error && error.toLowerCase().includes('password') ? 'register-error' : 'password-requirements'}
                   required
-                  minLength="8"
+                  minLength="12"
                   className="form-input glossy"
-                  placeholder="Create a strong password"
+                  placeholder="Create a strong password (12+ characters)"
                   autoComplete="new-password"
                 />
                 {formData.password && (
@@ -457,7 +457,7 @@ function Register({ setIsAuth }) {
                   id="password-requirements"
                   style={{ color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)', marginTop: 'var(--space-sm)', display: 'block' }}
                 >
-                  This needs at least one uppercase letter, one lowercase letter, and one number.
+                  At least 12 characters with one uppercase, one lowercase, one number, and one special character.
                 </small>
               </div>
             </div>

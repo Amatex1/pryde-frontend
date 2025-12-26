@@ -89,10 +89,10 @@ function ForgotPassword() {
 
         <div className="auth-footer">
           <p>
-            Remember your password? <Link to="/login" className="auth-link">Log In</Link>
+            Remember your password? <Link to="/login" className="auth-link">Sign in</Link>
           </p>
           <p>
-            Don't have an account? <Link to="/signup" className="auth-link">Sign Up</Link>
+            Don't have an account? <Link to="/register" className="auth-link">Sign up</Link>
           </p>
         </div>
       </div>

@@ -45,9 +45,17 @@ function ResetPassword() {
       return;
     }
 
-    // Validate password length
-    if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters');
+    // Validate password length (must match signup requirements)
+    if (newPassword.length < 12) {
+      setError('Password must be at least 12 characters');
+      setLoading(false);
+      return;
+    }
+
+    // Validate password complexity (must match signup requirements)
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/])/;
+    if (!passwordRegex.test(newPassword)) {
+      setError('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character');
       setLoading(false);
       return;
     }
@@ -125,13 +133,16 @@ function ResetPassword() {
                 id="newPassword"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Enter new password"
+                placeholder="Enter new password (12+ characters)"
                 required
-                minLength={6}
+                minLength={12}
                 className="form-input glossy"
                 disabled={loading}
                 autoComplete="new-password"
               />
+              <small style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.5rem', display: 'block' }}>
+                At least 12 characters with one uppercase, one lowercase, one number, and one special character.
+              </small>
             </div>
 
             <div className="form-group">
@@ -143,7 +154,7 @@ function ResetPassword() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
                 required
-                minLength={6}
+                minLength={12}
                 className="form-input glossy"
                 disabled={loading}
                 autoComplete="new-password"
