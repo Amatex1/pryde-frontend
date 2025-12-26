@@ -1,144 +1,290 @@
 /**
  * AuthContext - Centralized Authentication State Management
- * 
- * CRITICAL: This context prevents duplicate /auth/me calls across the app.
- * All components should use useAuth() instead of fetching user data directly.
- * 
+ *
+ * 🔥 GLOBAL AUTH GATE: This is the SINGLE source of truth for auth state.
+ *
+ * CRITICAL RULES:
+ * - All components MUST use useAuth() instead of fetching user data directly
+ * - NO component should call /auth/me directly - AuthContext handles this
+ * - authStatus has 3 states: "loading" | "authenticated" | "unauthenticated"
+ * - App rendering is blocked until authStatus !== "loading"
+ *
  * Features:
- * - Single source of truth for user data
- * - Automatic hydration on mount
- * - Cached responses (5 min TTL)
- * - Loading state management
- * - Prevents request storms
- * 
+ * - Single auth check on app load (GET /auth/me)
+ * - Automatic token refresh on 401 (handled by api.js interceptor)
+ * - login(), logout(), refreshToken() functions exposed
+ * - Role derived from user object
+ * - Cross-tab sync for login/logout events
+ * - Circuit breaker to prevent API storms
+ *
  * Usage:
  * import { useAuth } from '../context/AuthContext';
- * 
+ *
  * function MyComponent() {
- *   const { user, loading, refreshUser } = useAuth();
- *   
- *   if (loading) return <div>Loading...</div>;
- *   if (!user) return <div>Not logged in</div>;
- *   
- *   return <div>Hello {user.username}</div>;
+ *   const { user, authStatus, login, logout } = useAuth();
+ *
+ *   if (authStatus === 'loading') return <div>Loading...</div>;
+ *   if (authStatus === 'unauthenticated') return <Navigate to="/login" />;
+ *
+ *   return <div>Hello {user.username} (role: {user.role})</div>;
  * }
  */
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { apiFetch, clearCachePattern } from '../utils/apiClient';
-import { listenForAuthEvents, closeAuthSync } from '../utils/authSync'; // 🔥 NEW: Cross-tab sync
+import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
+import api from '../utils/api';
+import {
+  setAuthToken,
+  setRefreshToken,
+  setCurrentUser,
+  getRefreshToken,
+  logout as authLogout
+} from '../utils/auth';
+import { listenForAuthEvents, closeAuthSync, broadcastLogin, broadcastLogout } from '../utils/authSync';
+import { clearCachePattern } from '../utils/apiClient';
 import logger from '../utils/logger';
-import { markAuthReady, resetAuthReady } from '../utils/authCircuitBreaker'; // 🔥 NEW: Circuit breaker
+import { markAuthReady, resetAuthReady } from '../utils/authCircuitBreaker';
+import {
+  AUTH_STATUS,
+  markAuthenticated as markAuthStatusAuthenticated,
+  markUnauthenticated as markAuthStatusUnauthenticated
+} from '../state/authStatus';
+import { initializeSocket, disconnectSocket } from '../utils/socket';
 
 const AuthContext = createContext(null);
 
+// Auth status constants for components
+export const AUTH_STATES = {
+  LOADING: 'loading',
+  AUTHENTICATED: 'authenticated',
+  UNAUTHENTICATED: 'unauthenticated',
+};
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [authStatus, setAuthStatus] = useState(AUTH_STATES.LOADING);
   const [error, setError] = useState(null);
-  const [authReady, setAuthReady] = useState(false); // Auth ready gate
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Auth state
-  const [authLoading, setAuthLoading] = useState(true); // 🔥 NEW: Global auth loading state
+
+  // Derived state for backward compatibility
+  const loading = authStatus === AUTH_STATES.LOADING;
+  const authLoading = authStatus === AUTH_STATES.LOADING;
+  const authReady = authStatus !== AUTH_STATES.LOADING;
+  const isAuthenticated = authStatus === AUTH_STATES.AUTHENTICATED;
+
+  // Derive role from user object
+  const role = useMemo(() => user?.role || null, [user]);
 
   /**
-   * Hydrate user data from API
-   * Uses apiFetch with 5-minute cache to prevent duplicate requests
-   * 🔥 CRITICAL: This is the FIRST protected call - sets authLoading = false when done
+   * Verify auth state with backend
+   * Uses Axios-based api.js for auth-critical flows (handles token refresh automatically)
+   * 🔥 CRITICAL: This is the ONLY place that calls /auth/me on app load
    */
-  const hydrate = useCallback(async () => {
+  const verifyAuth = useCallback(async () => {
     try {
       logger.debug('[AuthContext] 🔐 Starting auth verification...');
-      setAuthLoading(true); // Start loading
 
       // Check if we have a token before making the request
       const token = localStorage.getItem('token');
       if (!token) {
         logger.debug('[AuthContext] No token found - marking unauthenticated');
         setUser(null);
-        setIsAuthenticated(false);
-        setAuthReady(true);
-        setAuthLoading(false); // 🔥 Auth verification complete
-        setLoading(false);
-        return;
+        setAuthStatus(AUTH_STATES.UNAUTHENTICATED);
+        markAuthStatusUnauthenticated();
+        markAuthReady();
+        sessionStorage.setItem('authReady', 'true');
+        return { authenticated: false };
       }
 
-      // 🔥 CRITICAL: /auth/me is ALWAYS the first protected call
-      const data = await apiFetch(
-        '/auth/me',
-        {},
-        { cacheTtl: 300_000 } // 5 minutes
-      );
+      // 🔥 Use Axios api.js for auth-critical flows (has token refresh interceptor)
+      const response = await api.get('/auth/me');
+      const userData = response.data;
 
-      if (data) {
-        setUser(data);
-        setIsAuthenticated(true);
-        setAuthReady(true); // Auth is ready after successful fetch
-        setAuthLoading(false); // 🔥 Auth verification complete
-        sessionStorage.setItem('authReady', 'true'); // 🔥 DEV: Set flag for dev warnings
-        markAuthReady(); // 🔥 CIRCUIT BREAKER: Mark auth as ready
+      if (userData && userData._id) {
+        setUser(userData);
+        setCurrentUser(userData); // Sync to localStorage for other utils
+        setAuthStatus(AUTH_STATES.AUTHENTICATED);
+        markAuthStatusAuthenticated();
+        markAuthReady();
+        sessionStorage.setItem('authReady', 'true');
         setError(null);
-        logger.debug('[AuthContext] ✅ User authenticated:', data.username);
+        logger.debug('[AuthContext] ✅ User authenticated:', userData.username);
+
+        // Initialize socket for authenticated user
+        try {
+          initializeSocket(userData._id);
+        } catch (socketErr) {
+          logger.warn('[AuthContext] Socket initialization failed:', socketErr);
+        }
+
+        return { authenticated: true, user: userData };
       } else {
-        setUser(null);
-        setIsAuthenticated(false);
-        setAuthReady(true);
-        setAuthLoading(false); // 🔥 Auth verification complete
-        sessionStorage.setItem('authReady', 'true'); // 🔥 DEV: Set flag for dev warnings
-        markAuthReady(); // 🔥 CIRCUIT BREAKER: Mark auth as ready (even if not authenticated)
-        logger.debug('[AuthContext] ❌ Not authenticated');
+        throw new Error('Invalid user data received');
       }
     } catch (err) {
       logger.error('[AuthContext] Auth verification failed:', err);
+
+      // If 401, the interceptor already tried to refresh - user is truly unauthenticated
       setError(err);
       setUser(null);
-      setIsAuthenticated(false);
-      setAuthReady(true); // Still mark as ready even on error
-      setAuthLoading(false); // 🔥 Auth verification complete (even on error)
-      sessionStorage.setItem('authReady', 'true'); // 🔥 DEV: Set flag for dev warnings
-      markAuthReady(); // 🔥 CIRCUIT BREAKER: Mark auth as ready (even on error)
-    } finally {
-      setLoading(false);
+      setAuthStatus(AUTH_STATES.UNAUTHENTICATED);
+      markAuthStatusUnauthenticated();
+      markAuthReady();
+      sessionStorage.setItem('authReady', 'true');
+
+      return { authenticated: false, error: err };
     }
   }, []);
 
   /**
-   * Refresh user data (bypasses cache)
+   * Login function - to be called after successful login API call
+   * @param {Object} authData - { token, refreshToken, user }
+   */
+  const login = useCallback(async (authData) => {
+    const { token, refreshToken, user: userData } = authData;
+
+    logger.debug('[AuthContext] 🔑 Processing login...');
+
+    // Store tokens
+    if (token) {
+      setAuthToken(token);
+    }
+    if (refreshToken) {
+      setRefreshToken(refreshToken);
+    }
+
+    // Set user state
+    if (userData) {
+      setUser(userData);
+      setCurrentUser(userData);
+    }
+
+    setAuthStatus(AUTH_STATES.AUTHENTICATED);
+    markAuthStatusAuthenticated();
+    markAuthReady();
+    sessionStorage.setItem('authReady', 'true');
+    setError(null);
+
+    // Initialize socket
+    if (userData?._id) {
+      try {
+        initializeSocket(userData._id);
+      } catch (socketErr) {
+        logger.warn('[AuthContext] Socket initialization failed:', socketErr);
+      }
+    }
+
+    // Broadcast login to other tabs
+    broadcastLogin();
+
+    logger.debug('[AuthContext] ✅ Login complete:', userData?.username);
+  }, []);
+
+  /**
+   * Logout function - clears all auth state and redirects to login
+   */
+  const logout = useCallback(async () => {
+    logger.debug('[AuthContext] 🚪 Processing logout...');
+
+    // Disconnect socket first
+    try {
+      disconnectSocket();
+    } catch (err) {
+      logger.warn('[AuthContext] Socket disconnect failed:', err);
+    }
+
+    // Clear context state
+    setUser(null);
+    setAuthStatus(AUTH_STATES.UNAUTHENTICATED);
+    markAuthStatusUnauthenticated();
+    resetAuthReady();
+    sessionStorage.removeItem('authReady');
+    clearCachePattern('/auth/me');
+
+    // Use the auth utility logout (handles backend call and localStorage cleanup)
+    await authLogout();
+
+    logger.debug('[AuthContext] ✅ Logout complete');
+  }, []);
+
+  /**
+   * Manually refresh the access token
+   * Note: The api.js interceptor handles this automatically on 401
+   */
+  const refreshToken = useCallback(async () => {
+    try {
+      logger.debug('[AuthContext] 🔄 Manually refreshing token...');
+
+      const currentRefreshToken = getRefreshToken();
+      if (!currentRefreshToken) {
+        throw new Error('No refresh token available');
+      }
+
+      const response = await api.post('/auth/refresh', {
+        refreshToken: currentRefreshToken
+      });
+
+      const { accessToken, refreshToken: newRefreshToken } = response.data;
+
+      if (accessToken) {
+        setAuthToken(accessToken);
+        logger.debug('[AuthContext] ✅ Token refreshed');
+      }
+
+      if (newRefreshToken) {
+        setRefreshToken(newRefreshToken);
+      }
+
+      return { success: true };
+    } catch (err) {
+      logger.error('[AuthContext] Token refresh failed:', err);
+
+      // If refresh fails, user needs to re-login
+      setUser(null);
+      setAuthStatus(AUTH_STATES.UNAUTHENTICATED);
+      markAuthStatusUnauthenticated();
+
+      return { success: false, error: err };
+    }
+  }, []);
+
+  /**
+   * Refresh user data from API (bypasses cache)
    */
   const refreshUser = useCallback(async () => {
-    // Clear auth cache to force fresh fetch
     clearCachePattern('/auth/me');
-    setLoading(true);
-    await hydrate();
-  }, [hydrate]);
+    return await verifyAuth();
+  }, [verifyAuth]);
 
   /**
    * Update user data locally (optimistic update)
    */
   const updateUser = useCallback((updates) => {
-    setUser(prev => prev ? { ...prev, ...updates } : null);
+    setUser(prev => {
+      if (!prev) return null;
+      const updated = { ...prev, ...updates };
+      setCurrentUser(updated); // Sync to localStorage
+      return updated;
+    });
   }, []);
 
   /**
-   * Clear user data (on logout)
+   * Clear user data (used by cross-tab sync)
    */
   const clearUser = useCallback(() => {
     setUser(null);
-    setIsAuthenticated(false);
-    setAuthReady(false); // Reset auth ready on logout
-    setAuthLoading(false); // Reset auth loading
-    setLoading(false);
-    sessionStorage.removeItem('authReady'); // 🔥 DEV: Clear flag for dev warnings
+    setAuthStatus(AUTH_STATES.UNAUTHENTICATED);
+    markAuthStatusUnauthenticated();
+    resetAuthReady();
+    sessionStorage.removeItem('authReady');
     clearCachePattern('/auth/me');
-    resetAuthReady(); // 🔥 CIRCUIT BREAKER: Reset auth ready state on logout
     logger.debug('[AuthContext] User cleared');
   }, []);
 
-  // Hydrate on mount
+  // 🔥 SINGLE AUTH CHECK ON MOUNT
   useEffect(() => {
     let active = true;
 
     async function init() {
-      await hydrate();
+      await verifyAuth();
       if (!active) return;
     }
 
@@ -147,31 +293,29 @@ export function AuthProvider({ children }) {
     return () => {
       active = false;
     };
-  }, [hydrate]);
+  }, [verifyAuth]);
 
-  // 🔥 CROSS-TAB AUTH SYNC: Listen for auth events from other tabs
+  // 🔥 CROSS-TAB AUTH SYNC
   useEffect(() => {
     const cleanup = listenForAuthEvents(async (type, data) => {
       logger.debug(`[AuthContext] Received cross-tab event: ${type}`);
 
       if (type === 'auth:login') {
-        // Another tab logged in - rehydrate auth
         logger.debug('[AuthContext] Another tab logged in - rehydrating...');
         await refreshUser();
       } else if (type === 'auth:logout') {
-        // Another tab logged out - clear auth
         logger.debug('[AuthContext] Another tab logged out - clearing auth...');
         clearUser();
 
-        // Redirect to login if not already there
+        // Redirect to login if on protected route
         const currentPath = window.location.pathname;
-        if (currentPath !== '/login' && currentPath !== '/register' && currentPath !== '/') {
+        const publicPaths = ['/login', '/register', '/', '/forgot-password', '/reset-password'];
+        if (!publicPaths.includes(currentPath) && !currentPath.startsWith('/terms') && !currentPath.startsWith('/privacy')) {
           window.location.href = '/login';
         }
       }
     });
 
-    // Cleanup on unmount
     return () => {
       cleanup();
       closeAuthSync();
@@ -179,12 +323,22 @@ export function AuthProvider({ children }) {
   }, [refreshUser, clearUser]);
 
   const value = {
+    // Core state
     user,
-    loading,
+    role,
+    authStatus,
     error,
-    authReady, // Expose auth ready state
-    isAuthenticated, // Expose auth state
-    authLoading, // 🔥 NEW: Expose global auth loading state
+
+    // Derived state (backward compatibility)
+    loading,
+    authLoading,
+    authReady,
+    isAuthenticated,
+
+    // Actions
+    login,
+    logout,
+    refreshToken,
     refreshUser,
     updateUser,
     clearUser,
@@ -204,38 +358,32 @@ export function AuthProvider({ children }) {
  */
 export function useAuth() {
   const context = useContext(AuthContext);
-  
-  if (context === undefined) {
+
+  if (context === null) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-  
+
   return context;
 }
 
 /**
  * HOC to require authentication
  * Redirects to login if not authenticated
+ * @deprecated Use PrivateRoute component instead for route-level protection
  */
 export function withAuth(Component) {
   return function AuthenticatedComponent(props) {
-    const { user, loading } = useAuth();
-    const navigate = useNavigate();
+    const { authStatus } = useAuth();
 
-    useEffect(() => {
-      if (!loading && !user) {
-        navigate('/login');
-      }
-    }, [user, loading, navigate]);
-
-    if (loading) {
+    if (authStatus === AUTH_STATES.LOADING) {
       return <div className="loading-spinner">Loading...</div>;
     }
 
-    if (!user) {
+    if (authStatus === AUTH_STATES.UNAUTHENTICATED) {
+      // Redirect will be handled by PrivateRoute
       return null;
     }
 
     return <Component {...props} />;
   };
 }
-

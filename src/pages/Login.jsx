@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../utils/api';
-import { setAuthToken, setRefreshToken, setCurrentUser, clearManualLogoutFlag } from '../utils/auth';
-import { disconnectSocket, initializeSocket, resetLogoutFlag } from '../utils/socket';
-import { broadcastLogin } from '../utils/authSync'; // 🔥 NEW: Cross-tab sync
+import { clearManualLogoutFlag } from '../utils/auth';
+import { resetLogoutFlag } from '../utils/socket';
 import { useAuth } from '../context/AuthContext';
 import PasskeyLogin from '../components/PasskeyLogin';
 import './Auth.css';
 
-function Login({ setIsAuth }) {
+/**
+ * Login Page
+ * Uses AuthContext.login() for all auth state management
+ */
+function Login() {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -20,7 +23,7 @@ function Login({ setIsAuth }) {
   const [twoFactorCode, setTwoFactorCode] = useState('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { refreshUser } = useAuth(); // Get refreshUser from AuthContext
+  const { login } = useAuth(); // Get refreshUser from AuthContext
   // Theme is initialized in main.jsx - no need to set it here
 
   // Check if redirected due to expired token
@@ -60,24 +63,14 @@ function Login({ setIsAuth }) {
         return;
       }
 
-      // Normal login (no 2FA)
-      // Backend now returns accessToken instead of token (refresh token rotation)
-      setAuthToken(response.data.accessToken || response.data.token);
-      setRefreshToken(response.data.refreshToken); // Store refresh token
-      setCurrentUser(response.data.user);
+      // 🔥 Use AuthContext.login() for all auth state management
+      // This handles: token storage, user state, socket init, cross-tab sync
+      await login({
+        token: response.data.accessToken || response.data.token,
+        refreshToken: response.data.refreshToken,
+        user: response.data.user
+      });
 
-      // 🔥 CRITICAL: Refresh AuthContext to populate user data
-      await refreshUser();
-
-      // 🔥 CROSS-TAB SYNC: Broadcast login to other tabs
-      broadcastLogin();
-
-      // Disconnect old socket and reconnect with new token
-      disconnectSocket();
-      const userId = response.data.user.id || response.data.user._id;
-      initializeSocket(userId);
-
-      setIsAuth(true);
       navigate('/feed');
     } catch (err) {
       console.error('Login error:', {
@@ -109,23 +102,13 @@ function Login({ setIsAuth }) {
 
       console.log('2FA verification successful:', response.data);
 
-      // Backend now returns accessToken instead of token (refresh token rotation)
-      setAuthToken(response.data.accessToken || response.data.token);
-      setRefreshToken(response.data.refreshToken); // Store refresh token
-      setCurrentUser(response.data.user);
+      // 🔥 Use AuthContext.login() for all auth state management
+      await login({
+        token: response.data.accessToken || response.data.token,
+        refreshToken: response.data.refreshToken,
+        user: response.data.user
+      });
 
-      // 🔥 CRITICAL: Refresh AuthContext to populate user data
-      await refreshUser();
-
-      // 🔥 CROSS-TAB SYNC: Broadcast login to other tabs
-      broadcastLogin();
-
-      // Disconnect old socket and reconnect with new token
-      disconnectSocket();
-      const userId = response.data.user.id || response.data.user._id;
-      initializeSocket(userId);
-
-      setIsAuth(true);
       navigate('/feed');
     } catch (err) {
       console.error('2FA verification error:', err);
@@ -260,11 +243,13 @@ function Login({ setIsAuth }) {
 
           <PasskeyLogin
             email={formData.email}
-            onSuccess={(user) => {
-              disconnectSocket();
-              const userId = user.id || user._id;
-              initializeSocket(userId);
-              setIsAuth(true);
+            onSuccess={async (userData, authData) => {
+              // 🔥 Use AuthContext.login() for passkey auth too
+              await login({
+                token: authData?.accessToken || authData?.token,
+                refreshToken: authData?.refreshToken,
+                user: userData
+              });
               navigate('/feed');
             }}
           />

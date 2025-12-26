@@ -1,27 +1,14 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect, lazy, Suspense } from 'react';
-import { isAuthenticated, getCurrentUser, setAuthToken, setRefreshToken } from './utils/auth';
-import { initializeSocket, disconnectSocket, disconnectSocketForLogout, resetLogoutFlag, onNewMessage } from './utils/socket';
+import { getCurrentUser } from './utils/auth';
+import { resetLogoutFlag, onNewMessage, disconnectSocketForLogout } from './utils/socket';
 import { playNotificationSound } from './utils/notifications';
 import { initializeQuietMode } from './utils/quietMode';
 import { preloadCriticalResources, preloadFeedData } from './utils/resourcePreloader';
-import { startVersionCheck, checkForUpdate } from './utils/versionCheck';
-import { checkVersion } from './utils/versionChecker';
-import { useUpdateStore } from './state/updateStore';
-import { registerSW } from 'virtual:pwa-register';
-import api from './utils/api';
-import axios from 'axios';
+import { checkForUpdate } from './utils/versionCheck';
 import { API_BASE_URL } from './config/api';
 import logger from './utils/logger';
-import { apiFetch } from './utils/apiClient';
-import {
-  AUTH_STATUS,
-  getAuthStatus,
-  setAuthStatus,
-  markAuthenticated,
-  markUnauthenticated
-} from './state/authStatus';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth, AUTH_STATES } from './context/AuthContext';
 import { executePWASafetyChecks } from './utils/pwaSafety';
 import { disablePWAAndReload, forceReloadWithCacheClear } from './utils/emergencyRecovery';
 import { initOfflineManager } from './utils/offlineManager';
@@ -167,21 +154,40 @@ const PageLoader = () => {
   );
 };
 
-function App() {
-  // CRITICAL: Use 3-state auth model to prevent redirect loops
-  // - "loading": Auth state unknown (initial state, checking token)
-  // - "authenticated": User is confirmed logged in
-  // - "unauthenticated": User is confirmed logged out
-  const [authStatus, setAuthStatusState] = useState(AUTH_STATUS.UNKNOWN);
-  const [initError, setInitError] = useState(false);
+/**
+ * PrivateRoute - Protects routes that require authentication
+ * Uses AuthContext for auth state (single source of truth)
+ */
+function PrivateRoute({ children }) {
+  const { authStatus } = useAuth();
 
-  // Update banner state - using new version checker
+  // Show loading while auth is being verified
+  if (authStatus === AUTH_STATES.LOADING) {
+    return <PageLoader />;
+  }
+
+  // Redirect to login if not authenticated
+  if (authStatus === AUTH_STATES.UNAUTHENTICATED) {
+    return <Navigate to="/login" />;
+  }
+
+  return children;
+}
+
+/**
+ * AppContent - Main app content (inside AuthProvider)
+ * Uses AuthContext for all auth state
+ */
+function AppContent() {
+  const { authStatus, isAuthenticated, user, login } = useAuth();
+
+  // Update banner state
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [showUpdateBanner, setShowUpdateBanner] = useState(true);
 
-  // Derived state for backward compatibility
-  const isAuth = authStatus === AUTH_STATUS.AUTHENTICATED;
-  const authLoading = authStatus === AUTH_STATUS.UNKNOWN;
+  // Derived state for convenience
+  const isAuth = isAuthenticated;
+  const authLoading = authStatus === AUTH_STATES.LOADING;
 
   // Detect mobile vs desktop for layout switching
   const [isMobile, setIsMobile] = useState(
@@ -196,9 +202,172 @@ function App() {
     return () => mediaQuery.removeEventListener('change', handleResize);
   }, []);
 
+  // 🔥 AUTHENTICATED USER EFFECTS
+  // These only run when user is authenticated
   useEffect(() => {
-    // 🛡️ STEP 1: PWA SAFETY CHECKS (BEFORE EVERYTHING ELSE)
-    // This must run BEFORE auth bootstrap to catch kill-switch and version mismatches
+    if (!isAuthenticated || !user) return;
+
+    // Initialize quiet mode with user settings
+    initializeQuietMode(user);
+
+    // Reset logout flag to allow socket reconnection
+    resetLogoutFlag();
+
+    // Listen for new messages and play sound
+    const cleanupNewMessage = onNewMessage((msg) => {
+      playNotificationSound().catch(err => {
+        logger.warn('Failed to play notification sound:', err);
+      });
+    });
+
+    // Preload resources for authenticated users
+    Promise.all([
+      preloadCriticalResources(),
+      preloadFeedData()
+    ]).catch(err => {
+      logger.debug('Resource preload failed (non-critical):', err);
+    });
+
+    return () => {
+      cleanupNewMessage?.();
+    };
+  }, [isAuthenticated, user]);
+
+  // 🔥 UNAUTHENTICATED EFFECTS
+  useEffect(() => {
+    if (authStatus === AUTH_STATES.UNAUTHENTICATED) {
+      disconnectSocketForLogout();
+    }
+  }, [authStatus]);
+
+  // Expose checkForUpdate globally for testing
+  useEffect(() => {
+    window.checkForUpdate = checkForUpdate;
+  }, []);
+
+  return (
+    <AuthGate>
+      <Router>
+        <Suspense fallback={<PageLoader />}>
+          <div className="app-container">
+            {/* Safety Warning for high-risk regions */}
+            {isAuth && <SafetyWarning />}
+
+            {/* Update banner for new deployments */}
+            {updateAvailable && showUpdateBanner && (
+              <UpdateBanner onClose={() => setShowUpdateBanner(false)} />
+            )}
+
+            <main id="main-content">
+              <Routes>
+                {/* Layout wrapper - switches between mobile and desktop */}
+                <Route element={isMobile ? <MobileLayout /> : <DesktopLayout />}>
+                  {/* Public Home Page - Redirect to feed if logged in */}
+                  <Route path="/" element={
+                    authLoading ? <PageLoader /> :
+                    !isAuth ? <Home /> : <Navigate to="/feed" />
+                  } />
+
+                  {/* Auth Pages - Use AuthContext login function */}
+                  <Route path="/login" element={
+                    authLoading ? <PageLoader /> :
+                    !isAuth ? <Login onLoginSuccess={login} /> : <Navigate to="/feed" />
+                  } />
+                  <Route path="/register" element={
+                    authLoading ? <PageLoader /> :
+                    !isAuth ? <Register onLoginSuccess={login} /> : <Navigate to="/feed" />
+                  } />
+                  <Route path="/forgot-password" element={
+                    authLoading ? <PageLoader /> :
+                    !isAuth ? <ForgotPassword /> : <Navigate to="/feed" />
+                  } />
+                  <Route path="/reset-password" element={
+                    authLoading ? <PageLoader /> :
+                    !isAuth ? <ResetPassword /> : <Navigate to="/feed" />
+                  } />
+
+                  {/* Reactivate Account */}
+                  <Route path="/reactivate" element={
+                    authLoading ? <PageLoader /> :
+                    isAuth ? <ReactivateAccount /> : <Navigate to="/login" />
+                  } />
+
+                  {/* Protected Routes */}
+                  <Route path="/feed" element={<PrivateRoute><Feed /></PrivateRoute>} />
+                  <Route path="/feed/following" element={<PrivateRoute><FollowingFeed /></PrivateRoute>} />
+                  <Route path="/journal" element={<PrivateRoute><Journal /></PrivateRoute>} />
+                  <Route path="/longform" element={<PrivateRoute><Longform /></PrivateRoute>} />
+                  <Route path="/discover" element={<PrivateRoute><Discover /></PrivateRoute>} />
+                  <Route path="/search" element={<PrivateRoute><Search /></PrivateRoute>} />
+                  <Route path="/tags/:slug" element={<PrivateRoute><TagFeed /></PrivateRoute>} />
+                  <Route path="/groups/:slug" element={<PrivateRoute><Groups /></PrivateRoute>} />
+                  <Route path="/photo-essay" element={<PrivateRoute><PhotoEssay /></PrivateRoute>} />
+                  <Route path="/photo-essay/:id" element={<PrivateRoute><PhotoEssay /></PrivateRoute>} />
+                  <Route path="/profile/:id" element={<PrivateRoute><Profile /></PrivateRoute>} />
+                  <Route path="/profile/:username/followers" element={<PrivateRoute><Followers /></PrivateRoute>} />
+                  <Route path="/profile/:username/following" element={<PrivateRoute><Following /></PrivateRoute>} />
+                  <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+                  <Route path="/settings/security" element={<PrivateRoute><SecuritySettings /></PrivateRoute>} />
+                  <Route path="/settings/privacy" element={<PrivateRoute><PrivacySettings /></PrivateRoute>} />
+                  <Route path="/bookmarks" element={<PrivateRoute><Bookmarks /></PrivateRoute>} />
+                  <Route path="/events" element={<PrivateRoute><Events /></PrivateRoute>} />
+                  <Route path="/messages" element={<PrivateRoute><Messages /></PrivateRoute>} />
+                  <Route path="/lounge" element={<PrivateRoute><Lounge /></PrivateRoute>} />
+                  <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
+                  <Route path="/hashtag/:tag" element={<PrivateRoute><Hashtag /></PrivateRoute>} />
+
+                  {/* Admin Panel - Role-protected */}
+                  <Route path="/admin" element={
+                    <PrivateRoute>
+                      <RoleRoute allowedRoles={['moderator', 'admin', 'super_admin']}>
+                        <Admin />
+                      </RoleRoute>
+                    </PrivateRoute>
+                  } />
+
+                  {/* Legal Pages - Public Access */}
+                  <Route path="/terms" element={<><Terms /><Footer /></>} />
+                  <Route path="/privacy" element={<><Privacy /><Footer /></>} />
+                  <Route path="/community" element={<><Community /><Footer /></>} />
+                  <Route path="/community-guidelines" element={<><Community /><Footer /></>} />
+                  <Route path="/safety" element={<><Safety /><Footer /></>} />
+                  <Route path="/security" element={<><Security /><Footer /></>} />
+                  <Route path="/contact" element={<><Contact /><Footer /></>} />
+                  <Route path="/faq" element={<><FAQ /><Footer /></>} />
+                  <Route path="/legal-requests" element={<><LegalRequests /><Footer /></>} />
+                  <Route path="/dmca" element={<><DMCA /><Footer /></>} />
+                  <Route path="/acceptable-use" element={<><AcceptableUse /><Footer /></>} />
+                  <Route path="/cookie-policy" element={<><CookiePolicy /><Footer /></>} />
+                  <Route path="/helplines" element={<><Helplines /><Footer /></>} />
+                </Route>
+              </Routes>
+            </main>
+
+            {/* PWA Install Prompt */}
+            {isAuth && <PWAInstallPrompt />}
+
+            {/* Cookie Banner */}
+            <CookieBanner />
+          </div>
+        </Suspense>
+      </Router>
+
+      {/* 🔍 Debug Overlay - Toggle with ?debug=true or Ctrl+Shift+D */}
+      <DebugOverlay />
+
+      {/* 📴 Offline Banner - Shows when app is offline */}
+      <OfflineBanner />
+    </AuthGate>
+  );
+}
+
+/**
+ * App - Root component that provides all context providers
+ * AuthProvider is the outermost provider for auth state
+ */
+function App() {
+  // 🛡️ PWA SAFETY CHECKS (runs once on mount)
+  useEffect(() => {
     const runPWASafetyChecks = async () => {
       try {
         logger.info('[App] 🛡️ Running PWA safety checks...');
@@ -207,20 +376,14 @@ function App() {
         if (!safetyResult.safe) {
           logger.warn('[App] 🔥 PWA safety check failed:', safetyResult.action);
 
-          // Handle different safety actions
           switch (safetyResult.action) {
             case 'disable_pwa':
               disablePWAAndReload(safetyResult.message);
-              return; // Stop execution
-
+              return;
             case 'force_reload':
-              forceReloadWithCacheClear(safetyResult.message);
-              return; // Stop execution
-
             case 'version_mismatch':
               forceReloadWithCacheClear(safetyResult.message);
-              return; // Stop execution
-
+              return;
             default:
               logger.warn('[App] Unknown safety action:', safetyResult.action);
           }
@@ -233,465 +396,32 @@ function App() {
       }
     };
 
-    // 🌐 STEP 2: Initialize offline manager
+    // Initialize offline manager
     initOfflineManager();
 
-    // 🔥 STEP 3: PRE-WARM BACKEND
-    // Wake backend immediately on app load to prevent cold start delays
-    const preWarmBackend = async () => {
-      try {
-        // Use lightweight health endpoint to wake backend
-        // This doesn't require auth and is very fast
-        await fetch(API_BASE_URL.replace('/api', '') + '/api/health', {
-          credentials: 'include',
-          signal: AbortSignal.timeout(5000) // 5 second timeout
-        });
-        logger.debug('🔥 Backend pre-warmed successfully');
-      } catch (error) {
-        // Silently fail - this is just an optimization
-        logger.debug('Backend pre-warm failed (non-critical):', error);
-      }
-    };
+    // Pre-warm backend (non-blocking)
+    fetch(API_BASE_URL.replace('/api', '') + '/api/health', {
+      credentials: 'include',
+      signal: AbortSignal.timeout(5000)
+    }).then(() => {
+      logger.debug('🔥 Backend pre-warmed successfully');
+    }).catch(() => {
+      logger.debug('Backend pre-warm failed (non-critical)');
+    });
 
-    // 🔐 STEP 4: Bootstrap auth state
-    // This prevents refresh loops and ensures CSRF token is available
-    const bootstrapAuth = async () => {
-      try {
-        // Check if token exists in localStorage
-        const token = localStorage.getItem('token');
-        const refreshToken = localStorage.getItem('refreshToken');
-
-        if (!token && !refreshToken) {
-          // No tokens = definitely unauthenticated
-          logger.debug('🔐 No tokens found - marking unauthenticated');
-          setAuthStatusState(AUTH_STATUS.UNAUTHENTICATED);
-          markUnauthenticated();
-          return;
-        }
-
-        // Token exists - verify it with backend
-        logger.debug('🔐 Token found - verifying with backend...');
-
-        try {
-          const response = await api.get('/auth/status');
-          const isCurrentlyAuth = response.data.authenticated;
-
-          if (isCurrentlyAuth) {
-            logger.debug('🔐 Auth verified - marking authenticated');
-            setAuthStatusState(AUTH_STATUS.AUTHENTICATED);
-            markAuthenticated();
-
-            // 🚀 OPTIMIZATION: Preload critical resources after auth
-            Promise.all([
-              preloadCriticalResources(),
-              preloadFeedData()
-            ]).catch(err => {
-              logger.debug('Resource preload failed (non-critical):', err);
-            });
-          } else {
-            // Auth status returned false - try to refresh token before giving up
-            logger.debug('🔐 Auth status false - attempting token refresh...');
-
-            if (refreshToken) {
-              try {
-                const refreshResponse = await axios.post(`${API_BASE_URL}/refresh`, {
-                  refreshToken
-                }, {
-                  withCredentials: true
-                });
-
-                if (refreshResponse.data.accessToken) {
-                  logger.debug('✅ Token refreshed successfully during bootstrap');
-                  setAuthToken(refreshResponse.data.accessToken);
-
-                  if (refreshResponse.data.refreshToken) {
-                    setRefreshToken(refreshResponse.data.refreshToken);
-                  }
-
-                  // Now verify auth again with new token
-                  const retryResponse = await api.get('/auth/status');
-                  if (retryResponse.data.authenticated) {
-                    logger.debug('🔐 Auth verified after refresh - marking authenticated');
-                    setAuthStatusState(AUTH_STATUS.AUTHENTICATED);
-                    markAuthenticated();
-                    return;
-                  }
-                }
-              } catch (refreshError) {
-                logger.warn('Token refresh failed during bootstrap:', refreshError);
-              }
-            }
-
-            // If we get here, refresh failed or no refresh token
-            logger.debug('🔐 Auth failed - marking unauthenticated');
-            setAuthStatusState(AUTH_STATUS.UNAUTHENTICATED);
-            markUnauthenticated();
-          }
-
-          logger.debug('🔐 Auth bootstrap complete:', {
-            status: isCurrentlyAuth ? 'authenticated' : 'unauthenticated',
-            user: response.data.user?.username
-          });
-        } catch (statusError) {
-          // If auth status check fails with error, try to refresh token
-          logger.warn('Auth status check failed - attempting token refresh:', statusError);
-
-          if (refreshToken) {
-            try {
-              const refreshResponse = await axios.post(`${API_BASE_URL}/refresh`, {
-                refreshToken
-              }, {
-                withCredentials: true
-              });
-
-              if (refreshResponse.data.accessToken) {
-                logger.debug('✅ Token refreshed successfully after status error');
-                setAuthToken(refreshResponse.data.accessToken);
-
-                if (refreshResponse.data.refreshToken) {
-                  setRefreshToken(refreshResponse.data.refreshToken);
-                }
-
-                // Verify auth with new token
-                const retryResponse = await api.get('/auth/status');
-                if (retryResponse.data.authenticated) {
-                  logger.debug('🔐 Auth verified after refresh - marking authenticated');
-                  setAuthStatusState(AUTH_STATUS.AUTHENTICATED);
-                  markAuthenticated();
-                  return;
-                }
-              }
-            } catch (refreshError) {
-              logger.warn('Token refresh failed:', refreshError);
-            }
-          }
-
-          // If we get here, everything failed
-          logger.debug('🔐 All auth attempts failed - marking unauthenticated');
-          setAuthStatusState(AUTH_STATUS.UNAUTHENTICATED);
-          markUnauthenticated();
-        }
-      } catch (error) {
-        // Unexpected error
-        logger.error('Unexpected error during auth bootstrap:', error);
-        setAuthStatusState(AUTH_STATUS.UNAUTHENTICATED);
-        markUnauthenticated();
-      }
-    };
-
-    // Execute in order: Safety checks → Pre-warm → Auth bootstrap
-    (async () => {
-      await runPWASafetyChecks();
-      preWarmBackend(); // Non-blocking
-      await bootstrapAuth();
-    })();
-
-    // 🔥 TEMPORARILY DISABLED FOR DEBUGGING
-    // Register service worker with auto-update handling
-    // This will automatically reload the page when a new service worker is installed
-    // const updateSW = registerSW({
-    //   immediate: true,
-    //   async onNeedRefresh() {
-    //     console.log('🔄 New service worker available - clearing caches and reloading...');
-
-    //     // Clear all caches before updating to ensure fresh content
-    //     try {
-    //       if ('caches' in window) {
-    //         const cacheNames = await caches.keys();
-    //         console.log(`🗑️ Clearing ${cacheNames.length} caches before update...`);
-    //         await Promise.all(cacheNames.map(name => caches.delete(name)));
-    //       }
-    //     } catch (error) {
-    //       console.error('⚠️ Error clearing caches:', error);
-    //     }
-
-    //     // Automatically reload when new service worker is ready
-    //     // This ensures users always get the latest version
-    //     updateSW(true);
-    //   },
-    //   onOfflineReady() {
-    //     console.log('✅ App ready to work offline');
-    //   },
-    //   onRegistered(registration) {
-    //     console.log('✅ Service worker registered');
-    //     // Check for updates every 5 minutes (more frequent for faster updates)
-    //     if (registration) {
-    //       setInterval(() => {
-    //         console.log('🔍 Checking for service worker updates...');
-    //         registration.update();
-    //       }, 5 * 60 * 1000); // 5 minutes (changed from 1 hour)
-    //     }
-    //   },
-    //   onRegisterError(error) {
-    //     console.error('❌ Service worker registration failed:', error);
-    //   }
-    // });
-
-    // ✅ FIXED: Use ONLY ONE version checker (backend API)
-    // Removed duplicate startVersionCheck() to prevent banner spam
-
-    // Expose checkForUpdate globally for testing in console
-    // Usage: window.checkForUpdate()
-    window.checkForUpdate = checkForUpdate;
-
-    // 🔥 TEMPORARILY DISABLED FOR DEBUGGING
-    // Subscribe to update notifications
-    // const unsubscribe = useUpdateStore(setUpdateAvailable);
-
-    // Check immediately on load
-    // checkVersion();
-
-    // ✅ FIXED: Reduced from 60s to 5 minutes to prevent spam
-    // const versionCheckInterval = setInterval(checkVersion, 5 * 60 * 1000); // 5 minutes
-
-    // ✅ FIXED: Debounced focus check to prevent rapid checks
-    // let focusTimeout;
-    // const onFocus = () => {
-    //   clearTimeout(focusTimeout);
-    //   focusTimeout = setTimeout(checkVersion, 2000); // Wait 2s after focus
-    // };
-    // window.addEventListener('focus', onFocus);
-
-    // ✅ REMOVED: visibility and online checks - redundant with focus check
-
-    // Cleanup
-    return () => {
-      // clearTimeout(focusTimeout);
-      // unsubscribe();
-      // clearInterval(versionCheckInterval);
-      // window.removeEventListener('focus', onFocus);
-    };
-
-    // Initialize Quiet Mode globally - only when authenticated
-    const initQuietMode = async (retries = 3) => {
-      // Only initialize if authenticated
-      if (authStatus !== AUTH_STATUS.AUTHENTICATED) {
-        return;
-      }
-
-      try {
-        // Use apiFetch with cache to prevent duplicate requests
-        const user = await apiFetch(
-          '/auth/me',
-          {},
-          { cacheTtl: 300_000 } // 5 minutes cache
-        );
-
-        if (!user) {
-          throw new Error('Failed to fetch user data');
-        }
-
-        // Initialize quiet mode with user settings
-        initializeQuietMode(user);
-        setInitError(false);
-      } catch (error) {
-        logger.error('Failed to initialize quiet mode:', error);
-
-        // Retry if we have retries left
-        if (retries > 0) {
-          logger.debug(`Retrying quiet mode initialization... (${retries} retries left)`);
-          setTimeout(() => initQuietMode(retries - 1), 2000);
-        } else {
-          logger.warn('Quiet mode initialization failed after all retries');
-          // Don't block the app - just use default settings
-          setInitError(true);
-        }
-      }
-    };
-
-    // Only initialize quiet mode when authenticated
-    if (authStatus === AUTH_STATUS.AUTHENTICATED) {
-      initQuietMode();
-    }
-
-    // Initialize Socket.IO when user is authenticated
-    if (authStatus === AUTH_STATUS.AUTHENTICATED) {
-      // 🔥 CRITICAL: Reset logout flag when user is authenticated
-      // This allows socket to reconnect after a fresh login
-      resetLogoutFlag();
-
-      const user = getCurrentUser();
-      if (user && (user.id || user._id)) {
-        try {
-          initializeSocket(user.id || user._id);
-
-          // NOTE: Notification permission is now requested only when user explicitly
-          // enables notifications in Settings, not automatically on login.
-          // This prevents browser console violations about requesting permission
-          // without user gesture.
-
-          // Listen for new messages and play sound
-          const cleanupNewMessage = onNewMessage((msg) => {
-            playNotificationSound().catch(err => {
-              logger.warn('Failed to play notification sound:', err);
-            });
-          });
-
-          // Cleanup on unmount or when user logs out
-          return () => {
-            cleanupNewMessage?.();
-            if (authStatus !== AUTH_STATUS.AUTHENTICATED) {
-              // Use logout-specific disconnect to prevent reconnection
-              disconnectSocketForLogout();
-            }
-          };
-        } catch (error) {
-          logger.error('Socket initialization failed:', error);
-          // Don't block the app - socket features just won't work
-        }
-      }
-    } else if (authStatus === AUTH_STATUS.UNAUTHENTICATED) {
-      // 🔥 CRITICAL: User is not authenticated, ensure socket is disconnected
-      disconnectSocketForLogout();
-    }
-  }, [authStatus]);
-
-  const PrivateRoute = ({ children }) => {
-    // CRITICAL: Don't redirect while auth state is loading
-    // This prevents redirect loops
-    if (authLoading) {
-      return <PageLoader />;
-    }
-
-    return isAuth ? children : <Navigate to="/login" />;
-  };
+    // Run PWA safety checks
+    runPWASafetyChecks();
+  }, []);
 
   return (
     <ErrorBoundary>
       <AppReadyProvider>
         <LoadingGate>
           <AuthProvider>
-            {/* 🔥 AUTH GATE: Block ALL UI until auth verification completes */}
-            <AuthGate>
-              <Router>
-                <Suspense fallback={<PageLoader />}>
-                  <div className="app-container">
-                    {/* Safety Warning for high-risk regions */}
-                    {isAuth && <SafetyWarning />}
-
-                {/* Update banner for new deployments */}
-                {updateAvailable && showUpdateBanner && (
-                  <UpdateBanner onClose={() => setShowUpdateBanner(false)} />
-                )}
-
-                <main id="main-content">
-                  <Routes>
-            {/* Layout wrapper - switches between mobile and desktop */}
-            <Route element={isMobile ? <MobileLayout /> : <DesktopLayout />}>
-              {/* Public Home Page - Redirect to feed if logged in */}
-              <Route path="/" element={
-                authLoading ? <PageLoader /> :
-                !isAuth ? <Home /> : <Navigate to="/feed" />
-              } />
-
-            {/* Auth Pages - Don't redirect while loading */}
-            <Route path="/login" element={
-              authLoading ? <PageLoader /> :
-              !isAuth ? <Login setIsAuth={(val) => {
-                setAuthStatusState(val ? AUTH_STATUS.AUTHENTICATED : AUTH_STATUS.UNAUTHENTICATED);
-                if (val) markAuthenticated();
-                else markUnauthenticated();
-              }} /> : <Navigate to="/feed" />
-            } />
-            <Route path="/register" element={
-              authLoading ? <PageLoader /> :
-              !isAuth ? <Register setIsAuth={(val) => {
-                setAuthStatusState(val ? AUTH_STATUS.AUTHENTICATED : AUTH_STATUS.UNAUTHENTICATED);
-                if (val) markAuthenticated();
-                else markUnauthenticated();
-              }} /> : <Navigate to="/feed" />
-            } />
-            <Route path="/forgot-password" element={
-              authLoading ? <PageLoader /> :
-              !isAuth ? <ForgotPassword /> : <Navigate to="/feed" />
-            } />
-            <Route path="/reset-password" element={
-              authLoading ? <PageLoader /> :
-              !isAuth ? <ResetPassword /> : <Navigate to="/feed" />
-            } />
-
-            {/* Reactivate Account - accessible with valid tokens but deactivated account */}
-            <Route path="/reactivate" element={
-              authLoading ? <PageLoader /> :
-              isAuth ? <ReactivateAccount /> : <Navigate to="/login" />
-            } />
-
-          {/* Protected Routes */}
-          <Route path="/feed" element={<PrivateRoute><Feed /></PrivateRoute>} />
-          <Route path="/feed/following" element={<PrivateRoute><FollowingFeed /></PrivateRoute>} /> {/* PHASE 2 */}
-          <Route path="/journal" element={<PrivateRoute><Journal /></PrivateRoute>} /> {/* PHASE 3 */}
-          <Route path="/longform" element={<PrivateRoute><Longform /></PrivateRoute>} /> {/* PHASE 3 */}
-          <Route path="/discover" element={<PrivateRoute><Discover /></PrivateRoute>} /> {/* PHASE 4 */}
-          <Route path="/search" element={<PrivateRoute><Search /></PrivateRoute>} /> {/* Mobile Search */}
-          <Route path="/tags/:slug" element={<PrivateRoute><TagFeed /></PrivateRoute>} /> {/* PHASE 4 (legacy-active) */}
-          <Route path="/groups/:slug" element={<PrivateRoute><Groups /></PrivateRoute>} /> {/* Migration: TAGS → GROUPS (Phase 0) */}
-          <Route path="/photo-essay" element={<PrivateRoute><PhotoEssay /></PrivateRoute>} /> {/* OPTIONAL */}
-          <Route path="/photo-essay/:id" element={<PrivateRoute><PhotoEssay /></PrivateRoute>} /> {/* OPTIONAL */}
-          <Route path="/profile/:id" element={<PrivateRoute><Profile /></PrivateRoute>} />
-          <Route path="/profile/:username/followers" element={<PrivateRoute><Followers /></PrivateRoute>} />
-          <Route path="/profile/:username/following" element={<PrivateRoute><Following /></PrivateRoute>} />
-          <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
-          <Route path="/settings/security" element={<PrivateRoute><SecuritySettings /></PrivateRoute>} />
-          <Route path="/settings/privacy" element={<PrivateRoute><PrivacySettings /></PrivateRoute>} />
-          <Route path="/bookmarks" element={<PrivateRoute><Bookmarks /></PrivateRoute>} />
-          <Route path="/events" element={<PrivateRoute><Events /></PrivateRoute>} />
-          {/* PHASE 1 REFACTOR: Friends/Connections routes removed */}
-          {/* <Route path="/connections" element={<PrivateRoute><Friends /></PrivateRoute>} /> */}
-          {/* <Route path="/friends" element={<PrivateRoute><Friends /></PrivateRoute>} /> */}
-          <Route path="/messages" element={<PrivateRoute><Messages /></PrivateRoute>} />
-          <Route path="/lounge" element={<PrivateRoute><Lounge /></PrivateRoute>} />
-          <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
-          <Route path="/hashtag/:tag" element={<PrivateRoute><Hashtag /></PrivateRoute>} />
-
-          {/* Admin Panel - Role-protected route (requires moderator, admin, or super_admin role) */}
-          {/* Defense-in-depth: PrivateRoute checks auth, RoleRoute checks role, Admin.jsx checks permissions */}
-          <Route path="/admin" element={
-            <PrivateRoute>
-              <RoleRoute allowedRoles={['moderator', 'admin', 'super_admin']}>
-                <Admin />
-              </RoleRoute>
-            </PrivateRoute>
-          } />
-
-          {/* Legal Pages - Public Access */}
-          <Route path="/terms" element={<><Terms /><Footer /></>} />
-          <Route path="/privacy" element={<><Privacy /><Footer /></>} />
-          <Route path="/community" element={<><Community /><Footer /></>} />
-          <Route path="/community-guidelines" element={<><Community /><Footer /></>} />
-          <Route path="/safety" element={<><Safety /><Footer /></>} />
-          <Route path="/security" element={<><Security /><Footer /></>} />
-          <Route path="/contact" element={<><Contact /><Footer /></>} />
-          <Route path="/faq" element={<><FAQ /><Footer /></>} />
-          <Route path="/legal-requests" element={<><LegalRequests /><Footer /></>} />
-          <Route path="/dmca" element={<><DMCA /><Footer /></>} />
-          <Route path="/acceptable-use" element={<><AcceptableUse /><Footer /></>} />
-          <Route path="/cookie-policy" element={<><CookiePolicy /><Footer /></>} />
-          <Route path="/helplines" element={<><Helplines /><Footer /></>} />
-            </Route>
-            {/* End layout wrapper */}
-          </Routes>
-          </main>
-
-          {/* PWA Install Prompt */}
-          {isAuth && <PWAInstallPrompt />}
-
-              {/* Cookie Banner */}
-              <CookieBanner />
-            </div>
-          </Suspense>
-        </Router>
-      </AuthGate>
-      {/* End of AuthGate - Auth verification complete */}
-
-      {/* 🔍 Debug Overlay - Toggle with ?debug=true or Ctrl+Shift+D */}
-      <DebugOverlay />
-
-      {/* 📴 Offline Banner - Shows when app is offline */}
-      <OfflineBanner />
-
-      </AuthProvider>
-      </LoadingGate>
-    </AppReadyProvider>
+            <AppContent />
+          </AuthProvider>
+        </LoadingGate>
+      </AppReadyProvider>
     </ErrorBoundary>
   );
 }

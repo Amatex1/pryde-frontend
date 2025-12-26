@@ -23,9 +23,8 @@ import { useOnlineUsers } from '../hooks/useOnlineUsers';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useUnreadMessages } from '../hooks/useUnreadMessages'; // ✅ Use singleton hook
 import { useToast } from '../hooks/useToast';
-import { useAuth } from '../context/AuthContext'; // ✅ Use auth context for authReady gate
+import { useAuth } from '../context/AuthContext'; // ✅ Use auth context (single source of truth)
 import api, { getCsrfToken } from '../utils/api';
-import { getCurrentUser } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
 import { getSocket, setupSocketListeners } from '../utils/socketHelpers';
 import { convertEmojiShortcuts } from '../utils/textFormatting';
@@ -41,7 +40,7 @@ function Feed() {
   const [searchParams] = useSearchParams();
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const { onlineUsers, isUserOnline } = useOnlineUsers();
-  const { authReady, isAuthenticated } = useAuth(); // ✅ Get auth ready state
+  const { authReady, isAuthenticated, user: currentUser } = useAuth(); // ✅ Single source of truth for auth
   const { toasts, showToast, removeToast } = useToast();
   const isMobile = useMediaQuery('(max-width: 768px)');
   const [posts, setPosts] = useState([]);
@@ -133,7 +132,7 @@ function Feed() {
   const reactionPickerTimeoutRef = useRef(null);
   const [pullDistance, setPullDistance] = useState(0);
 
-  const currentUser = getCurrentUser();
+  // currentUser is now from useAuth() above - no direct localStorage call
   const postRefs = useRef({});
   const commentRefs = useRef({});
   const listenersSetUpRef = useRef(false);
@@ -850,8 +849,8 @@ function Feed() {
     }
 
     // CRITICAL: Check if user is authenticated before attempting autosave
-    const currentUser = getCurrentUser();
-    if (!currentUser) {
+    // currentUser is from useAuth() context - no localStorage call needed
+    if (!currentUser || !isAuthenticated) {
       logger.debug('⏸️ Skipping autosave - user not authenticated');
       setDraftSaveStatus('');
       return;
