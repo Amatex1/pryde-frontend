@@ -1,0 +1,134 @@
+/**
+ * Phase 2: Groups List Page Styles
+ */
+
+.groups-list-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 100px 1rem 2rem 1rem;
+}
+
+.groups-list-header {
+  text-align: center;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.groups-list-header h1 {
+  font-size: 2rem;
+  color: var(--pryde-purple);
+  margin-bottom: 0.5rem;
+}
+
+.groups-list-subtitle {
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.groups-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.group-card {
+  padding: 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.group-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(108, 92, 231, 0.15);
+}
+
+.group-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.group-card-name {
+  font-size: 1.25rem;
+  color: var(--pryde-purple);
+  margin: 0;
+  flex: 1;
+}
+
+.member-badge {
+  background: var(--soft-lavender);
+  color: var(--pryde-purple);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.owner-badge {
+  background: linear-gradient(135deg, #ffd700, #ffb347);
+  color: #333;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.group-card-description {
+  color: var(--text-muted);
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.group-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.member-count {
+  color: var(--pryde-purple);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.visibility-badge {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  border-radius: 12px;
+}
+
+.empty-state p {
+  color: var(--text-muted);
+  margin: 0.5rem 0;
+}
+
+.empty-hint {
+  font-size: 0.9rem;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  .groups-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
