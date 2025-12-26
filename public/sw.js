@@ -13,28 +13,37 @@
    - Handle navigation
    ===================================================== */
 
-self.addEventListener('install', () => {
+const VERSION = '2.0.0'; // Increment to force update
+
+self.addEventListener('install', (event) => {
+  console.log(`[SW ${VERSION}] Installing...`);
   self.skipWaiting(); // Activate immediately
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim()); // Take control immediately
-});
-
-/* ⚠️ NO FETCH HANDLER - Browser handles all requests
-   This eliminates the "no-op fetch handler" warning
-   PWA install prompt works without fetch handler in modern browsers */
-
-self.addEventListener('activate', (event) => {
-  // Clean up any old caches from previous SW versions
+  console.log(`[SW ${VERSION}] Activating...`);
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(name => caches.delete(name))
-      );
-    }).then(() => self.clients.claim())
+    Promise.all([
+      self.clients.claim(), // Take control immediately
+      // Clear old caches from previous versions
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => caches.delete(cacheName))
+        );
+      })
+    ])
   );
+  console.log(`[SW ${VERSION}] Activated and ready`);
 });
+
+/* ⚠️ CRITICAL: NO FETCH HANDLER AT ALL
+   - Eliminates "no-op fetch handler" warning
+   - Browser handles ALL requests natively
+   - No interference with navigation or API calls
+   - PWA install prompt works without fetch handler in modern browsers
+
+   If you need push notifications, they work via the 'push' event handler below.
+*/
 
 /* 🔔 Handle push notifications */
 self.addEventListener('push', (event) => {

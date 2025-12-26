@@ -56,22 +56,47 @@ if (import.meta.env.PROD) {
   // This SW only handles push notifications - NO fetch, NO cache, NO navigation
   // Safe by design - cannot cause ERR_FAILED or stale content issues
   if ('serviceWorker' in navigator) {
-    // First, clean up old caches from previous SW versions
-    clearStaleSWAndCaches().then(() => {
-      console.log('[PWA] ✅ Old caches cleaned up');
-    }).catch(err => {
-      console.error('[PWA] Cache cleanup failed:', err);
-    });
+    // First, FORCE unregister ALL existing service workers
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      console.log(`[PWA] 🔍 Found ${registrations.length} existing service worker(s)`);
 
-    // Register the push-only service worker
-    navigator.serviceWorker.register('/sw.js', { scope: '/' })
-      .then(registration => {
-        console.log('[PWA] ✅ Push-only service worker registered');
-        console.log('[PWA] 📍 Scope:', registration.scope);
-      })
-      .catch(err => {
-        console.error('[PWA] Service worker registration failed:', err);
+      // Unregister all old service workers
+      const unregisterPromises = registrations.map(reg => {
+        console.log(`[PWA] 🗑️ Unregistering old service worker: ${reg.scope}`);
+        return reg.unregister();
       });
+
+      return Promise.all(unregisterPromises);
+    }).then(() => {
+      console.log('[PWA] ✅ All old service workers unregistered');
+
+      // Clean up old caches
+      return clearStaleSWAndCaches();
+    }).then(() => {
+      console.log('[PWA] ✅ Old caches cleaned up');
+
+      // Now register the NEW service worker
+      return navigator.serviceWorker.register('/sw.js', {
+        scope: '/',
+        updateViaCache: 'none' // Force check for updates every time
+      });
+    }).then(registration => {
+      console.log('[PWA] ✅ New service worker registered');
+      console.log('[PWA] 📍 Scope:', registration.scope);
+
+      // Force immediate activation
+      if (registration.waiting) {
+        console.log('[PWA] 🔄 Activating waiting service worker...');
+        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
+
+      // Check for updates every 60 seconds
+      setInterval(() => {
+        registration.update();
+      }, 60000);
+    }).catch(err => {
+      console.error('[PWA] Service worker registration failed:', err);
+    });
   }
 
   // Setup install prompt
