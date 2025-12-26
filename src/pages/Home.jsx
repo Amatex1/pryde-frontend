@@ -39,8 +39,8 @@ function Home() {
                   <Link to="/feed" className="btn-primary">
                     Go to Feed
                   </Link>
-                  <Link to="/discover" className="btn-secondary">
-                    Explore Community Tags
+                  <Link to="/groups" className="btn-secondary">
+                    Explore Groups
                   </Link>
                 </>
               ) : (
@@ -191,12 +191,12 @@ function Home() {
         </div>
       </section>
 
-      {/* Community Tags Section */}
+      {/* Groups Section */}
       <section className="tags-section">
         <div className="tags-content">
           <h2 className="section-title">Find Your Community</h2>
           <p className="tags-subtitle">
-            Explore curated Community Tags made for queer life, creativity, self-care, and deep reflection.
+            Join private groups for queer life, creativity, self-care, and deep reflection.
           </p>
           <div className="tags-grid">
             <div className="tag-badge">🛋️ Introverts Lounge</div>
@@ -210,12 +210,12 @@ function Home() {
             <div className="tag-badge">🎵 Music & Audio</div>
           </div>
           {isAuth ? (
-            <Link to="/discover" className="btn-tags">
-              Browse All Tags
+            <Link to="/groups" className="btn-tags">
+              Browse All Groups
             </Link>
           ) : (
             <Link to="/register" className="btn-tags">
-              Browse All Tags
+              Browse All Groups
             </Link>
           )}
         </div>
@@ -310,8 +310,8 @@ function Home() {
                 <Link to="/feed" className="btn-cta-primary">
                   Go to Feed
                 </Link>
-                <Link to="/discover" className="btn-cta-secondary">
-                  Explore Community Tags
+                <Link to="/groups" className="btn-cta-secondary">
+                  Explore Groups
                 </Link>
               </>
             ) : (
@@ -319,8 +319,8 @@ function Home() {
                 <Link to="/register" className="btn-cta-primary">
                   Create Your Profile
                 </Link>
-                <Link to="/register" className="btn-cta-secondary">
-                  Explore Community Tags
+                <Link to="/groups" className="btn-cta-secondary">
+                  Explore Groups
                 </Link>
               </>
             )}
