@@ -93,7 +93,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Handle 401 errors (unauthorized) and 403 CSRF errors
+// Handle 401 errors (unauthorized), 403 CSRF errors, and 410 Gone
 api.interceptors.response.use(
   (response) => {
     // Extract CSRF token from response header if present
@@ -106,6 +106,20 @@ api.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
+
+    // 🔥 Handle 410 Gone - Intentionally Removed Features
+    // NOTE: Endpoints returning 410 indicate intentionally removed features.
+    // These must be treated as resolved, terminal states.
+    // Never retry 410 responses. Never trigger auth or loading state changes.
+    if (error.response?.status === 410) {
+      logger.info(`[API] 410 Gone: ${originalRequest?.url} - Feature intentionally removed`);
+      // Return a resolved response instead of rejecting - prevents retry loops
+      return Promise.resolve({
+        data: { removed: true, status: 410, url: originalRequest?.url },
+        status: 410,
+        statusText: 'Gone'
+      });
+    }
 
     // Handle 403 errors
     if (error.response?.status === 403) {

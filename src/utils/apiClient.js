@@ -251,6 +251,16 @@ export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = fal
         return null;
       }
 
+      // 🔥 Handle 410 Gone - Intentionally Removed Features
+      // NOTE: Endpoints returning 410 indicate intentionally removed features.
+      // These must be treated as resolved, terminal states.
+      // Never retry 410 responses. Never trigger auth state changes.
+      if (res.status === 410) {
+        logger.info(`[API] 410 Gone: ${url} - Feature intentionally removed, treating as resolved`);
+        // Return a resolved object instead of throwing - prevents retry loops
+        return { removed: true, status: 410, url };
+      }
+
       // Reset backoff on success
       if (res.ok) {
         backoffDelay = 1000;

@@ -31,11 +31,8 @@ function Settings() {
   const [loading, setLoading] = useState(true); // ✅ Start with loading state
   const [message, setMessage] = useState('');
   const [quietModeEnabled, setQuietModeEnabled] = useState(false); // PHASE 2: Quiet Mode
-  const [verificationStatus, setVerificationStatus] = useState({
-    isVerified: false,
-    verificationRequested: false,
-    verificationRequestDate: null
-  });
+  // NOTE: Verification system removed 2025-12-26 (returns 410 Gone)
+  // State and API calls removed to prevent 410 loops
 
   // ✅ Fetch data on mount
   useEffect(() => {
@@ -74,23 +71,14 @@ function Settings() {
       // Refresh user data from API (bypasses cache)
       await refreshUser();
 
-      // Fetch verification status
-      await fetchVerificationStatus();
+      // NOTE: Verification status fetch removed 2025-12-26
+      // The endpoint returns 410 Gone - feature intentionally removed
     } catch (error) {
       logger.error('Failed to fetch initial data:', error);
       setMessage('Failed to load settings. Please refresh the page.');
     } finally {
       // ✅ CRITICAL: Always set loading to false
       setLoading(false);
-    }
-  };
-
-  const fetchVerificationStatus = async () => {
-    try {
-      const response = await api.get('/users/verification-status');
-      setVerificationStatus(response.data);
-    } catch (error) {
-      logger.error('Failed to fetch verification status:', error);
     }
   };
 
@@ -253,31 +241,8 @@ function Settings() {
     }
   };
 
-  const handleRequestVerification = async () => {
-    const reason = await showPrompt(
-      'Please explain why you would like to be verified (e.g., LGBTQ+ activist, content creator, community leader):',
-      'Request Verification',
-      'Enter reason (max 500 characters)'
-    );
-
-    if (!reason || reason.trim().length === 0) {
-      return;
-    }
-
-    if (reason.length > 500) {
-      showAlert('Reason must be 500 characters or less', 'Too Long');
-      return;
-    }
-
-    try {
-      const response = await api.post('/users/verification-request', { reason });
-      showAlert(response.data.message, 'Request Submitted');
-      fetchVerificationStatus();
-    } catch (error) {
-      logger.error('Verification request error:', error);
-      showAlert(error.response?.data?.message || 'Failed to submit verification request', 'Error');
-    }
-  };
+  // NOTE: handleRequestVerification removed 2025-12-26
+  // Verification request endpoint returns 410 Gone - feature intentionally removed
 
   // ✅ Show loading state
   if (loading) {
@@ -352,56 +317,9 @@ function Settings() {
 
           {/* Basic Information moved to Edit Profile modal on Profile page */}
 
-          {/* Verification Request Section */}
-          <div className="settings-section">
-            <h2 className="section-title">✓ Account Verification</h2>
-
-            <div className="verification-info">
-              {verificationStatus.isVerified ? (
-                <div className="verification-verified">
-                  <div className="verified-icon">✓</div>
-                  <div className="verified-text">
-                    <h3>Account Verified</h3>
-                    <p>
-                      Your account is verified! You have a blue checkmark badge on your profile and posts.
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <p>
-                    Verified accounts receive a blue checkmark badge on their profile and posts.
-                    Verification is available for LGBTQ+ activists, content creators, community leaders,
-                    and other notable members of the community.
-                  </p>
-
-                  {verificationStatus.verificationRequested ? (
-                    <div className="verification-pending">
-                      <div className="pending-icon">⏳</div>
-                      <div className="pending-text">
-                        <h3>Verification Request Pending</h3>
-                        <p>
-                          Your verification request is under review.
-                          Submitted on {new Date(verificationStatus.verificationRequestDate).toLocaleDateString()}
-                        </p>
-                        <p className="muted-text">
-                          An admin will review your request and contact you if additional information is needed.
-                        </p>
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleRequestVerification}
-                      className="btn-verification"
-                    >
-                      ✓ Request Verification
-                    </button>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
+          {/* NOTE: Verification Request Section removed 2025-12-26
+              The verification system has been intentionally removed.
+              Endpoint returns 410 Gone. */}
 
           {/* PHASE 2: Quiet Mode */}
           <div className="settings-section">

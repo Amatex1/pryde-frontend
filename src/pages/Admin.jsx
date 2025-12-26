@@ -248,8 +248,14 @@ function Admin() {
         setSecurityLogs(response.data.logs);
         setSecurityStats(response.data.stats);
       } else if (activeTab === 'verification') {
+        // NOTE: Verification system removed 2025-12-26 - endpoint returns 410 Gone
         const response = await api.get('/admin/verification-requests?status=pending');
-        setVerificationRequests(response.data.requests);
+        // Handle 410 response (feature removed) gracefully
+        if (response.data?.removed || response.status === 410) {
+          setVerificationRequests([]); // Show empty state
+        } else {
+          setVerificationRequests(response.data.requests || []);
+        }
       }
     } catch (error) {
       console.error('Load data error:', error);
@@ -361,22 +367,9 @@ function Admin() {
   };
 
   const handleVerificationAction = async (userId, action) => {
-    try {
-      const actionText = action === 'approve' ? 'approve' : 'deny';
-      const confirmed = await showConfirm(
-        `Are you sure you want to ${actionText} this verification request?`,
-        `${actionText.charAt(0).toUpperCase() + actionText.slice(1)} Verification`
-      );
-
-      if (!confirmed) return;
-
-      await api.put(`/admin/verification-requests/${userId}`, { action });
-      showAlert(`Verification ${action === 'approve' ? 'approved' : 'denied'} successfully`, 'Success');
-      loadTabData();
-    } catch (error) {
-      console.error('Verification action error:', error);
-      showAlert('Failed to process verification request', 'Error');
-    }
+    // NOTE: Verification system removed 2025-12-26 - endpoint returns 410 Gone
+    // This function is kept for UI stability but will show a "feature removed" message
+    showAlert('Verification system has been removed.', 'Feature Removed');
   };
 
   const handleSendPasswordReset = async (userId, userEmail, username) => {
