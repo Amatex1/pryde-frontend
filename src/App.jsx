@@ -39,6 +39,7 @@ import AuthLoadingScreen from './components/AuthLoadingScreen'; // 🔥 NEW: Glo
 import AuthGate from './components/AuthGate'; // 🔥 NEW: Auth gate wrapper
 import { AppReadyProvider } from './state/appReady';
 import LoadingGate from './components/LoadingGate';
+import RoleRoute from './components/RoleRoute'; // Role-based route protection for admin
 import useAppVersion from './hooks/useAppVersion';
 
 // Harden lazy imports: catch failures and reload to clear stale cache
@@ -640,8 +641,15 @@ function App() {
           <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
           <Route path="/hashtag/:tag" element={<PrivateRoute><Hashtag /></PrivateRoute>} />
 
-          {/* Admin Panel - Hidden Route (requires admin role) */}
-          <Route path="/admin" element={<PrivateRoute><Admin /></PrivateRoute>} />
+          {/* Admin Panel - Role-protected route (requires moderator, admin, or super_admin role) */}
+          {/* Defense-in-depth: PrivateRoute checks auth, RoleRoute checks role, Admin.jsx checks permissions */}
+          <Route path="/admin" element={
+            <PrivateRoute>
+              <RoleRoute allowedRoles={['moderator', 'admin', 'super_admin']}>
+                <Admin />
+              </RoleRoute>
+            </PrivateRoute>
+          } />
 
           {/* Legal Pages - Public Access */}
           <Route path="/terms" element={<><Terms /><Footer /></>} />

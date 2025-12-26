@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import EmojiPicker from '../components/EmojiPicker';
-import GifPicker from '../components/GifPicker';
+// DEPRECATED: GifPicker import removed 2025-12-26
 import CustomModal from '../components/CustomModal';
 import MessageSearch from '../components/MessageSearch';
 import VoiceRecorder from '../components/VoiceRecorder';
@@ -1579,15 +1579,7 @@ function Messages() {
                       >
                         {uploadingFile ? `${uploadProgress}%` : '📎'}
                       </button>
-                      <button
-                        type="button"
-                        className="icon-btn"
-                        onClick={() => setShowGifPicker(!showGifPicker)}
-                        disabled={selectedFile || isRecipientUnavailable}
-                        title="Add GIF"
-                      >
-                        GIF
-                      </button>
+                      {/* DEPRECATED: GIF button removed 2025-12-26 */}
                       <button
                         type="button"
                         className="icon-btn"
@@ -1632,16 +1624,7 @@ function Messages() {
                       Send
                     </button>
                   </div>
-                  {showGifPicker && (
-                    <GifPicker
-                      onGifSelect={(gifUrl) => {
-                        setSelectedGif(gifUrl);
-                        setSelectedFile(null);
-                        setShowGifPicker(false);
-                      }}
-                      onClose={() => setShowGifPicker(false)}
-                    />
-                  )}
+                  {/* DEPRECATED: GifPicker removed 2025-12-26 */}
                   {showVoiceRecorder && (
                     <VoiceRecorder
                       onRecordingComplete={async (audioBlob, duration) => {

@@ -11,11 +11,11 @@ import PostSkeleton from '../components/PostSkeleton';
 import OptimizedImage from '../components/OptimizedImage';
 import CommentThread from '../components/CommentThread';
 import ReactionButton from '../components/ReactionButton';
-import GifPicker from '../components/GifPicker';
+// DEPRECATED: GifPicker import removed 2025-12-26
 import PollCreator from '../components/PollCreator';
 import Poll from '../components/Poll';
 import PinnedPostBadge from '../components/PinnedPostBadge';
-import EditHistoryModal from '../components/EditHistoryModal';
+// DEPRECATED: EditHistoryModal import removed 2025-12-26
 import DraftManager from '../components/DraftManager';
 import Toast from '../components/Toast';
 import { useModal } from '../hooks/useModal';
@@ -2051,34 +2051,10 @@ function Feed() {
                                post.visibility === 'friends' ? '👫' : '👥'}
                             </span>
                             {post.edited && (
-                              <button
-                                type="button"
-                                className="edited-indicator-btn"
-                                onClick={() => {
-                                  setEditHistoryPostId(post._id);
-                                  setShowEditHistory(true);
-                                }}
-                                aria-label="View edit history"
-                              >
-                                (edited)
-                              </button>
+                              <span className="edited-indicator">(edited)</span>
                             )}
                           </div>
-                          {post.edited && (
-                            <div className="post-edited-row">
-                              <button
-                                type="button"
-                                className="edited-indicator-btn"
-                                onClick={() => {
-                                  setEditHistoryPostId(post._id);
-                                  setShowEditHistory(true);
-                                }}
-                                aria-label="View edit history"
-                              >
-                                (edited)
-                              </button>
-                            </div>
-                          )}
+                          {/* DEPRECATED: Edit history button removed 2025-12-26 - showing static indicator only */}
                         </div>
                       </div>
                       <div className="post-header-actions">
@@ -2108,18 +2084,7 @@ function Feed() {
                                   >
                                     📌 {post.isPinned ? 'Unpin' : 'Pin to Profile'}
                                   </button>
-                                  {post.edited && (
-                                    <button
-                                      className="dropdown-item"
-                                      onClick={() => {
-                                        setEditHistoryPostId(post._id);
-                                        setShowEditHistory(true);
-                                        setOpenDropdownId(null);
-                                      }}
-                                    >
-                                      📜 View Edit History
-                                    </button>
-                                  )}
+                                  {/* DEPRECATED: View Edit History menu item removed 2025-12-26 */}
                                   {!post.isShared && (
                                     <button
                                       className="dropdown-item"
@@ -2510,14 +2475,7 @@ function Feed() {
                           >
                             Cancel
                           </button>
-                          <button
-                            type="button"
-                            className="btn-gif"
-                            onClick={() => setShowGifPicker(showGifPicker === `reply-${replyingToComment.commentId}` ? null : `reply-${replyingToComment.commentId}`)}
-                            title="Add GIF"
-                          >
-                            GIF
-                          </button>
+                          {/* DEPRECATED: GIF button removed 2025-12-26 */}
                           <button
                             type="submit"
                             className="reply-submit-btn"
@@ -2538,15 +2496,7 @@ function Feed() {
                             </button>
                           </div>
                         )}
-                        {showGifPicker === `reply-${replyingToComment.commentId}` && (
-                          <GifPicker
-                            onGifSelect={(gifUrl) => {
-                              setReplyGif(gifUrl);
-                              setShowGifPicker(null);
-                            }}
-                            onClose={() => setShowGifPicker(null)}
-                          />
-                        )}
+                        {/* DEPRECATED: GifPicker removed 2025-12-26 */}
                       </form>
                     )}
 
@@ -2572,17 +2522,10 @@ function Feed() {
                             value={commentText[post._id] || ''}
                             onChange={(e) => handleCommentChange(post._id, e.target.value)}
                             onKeyDown={handleKeyDown}
-                            placeholder={commentGif[post._id] ? "Caption, if you'd like" : "Reply, if you feel like it."}
+                            placeholder="Reply, if you feel like it."
                             className="comment-input glossy"
                           />
-                          <button
-                            type="button"
-                            className="btn-gif"
-                            onClick={() => setShowGifPicker(showGifPicker === post._id ? null : post._id)}
-                            title="Add GIF"
-                          >
-                            GIF
-                          </button>
+                          {/* DEPRECATED: GIF button removed 2025-12-26 */}
                           <button
                             type="submit"
                             className="comment-submit-btn"
@@ -2603,15 +2546,7 @@ function Feed() {
                             </button>
                           </div>
                         )}
-                        {showGifPicker === post._id && (
-                          <GifPicker
-                            onGifSelect={(gifUrl) => {
-                              setCommentGif(prev => ({ ...prev, [post._id]: gifUrl }));
-                              setShowGifPicker(null);
-                            }}
-                            onClose={() => setShowGifPicker(null)}
-                          />
-                        )}
+                        {/* DEPRECATED: GifPicker removed 2025-12-26 */}
                       </form>
                     )}
                   </div>
@@ -3076,17 +3011,7 @@ function Feed() {
         />
       )}
 
-      {showEditHistory && (
-        <EditHistoryModal
-          isOpen={showEditHistory}
-          onClose={() => {
-            setShowEditHistory(false);
-            setEditHistoryPostId(null);
-          }}
-          postId={editHistoryPostId}
-          contentType="post"
-        />
-      )}
+      {/* DEPRECATED: EditHistoryModal removed 2025-12-26 */}
 
       {/* Comment Modal for Mobile */}
       {commentModalOpen && (
@@ -3098,11 +3023,6 @@ function Feed() {
             </div>
             <div className="comment-modal-body">
               <form onSubmit={(e) => {
-                // Block submission if GIF picker is open
-                if (showGifPicker !== null) {
-                  e.preventDefault();
-                  return;
-                }
                 handleCommentSubmit(commentModalOpen, e);
                 setCommentModalOpen(null);
               }}>
@@ -3129,7 +3049,7 @@ function Feed() {
                       e.target.style.height = e.target.scrollHeight + 'px';
                     }}
                     onKeyDown={handleKeyDown}
-                    placeholder={commentGif[commentModalOpen] ? "Caption, if you'd like" : "Reply, if you feel like it."}
+                    placeholder="Reply, if you feel like it."
                     className="comment-modal-textarea"
                     autoFocus
                     rows="3"
@@ -3147,23 +3067,9 @@ function Feed() {
                     </button>
                   </div>
                 )}
-                {showGifPicker === commentModalOpen && (
-                  <GifPicker
-                    onGifSelect={(gifUrl) => {
-                      setCommentGif(prev => ({ ...prev, [commentModalOpen]: gifUrl }));
-                      setShowGifPicker(null);
-                    }}
-                    onClose={() => setShowGifPicker(null)}
-                  />
-                )}
+                {/* DEPRECATED: GifPicker removed 2025-12-26 */}
                 <div className="comment-modal-actions">
-                  <button
-                    type="button"
-                    className="btn-gif-modal"
-                    onClick={() => setShowGifPicker(showGifPicker === commentModalOpen ? null : commentModalOpen)}
-                  >
-                    GIF
-                  </button>
+                  {/* DEPRECATED: GIF button removed 2025-12-26 */}
                   <button
                     type="submit"
                     className="btn-submit-comment"

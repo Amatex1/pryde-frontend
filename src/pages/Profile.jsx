@@ -15,7 +15,7 @@ import ProfilePostSearch from '../components/ProfilePostSearch';
 import CommentThread from '../components/CommentThread';
 import ReactionButton from '../components/ReactionButton';
 import PinnedPostBadge from '../components/PinnedPostBadge';
-import EditHistoryModal from '../components/EditHistoryModal';
+// DEPRECATED: EditHistoryModal import removed 2025-12-26
 import Poll from '../components/Poll';
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
@@ -1443,17 +1443,7 @@ function Profile() {
                     {user.sexualOrientation.charAt(0).toUpperCase() + user.sexualOrientation.slice(1)}
                   </span>
                 )}
-                {user.relationshipStatus && (
-                  <span className="badge">
-                    {user.relationshipStatus === 'single' && '💔'}
-                    {user.relationshipStatus === 'in_relationship' && '💕'}
-                    {user.relationshipStatus === 'married' && '💍'}
-                    {user.relationshipStatus === 'engaged' && '💍'}
-                    {user.relationshipStatus === 'complicated' && '😅'}
-                    {user.relationshipStatus === 'open' && '🌈'}
-                    {' '}{user.relationshipStatus.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                  </span>
-                )}
+                {/* DEPRECATED: Relationship Status UI removed 2025-12-26 */}
                 {user.birthday && (
                   <span className="badge">
                     🎂 {new Date().getFullYear() - new Date(user.birthday).getFullYear()} years old
@@ -1967,34 +1957,10 @@ function Profile() {
                                 {post.visibility === 'public' ? '🌍' : post.visibility === 'private' ? '🔒' : '👥'}
                               </span>
                               {post.edited && (
-                                <button
-                                  type="button"
-                                  className="edited-indicator-btn"
-                                  onClick={() => {
-                                    setEditHistoryPostId(post._id);
-                                    setShowEditHistory(true);
-                                  }}
-                                  aria-label="View edit history"
-                                >
-                                  (edited)
-                                </button>
+                                <span className="edited-indicator">(edited)</span>
                               )}
                             </div>
-                            {post.edited && (
-                              <div className="post-edited-row">
-                                <button
-                                  type="button"
-                                  className="edited-indicator-btn"
-                                  onClick={() => {
-                                    setEditHistoryPostId(post._id);
-                                    setShowEditHistory(true);
-                                  }}
-                                  aria-label="View edit history"
-                                >
-                                  (edited)
-                                </button>
-                              </div>
-                            )}
+                            {/* DEPRECATED: Edit history button removed 2025-12-26 - showing static indicator only */}
                           </div>
                         </div>
                         <div className="post-header-actions">
@@ -2020,18 +1986,7 @@ function Profile() {
                                     >
                                       {post.isPinned ? '📌 Unpin' : '📍 Pin'}
                                     </button>
-                                    {post.edited && (
-                                      <button
-                                        className="dropdown-item"
-                                        onClick={() => {
-                                          setEditHistoryPostId(post._id);
-                                          setShowEditHistory(true);
-                                          setOpenDropdownId(null);
-                                        }}
-                                      >
-                                        📜 View Edit History
-                                      </button>
-                                    )}
+                                    {/* DEPRECATED: View Edit History menu item removed 2025-12-26 */}
                                     {!post.isShared && (
                                       <button
                                         className="dropdown-item"
@@ -2602,17 +2557,7 @@ function Profile() {
 
       {/* REMOVED: PhotoRepositionModal - All image editing moved to Edit Profile modal */}
 
-      {showEditHistory && (
-        <EditHistoryModal
-          isOpen={showEditHistory}
-          onClose={() => {
-            setShowEditHistory(false);
-            setEditHistoryPostId(null);
-          }}
-          postId={editHistoryPostId}
-          contentType="post"
-        />
-      )}
+      {/* DEPRECATED: EditHistoryModal removed 2025-12-26 */}
       </div>
     </div>
   );

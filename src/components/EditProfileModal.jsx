@@ -588,29 +588,7 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                 )}
               </div>
 
-              <div className="form-group">
-                <label>Relationship Status</label>
-                <select
-                  name="relationshipStatus"
-                  value={formData.relationshipStatus}
-                  onChange={handleChange}
-                >
-                  <option value="">Select Status (Optional)</option>
-                  <option value="single">Single</option>
-                  <option value="in_relationship">In a Relationship</option>
-                  <option value="engaged">Engaged</option>
-                  <option value="married">Married</option>
-                  <option value="domestic_partnership">Domestic Partnership</option>
-                  <option value="civil_union">Civil Union</option>
-                  <option value="polyamorous">Polyamorous</option>
-                  <option value="open">Open Relationship</option>
-                  <option value="complicated">It's Complicated</option>
-                  <option value="separated">Separated</option>
-                  <option value="divorced">Divorced</option>
-                  <option value="widowed">Widowed</option>
-                  <option value="prefer_not_to_say">Prefer Not to Say</option>
-                </select>
-              </div>
+              {/* DEPRECATED: Relationship Status UI removed 2025-12-26 */}
 
               <div className="form-group">
                 <label>Birthday <span className="info-text">(Only age shows on profile)</span></label>
