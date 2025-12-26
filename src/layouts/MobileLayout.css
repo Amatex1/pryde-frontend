@@ -5,7 +5,7 @@
 .mobile-app {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh; /* Use dvh for mobile viewport safety */
   background: var(--bg-primary, #f7f7f7);
   overflow: hidden;
 }

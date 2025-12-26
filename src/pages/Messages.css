@@ -6,7 +6,7 @@
   max-width: var(--fluid-container-2xl, 2000px);
   margin: 0 auto;
   padding: 0 var(--space-4) var(--space-6);
-  height: calc(100vh - 150px);
+  height: calc(100dvh - 150px);
 }
 
 .messages-layout {

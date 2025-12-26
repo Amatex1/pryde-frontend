@@ -1,87 +1,184 @@
 /* ========================================
    RESPONSIVE BASE STABILIZATION LAYER
-   Global mobile-first foundation (loaded first)
-   Prevents layout breakage on all devices
+   MOBILE-FIRST FOUNDATION (loaded first)
+   Structure-based, no padding hacks
    ======================================== */
 
 /* ============================= */
-/* 📱 RESPONSIVE BASE RESET */
+/* 1️⃣ GLOBAL RESET - BOX SIZING */
 /* ============================= */
 
-html, body {
-  max-width: 100%;
-  overflow-x: hidden;
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-* {
-  box-sizing: border-box;
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
 }
 
+body {
+  margin: 0;
+  min-width: 320px;
+  overflow-x: hidden;
+  min-height: 100dvh; /* Use dvh instead of vh for mobile */
+}
+
+/* Prevent mobile font scaling chaos */
+button, input, textarea, select {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
 /* ============================= */
-/* 📐 FLUID CONTAINERS */
+/* 2️⃣ CONTAINER WIDTH NORMALIZATION */
 /* ============================= */
 
+.app-container,
+.page-container,
 .container,
 .page,
-.layout,
 .main-content {
   width: 100%;
   max-width: 100%;
-  margin: 0 auto;
-  padding-inline: clamp(12px, 4vw, 24px);
+  padding-inline: 12px; /* Mobile default */
+}
+
+@media (min-width: 768px) {
+  .app-container,
+  .page-container,
+  .container,
+  .page,
+  .main-content {
+    padding-inline: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-container,
+  .page-container,
+  .container,
+  .page,
+  .main-content {
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: 24px;
+  }
 }
 
 /* ============================= */
-/* 🧱 CARD NORMALIZATION */
+/* 3️⃣ HEADER / ROW LAYOUT FIX */
 /* ============================= */
 
-.card,
-.surface,
-.panel {
+.header-row,
+.post-header,
+.message-header,
+.profile-header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.header-title,
+.author-name,
+.message-title {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-actions,
+.post-header-actions,
+.message-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ============================= */
+/* 4️⃣ INPUTS & COMPOSERS */
+/* ============================= */
+
+.composer,
+.message-composer,
+.post-composer,
+.comment-composer,
+.reply-composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.composer-input,
+.message-input,
+.post-input,
+.comment-input,
+.reply-input {
+  flex: 1;
+  min-width: 0;
+  resize: none;
+  line-height: 1.4;
+}
+
+.composer-actions,
+.message-actions-row {
+  flex-shrink: 0;
+  display: flex;
+  gap: 6px;
+}
+
+/* ============================= */
+/* 5️⃣ LAYOUT - MOBILE-FIRST FLEX → GRID */
+/* ============================= */
+
+.layout,
+.two-column,
+.three-column,
+.profile-layout,
+.feed-layout,
+.messages-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 1024px) {
+  .layout,
+  .feed-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+  }
+
+  .profile-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+  }
+
+  .messages-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 0;
+  }
+}
+
+/* Sidebars move below content on mobile */
+.sidebar,
+.right-column,
+.left-column {
   width: 100%;
   max-width: 100%;
 }
 
-/* ============================= */
-/* 🧭 FLEX & GRID SAFETY */
-/* ============================= */
-
-.flex,
-.flex-row,
-.grid {
-  min-width: 0;
-}
-
-/* Prevent text overflow */
-p, h1, h2, h3, h4, h5, h6 {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-
-/* ============================= */
-/* 📱 MOBILE LAYOUT OVERRIDES */
-/* ============================= */
-
-@media (max-width: 768px) {
-
-  /* Stack columns instead of squeezing */
-  .layout,
-  .two-column,
-  .three-column,
-  .profile-layout,
-  .feed-layout {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  /* Sidebars move below content */
+@media (max-width: 1023px) {
   .sidebar,
   .right-column,
   .left-column {
-    width: 100%;
-    max-width: 100%;
     order: 2;
   }
 
@@ -90,59 +187,59 @@ p, h1, h2, h3, h4, h5, h6 {
   .feed {
     order: 1;
   }
-
-  /* Reduce padding for mobile */
-  .card,
-  .panel,
-  .surface {
-    padding: 12px;
-  }
-
-  /* Buttons & touch targets */
-  button,
-  a,
-  .icon-button {
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  /* Inputs */
-  input,
-  textarea,
-  select {
-    font-size: 16px; /* Prevent iOS zoom */
-  }
 }
 
 /* ============================= */
-/* 📱 SMALL PHONE SAFETY */
+/* 6️⃣ CARD NORMALIZATION */
 /* ============================= */
 
-@media (max-width: 480px) {
-
-  .card,
-  .panel,
-  .surface {
-    padding: 10px;
-  }
-
-  .nav,
-  .navbar {
-    padding-inline: 12px;
-  }
-
+.card,
+.surface,
+.panel,
+.post-card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 /* ============================= */
-/* 🧠 PWA SAFE AREAS (iOS) */
+/* 7️⃣ FLEX & GRID SAFETY */
 /* ============================= */
 
-body {
+.flex,
+.flex-row,
+.grid,
+[class*="flex"],
+[class*="grid"] {
+  min-width: 0;
+}
+
+/* Prevent text overflow */
+p, h1, h2, h3, h4, h5, h6, span {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ============================= */
+/* 8️⃣ PWA SAFE AREAS */
+/* ============================= */
+
+.safe-area {
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Apply to critical elements */
+.mobile-nav,
+.bottom-nav,
+.message-composer,
+.action-bar {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* ============================= */
-/* 📷 MEDIA STABILIZATION */
+/* 9️⃣ MEDIA STABILIZATION */
 /* ============================= */
 
 img,
@@ -151,4 +248,13 @@ video {
   height: auto;
   border-radius: inherit;
 }
+
+/* ============================= */
+/* 🚫 ANTI-PATTERN OVERRIDES */
+/* Remove dangerous width/height values */
+/* ============================= */
+
+/* Never use 100vw - causes PWA overflow */
+/* Never use 100vh - causes mobile viewport bugs */
+/* Use 100% and 100dvh instead */
 

@@ -34,14 +34,13 @@ html {
 body {
   /* Font family and sizing handled by design-system.css */
   background: var(--bg);
-  min-height: 100vh;
+  min-height: 100dvh; /* Use dvh for mobile viewport safety */
   color: var(--text-main);
   transition: background-color 0.3s ease, color 0.3s ease;
 
-  /* Prevent horizontal overflow */
+  /* Prevent horizontal overflow - use % not vw */
   overflow-x: hidden;
   width: 100%;
-  max-width: 100vw;
 
   /* Better touch scrolling on mobile */
   -webkit-overflow-scrolling: touch;
@@ -50,27 +49,18 @@ body {
 /* Root container responsive sizing */
 #root {
   width: 100%;
-  max-width: 100vw;
   min-width: 320px;
   overflow-x: hidden;
-  min-height: 100vh;
-  box-sizing: border-box;
-}
-
-/* Ensure all elements use border-box sizing */
-*, *::before, *::after {
-  box-sizing: border-box;
+  min-height: 100dvh; /* Use dvh for mobile */
 }
 
 /* App container - wraps all routes */
 .app-container {
   width: 100%;
   min-width: 320px;
-  max-width: 100vw;
-  min-height: 100vh;
+  min-height: 100dvh;
   background: var(--bg);
   overflow-x: hidden;
-  box-sizing: border-box;
 }
 
 /* Font scaling removed - handled by design-system.css */
