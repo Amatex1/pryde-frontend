@@ -275,30 +275,31 @@ function Navbar() {
           </Link>
           <NotificationBell />
 
-          <button
-            className="user-profile-trigger"
-            onClick={() => setShowDropdown(!showDropdown)}
-            aria-label={`${showDropdown ? 'Close' : 'Open'} profile menu`}
-            aria-expanded={showDropdown}
-            aria-haspopup="true"
-          >
-            <div className="user-avatar">
-              {user?.profilePhoto ? (
-                <img src={getImageUrl(user.profilePhoto)} alt={user?.username || 'User'} />
-              ) : (
-                <span>{user?.username?.charAt(0).toUpperCase() || '?'}</span>
-              )}
-            </div>
-            <span className="user-name">{user?.displayName || user?.username}</span>
-            <span className="dropdown-arrow" aria-hidden="true">{showDropdown ? '▲' : '▼'}</span>
-          </button>
-
-          {showDropdown && (
-            <div
-              className="profile-dropdown"
-              role="menu"
-              aria-label="Profile menu"
+          <div className="profile-dropdown-container" ref={dropdownRef}>
+            <button
+              className="user-profile-trigger"
+              onClick={() => setShowDropdown(!showDropdown)}
+              aria-label={`${showDropdown ? 'Close' : 'Open'} profile menu`}
+              aria-expanded={showDropdown}
+              aria-haspopup="true"
             >
+              <div className="user-avatar">
+                {user?.profilePhoto ? (
+                  <img src={getImageUrl(user.profilePhoto)} alt={user?.username || 'User'} />
+                ) : (
+                  <span>{user?.username?.charAt(0).toUpperCase() || '?'}</span>
+                )}
+              </div>
+              <span className="user-name">{user?.displayName || user?.username}</span>
+              <span className="dropdown-arrow" aria-hidden="true">{showDropdown ? '▲' : '▼'}</span>
+            </button>
+
+            {showDropdown && (
+              <div
+                className="profile-dropdown"
+                role="menu"
+                aria-label="Profile menu"
+              >
               <Link
                 to={`/profile/${user?.username}`}
                 className="dropdown-item"
@@ -383,8 +384,9 @@ function Navbar() {
                 <span className="dropdown-icon" aria-hidden="true">🚪</span>
                 <span>Logout</span>
               </button>
-            </div>
-          )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </nav>

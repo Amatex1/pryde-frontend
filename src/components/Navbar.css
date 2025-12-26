@@ -259,6 +259,10 @@
    DROPDOWN MENU
    ======================================== */
 
+.profile-dropdown-container {
+  position: relative;
+}
+
 .profile-dropdown {
   position: absolute;
   top: calc(100% + var(--space-2));
