@@ -205,7 +205,7 @@
 
 @media (max-width: 768px) {
   .notification-dropdown {
-    width: min(320px, calc(100vw - 2rem));
+    width: min(320px, calc(100% - 2rem));
     right: 0;
     left: auto;
     max-height: min(500px, 80vh);
@@ -239,7 +239,7 @@
 
 @media (max-width: 480px) {
   .notification-dropdown {
-    width: calc(100vw - 1rem);
+    width: calc(100% - 1rem);
     right: -0.5rem;
     max-height: min(450px, 75vh);
   }

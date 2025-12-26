@@ -9,15 +9,24 @@
   height: calc(100dvh - 150px);
 }
 
+/* MOBILE-FIRST: Start with flex column, upgrade to grid on desktop */
 .messages-layout {
   height: 100%;
   border-radius: var(--radius-card);
   overflow: hidden;
-  display: grid;
-  grid-template-columns: 350px 1fr;
+  display: flex;
+  flex-direction: column;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-medium);
+}
+
+/* DESKTOP: Switch to grid layout */
+@media (min-width: 1024px) {
+  .messages-layout {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+  }
 }
 
 .conversations-sidebar {

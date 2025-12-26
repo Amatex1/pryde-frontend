@@ -640,7 +640,7 @@
     z-index: calc(var(--z-modal) + 200) !important;
     position: fixed !important;
     right: var(--space-4) !important;
-    max-width: calc(100vw - var(--space-8));
+    max-width: calc(100% - var(--space-8));
   }
 
   .navbar {
