@@ -288,13 +288,16 @@ function TagFeed() {
                 )}
               </div>
 
-              {post.tags && post.tags.length > 0 && (
+              {/* Tags Display - Only render tags with valid slugs */}
+              {post.tags && post.tags.length > 0 && post.tags.some(t => t?.slug) && (
                 <div className="post-tags">
-                  {post.tags.map(t => (
-                    <Link key={t._id} to={`/tags/${t.slug}`} className="post-tag">
-                      {t.icon} {t.label}
-                    </Link>
-                  ))}
+                  {post.tags
+                    .filter(t => t && t.slug && t._id)
+                    .map(t => (
+                      <Link key={t._id} to={`/tags/${t.slug}`} className="post-tag">
+                        {t.icon} {t.label || t.slug}
+                      </Link>
+                    ))}
                 </div>
               )}
             </div>

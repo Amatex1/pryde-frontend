@@ -2387,18 +2387,20 @@ function Feed() {
                       </button>
                     </div>
 
-                    {/* Tags Display */}
-                    {post.tags && post.tags.length > 0 && (
+                    {/* Tags Display - Only render tags with valid slugs */}
+                    {post.tags && post.tags.length > 0 && post.tags.some(tag => tag?.slug) && (
                       <div className="post-tags">
-                        {post.tags.map(tag => (
-                          <Link
-                            key={tag._id}
-                            to={`/tags/${tag.slug}`}
-                            className="post-tag"
-                          >
-                            {tag.icon} {tag.label}
-                          </Link>
-                        ))}
+                        {post.tags
+                          .filter(tag => tag && tag.slug && tag._id)
+                          .map(tag => (
+                            <Link
+                              key={tag._id}
+                              to={`/tags/${tag.slug}`}
+                              className="post-tag"
+                            >
+                              {tag.icon} {tag.label || tag.slug}
+                            </Link>
+                          ))}
                       </div>
                     )}
 

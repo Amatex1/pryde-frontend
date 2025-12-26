@@ -210,7 +210,13 @@ function Messages() {
           api.get('/messages'),
           api.get('/groupChats')
         ]);
-        setConversations(messagesRes.data);
+        // Sort conversations by lastMessage timestamp (most recent first)
+        const sortedConversations = [...messagesRes.data].sort((a, b) => {
+          const timeA = a.lastMessage?.createdAt ? new Date(a.lastMessage.createdAt).getTime() : 0;
+          const timeB = b.lastMessage?.createdAt ? new Date(b.lastMessage.createdAt).getTime() : 0;
+          return timeB - timeA;
+        });
+        setConversations(sortedConversations);
         setGroupChats(groupsRes.data);
         setLoading(false);
       } catch (error) {
