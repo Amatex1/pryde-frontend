@@ -56,7 +56,7 @@ function GroupsList() {
       setCreating(true);
       setCreateError(null);
 
-      await api.post('/groups', {
+      const response = await api.post('/groups', {
         name: newGroupName.trim(),
         description: newGroupDescription.trim()
       });
@@ -67,7 +67,11 @@ function GroupsList() {
       setNewGroupDescription('');
       fetchGroups();
 
-      alert('Group submitted for approval! You\'ll be notified when it\'s approved.');
+      // Show appropriate message based on status
+      const isApproved = response.data.group?.status === 'approved';
+      alert(isApproved
+        ? 'Group created successfully!'
+        : 'Group submitted for approval! You\'ll be notified when it\'s approved.');
 
     } catch (err) {
       console.error('Failed to create group:', err);
