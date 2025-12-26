@@ -1,12 +1,12 @@
 /**
  * Phase 2: Groups List Page
- * 
+ *
  * Shows all available groups with join/view functionality.
- * Replaces the old /discover (Tags) page functionality.
+ * Includes create group feature (requires admin approval).
  */
 
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../utils/api';
 import './GroupsList.css';
@@ -16,6 +16,13 @@ function GroupsList() {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Create group modal state
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newGroupName, setNewGroupName] = useState('');
+  const [newGroupDescription, setNewGroupDescription] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState(null);
 
   useEffect(() => {
     fetchGroups();
@@ -35,8 +42,39 @@ function GroupsList() {
     }
   };
 
-  const handleGroupClick = (slug) => {
+  const handleGroupClick = (slug, status) => {
+    // Don't navigate to pending groups
+    if (status === 'pending') return;
     navigate(`/groups/${slug}`);
+  };
+
+  const handleCreateGroup = async (e) => {
+    e.preventDefault();
+    if (!newGroupName.trim() || creating) return;
+
+    try {
+      setCreating(true);
+      setCreateError(null);
+
+      await api.post('/groups', {
+        name: newGroupName.trim(),
+        description: newGroupDescription.trim()
+      });
+
+      // Close modal and refresh
+      setShowCreateModal(false);
+      setNewGroupName('');
+      setNewGroupDescription('');
+      fetchGroups();
+
+      alert('Group submitted for approval! You\'ll be notified when it\'s approved.');
+
+    } catch (err) {
+      console.error('Failed to create group:', err);
+      setCreateError(err.response?.data?.message || 'Failed to create group');
+    } finally {
+      setCreating(false);
+    }
   };
 
   return (
@@ -48,6 +86,12 @@ function GroupsList() {
           <p className="groups-list-subtitle">
             Join private communities for focused discussion and connection.
           </p>
+          <button
+            className="btn-create-group"
+            onClick={() => setShowCreateModal(true)}
+          >
+            + Create Group
+          </button>
         </header>
 
         {loading ? (
@@ -57,22 +101,25 @@ function GroupsList() {
         ) : groups.length === 0 ? (
           <div className="empty-state glossy">
             <p>No groups available yet.</p>
-            <p className="empty-hint">Check back soon!</p>
+            <p className="empty-hint">Be the first to create one!</p>
           </div>
         ) : (
           <div className="groups-grid">
             {groups.map(group => (
               <div
                 key={group._id}
-                className="group-card glossy"
-                onClick={() => handleGroupClick(group.slug)}
+                className={`group-card glossy ${group.status === 'pending' ? 'pending' : ''}`}
+                onClick={() => handleGroupClick(group.slug, group.status)}
               >
                 <div className="group-card-header">
                   <h3 className="group-card-name">{group.name}</h3>
-                  {group.isMember && (
+                  {group.status === 'pending' && (
+                    <span className="pending-badge">⏳ Pending</span>
+                  )}
+                  {group.status !== 'pending' && group.isMember && (
                     <span className="member-badge">✓ Member</span>
                   )}
-                  {group.isOwner && (
+                  {group.status !== 'pending' && group.isOwner && (
                     <span className="owner-badge">👑 Owner</span>
                   )}
                 </div>
@@ -89,6 +136,69 @@ function GroupsList() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Create Group Modal */}
+        {showCreateModal && (
+          <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
+            <div className="create-group-modal glossy" onClick={e => e.stopPropagation()}>
+              <h2>Create a New Group</h2>
+              <p className="modal-subtitle">
+                Groups require admin approval before becoming visible to others.
+              </p>
+
+              <form onSubmit={handleCreateGroup}>
+                <div className="form-group">
+                  <label htmlFor="groupName">Group Name *</label>
+                  <input
+                    id="groupName"
+                    type="text"
+                    value={newGroupName}
+                    onChange={(e) => setNewGroupName(e.target.value)}
+                    placeholder="e.g., Book Club, Art Corner"
+                    maxLength={100}
+                    disabled={creating}
+                    autoFocus
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="groupDescription">Description</label>
+                  <textarea
+                    id="groupDescription"
+                    value={newGroupDescription}
+                    onChange={(e) => setNewGroupDescription(e.target.value)}
+                    placeholder="What is this group about?"
+                    maxLength={500}
+                    rows={3}
+                    disabled={creating}
+                  />
+                </div>
+
+                {createError && (
+                  <div className="create-error">{createError}</div>
+                )}
+
+                <div className="modal-buttons">
+                  <button
+                    type="button"
+                    className="btn-cancel"
+                    onClick={() => setShowCreateModal(false)}
+                    disabled={creating}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn-submit"
+                    disabled={creating || !newGroupName.trim()}
+                  >
+                    {creating ? 'Submitting...' : 'Submit for Approval'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
       </div>
