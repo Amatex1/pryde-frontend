@@ -4,7 +4,7 @@
 
    Features:
    - Push notifications
-   - PWA install prompt (requires fetch handler to exist)
+   - PWA install prompt
    - Notification click handling
 
    Does NOT:
@@ -17,11 +17,13 @@ self.addEventListener('install', () => {
   self.skipWaiting(); // Activate immediately
 });
 
-/* 📱 No-op fetch handler - required for PWA install prompt
-   Does NOT call event.respondWith() - browser handles everything */
-self.addEventListener('fetch', () => {
-  // Empty - just satisfies Chrome's installability requirement
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim()); // Take control immediately
 });
+
+/* ⚠️ NO FETCH HANDLER - Browser handles all requests
+   This eliminates the "no-op fetch handler" warning
+   PWA install prompt works without fetch handler in modern browsers */
 
 self.addEventListener('activate', (event) => {
   // Clean up any old caches from previous SW versions
