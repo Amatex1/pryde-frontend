@@ -64,13 +64,24 @@ function Groups() {
 
   const handleJoin = async () => {
     if (joining) return;
-    
+
     try {
       setJoining(true);
-      await api.post(`/groups/${slug}/join`);
-      
-      // Refetch group to get posts now that we're a member
-      await fetchGroup();
+      const response = await api.post(`/groups/${slug}/join`);
+
+      // Use the response data directly to update state (faster UX)
+      if (response.data.success || response.data.isMember) {
+        setGroup(prev => ({
+          ...prev,
+          ...response.data,
+          isMember: true
+        }));
+        // Set posts from response (empty array for Phase 0)
+        setPosts(response.data.posts || []);
+      } else {
+        // Fallback: refetch if response doesn't contain full data
+        await fetchGroup();
+      }
     } catch (err) {
       console.error('Failed to join group:', err);
       alert('Failed to join group. Please try again.');
@@ -81,17 +92,27 @@ function Groups() {
 
   const handleLeave = async () => {
     if (leaving) return;
-    
+
     if (!window.confirm('Are you sure you want to leave this group?')) {
       return;
     }
-    
+
     try {
       setLeaving(true);
-      await api.post(`/groups/${slug}/leave`);
-      
-      // Refetch group to update membership status
-      await fetchGroup();
+      const response = await api.post(`/groups/${slug}/leave`);
+
+      // Update state immediately on success
+      if (response.data.success || response.data.isMember === false) {
+        setGroup(prev => ({
+          ...prev,
+          isMember: false,
+          memberCount: Math.max(0, (prev.memberCount || 1) - 1)
+        }));
+        setPosts([]); // Clear posts since no longer a member
+      } else {
+        // Fallback: refetch
+        await fetchGroup();
+      }
     } catch (err) {
       console.error('Failed to leave group:', err);
       alert('Failed to leave group. Please try again.');
