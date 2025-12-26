@@ -121,6 +121,36 @@
   color: var(--text-muted);
 }
 
+/* Owner action buttons */
+.group-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.btn-edit-group,
+.btn-delete-group {
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: var(--bg-secondary);
+}
+
+.btn-edit-group:hover {
+  background: var(--soft-lavender);
+  transform: scale(1.05);
+}
+
+.btn-delete-group:hover {
+  background: rgba(231, 76, 60, 0.15);
+  transform: scale(1.05);
+}
+
 .empty-state {
   text-align: center;
   padding: 3rem;
