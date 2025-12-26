@@ -28,7 +28,7 @@ function Settings() {
     website: '',
     socialLinks: []
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // ✅ Start with loading state
   const [message, setMessage] = useState('');
   const [quietModeEnabled, setQuietModeEnabled] = useState(false); // PHASE 2: Quiet Mode
   const [verificationStatus, setVerificationStatus] = useState({
@@ -37,10 +37,53 @@ function Settings() {
     verificationRequestDate: null
   });
 
+  // ✅ Fetch data on mount
   useEffect(() => {
-    fetchUserData();
-    fetchVerificationStatus();
+    fetchInitialData();
   }, []);
+
+  // ✅ Update form data when currentUser changes
+  useEffect(() => {
+    if (currentUser) {
+      setFormData({
+        fullName: currentUser.fullName || '',
+        displayName: currentUser.displayName || '',
+        nickname: currentUser.nickname || '',
+        pronouns: currentUser.pronouns || '',
+        customPronouns: currentUser.customPronouns || '',
+        gender: currentUser.gender || '',
+        customGender: currentUser.customGender || '',
+        relationshipStatus: currentUser.relationshipStatus || '',
+        bio: currentUser.bio || '',
+        location: currentUser.location || '',
+        website: currentUser.website || '',
+        socialLinks: currentUser.socialLinks || []
+      });
+
+      // PHASE 2: Load quiet mode settings
+      const quietMode = currentUser.privacySettings?.quietModeEnabled || false;
+      setQuietModeEnabled(quietMode);
+      setQuietMode(quietMode);
+    }
+  }, [currentUser]);
+
+  const fetchInitialData = async () => {
+    try {
+      setLoading(true);
+
+      // Refresh user data from API (bypasses cache)
+      await refreshUser();
+
+      // Fetch verification status
+      await fetchVerificationStatus();
+    } catch (error) {
+      logger.error('Failed to fetch initial data:', error);
+      setMessage('Failed to load settings. Please refresh the page.');
+    } finally {
+      // ✅ CRITICAL: Always set loading to false
+      setLoading(false);
+    }
+  };
 
   const fetchVerificationStatus = async () => {
     try {
@@ -49,37 +92,6 @@ function Settings() {
     } catch (error) {
       logger.error('Failed to fetch verification status:', error);
     }
-  };
-
-  const fetchUserData = async () => {
-    // Refresh user data from API (bypasses cache)
-    await refreshUser();
-
-    // Use the user from context
-    if (!currentUser) {
-      logger.warn('No user data available');
-      return;
-    }
-
-    setFormData({
-      fullName: currentUser.fullName || '',
-      displayName: currentUser.displayName || '',
-      nickname: currentUser.nickname || '',
-      pronouns: currentUser.pronouns || '',
-      customPronouns: currentUser.customPronouns || '',
-      gender: currentUser.gender || '',
-      customGender: currentUser.customGender || '',
-      relationshipStatus: currentUser.relationshipStatus || '',
-      bio: currentUser.bio || '',
-      location: currentUser.location || '',
-      website: currentUser.website || '',
-      socialLinks: currentUser.socialLinks || []
-    });
-
-    // PHASE 2: Load quiet mode settings
-    const quietMode = currentUser.privacySettings?.quietModeEnabled || false;
-    setQuietModeEnabled(quietMode);
-    setQuietMode(quietMode);
   };
 
   const handleChange = (e) => {
@@ -266,6 +278,23 @@ function Settings() {
       showAlert(error.response?.data?.message || 'Failed to submit verification request', 'Error');
     }
   };
+
+  // ✅ Show loading state
+  if (loading) {
+    return (
+      <div className="page-container">
+        <Navbar />
+        <div className="settings-container">
+          <div className="settings-card glossy fade-in">
+            <h1 className="settings-title text-shadow">⚙️ Settings</h1>
+            <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+              Loading settings...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container">
