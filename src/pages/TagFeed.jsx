@@ -1,6 +1,11 @@
 /**
  * PHASE 4: Tag Feed Page
  * Shows posts for a specific community tag
+ *
+ * Migration Phase: TAGS → GROUPS (Phase 0 - Foundation)
+ * NOTE: Tags are still legacy-active. This page now detects if a tag
+ * has been migrated to a group and shows a banner with CTA.
+ * Posting is disabled for migrated tags.
  */
 
 import { useState, useEffect } from 'react';
@@ -22,6 +27,9 @@ function TagFeed() {
   const [newPost, setNewPost] = useState('');
   const [posting, setPosting] = useState(false);
   const currentUser = getCurrentUser();
+
+  // Migration Phase: TAGS → GROUPS - Track if tag is migrated
+  const [groupMapping, setGroupMapping] = useState(null);
 
   // Check if user is admin (can edit/delete any post)
   const isAdmin = currentUser && ['moderator', 'admin', 'super_admin'].includes(currentUser.role);
@@ -50,11 +58,22 @@ function TagFeed() {
   const fetchTagAndPosts = async () => {
     try {
       setLoading(true);
-      
+
+      // Migration Phase: Check if this tag has been migrated to a group
+      try {
+        const mappingResponse = await api.get(`/tags/${slug}/group-mapping`);
+        if (mappingResponse.data.hasMigrated) {
+          setGroupMapping(mappingResponse.data.group);
+        }
+      } catch (mappingError) {
+        // Ignore mapping errors - tag might not exist or API not available
+        console.debug('Group mapping check failed:', mappingError);
+      }
+
       // Fetch tag details
       const tagResponse = await api.get(`/tags/${slug}`);
       setTag(tagResponse.data);
-      
+
       // Fetch posts with this tag
       const postsResponse = await api.get(`/tags/${slug}/posts`);
       setPosts(postsResponse.data);
@@ -144,41 +163,57 @@ function TagFeed() {
     <div className="page-container">
       <Navbar />
       <div className="tag-feed-container">
-        <div className="tag-feed-header glossy">
-        <div className="tag-feed-icon">{tag.icon}</div>
-        <h1>{tag.label}</h1>
-        <p className="tag-feed-description">{tag.description}</p>
-        <div className="tag-feed-stats">
-          <span>{tag.postCount} post{tag.postCount !== 1 ? 's' : ''}</span>
-        </div>
-      </div>
+        {/* Migration Phase: TAGS → GROUPS - Show banner if tag is migrated */}
+        {groupMapping && (
+          <div className="migration-banner glossy">
+            <div className="migration-banner-icon">🚀</div>
+            <div className="migration-banner-content">
+              <h3>This topic now lives as a private group</h3>
+              <p>Join the <strong>{groupMapping.name}</strong> group for new discussions and posts.</p>
+            </div>
+            <Link to={`/groups/${groupMapping.slug}`} className="btn-go-to-group">
+              Go to Group →
+            </Link>
+          </div>
+        )}
 
-      {/* Create Post Box */}
-      <div className="create-post glossy">
-        <h2 className="section-title">✨ Share with {tag.label}</h2>
-        <form onSubmit={handlePostSubmit}>
-          <textarea
-            value={newPost}
-            onChange={(e) => {
-              const el = e.target;
-              el.style.height = 'auto';
-              el.style.height = el.scrollHeight + 'px';
-              setNewPost(el.value);
-            }}
-            placeholder={`What would you like to share with ${tag.label}?`}
-            className="post-input"
-            rows="1"
-            style={{ overflow: 'hidden', resize: 'none' }}
-          />
-          <button
-            type="submit"
-            disabled={posting || !newPost.trim()}
-            className="btn-post"
-          >
-            {posting ? 'Posting...' : 'Post ✨'}
-          </button>
-        </form>
-      </div>
+        <div className="tag-feed-header glossy">
+          <div className="tag-feed-icon">{tag.icon}</div>
+          <h1>{tag.label}</h1>
+          <p className="tag-feed-description">{tag.description}</p>
+          <div className="tag-feed-stats">
+            <span>{tag.postCount} post{tag.postCount !== 1 ? 's' : ''}</span>
+          </div>
+        </div>
+
+        {/* Create Post Box - Hidden if tag is migrated to group */}
+        {!groupMapping && (
+          <div className="create-post glossy">
+            <h2 className="section-title">✨ Share with {tag.label}</h2>
+            <form onSubmit={handlePostSubmit}>
+              <textarea
+                value={newPost}
+                onChange={(e) => {
+                  const el = e.target;
+                  el.style.height = 'auto';
+                  el.style.height = el.scrollHeight + 'px';
+                  setNewPost(el.value);
+                }}
+                placeholder={`What would you like to share with ${tag.label}?`}
+                className="post-input"
+                rows="1"
+                style={{ overflow: 'hidden', resize: 'none' }}
+              />
+              <button
+                type="submit"
+                disabled={posting || !newPost.trim()}
+                className="btn-post"
+              >
+                {posting ? 'Posting...' : 'Post ✨'}
+              </button>
+            </form>
+          </div>
+        )}
 
       <div className="tag-feed-posts">
         {posts.length === 0 ? (

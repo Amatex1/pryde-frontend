@@ -289,3 +289,63 @@
   color: var(--text-muted);
 }
 
+/* Migration Phase: TAGS → GROUPS - Migration Banner */
+.migration-banner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(162, 155, 254, 0.1));
+  border: 2px solid var(--pryde-purple);
+}
+
+.migration-banner-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.migration-banner-content {
+  flex: 1;
+}
+
+.migration-banner-content h3 {
+  margin: 0 0 0.25rem 0;
+  color: var(--pryde-purple);
+  font-size: 1.1rem;
+}
+
+.migration-banner-content p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.btn-go-to-group {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  background: var(--gradient-primary);
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.btn-go-to-group:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+}
+
+@media (max-width: 600px) {
+  .migration-banner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .btn-go-to-group {
+    width: 100%;
+    text-align: center;
+  }
+}

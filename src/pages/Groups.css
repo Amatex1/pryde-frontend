@@ -1,0 +1,229 @@
+/**
+ * Migration Phase: TAGS → GROUPS (Phase 0 - Foundation)
+ * Groups Page Styles - Reuses patterns from TagFeed.css
+ */
+
+.group-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 100px 1rem 2rem 1rem; /* Top padding for navbar */
+}
+
+.group-header {
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.group-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.group-header h1 {
+  font-size: 2rem;
+  color: var(--pryde-purple);
+  margin-bottom: 0.5rem;
+}
+
+.group-description {
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.group-stats {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+  color: var(--pryde-purple);
+  font-weight: 600;
+}
+
+.visibility-badge {
+  background: var(--soft-lavender);
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.85rem;
+}
+
+.group-actions {
+  margin-top: 1.5rem;
+}
+
+.btn-join {
+  padding: 0.75rem 2rem;
+  border-radius: 12px;
+  border: none;
+  background: var(--gradient-primary);
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-join:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+}
+
+.btn-join:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-leave {
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-leave:hover:not(:disabled) {
+  border-color: #ff4444;
+  color: #ff4444;
+}
+
+.btn-leave:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ownership-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #ffd700, #ffb347);
+  color: #333;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.join-prompt {
+  text-align: center;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.join-prompt p {
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.group-composer {
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  color: var(--pryde-purple);
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.coming-soon {
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+.group-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Reuse post-card styles from TagFeed.css */
+.group-posts .post-card {
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+
+.group-posts .post-header {
+  margin-bottom: 1rem;
+}
+
+.group-posts .post-author {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.group-posts .author-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-primary);
+  flex-shrink: 0;
+}
+
+.group-posts .author-avatar .avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.group-posts .author-avatar .avatar-fallback {
+  color: white;
+  font-weight: 600;
+  font-size: 1.25rem;
+  text-transform: uppercase;
+}
+
+.group-posts .author-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.group-posts .author-name {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.group-posts .post-date {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.group-posts .post-content p {
+  line-height: 1.6;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  border-radius: 12px;
+}
+
+.empty-state p {
+  color: var(--text-muted);
+  margin: 0.5rem 0;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-muted);
+}
+

@@ -67,6 +67,7 @@ const Longform = lazyWithReload(() => import('./pages/Longform'));
 const Discover = lazyWithReload(() => import('./pages/Discover'));
 const Search = lazyWithReload(() => import('./pages/Search'));
 const TagFeed = lazyWithReload(() => import('./pages/TagFeed'));
+const Groups = lazyWithReload(() => import('./pages/Groups')); // Migration Phase: TAGS → GROUPS (Phase 0)
 const PhotoEssay = lazyWithReload(() => import('./pages/PhotoEssay'));
 const Profile = lazyWithReload(() => import('./pages/Profile'));
 const Followers = lazyWithReload(() => import('./pages/Followers'));
@@ -622,7 +623,8 @@ function App() {
           <Route path="/longform" element={<PrivateRoute><Longform /></PrivateRoute>} /> {/* PHASE 3 */}
           <Route path="/discover" element={<PrivateRoute><Discover /></PrivateRoute>} /> {/* PHASE 4 */}
           <Route path="/search" element={<PrivateRoute><Search /></PrivateRoute>} /> {/* Mobile Search */}
-          <Route path="/tags/:slug" element={<PrivateRoute><TagFeed /></PrivateRoute>} /> {/* PHASE 4 */}
+          <Route path="/tags/:slug" element={<PrivateRoute><TagFeed /></PrivateRoute>} /> {/* PHASE 4 (legacy-active) */}
+          <Route path="/groups/:slug" element={<PrivateRoute><Groups /></PrivateRoute>} /> {/* Migration: TAGS → GROUPS (Phase 0) */}
           <Route path="/photo-essay" element={<PrivateRoute><PhotoEssay /></PrivateRoute>} /> {/* OPTIONAL */}
           <Route path="/photo-essay/:id" element={<PrivateRoute><PhotoEssay /></PrivateRoute>} /> {/* OPTIONAL */}
           <Route path="/profile/:id" element={<PrivateRoute><Profile /></PrivateRoute>} />
