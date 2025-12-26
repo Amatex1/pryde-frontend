@@ -78,7 +78,7 @@ function Feed() {
   const [showReactionPicker, setShowReactionPicker] = useState(null); // Track which comment shows reaction picker
   const [postComments, setPostComments] = useState({}); // Store comments by postId { postId: [comments] }
   const [commentReplies, setCommentReplies] = useState({}); // Store replies by commentId { commentId: [replies] }
-  const [editPostVisibility, setEditPostVisibility] = useState('friends');
+  const [editPostVisibility, setEditPostVisibility] = useState('followers');
   const [editHiddenFromUsers, setEditHiddenFromUsers] = useState([]);
   const [editSharedWithUsers, setEditSharedWithUsers] = useState([]);
   const [editPostMedia, setEditPostMedia] = useState([]); // Current media for post being edited
@@ -1465,7 +1465,7 @@ function Feed() {
 
     if (localDraft) {
       setEditPostText(localDraft.content || post.content);
-      setEditPostVisibility(localDraft.visibility || post.visibility || 'friends');
+      setEditPostVisibility(localDraft.visibility || post.visibility || 'followers');
       setEditHiddenFromUsers(localDraft.hiddenFrom || post.hiddenFrom?.map(u => u._id || u) || []);
       setEditSharedWithUsers(localDraft.sharedWith || post.sharedWith?.map(u => u._id || u) || []);
       // Restore media from draft if available, otherwise from post
@@ -1473,7 +1473,7 @@ function Feed() {
       setDeletedMedia(localDraft.deletedMedia || []);
     } else {
       setEditPostText(post.content);
-      setEditPostVisibility(post.visibility || 'friends');
+      setEditPostVisibility(post.visibility || 'followers');
       setEditHiddenFromUsers(post.hiddenFrom?.map(u => u._id || u) || []);
       setEditSharedWithUsers(post.sharedWith?.map(u => u._id || u) || []);
       // Load existing media for editing
@@ -1556,7 +1556,7 @@ function Feed() {
 
       setEditingPostId(null);
       setEditPostText('');
-      setEditPostVisibility('friends');
+      setEditPostVisibility('followers');
       setEditHiddenFromUsers([]);
       setEditSharedWithUsers([]);
       setEditPostMedia([]);
@@ -1577,7 +1577,7 @@ function Feed() {
 
     setEditingPostId(null);
     setEditPostText('');
-    setEditPostVisibility('friends');
+    setEditPostVisibility('followers');
     setEditHiddenFromUsers([]);
     setEditSharedWithUsers([]);
     setEditPostMedia([]);
@@ -2030,9 +2030,7 @@ function Feed() {
                             </span>
                             <span className="post-privacy-icon" title={`Visible to: ${post.visibility || 'followers'}`}>
                               {post.visibility === 'public' ? '🌍' :
-                               post.visibility === 'private' ? '🔒' :
-                               post.visibility === 'followers' ? '👥' :
-                               post.visibility === 'friends' ? '👫' : '👥'}
+                               post.visibility === 'private' ? '🔒' : '👥'}
                             </span>
                           </div>
                           {/* Mobile: meta row below name */}
@@ -2045,9 +2043,7 @@ function Feed() {
                             </span>
                             <span className="post-privacy-icon" title={`Visible to: ${post.visibility || 'followers'}`}>
                               {post.visibility === 'public' ? '🌍' :
-                               post.visibility === 'private' ? '🔒' :
-                               post.visibility === 'followers' ? '👥' :
-                               post.visibility === 'friends' ? '👫' : '👥'}
+                               post.visibility === 'private' ? '🔒' : '👥'}
                             </span>
                             {post.edited && (
                               <span className="edited-indicator">(edited)</span>

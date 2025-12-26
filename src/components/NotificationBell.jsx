@@ -150,7 +150,12 @@ const NotificationBell = () => {
 
     // Navigate based on notification type
     if (notification.type === 'friend_request' || notification.type === 'friend_accept') {
-      navigate('/friends');
+      // Navigate to the sender's profile instead of non-existent /friends page
+      if (notification.sender?._id) {
+        navigate(`/profile/${notification.sender._id}`);
+      } else {
+        navigate('/feed');
+      }
     } else if (notification.postId) {
       if (notification.type === 'comment' && notification.commentId) {
         navigate(`/feed?post=${notification.postId}&comment=${notification.commentId}`);
