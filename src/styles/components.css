@@ -313,3 +313,39 @@
   font-size: 13px;
   opacity: 0.65;
 }
+
+/* =====================================================
+   NAVBAR — FINAL VISUAL POLISH
+   ===================================================== */
+
+@media (min-width: 1024px) {
+
+  /* Remove navbar border so it blends with background */
+  nav.navbar.glossy {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent;
+  }
+
+  /* Inner navbar container — no border */
+  nav.navbar.glossy > .feed-layout.feed-desktop {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent;
+  }
+
+  /* PERFECTLY center the search bar */
+  .navbar-utility-search {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+  }
+
+  .navbar-utility-search input,
+  .navbar-utility-search .search-input {
+    width: 420px;
+    max-width: 420px;
+  }
+}
