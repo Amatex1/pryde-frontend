@@ -85,6 +85,7 @@ const DMCA = lazyWithReload(() => import('./pages/legal/DMCA'));
 const AcceptableUse = lazyWithReload(() => import('./pages/legal/AcceptableUse'));
 const CookiePolicy = lazyWithReload(() => import('./pages/legal/CookiePolicy'));
 const Helplines = lazyWithReload(() => import('./pages/legal/Helplines'));
+const TrustAndSafety = lazyWithReload(() => import('./pages/legal/TrustAndSafety')); // Phase 6B
 
 // Layout components - eager load for immediate layout switching
 import MobileLayout from './layouts/MobileLayout';
@@ -377,6 +378,7 @@ function AppContent() {
                   <Route path="/acceptable-use" element={<><AcceptableUse /><Footer /></>} />
                   <Route path="/cookie-policy" element={<><CookiePolicy /><Footer /></>} />
                   <Route path="/helplines" element={<><Helplines /><Footer /></>} />
+                  <Route path="/trust-and-safety" element={<><TrustAndSafety /><Footer /></>} />
                 </Route>
               </Routes>
             </main>

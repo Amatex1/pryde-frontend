@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import { useToast } from '../hooks/useToast';
 import './PrivacySettings.css';
@@ -229,6 +230,39 @@ const PrivacySettings = () => {
               </div>
             ))
           )}
+        </div>
+      </section>
+
+      {/* Phase 6B: Trust & Safety Link */}
+      <section className="privacy-section" style={{
+        background: 'linear-gradient(135deg, #EDEAFF 0%, #F7F7F7 100%)',
+        borderRadius: '12px',
+        padding: '20px',
+        marginTop: '20px'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <h2 style={{ margin: 0, marginBottom: '5px', fontSize: '1.2rem' }}>🛡️ Trust & Safety</h2>
+            <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '14px' }}>
+              Learn how we keep Pryde safe, how reporting works, and what we can see
+            </p>
+          </div>
+          <Link
+            to="/trust-and-safety"
+            style={{
+              background: 'linear-gradient(135deg, #6C5CE7 0%, #0984E3 100%)',
+              color: '#fff',
+              padding: '0.75rem 1.5rem',
+              borderRadius: '50px',
+              textDecoration: 'none',
+              fontWeight: '600',
+              whiteSpace: 'nowrap',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              boxShadow: '0 4px 12px rgba(108, 92, 231, 0.3)'
+            }}
+          >
+            Learn More →
+          </Link>
         </div>
       </section>
     </div>

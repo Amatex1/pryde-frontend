@@ -33,6 +33,8 @@ function Footer() {
           <span className="separator">•</span>
           <Link to="/privacy">Privacy Policy</Link>
           <span className="separator">•</span>
+          <Link to="/trust-and-safety">Trust & Safety</Link>
+          <span className="separator">•</span>
           <Link to="/security">Security</Link>
           <span className="separator">•</span>
           <Link to="/community">Community Guidelines</Link>
