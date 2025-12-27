@@ -889,3 +889,86 @@
     transform: none !important;
   }
 }
+
+/* ================================
+   DESKTOP NAVBAR POLISH (CALM MODE)
+   ================================ */
+
+@media (min-width: 1024px) {
+
+  /* 1️⃣ Hard-lock navbar structure */
+  .navbar {
+    display: flex;
+    align-items: center;
+    height: 64px;
+    padding: 0 24px;
+  }
+
+  .navbar * {
+    line-height: 1;
+  }
+
+  /* 2️⃣ Logo alignment */
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* 3️⃣ Center navigation items */
+  .navbar-links {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+  }
+
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 0;
+    font-weight: 500;
+  }
+
+  .nav-link svg,
+  .nav-link img {
+    width: 18px;
+    height: 18px;
+    opacity: 0.9;
+  }
+
+  /* 4️⃣ Calm the search bar (desktop only) */
+  .global-search {
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .global-search input {
+    height: 100%;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+
+  /* 5️⃣ Right-side action grouping (bell + avatar) */
+  .navbar-user {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .navbar-user button,
+  .navbar-user a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 6️⃣ Avatar alignment */
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+  }
+}
