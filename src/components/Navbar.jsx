@@ -262,27 +262,7 @@ function Navbar() {
         )}
 
         <div className="navbar-user" ref={dropdownRef}>
-          {/* Main Navigation Buttons */}
-          <Link to="/groups" className="nav-button" title="Groups">
-            <span className="nav-icon">👥</span>
-            <span className="nav-label">Groups</span>
-          </Link>
-          <Link to="/journal" className="nav-button" title="Journal">
-            <span className="nav-icon">📔</span>
-            <span className="nav-label">Journal</span>
-          </Link>
-          <Link to="/longform" className="nav-button" title="Stories">
-            <span className="nav-icon">📖</span>
-            <span className="nav-label">Stories</span>
-          </Link>
-          <Link to="/photo-essay" className="nav-button" title="Photo Essays">
-            <span className="nav-icon">📸</span>
-            <span className="nav-label">Photos</span>
-          </Link>
-          <Link to="/lounge" className="nav-button" title="Lounge - Global Chat">
-            <span className="nav-icon">✨</span>
-            <span className="nav-label">Lounge</span>
-          </Link>
+          {/* Feature navigation moved to contextual panel - keeping only global actions */}
           <Link to="/messages" className="nav-button" title="Messages">
             <span className="nav-icon">💬</span>
             <span className="nav-label">Messages</span>
