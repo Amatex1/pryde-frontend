@@ -1,6 +1,7 @@
 /**
  * Phase 2: Group-only posting
  * Phase 4A: Group Ownership & Moderation
+ * Phase 4B: Group Notifications (Quiet, Opt-in)
  *
  * Groups Page - Private, join-gated community groups
  *
@@ -13,6 +14,11 @@
  * - Owner: Can manage members, promote/demote moderators, delete any post
  * - Moderator: Can remove members, delete any post
  * - Regular member: No moderation controls
+ *
+ * NOTIFICATIONS (Phase 4B):
+ * - New posts: OFF by default (opt-in)
+ * - Mentions: ON by default
+ * - Respects Quiet Mode
  *
  * ISOLATION:
  * - Group posts are intentionally isolated from global feeds
@@ -66,6 +72,15 @@ function Groups() {
   const [moderators, setModerators] = useState([]);
   const [loadingMembers, setLoadingMembers] = useState(false);
   const [actionInProgress, setActionInProgress] = useState(null);
+
+  // Phase 4B: Notification settings state
+  const [showNotificationSettings, setShowNotificationSettings] = useState(false);
+  const [notificationSettings, setNotificationSettings] = useState({
+    notifyOnNewPost: false,  // OFF by default (opt-in)
+    notifyOnMention: true     // ON by default
+  });
+  const [loadingNotificationSettings, setLoadingNotificationSettings] = useState(false);
+  const [savingNotificationSettings, setSavingNotificationSettings] = useState(false);
 
   useEffect(() => {
     fetchGroup();
@@ -389,6 +404,49 @@ function Groups() {
     }
   };
 
+  // Phase 4B: Fetch notification settings for this group
+  const fetchNotificationSettings = async () => {
+    try {
+      setLoadingNotificationSettings(true);
+      const response = await api.get(`/groups/${slug}/notification-settings`);
+      if (response.data.settings) {
+        setNotificationSettings(response.data.settings);
+      }
+    } catch (err) {
+      console.error('Failed to fetch notification settings:', err);
+    } finally {
+      setLoadingNotificationSettings(false);
+    }
+  };
+
+  // Phase 4B: Open notification settings panel
+  const openNotificationSettings = () => {
+    setShowNotificationSettings(true);
+    fetchNotificationSettings();
+  };
+
+  // Phase 4B: Update a notification setting
+  const handleNotificationToggle = async (setting, value) => {
+    try {
+      setSavingNotificationSettings(true);
+      const newSettings = { ...notificationSettings, [setting]: value };
+
+      await api.put(`/groups/${slug}/notification-settings`, newSettings);
+      setNotificationSettings(newSettings);
+
+      // Calm feedback
+      const message = value
+        ? `You'll receive ${setting === 'notifyOnNewPost' ? 'new post' : 'mention'} updates`
+        : `${setting === 'notifyOnNewPost' ? 'New post' : 'Mention'} updates turned off`;
+      showToast(message, 'success');
+    } catch (err) {
+      console.error('Failed to update notification settings:', err);
+      showToast('Failed to update settings', 'error');
+    } finally {
+      setSavingNotificationSettings(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="page-container">
@@ -479,6 +537,17 @@ function Groups() {
                   {leaving ? 'Leaving...' : 'Leave Group'}
                 </button>
               </>
+            )}
+
+            {/* Phase 4B: Notification settings button (members only) */}
+            {group.isMember && (
+              <button
+                className="btn-notification-settings"
+                onClick={openNotificationSettings}
+                title="Notification preferences"
+              >
+                🔔
+              </button>
             )}
           </div>
         </div>
@@ -824,6 +893,64 @@ function Groups() {
                   {members.length === 0 && moderators.length === 0 && (
                     <p className="no-members">No other members yet.</p>
                   )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Phase 4B: Notification Settings Modal */}
+        {showNotificationSettings && (
+          <div className="modal-overlay" onClick={() => setShowNotificationSettings(false)}>
+            <div className="notification-settings-modal glossy" onClick={e => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>Updates</h2>
+                <button className="btn-close" onClick={() => setShowNotificationSettings(false)}>✕</button>
+              </div>
+
+              {loadingNotificationSettings ? (
+                <div className="loading-settings">Loading preferences...</div>
+              ) : (
+                <div className="notification-options">
+                  <p className="settings-intro">
+                    Choose what you'd like to hear about. All updates are optional.
+                  </p>
+
+                  <label className="notification-toggle">
+                    <input
+                      type="checkbox"
+                      checked={notificationSettings.notifyOnNewPost}
+                      onChange={(e) => handleNotificationToggle('notifyOnNewPost', e.target.checked)}
+                      disabled={savingNotificationSettings}
+                    />
+                    <span className="toggle-label">
+                      <span className="toggle-icon">📝</span>
+                      <span className="toggle-text">
+                        <strong>New posts</strong>
+                        <small>Get notified when someone posts in this group</small>
+                      </span>
+                    </span>
+                  </label>
+
+                  <label className="notification-toggle">
+                    <input
+                      type="checkbox"
+                      checked={notificationSettings.notifyOnMention}
+                      onChange={(e) => handleNotificationToggle('notifyOnMention', e.target.checked)}
+                      disabled={savingNotificationSettings}
+                    />
+                    <span className="toggle-label">
+                      <span className="toggle-icon">💬</span>
+                      <span className="toggle-text">
+                        <strong>Mentions</strong>
+                        <small>Get notified when someone @mentions you</small>
+                      </span>
+                    </span>
+                  </label>
+
+                  <p className="settings-note">
+                    These preferences only apply to this group. Quiet Mode will pause all updates.
+                  </p>
                 </div>
               )}
             </div>

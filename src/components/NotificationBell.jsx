@@ -156,6 +156,15 @@ const NotificationBell = () => {
       } else {
         navigate('/feed');
       }
+    } else if (notification.type === 'group_post' || notification.type === 'group_mention') {
+      // Phase 4B: Group notifications - navigate to the group
+      if (notification.groupSlug) {
+        navigate(`/groups/${notification.groupSlug}`);
+      } else if (notification.link) {
+        navigate(notification.link);
+      } else {
+        navigate('/groups');
+      }
     } else if (notification.postId) {
       if (notification.type === 'comment' && notification.commentId) {
         navigate(`/feed?post=${notification.postId}&comment=${notification.commentId}`);
@@ -178,12 +187,15 @@ const NotificationBell = () => {
       case 'mention': return '@';
       case 'share': return '🔄';
       case 'reaction': return '😊';
+      case 'group_post': return '📝';
+      case 'group_mention': return '💬';
       default: return '🔔';
     }
   };
 
   const getNotificationText = (notification) => {
     const senderName = notification.sender?.displayName || notification.sender?.username || 'Someone';
+    const groupName = notification.groupName || 'a group';
 
     switch (notification.type) {
       case 'like':
@@ -200,6 +212,10 @@ const NotificationBell = () => {
         return `${senderName} shared your post`;
       case 'reaction':
         return `${senderName} reacted to your post`;
+      case 'group_post':
+        return `${senderName} posted in ${groupName}`;
+      case 'group_mention':
+        return `${senderName} mentioned you in ${groupName}`;
       default:
         return notification.message || 'New notification';
     }
