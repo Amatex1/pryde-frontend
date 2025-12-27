@@ -70,6 +70,7 @@ function Groups() {
   const [showMemberModal, setShowMemberModal] = useState(false);
   const [members, setMembers] = useState([]);
   const [moderators, setModerators] = useState([]);
+  const [mutedMembers, setMutedMembers] = useState([]); // Phase 6A: Muted member IDs
   const [loadingMembers, setLoadingMembers] = useState(false);
   const [actionInProgress, setActionInProgress] = useState(null);
 
@@ -81,6 +82,11 @@ function Groups() {
   });
   const [loadingNotificationSettings, setLoadingNotificationSettings] = useState(false);
   const [savingNotificationSettings, setSavingNotificationSettings] = useState(false);
+
+  // Phase 6A: Moderation log state
+  const [showModLog, setShowModLog] = useState(false);
+  const [modLogs, setModLogs] = useState([]);
+  const [loadingModLogs, setLoadingModLogs] = useState(false);
 
   // Phase 5B: AbortController to prevent double-fetch in StrictMode
   useEffect(() => {
@@ -372,6 +378,34 @@ function Groups() {
     }
   };
 
+  // Phase 6A: Lock a post (disable replies)
+  const handleLockPost = async (postId) => {
+    try {
+      await api.post(`/groups/${slug}/posts/${postId}/lock`);
+      setPosts(prev => prev.map(p =>
+        p._id === postId ? { ...p, isLocked: true } : p
+      ));
+      showToast('Post locked - replies disabled', 'success');
+    } catch (err) {
+      console.error('Failed to lock post:', err);
+      showToast(err.response?.data?.message || 'Failed to lock post', 'error');
+    }
+  };
+
+  // Phase 6A: Unlock a post (enable replies)
+  const handleUnlockPost = async (postId) => {
+    try {
+      await api.post(`/groups/${slug}/posts/${postId}/unlock`);
+      setPosts(prev => prev.map(p =>
+        p._id === postId ? { ...p, isLocked: false } : p
+      ));
+      showToast('Post unlocked - replies enabled', 'success');
+    } catch (err) {
+      console.error('Failed to unlock post:', err);
+      showToast(err.response?.data?.message || 'Failed to unlock post', 'error');
+    }
+  };
+
   // Phase 4A: Fetch member list for moderation
   const fetchMembers = async () => {
     try {
@@ -379,6 +413,9 @@ function Groups() {
       const response = await api.get(`/groups/${slug}/members`);
       setMembers(response.data.members || []);
       setModerators(response.data.moderators || []);
+      // Phase 6A: Extract muted member IDs
+      const mutedIds = (response.data.mutedMembers || []).map(m => m.user || m);
+      setMutedMembers(mutedIds);
     } catch (err) {
       console.error('Failed to fetch members:', err);
       showToast('Failed to load members', 'error');
@@ -453,6 +490,55 @@ function Groups() {
     } finally {
       setActionInProgress(null);
     }
+  };
+
+  // Phase 6A: Mute a member (owner/moderator only)
+  const handleMuteMember = async (userId, displayName) => {
+    try {
+      setActionInProgress(userId);
+      await api.post(`/groups/${slug}/mute-member`, { userId });
+      setMutedMembers(prev => [...prev, userId]);
+      showToast(`${displayName} has been muted`, 'success');
+    } catch (err) {
+      console.error('Failed to mute member:', err);
+      showToast(err.response?.data?.message || 'Failed to mute member', 'error');
+    } finally {
+      setActionInProgress(null);
+    }
+  };
+
+  // Phase 6A: Unmute a member (owner/moderator only)
+  const handleUnmuteMember = async (userId, displayName) => {
+    try {
+      setActionInProgress(userId);
+      await api.post(`/groups/${slug}/unmute-member`, { userId });
+      setMutedMembers(prev => prev.filter(id => id !== userId));
+      showToast(`${displayName} has been unmuted`, 'success');
+    } catch (err) {
+      console.error('Failed to unmute member:', err);
+      showToast(err.response?.data?.message || 'Failed to unmute member', 'error');
+    } finally {
+      setActionInProgress(null);
+    }
+  };
+
+  // Phase 6A: Fetch moderation log
+  const fetchModLogs = async () => {
+    try {
+      setLoadingModLogs(true);
+      const response = await api.get(`/groups/${slug}/moderation-log?limit=50`);
+      setModLogs(response.data.logs || []);
+    } catch (err) {
+      console.error('Failed to fetch moderation log:', err);
+      showToast('Failed to load moderation log', 'error');
+    } finally {
+      setLoadingModLogs(false);
+    }
+  };
+
+  const openModLog = () => {
+    setShowModLog(true);
+    fetchModLogs();
   };
 
   // Phase 4B: Fetch notification settings for this group
@@ -571,6 +657,13 @@ function Groups() {
                 >
                   Manage Members
                 </button>
+                <button
+                  className="btn-mod-log"
+                  onClick={openModLog}
+                  aria-label="View moderation log"
+                >
+                  📋 Mod Log
+                </button>
               </>
             ) : isModerator ? (
               <>
@@ -583,6 +676,13 @@ function Groups() {
                   aria-label="View group members"
                 >
                   Members
+                </button>
+                <button
+                  className="btn-mod-log"
+                  onClick={openModLog}
+                  aria-label="View moderation log"
+                >
+                  📋 Mod Log
                 </button>
                 <button
                   className="btn-leave"
@@ -771,9 +871,34 @@ function Groups() {
                                 🗑️
                               </button>
                             )}
+                            {/* Phase 6A: Lock/Unlock button for moderators */}
+                            {(isOwner || isModerator) && (
+                              post.isLocked ? (
+                                <button
+                                  className="btn-unlock-post"
+                                  onClick={() => handleUnlockPost(post._id)}
+                                  title="Unlock post (enable replies)"
+                                >
+                                  🔓
+                                </button>
+                              ) : (
+                                <button
+                                  className="btn-lock-post"
+                                  onClick={() => handleLockPost(post._id)}
+                                  title="Lock post (disable replies)"
+                                >
+                                  🔒
+                                </button>
+                              )
+                            )}
                           </div>
                         )}
                       </div>
+
+                      {/* Phase 6A: Locked post indicator */}
+                      {post.isLocked && (
+                        <div className="post-locked-badge">🔒 Replies disabled</div>
+                      )}
 
                       <div className="post-content">
                         {post.content && <p>{post.content}</p>}
@@ -939,7 +1064,9 @@ function Groups() {
                       </div>
                       <div className="member-info">
                         <span className="member-name">{member.displayName || member.username}</span>
-                        <span className="member-role">Member</span>
+                        <span className="member-role">
+                          {mutedMembers.includes(member._id) ? '🔇 Muted' : 'Member'}
+                        </span>
                       </div>
                       {(isOwner || isModerator) && (
                         <div className="member-actions">
@@ -951,6 +1078,26 @@ function Groups() {
                               title="Promote to moderator"
                             >
                               {actionInProgress === member._id ? '...' : '↑'}
+                            </button>
+                          )}
+                          {/* Phase 6A: Mute/Unmute button */}
+                          {mutedMembers.includes(member._id) ? (
+                            <button
+                              className="btn-unmute"
+                              onClick={() => handleUnmuteMember(member._id, member.displayName || member.username)}
+                              disabled={actionInProgress === member._id}
+                              title="Unmute member"
+                            >
+                              {actionInProgress === member._id ? '...' : '🔊'}
+                            </button>
+                          ) : (
+                            <button
+                              className="btn-mute"
+                              onClick={() => handleMuteMember(member._id, member.displayName || member.username)}
+                              disabled={actionInProgress === member._id}
+                              title="Mute member"
+                            >
+                              {actionInProgress === member._id ? '...' : '🔇'}
                             </button>
                           )}
                           <button
@@ -969,6 +1116,60 @@ function Groups() {
                   {members.length === 0 && moderators.length === 0 && (
                     <p className="no-members">No other members yet.</p>
                   )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Phase 6A: Moderation Log Modal */}
+        {showModLog && (
+          <div className="modal-overlay" onClick={() => setShowModLog(false)}>
+            <div className="mod-log-modal glossy" onClick={e => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>📋 Moderation Log</h2>
+                <button className="btn-close" onClick={() => setShowModLog(false)}>✕</button>
+              </div>
+
+              {loadingModLogs ? (
+                <div className="loading-members">Loading log...</div>
+              ) : modLogs.length === 0 ? (
+                <div className="no-logs">
+                  <p>No moderation actions recorded yet.</p>
+                  <p className="log-privacy-note">This log is private and only visible to owner and moderators.</p>
+                </div>
+              ) : (
+                <div className="mod-log-list">
+                  <p className="log-privacy-note">🔒 Private - only visible to owner and moderators</p>
+                  {modLogs.map(log => (
+                    <div key={log._id} className="log-entry">
+                      <div className="log-action">
+                        {log.action === 'member_removed' && '👋'}
+                        {log.action === 'member_muted' && '🔇'}
+                        {log.action === 'member_unmuted' && '🔊'}
+                        {log.action === 'member_blocked' && '🚫'}
+                        {log.action === 'member_unblocked' && '✅'}
+                        {log.action === 'post_locked' && '🔒'}
+                        {log.action === 'post_unlocked' && '🔓'}
+                        {log.action === 'post_deleted' && '🗑️'}
+                        {log.action === 'join_approved' && '✓'}
+                        {log.action === 'join_declined' && '✗'}
+                        {log.action === 'moderator_promoted' && '⬆️'}
+                        {log.action === 'moderator_demoted' && '⬇️'}
+                        {' '}
+                        {log.action.replace(/_/g, ' ')}
+                      </div>
+                      <div className="log-details">
+                        <span className="log-actor">{log.actor?.displayName || log.actor?.username || 'Unknown'}</span>
+                        {log.targetUser && (
+                          <span className="log-target">→ {log.targetUser?.displayName || log.targetUser?.username}</span>
+                        )}
+                      </div>
+                      <div className="log-time">
+                        {new Date(log.createdAt).toLocaleDateString()} {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

@@ -353,7 +353,9 @@
 }
 
 .btn-edit-post,
-.btn-delete-post {
+.btn-delete-post,
+.btn-lock-post,
+.btn-unlock-post {
   padding: 0.4rem 0.6rem;
   border: none;
   border-radius: 8px;
@@ -371,6 +373,24 @@
 .btn-delete-post:hover {
   background: rgba(231, 76, 60, 0.15);
   transform: scale(1.05);
+}
+
+/* Phase 6A: Lock/Unlock buttons */
+.btn-lock-post:hover,
+.btn-unlock-post:hover {
+  background: rgba(155, 89, 182, 0.15);
+  transform: scale(1.05);
+}
+
+/* Phase 6A: Locked post badge */
+.post-locked-badge {
+  background: rgba(155, 89, 182, 0.1);
+  color: #9b59b6;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+  display: inline-block;
 }
 
 /* Post media grid */
@@ -710,7 +730,9 @@
 
 .btn-promote,
 .btn-demote,
-.btn-remove {
+.btn-remove,
+.btn-mute,
+.btn-unmute {
   width: 28px;
   height: 28px;
   border-radius: 6px;
@@ -750,9 +772,30 @@
   background: rgba(231, 76, 60, 0.25);
 }
 
+/* Phase 6A: Mute/Unmute buttons */
+.btn-mute {
+  background: rgba(155, 89, 182, 0.1);
+  color: #9b59b6;
+}
+
+.btn-mute:hover:not(:disabled) {
+  background: rgba(155, 89, 182, 0.25);
+}
+
+.btn-unmute {
+  background: rgba(46, 204, 113, 0.1);
+  color: #2ecc71;
+}
+
+.btn-unmute:hover:not(:disabled) {
+  background: rgba(46, 204, 113, 0.25);
+}
+
 .btn-promote:disabled,
 .btn-demote:disabled,
-.btn-remove:disabled {
+.btn-remove:disabled,
+.btn-mute:disabled,
+.btn-unmute:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -761,6 +804,101 @@
   text-align: center;
   padding: 2rem;
   color: var(--text-muted);
+}
+
+/* ============================================
+   Phase 6A: Moderation Log
+   Private activity log for owners/mods
+   ============================================ */
+
+.btn-mod-log {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: transparent;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-mod-log:hover {
+  background: rgba(155, 89, 182, 0.1);
+  border-color: #9b59b6;
+}
+
+.mod-log-modal {
+  background: var(--bg-card);
+  padding: 0;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+.mod-log-list {
+  padding: 1rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.log-privacy-note {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  padding: 0.5rem;
+  background: rgba(155, 89, 182, 0.05);
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.log-entry {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border-light);
+  align-items: center;
+}
+
+.log-entry:last-child {
+  border-bottom: none;
+}
+
+.log-action {
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.log-details {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.log-actor {
+  font-weight: 500;
+}
+
+.log-target {
+  color: var(--text-muted);
+  margin-left: 0.5rem;
+}
+
+.log-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.no-logs {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+}
+
+.no-logs p:first-child {
+  margin-bottom: 0.5rem;
 }
 
 /* ============================================
