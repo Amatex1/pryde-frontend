@@ -2738,6 +2738,35 @@ function Feed() {
         <aside className={`feed-sidebar ${showMobileSidebar ? 'mobile-visible' : ''}`}>
           {/* REMOVED 2025-12-26: Featured Tags / Trending removed (Phase 5) */}
 
+          {/* =========================================
+              Explore Pryde — Feature Discovery
+             ========================================= */}
+          <div className="sidebar-card explore-pryde glossy">
+            <h3 className="sidebar-title">Explore Pryde</h3>
+            <nav className="explore-links">
+              <Link to="/groups" className="explore-link">
+                <strong>👥 Groups</strong>
+                <span>Shared spaces around interests and identity</span>
+              </Link>
+              <Link to="/journal" className="explore-link">
+                <strong>📔 Journal</strong>
+                <span>Write privately or share thoughtfully</span>
+              </Link>
+              <Link to="/longform" className="explore-link">
+                <strong>📖 Stories</strong>
+                <span>Short moments from the community</span>
+              </Link>
+              <Link to="/photo-essay" className="explore-link">
+                <strong>📸 Photos</strong>
+                <span>Visual posts and memories</span>
+              </Link>
+              <Link to="/lounge" className="explore-link">
+                <strong>✨ Lounge</strong>
+                <span>Open conversation at a slower pace</span>
+              </Link>
+            </nav>
+          </div>
+
           {/* Need Support */}
           <div className="sidebar-card support-card glossy">
             <h3 className="sidebar-title support-title">Need support?</h3>

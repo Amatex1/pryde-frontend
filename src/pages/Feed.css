@@ -2397,6 +2397,51 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 }
 
 /* ========================================
+   EXPLORE PRYDE - FEATURE DISCOVERY
+   Calm, contextual, explanatory navigation
+   ======================================== */
+
+.explore-pryde {
+  /* Slightly more prominent than other sidebar cards */
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+}
+
+.explore-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.explore-link {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.explore-link:hover {
+  background: var(--bg-hover);
+}
+
+.explore-link strong {
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.explore-link span {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  opacity: 0.85;
+}
+
+/* ========================================
    SUPPORT CARD - CALM & GENTLE
    ======================================== */
 
