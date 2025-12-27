@@ -120,3 +120,160 @@ html {
     scroll-behavior: auto !important;
   }
 }
+
+/* ==================================================
+   TABLET POLISH PASS (768px–1023px)
+   ================================================== */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+
+  /* Global spacing rhythm */
+  .container,
+  .page,
+  .layout {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  /* Cards & surfaces */
+  .card,
+  .panel,
+  .surface {
+    border-radius: 14px;
+    box-shadow: none;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* Messages */
+  .messages-layout {
+    gap: 16px;
+  }
+
+  .message-bubble {
+    max-width: 82%;
+    padding: 10px 14px;
+    border-radius: 16px;
+  }
+
+  /* Groups */
+  .group-card {
+    padding: 16px;
+  }
+
+  /* Profile header */
+  .profile-header {
+    padding: 20px;
+  }
+
+  .profile-avatar {
+    width: 88px;
+    height: 88px;
+  }
+}
+
+/* ==================================================
+   QUIET MODE — DESIGN PERSONALITY CONTRACT
+   Core philosophy: less chrome, more content
+   ================================================== */
+
+[data-quiet="true"],
+[data-quiet-mode="true"] {
+  --quiet-bg: #0f1220;
+  --quiet-surface: #15182b;
+  --quiet-border: rgba(255,255,255,0.05);
+  --quiet-text-primary: rgba(255,255,255,0.92);
+  --quiet-text-secondary: rgba(255,255,255,0.62);
+  --quiet-accent: rgba(120,140,255,0.55);
+}
+
+/* Background override */
+[data-quiet="true"],
+[data-quiet-mode="true"] {
+  background-color: var(--quiet-bg);
+  color: var(--quiet-text-primary);
+}
+
+/* Surfaces */
+[data-quiet="true"] .card,
+[data-quiet="true"] .panel,
+[data-quiet="true"] .surface,
+[data-quiet-mode="true"] .card,
+[data-quiet-mode="true"] .panel,
+[data-quiet-mode="true"] .surface {
+  background: var(--quiet-surface);
+  border: 1px solid var(--quiet-border);
+  box-shadow: none;
+}
+
+/* Text hierarchy */
+[data-quiet="true"] h1,
+[data-quiet="true"] h2,
+[data-quiet="true"] h3,
+[data-quiet-mode="true"] h1,
+[data-quiet-mode="true"] h2,
+[data-quiet-mode="true"] h3 {
+  color: var(--quiet-text-primary);
+}
+
+[data-quiet="true"] .meta,
+[data-quiet="true"] .timestamp,
+[data-quiet="true"] .secondary-text,
+[data-quiet-mode="true"] .meta,
+[data-quiet-mode="true"] .timestamp,
+[data-quiet-mode="true"] .secondary-text {
+  color: var(--quiet-text-secondary);
+}
+
+/* Buttons & actions */
+[data-quiet="true"] button,
+[data-quiet="true"] .btn,
+[data-quiet-mode="true"] button,
+[data-quiet-mode="true"] .btn {
+  background: transparent;
+  border: 1px solid var(--quiet-border);
+  color: var(--quiet-text-primary);
+}
+
+[data-quiet="true"] button.primary,
+[data-quiet="true"] .btn-primary,
+[data-quiet-mode="true"] button.primary,
+[data-quiet-mode="true"] .btn-primary {
+  background: var(--quiet-accent);
+  color: #fff;
+  border: none;
+}
+
+/* Navbar in Quiet Mode */
+[data-quiet="true"] .navbar,
+[data-quiet-mode="true"] .navbar {
+  background: rgba(10,12,24,0.92);
+  border-bottom: 1px solid var(--quiet-border);
+}
+
+/* Messages in Quiet Mode */
+[data-quiet="true"] .message-bubble,
+[data-quiet-mode="true"] .message-bubble {
+  background: rgba(255,255,255,0.04);
+}
+
+[data-quiet="true"] .message-bubble.own,
+[data-quiet-mode="true"] .message-bubble.own {
+  background: rgba(120,140,255,0.22);
+}
+
+/* Groups */
+[data-quiet="true"] .group-card:hover,
+[data-quiet-mode="true"] .group-card:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+/* Profile header */
+[data-quiet="true"] .profile-header,
+[data-quiet-mode="true"] .profile-header {
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.04),
+    rgba(255,255,255,0)
+  );
+}
