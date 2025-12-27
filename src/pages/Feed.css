@@ -555,6 +555,7 @@
 /* =====================================================
    POST AUTHOR META — ALIGNMENT LOCK
    Name, badge, pronouns, date, privacy on single baseline
+   All meta inside .post-author-meta for stable alignment
    ===================================================== */
 
 .post-author-meta {
@@ -563,21 +564,39 @@
   gap: 6px;
   flex-wrap: wrap;
   min-width: 0;
+  line-height: 1.2;
+}
+
+.post-author-name {
+  font-weight: 600;
+  color: var(--pryde-purple);
+  transition: color 0.2s ease;
+  line-height: 1.2;
+}
+
+.post-author-name:hover {
+  color: var(--electric-blue);
 }
 
 .post-author-badge {
   display: inline-flex;
   align-items: center;
+  line-height: 1;
 }
 
 .post-author-pronouns,
 .post-author-date,
-.post-author-privacy {
+.post-author-privacy,
+.post-author-edited {
   font-size: 13px;
   opacity: 0.65;
   line-height: 1.2;
   display: inline-flex;
   align-items: center;
+}
+
+.post-author-edited {
+  font-style: italic;
 }
 
 .post-author-meta > * {

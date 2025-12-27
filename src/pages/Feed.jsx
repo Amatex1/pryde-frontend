@@ -2028,41 +2028,25 @@ function Feed() {
                             <span>{post.author?.displayName?.charAt(0).toUpperCase() || post.author?.username?.charAt(0).toUpperCase() || 'U'}</span>
                           )}
                         </Link>
-                        <div className="author-info">
-                          <div className="author-name-row">
-                            <Link to={`/profile/${post.author?.username}`} className="author-name" style={{ textDecoration: 'none', color: 'inherit' }}>
-                              {post.author?.displayName || post.author?.username || 'User'}
-                            </Link>
-                            {post.author?.isVerified && <span className="verified-badge" title="Verified">✓</span>}
-                            {/* Desktop: show inline */}
-                            {post.author?.pronouns && (
-                              <span className="author-pronouns">({post.author.pronouns})</span>
-                            )}
-                            <span className="post-time-inline">
-                              {new Date(post.createdAt).toLocaleDateString()}
-                            </span>
-                            <span className="post-privacy-icon" title={`Visible to: ${post.visibility || 'followers'}`}>
-                              {post.visibility === 'public' ? '🌍' :
-                               post.visibility === 'private' ? '🔒' : '👥'}
-                            </span>
-                          </div>
-                          {/* Mobile: meta row below name */}
-                          <div className="post-meta-row">
-                            {post.author?.pronouns && (
-                              <span className="author-pronouns">({post.author.pronouns})</span>
-                            )}
-                            <span className="post-time-inline">
-                              {new Date(post.createdAt).toLocaleDateString()}
-                            </span>
-                            <span className="post-privacy-icon" title={`Visible to: ${post.visibility || 'followers'}`}>
-                              {post.visibility === 'public' ? '🌍' :
-                               post.visibility === 'private' ? '🔒' : '👥'}
-                            </span>
-                            {post.edited && (
-                              <span className="edited-indicator">(edited)</span>
-                            )}
-                          </div>
-                          {/* DEPRECATED: Edit history button removed 2025-12-26 - showing static indicator only */}
+                        {/* All meta elements inside .post-author-meta for alignment lock */}
+                        <div className="post-author-meta">
+                          <Link to={`/profile/${post.author?.username}`} className="post-author-name" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            {post.author?.displayName || post.author?.username || 'User'}
+                          </Link>
+                          {post.author?.isVerified && <span className="post-author-badge verified-badge" title="Verified">✓</span>}
+                          {post.author?.pronouns && (
+                            <span className="post-author-pronouns">({post.author.pronouns})</span>
+                          )}
+                          <span className="post-author-date">
+                            {new Date(post.createdAt).toLocaleDateString()}
+                          </span>
+                          <span className="post-author-privacy" title={`Visible to: ${post.visibility || 'followers'}`}>
+                            {post.visibility === 'public' ? '🌍' :
+                             post.visibility === 'private' ? '🔒' : '👥'}
+                          </span>
+                          {post.edited && (
+                            <span className="post-author-edited">(edited)</span>
+                          )}
                         </div>
                       </div>
                       <div className="post-header-actions">
