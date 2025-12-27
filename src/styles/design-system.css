@@ -1,13 +1,32 @@
 /* ========================================
    PRYDE SOCIAL - UNIFIED MOBILE-FIRST DESIGN SYSTEM
    Version: 2024-12-18
-   
+
    PHILOSOPHY:
    - Mobile-first: Base styles for mobile, enhance for larger screens
    - Single source of truth: No conflicting spacing/typography
    - Consistent: Same spacing, typography, and layout patterns everywhere
    - Accessible: 44px minimum touch targets, WCAG AAA contrast
    ======================================== */
+
+/* =====================================================
+   DOM ORDER CONTRACT (DOCUMENTED)
+   ===================================================== */
+
+/*
+NAVBAR (desktop & mobile)
+Order MUST be:
+1. .navbar-logo
+2. .navbar-utility-search
+3. .navbar-actions
+
+POST HEADER
+Order MUST be:
+1. .post-author
+2. .post-header-actions
+
+DO NOT rely on CSS reordering to fix structure.
+*/
 
 :root {
   /* ========================================

@@ -12,6 +12,7 @@ import { AuthProvider, useAuth, AUTH_STATES } from './context/AuthContext';
 import { executePWASafetyChecks } from './utils/pwaSafety';
 import { disablePWAAndReload, forceReloadWithCacheClear } from './utils/emergencyRecovery';
 import { initOfflineManager } from './utils/offlineManager';
+import { checkDomOrder } from './utils/domOrderCheck';
 import DebugOverlay from './components/DebugOverlay';
 import OfflineBanner from './components/OfflineBanner';
 
@@ -266,6 +267,11 @@ function AppContent() {
   // Expose checkForUpdate globally for testing
   useEffect(() => {
     window.checkForUpdate = checkForUpdate;
+  }, []);
+
+  // DOM order sanity check (development only)
+  useEffect(() => {
+    checkDomOrder();
   }, []);
 
   return (
