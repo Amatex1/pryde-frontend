@@ -890,32 +890,49 @@
   }
 }
 
-/* ================================
-   DESKTOP NAVBAR POLISH (CALM MODE)
-   ================================ */
+/* ============================================
+   DESKTOP NAVBAR — BEHAVIOR & LAYOUT FIX
+   ============================================ */
 
 @media (min-width: 1024px) {
 
-  /* 1️⃣ Hard-lock navbar structure */
+  /* 1️⃣ Force correct navbar zones */
   .navbar {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
     height: 64px;
     padding: 0 24px;
+    overflow: visible;
+  }
+
+  .navbar-left,
+  .navbar-center,
+  .navbar-right {
+    display: flex;
+    align-items: center;
+    min-width: 0;
   }
 
   .navbar * {
     line-height: 1;
   }
 
-  /* 2️⃣ Logo alignment */
+  /* 2️⃣ Desktop should NEVER show hamburger */
+  .hamburger,
+  .menu-toggle,
+  .mobile-menu-button {
+    display: none !important;
+  }
+
+  /* 3️⃣ Logo alignment */
   .navbar-brand {
     display: flex;
     align-items: center;
     gap: 10px;
   }
 
-  /* 3️⃣ Center navigation items */
+  /* 4️⃣ Center navigation items */
   .navbar-links {
     display: flex;
     align-items: center;
@@ -937,7 +954,13 @@
     opacity: 0.9;
   }
 
-  /* 4️⃣ Calm the search bar (desktop only) */
+  /* 5️⃣ Search belongs in center, not competing */
+  .navbar-search {
+    max-width: 420px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
   .global-search {
     height: 36px;
     border-radius: 8px;
@@ -951,11 +974,30 @@
     font-size: 14px;
   }
 
-  /* 5️⃣ Right-side action grouping (bell + avatar) */
-  .navbar-user {
+  /* 6️⃣ Avatar container must not clip */
+  .navbar-user,
+  .navbar-avatar-wrapper {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
+    overflow: visible;
+    cursor: pointer;
+  }
+
+  .navbar-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .navbar-username {
+    max-width: 160px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    line-height: 1.2;
   }
 
   .navbar-user button,
@@ -965,10 +1007,28 @@
     justify-content: center;
   }
 
-  /* 6️⃣ Avatar alignment */
+  /* 7️⃣ User avatar alignment */
   .user-avatar {
     width: 32px;
     height: 32px;
     border-radius: 50%;
+  }
+
+  /* 8️⃣ Fix dropdown clipping + stacking */
+  .user-dropdown,
+  .avatar-dropdown,
+  .navbar-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 9999;
+    min-width: 200px;
+    overflow: visible;
+  }
+
+  /* 9️⃣ Ensure parent allows click-through */
+  .navbar-right {
+    position: relative;
+    overflow: visible;
   }
 }
