@@ -13,6 +13,7 @@ import { executePWASafetyChecks } from './utils/pwaSafety';
 import { disablePWAAndReload, forceReloadWithCacheClear } from './utils/emergencyRecovery';
 import { initOfflineManager } from './utils/offlineManager';
 import { checkDomOrder } from './utils/domOrderCheck';
+import { setupDevConsole } from './utils/devConsole';
 import DebugOverlay from './components/DebugOverlay';
 import OfflineBanner from './components/OfflineBanner';
 
@@ -272,6 +273,11 @@ function AppContent() {
   // DOM order sanity check (development only)
   useEffect(() => {
     checkDomOrder();
+  }, []);
+
+  // Dev console signal lock (development only)
+  useEffect(() => {
+    setupDevConsole();
   }, []);
 
   return (

@@ -28,6 +28,28 @@ Order MUST be:
 DO NOT rely on CSS reordering to fix structure.
 */
 
+/* =====================================================
+   DEV LOGGING STANDARD (DOCUMENTATION)
+   ===================================================== */
+
+/*
+DEV CONSOLE RULES:
+
+✔ console.error(...)   → ALWAYS allowed
+✔ console.warn(...)    → ALWAYS allowed
+✔ console.log(...)     → ONLY if prefixed with "[Pryde]"
+✖ console.info(...)    → DISABLED
+
+EXAMPLES:
+✔ console.warn("[Pryde][Layout] Navbar structure drift detected");
+✔ console.error("[Pryde][Auth] Token refresh failed", error);
+✖ console.log("rendered component");
+
+RATIONALE:
+Console output must be actionable.
+Noise hides real problems.
+*/
+
 :root {
   /* ========================================
      SPACING SCALE (COMPACT DENSITY)
