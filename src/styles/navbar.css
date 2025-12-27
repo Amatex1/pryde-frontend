@@ -1,28 +1,38 @@
 /* =====================================================
-   DESKTOP NAVBAR — FINAL STRUCTURE
-   Brand | Search (centered) | Actions (right)
+   DESKTOP NAVBAR — CONTAINED, FRAMED, FINAL
+   Navbar aligns with post container width
+   Soft rounded border, centered wider search
+   Right-aligned: Profile → Bell → Messages (icon only)
    ===================================================== */
 
 @media (min-width: 1024px) {
 
-  /* Base grid: brand | search | actions */
+  /* Outer navbar becomes transparent holder */
   .navbar {
+    background: transparent;
+    padding: 12px 0;
+    justify-content: center;
+    overflow: visible !important;
+  }
+
+  /* Inner constrained container (matches feed width) */
+  .navbar-container,
+  .navbar-inner {
     display: grid;
-    grid-template-columns: auto minmax(420px, 640px) auto;
+    grid-template-columns: auto minmax(520px, 720px) auto;
     align-items: center;
-    height: 64px;
-    padding: 0 24px;
     gap: 24px;
-    /* Allow dropdowns to overflow */
+    width: 100%;
+    max-width: var(--content-max-width, 1200px);
+    margin: 0 auto;
+    padding: 10px 16px;
+    background: rgba(15, 18, 32, 0.9);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
     overflow: visible !important;
   }
 
-  /* Container must allow overflow for dropdowns */
-  .navbar-container {
-    overflow: visible !important;
-  }
-
-  /* LEFT: Brand */
+  /* LEFT — Brand */
   .navbar-logo,
   .navbar-brand {
     grid-column: 1;
@@ -31,44 +41,51 @@
     gap: 10px;
   }
 
-  /* CENTER: Search */
+  /* CENTER — Search */
   .navbar-search,
   .global-search {
     grid-column: 2;
     width: 100%;
-    max-width: 640px;
+    max-width: 720px;
     justify-self: center;
   }
 
   .navbar-search input,
   .global-search input {
-    height: 40px;
+    height: 42px;
     font-size: 15px;
-    padding: 0 16px;
-    border-radius: 10px;
+    padding: 0 18px;
+    border-radius: 12px;
   }
 
-  /* RIGHT: Actions */
+  /* RIGHT — Actions (right-aligned) */
   .navbar-right,
   .navbar-actions,
   .navbar-user {
     grid-column: 3;
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 14px;
     position: relative;
     overflow: visible !important;
   }
 
-  /* Messages + notification icons */
-  .navbar-right .nav-icon,
-  .navbar-user .nav-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  /* Messages icon — icon only */
+  .navbar-messages span,
+  .navbar-messages .label,
+  .nav-button .nav-text {
+    display: none;
   }
 
-  /* Profile dropdown container - must allow overflow */
+  /* Notification bell */
+  .navbar-notifications,
+  .notification-bell {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Profile dropdown container */
   .profile-dropdown-container {
     display: flex;
     align-items: center;
@@ -78,11 +95,12 @@
     overflow: visible !important;
   }
 
-  /* Profile dropdown - ensure visibility */
+  /* Profile dropdown — flush right, visible */
   .profile-dropdown {
     position: absolute;
     top: calc(100% + 8px);
     right: 0;
+    left: auto;
     z-index: 9999 !important;
     min-width: 220px;
   }
@@ -104,18 +122,26 @@
 
   .navbar-username,
   .user-name {
-    max-width: 140px;
+    max-width: 120px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 14px;
   }
 
-  /* Kill hamburger on desktop (render + layout safety) */
+  /* Dropdown alignment */
+  .navbar-dropdown,
+  .user-dropdown {
+    right: 0;
+    left: auto;
+  }
+
+  /* Safety: no mobile controls on desktop */
   .hamburger,
   .menu-toggle,
   .mobile-menu-button,
-  .mobile-hamburger-btn {
+  .mobile-hamburger-btn,
+  .navbar-toggle {
     display: none !important;
     visibility: hidden !important;
     pointer-events: none !important;
