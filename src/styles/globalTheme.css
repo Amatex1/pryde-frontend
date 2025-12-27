@@ -135,10 +135,30 @@ button:hover {
 }
 
 /* =====================================================
-   LINK UNDERLINE NORMALIZATION
+   STRUCTURAL LINK CONTRACT
    ===================================================== */
 
-/* Remove underline from structural links */
+/* Structural links = clickable containers (no underline, ever) */
+a[data-link="structural"] {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Subtle hover feedback for structural links */
+a[data-link="structural"]:hover {
+  background-color: rgba(255,255,255,0.04);
+  border-radius: inherit;
+}
+
+/* Slight lift for card-like structural links */
+.card a[data-link="structural"]:hover,
+.post-card a[data-link="structural"]:hover,
+.group-card a[data-link="structural"]:hover {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  transform: translateY(-1px);
+}
+
+/* Legacy class-based structural link removal (backward compat) */
 nav a,
 .navbar a,
 .post-card a,
@@ -149,18 +169,35 @@ nav a,
   text-decoration: none;
 }
 
-/* Restore underline ONLY for inline text links */
-.post-content a,
-.comment-content a,
-.message-content a,
-.rich-text a {
+/* =====================================================
+   INLINE TEXT LINKS (ONLY place underlines are allowed)
+   ===================================================== */
+
+.post-content a:not([data-link="structural"]),
+.comment-content a:not([data-link="structural"]),
+.message-content a:not([data-link="structural"]),
+.rich-text a:not([data-link="structural"]) {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
-/* Accessible focus without underline */
+/* =====================================================
+   ACCESSIBLE FOCUS STATES (NO UNDERLINES)
+   ===================================================== */
+
 a:focus-visible {
   outline: 2px solid rgba(255,255,255,0.4);
   outline-offset: 2px;
   text-decoration: none;
+}
+
+/* =====================================================
+   DEV SAFETY: ACCIDENTAL ANCHOR DETECTION
+   ===================================================== */
+
+/* If a large block-level <a> is missing data-link="structural",
+   give it a faint warning outline in development */
+body[data-env="development"] a:not([data-link="structural"]) > div,
+body[data-env="development"] a:not([data-link="structural"]) > section {
+  outline: 1px dashed rgba(255, 80, 80, 0.4);
 }
