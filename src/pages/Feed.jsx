@@ -35,6 +35,7 @@ import { uploadMultipleWithProgress } from '../utils/uploadWithProgress';
 import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
 import { withOptimisticUpdate } from '../utils/consistencyGuard';
 import { quietCopy } from '../config/uiCopy';
+import PageTitle from '../components/PageTitle';
 import './Feed.css';
 
 function Feed() {
@@ -1737,6 +1738,14 @@ function Feed() {
     >
       <Navbar />
       <PasskeyBanner />
+
+      {/* One Header Rule: quiet in-content title, first-visit only */}
+      <PageTitle
+        title="Feed"
+        subtitle="Updates from people and spaces you follow."
+        pageKey="feed"
+        firstVisitOnly
+      />
 
       {/* Pull-to-refresh indicator */}
       {isPulling && (
