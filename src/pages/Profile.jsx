@@ -111,41 +111,33 @@ function Profile() {
     }
   };
 
-  const checkPrivacyPermissions = useCallback(async () => {
-    try {
-      // Get the user's privacy settings
-      const response = await api.get(`/users/${id}`);
-      const targetUser = response.data;
+  // Update privacy permissions based on already-fetched user data (no extra API call!)
+  const updatePrivacyPermissions = useCallback((targetUser) => {
+    if (!targetUser) return;
 
-      // Check if user can send friend requests
-      const friendRequestSetting = targetUser.privacySettings?.whoCanSendFriendRequests || 'everyone';
-      if (friendRequestSetting === 'no-one') {
-        setCanSendFriendRequest(false);
-      } else if (friendRequestSetting === 'friends-of-friends') {
-        // This would require checking mutual friends - for now, we'll allow it
-        // The backend will validate this when the request is sent
-        setCanSendFriendRequest(true);
-      } else {
-        setCanSendFriendRequest(true);
-      }
-
-      // Check if user can send messages
-      const messageSetting = targetUser.privacySettings?.whoCanMessage || 'followers';
-      if (messageSetting === 'no-one') {
-        setCanSendMessage(false);
-      } else if (messageSetting === 'friends' || messageSetting === 'followers') {
-        // Can only message if following (or friends for backward compatibility)
-        setCanSendMessage(followStatus === 'following' || friendStatus === 'friends');
-      } else if (messageSetting === 'everyone') {
-        setCanSendMessage(true);
-      }
-    } catch (error) {
-      logger.error('Failed to check privacy permissions:', error);
-      // Default to allowing if we can't check
+    // Check if user can send friend requests
+    const friendRequestSetting = targetUser.privacySettings?.whoCanSendFriendRequests || 'everyone';
+    if (friendRequestSetting === 'no-one') {
+      setCanSendFriendRequest(false);
+    } else if (friendRequestSetting === 'friends-of-friends') {
+      // This would require checking mutual friends - for now, we'll allow it
+      // The backend will validate this when the request is sent
       setCanSendFriendRequest(true);
-      setCanSendMessage(false);
+    } else {
+      setCanSendFriendRequest(true);
     }
-  }, [id, followStatus, friendStatus]);
+
+    // Check if user can send messages
+    const messageSetting = targetUser.privacySettings?.whoCanMessage || 'followers';
+    if (messageSetting === 'no-one') {
+      setCanSendMessage(false);
+    } else if (messageSetting === 'friends' || messageSetting === 'followers') {
+      // Can only message if following (or friends for backward compatibility)
+      setCanSendMessage(followStatus === 'following' || friendStatus === 'friends');
+    } else if (messageSetting === 'everyone') {
+      setCanSendMessage(true);
+    }
+  }, [followStatus, friendStatus]);
 
   const fetchPrivacySettings = async () => {
     try {
@@ -297,8 +289,8 @@ function Profile() {
       fetchPromises.push(
         checkFriendStatus(),
         checkFollowStatus(),
-        checkBlockStatus(),
-        checkPrivacyPermissions()
+        checkBlockStatus()
+        // Note: Privacy permissions are now checked when user data loads (no extra API call)
       );
     }
 
@@ -313,7 +305,7 @@ function Profile() {
     return () => {
       isMountedRef.current = false;
     };
-  }, [id, isOwnProfile, checkPrivacyPermissions]);
+  }, [id, isOwnProfile]);
 
   // Socket.io real-time updates
   useEffect(() => {
@@ -456,12 +448,13 @@ function Profile() {
     }
   }, [activeTab, id]);
 
-  // Update message permission when friend/follow status changes
+  // Update message permission when user data or friend/follow status changes
+  // Uses already-fetched user data - no extra API call needed!
   useEffect(() => {
     if (!isOwnProfile && user) {
-      checkPrivacyPermissions();
+      updatePrivacyPermissions(user);
     }
-  }, [isOwnProfile, user, checkPrivacyPermissions]);
+  }, [isOwnProfile, user, followStatus, friendStatus, updatePrivacyPermissions]);
 
   // Phase 5B: Removed resize listener - use CSS media queries for responsive layout
   // This prevents resize jitter and unnecessary re-renders
