@@ -592,6 +592,7 @@
   color: var(--pryde-purple);
   transition: color 0.2s ease;
   line-height: 1.2;
+  flex-shrink: 0; /* Don't shrink the name */
 }
 
 .post-author-name:hover {
@@ -602,6 +603,8 @@
   display: inline-flex;
   align-items: center;
   line-height: 1;
+  flex-shrink: 0; /* Keep badge next to name */
+  order: 0; /* Ensure badge stays in source order */
 }
 
 .post-author-pronouns,

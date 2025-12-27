@@ -1,4 +1,35 @@
 /* =====================================================
+   MOBILE NAVBAR — FLEX ROW (RESET FROM DESKTOP GRID)
+   ===================================================== */
+
+@media (max-width: 1023px) {
+  nav.navbar.glossy {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 10px 16px !important;
+    background: var(--bg-card, #0f1220e6) !important;
+  }
+
+  nav.navbar.glossy > .navbar-logo {
+    flex-shrink: 0;
+  }
+
+  nav.navbar.glossy > .navbar-utility-search {
+    display: none !important; /* Hidden on mobile - search is in mobile menu */
+  }
+
+  nav.navbar.glossy > .navbar-actions {
+    flex-shrink: 0;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+}
+
+/* =====================================================
    DESKTOP NAVBAR — CONTAINED, FRAMED, FINAL
    Navbar aligns with post container width
    Soft rounded border, centered wider search

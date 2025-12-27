@@ -295,8 +295,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   min-width: 0;
+  white-space: nowrap;
 }
 
 .post-header .post-author span,
@@ -308,10 +309,19 @@
   white-space: nowrap;
 }
 
-.post-header .post-author span:not(:first-child),
+.post-header .post-author span.post-author-pronouns,
+.post-header .post-author span.post-author-date,
+.post-header .post-author span.post-author-privacy,
+.post-header .post-author span.post-author-edited,
 .post-header .post-author time {
   font-size: 13px;
   opacity: 0.65;
+}
+
+/* Verified badge should NOT be dimmed */
+.post-header .post-author span.verified-badge,
+.post-header .post-author span.post-author-badge {
+  opacity: 1 !important;
 }
 
 /* =====================================================
