@@ -69,6 +69,7 @@ function Messages() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [conversationFilter, setConversationFilter] = useState(''); // Filter conversations by name
   const [friends, setFriends] = useState([]);
   const [groupName, setGroupName] = useState('');
   const [groupDescription, setGroupDescription] = useState('');
@@ -994,9 +995,12 @@ function Messages() {
               </div>
             </div>
 
-            {/* Message Search */}
+            {/* Conversation Filter */}
             <div className="message-search-container">
-              <MessageSearch conversationWith={selectedChat} />
+              <MessageSearch
+                onSearch={setConversationFilter}
+                placeholder="Filter by name..."
+              />
             </div>
 
             {/* Tabs for All/Unread/Archived */}
@@ -1116,10 +1120,26 @@ function Messages() {
                       <div className="section-label">Direct Messages</div>
                       {conversations
                         .filter(conv => {
+                          // Tab filter (archived/unread/all)
                           const isArchived = archivedConversations.includes(conv._id);
                           if (activeTab === 'archived') return isArchived;
                           if (activeTab === 'unread') return !isArchived && (conv.unread > 0 || conv.manuallyUnread);
-                          return !isArchived; // 'all' tab shows non-archived
+                          if (isArchived) return false; // 'all' tab shows non-archived
+
+                          // Name filter - search by participant displayName or username
+                          if (conversationFilter.trim()) {
+                            const q = conversationFilter.toLowerCase();
+                            const otherUser = conv.otherUser || (
+                              conv.lastMessage?.sender?._id === currentUser?._id
+                                ? conv.lastMessage?.recipient
+                                : conv.lastMessage?.sender
+                            );
+                            const displayName = otherUser?.displayName || otherUser?.username || '';
+                            const username = otherUser?.username || '';
+                            return displayName.toLowerCase().includes(q) || username.toLowerCase().includes(q);
+                          }
+
+                          return true;
                         })
                         .map((conv) => {
                         // Use the otherUser field from backend, or fallback to lastMessage sender/recipient
