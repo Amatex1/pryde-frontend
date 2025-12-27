@@ -1,5 +1,7 @@
 /**
  * Phase 2: Group-only posting
+ * Phase 5B: Layout stability fixes
+ *
  * Groups Page Styles - Reuses patterns from TagFeed.css
  *
  * Group posts are intentionally isolated from global feeds.
@@ -12,38 +14,54 @@
   padding: 100px 1rem 2rem 1rem; /* Top padding for navbar */
 }
 
+/* Phase 5B: Fixed header height - no resize on state change */
 .group-header {
   padding: 2rem;
   border-radius: 12px;
   text-align: center;
   margin-bottom: 2rem;
+  /* Reserve minimum height to prevent layout shift */
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .group-icon {
   font-size: 4rem;
   margin-bottom: 1rem;
+  /* Fixed height for icon container */
+  height: 64px;
+  line-height: 64px;
 }
 
 .group-header h1 {
   font-size: 2rem;
   color: var(--pryde-purple);
   margin-bottom: 0.5rem;
+  /* Prevent text reflow causing height changes */
+  min-height: 2.5rem;
 }
 
 .group-description {
   color: var(--text-muted);
   margin-bottom: 1rem;
   line-height: 1.6;
+  /* Reserve space for description - 2 lines minimum */
+  min-height: 3.2rem;
 }
 
 .group-stats {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 1rem;
   padding-top: 1rem;
   border-top: 1px solid var(--border-light);
   color: var(--pryde-purple);
   font-weight: 600;
+  /* Fixed height for stats row */
+  min-height: 2.5rem;
 }
 
 .visibility-badge {
@@ -53,10 +71,19 @@
   font-size: 0.85rem;
 }
 
+/* Phase 5B: Fixed height action row - no layout shift */
 .group-actions {
   margin-top: 1.5rem;
+  /* Fixed height to prevent layout shift when switching states */
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
+/* Phase 5B: Fixed button dimensions - consistent sizing */
 .btn-join {
   padding: 0.75rem 2rem;
   border-radius: 12px;
@@ -66,11 +93,13 @@
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  /* Fixed dimensions to prevent layout shift */
+  min-width: 140px;
+  height: 44px;
 }
 
 .btn-join:hover:not(:disabled) {
-  transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
 }
 
@@ -87,7 +116,10 @@
   color: var(--text-muted);
   font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease, color 0.3s ease;
+  /* Fixed dimensions */
+  min-width: 120px;
+  height: 40px;
 }
 
 .btn-leave:hover:not(:disabled) {
@@ -100,24 +132,29 @@
   cursor: not-allowed;
 }
 
+/* Phase 5B: Fixed badge dimensions */
 .ownership-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   padding: 0.5rem 1rem;
   background: linear-gradient(135deg, #ffd700, #ffb347);
   color: #333;
   border-radius: 8px;
   font-weight: 600;
   font-size: 0.9rem;
+  height: 40px;
 }
 
 /* Phase 2C: Role badges for members and moderators */
 .role-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   padding: 0.4rem 0.8rem;
   border-radius: 8px;
   font-weight: 500;
   font-size: 0.85rem;
-  margin-right: 0.75rem;
+  /* Fixed height to match other action items */
+  height: 36px;
 }
 
 .role-badge.member {
@@ -828,5 +865,152 @@
   color: var(--text-muted);
   font-size: 0.8rem;
   line-height: 1.5;
+}
+
+/* ============================================
+   Phase 5B: Responsive Breakpoints
+   Hardened for all viewport widths
+   ============================================ */
+
+/* Large desktops (1440px+) */
+@media (min-width: 1440px) {
+  .group-container {
+    max-width: 900px;
+  }
+}
+
+/* Desktop (1024px - 1280px) */
+@media (max-width: 1280px) {
+  .group-container {
+    max-width: 750px;
+  }
+}
+
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) {
+  .group-container {
+    max-width: 100%;
+    padding: 100px 1.5rem 2rem 1.5rem;
+  }
+
+  .group-header {
+    min-height: 260px;
+    padding: 1.5rem;
+  }
+}
+
+/* Mobile (480px - 768px) */
+@media (max-width: 768px) {
+  .group-container {
+    padding: 80px 1rem 2rem 1rem;
+  }
+
+  .group-header {
+    min-height: auto; /* Allow natural height on mobile */
+    padding: 1.25rem;
+  }
+
+  .group-header h1 {
+    font-size: 1.5rem;
+    min-height: auto;
+  }
+
+  .group-icon {
+    font-size: 3rem;
+    height: 48px;
+    line-height: 48px;
+  }
+
+  .group-description {
+    min-height: auto;
+  }
+
+  .group-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: auto;
+  }
+
+  .btn-join,
+  .btn-leave {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .group-stats {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    min-height: auto;
+  }
+
+  /* Modal adjustments */
+  .member-modal,
+  .notification-settings-modal,
+  .edit-post-modal {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .modal-buttons {
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+  }
+
+  .modal-buttons button {
+    width: 100%;
+  }
+
+  /* Post grid adjustments */
+  .post-media-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .media-preview-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Small mobile (< 480px) */
+@media (max-width: 480px) {
+  .group-container {
+    padding: 75px 0.75rem 1.5rem 0.75rem;
+  }
+
+  .group-header {
+    padding: 1rem;
+    border-radius: 8px;
+  }
+
+  .group-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .group-icon {
+    font-size: 2.5rem;
+    height: 40px;
+    line-height: 40px;
+  }
+
+  .section-title {
+    font-size: 1.1rem;
+  }
+
+  .group-composer {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .group-posts .post-card {
+    padding: 1rem;
+  }
+
+  .group-posts .author-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .composer-actions {
+    flex-wrap: wrap;
+  }
 }
 

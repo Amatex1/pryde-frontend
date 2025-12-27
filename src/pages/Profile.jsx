@@ -99,7 +99,7 @@ function Profile() {
   const [editHistoryPostId, setEditHistoryPostId] = useState(null);
   const editTextareaRef = useRef(null);
   const isMountedRef = useRef(true); // Track if component is mounted to prevent race conditions
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth); // Track window width for responsive layout
+  // Phase 5B: Removed windowWidth state - use CSS media queries instead to prevent resize jitter
 
   // Define all fetch and check functions BEFORE useEffects that use them
   const checkBlockStatus = async () => {
@@ -463,15 +463,8 @@ function Profile() {
     }
   }, [isOwnProfile, user, checkPrivacyPermissions]);
 
-  // Handle window resize for responsive layout
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // Phase 5B: Removed resize listener - use CSS media queries for responsive layout
+  // This prevents resize jitter and unnecessary re-renders
 
   // Close dropdown when clicking outside
   useEffect(() => {

@@ -1,5 +1,6 @@
 /**
  * Phase 5A: Manual, Calm Group Discovery Styles
+ * Phase 5B: Layout stability and responsive hardening
  */
 
 .groups-list-container {
@@ -31,8 +32,10 @@
   display: flex;
   justify-content: center;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
+/* Phase 5B: Fixed button dimensions */
 .btn-create-group {
   background: linear-gradient(135deg, var(--pryde-purple), var(--pryde-pink));
   color: white;
@@ -42,11 +45,13 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease;
+  /* Fixed dimensions to prevent layout shift */
+  min-width: 160px;
+  height: 44px;
 }
 
 .btn-create-group:hover {
-  transform: scale(1.05);
   box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
 }
 
@@ -83,21 +88,26 @@
   border-color: var(--pryde-purple);
 }
 
+/* Phase 5B: Grid layout with stable sizing */
 .groups-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
 }
 
+/* Phase 5B: Fixed card dimensions to prevent layout shift */
 .group-card {
   padding: 1.5rem;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease;
+  /* Reserve minimum height to prevent layout shift */
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
 }
 
 .group-card:hover {
-  transform: translateY(-3px);
   box-shadow: 0 8px 25px rgba(108, 92, 231, 0.15);
 }
 
@@ -107,6 +117,8 @@
   gap: 0.75rem;
   margin-bottom: 0.75rem;
   flex-wrap: wrap;
+  /* Fixed height for header row */
+  min-height: 32px;
 }
 
 .group-card-name {
@@ -114,8 +126,13 @@
   color: var(--pryde-purple);
   margin: 0;
   flex: 1;
+  min-width: 0; /* Allow text truncation */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+/* Phase 5B: Fixed badge heights */
 .member-badge {
   background: var(--soft-lavender);
   color: var(--pryde-purple);
@@ -123,6 +140,10 @@
   border-radius: 12px;
   font-size: 0.8rem;
   font-weight: 600;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .owner-badge {
@@ -132,6 +153,10 @@
   border-radius: 12px;
   font-size: 0.8rem;
   font-weight: 600;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .group-card-description {
@@ -139,20 +164,33 @@
   margin: 0 0 1rem 0;
   line-height: 1.5;
   font-size: 0.95rem;
+  /* Reserve space for 2 lines */
+  min-height: 3rem;
+  /* Clamp to 2 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
 }
 
+/* Phase 5B: Fixed footer height */
 .group-card-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding-top: 0.75rem;
   border-top: 1px solid var(--border-light);
+  min-height: 32px;
+  margin-top: auto; /* Push to bottom of card */
 }
 
 .member-count {
   color: var(--pryde-purple);
   font-weight: 600;
   font-size: 0.9rem;
+  /* Reserve minimum width for count */
+  min-width: 80px;
 }
 
 .visibility-badge,
@@ -166,9 +204,10 @@
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+  min-height: 24px;
 }
 
-/* Phase 5A: Join button styles */
+/* Phase 5A/5B: Join button styles - fixed height, no layout shift */
 .join-btn {
   width: 100%;
   margin-top: 1rem;
@@ -180,7 +219,12 @@
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease;
+  /* Phase 5B: Fixed height to prevent layout shift */
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .join-btn:hover:not(:disabled) {
@@ -205,15 +249,19 @@
   color: var(--pryde-purple);
 }
 
-/* Owner action buttons */
+/* Owner action buttons - fixed height row */
 .group-actions {
   display: flex;
   gap: 0.5rem;
   margin-top: 0.75rem;
   padding-top: 0.75rem;
   border-top: 1px solid var(--border-light);
+  /* Phase 5B: Fixed height for action row */
+  min-height: 44px;
+  align-items: center;
 }
 
+/* Phase 5B: Fixed button dimensions */
 .btn-edit-group,
 .btn-delete-group {
   padding: 0.5rem 0.75rem;
@@ -221,18 +269,23 @@
   border-radius: 8px;
   cursor: pointer;
   font-size: 1rem;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease;
   background: var(--bg-secondary);
+  /* Fixed dimensions */
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .btn-edit-group:hover {
   background: var(--soft-lavender);
-  transform: scale(1.05);
 }
 
 .btn-delete-group:hover {
   background: rgba(231, 76, 60, 0.15);
-  transform: scale(1.05);
 }
 
 .empty-state {
@@ -405,13 +458,137 @@
   cursor: not-allowed;
 }
 
+/* ============================================
+   Phase 5B: Responsive Breakpoints
+   Hardened for all viewport widths
+   ============================================ */
+
+/* Large desktops (1440px+) */
+@media (min-width: 1440px) {
+  .groups-list-container {
+    max-width: 1100px;
+  }
+
+  .groups-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Desktop (1024px - 1280px) */
+@media (max-width: 1280px) {
+  .groups-list-container {
+    max-width: 960px;
+  }
+}
+
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) {
+  .groups-list-container {
+    max-width: 100%;
+    padding: 100px 1.5rem 2rem 1.5rem;
+  }
+
+  .groups-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* Mobile (480px - 768px) */
 @media (max-width: 768px) {
+  .groups-list-container {
+    padding: 80px 1rem 2rem 1rem;
+  }
+
+  .groups-list-header {
+    padding: 1.5rem;
+  }
+
+  .groups-list-header h1 {
+    font-size: 1.5rem;
+  }
+
   .groups-grid {
     grid-template-columns: 1fr;
   }
 
+  .group-card {
+    min-height: auto; /* Allow natural height on mobile */
+    padding: 1.25rem;
+  }
+
+  .sort-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .sort-select {
+    width: 100%;
+  }
+
   .modal-buttons {
     flex-direction: column-reverse;
+  }
+
+  .modal-buttons button {
+    width: 100%;
+  }
+
+  .create-group-modal,
+  .edit-group-modal,
+  .settings-modal {
+    width: 95%;
+    max-height: 85vh;
+  }
+}
+
+/* Small mobile (< 480px) */
+@media (max-width: 480px) {
+  .groups-list-container {
+    padding: 75px 0.75rem 1.5rem 0.75rem;
+  }
+
+  .groups-list-header {
+    padding: 1rem;
+    border-radius: 8px;
+  }
+
+  .groups-list-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .groups-list-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .btn-create-group {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .group-card {
+    padding: 1rem;
+    border-radius: 8px;
+  }
+
+  .group-card-name {
+    font-size: 1.1rem;
+  }
+
+  .group-card-description {
+    font-size: 0.9rem;
+    min-height: auto;
+  }
+
+  .join-btn {
+    height: 44px;
+    font-size: 0.9rem;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    gap: 0.75rem;
   }
 }
 

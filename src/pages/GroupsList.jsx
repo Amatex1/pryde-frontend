@@ -42,15 +42,50 @@ function GroupsList() {
   const [editing, setEditing] = useState(false);
   const [editError, setEditError] = useState(null);
 
+  // Phase 5B: AbortController to prevent double-fetch in StrictMode
   useEffect(() => {
-    fetchGroups();
+    const abortController = new AbortController();
+    let isMounted = true;
+
+    const fetchGroupsData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        // Phase 5A: Pass sort parameter
+        const response = await api.get(`/groups?sort=${sortBy}`, {
+          signal: abortController.signal
+        });
+        if (isMounted) {
+          setGroups(response.data.groups || []);
+        }
+      } catch (err) {
+        // Ignore aborted requests
+        if (err.name === 'AbortError' || err.name === 'CanceledError') return;
+
+        if (isMounted) {
+          console.error('Failed to fetch groups:', err);
+          setError('Failed to load groups');
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchGroupsData();
+
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
   }, [sortBy]);
 
+  // Manual refetch for after mutations
   const fetchGroups = async () => {
     try {
       setLoading(true);
       setError(null);
-      // Phase 5A: Pass sort parameter
       const response = await api.get(`/groups?sort=${sortBy}`);
       setGroups(response.data.groups || []);
     } catch (err) {

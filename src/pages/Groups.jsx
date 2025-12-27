@@ -82,18 +82,67 @@ function Groups() {
   const [loadingNotificationSettings, setLoadingNotificationSettings] = useState(false);
   const [savingNotificationSettings, setSavingNotificationSettings] = useState(false);
 
+  // Phase 5B: AbortController to prevent double-fetch in StrictMode
   useEffect(() => {
-    fetchGroup();
+    const abortController = new AbortController();
+    let isMounted = true;
+
+    const fetchGroupData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await api.get(`/groups/${slug}`, {
+          signal: abortController.signal
+        });
+
+        // Only update state if component is still mounted
+        if (isMounted) {
+          setGroup(response.data);
+
+          // Posts are only returned if user is a member
+          if (response.data.posts) {
+            setPosts(response.data.posts);
+          } else {
+            setPosts([]);
+          }
+        }
+      } catch (err) {
+        // Ignore aborted requests
+        if (err.name === 'AbortError' || err.name === 'CanceledError') return;
+
+        if (isMounted) {
+          console.error('Failed to fetch group:', err);
+          if (err.response?.status === 404) {
+            setError('Group not found');
+          } else {
+            setError('Failed to load group');
+          }
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchGroupData();
+
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
   }, [slug]);
 
+  // Refetch group data (for after join/leave actions)
   const fetchGroup = async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await api.get(`/groups/${slug}`);
       setGroup(response.data);
-      
+
       // Posts are only returned if user is a member
       if (response.data.posts) {
         setPosts(response.data.posts);
