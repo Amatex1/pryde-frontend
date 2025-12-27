@@ -265,7 +265,7 @@ function Navbar() {
         </div>
         )}
 
-        <div className="navbar-user" ref={dropdownRef}>
+        <div className="navbar-user">
           {/* Feature navigation moved to contextual panel - keeping only global actions */}
           <Link to="/messages" className="nav-button" title="Messages">
             <span className="nav-icon">💬</span>
