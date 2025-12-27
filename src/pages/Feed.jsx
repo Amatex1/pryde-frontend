@@ -2743,26 +2743,29 @@ function Feed() {
              ========================================= */}
           <div className="sidebar-card explore-pryde glossy">
             <h3 className="sidebar-title">Explore Pryde</h3>
+            <p className="sidebar-subtitle">
+              Take your time. These spaces are here when you need them.
+            </p>
             <nav className="explore-links">
               <Link to="/groups" className="explore-link">
                 <strong>👥 Groups</strong>
-                <span>Shared spaces around interests and identity</span>
+                <span>Join shared spaces built around interests, support, and identity.</span>
               </Link>
               <Link to="/journal" className="explore-link">
                 <strong>📔 Journal</strong>
-                <span>Write privately or share thoughtfully</span>
+                <span>A quiet place to write — just for you, or gently shared.</span>
               </Link>
               <Link to="/longform" className="explore-link">
                 <strong>📖 Stories</strong>
-                <span>Short moments from the community</span>
+                <span>Short moments people choose to share, nothing more.</span>
               </Link>
               <Link to="/photo-essay" className="explore-link">
                 <strong>📸 Photos</strong>
-                <span>Visual posts and memories</span>
+                <span>Images, memories, and small glimpses of life.</span>
               </Link>
               <Link to="/lounge" className="explore-link">
                 <strong>✨ Lounge</strong>
-                <span>Open conversation at a slower pace</span>
+                <span>A shared space for open conversation, without urgency.</span>
               </Link>
             </nav>
           </div>
