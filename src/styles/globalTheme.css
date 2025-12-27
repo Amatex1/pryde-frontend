@@ -134,3 +134,33 @@ button:hover {
   transform: scale(calc(1 + 0.02 * var(--motion-scale)));
 }
 
+/* =====================================================
+   LINK UNDERLINE NORMALIZATION
+   ===================================================== */
+
+/* Remove underline from structural links */
+nav a,
+.navbar a,
+.post-card a,
+.post-header a,
+.group-card a,
+.explore-links a,
+.card a {
+  text-decoration: none;
+}
+
+/* Restore underline ONLY for inline text links */
+.post-content a,
+.comment-content a,
+.message-content a,
+.rich-text a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Accessible focus without underline */
+a:focus-visible {
+  outline: 2px solid rgba(255,255,255,0.4);
+  outline-offset: 2px;
+  text-decoration: none;
+}
