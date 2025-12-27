@@ -51,3 +51,26 @@ body.quiet-mode .explore-links a {
   background: rgba(255,255,255,0.02);
 }
 
+/* ================================
+   TABLET ADAPTATION
+   ================================ */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .explore-links a {
+    padding: 12px 14px;
+  }
+
+  .explore-links span {
+    font-size: 13px;
+  }
+}
+
+/* ================================
+   MOBILE ADAPTATION
+   ================================ */
+
+@media (max-width: 767px) {
+  .explore-pryde {
+    display: none;
+  }
+}
