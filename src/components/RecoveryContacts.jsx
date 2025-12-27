@@ -36,7 +36,8 @@ const RecoveryContacts = () => {
       const response = await api.get('/users/search', {
         params: { q: searchQuery }
       });
-      setSearchResults(response.data.users || []);
+      // /users/search returns an array directly, not { users: [] }
+      setSearchResults(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error('Error searching users:', error);
     } finally {
