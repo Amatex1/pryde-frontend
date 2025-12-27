@@ -96,7 +96,7 @@ function Navbar() {
 
   return (
     <nav className="navbar glossy" role="navigation" aria-label="Main navigation">
-      <div className="navbar-container">
+      <div className="navbar-inner">
         <Link to="/feed" className="navbar-brand" aria-label="Pryde Social - Go to feed">
           <img
             src={prydeLogo}
