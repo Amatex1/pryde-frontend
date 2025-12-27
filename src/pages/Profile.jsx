@@ -85,6 +85,7 @@ function Profile() {
   const isOwnProfile = currentUser?.username === id;
   const [canSendFriendRequest, setCanSendFriendRequest] = useState(true);
   const [canSendMessage, setCanSendMessage] = useState(false);
+  const [permissionsChecked, setPermissionsChecked] = useState(false); // Hide buttons until permissions are determined
   const [showUnfriendModal, setShowUnfriendModal] = useState(false);
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [editingPostId, setEditingPostId] = useState(null);
@@ -137,6 +138,9 @@ function Profile() {
     } else if (messageSetting === 'everyone') {
       setCanSendMessage(true);
     }
+
+    // Mark permissions as checked so buttons can render
+    setPermissionsChecked(true);
   }, [followStatus, friendStatus]);
 
   const fetchPrivacySettings = async () => {
@@ -274,6 +278,9 @@ function Profile() {
   useEffect(() => {
     // Reset mounted flag when component mounts
     isMountedRef.current = true;
+
+    // Reset permissions state when profile changes (prevents flash of wrong button)
+    setPermissionsChecked(false);
 
     // Fetch all data in parallel for faster initial load
     const fetchPromises = [
@@ -1473,8 +1480,8 @@ function Profile() {
                       </button>
                     )}
 
-                    {/* Message button - show based on privacy settings */}
-                    {canSendMessage && (
+                    {/* Message button - show based on privacy settings (hidden until permissions checked) */}
+                    {permissionsChecked && canSendMessage && (
                       <button
                         className="btn-message"
                         onClick={handleMessage}
@@ -1482,7 +1489,7 @@ function Profile() {
                         💬 Message
                       </button>
                     )}
-                    {!canSendMessage && followStatus !== 'following' && (
+                    {permissionsChecked && !canSendMessage && followStatus !== 'following' && (
                       <button
                         className="btn-message"
                         disabled
