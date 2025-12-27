@@ -96,7 +96,8 @@ function Navbar() {
 
   return (
     <nav className="navbar glossy" role="navigation" aria-label="Main navigation">
-      <div className="navbar-inner">
+      {/* Left: Logo/Brand */}
+      <div className="navbar-logo">
         <Link to="/feed" className="navbar-brand" aria-label="Pryde Social - Go to feed">
           <img
             src={prydeLogo}
@@ -109,8 +110,12 @@ function Navbar() {
           />
           <span className="brand-text">Pryde Social</span>
         </Link>
+      </div>
 
-        {/* Center search removed — unified search lives in right utility area */}
+      {/* Center: Search */}
+      <div className="navbar-utility-search">
+        <GlobalSearch variant="compact" />
+      </div>
 
         {/* Mobile Hamburger Menu - Only render on non-desktop */}
         {!isDesktop && (
@@ -272,11 +277,8 @@ function Navbar() {
         </div>
         )}
 
-        <div className="navbar-user">
-          {/* Unified search (compact, functional) */}
-          <GlobalSearch variant="compact" />
-
-          {/* Feature navigation moved to contextual panel - keeping only global actions */}
+        {/* Right: Actions */}
+        <div className="navbar-actions">
           <Link to="/messages" className="nav-button" title="Messages">
             <span className="nav-icon">💬</span>
             <span className="nav-label">Messages</span>
@@ -399,7 +401,6 @@ function Navbar() {
             )}
           </div>
         </div>
-      </div>
     </nav>
   );
 }
