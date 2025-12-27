@@ -2227,20 +2227,12 @@ function Feed() {
                                 </div>
                               )}
                               <div className="post-edit-privacy">
-                                <label
-                                  htmlFor="edit-post-privacy-selector"
-                                  style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginRight: '0.5rem' }}
-                                >
-                                  Privacy:
-                                </label>
-                                {/* PHASE 1 REFACTOR: Simplified privacy options */}
+                                <div className="post-edit-privacy-label">Privacy:</div>
                                 <select
                                   id="edit-post-privacy-selector"
                                   name="editPostPrivacy"
                                   value={editPostVisibility}
                                   onChange={(e) => setEditPostVisibility(e.target.value)}
-                                  className="privacy-selector glossy"
-                                  style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}
                                   aria-label="Edit post privacy"
                                 >
                                   <option value="public">🌍 Public</option>
