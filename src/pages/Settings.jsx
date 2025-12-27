@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import CustomModal from '../components/CustomModal';
 import InviteManagement from '../components/InviteManagement'; // Phase 7B
+import ProfileUrlSetting from '../components/ProfileUrlSetting'; // Custom profile URLs
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
 import { logout } from '../utils/auth';
@@ -317,6 +318,16 @@ function Settings() {
           </div>
 
           {/* Basic Information moved to Edit Profile modal on Profile page */}
+
+          {/* Custom Profile URL */}
+          <div className="settings-section">
+            <ProfileUrlSetting
+              currentSlug={currentUser?.profileSlug}
+              onUpdate={(newSlug) => {
+                refreshUser();
+              }}
+            />
+          </div>
 
           {/* NOTE: Verification Request Section removed 2025-12-26
               The verification system has been intentionally removed.

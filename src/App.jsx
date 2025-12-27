@@ -429,6 +429,9 @@ function AppContent() {
                   <Route path="/helplines" element={<><Helplines /><Footer /></>} />
                   <Route path="/trust-and-safety" element={<><TrustAndSafety /><Footer /></>} />
                   <Route path="/guarantees" element={<><PlatformGuarantees /><Footer /></>} />
+
+                  {/* Custom Profile URL - catch-all for /@username style URLs */}
+                  <Route path="/@:slug" element={<PrivateRoute><Profile /></PrivateRoute>} />
                 </Route>
               </Routes>
             </main>
