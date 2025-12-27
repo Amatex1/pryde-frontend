@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
+import { useMediaQuery } from 'react-responsive';
 import { logout } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
 import DarkModeToggle from './DarkModeToggle';
@@ -26,6 +27,7 @@ function useDarkMode() {
 
 function Navbar() {
   const navigate = useNavigate();
+  const isDesktop = useMediaQuery({ minWidth: 1024 });
   const { user, updateUser, clearUser } = useAuth(); // Use centralized auth context
   const [showDropdown, setShowDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -110,19 +112,21 @@ function Navbar() {
 
         <GlobalSearch />
 
-        {/* Mobile Hamburger Menu */}
-        <button
-          className="mobile-hamburger-btn"
-          onClick={() => setShowMobileMenu(!showMobileMenu)}
-          aria-label={showMobileMenu ? 'Close menu' : 'Open menu'}
-          aria-expanded={showMobileMenu}
-          aria-controls="mobile-menu"
-        >
-          <span aria-hidden="true">{showMobileMenu ? '✕' : '☰'}</span>
-        </button>
+        {/* Mobile Hamburger Menu - Only render on non-desktop */}
+        {!isDesktop && (
+          <button
+            className="mobile-hamburger-btn"
+            onClick={() => setShowMobileMenu(!showMobileMenu)}
+            aria-label={showMobileMenu ? 'Close menu' : 'Open menu'}
+            aria-expanded={showMobileMenu}
+            aria-controls="mobile-menu"
+          >
+            <span aria-hidden="true">{showMobileMenu ? '✕' : '☰'}</span>
+          </button>
+        )}
 
-        {/* Mobile Menu Overlay */}
-        {showMobileMenu && (
+        {/* Mobile Menu Overlay - Only render on non-desktop */}
+        {!isDesktop && showMobileMenu && (
           <div
             className="mobile-menu-overlay"
             onClick={() => setShowMobileMenu(false)}
@@ -130,7 +134,8 @@ function Navbar() {
           />
         )}
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Only render on non-desktop */}
+        {!isDesktop && (
         <div
           id="mobile-menu"
           className={`mobile-menu ${showMobileMenu ? 'mobile-menu-visible' : ''}`}
@@ -254,6 +259,7 @@ function Navbar() {
             </button>
           </div>
         </div>
+        )}
 
         <div className="navbar-user" ref={dropdownRef}>
           {/* Main Navigation Buttons */}
