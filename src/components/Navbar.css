@@ -890,55 +890,67 @@
   }
 }
 
-/* ============================================
-   DESKTOP NAVBAR — BEHAVIOR & LAYOUT FIX
-   ============================================ */
+/* =====================================================
+   DESKTOP NAVBAR — AUTHORITATIVE LAYOUT OVERRIDE
+   ===================================================== */
 
 @media (min-width: 1024px) {
 
-  /* 1️⃣ Force correct navbar zones */
+  /* --- Base navbar grid --- */
   .navbar {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto minmax(320px, 480px) 1fr auto;
     align-items: center;
     height: 64px;
     padding: 0 24px;
-    overflow: visible;
+    gap: 20px;
   }
 
-  .navbar-left,
-  .navbar-center,
-  .navbar-right {
-    display: flex;
-    align-items: center;
-    min-width: 0;
-  }
-
-  .navbar * {
-    line-height: 1;
-  }
-
-  /* 2️⃣ Desktop should NEVER show hamburger */
-  .hamburger,
-  .menu-toggle,
-  .mobile-menu-button {
-    display: none !important;
-  }
-
-  /* 3️⃣ Logo alignment */
+  /* --- Explicit zone placement (ignore DOM order) --- */
+  .navbar-logo,
   .navbar-brand {
+    grid-column: 1;
     display: flex;
     align-items: center;
     gap: 10px;
   }
 
-  /* 4️⃣ Center navigation items */
+  .navbar-search {
+    grid-column: 2;
+    justify-self: center;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .navbar-nav,
   .navbar-links {
+    grid-column: 3;
     display: flex;
     align-items: center;
     gap: 22px;
   }
 
+  .navbar-actions,
+  .navbar-right {
+    grid-column: 4;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    overflow: visible;
+  }
+
+  /* --- Kill hamburger completely on desktop --- */
+  .hamburger,
+  .menu-toggle,
+  .mobile-menu-button,
+  .navbar-toggle {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  /* --- Nav link styling --- */
   .nav-link {
     display: inline-flex;
     align-items: center;
@@ -954,13 +966,7 @@
     opacity: 0.9;
   }
 
-  /* 5️⃣ Search belongs in center, not competing */
-  .navbar-search {
-    max-width: 420px;
-    width: 100%;
-    margin: 0 auto;
-  }
-
+  /* --- Search bar styling --- */
   .global-search {
     height: 36px;
     border-radius: 8px;
@@ -974,29 +980,29 @@
     font-size: 14px;
   }
 
-  /* 6️⃣ Avatar container must not clip */
+  /* --- Avatar + username safety --- */
   .navbar-user,
   .navbar-avatar-wrapper {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     overflow: visible;
     cursor: pointer;
   }
 
-  .navbar-avatar {
+  .navbar-avatar,
+  .user-avatar {
     width: 32px;
     height: 32px;
-    border-radius: 50%;
     flex-shrink: 0;
+    border-radius: 50%;
   }
 
   .navbar-username {
-    max-width: 160px;
+    max-width: 140px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 14px;
     line-height: 1.2;
   }
 
@@ -1007,28 +1013,14 @@
     justify-content: center;
   }
 
-  /* 7️⃣ User avatar alignment */
-  .user-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-  }
-
-  /* 8️⃣ Fix dropdown clipping + stacking */
+  /* --- Dropdown must escape navbar --- */
   .user-dropdown,
   .avatar-dropdown,
   .navbar-dropdown {
     position: absolute;
     top: calc(100% + 8px);
     right: 0;
-    z-index: 9999;
     min-width: 200px;
-    overflow: visible;
-  }
-
-  /* 9️⃣ Ensure parent allows click-through */
-  .navbar-right {
-    position: relative;
-    overflow: visible;
+    z-index: 10000;
   }
 }
