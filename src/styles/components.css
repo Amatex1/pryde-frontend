@@ -224,3 +224,92 @@
   background: var(--color-warning-soft);
   color: var(--color-warning);
 }
+
+/* =====================================================
+   NAVBAR — FINAL ALIGNMENT LOCK
+   (based on nav.navbar.glossy + feed-layout)
+   ===================================================== */
+
+@media (min-width: 1024px) {
+  nav.navbar.glossy {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 0;
+    background: transparent;
+  }
+
+  nav.navbar.glossy > .feed-layout.feed-desktop {
+    display: grid;
+    grid-template-columns: auto minmax(520px, 720px) auto;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+    max-width: 1200px;
+    padding: 10px 16px;
+    background: rgba(15,18,32,0.92);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+  }
+
+  /* Center search exactly */
+  .navbar-search {
+    justify-self: center;
+    margin: 0;
+  }
+
+  /* Right rail termination */
+  .navbar-right,
+  .navbar-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  .navbar-actions > * {
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* =====================================================
+   POST HEADER — SINGLE META RAIL
+   (name, badge, pronouns, date, privacy)
+   ===================================================== */
+
+.post-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.post-header .post-author {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.post-header .post-author > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.post-header .post-author span,
+.post-header .post-author time,
+.post-header .post-author svg {
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.post-header .post-author span:not(:first-child),
+.post-header .post-author time {
+  font-size: 13px;
+  opacity: 0.65;
+}
