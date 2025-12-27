@@ -173,5 +173,26 @@
     visibility: hidden !important;
     pointer-events: none !important;
   }
+
+  /* =====================================================
+     COMPACT SEARCH VARIANT (RIGHT NAV)
+     ===================================================== */
+
+  .global-search-compact {
+    display: flex;
+    align-items: center;
+  }
+
+  .global-search-compact .search-input {
+    width: 220px;
+    height: 36px;
+    font-size: 14px;
+    border-radius: 10px;
+    padding: 0 14px;
+  }
+
+  .search-input[data-variant="compact"] {
+    background: rgba(255,255,255,0.06);
+  }
 }
 

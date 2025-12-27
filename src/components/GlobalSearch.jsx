@@ -5,7 +5,7 @@ import { getImageUrl } from '../utils/imageUrl';
 import { quietCopy } from '../config/uiCopy';
 import './GlobalSearch.css';
 
-function GlobalSearch() {
+function GlobalSearch({ variant = 'default' }) {
   const [searchQuery, setSearchQuery] = useState('');
   // REMOVED 2025-12-26: hashtags removed (Phase 5)
   const [searchResults, setSearchResults] = useState({ users: [], posts: [] });
@@ -81,7 +81,7 @@ function GlobalSearch() {
                      searchResults.posts.length > 0;
 
   return (
-    <div className="global-search" ref={searchRef}>
+    <div className={`global-search ${variant === 'compact' ? 'global-search-compact' : ''}`} ref={searchRef} data-variant={variant}>
       <div className="search-input-wrapper">
         <input
           type="text"
@@ -90,8 +90,9 @@ function GlobalSearch() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => searchQuery && setShowResults(true)}
-          placeholder={isQuietMode ? quietCopy.searchPlaceholder : "Search users and posts..."}
+          placeholder={isQuietMode ? quietCopy.searchPlaceholder : (variant === 'compact' ? 'Search...' : 'Search users and posts...')}
           className="search-input"
+          data-variant={variant}
           autoComplete="off"
           aria-label="Search users and posts"
         />

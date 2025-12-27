@@ -110,7 +110,7 @@ function Navbar() {
           <span className="brand-text">Pryde Social</span>
         </Link>
 
-        <GlobalSearch />
+        {/* Center search removed — unified search lives in right utility area */}
 
         {/* Mobile Hamburger Menu - Only render on non-desktop */}
         {!isDesktop && (
@@ -266,6 +266,9 @@ function Navbar() {
         )}
 
         <div className="navbar-user">
+          {/* Unified search (compact, functional) */}
+          <GlobalSearch variant="compact" />
+
           {/* Feature navigation moved to contextual panel - keeping only global actions */}
           <Link to="/messages" className="nav-button" title="Messages">
             <span className="nav-icon">💬</span>
