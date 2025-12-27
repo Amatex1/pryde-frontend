@@ -60,15 +60,25 @@
 
   /* RIGHT — Actions (right-aligned) */
   .navbar-right,
-  .navbar-actions,
-  .navbar-user {
+  .navbar-actions {
     grid-column: 3;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 14px;
+    gap: 12px;
     position: relative;
     overflow: visible !important;
+  }
+
+  /* All action children flex-aligned */
+  .navbar-actions > * {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Icons baseline */
+  .navbar-actions svg {
+    vertical-align: middle;
   }
 
   /* Messages icon — icon only */
@@ -83,6 +93,16 @@
   .notification-bell {
     display: flex;
     align-items: center;
+  }
+
+  /* Profile anchor is the terminal edge */
+  .navbar-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 6px;
+    position: relative;
+    overflow: visible !important;
   }
 
   /* Profile dropdown container */
@@ -134,6 +154,13 @@
   .user-dropdown {
     right: 0;
     left: auto;
+  }
+
+  /* Search visual centering */
+  .navbar-search,
+  .global-search {
+    margin-top: 0;
+    margin-bottom: 0;
   }
 
   /* Safety: no mobile controls on desktop */
