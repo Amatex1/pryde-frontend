@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import CustomModal from '../components/CustomModal';
+import InviteManagement from '../components/InviteManagement'; // Phase 7B
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
 import { logout } from '../utils/auth';
@@ -320,6 +321,13 @@ function Settings() {
           {/* NOTE: Verification Request Section removed 2025-12-26
               The verification system has been intentionally removed.
               Endpoint returns 410 Gone. */}
+
+          {/* Phase 7B: Invite Management (Admin/Super Admin only) */}
+          {currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin') && (
+            <div className="settings-section">
+              <InviteManagement />
+            </div>
+          )}
 
           {/* PHASE 2: Quiet Mode */}
           <div className="settings-section">

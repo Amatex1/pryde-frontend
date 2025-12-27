@@ -1,0 +1,178 @@
+/* ========================================
+   INVITE MANAGEMENT COMPONENT (Phase 7B)
+   ======================================== */
+
+.invite-management {
+  padding: var(--space-md);
+}
+
+.invite-header h3 {
+  margin: 0 0 var(--space-sm) 0;
+  font-size: var(--font-size-lg);
+  color: var(--text-main);
+}
+
+.invite-description {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-md);
+}
+
+.invite-error {
+  background: var(--error-bg);
+  color: var(--error-color);
+  padding: var(--space-sm);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-sm);
+}
+
+.invite-success {
+  background: var(--success-bg);
+  color: var(--success-color);
+  padding: var(--space-sm);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-sm);
+}
+
+.invite-loading {
+  text-align: center;
+  padding: var(--space-lg);
+  color: var(--text-muted);
+}
+
+/* Create Section */
+.invite-create-section {
+  background: var(--bg-subtle);
+  padding: var(--space-md);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--space-lg);
+}
+
+.invite-note-input {
+  margin-bottom: var(--space-md);
+}
+
+.invite-note-input label {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-xs);
+}
+
+.invite-note-input input {
+  width: 100%;
+  padding: var(--space-sm);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+.invite-create-btn {
+  width: 100%;
+}
+
+.invite-cooldown-notice {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  padding: var(--space-sm);
+}
+
+/* Invites List */
+.invite-list {
+  margin-top: var(--space-lg);
+}
+
+.invite-list h4 {
+  margin: 0 0 var(--space-md) 0;
+  font-size: var(--font-size-md);
+  color: var(--text-main);
+}
+
+.invite-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.invite-item-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.invite-code-display {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.invite-code-display code {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  background: var(--bg-subtle);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-main);
+}
+
+.invite-note {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.invite-status-badge {
+  font-size: var(--font-size-xs);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--border-radius-full);
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.invite-active .invite-status-badge {
+  background: var(--success-bg);
+  color: var(--success-color);
+}
+
+.invite-used .invite-status-badge {
+  background: var(--info-bg);
+  color: var(--info-color);
+}
+
+.invite-expired .invite-status-badge,
+.invite-revoked .invite-status-badge {
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+}
+
+.invite-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.invite-item-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.invite-empty {
+  text-align: center;
+  padding: var(--space-lg);
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+

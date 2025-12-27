@@ -44,6 +44,7 @@ const lazyWithReload = (importFn) => {
 const Home = lazyWithReload(() => import('./pages/Home'));
 const Login = lazyWithReload(() => import('./pages/Login'));
 const Register = lazyWithReload(() => import('./pages/Register'));
+const InviteRequired = lazyWithReload(() => import('./pages/InviteRequired')); // Phase 7B
 const Footer = lazyWithReload(() => import('./components/Footer'));
 const ForgotPassword = lazyWithReload(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazyWithReload(() => import('./pages/ResetPassword'));
@@ -311,6 +312,10 @@ function AppContent() {
                   <Route path="/register" element={
                     authLoading ? <PageLoader /> :
                     !isAuth ? <Register onLoginSuccess={login} /> : <Navigate to="/feed" />
+                  } />
+                  <Route path="/invite-required" element={
+                    authLoading ? <PageLoader /> :
+                    !isAuth ? <InviteRequired /> : <Navigate to="/feed" />
                   } />
                   <Route path="/forgot-password" element={
                     authLoading ? <PageLoader /> :

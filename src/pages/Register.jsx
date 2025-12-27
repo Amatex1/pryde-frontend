@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import api from '../utils/api';
 import { setAuthToken, setRefreshToken, setCurrentUser } from '../utils/auth';
@@ -7,6 +7,9 @@ import PasskeySetup from '../components/PasskeySetup';
 import './Auth.css';
 
 function Register({ setIsAuth }) {
+  const [searchParams] = useSearchParams();
+  const inviteCodeFromUrl = searchParams.get('invite');
+
   const [formData, setFormData] = useState({
     // Required fields
     fullName: '',
@@ -32,10 +35,68 @@ function Register({ setIsAuth }) {
   const [usernameAvailable, setUsernameAvailable] = useState(null);
   const [checkingUsername, setCheckingUsername] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState({ score: 0, label: '', color: '' });
+
+  // Phase 7B: Invite-only mode state
+  const [inviteCode, setInviteCode] = useState(inviteCodeFromUrl || '');
+  const [inviteValid, setInviteValid] = useState(null); // null = checking, true = valid, false = invalid
+  const [inviteOnlyMode, setInviteOnlyMode] = useState(false);
+  const [checkingInvite, setCheckingInvite] = useState(true);
+
   const navigate = useNavigate();
   const captchaRef = useRef(null);
   const usernameCheckTimeout = useRef(null);
   // Theme is initialized in main.jsx - no need to set it here
+
+  // Phase 7B: Check if invite-only mode is enabled and validate invite code
+  useEffect(() => {
+    const checkInviteStatus = async () => {
+      try {
+        // Check platform status
+        const statusResponse = await api.get('/invites/status');
+        const isInviteOnly = statusResponse.data.inviteOnlyMode;
+        setInviteOnlyMode(isInviteOnly);
+
+        if (!isInviteOnly) {
+          // Not invite-only mode, allow registration
+          setInviteValid(true);
+          setCheckingInvite(false);
+          return;
+        }
+
+        // Invite-only mode is enabled
+        if (!inviteCodeFromUrl) {
+          // No invite code provided, redirect to invite-required page
+          navigate('/invite-required');
+          return;
+        }
+
+        // Validate the invite code
+        const validateResponse = await api.post('/invites/validate', {
+          code: inviteCodeFromUrl
+        });
+
+        if (validateResponse.data.valid) {
+          setInviteValid(true);
+        } else {
+          setInviteValid(false);
+          setError(validateResponse.data.message || 'This invite code is not valid.');
+        }
+      } catch (err) {
+        console.error('Invite check error:', err);
+        // If we can't check, assume invite-only and redirect
+        if (err.response?.status === 403) {
+          navigate('/invite-required');
+        } else {
+          // Network error or server issue - allow registration attempt
+          setInviteValid(true);
+        }
+      } finally {
+        setCheckingInvite(false);
+      }
+    };
+
+    checkInviteStatus();
+  }, [inviteCodeFromUrl, navigate]);
 
   // Password strength calculator
   const calculatePasswordStrength = (password) => {
@@ -192,7 +253,8 @@ function Register({ setIsAuth }) {
 
       const response = await api.post('/auth/signup', {
         ...formData,
-        captchaToken
+        captchaToken,
+        inviteCode: inviteCode || inviteCodeFromUrl || undefined // Phase 7B: Include invite code
       });
       
       console.log('Registration successful:', response.data);
@@ -236,6 +298,44 @@ function Register({ setIsAuth }) {
     setCaptchaToken('');
   };
 
+  // Phase 7B: Show loading while checking invite status
+  if (checkingInvite) {
+    return (
+      <div className="auth-container">
+        <div className="auth-card glossy fade-in">
+          <div className="auth-header">
+            <h1 className="auth-title text-shadow">✨ Pryde Social</h1>
+            <p className="auth-subtitle">Checking invite...</p>
+          </div>
+          <div className="loading-spinner" style={{ margin: '2rem auto' }} />
+        </div>
+      </div>
+    );
+  }
+
+  // Phase 7B: Show error if invite is invalid
+  if (inviteOnlyMode && inviteValid === false) {
+    return (
+      <div className="auth-container">
+        <div className="auth-card glossy fade-in">
+          <div className="auth-header">
+            <h1 className="auth-title text-shadow">✨ Pryde Social</h1>
+            <p className="auth-subtitle">Invalid Invite</p>
+          </div>
+          <div className="error-message" role="alert">
+            {error || 'This invite code is not valid or has expired.'}
+          </div>
+          <Link to="/invite-required" className="btn-primary btn-full" style={{ marginTop: '1rem' }}>
+            Try Another Invite
+          </Link>
+          <p className="auth-switch" style={{ marginTop: '1rem' }}>
+            Already have an account? <Link to="/login">Sign in</Link>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="auth-container">
       <div className="auth-card glossy fade-in">
@@ -247,6 +347,19 @@ function Register({ setIsAuth }) {
           {!showPasskeySetup && (
             <>
               <p className="auth-subtext">You can come back to this later.</p>
+              {inviteOnlyMode && inviteCode && (
+                <div style={{
+                  background: 'var(--soft-green)',
+                  border: '2px solid var(--success-color)',
+                  borderRadius: 'var(--border-radius-md)',
+                  padding: 'var(--space-sm)',
+                  marginTop: 'var(--space-sm)',
+                  fontSize: 'var(--font-size-sm)',
+                  textAlign: 'center'
+                }}>
+                  <span style={{ color: 'var(--success-color)' }}>✓ Valid invite code</span>
+                </div>
+              )}
               <div style={{
                 background: 'var(--soft-lavender)',
                 border: '2px solid var(--pryde-purple)',
