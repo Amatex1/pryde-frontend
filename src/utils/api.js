@@ -182,6 +182,10 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       const errorCode = error.response?.data?.code || '';
       const errorMessage = error.response?.data?.message || '';
+      const endpoint = originalRequest?.url || 'unknown';
+
+      // Log 401 for debugging (only once per endpoint to reduce spam)
+      logger.debug(`🔐 401 on ${endpoint}: ${errorMessage || 'No auth token'}`);
 
       // CRITICAL: Handle account deletion - force logout immediately, no refresh attempt
       if (errorCode === 'ACCOUNT_DELETED' || errorMessage.includes('deleted')) {
@@ -195,6 +199,13 @@ api.interceptors.response.use(
       const currentPath = window.location.pathname;
       if (currentPath === '/login' || currentPath === '/register' || currentPath === '/') {
         logger.debug('⏸️ Skipping refresh on public page:', currentPath);
+        return Promise.reject(error);
+      }
+
+      // Check for access token first
+      const accessToken = getAuthToken();
+      if (!accessToken) {
+        logger.debug(`⏸️ No access token - user not logged in (endpoint: ${endpoint})`);
         return Promise.reject(error);
       }
 

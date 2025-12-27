@@ -87,6 +87,13 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
   }, []);
 
   useEffect(() => {
+    // Guard: Don't fetch if not authenticated
+    if (!currentUserId) {
+      console.log('⏸️ MiniChat: Skipping fetch - not authenticated');
+      setIsLoading(false);
+      return;
+    }
+
     // Fetch friend data for online status
     const fetchFriendData = async () => {
       try {
@@ -180,7 +187,7 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
       cleanupUserOffline?.();
       cleanupOnlineUsers?.();
     };
-  }, [friendId]);
+  }, [friendId, currentUserId]);
 
   const handleSend = () => {
     if (!inputMessage.trim()) return;
