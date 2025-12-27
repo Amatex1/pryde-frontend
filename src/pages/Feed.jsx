@@ -34,6 +34,7 @@ import { compressPostMedia } from '../utils/compressImage';
 import { uploadMultipleWithProgress } from '../utils/uploadWithProgress';
 import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
 import { withOptimisticUpdate } from '../utils/consistencyGuard';
+import { quietCopy } from '../config/uiCopy';
 import './Feed.css';
 
 function Feed() {
@@ -106,7 +107,7 @@ function Feed() {
   const [editHistoryPostId, setEditHistoryPostId] = useState(null);
   const [hideMetrics, setHideMetrics] = useState(false); // Hide metrics for new post
   const [autoHideContentWarnings, setAutoHideContentWarnings] = useState(false);
-  const [quietMode, setQuietMode] = useState(document.documentElement.getAttribute('data-quiet-mode') === 'true');
+  const [quietMode, setQuietMode] = useState(document.documentElement.getAttribute('data-quiet') === 'true');
   const [initializing, setInitializing] = useState(true); // Track initial load
   const [showDraftManager, setShowDraftManager] = useState(false); // Show/hide draft manager
   const [currentDraftId, setCurrentDraftId] = useState(null); // Track current draft being edited
@@ -421,13 +422,13 @@ function Feed() {
   // Listen for quiet mode changes
   useEffect(() => {
     const observer = new MutationObserver(() => {
-      const quiet = document.documentElement.getAttribute('data-quiet-mode') === 'true';
+      const quiet = document.documentElement.getAttribute('data-quiet') === 'true';
       setQuietMode(quiet);
     });
 
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-quiet-mode']
+      attributeFilter: ['data-quiet']
     });
 
     return () => observer.disconnect();
@@ -1976,7 +1977,9 @@ function Feed() {
               </>
             ) : posts.length === 0 ? (
               <div className="empty-state glossy">
-                <p className="empty-state-primary">There's nothing new right now — and that's okay.</p>
+                <p className="empty-state-primary">
+                  {quietMode ? quietCopy.emptyFeed : "There's nothing new right now — and that's okay."}
+                </p>
                 <p className="empty-state-secondary">When people share, you'll see it here.</p>
                 <p className="empty-state-tertiary">Pryde moves at a human pace.</p>
               </div>

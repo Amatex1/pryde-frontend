@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
+import { quietCopy } from '../config/uiCopy';
 import './GlobalSearch.css';
 
 function GlobalSearch() {
@@ -10,8 +11,22 @@ function GlobalSearch() {
   const [searchResults, setSearchResults] = useState({ users: [], posts: [] });
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isQuietMode, setIsQuietMode] = useState(false);
   const searchRef = useRef(null);
   const navigate = useNavigate();
+
+  // Listen for quiet mode changes
+  useEffect(() => {
+    const checkQuietMode = () => {
+      const quietAttr = document.documentElement.getAttribute('data-quiet');
+      setIsQuietMode(quietAttr === 'true');
+    };
+    checkQuietMode();
+
+    const observer = new MutationObserver(checkQuietMode);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-quiet'] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -75,7 +90,7 @@ function GlobalSearch() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => searchQuery && setShowResults(true)}
-          placeholder="Search users and posts..."
+          placeholder={isQuietMode ? quietCopy.searchPlaceholder : "Search users and posts..."}
           className="search-input"
           autoComplete="off"
           aria-label="Search users and posts"

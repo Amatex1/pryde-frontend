@@ -9,6 +9,7 @@ import api, { getCsrfToken } from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
 import Navbar from '../components/Navbar';
 import DraftManager from '../components/DraftManager';
+import { quietCopy } from '../config/uiCopy';
 import './Journal.css';
 
 function Journal() {
@@ -24,8 +25,18 @@ function Journal() {
   });
   const [showDraftManager, setShowDraftManager] = useState(false);
   const [currentDraftId, setCurrentDraftId] = useState(null);
+  const [isQuietMode, setIsQuietMode] = useState(document.documentElement.getAttribute('data-quiet') === 'true');
   const autoSaveTimerRef = useRef(null);
   const currentUser = getCurrentUser();
+
+  // Listen for quiet mode changes
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsQuietMode(document.documentElement.getAttribute('data-quiet') === 'true');
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-quiet'] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     fetchJournals();
@@ -218,7 +229,7 @@ function Journal() {
             />
             
             <textarea
-              placeholder="Write your thoughts..."
+              placeholder={isQuietMode ? quietCopy.journalPrompt : "Write your thoughts..."}
               value={formData.body}
               onChange={(e) => setFormData({ ...formData, body: e.target.value })}
               className="journal-body-input"

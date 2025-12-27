@@ -30,6 +30,7 @@ import { compressImage } from '../utils/compressImage';
 import { uploadWithProgress } from '../utils/uploadWithProgress';
 import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
 import { withOptimisticUpdate } from '../utils/consistencyGuard';
+import { quietCopy } from '../config/uiCopy';
 import './Messages.css';
 import '../styles/themes/messages.css';
 
@@ -83,7 +84,7 @@ function Messages() {
   const [archivedConversations, setArchivedConversations] = useState([]);
   const [mutedConversations, setMutedConversations] = useState([]);
   const [currentTheme, setCurrentTheme] = useState(document.documentElement.getAttribute('data-theme') || 'light');
-  const [quietMode, setQuietMode] = useState(document.documentElement.getAttribute('data-quiet-mode') === 'true');
+  const [quietMode, setQuietMode] = useState(document.documentElement.getAttribute('data-quiet') === 'true');
   const [uploadingFile, setUploadingFile] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -141,14 +142,14 @@ function Messages() {
   useEffect(() => {
     const observer = new MutationObserver(() => {
       const theme = document.documentElement.getAttribute('data-theme') || 'light';
-      const quiet = document.documentElement.getAttribute('data-quiet-mode') === 'true';
+      const quiet = document.documentElement.getAttribute('data-quiet') === 'true';
       setCurrentTheme(theme);
       setQuietMode(quiet);
     });
 
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-theme', 'data-quiet-mode']
+      attributeFilter: ['data-theme', 'data-quiet']
     });
 
     return () => observer.disconnect();
@@ -1235,7 +1236,9 @@ function Messages() {
                   )}
 
                   {conversations.length === 0 && groupChats.length === 0 && (
-                    <div className="empty-state">No conversations yet</div>
+                    <div className="empty-state">
+                      {quietMode ? quietCopy.noMessages : "No conversations yet"}
+                    </div>
                   )}
                 </>
               )}

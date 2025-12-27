@@ -6,6 +6,7 @@ import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import { getSocket } from '../utils/socket';
 import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
+import { quietCopy } from '../config/uiCopy';
 import './Lounge.css';
 
 function Lounge() {
@@ -26,9 +27,19 @@ function Lounge() {
   const [showOnlineUsersModal, setShowOnlineUsersModal] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [loadingOnlineUsers, setLoadingOnlineUsers] = useState(false);
+  const [isQuietMode, setIsQuietMode] = useState(document.documentElement.getAttribute('data-quiet') === 'true');
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const socketRef = useRef(null);
+
+  // Listen for quiet mode changes
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsQuietMode(document.documentElement.getAttribute('data-quiet') === 'true');
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-quiet'] });
+    return () => observer.disconnect();
+  }, []);
 
   // Handler to block Enter key submission when GIF picker is open
   const handleKeyDown = useCallback((e) => {
@@ -316,7 +327,9 @@ function Lounge() {
           <div className="lounge-title-section">
             <h1 className="lounge-title">✨ Lounge</h1>
             <p className="lounge-subtitle">
-              A calm, site-wide chat room for all members. Say hi, share your day, or just sit quietly with us.
+              {isQuietMode
+                ? quietCopy.loungeIntro
+                : "A calm, site-wide chat room for all members. Say hi, share your day, or just sit quietly with us."}
             </p>
           </div>
 
