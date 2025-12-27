@@ -1,0 +1,100 @@
+/* =====================================================
+   DESKTOP NAVBAR — FINAL STRUCTURE
+   Brand | Search (centered) | Actions (right)
+   ===================================================== */
+
+@media (min-width: 1024px) {
+
+  /* Base grid: brand | search | actions */
+  .navbar {
+    display: grid;
+    grid-template-columns: auto minmax(420px, 640px) auto;
+    align-items: center;
+    height: 64px;
+    padding: 0 24px;
+    gap: 24px;
+  }
+
+  /* LEFT: Brand */
+  .navbar-logo,
+  .navbar-brand {
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* CENTER: Search */
+  .navbar-search,
+  .global-search {
+    grid-column: 2;
+    width: 100%;
+    max-width: 640px;
+    justify-self: center;
+  }
+
+  .navbar-search input,
+  .global-search input {
+    height: 40px;
+    font-size: 15px;
+    padding: 0 16px;
+    border-radius: 10px;
+  }
+
+  /* RIGHT: Actions */
+  .navbar-right,
+  .navbar-actions,
+  .navbar-user {
+    grid-column: 3;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    overflow: visible;
+  }
+
+  /* Messages + notification icons */
+  .navbar-right .nav-icon,
+  .navbar-user .nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Profile + name */
+  .navbar-avatar-wrapper,
+  .profile-dropdown-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  .navbar-avatar,
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .navbar-username,
+  .user-name {
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+  }
+
+  /* Kill hamburger on desktop (render + layout safety) */
+  .hamburger,
+  .menu-toggle,
+  .mobile-menu-button,
+  .mobile-hamburger-btn {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
+
