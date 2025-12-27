@@ -1,0 +1,125 @@
+/**
+ * PageLayout.css - Responsive CSS Grid layout
+ * 
+ * THE ONLY PLACE WHERE LAYOUT MEDIA QUERIES ARE ALLOWED
+ * 
+ * Breakpoints:
+ * - Mobile: ≤600px (single column always)
+ * - Tablet: 601-1024px (two-column max)
+ * - Desktop: ≥1025px (full variant support)
+ */
+
+/* ========================================
+   BASE LAYOUT (Mobile-first: single column)
+   ======================================== */
+
+.page-layout {
+  display: grid;
+  gap: var(--layout-gap, var(--space-md, 16px));
+  width: 100%;
+  
+  /* Mobile: single column */
+  grid-template-columns: 1fr;
+  grid-template-areas: "primary";
+}
+
+/* Primary column - always visible */
+.page-layout__primary {
+  grid-area: primary;
+  min-width: 0; /* Prevent grid blowout */
+}
+
+/* Secondary column - hidden on mobile */
+.page-layout__secondary {
+  grid-area: secondary;
+  display: none;
+  min-width: 0;
+}
+
+/* Tertiary column - hidden on mobile and tablet */
+.page-layout__tertiary {
+  grid-area: tertiary;
+  display: none;
+  min-width: 0;
+}
+
+/* ========================================
+   TABLET LAYOUT (601px - 1024px)
+   ======================================== */
+
+@media (min-width: 601px) and (max-width: 1024px) {
+  /* Two-column: primary (65%) + secondary (35%) */
+  .page-layout--two-column {
+    grid-template-columns: 1.8fr 1fr;
+    grid-template-areas: "primary secondary";
+  }
+  
+  .page-layout--two-column .page-layout__secondary {
+    display: block;
+  }
+  
+  /* Three-column collapses to two-column on tablet */
+  .page-layout--three-column {
+    grid-template-columns: 1.8fr 1fr;
+    grid-template-areas: "primary secondary";
+  }
+  
+  .page-layout--three-column .page-layout__secondary {
+    display: block;
+  }
+  
+  /* Tertiary stays hidden on tablet */
+  .page-layout--three-column .page-layout__tertiary {
+    display: none;
+  }
+}
+
+/* ========================================
+   DESKTOP LAYOUT (≥1025px)
+   ======================================== */
+
+@media (min-width: 1025px) {
+  /* Two-column: primary (70%) + secondary (30%) */
+  .page-layout--two-column {
+    grid-template-columns: 2fr 1fr;
+    grid-template-areas: "primary secondary";
+  }
+  
+  .page-layout--two-column .page-layout__secondary {
+    display: block;
+  }
+  
+  /* Three-column: tertiary (20%) + primary (55%) + secondary (25%) */
+  .page-layout--three-column {
+    grid-template-columns: 1fr 2.5fr 1fr;
+    grid-template-areas: "tertiary primary secondary";
+  }
+  
+  .page-layout--three-column .page-layout__secondary,
+  .page-layout--three-column .page-layout__tertiary {
+    display: block;
+  }
+  
+  /* Sticky secondary wrapper (desktop only) */
+  .page-layout[data-sticky-secondary="true"] .page-layout__sticky-wrapper {
+    position: sticky;
+    top: calc(var(--navbar-height, 60px) + var(--space-md, 16px));
+    max-height: calc(100vh - var(--navbar-height, 60px) - var(--space-lg, 24px));
+    overflow-y: auto;
+  }
+}
+
+/* ========================================
+   SINGLE COLUMN (all breakpoints)
+   ======================================== */
+
+.page-layout--single {
+  grid-template-columns: 1fr;
+  grid-template-areas: "primary";
+}
+
+.page-layout--single .page-layout__secondary,
+.page-layout--single .page-layout__tertiary {
+  display: none;
+}
+

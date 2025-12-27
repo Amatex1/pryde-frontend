@@ -1,0 +1,16 @@
+/**
+ * FeedSidebar.css - Sidebar styling (layout-agnostic)
+ * 
+ * NO width, max-width, or layout rules
+ * These are handled by PageLayout
+ */
+
+.feed-sidebar-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 16px);
+}
+
+/* Styles are inherited from existing Feed.css and sidebar.css */
+/* This file can be extended as needed for sidebar-specific styling */
+

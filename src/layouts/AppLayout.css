@@ -1,0 +1,42 @@
+/**
+ * AppLayout.css - Unified app layout styles
+ * 
+ * CONTROLS:
+ * - Mobile navigation visibility (CSS-based, no JS)
+ * - Bottom padding for mobile nav
+ */
+
+/* ========================================
+   MOBILE NAVIGATION VISIBILITY
+   Hidden on desktop, shown on mobile
+   ======================================== */
+
+/* Mobile nav is hidden by default */
+.mobile-nav {
+  display: none;
+}
+
+/* Show mobile nav on mobile/tablet */
+@media (max-width: 1024px) {
+  .mobile-nav {
+    display: grid;
+  }
+  
+  /* Add bottom padding to page-container to prevent content overlap */
+  .page-container {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0));
+  }
+}
+
+/* Hide mobile nav on desktop */
+@media (min-width: 1025px) {
+  .mobile-nav {
+    display: none !important;
+  }
+  
+  /* No extra bottom padding needed on desktop */
+  .page-container {
+    padding-bottom: 0;
+  }
+}
+

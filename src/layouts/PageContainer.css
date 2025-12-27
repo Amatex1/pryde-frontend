@@ -1,0 +1,26 @@
+/**
+ * PageContainer.css - Content centering and max-width
+ * 
+ * SINGLE RESPONSIBILITY:
+ * - Center content horizontally
+ * - Constrain max-width
+ * - Apply responsive horizontal padding
+ * 
+ * NO column layout rules - that's PageLayout's job
+ */
+
+.page-container {
+  /* Center content */
+  width: 100%;
+  max-width: var(--container-desktop, 1200px);
+  margin-left: auto;
+  margin-right: auto;
+  
+  /* Horizontal padding - controlled by CSS variable */
+  padding-left: var(--page-padding, 16px);
+  padding-right: var(--page-padding, 16px);
+  
+  /* Prevent content from touching edges */
+  box-sizing: border-box;
+}
+

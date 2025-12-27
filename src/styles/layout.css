@@ -1,0 +1,90 @@
+/**
+ * layout.css - Layout Design Tokens and Responsive Variables
+ * 
+ * THIS FILE DEFINES:
+ * - Spacing tokens used by layout primitives
+ * - --page-padding responsive variable
+ * - Breakpoint-specific layout adjustments
+ * 
+ * RULES:
+ * - Only layout-related tokens and media queries
+ * - Feature components must NOT override these
+ * - All layout decisions flow from these variables
+ */
+
+:root {
+  /* ========================================
+     SPACING TOKENS (Layout-specific)
+     ======================================== */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 40px;
+  --space-8: 48px;
+  
+  /* Semantic spacing aliases */
+  --space-xs: var(--space-1);
+  --space-sm: var(--space-2);
+  --space-md: var(--space-4);
+  --space-lg: var(--space-5);
+  --space-xl: var(--space-6);
+  
+  /* ========================================
+     PAGE PADDING (Responsive)
+     Mobile default - enhanced via media queries
+     ======================================== */
+  --page-padding: 16px;
+  
+  /* ========================================
+     CONTAINER MAX WIDTHS
+     ======================================== */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1200px;
+  --container-desktop: 1200px;
+  
+  /* ========================================
+     LAYOUT GAP TOKENS
+     ======================================== */
+  --layout-gap-sm: var(--space-3);  /* 12px */
+  --layout-gap-md: var(--space-4);  /* 16px */
+  --layout-gap-lg: var(--space-5);  /* 24px */
+  
+  /* ========================================
+     NAVBAR HEIGHT (for sticky calculations)
+     ======================================== */
+  --navbar-height: 60px;
+}
+
+/* ========================================
+   TABLET BREAKPOINT (≥601px)
+   ======================================== */
+@media (min-width: 601px) {
+  :root {
+    --page-padding: 24px;
+  }
+}
+
+/* ========================================
+   DESKTOP BREAKPOINT (≥1025px)
+   ======================================== */
+@media (min-width: 1025px) {
+  :root {
+    --page-padding: 32px;
+    --navbar-height: 64px;
+  }
+}
+
+/* ========================================
+   WIDE DESKTOP (≥1400px)
+   ======================================== */
+@media (min-width: 1400px) {
+  :root {
+    --page-padding: 40px;
+  }
+}
+

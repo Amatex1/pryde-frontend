@@ -82,6 +82,7 @@ const Footer = lazyWithReload(() => import('./components/Footer'));
 const ForgotPassword = lazyWithReload(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazyWithReload(() => import('./pages/ResetPassword'));
 const Feed = lazyWithReload(() => import('./pages/Feed'));
+const FeedController = lazyWithReload(() => import('./features/feed/FeedController')); // New layout system
 const FollowingFeed = lazyWithReload(() => import('./pages/FollowingFeed'));
 const Journal = lazyWithReload(() => import('./pages/Journal'));
 const Longform = lazyWithReload(() => import('./pages/Longform'));
@@ -122,9 +123,8 @@ const Helplines = lazyWithReload(() => import('./pages/legal/Helplines'));
 const TrustAndSafety = lazyWithReload(() => import('./pages/legal/TrustAndSafety')); // Phase 6B
 const PlatformGuarantees = lazyWithReload(() => import('./pages/PlatformGuarantees')); // Phase 7A
 
-// Layout components - eager load for immediate layout switching
-import MobileLayout from './layouts/MobileLayout';
-import DesktopLayout from './layouts/DesktopLayout';
+// Layout component - unified for all platforms (no viewport switching)
+import AppLayout from './layouts/AppLayout';
 
 // Loading fallback component with timeout
 const PageLoader = () => {
@@ -245,18 +245,8 @@ function AppContent() {
   const isAuth = isAuthenticated;
   const authLoading = authStatus === AUTH_STATES.LOADING;
 
-  // Detect mobile vs desktop for layout switching
-  const [isMobile, setIsMobile] = useState(
-    window.matchMedia('(max-width: 768px)').matches
-  );
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 768px)');
-    const handleResize = (e) => setIsMobile(e.matches);
-
-    mediaQuery.addEventListener('change', handleResize);
-    return () => mediaQuery.removeEventListener('change', handleResize);
-  }, []);
+  // NOTE: Mobile detection removed - layout now handled by CSS in AppLayout
+  // All platforms use the same layout primitives (PageViewport, PageContainer, PageLayout)
 
   // 🔥 AUTHENTICATED USER EFFECTS
   // These only run when user is authenticated
@@ -339,8 +329,8 @@ function AppContent() {
 
             <main id="main-content" role="main">
               <Routes>
-                {/* Layout wrapper - switches between mobile and desktop */}
-                <Route element={isMobile ? <MobileLayout /> : <DesktopLayout />}>
+                {/* Unified layout wrapper - same for all platforms */}
+                <Route element={<AppLayout />}>
                   {/* Public Home Page - Redirect to feed if logged in */}
                   <Route path="/" element={
                     authLoading ? <PageLoader /> :
@@ -377,6 +367,7 @@ function AppContent() {
 
                   {/* Protected Routes */}
                   <Route path="/feed" element={<PrivateRoute><Feed /></PrivateRoute>} />
+                  <Route path="/feed-v2" element={<PrivateRoute><FeedController /></PrivateRoute>} /> {/* New layout system test */}
                   <Route path="/feed/following" element={<PrivateRoute><FollowingFeed /></PrivateRoute>} />
                   <Route path="/journal" element={<PrivateRoute><Journal /></PrivateRoute>} />
                   <Route path="/longform" element={<PrivateRoute><Longform /></PrivateRoute>} />

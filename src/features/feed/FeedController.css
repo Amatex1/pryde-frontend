@@ -1,0 +1,10 @@
+/**
+ * FeedController.css - Controller-level styling
+ * 
+ * Minimal styling - most styles are in FeedStream.css and FeedSidebar.css
+ * This file handles any controller-specific overrides
+ */
+
+/* Controller has no layout-specific styles */
+/* All layout is handled by PageLayout */
+

@@ -1,0 +1,16 @@
+/**
+ * FeedStream.css - Post stream styling (layout-agnostic)
+ * 
+ * NO width, max-width, or layout rules
+ * These are handled by PageLayout
+ */
+
+.feed-stream-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 16px);
+}
+
+/* Post cards and other styles inherit from Feed.css */
+/* This file can be extended for stream-specific styling */
+
