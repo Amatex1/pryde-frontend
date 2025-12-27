@@ -11,61 +11,12 @@
 }
 
 /* ========================================
-   MOBILE HEADER - COMPACT & CONTEXT-AWARE
+   MOBILE HEADER - REMOVED (One Header Rule)
+   Global navbar is the only header.
+   Page context via PageTitle component.
    ======================================== */
 
-.mobile-header {
-  position: sticky;
-  top: 0;
-  height: 48px;
-  display: grid;
-  grid-template-columns: 40px 1fr 40px;
-  align-items: center;
-  border-bottom: 1px solid var(--border-subtle, #e0e0e0);
-  background: var(--surface-primary, #ffffff);
-  z-index: var(--z-sticky);
-  flex-shrink: 0;
-  padding: 0 4px;
-}
-
-.mobile-header-left,
-.mobile-header-right {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mobile-header-title {
-  text-align: center;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-primary, #2b2b2b);
-  user-select: none;
-  letter-spacing: -0.01em;
-}
-
-.mobile-back {
-  background: none;
-  border: none;
-  font-size: 20px;
-  padding: 8px;
-  cursor: pointer;
-  color: var(--text-primary, #2b2b2b);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  transition: background-color 0.15s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.mobile-back:hover {
-  background-color: var(--bg-hover, rgba(0, 0, 0, 0.05));
-}
-
-.mobile-back:active {
-  background-color: var(--bg-active, rgba(0, 0, 0, 0.1));
-}
+/* mobile-header styles removed — One Header Rule enforced */
 
 /* ========================================
    MOBILE CONTENT AREA
@@ -176,23 +127,11 @@
     background: var(--bg-primary, #1a1a1a);
   }
 
-  .mobile-header,
+  /* mobile-header dark mode removed — One Header Rule */
+
   .mobile-nav {
     background: var(--surface-primary, #2b2b2b);
     border-color: var(--border-subtle, #3a3a3a);
-  }
-
-  .mobile-header-title,
-  .mobile-back {
-    color: var(--text-primary, #f7f7f7);
-  }
-
-  .mobile-back:hover {
-    background-color: var(--bg-hover, rgba(255, 255, 255, 0.05));
-  }
-
-  .mobile-back:active {
-    background-color: var(--bg-active, rgba(255, 255, 255, 0.1));
   }
 
   .mobile-nav a {
