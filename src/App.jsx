@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { getCurrentUser } from './utils/auth';
 import { resetLogoutFlag, onNewMessage, disconnectSocketForLogout } from './utils/socket';
@@ -53,7 +53,7 @@ const Journal = lazyWithReload(() => import('./pages/Journal'));
 const Longform = lazyWithReload(() => import('./pages/Longform'));
 const Discover = lazyWithReload(() => import('./pages/Discover'));
 const Search = lazyWithReload(() => import('./pages/Search'));
-const TagFeed = lazyWithReload(() => import('./pages/TagFeed'));
+// Phase 2B: TagFeed removed - redirects to /groups/:slug
 const GroupsList = lazyWithReload(() => import('./pages/GroupsList')); // Phase 2: Groups listing
 const Groups = lazyWithReload(() => import('./pages/Groups')); // Phase 2: Individual group page
 const PhotoEssay = lazyWithReload(() => import('./pages/PhotoEssay'));
@@ -69,7 +69,7 @@ const Messages = lazyWithReload(() => import('./pages/Messages'));
 const Lounge = lazyWithReload(() => import('./pages/Lounge'));
 const Notifications = lazyWithReload(() => import('./pages/Notifications'));
 const Admin = lazyWithReload(() => import('./pages/Admin'));
-const Hashtag = lazyWithReload(() => import('./pages/Hashtag'));
+// Phase 2B: Hashtag removed - redirects to /groups/:tag
 const ReactivateAccount = lazyWithReload(() => import('./pages/ReactivateAccount'));
 
 // Lazy load legal pages with cache-mismatch protection
@@ -173,6 +173,25 @@ function PrivateRoute({ children }) {
   }
 
   return children;
+}
+
+/**
+ * Phase 2B: Tags → Groups Migration Redirects
+ * Redirects /tags/:slug to /groups/:slug
+ * Preserves bookmarks, SEO, avoids 404s
+ */
+function TagToGroupRedirect() {
+  const { slug } = useParams();
+  return <Navigate to={`/groups/${slug}`} replace />;
+}
+
+/**
+ * Phase 2B: Hashtag → Groups Migration Redirect
+ * Redirects /hashtag/:tag to /groups/:tag
+ */
+function HashtagToGroupRedirect() {
+  const { tag } = useParams();
+  return <Navigate to={`/groups/${tag}`} replace />;
 }
 
 /**
@@ -300,7 +319,6 @@ function AppContent() {
                   <Route path="/longform" element={<PrivateRoute><Longform /></PrivateRoute>} />
                   <Route path="/discover" element={<PrivateRoute><Discover /></PrivateRoute>} />
                   <Route path="/search" element={<PrivateRoute><Search /></PrivateRoute>} />
-                  <Route path="/tags/:slug" element={<PrivateRoute><TagFeed /></PrivateRoute>} />
                   <Route path="/groups" element={<PrivateRoute><GroupsList /></PrivateRoute>} />
                   <Route path="/groups/:slug" element={<PrivateRoute><Groups /></PrivateRoute>} />
                   <Route path="/photo-essay" element={<PrivateRoute><PhotoEssay /></PrivateRoute>} />
@@ -316,7 +334,12 @@ function AppContent() {
                   <Route path="/messages" element={<PrivateRoute><Messages /></PrivateRoute>} />
                   <Route path="/lounge" element={<PrivateRoute><Lounge /></PrivateRoute>} />
                   <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
-                  <Route path="/hashtag/:tag" element={<PrivateRoute><Hashtag /></PrivateRoute>} />
+
+                  {/* Phase 2B: Tags → Groups Migration Redirects */}
+                  {/* Preserve bookmarks, SEO, avoid 404s */}
+                  <Route path="/tags" element={<Navigate to="/groups" replace />} />
+                  <Route path="/tags/:slug" element={<TagToGroupRedirect />} />
+                  <Route path="/hashtag/:tag" element={<HashtagToGroupRedirect />} />
 
                   {/* Admin Panel - Role-protected */}
                   <Route path="/admin" element={
