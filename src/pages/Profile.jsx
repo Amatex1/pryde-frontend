@@ -260,7 +260,7 @@ function Profile() {
       }
 
       // Check for pending follow requests (if private account)
-      if (user.privacySettings?.isPrivateAccount) {
+      if (userResponse.data.privacySettings?.isPrivateAccount) {
         const requestsResponse = await api.get('/follow/requests/sent');
         const sentRequests = requestsResponse.data.sentRequests || requestsResponse.data;
         const pendingRequest = sentRequests.find(req => req.receiver._id === profileUserId);
