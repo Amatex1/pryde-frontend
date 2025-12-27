@@ -1,7 +1,9 @@
 /**
- * Mobile Search Page
+ * Phase 4C: Mobile Search Page
  * Full-page search experience for mobile users
  * Provides the same search functionality as GlobalSearch on desktop
+ *
+ * PHASE 4C: Hashtag search removed - groups are the only topic-based container
  */
 
 import { useState, useEffect } from 'react';
@@ -13,7 +15,8 @@ import './Search.css';
 
 function Search() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState({ users: [], posts: [], hashtags: [] });
+  // PHASE 4C: Removed hashtags from search results
+  const [searchResults, setSearchResults] = useState({ users: [], posts: [], groups: [] });
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const navigate = useNavigate();
@@ -23,7 +26,7 @@ function Search() {
       if (searchQuery.trim().length > 0) {
         performSearch();
       } else {
-        setSearchResults({ users: [], posts: [], hashtags: [] });
+        setSearchResults({ users: [], posts: [], groups: [] });
         setHasSearched(false);
       }
     }, 300);
@@ -34,8 +37,24 @@ function Search() {
   const performSearch = async () => {
     setLoading(true);
     try {
+      // Search users and posts from main search endpoint
       const response = await api.get(`/search?q=${encodeURIComponent(searchQuery)}`);
-      setSearchResults(response.data);
+
+      // Also search groups by name/description
+      let groups = [];
+      try {
+        const groupsResponse = await api.get('/groups');
+        const allGroups = groupsResponse.data.groups || groupsResponse.data || [];
+        const query = searchQuery.toLowerCase();
+        groups = allGroups.filter(g =>
+          g.name?.toLowerCase().includes(query) ||
+          g.description?.toLowerCase().includes(query)
+        ).slice(0, 5);
+      } catch (err) {
+        console.error('Group search error:', err);
+      }
+
+      setSearchResults({ ...response.data, groups });
       setHasSearched(true);
     } catch (error) {
       console.error('Search error:', error);
@@ -48,8 +67,8 @@ function Search() {
     navigate(`/profile/${username}`);
   };
 
-  const handleHashtagClick = (hashtag) => {
-    navigate(`/hashtag/${hashtag.replace('#', '')}`);
+  const handleGroupClick = (slug) => {
+    navigate(`/groups/${slug}`);
   };
 
   const handlePostClick = (postId) => {
@@ -58,13 +77,13 @@ function Search() {
 
   const clearSearch = () => {
     setSearchQuery('');
-    setSearchResults({ users: [], posts: [], hashtags: [] });
+    setSearchResults({ users: [], posts: [], groups: [] });
     setHasSearched(false);
   };
 
-  const hasResults = searchResults.users.length > 0 || 
-                     searchResults.posts.length > 0 || 
-                     searchResults.hashtags.length > 0;
+  const hasResults = searchResults.users.length > 0 ||
+                     searchResults.posts.length > 0 ||
+                     searchResults.groups?.length > 0;
 
   return (
     <div className="search-page">
@@ -78,7 +97,7 @@ function Search() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search users, posts, hashtags..."
+            placeholder="Search users, posts, groups..."
             className="search-input"
             autoFocus
             autoComplete="off"
@@ -101,7 +120,7 @@ function Search() {
         {!loading && hasSearched && !hasResults && (
           <div className="no-results">
             <p>No results found for "{searchQuery}"</p>
-            <p className="no-results-hint">Try searching for users, posts, or hashtags</p>
+            <p className="no-results-hint">Try searching for users, posts, or groups</p>
           </div>
         )}
 
@@ -109,23 +128,24 @@ function Search() {
           <div className="search-hints">
             <p>🔍 Search for users by name or username</p>
             <p>📝 Search posts by content</p>
-            <p>#️⃣ Search hashtags</p>
+            <p>👥 Search groups by name</p>
           </div>
         )}
 
-        {searchResults.hashtags.length > 0 && (
+        {/* PHASE 4C: Groups replace hashtags */}
+        {searchResults.groups?.length > 0 && (
           <div className="results-section">
-            <h3 className="section-title">Hashtags</h3>
-            {searchResults.hashtags.map((item, index) => (
+            <h3 className="section-title">Groups</h3>
+            {searchResults.groups.map((group) => (
               <div
-                key={index}
-                className="result-item hashtag-item"
-                onClick={() => handleHashtagClick(item.hashtag)}
+                key={group._id}
+                className="result-item group-item"
+                onClick={() => handleGroupClick(group.slug)}
               >
-                <span className="hashtag-icon">#</span>
-                <div className="hashtag-info">
-                  <span className="hashtag-name">{item.hashtag}</span>
-                  <span className="hashtag-count">{item.count} posts</span>
+                <span className="group-icon">👥</span>
+                <div className="group-info">
+                  <span className="group-name">{group.name}</span>
+                  <span className="group-description">{group.description?.substring(0, 50)}{group.description?.length > 50 ? '...' : ''}</span>
                 </div>
               </div>
             ))}
