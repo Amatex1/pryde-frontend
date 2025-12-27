@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+﻿import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ReportModal from '../components/ReportModal';
@@ -260,7 +260,7 @@ function Profile() {
       }
 
       // Check for pending follow requests (if private account)
-      if (userResponse.data.privacySettings?.isPrivateAccount) {
+      if (user.privacySettings?.isPrivateAccount) {
         const requestsResponse = await api.get('/follow/requests/sent');
         const sentRequests = requestsResponse.data.sentRequests || requestsResponse.data;
         const pendingRequest = sentRequests.find(req => req.receiver._id === profileUserId);
@@ -294,12 +294,7 @@ function Profile() {
     }
 
     if (!isOwnProfile) {
-      fetchPromises.push(
-        checkFriendStatus(),
-        checkFollowStatus(),
-        checkBlockStatus(),
-        checkPrivacyPermissions()
-      );
+      fetchPromises.push(checkFriendStatus(), checkBlockStatus());
     }
 
     Promise.all(fetchPromises).catch(error => {
@@ -459,7 +454,7 @@ function Profile() {
   // Update message permission when friend/follow status changes
   useEffect(() => {
     if (!isOwnProfile && user) {
-      checkPrivacyPermissions();
+      updatePrivacyPermissions();
     }
   }, [isOwnProfile, user, checkPrivacyPermissions]);
 
