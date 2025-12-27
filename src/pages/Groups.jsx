@@ -162,10 +162,9 @@ function Groups() {
   };
 
   /**
-   * Phase 2C: Join group with instant feedback
-   * - Button switches to "Leave Group"
-   * - Member count updates immediately
-   * - Toast notification confirms action
+   * Phase 5A: Join group with approval-aware feedback
+   * - joinMode = 'auto': Immediate join, button switches to "Leave Group"
+   * - joinMode = 'approval': Request sent, button shows "Request Pending"
    */
   const handleJoin = async () => {
     if (joining) return;
@@ -174,24 +173,27 @@ function Groups() {
       setJoining(true);
       const response = await api.post(`/groups/${slug}/join`);
 
-      // Use the response data directly to update state (faster UX)
-      if (response.data.success || response.data.isMember) {
-        setGroup(prev => ({
-          ...prev,
-          ...response.data,
-          isMember: true,
-          isOwner: response.data.isOwner || prev.isOwner
-        }));
-        // Set posts from response (empty array initially)
-        setPosts(response.data.posts || []);
+      // Update state based on ACTUAL response (not optimistic)
+      setGroup(prev => ({
+        ...prev,
+        ...response.data,
+        // Use backend's isMember value - don't override!
+        isMember: response.data.isMember === true,
+        hasPendingRequest: response.data.hasPendingRequest === true,
+        isOwner: response.data.isOwner || prev.isOwner
+      }));
 
-        // Phase 2C: Toast notification for join success
-        const groupName = response.data.name || group?.name || 'this group';
+      // Only set posts if actually a member now
+      if (response.data.isMember && response.data.posts) {
+        setPosts(response.data.posts);
+      }
+
+      // Show appropriate toast based on join mode
+      const groupName = response.data.name || group?.name || 'this group';
+      if (response.data.hasPendingRequest) {
+        showToast(`Request sent to join ${groupName}. You'll be notified when approved.`, 'info');
+      } else if (response.data.isMember) {
         showToast(`You joined ${groupName}`, 'success');
-      } else {
-        // Fallback: refetch if response doesn't contain full data
-        await fetchGroup();
-        showToast('Joined successfully', 'success');
       }
     } catch (err) {
       console.error('Failed to join group:', err);
@@ -536,9 +538,18 @@ function Groups() {
             {group.visibility === 'private' && <span className="visibility-badge">🔒 Private</span>}
           </div>
 
-          {/* Phase 2C: Role badge + Join/Leave CTA */}
+          {/* Phase 5A: Role badge + Join/Leave CTA (approval-aware) */}
           <div className="group-actions" role="group" aria-label="Group membership actions">
-            {!group.isMember ? (
+            {group.hasPendingRequest ? (
+              /* Pending request state - user waiting for approval */
+              <button
+                className="btn-pending"
+                disabled
+                aria-label="Your join request is pending approval"
+              >
+                <span aria-hidden="true">⏳</span> Request Pending
+              </button>
+            ) : !group.isMember ? (
               <button
                 className="btn-join"
                 onClick={handleJoin}
@@ -613,11 +624,15 @@ function Groups() {
           </div>
         </div>
 
-        {/* Phase 2C: Non-member private group message */}
+        {/* Phase 5A: Non-member / pending request message */}
         {!group.isMember && (
           <div className="join-prompt glossy">
-            {group.visibility === 'private' ? (
+            {group.hasPendingRequest ? (
+              <p>⏳ Your request to join is pending. The group owner will review it soon.</p>
+            ) : group.visibility === 'private' ? (
               <p>🔒 This is a private group — join to see posts and participate.</p>
+            ) : group.joinMode === 'approval' ? (
+              <p>This group requires approval to join. Request access to see posts and participate.</p>
             ) : (
               <p>Join this group to see posts and participate in discussions.</p>
             )}
