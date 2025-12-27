@@ -10,6 +10,7 @@
 @import './styles/theme.css';               /* Brand colors and theme variables */
 @import './styles/professional-layout.css'; /* Professional layout pass - calm + confident */
 @import './styles/components.css';          /* Reusable component styles */
+@import './styles/accessibility.css';       /* Phase 5C: Accessibility & keyboard navigation */
 
 /* ========================================
    RESPONSIVE FOUNDATION (MOBILE-FIRST)

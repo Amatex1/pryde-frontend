@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import './CustomModal.css';
 
 /**
@@ -9,11 +9,12 @@ import './CustomModal.css';
  * - 'confirm': Message with Cancel and Confirm buttons
  * - 'prompt': Message with text input and Cancel/Submit buttons
  *
- * Accessibility:
+ * Accessibility (Phase 5C Enhanced):
  * - Focus trap keeps keyboard navigation within modal
  * - ARIA attributes for screen readers
  * - Escape key closes modal
  * - Focus returns to trigger element on close
+ * - Prevents body scroll when open
  */
 function CustomModal({
   isOpen,
@@ -31,31 +32,67 @@ function CustomModal({
 }) {
   const [inputValue, setInputValue] = useState(defaultValue);
   const triggerRef = useRef(null);
+  const modalRef = useRef(null);
 
   useEffect(() => {
     setInputValue(defaultValue);
   }, [defaultValue, isOpen]);
 
-  // Store trigger element and handle focus return
+  // Store trigger element and handle focus return + body scroll lock
   useEffect(() => {
     if (isOpen) {
       triggerRef.current = document.activeElement;
-    } else if (triggerRef.current) {
-      triggerRef.current.focus();
+      // Prevent body scroll
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Restore body scroll
+      document.body.style.overflow = '';
+      if (triggerRef.current) {
+        triggerRef.current.focus();
+      }
     }
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
 
-  // Handle Escape key
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
+  // Phase 5C: Focus trap - keep focus within modal
+  const handleKeyDown = useCallback((e) => {
+    if (!isOpen || !modalRef.current) return;
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      onClose();
+      return;
+    }
+
+    if (e.key === 'Tab') {
+      const focusableElements = modalRef.current.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey) {
+        // Shift + Tab
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement?.focus();
+        }
+      } else {
+        // Tab
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement?.focus();
+        }
+      }
+    }
   }, [isOpen, onClose]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
 
   if (!isOpen) return null;
 
@@ -87,7 +124,11 @@ function CustomModal({
       aria-labelledby={title ? "modal-title" : undefined}
       aria-describedby="modal-message"
     >
-      <div className="custom-modal-content" onClick={(e) => e.stopPropagation()}>
+      <div
+        ref={modalRef}
+        className="custom-modal-content"
+        onClick={(e) => e.stopPropagation()}
+      >
         {title && <h3 id="modal-title" className="custom-modal-title">{title}</h3>}
 
         {children ? (

@@ -270,6 +270,19 @@ function AppContent() {
       <Router>
         <Suspense fallback={<PageLoader />}>
           <div className="app-container">
+            {/* Phase 5C: Skip link for keyboard users */}
+            <a href="#main-content" className="skip-link">
+              Skip to main content
+            </a>
+
+            {/* Screen reader live region for announcements */}
+            <div
+              id="aria-live-announcer"
+              aria-live="polite"
+              aria-atomic="true"
+              className="aria-live-region"
+            />
+
             {/* Safety Warning for high-risk regions */}
             {isAuth && <SafetyWarning />}
 
@@ -278,7 +291,7 @@ function AppContent() {
               <UpdateBanner onClose={() => setShowUpdateBanner(false)} />
             )}
 
-            <main id="main-content">
+            <main id="main-content" role="main">
               <Routes>
                 {/* Layout wrapper - switches between mobile and desktop */}
                 <Route element={isMobile ? <MobileLayout /> : <DesktopLayout />}>

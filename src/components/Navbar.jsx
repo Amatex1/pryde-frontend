@@ -93,12 +93,13 @@ function Navbar() {
   }, []);
 
   return (
-    <nav className="navbar glossy">
+    <nav className="navbar glossy" role="navigation" aria-label="Main navigation">
       <div className="navbar-container">
-        <Link to="/feed" className="navbar-brand">
+        <Link to="/feed" className="navbar-brand" aria-label="Pryde Social - Go to feed">
           <img
             src={prydeLogo}
-            alt="Pryde Social Logo - Home"
+            alt=""
+            aria-hidden="true"
             className="brand-logo"
             width="36"
             height="36"
@@ -113,9 +114,11 @@ function Navbar() {
         <button
           className="mobile-hamburger-btn"
           onClick={() => setShowMobileMenu(!showMobileMenu)}
-          aria-label="Toggle menu"
+          aria-label={showMobileMenu ? 'Close menu' : 'Open menu'}
+          aria-expanded={showMobileMenu}
+          aria-controls="mobile-menu"
         >
-          {showMobileMenu ? '✕' : '☰'}
+          <span aria-hidden="true">{showMobileMenu ? '✕' : '☰'}</span>
         </button>
 
         {/* Mobile Menu Overlay */}
@@ -123,16 +126,24 @@ function Navbar() {
           <div
             className="mobile-menu-overlay"
             onClick={() => setShowMobileMenu(false)}
+            aria-hidden="true"
           />
         )}
 
         {/* Mobile Menu */}
-        <div className={`mobile-menu ${showMobileMenu ? 'mobile-menu-visible' : ''}`} ref={mobileMenuRef}>
+        <div
+          id="mobile-menu"
+          className={`mobile-menu ${showMobileMenu ? 'mobile-menu-visible' : ''}`}
+          ref={mobileMenuRef}
+          role="menu"
+          aria-label="Mobile navigation menu"
+          aria-hidden={!showMobileMenu}
+        >
           <div className="mobile-menu-header">
             <div className="mobile-menu-user">
-              <div className="mobile-menu-avatar">
+              <div className="mobile-menu-avatar" aria-hidden="true">
                 {user?.profilePhoto ? (
-                  <img src={getImageUrl(user.profilePhoto)} alt={user?.username || 'User'} />
+                  <img src={getImageUrl(user.profilePhoto)} alt="" />
                 ) : (
                   <span>{user?.username?.charAt(0).toUpperCase() || '?'}</span>
                 )}
@@ -146,60 +157,60 @@ function Navbar() {
             </div>
           </div>
 
-          <div className="mobile-menu-items">
+          <div className="mobile-menu-items" role="menuitem">
             <Link to="/feed" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon">🏠</span>
+              <span className="mobile-menu-icon" aria-hidden="true">🏠</span>
               <span>Feed</span>
             </Link>
             <Link to="/groups" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon">👥</span>
+              <span className="mobile-menu-icon" aria-hidden="true">👥</span>
               <span>Groups</span>
             </Link>
             <Link to="/journal" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon">📔</span>
+              <span className="mobile-menu-icon" aria-hidden="true">📔</span>
               <span>Journal</span>
             </Link>
             <Link to="/longform" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon">📖</span>
+              <span className="mobile-menu-icon" aria-hidden="true">📖</span>
               <span>Stories</span>
             </Link>
             <Link to="/photo-essay" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon">📸</span>
+              <span className="mobile-menu-icon" aria-hidden="true">📸</span>
               <span>Photo Essays</span>
             </Link>
-            <div className="mobile-menu-divider"></div>
+            <div className="mobile-menu-divider" role="separator" aria-hidden="true"></div>
             <Link to="/lounge" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon">✨</span>
+              <span className="mobile-menu-icon" aria-hidden="true">✨</span>
               <span>Lounge</span>
             </Link>
             <Link to="/messages" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon">💬</span>
+              <span className="mobile-menu-icon" aria-hidden="true">💬</span>
               <span>Messages</span>
               {totalUnread > 0 && (
-                <span className="mobile-menu-badge">{totalUnread}</span>
+                <span className="mobile-menu-badge" aria-label={`${totalUnread} unread messages`}>{totalUnread}</span>
               )}
             </Link>
             <Link to="/notifications" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon">🔔</span>
+              <span className="mobile-menu-icon" aria-hidden="true">🔔</span>
               <span>Notifications</span>
             </Link>
             <Link to="/bookmarks" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon">🔖</span>
+              <span className="mobile-menu-icon" aria-hidden="true">🔖</span>
               <span>Bookmarks</span>
             </Link>
             <Link to="/events" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon">📅</span>
+              <span className="mobile-menu-icon" aria-hidden="true">📅</span>
               <span>Events</span>
             </Link>
             {user?.role && ['moderator', 'admin', 'super_admin'].includes(user.role) && (
               <Link to="/admin" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-                <span className="mobile-menu-icon">🛡️</span>
+                <span className="mobile-menu-icon" aria-hidden="true">🛡️</span>
                 <span>Admin Panel</span>
               </Link>
             )}
-            <div className="mobile-menu-divider"></div>
+            <div className="mobile-menu-divider" role="separator" aria-hidden="true"></div>
             <Link to="/settings" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon">⚙️</span>
+              <span className="mobile-menu-icon" aria-hidden="true">⚙️</span>
               <span>Settings</span>
             </Link>
             <button

@@ -1,5 +1,6 @@
 /* ========================================
    QUIET MODE - SUPPLEMENTAL STYLES
+   Phase 5C: Enhanced for accessibility
    Main variables are defined in variables.css
    This file handles transitions and special cases
    ======================================== */
@@ -21,4 +22,101 @@ html {
     color 0.3s ease-in-out,
     border-color 0.3s ease-in-out,
     box-shadow 0.3s ease-in-out;
+}
+
+/* ========================================
+   QUIET MODE: REDUCED MOTION
+   Disable non-essential animations
+   ======================================== */
+
+[data-quiet="true"],
+[data-quiet-mode="true"] {
+  /* Reduce animation speed globally */
+  --animation-duration: 0.1s;
+  --transition-duration: 0.1s;
+}
+
+/* Disable decorative animations in Quiet Mode */
+[data-quiet="true"] .animated,
+[data-quiet="true"] .pulse,
+[data-quiet="true"] .bounce,
+[data-quiet="true"] .shake,
+[data-quiet-mode="true"] .animated,
+[data-quiet-mode="true"] .pulse,
+[data-quiet-mode="true"] .bounce,
+[data-quiet-mode="true"] .shake {
+  animation: none !important;
+}
+
+/* Reduce hover effects */
+[data-quiet="true"] button:hover,
+[data-quiet="true"] a:hover,
+[data-quiet-mode="true"] button:hover,
+[data-quiet-mode="true"] a:hover {
+  transform: none;
+}
+
+/* Calm button states - no scale transforms */
+[data-quiet="true"] .btn-join:hover,
+[data-quiet="true"] .btn-leave:hover,
+[data-quiet="true"] .join-btn:hover,
+[data-quiet-mode="true"] .btn-join:hover,
+[data-quiet-mode="true"] .btn-leave:hover,
+[data-quiet-mode="true"] .join-btn:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* ========================================
+   QUIET MODE: SUBTLE FOCUS STATES
+   Reduced emphasis for calm browsing
+   ======================================== */
+
+[data-quiet="true"] :focus-visible,
+[data-quiet-mode="true"] :focus-visible {
+  outline-width: 1px;
+  outline-offset: 1px;
+  box-shadow: none;
+}
+
+/* ========================================
+   QUIET MODE: NO SURPRISE UI CHANGES
+   Predictable, calm interface
+   ======================================== */
+
+/* Don't animate notification badges */
+[data-quiet="true"] .notification-badge,
+[data-quiet="true"] .unread-badge,
+[data-quiet-mode="true"] .notification-badge,
+[data-quiet-mode="true"] .unread-badge {
+  animation: none;
+}
+
+/* Softer toast notifications */
+[data-quiet="true"] .toast,
+[data-quiet-mode="true"] .toast {
+  animation: none;
+  opacity: 0.9;
+}
+
+/* ========================================
+   PREFERS-REDUCED-MOTION SYNC
+   Honor system preference
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  [data-quiet="true"],
+  [data-quiet-mode="true"] {
+    /* Already reduced, ensure it stays that way */
+  }
+
+  /* Force reduced motion for all users who prefer it */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -231,7 +231,12 @@ function GroupsList() {
 
     if (group.hasPendingRequest) {
       return (
-        <button className="join-btn request-sent" disabled>
+        <button
+          className="join-btn request-sent"
+          disabled
+          aria-label={`Join request for ${group.name} is pending`}
+          aria-disabled="true"
+        >
           Request Sent
         </button>
       );
@@ -249,6 +254,8 @@ function GroupsList() {
         className={`join-btn ${isJoining ? 'joining' : ''}`}
         onClick={(e) => handleJoinGroup(group, e)}
         disabled={isJoining}
+        aria-label={isJoining ? `Joining ${group.name}...` : `${buttonText} ${group.name}`}
+        aria-busy={isJoining}
       >
         {buttonText}
       </button>
@@ -298,24 +305,39 @@ function GroupsList() {
             <p className="empty-hint">Create the first group and invite others to join.</p>
           </div>
         ) : (
-          <div className="groups-grid">
+          <div className="groups-grid" role="list" aria-label="Groups list">
             {groups.map(group => (
-              <div
+              <article
                 key={group._id}
                 className={`group-card glossy ${group.status === 'pending' ? 'pending' : ''}`}
                 onClick={(e) => handleGroupClick(group.slug, group.status, group.isOwner, e)}
+                role="listitem"
+                tabIndex={group.status !== 'pending' ? 0 : -1}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleGroupClick(group.slug, group.status, group.isOwner, e);
+                  }
+                }}
+                aria-label={`${group.name}${group.isOwner ? ', you are the owner' : group.isMember ? ', you are a member' : ''}`}
               >
                 <div className="group-card-header">
                   <h3 className="group-card-name">{group.name}</h3>
-                  <div className="group-badges">
+                  <div className="group-badges" aria-label="Group status">
                     {group.status === 'pending' && (
-                      <span className="pending-badge">⏳ Pending</span>
+                      <span className="pending-badge" role="status">
+                        <span aria-hidden="true">⏳</span> Pending approval
+                      </span>
                     )}
                     {group.status !== 'pending' && group.isOwner && (
-                      <span className="owner-badge">👑 Owner</span>
+                      <span className="owner-badge" role="status">
+                        <span aria-hidden="true">👑</span> Owner
+                      </span>
                     )}
                     {group.status !== 'pending' && !group.isOwner && group.isMember && (
-                      <span className="member-badge">✓ Member</span>
+                      <span className="member-badge" role="status">
+                        <span aria-hidden="true">✓</span> Member
+                      </span>
                     )}
                   </div>
                 </div>
@@ -323,12 +345,13 @@ function GroupsList() {
                   <p className="group-card-description">{group.description}</p>
                 )}
                 <div className="group-card-footer">
-                  <span className="member-count">
+                  <span className="member-count" aria-label={`${group.memberCount} ${group.memberCount === 1 ? 'member' : 'members'}`}>
                     {group.memberCount} {group.memberCount === 1 ? 'member' : 'members'}
                   </span>
                   {/* Phase 5A: Privacy badge based on joinMode */}
-                  <span className="privacy-badge">
-                    {group.joinMode === 'auto' ? '🌐 Open' : '🔒 Invite-only'}
+                  <span className="privacy-badge" aria-label={group.joinMode === 'auto' ? 'Open group - anyone can join' : 'Invite-only group - requires approval'}>
+                    <span aria-hidden="true">{group.joinMode === 'auto' ? '🌐' : '🔒'}</span>
+                    {group.joinMode === 'auto' ? ' Open' : ' Invite-only'}
                   </span>
                 </div>
 
@@ -337,24 +360,26 @@ function GroupsList() {
 
                 {/* Owner actions */}
                 {group.isOwner && (
-                  <div className="group-actions">
+                  <div className="group-actions" role="group" aria-label="Group management actions">
                     <button
                       className="btn-edit-group"
                       onClick={(e) => openEditModal(group, e)}
-                      title="Edit group settings"
+                      aria-label={`Edit ${group.name} settings`}
                     >
-                      ⚙️
+                      <span aria-hidden="true">⚙️</span>
+                      <span className="sr-only">Edit settings</span>
                     </button>
                     <button
                       className="btn-delete-group"
                       onClick={(e) => handleDeleteGroup(group, e)}
-                      title="Delete group"
+                      aria-label={`Delete ${group.name}`}
                     >
-                      🗑️
+                      <span aria-hidden="true">🗑️</span>
+                      <span className="sr-only">Delete group</span>
                     </button>
                   </div>
                 )}
-              </div>
+              </article>
             ))}
           </div>
         )}

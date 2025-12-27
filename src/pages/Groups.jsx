@@ -537,33 +537,39 @@ function Groups() {
           </div>
 
           {/* Phase 2C: Role badge + Join/Leave CTA */}
-          <div className="group-actions">
+          <div className="group-actions" role="group" aria-label="Group membership actions">
             {!group.isMember ? (
               <button
                 className="btn-join"
                 onClick={handleJoin}
                 disabled={joining}
+                aria-label={joining ? 'Joining group...' : `Join ${group.name}`}
+                aria-busy={joining}
               >
-                {joining ? 'Joining...' : '✨ Join Group'}
+                <span aria-hidden="true">✨</span> {joining ? 'Joining...' : 'Join Group'}
               </button>
             ) : isOwner ? (
               <>
-                <span className="ownership-badge">👑 Owner</span>
+                <span className="ownership-badge" role="status" aria-label="You are the owner of this group">
+                  <span aria-hidden="true">👑</span> Owner
+                </span>
                 <button
                   className="btn-manage-members"
                   onClick={openMemberModal}
-                  title="Manage members"
+                  aria-label="Manage group members"
                 >
                   Manage Members
                 </button>
               </>
             ) : isModerator ? (
               <>
-                <span className="role-badge moderator">🛡️ Moderator</span>
+                <span className="role-badge moderator" role="status" aria-label="You are a moderator of this group">
+                  <span aria-hidden="true">🛡️</span> Moderator
+                </span>
                 <button
                   className="btn-manage-members"
                   onClick={openMemberModal}
-                  title="Manage members"
+                  aria-label="View group members"
                 >
                   Members
                 </button>
@@ -571,17 +577,23 @@ function Groups() {
                   className="btn-leave"
                   onClick={handleLeave}
                   disabled={leaving}
+                  aria-label={leaving ? 'Leaving group...' : `Leave ${group.name}`}
+                  aria-busy={leaving}
                 >
                   {leaving ? 'Leaving...' : 'Leave Group'}
                 </button>
               </>
             ) : (
               <>
-                <span className="role-badge member">✓ Member</span>
+                <span className="role-badge member" role="status" aria-label="You are a member of this group">
+                  <span aria-hidden="true">✓</span> Member
+                </span>
                 <button
                   className="btn-leave"
                   onClick={handleLeave}
                   disabled={leaving}
+                  aria-label={leaving ? 'Leaving group...' : `Leave ${group.name}`}
+                  aria-busy={leaving}
                 >
                   {leaving ? 'Leaving...' : 'Leave Group'}
                 </button>
