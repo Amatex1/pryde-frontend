@@ -29,6 +29,8 @@ function Footer() {
 
         {/* Legal Links */}
         <div className="footer-links-container">
+          <Link to="/guarantees">Platform Guarantees</Link>
+          <span className="separator">•</span>
           <Link to="/terms">Terms of Service</Link>
           <span className="separator">•</span>
           <Link to="/privacy">Privacy Policy</Link>

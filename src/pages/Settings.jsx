@@ -401,6 +401,17 @@ function Settings() {
             <h2 className="section-title">Legal & Policies</h2>
 
             <div className="legal-links">
+              <a href="/guarantees" target="_blank" rel="noopener noreferrer" className="legal-link">
+                <div className="legal-link-content">
+                  <div className="legal-icon">💜</div>
+                  <div className="legal-info">
+                    <h3>Platform Guarantees</h3>
+                    <p>What Pryde promises — and what we don't do</p>
+                  </div>
+                </div>
+                <span className="legal-arrow">→</span>
+              </a>
+
               <a href="/terms" target="_blank" rel="noopener noreferrer" className="legal-link">
                 <div className="legal-link-content">
                   <div className="legal-icon">📄</div>
