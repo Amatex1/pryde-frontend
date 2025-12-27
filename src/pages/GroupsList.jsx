@@ -1,8 +1,10 @@
 /**
- * Phase 2: Groups List Page
+ * Phase 5A: Manual, Calm Group Discovery
  *
- * Shows all available groups with join/view functionality.
- * Includes create/edit/delete group features.
+ * Shows all listed groups with join/view functionality.
+ * - Intentional, quiet discovery experience
+ * - No algorithms, no virality, no engagement pressure
+ * - Sorting: Alphabetical (default), Recently Created, Recently Active
  */
 
 import { useState, useEffect } from 'react';
@@ -17,6 +19,12 @@ function GroupsList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Phase 5A: Sorting - NO trending/popular/recommended
+  const [sortBy, setSortBy] = useState('alphabetical');
+
+  // Joining state for optimistic UI
+  const [joiningGroup, setJoiningGroup] = useState(null);
+
   // Create group modal state
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newGroupName, setNewGroupName] = useState('');
@@ -29,18 +37,21 @@ function GroupsList() {
   const [editingGroup, setEditingGroup] = useState(null);
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
+  const [editVisibility, setEditVisibility] = useState('listed');
+  const [editJoinMode, setEditJoinMode] = useState('approval');
   const [editing, setEditing] = useState(false);
   const [editError, setEditError] = useState(null);
 
   useEffect(() => {
     fetchGroups();
-  }, []);
+  }, [sortBy]);
 
   const fetchGroups = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get('/groups');
+      // Phase 5A: Pass sort parameter
+      const response = await api.get(`/groups?sort=${sortBy}`);
       setGroups(response.data.groups || []);
     } catch (err) {
       console.error('Failed to fetch groups:', err);
@@ -52,10 +63,39 @@ function GroupsList() {
 
   const handleGroupClick = (slug, status, isOwner, e) => {
     // If clicking on action buttons, don't navigate
-    if (e.target.closest('.group-actions')) return;
+    if (e.target.closest('.group-actions') || e.target.closest('.join-btn')) return;
     // Don't navigate to pending groups
     if (status === 'pending') return;
     navigate(`/groups/${slug}`);
+  };
+
+  // Phase 5A: Join flow with optimistic UI
+  const handleJoinGroup = async (group, e) => {
+    e.stopPropagation();
+    if (joiningGroup === group.slug) return; // Prevent double-click
+
+    setJoiningGroup(group.slug);
+    try {
+      const response = await api.post(`/groups/${group.slug}/join`);
+
+      // Optimistic UI update
+      setGroups(prev => prev.map(g => {
+        if (g.slug === group.slug) {
+          return {
+            ...g,
+            isMember: response.data.isMember,
+            hasPendingRequest: response.data.hasPendingRequest,
+            memberCount: response.data.memberCount || g.memberCount + (response.data.isMember ? 1 : 0)
+          };
+        }
+        return g;
+      }));
+    } catch (err) {
+      console.error('Failed to join group:', err);
+      // Don't show alert - just reset state
+    } finally {
+      setJoiningGroup(null);
+    }
   };
 
   const openEditModal = (group, e) => {
@@ -63,6 +103,9 @@ function GroupsList() {
     setEditingGroup(group);
     setEditName(group.name);
     setEditDescription(group.description || '');
+    // Phase 5A: Include visibility and joinMode
+    setEditVisibility(group.visibility || 'listed');
+    setEditJoinMode(group.joinMode || 'approval');
     setEditError(null);
     setShowEditModal(true);
   };
@@ -75,9 +118,12 @@ function GroupsList() {
       setEditing(true);
       setEditError(null);
 
+      // Phase 5A: Include visibility and joinMode
       await api.patch(`/groups/${editingGroup.slug}`, {
         name: editName.trim(),
-        description: editDescription.trim()
+        description: editDescription.trim(),
+        visibility: editVisibility,
+        joinMode: editJoinMode
       });
 
       setShowEditModal(false);
@@ -141,6 +187,39 @@ function GroupsList() {
     }
   };
 
+  // Phase 5A: Render join button based on state
+  const renderJoinButton = (group) => {
+    if (group.status === 'pending') return null;
+    if (group.isMember) return null;
+
+    const isJoining = joiningGroup === group.slug;
+
+    if (group.hasPendingRequest) {
+      return (
+        <button className="join-btn request-sent" disabled>
+          Request Sent
+        </button>
+      );
+    }
+
+    const joinMode = group.joinMode || 'approval';
+    const buttonText = isJoining
+      ? 'Joining…'
+      : joinMode === 'approval'
+        ? 'Request to Join'
+        : 'Join Group';
+
+    return (
+      <button
+        className={`join-btn ${isJoining ? 'joining' : ''}`}
+        onClick={(e) => handleJoinGroup(group, e)}
+        disabled={isJoining}
+      >
+        {buttonText}
+      </button>
+    );
+  };
+
   return (
     <div className="page-container">
       <Navbar />
@@ -148,15 +227,31 @@ function GroupsList() {
         <header className="groups-list-header glossy">
           <h1>👥 Groups</h1>
           <p className="groups-list-subtitle">
-            Join private communities for focused discussion and connection.
+            Find communities for focused discussion and connection.
           </p>
-          <button
-            className="btn-create-group"
-            onClick={() => setShowCreateModal(true)}
-          >
-            + Create Group
-          </button>
+          <div className="header-actions">
+            <button
+              className="btn-create-group"
+              onClick={() => setShowCreateModal(true)}
+            >
+              + Create Group
+            </button>
+          </div>
         </header>
+
+        {/* Phase 5A: Sorting controls - NO trending/popular/recommended */}
+        <div className="sort-controls">
+          <label>Sort by:</label>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="sort-select"
+          >
+            <option value="alphabetical">Alphabetical (A–Z)</option>
+            <option value="recent">Recently Created</option>
+            <option value="active">Recently Active</option>
+          </select>
+        </div>
 
         {loading ? (
           <div className="loading">Loading groups...</div>
@@ -177,15 +272,17 @@ function GroupsList() {
               >
                 <div className="group-card-header">
                   <h3 className="group-card-name">{group.name}</h3>
-                  {group.status === 'pending' && (
-                    <span className="pending-badge">⏳ Pending</span>
-                  )}
-                  {group.status !== 'pending' && group.isMember && (
-                    <span className="member-badge">✓ Member</span>
-                  )}
-                  {group.status !== 'pending' && group.isOwner && (
-                    <span className="owner-badge">👑 Owner</span>
-                  )}
+                  <div className="group-badges">
+                    {group.status === 'pending' && (
+                      <span className="pending-badge">⏳ Pending</span>
+                    )}
+                    {group.status !== 'pending' && group.isOwner && (
+                      <span className="owner-badge">👑 Owner</span>
+                    )}
+                    {group.status !== 'pending' && !group.isOwner && group.isMember && (
+                      <span className="member-badge">✓ Member</span>
+                    )}
+                  </div>
                 </div>
                 {group.description && (
                   <p className="group-card-description">{group.description}</p>
@@ -194,19 +291,24 @@ function GroupsList() {
                   <span className="member-count">
                     {group.memberCount} {group.memberCount === 1 ? 'member' : 'members'}
                   </span>
-                  <span className="visibility-badge">
-                    {group.visibility === 'private' ? '🔒 Private' : '🌐 Public'}
+                  {/* Phase 5A: Privacy badge based on joinMode */}
+                  <span className="privacy-badge">
+                    {group.joinMode === 'auto' ? '🌐 Open' : '🔒 Invite-only'}
                   </span>
                 </div>
+
+                {/* Phase 5A: Join button for non-members */}
+                {renderJoinButton(group)}
+
                 {/* Owner actions */}
                 {group.isOwner && (
                   <div className="group-actions">
                     <button
                       className="btn-edit-group"
                       onClick={(e) => openEditModal(group, e)}
-                      title="Edit group"
+                      title="Edit group settings"
                     >
-                      ✏️
+                      ⚙️
                     </button>
                     <button
                       className="btn-delete-group"
@@ -285,11 +387,11 @@ function GroupsList() {
           </div>
         )}
 
-        {/* Edit Group Modal */}
+        {/* Phase 5A: Edit Group Settings Modal */}
         {showEditModal && editingGroup && (
           <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
             <div className="create-group-modal glossy" onClick={e => e.stopPropagation()}>
-              <h2>Edit Group</h2>
+              <h2>Group Settings</h2>
 
               <form onSubmit={handleEditGroup}>
                 <div className="form-group">
@@ -317,6 +419,36 @@ function GroupsList() {
                     rows={3}
                     disabled={editing}
                   />
+                </div>
+
+                {/* Phase 5A: Visibility setting */}
+                <div className="form-group">
+                  <label htmlFor="editVisibility">Discovery</label>
+                  <select
+                    id="editVisibility"
+                    value={editVisibility}
+                    onChange={(e) => setEditVisibility(e.target.value)}
+                    disabled={editing}
+                    className="form-select"
+                  >
+                    <option value="listed">Listed — Appears in /groups</option>
+                    <option value="unlisted">Unlisted — Direct link only</option>
+                  </select>
+                </div>
+
+                {/* Phase 5A: Join mode setting */}
+                <div className="form-group">
+                  <label htmlFor="editJoinMode">Join Mode</label>
+                  <select
+                    id="editJoinMode"
+                    value={editJoinMode}
+                    onChange={(e) => setEditJoinMode(e.target.value)}
+                    disabled={editing}
+                    className="form-select"
+                  >
+                    <option value="approval">Approval Required — You approve each request</option>
+                    <option value="auto">Open — Anyone can join immediately</option>
+                  </select>
                 </div>
 
                 {editError && (
