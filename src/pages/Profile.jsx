@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ReportModal from '../components/ReportModal';
@@ -294,7 +294,12 @@ function Profile() {
     }
 
     if (!isOwnProfile) {
-      fetchPromises.push(checkFriendStatus(), checkBlockStatus());
+      fetchPromises.push(
+        checkFriendStatus(),
+        checkFollowStatus(),
+        checkBlockStatus(),
+        checkPrivacyPermissions()
+      );
     }
 
     Promise.all(fetchPromises).catch(error => {
@@ -454,7 +459,7 @@ function Profile() {
   // Update message permission when friend/follow status changes
   useEffect(() => {
     if (!isOwnProfile && user) {
-      updatePrivacyPermissions();
+      checkPrivacyPermissions();
     }
   }, [isOwnProfile, user, checkPrivacyPermissions]);
 
