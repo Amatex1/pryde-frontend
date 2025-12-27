@@ -22,12 +22,11 @@
     grid-template-columns: auto minmax(520px, 720px) auto;
     align-items: center;
     gap: 24px;
-    /* width: 100%; */
+    width: 100%;
     max-width: var(--content-max-width, 1200px);
     margin: 0 auto;
     padding: 10px 16px;
     background: #0f1220e6;
-    /* border: 1px solid rgba(255, 255, 255, .08); */
     border-radius: 14px;
     overflow: visible !important;
   }
