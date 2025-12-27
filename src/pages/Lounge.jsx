@@ -62,7 +62,7 @@ function Lounge() {
     return scrollHeight - scrollTop - clientHeight < 100;
   };
 
-  // Fetch initial messages
+  // Fetch initial messages and online count
   useEffect(() => {
     const fetchMessages = async () => {
       try {
@@ -81,7 +81,21 @@ function Lounge() {
       }
     };
 
+    // Fetch online count immediately (faster than waiting for socket)
+    const fetchOnlineCount = async () => {
+      try {
+        const response = await api.get('/global-chat/online-count');
+        if (response.data.count > 0) {
+          setOnlineCount(response.data.count);
+        }
+      } catch (error) {
+        // Silent fail - socket will update it later
+        console.debug('Could not fetch online count:', error);
+      }
+    };
+
     fetchMessages();
+    fetchOnlineCount();
   }, []);
 
   // Get current user
