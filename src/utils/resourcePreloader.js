@@ -18,11 +18,11 @@ import { apiFetch } from './apiClient';
 import logger from './logger';
 
 // Cache for preloaded data
+// NOTE: trending removed 2025-12-26 (hashtags deprecated)
 const cache = {
   user: null,
   posts: null,
   notifications: null,
-  trending: null,
   timestamp: null
 };
 
@@ -78,27 +78,16 @@ export async function preloadFeedData() {
   try {
     logger.debug('🚀 Preloading feed data...');
 
-    // Preload in parallel
-    const [postsResponse, trendingResponse] = await Promise.allSettled([
-      api.get('/feed?page=1&limit=10').catch(err => {
-        logger.debug('Posts preload failed (non-critical):', err);
-        return null;
-      }),
-      api.get('/tags/trending').catch(err => {
-        logger.debug('Trending preload failed (non-critical):', err);
-        return null;
-      })
-    ]);
+    // Preload posts only (trending tags removed 2025-12-26)
+    const postsResponse = await api.get('/feed?page=1&limit=10').catch(err => {
+      logger.debug('Posts preload failed (non-critical):', err);
+      return null;
+    });
 
-    // Cache successful responses
-    if (postsResponse.status === 'fulfilled' && postsResponse.value) {
-      cache.posts = postsResponse.value.data;
+    // Cache successful response
+    if (postsResponse) {
+      cache.posts = postsResponse.data;
       logger.debug('✅ Posts preloaded');
-    }
-
-    if (trendingResponse.status === 'fulfilled' && trendingResponse.value) {
-      cache.trending = trendingResponse.value.data;
-      logger.debug('✅ Trending preloaded');
     }
 
     cache.timestamp = Date.now();
@@ -129,12 +118,7 @@ export function getCachedNotifications() {
   return isCacheValid() ? cache.notifications : null;
 }
 
-/**
- * Get cached trending
- */
-export function getCachedTrending() {
-  return isCacheValid() ? cache.trending : null;
-}
+// REMOVED 2025-12-26: getCachedTrending() - hashtags deprecated
 
 /**
  * Clear cache
@@ -143,7 +127,6 @@ export function clearCache() {
   cache.user = null;
   cache.posts = null;
   cache.notifications = null;
-  cache.trending = null;
   cache.timestamp = null;
   logger.debug('🗑️ Resource cache cleared');
 }
