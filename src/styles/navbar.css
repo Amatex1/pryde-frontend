@@ -193,5 +193,45 @@
   .search-input[data-variant="compact"] {
     background: rgba(255,255,255,0.06);
   }
+
+  /* =====================================================
+     TRUE CENTER SEARCH FIX
+     Make navbar a true 3-column grid with centered search
+     ===================================================== */
+
+  /* Make navbar a true 3-column grid */
+  nav.navbar.glossy {
+    display: grid !important;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    justify-items: center;
+    padding: 12px 24px;
+    background: transparent;
+  }
+
+  /* Left: brand */
+  nav.navbar.glossy > .navbar-logo {
+    justify-self: start;
+  }
+
+  /* Center: search */
+  .navbar-utility-search {
+    grid-column: 2;
+    justify-self: center;
+    width: 100%;
+    max-width: 480px;
+    position: static !important;
+    transform: none !important;
+  }
+
+  .navbar-utility-search input {
+    width: 100%;
+  }
+
+  /* Right: actions */
+  nav.navbar.glossy > .navbar-actions,
+  nav.navbar.glossy > .navbar-right {
+    justify-self: end;
+  }
 }
 
