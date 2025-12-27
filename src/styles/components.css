@@ -324,6 +324,14 @@
   opacity: 1 !important;
 }
 
+/* Mobile: Allow post author meta to wrap */
+@media (max-width: 480px) {
+  .post-header .post-author > div {
+    flex-wrap: wrap;
+    gap: 4px 6px;
+  }
+}
+
 /* =====================================================
    NAVBAR — FINAL VISUAL POLISH
    ===================================================== */

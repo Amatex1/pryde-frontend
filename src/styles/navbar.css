@@ -20,12 +20,15 @@
     display: none !important; /* Hidden on mobile - search is in mobile menu */
   }
 
+  /* Hide navbar-actions on mobile - hamburger menu has all these options */
   nav.navbar.glossy > .navbar-actions {
-    flex-shrink: 0;
+    display: none !important;
+  }
+
+  /* Make hamburger button visible and properly positioned */
+  nav.navbar.glossy .mobile-hamburger-btn {
     display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 8px !important;
+    order: 999; /* Push to the end */
   }
 }
 

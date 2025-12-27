@@ -585,6 +585,8 @@
   min-width: 0;
   line-height: 1.2;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .post-author-name {
@@ -592,7 +594,10 @@
   color: var(--pryde-purple);
   transition: color 0.2s ease;
   line-height: 1.2;
-  flex-shrink: 0; /* Don't shrink the name */
+  flex-shrink: 1; /* Allow name to shrink on mobile */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .post-author-name:hover {
@@ -603,8 +608,7 @@
   display: inline-flex;
   align-items: center;
   line-height: 1;
-  flex-shrink: 0; /* Keep badge next to name */
-  order: 0; /* Ensure badge stays in source order */
+  flex-shrink: 0; /* Keep badge next to name - never shrink */
 }
 
 .post-author-pronouns,
@@ -616,6 +620,7 @@
   line-height: 1.2;
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .post-author-edited {
@@ -624,6 +629,34 @@
 
 .post-author-meta > * {
   white-space: nowrap;
+}
+
+/* Mobile: Allow wrapping and prioritize key elements */
+@media (max-width: 480px) {
+  .post-author-meta {
+    flex-wrap: wrap;
+    gap: 4px 6px;
+    overflow: visible;
+  }
+
+  .post-author-name {
+    flex-shrink: 0;
+    max-width: 120px;
+  }
+
+  .post-author-badge {
+    flex-shrink: 0;
+  }
+
+  .post-author-pronouns {
+    flex-shrink: 0;
+  }
+
+  .post-author-date,
+  .post-author-privacy,
+  .post-author-edited {
+    font-size: 12px;
+  }
 }
 
 /* Legacy .author-name-row support */
