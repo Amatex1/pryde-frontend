@@ -31,15 +31,46 @@ import LoadingGate from './components/LoadingGate';
 import RoleRoute from './components/RoleRoute'; // Role-based route protection for admin
 import useAppVersion from './hooks/useAppVersion';
 
-// Harden lazy imports: catch failures and reload to clear stale cache
+// Harden lazy imports: catch failures gracefully (NEVER auto-reload - causes infinite loops!)
+// If chunk fails to load (404, cache mismatch, stale Cloudflare asset), show error UI instead
 const lazyWithReload = (importFn) => {
-  return lazy(() =>
-    importFn().catch((err) => {
-      console.error('Lazy load failed, reloading page to clear cache...', err);
-      window.location.reload();
-      return { default: () => null }; // Fallback to prevent crash during reload
-    })
-  );
+  return lazy(async () => {
+    try {
+      return await importFn();
+    } catch (err) {
+      console.error('Lazy load failed:', err);
+      // Return a fallback component instead of reloading (which causes infinite loops)
+      return {
+        default: () => (
+          <div style={{
+            padding: '40px',
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '16px'
+          }}>
+            <h2>Failed to load this page</h2>
+            <p style={{ color: '#666' }}>This usually happens after an update. Please refresh to get the latest version.</p>
+            <button
+              onClick={() => window.location.reload()}
+              style={{
+                padding: '12px 24px',
+                backgroundColor: '#7c3aed',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '16px'
+              }}
+            >
+              Refresh Page
+            </button>
+          </div>
+        )
+      };
+    }
+  });
 };
 
 // Lazy load ALL pages with cache-mismatch protection
