@@ -569,6 +569,17 @@
   margin: var(--space-2) var(--space-4);
 }
 
+.mobile-menu-section-header {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  opacity: 0.7;
+  padding: var(--space-4) var(--space-4) var(--space-2);
+  margin-top: var(--space-2);
+}
+
 .mobile-menu-logout {
   color: var(--color-danger);
 }

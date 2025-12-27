@@ -167,6 +167,11 @@ function Navbar() {
               <span className="mobile-menu-icon" aria-hidden="true">🏠</span>
               <span>Feed</span>
             </Link>
+
+            {/* =========================================
+                Explore Pryde — Mobile Access
+               ========================================= */}
+            <div className="mobile-menu-section-header">Explore Pryde</div>
             <Link to="/groups" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
               <span className="mobile-menu-icon" aria-hidden="true">👥</span>
               <span>Groups</span>
@@ -181,9 +186,8 @@ function Navbar() {
             </Link>
             <Link to="/photo-essay" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
               <span className="mobile-menu-icon" aria-hidden="true">📸</span>
-              <span>Photo Essays</span>
+              <span>Photos</span>
             </Link>
-            <div className="mobile-menu-divider" role="separator" aria-hidden="true"></div>
             <Link to="/lounge" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
               <span className="mobile-menu-icon" aria-hidden="true">✨</span>
               <span>Lounge</span>
