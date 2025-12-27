@@ -581,9 +581,10 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   min-width: 0;
   line-height: 1.2;
+  white-space: nowrap;
 }
 
 .post-author-name {
@@ -3076,7 +3077,7 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   }
 
   .post-header {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 
   .post-content {
