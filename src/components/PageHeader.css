@@ -1,0 +1,44 @@
+/* ========================================
+   PAGE HEADER COMPONENT
+   Consistent page headers across the app
+   Hidden on mobile (navbar provides context)
+   ======================================== */
+
+.page-header-component {
+  text-align: center;
+  padding: var(--space-6) var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.page-header-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 var(--space-2);
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.page-header-subtitle {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin: 0;
+  opacity: 0.85;
+}
+
+.page-header-actions {
+  margin-top: var(--space-4);
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+/* On tablet, slightly smaller */
+@media (max-width: 1023px) {
+  .page-header-title {
+    font-size: 1.75rem;
+  }
+}
+
