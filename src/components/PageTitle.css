@@ -1,48 +1,41 @@
-/* ========================================
-   PAGE TITLE — ONE HEADER RULE
-   Non-sticky, in-content, calm titles
-   ======================================== */
+/* =========================================
+   ONE HEADER RULE — QUIET IN-CONTENT TITLES
+   - Non-sticky, lives inside content
+   - Hidden on desktop (sidebar provides context)
+   - Visible on tablet/mobile only
+   ========================================= */
 
 .page-title {
-  padding: var(--space-6) var(--space-4) var(--space-4);
+  margin: 8px 0 16px;
   text-align: center;
 }
 
 .page-title h1 {
-  font-size: 1.5rem;
+  font-size: 18px;
   font-weight: 600;
   color: var(--text-main);
-  margin: 0 0 var(--space-2);
-  opacity: 0.9;
+  margin: 0;
 }
 
 .page-title p {
-  font-size: 0.95rem;
+  margin-top: 4px;
+  font-size: 13px;
   color: var(--text-muted);
-  margin: 0;
-  opacity: 0.75;
-  line-height: 1.5;
+  opacity: 0.65;
 }
 
-/* Tablet */
-@media (max-width: 1023px) {
-  .page-title h1 {
-    font-size: 1.35rem;
+/* Desktop — already has context via sidebar */
+@media (min-width: 1024px) {
+  .page-title {
+    display: none;
   }
 }
 
-/* Mobile */
+/* Mobile refinements */
 @media (max-width: 767px) {
   .page-title {
-    padding: var(--space-4) var(--space-3) var(--space-3);
-  }
-
-  .page-title h1 {
-    font-size: 1.25rem;
-  }
-
-  .page-title p {
-    font-size: 0.9rem;
+    margin: 12px 0 16px;
+    padding: 0 var(--space-3);
   }
 }
 
