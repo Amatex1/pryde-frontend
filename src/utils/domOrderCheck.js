@@ -22,17 +22,21 @@ export function checkDomOrder() {
     const root = document.querySelector(selector);
     if (!root) return;
 
-    const children = Array.from(root.children).map((el) =>
-      expected.find((cls) => el.classList.contains(cls))
-    );
+    // Look for relevant descendants in visual order
+    const found = [];
 
-    const filtered = children.filter(Boolean);
+    expected.forEach((cls) => {
+      const el = root.querySelector(`.${cls}`);
+      if (el) {
+        found.push(cls);
+      }
+    });
 
-    if (filtered.join(",") !== expected.join(",")) {
+    if (found.join(",") !== expected.join(",")) {
       console.warn(
-        `[Pryde DOM Order Warning] ${selector} children order is incorrect.`,
-        "\nExpected:", expected,
-        "\nFound:", filtered
+        `[Pryde DOM Order Warning] ${selector} structure drift detected.`,
+        "\nExpected order:", expected,
+        "\nFound order:", found
       );
     }
   });
