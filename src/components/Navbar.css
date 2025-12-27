@@ -366,21 +366,34 @@
 
 .mobile-hamburger-btn {
   display: none;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-md);
   border: none;
   background: var(--color-primary-soft);
   color: var(--color-primary);
-  font-size: 20px;
+  font-size: 22px;
   cursor: pointer;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  line-height: 1;
   transition: all 0.15s ease;
   z-index: 10000; /* Above mobile menu when open */
   margin-left: auto;
   flex-shrink: 0;
   position: relative;
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+  touch-action: manipulation; /* Prevent double-tap zoom */
+  user-select: none;
+}
+
+.mobile-hamburger-btn span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .mobile-hamburger-btn:hover {
