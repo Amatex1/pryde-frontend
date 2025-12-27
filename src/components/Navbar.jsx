@@ -116,7 +116,14 @@ function Navbar() {
         {!isDesktop && (
           <button
             className="mobile-hamburger-btn"
-            onClick={() => setShowMobileMenu(!showMobileMenu)}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowMobileMenu(!showMobileMenu);
+            }}
+            onTouchStart={(e) => {
+              e.stopPropagation();
+            }}
             aria-label={showMobileMenu ? 'Close menu' : 'Open menu'}
             aria-expanded={showMobileMenu}
             aria-controls="mobile-menu"

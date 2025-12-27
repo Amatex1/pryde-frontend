@@ -1239,3 +1239,20 @@
   }
 }
 
+/* =====================================================
+   MOBILE MENU — TOUCH SAFETY
+   ===================================================== */
+
+.mobile-menu {
+  pointer-events: auto;
+}
+
+.mobile-hamburger-btn {
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+/* Prevent clicks passing through closed menu */
+.mobile-menu:not(.mobile-menu-visible) {
+  pointer-events: none;
+}
