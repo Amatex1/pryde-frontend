@@ -1,5 +1,6 @@
 /**
  * Phase 2: Group-only posting
+ * Phase 4A: Group Ownership & Moderation
  *
  * Groups Page - Private, join-gated community groups
  *
@@ -7,6 +8,11 @@
  * - Shows name + description to everyone
  * - Non-members: "Join Group" CTA, NO posts visible
  * - Members: Post composer + group feed
+ *
+ * MODERATION (Phase 4A):
+ * - Owner: Can manage members, promote/demote moderators, delete any post
+ * - Moderator: Can remove members, delete any post
+ * - Regular member: No moderation controls
  *
  * ISOLATION:
  * - Group posts are intentionally isolated from global feeds
@@ -53,6 +59,13 @@ function Groups() {
   const [editContent, setEditContent] = useState('');
   const [editMedia, setEditMedia] = useState([]);
   const [saving, setSaving] = useState(false);
+
+  // Phase 4A: Member management state
+  const [showMemberModal, setShowMemberModal] = useState(false);
+  const [members, setMembers] = useState([]);
+  const [moderators, setModerators] = useState([]);
+  const [loadingMembers, setLoadingMembers] = useState(false);
+  const [actionInProgress, setActionInProgress] = useState(null);
 
   useEffect(() => {
     fetchGroup();
@@ -286,9 +299,93 @@ function Groups() {
     try {
       await api.delete(`/groups/${slug}/posts/${postId}`);
       setPosts(prev => prev.filter(p => p._id !== postId));
+      showToast('Post deleted', 'success');
     } catch (err) {
       console.error('Failed to delete post:', err);
-      alert(err.response?.data?.message || 'Failed to delete post');
+      showToast(err.response?.data?.message || 'Failed to delete post', 'error');
+    }
+  };
+
+  // Phase 4A: Fetch member list for moderation
+  const fetchMembers = async () => {
+    try {
+      setLoadingMembers(true);
+      const response = await api.get(`/groups/${slug}/members`);
+      setMembers(response.data.members || []);
+      setModerators(response.data.moderators || []);
+    } catch (err) {
+      console.error('Failed to fetch members:', err);
+      showToast('Failed to load members', 'error');
+    } finally {
+      setLoadingMembers(false);
+    }
+  };
+
+  const openMemberModal = () => {
+    setShowMemberModal(true);
+    fetchMembers();
+  };
+
+  // Phase 4A: Remove a member (owner/moderator only)
+  const handleRemoveMember = async (userId, displayName) => {
+    if (!confirm(`Remove ${displayName} from this group?`)) return;
+
+    try {
+      setActionInProgress(userId);
+      await api.post(`/groups/${slug}/remove-member`, { userId });
+      setMembers(prev => prev.filter(m => m._id !== userId));
+      setModerators(prev => prev.filter(m => m._id !== userId));
+      setGroup(prev => ({ ...prev, memberCount: (prev.memberCount || 1) - 1 }));
+      showToast(`${displayName} removed from group`, 'success');
+    } catch (err) {
+      console.error('Failed to remove member:', err);
+      showToast(err.response?.data?.message || 'Failed to remove member', 'error');
+    } finally {
+      setActionInProgress(null);
+    }
+  };
+
+  // Phase 4A: Promote to moderator (owner only)
+  const handlePromoteModerator = async (userId, displayName) => {
+    if (!confirm(`Promote ${displayName} to moderator?`)) return;
+
+    try {
+      setActionInProgress(userId);
+      await api.post(`/groups/${slug}/promote-moderator`, { userId });
+      // Move from members to moderators
+      const member = members.find(m => m._id === userId);
+      if (member) {
+        setMembers(prev => prev.filter(m => m._id !== userId));
+        setModerators(prev => [...prev, member]);
+      }
+      showToast(`${displayName} is now a moderator`, 'success');
+    } catch (err) {
+      console.error('Failed to promote moderator:', err);
+      showToast(err.response?.data?.message || 'Failed to promote', 'error');
+    } finally {
+      setActionInProgress(null);
+    }
+  };
+
+  // Phase 4A: Demote from moderator (owner only)
+  const handleDemoteModerator = async (userId, displayName) => {
+    if (!confirm(`Remove moderator role from ${displayName}?`)) return;
+
+    try {
+      setActionInProgress(userId);
+      await api.post(`/groups/${slug}/demote-moderator`, { userId });
+      // Move from moderators to members
+      const moderator = moderators.find(m => m._id === userId);
+      if (moderator) {
+        setModerators(prev => prev.filter(m => m._id !== userId));
+        setMembers(prev => [...prev, moderator]);
+      }
+      showToast(`${displayName} is now a regular member`, 'success');
+    } catch (err) {
+      console.error('Failed to demote moderator:', err);
+      showToast(err.response?.data?.message || 'Failed to demote', 'error');
+    } finally {
+      setActionInProgress(null);
     }
   };
 
@@ -343,10 +440,26 @@ function Groups() {
                 {joining ? 'Joining...' : '✨ Join Group'}
               </button>
             ) : isOwner ? (
-              <span className="ownership-badge">👑 Owner</span>
+              <>
+                <span className="ownership-badge">👑 Owner</span>
+                <button
+                  className="btn-manage-members"
+                  onClick={openMemberModal}
+                  title="Manage members"
+                >
+                  Manage Members
+                </button>
+              </>
             ) : isModerator ? (
               <>
                 <span className="role-badge moderator">🛡️ Moderator</span>
+                <button
+                  className="btn-manage-members"
+                  onClick={openMemberModal}
+                  title="Manage members"
+                >
+                  Members
+                </button>
                 <button
                   className="btn-leave"
                   onClick={handleLeave}
@@ -460,7 +573,8 @@ function Groups() {
               ) : (
                 posts.map(post => {
                   const isAuthor = post.author?._id === currentUser?.id;
-                  const canDelete = isAuthor || isOwner;
+                  // Phase 4A: Owner and moderators can delete any post
+                  const canDelete = isAuthor || isOwner || isModerator;
 
                   return (
                     <div key={post._id} className="post-card glossy">
@@ -591,6 +705,127 @@ function Groups() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* Phase 4A: Member Management Modal */}
+        {showMemberModal && (
+          <div className="modal-overlay" onClick={() => setShowMemberModal(false)}>
+            <div className="member-modal glossy" onClick={e => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>Members</h2>
+                <button className="btn-close" onClick={() => setShowMemberModal(false)}>✕</button>
+              </div>
+
+              {loadingMembers ? (
+                <div className="loading-members">Loading members...</div>
+              ) : (
+                <div className="member-list">
+                  {/* Owner (always first) */}
+                  {group.owner && (
+                    <div className="member-item owner">
+                      <div className="member-avatar">
+                        {group.owner.profilePhoto ? (
+                          <OptimizedImage
+                            src={getImageUrl(group.owner.profilePhoto)}
+                            alt={group.owner.username}
+                            className="avatar-image"
+                          />
+                        ) : (
+                          <span className="avatar-fallback">
+                            {group.owner.displayName?.charAt(0) || group.owner.username?.charAt(0) || 'O'}
+                          </span>
+                        )}
+                      </div>
+                      <div className="member-info">
+                        <span className="member-name">{group.owner.displayName || group.owner.username}</span>
+                        <span className="member-role">👑 Owner</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Moderators */}
+                  {moderators.map(mod => (
+                    <div key={mod._id} className="member-item moderator">
+                      <div className="member-avatar">
+                        {mod.profilePhoto ? (
+                          <OptimizedImage src={getImageUrl(mod.profilePhoto)} alt={mod.username} className="avatar-image" />
+                        ) : (
+                          <span className="avatar-fallback">{mod.displayName?.charAt(0) || mod.username?.charAt(0) || 'M'}</span>
+                        )}
+                      </div>
+                      <div className="member-info">
+                        <span className="member-name">{mod.displayName || mod.username}</span>
+                        <span className="member-role">🛡️ Moderator</span>
+                      </div>
+                      {isOwner && (
+                        <div className="member-actions">
+                          <button
+                            className="btn-demote"
+                            onClick={() => handleDemoteModerator(mod._id, mod.displayName || mod.username)}
+                            disabled={actionInProgress === mod._id}
+                            title="Demote to member"
+                          >
+                            {actionInProgress === mod._id ? '...' : '↓'}
+                          </button>
+                          <button
+                            className="btn-remove"
+                            onClick={() => handleRemoveMember(mod._id, mod.displayName || mod.username)}
+                            disabled={actionInProgress === mod._id}
+                            title="Remove from group"
+                          >
+                            {actionInProgress === mod._id ? '...' : '✕'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* Regular Members */}
+                  {members.map(member => (
+                    <div key={member._id} className="member-item">
+                      <div className="member-avatar">
+                        {member.profilePhoto ? (
+                          <OptimizedImage src={getImageUrl(member.profilePhoto)} alt={member.username} className="avatar-image" />
+                        ) : (
+                          <span className="avatar-fallback">{member.displayName?.charAt(0) || member.username?.charAt(0) || 'U'}</span>
+                        )}
+                      </div>
+                      <div className="member-info">
+                        <span className="member-name">{member.displayName || member.username}</span>
+                        <span className="member-role">Member</span>
+                      </div>
+                      {(isOwner || isModerator) && (
+                        <div className="member-actions">
+                          {isOwner && (
+                            <button
+                              className="btn-promote"
+                              onClick={() => handlePromoteModerator(member._id, member.displayName || member.username)}
+                              disabled={actionInProgress === member._id}
+                              title="Promote to moderator"
+                            >
+                              {actionInProgress === member._id ? '...' : '↑'}
+                            </button>
+                          )}
+                          <button
+                            className="btn-remove"
+                            onClick={() => handleRemoveMember(member._id, member.displayName || member.username)}
+                            disabled={actionInProgress === member._id}
+                            title="Remove from group"
+                          >
+                            {actionInProgress === member._id ? '...' : '✕'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {members.length === 0 && moderators.length === 0 && (
+                    <p className="no-members">No other members yet.</p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}
