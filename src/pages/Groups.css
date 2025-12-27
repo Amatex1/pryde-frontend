@@ -110,6 +110,28 @@
   font-size: 0.9rem;
 }
 
+/* Phase 2C: Role badges for members and moderators */
+.role-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  margin-right: 0.75rem;
+}
+
+.role-badge.member {
+  background: linear-gradient(135deg, rgba(108, 92, 231, 0.15), rgba(108, 92, 231, 0.25));
+  color: var(--pryde-purple);
+  border: 1px solid rgba(108, 92, 231, 0.3);
+}
+
+.role-badge.moderator {
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(39, 174, 96, 0.25));
+  color: #27ae60;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
 .join-prompt {
   text-align: center;
   padding: 2rem;

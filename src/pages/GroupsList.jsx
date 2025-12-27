@@ -164,8 +164,8 @@ function GroupsList() {
           <div className="error">{error}</div>
         ) : groups.length === 0 ? (
           <div className="empty-state glossy">
-            <p>No groups available yet.</p>
-            <p className="empty-hint">Be the first to create one!</p>
+            <p>No groups here — this is a fresh start.</p>
+            <p className="empty-hint">Create the first group and invite others to join.</p>
           </div>
         ) : (
           <div className="groups-grid">

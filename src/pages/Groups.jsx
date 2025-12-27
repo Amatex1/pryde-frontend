@@ -20,6 +20,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import OptimizedImage from '../components/OptimizedImage';
+import Toast from '../components/Toast';
+import { useToast } from '../hooks/useToast';
 import api from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
@@ -35,6 +37,9 @@ function Groups() {
   const [leaving, setLeaving] = useState(false);
   const [error, setError] = useState(null);
   const currentUser = getCurrentUser();
+
+  // Phase 2C: Toast notifications for UX feedback
+  const { toasts, showToast, removeToast } = useToast();
 
   // Phase 2: Group post composer state
   const [newPost, setNewPost] = useState('');
@@ -79,6 +84,12 @@ function Groups() {
     }
   };
 
+  /**
+   * Phase 2C: Join group with instant feedback
+   * - Button switches to "Leave Group"
+   * - Member count updates immediately
+   * - Toast notification confirms action
+   */
   const handleJoin = async () => {
     if (joining) return;
 
@@ -91,22 +102,34 @@ function Groups() {
         setGroup(prev => ({
           ...prev,
           ...response.data,
-          isMember: true
+          isMember: true,
+          isOwner: response.data.isOwner || prev.isOwner
         }));
-        // Set posts from response (empty array for Phase 0)
+        // Set posts from response (empty array initially)
         setPosts(response.data.posts || []);
+
+        // Phase 2C: Toast notification for join success
+        const groupName = response.data.name || group?.name || 'this group';
+        showToast(`You joined ${groupName}`, 'success');
       } else {
         // Fallback: refetch if response doesn't contain full data
         await fetchGroup();
+        showToast('Joined successfully', 'success');
       }
     } catch (err) {
       console.error('Failed to join group:', err);
-      alert('Failed to join group. Please try again.');
+      showToast(err.response?.data?.message || 'Failed to join group', 'error');
     } finally {
       setJoining(false);
     }
   };
 
+  /**
+   * Phase 2C: Leave group with instant feedback
+   * - Button switches to "Join Group"
+   * - Member count decrements immediately
+   * - Toast notification confirms action
+   */
   const handleLeave = async () => {
     if (leaving) return;
 
@@ -120,19 +143,32 @@ function Groups() {
 
       // Update state immediately on success
       if (response.data.success || response.data.isMember === false) {
+        // Use memberCount from response for accuracy, with fallback
+        const newMemberCount = response.data.memberCount ?? Math.max(0, (group?.memberCount || 1) - 1);
+
         setGroup(prev => ({
           ...prev,
           isMember: false,
-          memberCount: Math.max(0, (prev.memberCount || 1) - 1)
+          isOwner: false,
+          role: null,
+          memberCount: newMemberCount
         }));
         setPosts([]); // Clear posts since no longer a member
+
+        // Phase 2C: Toast notification for leave success
+        const groupName = response.data.name || group?.name || 'this group';
+        showToast(`You left ${groupName}`, 'info');
       } else {
         // Fallback: refetch
         await fetchGroup();
+        showToast('Left group', 'info');
       }
     } catch (err) {
       console.error('Failed to leave group:', err);
-      alert('Failed to leave group. Please try again.');
+      // Phase 2C: Show specific message for owner trying to leave
+      const message = err.response?.data?.message || 'Failed to leave group';
+      const isOwnerError = err.response?.data?.isOwner;
+      showToast(message, isOwnerError ? 'warning' : 'error');
     } finally {
       setLeaving(false);
     }
@@ -278,8 +314,9 @@ function Groups() {
     );
   }
 
-  const isOwner = group.owner?._id === currentUser?.id;
-  const isModerator = group.moderators?.some(m => m._id === currentUser?.id);
+  // Phase 2C: Use role info from API response, with fallback to local check
+  const isOwner = group.isOwner || group.owner?._id === currentUser?.id;
+  const isModerator = group.isModerator || group.moderators?.some(m => m._id === currentUser?.id);
 
   return (
     <div className="page-container">
@@ -294,11 +331,11 @@ function Groups() {
             <span>{group.memberCount} member{group.memberCount !== 1 ? 's' : ''}</span>
             {group.visibility === 'private' && <span className="visibility-badge">🔒 Private</span>}
           </div>
-          
-          {/* Join/Leave CTA */}
+
+          {/* Phase 2C: Role badge + Join/Leave CTA */}
           <div className="group-actions">
             {!group.isMember ? (
-              <button 
+              <button
                 className="btn-join"
                 onClick={handleJoin}
                 disabled={joining}
@@ -307,22 +344,40 @@ function Groups() {
               </button>
             ) : isOwner ? (
               <span className="ownership-badge">👑 Owner</span>
+            ) : isModerator ? (
+              <>
+                <span className="role-badge moderator">🛡️ Moderator</span>
+                <button
+                  className="btn-leave"
+                  onClick={handleLeave}
+                  disabled={leaving}
+                >
+                  {leaving ? 'Leaving...' : 'Leave Group'}
+                </button>
+              </>
             ) : (
-              <button 
-                className="btn-leave"
-                onClick={handleLeave}
-                disabled={leaving}
-              >
-                {leaving ? 'Leaving...' : 'Leave Group'}
-              </button>
+              <>
+                <span className="role-badge member">✓ Member</span>
+                <button
+                  className="btn-leave"
+                  onClick={handleLeave}
+                  disabled={leaving}
+                >
+                  {leaving ? 'Leaving...' : 'Leave Group'}
+                </button>
+              </>
             )}
           </div>
         </div>
 
-        {/* Non-member message */}
+        {/* Phase 2C: Non-member private group message */}
         {!group.isMember && (
           <div className="join-prompt glossy">
-            <p>Join this group to see posts and participate in discussions.</p>
+            {group.visibility === 'private' ? (
+              <p>🔒 This is a private group — join to see posts and participate.</p>
+            ) : (
+              <p>Join this group to see posts and participate in discussions.</p>
+            )}
           </div>
         )}
 
@@ -399,8 +454,8 @@ function Groups() {
             <div className="group-posts">
               {posts.length === 0 ? (
                 <div className="empty-state glossy">
-                  <p>No posts in this group yet.</p>
-                  <p className="empty-hint">Be the first to share something!</p>
+                  <p>This group is ready when you are.</p>
+                  <p className="empty-hint">Share what's on your mind to get the conversation started.</p>
                 </div>
               ) : (
                 posts.map(post => {
@@ -539,6 +594,17 @@ function Groups() {
             </div>
           </div>
         )}
+
+        {/* Phase 2C: Toast Notifications */}
+        {toasts.map(toast => (
+          <Toast
+            key={toast.id}
+            message={toast.message}
+            type={toast.type}
+            duration={toast.duration}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
       </div>
     </div>
   );

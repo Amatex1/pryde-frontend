@@ -192,29 +192,29 @@ function Home() {
       </section>
 
       {/* Groups Section */}
-      <section className="tags-section">
-        <div className="tags-content">
+      <section className="groups-section">
+        <div className="groups-content">
           <h2 className="section-title">Find Your Community</h2>
-          <p className="tags-subtitle">
+          <p className="groups-subtitle">
             Join private groups for queer life, creativity, self-care, and deep reflection.
           </p>
-          <div className="tags-grid">
-            <div className="tag-badge">🛋️ Introverts Lounge</div>
-            <div className="tag-badge">🏳️‍🌈 Queer Life</div>
-            <div className="tag-badge">🧠 Mental Health Corner</div>
-            <div className="tag-badge">💭 Deep Thoughts</div>
-            <div className="tag-badge">✍️ Writing & Poetry</div>
-            <div className="tag-badge">🎨 Creative Hub</div>
-            <div className="tag-badge">📷 Photography</div>
-            <div className="tag-badge">🌿 Self-Care</div>
-            <div className="tag-badge">🎵 Music & Audio</div>
+          <div className="groups-preview-grid">
+            <div className="group-badge">🛋️ Introverts Lounge</div>
+            <div className="group-badge">🏳️‍🌈 Queer Life</div>
+            <div className="group-badge">🧠 Mental Health Corner</div>
+            <div className="group-badge">💭 Deep Thoughts</div>
+            <div className="group-badge">✍️ Writing & Poetry</div>
+            <div className="group-badge">🎨 Creative Hub</div>
+            <div className="group-badge">📷 Photography</div>
+            <div className="group-badge">🌿 Self-Care</div>
+            <div className="group-badge">🎵 Music & Audio</div>
           </div>
           {isAuth ? (
-            <Link to="/groups" className="btn-tags">
+            <Link to="/groups" className="btn-groups">
               Browse All Groups
             </Link>
           ) : (
-            <Link to="/register" className="btn-tags">
+            <Link to="/register" className="btn-groups">
               Browse All Groups
             </Link>
           )}

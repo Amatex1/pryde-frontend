@@ -1,8 +1,8 @@
 /**
- * Phase 2B: Discover Page - Group Discovery
+ * Phase 2C: Discover Page - Group Discovery
  *
  * Discover private groups and find your community.
- * Tags have been migrated to Groups.
+ * All tag references removed - groups are the primary community structure.
  */
 
 import { useState, useEffect } from 'react';
@@ -50,21 +50,21 @@ function Discover() {
         ) : groups.length === 0 ? (
           <div className="no-groups" style={{ textAlign: 'center', padding: '3rem' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👥</div>
-            <p>No groups available yet.</p>
+            <p>No groups here — this is a fresh start.</p>
           </div>
         ) : (
-          <div className="tags-grid">
+          <div className="discover-groups-grid">
             {groups.map(group => (
               <div
                 key={group._id}
-                className="tag-card glossy"
+                className="discover-group-card glossy"
                 onClick={() => handleGroupClick(group.slug)}
               >
-                <div className="tag-icon">👥</div>
-                <h3 className="tag-label">{group.name}</h3>
-                <p className="tag-description">{group.description}</p>
-                <div className="tag-stats">
-                  <span className="tag-post-count">{group.memberCount || 0} members</span>
+                <div className="group-icon">👥</div>
+                <h3 className="group-label">{group.name}</h3>
+                <p className="group-description">{group.description}</p>
+                <div className="group-stats">
+                  <span className="group-member-count">{group.memberCount || 0} members</span>
                   {group.isPrivate && <span className="visibility-badge">🔒 Private</span>}
                 </div>
               </div>

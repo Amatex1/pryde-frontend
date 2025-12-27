@@ -336,33 +336,33 @@
   font-size: 1rem;
 }
 
-/* Community Tags Section */
-.tags-section {
+/* Community Groups Section (Phase 2C: renamed from tags-section) */
+.groups-section {
   padding: 5rem 2rem;
   background: linear-gradient(135deg, #EDEAFF 0%, #d4c5ff 100%);
 }
 
-.tags-content {
+.groups-content {
   max-width: var(--fluid-container-2xl, 2000px);
   margin: 0 auto;
   text-align: center;
 }
 
-.tags-subtitle {
+.groups-subtitle {
   font-size: 1.1rem;
   color: var(--text-main);
   margin-bottom: 3rem;
   opacity: 0.9;
 }
 
-.tags-grid {
+.groups-preview-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
   margin-bottom: 3rem;
 }
 
-.tag-badge {
+.group-badge {
   background: white;
   padding: 1rem 1.5rem;
   border-radius: 30px;
@@ -373,12 +373,12 @@
   transition: all 0.3s ease;
 }
 
-.tag-badge:hover {
+.group-badge:hover {
   transform: translateY(-3px);
   box-shadow: 0 4px 15px rgba(108, 92, 231, 0.2);
 }
 
-.btn-tags {
+.btn-groups {
   background: var(--gradient-primary);
   color: white;
   padding: 1rem 2.5rem;
@@ -390,7 +390,7 @@
   transition: all 0.3s ease;
 }
 
-.btn-tags:hover {
+.btn-groups:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(108, 92, 231, 0.3);
 }
@@ -675,7 +675,7 @@
   .philosophy-section,
   .privacy-section,
   .creator-section,
-  .tags-section,
+  .groups-section,
   .messaging-section,
   .notifications-section,
   .themes-section,
@@ -690,7 +690,7 @@
 
   .privacy-grid,
   .creator-grid,
-  .tags-grid,
+  .groups-preview-grid,
   .notifications-list,
   .themes-grid {
     grid-template-columns: 1fr;
@@ -762,7 +762,7 @@
 
   .btn-primary,
   .btn-secondary,
-  .btn-tags,
+  .btn-groups,
   .btn-messaging,
   .btn-cta-primary,
   .btn-cta-secondary {
@@ -807,7 +807,7 @@
   background: linear-gradient(135deg, #1a1a2e 0%, #2a2550 100%);
 }
 
-[data-theme="dark"] .tags-section {
+[data-theme="dark"] .groups-section {
   background: linear-gradient(135deg, #2a2550 0%, #3a3560 100%);
 }
 
@@ -838,7 +838,7 @@
 
 [data-theme="dark"] .privacy-item,
 [data-theme="dark"] .notification-item,
-[data-theme="dark"] .tag-badge {
+[data-theme="dark"] .group-badge {
   background: var(--card-surface);
   border: 1px solid var(--border-dark);
 }
@@ -848,11 +848,11 @@
   color: var(--text-light);
 }
 
-[data-theme="dark"] .tag-badge {
+[data-theme="dark"] .group-badge {
   color: var(--pryde-purple);
 }
 
-[data-theme="dark"] .tags-subtitle,
+[data-theme="dark"] .groups-subtitle,
 [data-theme="dark"] .messaging-description {
   color: var(--text-light);
   opacity: 0.9;
@@ -890,7 +890,7 @@
   background: linear-gradient(135deg, #0F1021 0%, #1a1530 100%) !important;
 }
 
-[data-quiet-mode="true"] .tags-section {
+[data-quiet-mode="true"] .groups-section {
   background: linear-gradient(135deg, #1a1530 0%, #252040 100%) !important;
 }
 
@@ -900,7 +900,7 @@
 [data-quiet-mode="true"] .theme-card,
 [data-quiet-mode="true"] .privacy-item,
 [data-quiet-mode="true"] .notification-item,
-[data-quiet-mode="true"] .tag-badge {
+[data-quiet-mode="true"] .group-badge {
   background: rgba(26, 21, 48, 0.6) !important;
   border: 1px solid rgba(108, 92, 231, 0.2) !important;
 }
@@ -908,7 +908,7 @@
 [data-quiet-mode="true"] .philosophy-card h3,
 [data-quiet-mode="true"] .creator-card h3,
 [data-quiet-mode="true"] .theme-card h3,
-[data-quiet-mode="true"] .tag-badge {
+[data-quiet-mode="true"] .group-badge {
   color: var(--pryde-purple) !important;
 }
 
@@ -920,7 +920,7 @@
   color: var(--text-muted) !important;
 }
 
-[data-quiet-mode="true"] .tags-subtitle,
+[data-quiet-mode="true"] .groups-subtitle,
 [data-quiet-mode="true"] .messaging-description {
   color: var(--text-light) !important;
   opacity: 0.8 !important;

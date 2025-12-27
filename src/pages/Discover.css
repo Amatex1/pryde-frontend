@@ -25,13 +25,14 @@
   font-size: 16px;
 }
 
-.tags-grid {
+/* Phase 2C: Renamed from tags-grid to discover-groups-grid */
+.discover-groups-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--space-4);
 }
 
-.tag-card {
+.discover-group-card {
   background: var(--bg-card);
   padding: var(--space-6);
   border-radius: var(--radius-card);
@@ -42,25 +43,25 @@
   text-align: center;
 }
 
-.tag-card:hover {
+.discover-group-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-medium);
   border-color: var(--color-primary);
 }
 
-.tag-icon {
+.discover-group-card .group-icon {
   font-size: 48px;
   margin-bottom: var(--space-4);
 }
 
-.tag-label {
+.discover-group-card .group-label {
   font-size: 20px;
   color: var(--text-main);
   margin-bottom: var(--space-3);
   font-weight: 600;
 }
 
-.tag-description {
+.discover-group-card .group-description {
   color: var(--text-muted);
   font-size: 14px;
   line-height: 1.6;
@@ -68,12 +69,12 @@
   min-height: 48px;
 }
 
-.tag-stats {
+.discover-group-card .group-stats {
   padding-top: 1rem;
   border-top: 1px solid var(--border-light);
 }
 
-.tag-post-count {
+.discover-group-card .group-member-count {
   color: var(--pryde-purple);
   font-weight: 600;
   font-size: 0.9rem;
@@ -149,7 +150,7 @@
 }
 
 @media (max-width: 768px) {
-  .tags-grid {
+  .discover-groups-grid {
     grid-template-columns: 1fr;
   }
 
