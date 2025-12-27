@@ -401,6 +401,10 @@
   color: white;
 }
 
+.mobile-hamburger-btn:active {
+  transform: scale(0.95);
+}
+
 .mobile-menu-overlay {
   display: none;
   position: fixed;
