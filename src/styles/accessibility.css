@@ -230,25 +230,27 @@ body.modal-open {
    8. LINK ACCESSIBILITY
    ======================================== */
 
-/* Links should be distinguishable from text */
-a {
-  text-decoration-skip-ink: auto;
-}
+/*
+ * Global link reset is in index.css (a { text-decoration: none; })
+ * Only content areas get underlined links for accessibility.
+ * UI elements (tabs, cards, navs) must NOT have underlines.
+ */
 
-/* Links within content should have underlines */
-.content a,
-.post-content a,
-.comment-content a,
-article a {
+/* Links within content areas should have underlines for accessibility */
+.content a:not(.btn):not([class*="button"]):not([data-link="structural"]),
+.post-content a:not(.btn):not([class*="button"]):not([data-link="structural"]),
+.comment-content a:not(.btn):not([class*="button"]):not([data-link="structural"]),
+article a:not(.btn):not([class*="button"]):not([data-link="structural"]) {
   text-decoration: underline;
   text-decoration-color: currentColor;
   text-underline-offset: 2px;
+  text-decoration-skip-ink: auto;
 }
 
-.content a:hover,
-.post-content a:hover,
-.comment-content a:hover,
-article a:hover {
+.content a:not(.btn):not([class*="button"]):hover,
+.post-content a:not(.btn):not([class*="button"]):hover,
+.comment-content a:not(.btn):not([class*="button"]):hover,
+article a:not(.btn):not([class*="button"]):hover {
   text-decoration-thickness: 2px;
 }
 
@@ -512,15 +514,12 @@ textarea:disabled {
    Links must be distinguishable from text
    ======================================== */
 
-a:not(.btn):not([class*="button"]) {
-  text-decoration: underline;
-  text-decoration-skip-ink: auto;
-  text-underline-offset: 2px;
-}
-
-a:not(.btn):not([class*="button"]):hover {
-  text-decoration-thickness: 2px;
-}
+/*
+ * REMOVED: Overly aggressive a:not(.btn) underline rule.
+ * Global link reset is in index.css (a { text-decoration: none; })
+ * Content-area links are underlined in section 8 above.
+ * Use .link class for explicit inline text links.
+ */
 
 /* ========================================
    16. FORM FIELD VISIBILITY

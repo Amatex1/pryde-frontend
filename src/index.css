@@ -14,6 +14,41 @@
 @import './styles/layout.css';              /* AUTHORITY: Layout tokens and .page-container (MUST be last) */
 
 /* ========================================
+   GLOBAL LINK RESET
+   UI elements must not look like traditional hyperlinks.
+   Underlines are reserved for inline text links only.
+   ======================================== */
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ========================================
+   EXPLICIT INLINE LINK STYLE
+   Use .link ONLY for real text links:
+   - "View helplines"
+   - Inline text references
+   - Legal / help links inside paragraphs
+   ======================================== */
+
+.link {
+  color: var(--color-accent, #9b87f5);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-skip-ink: auto;
+}
+
+.link:hover {
+  opacity: 0.85;
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--color-accent, #9b87f5);
+  outline-offset: 2px;
+}
+
+/* ========================================
    RESPONSIVE FOUNDATION (MOBILE-FIRST)
    ======================================== */
 
