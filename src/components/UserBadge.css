@@ -98,3 +98,24 @@
   color: #fff;
 }
 
+[data-theme="dark"] .badge-teal {
+  background: #0d9488;
+  color: #fff;
+}
+
+[data-theme="dark"] .badge-blue {
+  background: #2563eb;
+  color: #fff;
+}
+
+/* Green variant for profile_complete badge */
+.badge-green {
+  background: #10b981;
+  color: white;
+}
+
+[data-theme="dark"] .badge-green {
+  background: #059669;
+  color: #fff;
+}
+

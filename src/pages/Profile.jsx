@@ -1419,7 +1419,7 @@ function Profile() {
               <h1 className="profile-name text-shadow">
                 {user.displayName || user.fullName || user.username}
                 {user.badges?.length > 0 && (
-                  <BadgeContainer badges={user.badges} showLabels />
+                  <BadgeContainer badges={user.badges} showLabels showAll />
                 )}
                 {user.nickname &&
                  user.nickname !== user.displayName &&

@@ -376,9 +376,9 @@ function Admin() {
   };
 
   // Badge management handlers
-  const handleAssignBadge = async (userId, badgeId) => {
+  const handleAssignBadge = async (userId, badgeId, reason) => {
     try {
-      await api.post('/badges/admin/assign', { userId, badgeId });
+      await api.post('/badges/admin/assign', { userId, badgeId, reason });
       showAlert('Badge assigned successfully', 'Success');
       // Refresh users to show updated badges
       if (activeTab === 'users') {
@@ -878,18 +878,26 @@ function ReportsTab({ reports, onResolve }) {
 // Badge Management Modal Component
 function BadgeManagementModal({ user, badges = [], onAssignBadge, onRevokeBadge, onClose }) {
   const [selectedBadge, setSelectedBadge] = useState('');
+  const [reason, setReason] = useState('');
   const [isAssigning, setIsAssigning] = useState(false);
   const [isRevoking, setIsRevoking] = useState(null);
 
   const userBadges = user.badges || [];
   const availableBadges = badges.filter(b => !userBadges.some(ub => ub.id === b.id));
 
+  // Check if selected badge is manual (requires reason)
+  const selectedBadgeData = badges.find(b => b.id === selectedBadge);
+  const isManualBadge = selectedBadgeData?.assignmentType === 'manual';
+  const reasonValid = !isManualBadge || reason.trim().length >= 10;
+
   const handleAssign = async () => {
     if (!selectedBadge) return;
+    if (isManualBadge && !reasonValid) return;
     setIsAssigning(true);
     try {
-      await onAssignBadge(user._id, selectedBadge);
+      await onAssignBadge(user._id, selectedBadge, reason.trim());
       setSelectedBadge('');
+      setReason('');
     } finally {
       setIsAssigning(false);
     }
@@ -953,14 +961,32 @@ function BadgeManagementModal({ user, badges = [], onAssignBadge, onRevokeBadge,
                   <option value="">Select a badge...</option>
                   {availableBadges.map(badge => (
                     <option key={badge.id} value={badge.id}>
-                      {badge.icon} {badge.label}
+                      {badge.icon} {badge.label} {badge.assignmentType === 'manual' ? '(requires reason)' : ''}
                     </option>
                   ))}
                 </select>
+
+                {/* Reason input for manual badges */}
+                {selectedBadge && isManualBadge && (
+                  <div className="badge-reason-input">
+                    <label>Reason for assignment (required, min 10 chars):</label>
+                    <textarea
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
+                      placeholder="Why is this badge being assigned? This is logged for accountability."
+                      rows="2"
+                      className="badge-reason-textarea"
+                    />
+                    <small className={reason.trim().length >= 10 ? 'valid' : 'invalid'}>
+                      {reason.trim().length}/10 characters minimum
+                    </small>
+                  </div>
+                )}
+
                 <button
                   className="badge-assign-btn"
                   onClick={handleAssign}
-                  disabled={!selectedBadge || isAssigning}
+                  disabled={!selectedBadge || isAssigning || !reasonValid}
                 >
                   {isAssigning ? 'Assigning...' : 'Assign Badge'}
                 </button>
@@ -1141,8 +1167,8 @@ function UsersTab({ users, badges = [], onSuspend, onBan, onUnsuspend, onUnban, 
         <BadgeManagementModal
           user={badgeModalUser}
           badges={badges}
-          onAssignBadge={async (userId, badgeId) => {
-            await onAssignBadge(userId, badgeId);
+          onAssignBadge={async (userId, badgeId, reason) => {
+            await onAssignBadge(userId, badgeId, reason);
             // Update the modal user's badges after assignment
             const updatedUser = users.find(u => u._id === userId);
             if (updatedUser) setBadgeModalUser(updatedUser);

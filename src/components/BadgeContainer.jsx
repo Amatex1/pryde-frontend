@@ -1,8 +1,8 @@
 /**
  * BadgeContainer Component
- * 
- * Displays user badges with max 2 inline.
- * Additional badges shown via tooltip/overflow indicator.
+ *
+ * Displays user badges. By default shows max 2 inline with overflow indicator.
+ * Use showAll prop to display all badges (e.g., on profile pages).
  * Fixed height container to prevent layout shifts.
  */
 
@@ -13,7 +13,7 @@ import './BadgeContainer.css';
 
 const MAX_INLINE_BADGES = 2;
 
-function BadgeContainer({ badges = [], showLabels = false }) {
+function BadgeContainer({ badges = [], showLabels = false, showAll = false }) {
   const [showTooltip, setShowTooltip] = useState(false);
 
   // Filter and sort badges by priority (lower = higher priority)
@@ -31,26 +31,27 @@ function BadgeContainer({ badges = [], showLabels = false }) {
       .sort((a, b) => (a.priority || 100) - (b.priority || 100));
   }, [badges]);
 
-  const inlineBadges = sortedBadges.slice(0, MAX_INLINE_BADGES);
-  const overflowBadges = sortedBadges.slice(MAX_INLINE_BADGES);
+  // When showAll is true, display all badges without overflow
+  const inlineBadges = showAll ? sortedBadges : sortedBadges.slice(0, MAX_INLINE_BADGES);
+  const overflowBadges = showAll ? [] : sortedBadges.slice(MAX_INLINE_BADGES);
   const hasOverflow = overflowBadges.length > 0;
 
   if (sortedBadges.length === 0) return null;
 
   return (
-    <div className="badge-container">
+    <div className={`badge-container ${showAll ? 'badge-container-all' : ''}`}>
       {/* Inline badges */}
       {inlineBadges.map(badge => (
-        <UserBadge 
-          key={badge.id} 
-          badge={badge} 
+        <UserBadge
+          key={badge.id}
+          badge={badge}
           showLabel={showLabels}
         />
       ))}
 
-      {/* Overflow indicator */}
+      {/* Overflow indicator (only when not showing all) */}
       {hasOverflow && (
-        <span 
+        <span
           className="badge-overflow-indicator"
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
@@ -60,14 +61,14 @@ function BadgeContainer({ badges = [], showLabels = false }) {
           aria-label={`+${overflowBadges.length} more badges`}
         >
           +{overflowBadges.length}
-          
+
           {/* Overflow tooltip */}
           {showTooltip && (
             <div className="badge-overflow-tooltip">
               {overflowBadges.map(badge => (
-                <UserBadge 
-                  key={badge.id} 
-                  badge={badge} 
+                <UserBadge
+                  key={badge.id}
+                  badge={badge}
                   showLabel={true}
                 />
               ))}
@@ -88,7 +89,8 @@ BadgeContainer.propTypes = {
     priority: PropTypes.number,
     color: PropTypes.string
   })),
-  showLabels: PropTypes.bool
+  showLabels: PropTypes.bool,
+  showAll: PropTypes.bool
 };
 
 export default BadgeContainer;

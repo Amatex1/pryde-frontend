@@ -426,6 +426,42 @@ div.profile-layout,
   -webkit-background-clip: border-box;
 }
 
+/* Reset text-fill-color for user badges inside profile name */
+.profile-name .user-badge {
+  -webkit-text-fill-color: initial;
+  background-clip: border-box;
+  -webkit-background-clip: border-box;
+}
+
+.profile-name .user-badge.badge-teal,
+.profile-name .user-badge.badge-blue,
+.profile-name .user-badge.badge-purple,
+.profile-name .user-badge.badge-rainbow,
+.profile-name .user-badge.badge-green {
+  -webkit-text-fill-color: white;
+}
+
+.profile-name .user-badge.badge-gold,
+.profile-name .user-badge.badge-silver {
+  -webkit-text-fill-color: #333;
+}
+
+.profile-name .user-badge.badge-default,
+.profile-name .user-badge.badge-lavender {
+  -webkit-text-fill-color: var(--pryde-purple, #6B46C1);
+}
+
+/* Dark mode overrides for user badges in profile name */
+[data-theme="dark"] .profile-name .user-badge.badge-default,
+[data-theme="dark"] .profile-name .user-badge.badge-lavender {
+  -webkit-text-fill-color: #d8b4fe;
+}
+
+[data-theme="dark"] .profile-name .user-badge.badge-gold,
+[data-theme="dark"] .profile-name .user-badge.badge-silver {
+  -webkit-text-fill-color: #fff;
+}
+
 .verified-badge {
   display: inline-flex;
   align-items: center;

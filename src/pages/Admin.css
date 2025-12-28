@@ -1727,8 +1727,8 @@
 
 .badge-assign-form {
   display: flex;
-  gap: 0.5rem;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .badge-select {
@@ -1761,6 +1761,50 @@
 .badge-assign-btn:disabled {
   background: #ccc;
   cursor: not-allowed;
+}
+
+/* Badge reason input for manual badge assignments */
+.badge-reason-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.badge-reason-input label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.badge-reason-textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  background: var(--bg-surface);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 60px;
+}
+
+.badge-reason-textarea:focus {
+  outline: none;
+  border-color: var(--pryde-purple);
+}
+
+.badge-reason-input small {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.badge-reason-input small.valid {
+  color: #10b981;
+}
+
+.badge-reason-input small.invalid {
+  color: #ef4444;
 }
 
 /* Dark mode adjustments */

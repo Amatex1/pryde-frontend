@@ -17,6 +17,7 @@ const BADGE_COLORS = {
   lavender: 'badge-lavender',
   teal: 'badge-teal',
   blue: 'badge-blue',
+  green: 'badge-green',
   default: 'badge-default'
 };
 
