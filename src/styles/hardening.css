@@ -1,0 +1,304 @@
+/* ========================================
+   PRYDE SOCIAL - GLOBAL HARDENING PASS
+   Version: 2024-12-28
+
+   PURPOSE:
+   - Prevent layout overflow
+   - Prevent hydration shifts
+   - Ensure dark mode consistency
+   - Ensure quiet mode consistency
+   - Block future regressions structurally
+
+   IMPORT THIS FILE AFTER design-system.css
+   ======================================== */
+
+/* ========================================
+   PART 1: GLOBAL LAYOUT STABILITY
+   Prevent flex/grid children from breaking containers
+   ======================================== */
+
+/* Flex and grid children should shrink to fit */
+.flex,
+.grid,
+[class*="flex"],
+[class*="grid"] {
+  min-width: 0;
+}
+
+/* All major containers must respect boundaries */
+.page-container,
+.card,
+.panel,
+.surface,
+.modal-content,
+.drawer-content {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Prevent any element from causing horizontal scroll */
+.feed-main,
+.profile-content,
+.messages-container,
+.settings-container,
+.admin-container,
+.groups-container {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* ========================================
+   PART 2: TABLE & DENSE UI RULES
+   All tables must be wrapped for horizontal scroll
+   ======================================== */
+
+/* Generic table wrapper utility class */
+.table-wrapper {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* All tables should have minimum widths to prevent squishing */
+.table-wrapper table,
+table.data-table {
+  min-width: 800px;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/* Table cells should not wrap unexpectedly */
+.table-wrapper th,
+.table-wrapper td,
+table.data-table th,
+table.data-table td {
+  white-space: nowrap;
+  vertical-align: middle;
+  padding: 0.75rem 1rem;
+}
+
+/* Allow text wrapping in specific content columns */
+.table-wrapper td.wrap-text,
+table.data-table td.wrap-text {
+  white-space: normal;
+  max-width: 300px;
+}
+
+/* ========================================
+   PART 3: HYDRATION SHIFT PREVENTION
+   Reserve final geometry for interactive elements
+   ======================================== */
+
+/* Buttons must have stable dimensions */
+button,
+.btn,
+[class*="btn-"] {
+  min-height: 36px;
+  padding: 0 14px;
+  box-sizing: border-box;
+}
+
+/* Small buttons retain minimum */
+.btn-sm,
+.btn-small {
+  min-height: 28px;
+  padding: 0 10px;
+}
+
+/* Large buttons */
+.btn-lg,
+.btn-large {
+  min-height: 44px;
+  padding: 0 20px;
+}
+
+/* Interactive elements should not change border width on state */
+button:hover,
+button:focus,
+button:active,
+.btn:hover,
+.btn:focus,
+.btn:active {
+  border-width: inherit;
+}
+
+/* Visibility utility - use instead of conditional rendering */
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+/* Skeleton placeholders should match final size */
+.skeleton {
+  min-height: 1em;
+  min-width: 100px;
+  background: var(--bg-hover);
+  border-radius: var(--radius-sm, 4px);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+/* ========================================
+   PART 4: DARK MODE HARDENING
+   Ensure color-scheme is set and tokens are used
+   ======================================== */
+
+/* Set color-scheme for browser-native elements */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* Force form elements to respect dark mode */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select,
+[data-theme="dark"] option {
+  background-color: var(--bg-card, #1A1B30);
+  color: var(--text-primary, #F8F7FF);
+  border-color: var(--border-subtle, #262842);
+}
+
+/* Placeholder text in dark mode */
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--text-muted, #9FA1C0);
+}
+
+/* Scrollbar dark mode */
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--bg-surface, #15162A);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--border-default, #33355A);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary, #6C5CE7);
+}
+
+/* ========================================
+   PART 5: QUIET MODE ENFORCEMENT
+   Spacing, motion, and de-emphasis tokens
+   ======================================== */
+
+/* Quiet mode spacing overrides (already in quiet-mode.css but reinforced) */
+[data-quiet="true"] {
+  /* Spacing - slightly more generous */
+  --space-2: 10px;
+  --space-3: 16px;
+  --space-4: 22px;
+  --space-5: 30px;
+
+  /* Motion - faster, less noticeable */
+  --motion-fast: 120ms;
+  --motion-normal: 180ms;
+
+  /* De-emphasis */
+  --opacity-muted: 0.55;
+}
+
+/* Disable ALL decorative motion classes */
+[data-quiet="true"] .pulse,
+[data-quiet="true"] .bounce,
+[data-quiet="true"] .shake,
+[data-quiet="true"] .wiggle,
+[data-quiet="true"] .spin,
+[data-quiet="true"] .float,
+[data-quiet="true"] .glow {
+  animation: none !important;
+}
+
+/* Quiet mode: Hide metrics if enabled */
+[data-quiet="true"][data-hide-metrics="true"] .metrics,
+[data-quiet="true"][data-hide-metrics="true"] .post-metrics,
+[data-quiet="true"][data-hide-metrics="true"] .like-count,
+[data-quiet="true"][data-hide-metrics="true"] .share-count,
+[data-quiet="true"][data-hide-metrics="true"] .view-count {
+  display: none !important;
+}
+
+/* Quiet mode: Hide badges if enabled */
+[data-quiet="true"][data-hide-badges="true"] .badge,
+[data-quiet="true"][data-hide-badges="true"] .notification-badge,
+[data-quiet="true"][data-hide-badges="true"] .unread-badge {
+  display: none !important;
+}
+
+/* ========================================
+   PART 6: ADMIN UI SAFETY NET
+   Ensure admin panels are scroll-safe
+   ======================================== */
+
+.admin-container {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.admin-card,
+.admin-panel {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.admin-table,
+.users-table,
+.blocks-table {
+  min-width: 1100px;
+}
+
+/* Admin tables sticky header */
+.admin-table thead th,
+.users-table thead th,
+.blocks-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--accent-primary, #6C5CE7);
+}
+
+/* ========================================
+   RESPONSIVE SAFETY VALVES
+   Prevent layout breaks at breakpoints
+   ======================================== */
+
+/* Tablet: Allow horizontal scroll for data tables */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .admin-container,
+  .users-list,
+  .blocks-list {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Mobile: Card-based layouts */
+@media (max-width: 768px) {
+  /* Reduce minimum widths for mobile */
+  .table-wrapper table,
+  table.data-table {
+    min-width: 600px;
+  }
+
+  /* Ensure modals don't overflow */
+  .modal-content {
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+}
+

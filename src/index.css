@@ -11,6 +11,7 @@
 @import './styles/professional-layout.css'; /* Professional layout pass - calm + confident */
 @import './styles/components.css';          /* Reusable component styles */
 @import './styles/accessibility.css';       /* Phase 5C: Accessibility & keyboard navigation */
+@import './styles/hardening.css';           /* Global hardening pass - layout stability, dark mode, quiet mode */
 @import './styles/layout.css';              /* AUTHORITY: Layout tokens and .page-container (MUST be last) */
 
 /* ========================================
