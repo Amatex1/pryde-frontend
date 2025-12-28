@@ -1,13 +1,19 @@
 /**
  * GroupDetailController - Orchestrates the group detail page
- * 
+ *
+ * ARCHITECTURE RULE:
+ * This file must not contain viewport or device detection logic.
+ * Layout decisions belong exclusively in /layouts.
+ * Enforced by ESLint: no-restricted-properties, no-restricted-globals
+ *
  * RESPONSIBILITIES:
  * - Data fetching and state management
  * - API calls for group operations
  * - Coordinates GroupHeader, GroupFeed, GroupSidebar
  * - Handles modals (members, notifications, mod log)
- * 
+ *
  * RULES:
+ * - NO viewport detection (window.innerWidth, matchMedia)
  * - NO layout logic (widths, grids, media queries)
  * - Passes data and handlers to child components
  * - Layout is handled by PageLayout/GroupsLayout

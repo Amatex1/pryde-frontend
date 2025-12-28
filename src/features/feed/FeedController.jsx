@@ -1,13 +1,19 @@
 /**
  * FeedController - Data and state management for Feed feature
- * 
+ *
+ * ARCHITECTURE RULE:
+ * This file must not contain viewport or device detection logic.
+ * Layout decisions belong exclusively in /layouts.
+ * Enforced by ESLint: no-restricted-properties, no-restricted-globals
+ *
  * RESPONSIBILITIES:
  * - Fetch posts, friends, and related data
  * - Manage all Feed state (posts, comments, UI state)
  * - Handle all user interactions (like, comment, share, etc.)
  * - Compose layout using PageLayout primitive
- * 
+ *
  * RULES:
+ * - NO viewport detection (window.innerWidth, matchMedia)
  * - NO layout CSS (widths, grids, media queries)
  * - Uses PageLayout for responsive layout
  * - Passes data down to FeedStream and FeedSidebar

@@ -1,13 +1,19 @@
 /**
  * ProfileController - Data and state management for Profile feature
- * 
+ *
+ * ARCHITECTURE RULE:
+ * This file must not contain viewport or device detection logic.
+ * Layout decisions belong exclusively in /layouts.
+ * Enforced by ESLint: no-restricted-properties, no-restricted-globals
+ *
  * RESPONSIBILITIES:
  * - Fetch user profile, posts, and related data
  * - Manage all Profile state (user, posts, follow status, etc.)
  * - Handle all user interactions (follow, message, block, etc.)
  * - Compose layout using PageLayout primitive
- * 
+ *
  * RULES:
+ * - NO viewport detection (window.innerWidth, matchMedia)
  * - NO layout CSS (widths, grids, media queries)
  * - Uses PageLayout for responsive layout
  * - Passes data down to ProfileHeader, ProfileContent, ProfileSidebar

@@ -1,13 +1,19 @@
 /**
  * MessagesController - Orchestrates Messages feature
- * 
+ *
+ * ARCHITECTURE RULE:
+ * This file must not contain viewport or device detection logic.
+ * Layout decisions belong exclusively in /layouts.
+ * Enforced by ESLint: no-restricted-properties, no-restricted-globals
+ *
  * RESPONSIBILITIES:
  * - Manage all messaging state
  * - Handle data fetching and socket events
  * - Coordinate between ConversationList, MessageThread, MessageComposer
  * - Provide handlers to child components
- * 
+ *
  * RULES:
+ * - NO viewport detection (window.innerWidth, matchMedia)
  * - NO layout logic (widths, grids, media queries)
  * - NO direct rendering of layout containers
  * - Delegates layout to MessagesLayout

@@ -1,12 +1,18 @@
 /**
  * GroupsListController - Orchestrates the groups listing page
- * 
+ *
+ * ARCHITECTURE RULE:
+ * This file must not contain viewport or device detection logic.
+ * Layout decisions belong exclusively in /layouts.
+ * Enforced by ESLint: no-restricted-properties, no-restricted-globals
+ *
  * RESPONSIBILITIES:
  * - Fetch groups list (my groups, discover)
  * - Handle search/filter
  * - Create group modal
- * 
+ *
  * RULES:
+ * - NO viewport detection (window.innerWidth, matchMedia)
  * - NO layout logic (widths, grids, media queries)
  * - Passes data and handlers to child components
  */
