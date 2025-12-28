@@ -1,0 +1,62 @@
+/**
+ * GroupsGrid.css - Groups grid styling
+ */
+
+.groups-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.groups-grid-empty {
+  padding: 3rem;
+  text-align: center;
+  border-radius: 12px;
+}
+
+.groups-grid-empty p {
+  margin: 0;
+  color: var(--text-muted, #888);
+}
+
+.group-card {
+  padding: 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.group-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.group-card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.group-card-name {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+}
+
+.group-card-description {
+  margin: 0 0 0.75rem;
+  color: var(--text-secondary, #aaa);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.group-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--text-muted, #888);
+}
+
+.private-badge {
+  font-size: 1rem;
+}
+

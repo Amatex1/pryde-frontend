@@ -1,0 +1,115 @@
+/**
+ * GroupsListController.css - Groups list page styling
+ */
+
+.groups-list-controller {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.groups-list-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 1rem;
+}
+
+.groups-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.groups-list-header h1 {
+  margin: 0;
+}
+
+.btn-create-group {
+  padding: 0.75rem 1.5rem;
+  background: var(--accent-color, #7c3aed);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.groups-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border-color, #333);
+  padding-bottom: 0.5rem;
+}
+
+.groups-tabs .tab {
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  color: var(--text-muted, #888);
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+}
+
+.groups-tabs .tab.active {
+  color: var(--text-primary, #fff);
+  background: var(--bg-tertiary, #252525);
+}
+
+.groups-search input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color, #333);
+  border-radius: 8px;
+  background: var(--bg-tertiary, #252525);
+  color: var(--text-primary, #fff);
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--bg-secondary, #1a1a1a);
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-content h2 {
+  margin: 0;
+}
+
+.modal-content input,
+.modal-content textarea {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #333);
+  border-radius: 8px;
+  background: var(--bg-tertiary, #252525);
+  color: var(--text-primary, #fff);
+}
+
+.modal-content textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
