@@ -6,7 +6,6 @@ const PollCreator = ({ onPollChange, initialPoll = null }) => {
     options: ['', ''],
     endsAt: null,
     allowMultipleVotes: false,
-    showResultsBeforeVoting: false,
     resultsVisibility: 'public' // 'public' or 'author'
   });
 
@@ -114,15 +113,6 @@ const PollCreator = ({ onPollChange, initialPoll = null }) => {
             onChange={(e) => updatePoll({ allowMultipleVotes: e.target.checked })}
           />
           <span>Allow multiple votes</span>
-        </label>
-
-        <label className="poll-checkbox">
-          <input
-            type="checkbox"
-            checked={poll.showResultsBeforeVoting}
-            onChange={(e) => updatePoll({ showResultsBeforeVoting: e.target.checked })}
-          />
-          <span>Show results before voting</span>
         </label>
       </div>
     </div>

@@ -18,9 +18,9 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
   );
   const hasVoted = userVotedIndex !== -1;
 
-  // Can see results if: voted, showResultsBeforeVoting enabled, poll ended, OR results are public
-  // If resultsHidden is true, user can only see their own vote, not counts
-  const canSeeResults = (hasVoted || poll.showResultsBeforeVoting || hasEnded) && !resultsHidden;
+  // Always show results (unless resultsHidden by author)
+  // Users can see vote counts even before voting
+  const canSeeResults = !resultsHidden;
 
   const handleVote = async (optionIndex) => {
     if (voting || removingVote || hasEnded) return;
@@ -93,11 +93,19 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
           const votes = option.votes?.length || 0;
           const percentage = getPercentage(votes);
           const isSelected = index === userVotedIndex;
+          const canVote = !hasVoted && !hasEnded && !voting && !removingVote;
 
           return (
             <div key={index} className="poll-option-wrapper">
               {canSeeResults ? (
-                <div className={`poll-option-result ${isSelected ? 'selected' : ''}`}>
+                // Show results with vote counts - clickable if user hasn't voted
+                <div
+                  className={`poll-option-result ${isSelected ? 'selected' : ''} ${canVote ? 'clickable' : ''}`}
+                  onClick={canVote ? () => handleVote(index) : undefined}
+                  role={canVote ? 'button' : undefined}
+                  tabIndex={canVote ? 0 : undefined}
+                  onKeyDown={canVote ? (e) => e.key === 'Enter' && handleVote(index) : undefined}
+                >
                   <div className="poll-option-bar" style={{ width: `${percentage}%` }} />
                   <div className="poll-option-content">
                     <span className="poll-option-text">{option.text}</span>
@@ -115,6 +123,7 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
                   {isSelected && <span className="voted-checkmark">✓</span>}
                 </div>
               ) : (
+                // Results hidden and user hasn't voted - show buttons only
                 <button
                   className="poll-option-button"
                   onClick={() => handleVote(index)}

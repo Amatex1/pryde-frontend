@@ -88,6 +88,16 @@
   transition: all 0.3s ease;
 }
 
+.poll-option-result.clickable {
+  cursor: pointer;
+}
+
+.poll-option-result.clickable:hover {
+  border-color: var(--accent-primary);
+  background: var(--bg-hover, rgba(var(--accent-primary-rgb), 0.05));
+  transform: translateY(-1px);
+}
+
 .poll-option-result.selected {
   border-color: var(--accent-primary);
   background: var(--accent-muted);
