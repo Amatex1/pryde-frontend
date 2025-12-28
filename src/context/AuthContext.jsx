@@ -140,6 +140,13 @@ export function AuthProvider({ children }) {
       // Check if we have a token before making the request
       let token = localStorage.getItem('token');
 
+      // 🔥 Validate token format - clear if empty/malformed
+      if (token && (token === 'undefined' || token === 'null' || token.trim() === '')) {
+        logger.debug('[AuthContext] Invalid token format detected - clearing');
+        localStorage.removeItem('token');
+        token = null;
+      }
+
       // 🔥 NEW: If no access token, attempt silent refresh using httpOnly cookie
       // This restores sessions after browser restart, tab close, or PWA relaunch
       if (!token) {
@@ -160,6 +167,17 @@ export function AuthProvider({ children }) {
           sessionStorage.setItem('authReady', 'true');
           return { authenticated: false };
         }
+      }
+
+      // 🔥 Double-check we have a valid token before calling /auth/me
+      if (!token) {
+        logger.debug('[AuthContext] No token after refresh attempt - skipping /auth/me');
+        setUser(null);
+        setAuthStatus(AUTH_STATES.UNAUTHENTICATED);
+        markAuthStatusUnauthenticated();
+        markAuthReady();
+        sessionStorage.setItem('authReady', 'true');
+        return { authenticated: false };
       }
 
       // 🔥 Use Axios api.js for auth-critical flows (has token refresh interceptor)
