@@ -31,7 +31,7 @@ function Admin() {
   const [activity, setActivity] = useState(null);
   const [securityLogs, setSecurityLogs] = useState([]);
   const [securityStats, setSecurityStats] = useState(null);
-  const [verificationRequests, setVerificationRequests] = useState([]);
+  const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
@@ -249,15 +249,9 @@ function Admin() {
         const response = await api.get('/admin/security-logs?limit=50');
         setSecurityLogs(response.data.logs);
         setSecurityStats(response.data.stats);
-      } else if (activeTab === 'verification') {
-        // NOTE: Verification system removed 2025-12-26 - endpoint returns 410 Gone
-        const response = await api.get('/admin/verification-requests?status=pending');
-        // Handle 410 response (feature removed) gracefully
-        if (response.data?.removed || response.status === 410) {
-          setVerificationRequests([]); // Show empty state
-        } else {
-          setVerificationRequests(response.data.requests || []);
-        }
+      } else if (activeTab === 'badges') {
+        const response = await api.get('/badges');
+        setBadges(response.data || []);
       }
     } catch (error) {
       console.error('Load data error:', error);
@@ -368,10 +362,34 @@ function Admin() {
     }
   };
 
-  const handleVerificationAction = async (userId, action) => {
-    // NOTE: Verification system removed 2025-12-26 - endpoint returns 410 Gone
-    // This function is kept for UI stability but will show a "feature removed" message
-    showAlert('Verification system has been removed.', 'Feature Removed');
+  // Badge management handlers
+  const handleAssignBadge = async (userId, badgeId) => {
+    try {
+      await api.post('/badges/assign', { userId, badgeId });
+      showAlert('Badge assigned successfully', 'Success');
+    } catch (error) {
+      console.error('Assign badge error:', error);
+      showAlert(error.response?.data?.message || 'Failed to assign badge', 'Error');
+    }
+  };
+
+  const handleRevokeBadge = async (userId, badgeId) => {
+    const confirmed = await showConfirm(
+      'Are you sure you want to revoke this badge?',
+      'Revoke Badge',
+      'Revoke',
+      'Cancel'
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await api.post('/badges/revoke', { userId, badgeId });
+      showAlert('Badge revoked successfully', 'Success');
+    } catch (error) {
+      console.error('Revoke badge error:', error);
+      showAlert(error.response?.data?.message || 'Failed to revoke badge', 'Error');
+    }
   };
 
   const handleSendPasswordReset = async (userId, userEmail, username) => {
@@ -565,10 +583,10 @@ function Admin() {
             🔒 Security
           </button>
           <button
-            className={`admin-tab ${activeTab === 'verification' ? 'active' : ''}`}
-            onClick={() => handleTabChange('verification')}
+            className={`admin-tab ${activeTab === 'badges' ? 'active' : ''}`}
+            onClick={() => handleTabChange('badges')}
           >
-            ✓ Verification
+            🏅 Badges
           </button>
         </div>
 
@@ -582,6 +600,7 @@ function Admin() {
           {activeTab === 'users' && (
             <UsersTab
               users={users}
+              badges={badges}
               onSuspend={handleSuspendUser}
               onBan={handleBanUser}
               onUnsuspend={handleUnsuspendUser}
@@ -589,6 +608,8 @@ function Admin() {
               onChangeRole={handleChangeRole}
               onSendPasswordReset={handleSendPasswordReset}
               onUpdateEmail={handleUpdateEmail}
+              onAssignBadge={handleAssignBadge}
+              onRevokeBadge={handleRevokeBadge}
             />
           )}
           {activeTab === 'blocks' && (
@@ -613,10 +634,10 @@ function Admin() {
               />
             )
           )}
-          {activeTab === 'verification' && (
-            <VerificationTab
-              requests={verificationRequests}
-              onAction={handleVerificationAction}
+          {activeTab === 'badges' && (
+            <BadgesTab
+              badges={badges}
+              onRefresh={() => loadTabData()}
             />
           )}
         </div>
@@ -834,7 +855,10 @@ function ReportsTab({ reports, onResolve }) {
 }
 
 // Users Tab Component
-function UsersTab({ users, onSuspend, onBan, onUnsuspend, onUnban, onChangeRole, onSendPasswordReset, onUpdateEmail }) {
+function UsersTab({ users, badges = [], onSuspend, onBan, onUnsuspend, onUnban, onChangeRole, onSendPasswordReset, onUpdateEmail, onAssignBadge, onRevokeBadge }) {
+  const [expandedUser, setExpandedUser] = useState(null);
+  const [selectedBadge, setSelectedBadge] = useState('');
+
   return (
     <div className="users-list">
       <h2>User Management ({users.length} total users)</h2>
@@ -849,6 +873,7 @@ function UsersTab({ users, onSuspend, onBan, onUnsuspend, onUnban, onChangeRole,
               <th>Identity</th>
               <th>Email</th>
               <th>Role</th>
+              <th>Badges</th>
               <th>Status</th>
               <th>Joined</th>
               <th>Actions</th>
@@ -907,6 +932,101 @@ function UsersTab({ users, onSuspend, onBan, onUnsuspend, onUnban, onChangeRole,
                       <option value="super_admin">super_admin</option>
                     </select>
                   )}
+                </td>
+                <td data-label="Badges">
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    {/* Show current badges */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+                      {user.badges && user.badges.length > 0 ? (
+                        user.badges.map(badge => (
+                          <span
+                            key={badge.id}
+                            title={`${badge.tooltip} - Click to revoke`}
+                            onClick={() => onRevokeBadge(user._id, badge.id)}
+                            style={{
+                              cursor: 'pointer',
+                              padding: '2px 6px',
+                              background: 'var(--soft-lavender)',
+                              borderRadius: '4px',
+                              fontSize: '0.8rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '2px'
+                            }}
+                          >
+                            {badge.icon} {badge.label}
+                          </span>
+                        ))
+                      ) : (
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>No badges</span>
+                      )}
+                    </div>
+                    {/* Badge assignment dropdown */}
+                    {expandedUser === user._id ? (
+                      <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center' }}>
+                        <select
+                          value={selectedBadge}
+                          onChange={(e) => setSelectedBadge(e.target.value)}
+                          style={{ padding: '0.25rem', fontSize: '0.8rem', borderRadius: '4px' }}
+                        >
+                          <option value="">Select badge...</option>
+                          {badges.filter(b => !user.badges?.some(ub => ub.id === b.id)).map(badge => (
+                            <option key={badge.id} value={badge.id}>{badge.icon} {badge.label}</option>
+                          ))}
+                        </select>
+                        <button
+                          onClick={() => {
+                            if (selectedBadge) {
+                              onAssignBadge(user._id, selectedBadge);
+                              setSelectedBadge('');
+                              setExpandedUser(null);
+                            }
+                          }}
+                          disabled={!selectedBadge}
+                          style={{
+                            padding: '0.25rem 0.5rem',
+                            fontSize: '0.75rem',
+                            background: selectedBadge ? '#10b981' : '#ccc',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: selectedBadge ? 'pointer' : 'not-allowed'
+                          }}
+                        >
+                          ✓
+                        </button>
+                        <button
+                          onClick={() => setExpandedUser(null)}
+                          style={{
+                            padding: '0.25rem 0.5rem',
+                            fontSize: '0.75rem',
+                            background: '#ef4444',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setExpandedUser(user._id)}
+                        style={{
+                          padding: '0.25rem 0.5rem',
+                          fontSize: '0.75rem',
+                          background: 'var(--pryde-purple)',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        + Add Badge
+                      </button>
+                    )}
+                  </div>
                 </td>
                 <td data-label="Status">
                   {user.isBanned && <span className="status-badge banned">Banned</span>}
@@ -1248,73 +1368,190 @@ function SecurityTab({ logs, stats, onResolve }) {
   );
 }
 
-function VerificationTab({ requests, onAction }) {
+// BadgesTab Component - Manage platform badges
+function BadgesTab({ badges, onRefresh }) {
+  const [newBadge, setNewBadge] = useState({
+    id: '',
+    label: '',
+    type: 'community',
+    icon: '⭐',
+    tooltip: '',
+    priority: 100,
+    color: 'default'
+  });
+  const [creating, setCreating] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+
+  const handleCreateBadge = async (e) => {
+    e.preventDefault();
+    if (!newBadge.id || !newBadge.label || !newBadge.tooltip) {
+      return;
+    }
+
+    try {
+      setCreating(true);
+      await api.post('/badges', newBadge);
+      setNewBadge({
+        id: '',
+        label: '',
+        type: 'community',
+        icon: '⭐',
+        tooltip: '',
+        priority: 100,
+        color: 'default'
+      });
+      setShowForm(false);
+      onRefresh();
+    } catch (error) {
+      console.error('Create badge error:', error);
+      alert(error.response?.data?.message || 'Failed to create badge');
+    } finally {
+      setCreating(false);
+    }
+  };
+
   return (
     <div className="tab-content">
       <div className="tab-header">
-        <h2>✓ Verification Requests</h2>
-        <p className="tab-subtitle">Review and approve user verification requests</p>
+        <h2>🏅 Badge Management</h2>
+        <p className="tab-subtitle">Create and manage platform badges. Assign badges to users in the Users tab.</p>
+        <button
+          className="btn-create-badge"
+          onClick={() => setShowForm(!showForm)}
+          style={{
+            marginTop: '1rem',
+            padding: '0.75rem 1.5rem',
+            background: 'var(--gradient-primary)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontWeight: '600'
+          }}
+        >
+          {showForm ? '✕ Cancel' : '+ Create Badge'}
+        </button>
       </div>
 
-      <div className="verification-requests">
-        {requests.length === 0 ? (
+      {showForm && (
+        <form onSubmit={handleCreateBadge} className="badge-form" style={{
+          background: 'var(--card-surface)',
+          padding: '1.5rem',
+          borderRadius: '12px',
+          marginBottom: '1.5rem',
+          border: '1px solid var(--border-light)'
+        }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Badge ID</label>
+              <input
+                type="text"
+                value={newBadge.id}
+                onChange={(e) => setNewBadge({ ...newBadge, id: e.target.value.toLowerCase().replace(/\s/g, '_') })}
+                placeholder="early_member"
+                required
+                style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-light)' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Label</label>
+              <input
+                type="text"
+                value={newBadge.label}
+                onChange={(e) => setNewBadge({ ...newBadge, label: e.target.value })}
+                placeholder="Early Member"
+                required
+                style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-light)' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Icon (emoji)</label>
+              <input
+                type="text"
+                value={newBadge.icon}
+                onChange={(e) => setNewBadge({ ...newBadge, icon: e.target.value })}
+                placeholder="⭐"
+                style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-light)' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Type</label>
+              <select
+                value={newBadge.type}
+                onChange={(e) => setNewBadge({ ...newBadge, type: e.target.value })}
+                style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-light)' }}
+              >
+                <option value="platform">Platform (Official)</option>
+                <option value="community">Community</option>
+                <option value="activity">Activity</option>
+              </select>
+            </div>
+            <div style={{ gridColumn: 'span 2' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Tooltip</label>
+              <input
+                type="text"
+                value={newBadge.tooltip}
+                onChange={(e) => setNewBadge({ ...newBadge, tooltip: e.target.value })}
+                placeholder="Joined during beta launch"
+                required
+                style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-light)' }}
+              />
+            </div>
+          </div>
+          <button
+            type="submit"
+            disabled={creating}
+            style={{
+              marginTop: '1rem',
+              padding: '0.75rem 2rem',
+              background: 'linear-gradient(135deg, #10b981, #059669)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: creating ? 'not-allowed' : 'pointer',
+              fontWeight: '600',
+              opacity: creating ? 0.6 : 1
+            }}
+          >
+            {creating ? 'Creating...' : 'Create Badge'}
+          </button>
+        </form>
+      )}
+
+      <div className="badges-list" style={{ display: 'grid', gap: '1rem' }}>
+        {badges.length === 0 ? (
           <div className="no-data">
-            <p>No pending verification requests</p>
+            <p>No badges created yet. Create your first badge above!</p>
           </div>
         ) : (
-          requests.map(request => (
-            <div key={request._id} className="verification-card">
-              <div className="verification-user">
-                <Link to={`/profile/${request.username}`} className="user-link">
-                  {request.profilePhoto ? (
-                    <img src={getImageUrl(request.profilePhoto)} alt={request.username} />
-                  ) : (
-                    <div className="user-avatar">{request.displayName?.charAt(0) || 'U'}</div>
-                  )}
-                  <div className="user-info">
-                    <div className="user-name">
-                      {request.displayName || request.username}
-                      {/* REMOVED 2025-12-28: Verification tick replaced by badge system */}
-                    </div>
-                    <div className="user-username">@{request.username}</div>
-                    <div className="user-email">{request.email}</div>
-                  </div>
-                </Link>
-              </div>
-
-              <div className="verification-details">
-                <div className="detail-row">
-                  <span className="detail-label">Requested:</span>
-                  <span className="detail-value">
-                    {new Date(request.verificationRequestDate).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
+          badges.map(badge => (
+            <div key={badge.id} className="badge-card" style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1rem',
+              padding: '1rem 1.5rem',
+              background: 'var(--card-surface)',
+              borderRadius: '10px',
+              border: '1px solid var(--border-light)'
+            }}>
+              <span style={{ fontSize: '2rem' }}>{badge.icon}</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: '600', fontSize: '1.1rem' }}>{badge.label}</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{badge.tooltip}</div>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                  <span style={{
+                    padding: '2px 8px',
+                    background: badge.type === 'platform' ? 'var(--pryde-purple)' : badge.type === 'community' ? '#10b981' : '#f59e0b',
+                    color: 'white',
+                    borderRadius: '4px',
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase'
+                  }}>
+                    {badge.type}
                   </span>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>ID: {badge.id}</span>
                 </div>
-                <div className="detail-row">
-                  <span className="detail-label">Member Since:</span>
-                  <span className="detail-value">
-                    {new Date(request.createdAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </span>
-                </div>
-                {request.verificationRequestReason && (
-                  <div className="detail-row reason">
-                    <span className="detail-label">Reason:</span>
-                    <p className="detail-value">{request.verificationRequestReason}</p>
-                  </div>
-                )}
               </div>
-
-              {/* REMOVED 2025-12-28: Verification approval UI removed - badge system replaces this */}
-              )}
             </div>
           ))
         )}
