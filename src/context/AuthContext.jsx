@@ -74,6 +74,48 @@ export function AuthProvider({ children }) {
   const role = useMemo(() => user?.role || null, [user]);
 
   /**
+   * Attempt silent token refresh using httpOnly cookie
+   * This runs BEFORE checking localStorage to restore sessions across browser restarts
+   * @returns {boolean} true if refresh succeeded
+   */
+  const attemptSilentRefresh = useCallback(async () => {
+    try {
+      logger.debug('[AuthContext] 🔄 Attempting silent token refresh...');
+
+      // Call refresh endpoint - httpOnly cookie will be sent automatically
+      const response = await api.post('/refresh', {}, {
+        withCredentials: true,
+        // Don't send localStorage refresh token - rely on httpOnly cookie only
+      });
+
+      const { accessToken, refreshToken: newRefreshToken, user: userData } = response.data;
+
+      if (accessToken) {
+        logger.debug('[AuthContext] ✅ Silent refresh succeeded');
+        setAuthToken(accessToken);
+
+        // Store new refresh token in localStorage as backup for cross-domain setups
+        if (newRefreshToken) {
+          setRefreshToken(newRefreshToken);
+        }
+
+        // If user data was returned, use it directly
+        if (userData) {
+          setCurrentUser(userData);
+        }
+
+        return true;
+      }
+
+      return false;
+    } catch (err) {
+      // Expected to fail if no valid refresh token exists
+      logger.debug('[AuthContext] Silent refresh failed (expected if not logged in):', err.message);
+      return false;
+    }
+  }, []);
+
+  /**
    * Verify auth state with backend
    * Uses Axios-based api.js for auth-critical flows (handles token refresh automatically)
    * 🔥 CRITICAL: This is the ONLY place that calls /auth/me on app load
@@ -83,15 +125,28 @@ export function AuthProvider({ children }) {
       logger.debug('[AuthContext] 🔐 Starting auth verification...');
 
       // Check if we have a token before making the request
-      const token = localStorage.getItem('token');
+      let token = localStorage.getItem('token');
+
+      // 🔥 NEW: If no access token, attempt silent refresh using httpOnly cookie
+      // This restores sessions after browser restart, tab close, or PWA relaunch
       if (!token) {
-        logger.debug('[AuthContext] No token found - marking unauthenticated');
-        setUser(null);
-        setAuthStatus(AUTH_STATES.UNAUTHENTICATED);
-        markAuthStatusUnauthenticated();
-        markAuthReady();
-        sessionStorage.setItem('authReady', 'true');
-        return { authenticated: false };
+        logger.debug('[AuthContext] No access token - attempting silent refresh...');
+        const refreshed = await attemptSilentRefresh();
+
+        if (refreshed) {
+          // Silent refresh succeeded - we now have a token
+          token = localStorage.getItem('token');
+          logger.debug('[AuthContext] ✅ Session restored via silent refresh');
+        } else {
+          // No valid refresh token - user is truly unauthenticated
+          logger.debug('[AuthContext] No valid session - marking unauthenticated');
+          setUser(null);
+          setAuthStatus(AUTH_STATES.UNAUTHENTICATED);
+          markAuthStatusUnauthenticated();
+          markAuthReady();
+          sessionStorage.setItem('authReady', 'true');
+          return { authenticated: false };
+        }
       }
 
       // 🔥 Use Axios api.js for auth-critical flows (has token refresh interceptor)
@@ -132,7 +187,7 @@ export function AuthProvider({ children }) {
 
       return { authenticated: false, error: err };
     }
-  }, []);
+  }, [attemptSilentRefresh]);
 
   /**
    * Login function - to be called after successful login API call

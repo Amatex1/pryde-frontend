@@ -202,20 +202,6 @@ api.interceptors.response.use(
         return Promise.reject(error);
       }
 
-      // Check for access token first
-      const accessToken = getAuthToken();
-      if (!accessToken) {
-        logger.debug(`⏸️ No access token - user not logged in (endpoint: ${endpoint})`);
-        return Promise.reject(error);
-      }
-
-      // Only attempt refresh if user was previously authenticated
-      const refreshToken = getRefreshToken();
-      if (!refreshToken) {
-        logger.debug('⏸️ No refresh token available - skipping refresh');
-        return Promise.reject(error);
-      }
-
       // 🔥 SINGLE-FLIGHT REFRESH: If already refreshing, await existing promise
       if (isRefreshing && refreshPromise) {
         logger.debug('🔄 Refresh already in progress - awaiting existing promise');
@@ -234,61 +220,61 @@ api.interceptors.response.use(
       // 🔥 Create single-flight refresh promise
       refreshPromise = (async () => {
         try {
-          // Try to refresh the token
-          logger.debug('🔄 Token expired, refreshing...');
+          // Try to refresh the token using httpOnly cookie (primary) + localStorage fallback
+          logger.debug('🔄 Token expired, attempting silent refresh...');
 
-        // Get refresh token from localStorage (for cross-domain setups)
-        const refreshToken = getRefreshToken();
+          // Get refresh token from localStorage as fallback for cross-domain setups
+          // The httpOnly cookie will be sent automatically via withCredentials: true
+          const localRefreshToken = getRefreshToken();
 
-        const response = await axios.post(`${API_BASE_URL}/refresh`, {
-          refreshToken // Send refresh token in body for cross-domain
-        }, {
-          withCredentials: true // Also try to send httpOnly cookie if available
-        });
+          const response = await axios.post(`${API_BASE_URL}/refresh`, {
+            // Send localStorage token as fallback - httpOnly cookie takes priority on server
+            refreshToken: localRefreshToken || undefined
+          }, {
+            withCredentials: true // 🔥 CRITICAL: Sends httpOnly cookie automatically
+          });
 
-        const { accessToken, refreshToken: newRefreshToken } = response.data;
+          const { accessToken, refreshToken: newRefreshToken } = response.data;
 
-        if (accessToken) {
-          logger.debug('✅ Token refreshed successfully');
-          setAuthToken(accessToken);
+          if (accessToken) {
+            logger.debug('✅ Token refreshed successfully');
+            setAuthToken(accessToken);
 
-          // Store new refresh token if provided
-          if (newRefreshToken) {
-            setRefreshToken(newRefreshToken);
-          }
-
-          // Reconnect socket with new token
-          try {
-            const currentUser = getCurrentUser();
-            if (currentUser?.id) {
-              disconnectSocket();
-              initializeSocket(currentUser.id);
+            // Store new refresh token if provided (keeps localStorage in sync)
+            if (newRefreshToken) {
+              setRefreshToken(newRefreshToken);
             }
-          } catch (socketError) {
-            logger.error('⚠️ Failed to reconnect socket:', socketError);
+
+            // Reconnect socket with new token
+            try {
+              const currentUser = getCurrentUser();
+              if (currentUser?.id) {
+                disconnectSocket();
+                initializeSocket(currentUser.id);
+              }
+            } catch (socketError) {
+              logger.error('⚠️ Failed to reconnect socket:', socketError);
+            }
+
+            // Update the failed request with new token
+            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+
+            // Process queued requests
+            processQueue(null, accessToken);
+
+            isRefreshing = false;
+            refreshPromise = null;
+
+            return accessToken;
           }
 
-          // Update the failed request with new token
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-
-          // Process queued requests
-          processQueue(null, accessToken);
-
-          isRefreshing = false;
-          refreshPromise = null; // 🔥 Clear refresh promise
-
-          // 🔥 Return token for awaiting requests
-          return accessToken;
-        }
+          throw new Error('No access token in refresh response');
         } catch (refreshError) {
           logger.error('❌ Token refresh failed:', refreshError.message);
-          logger.error('📍 Refresh error response:', refreshError.response?.data);
-          logger.error('📍 Refresh error status:', refreshError.response?.status);
-          logger.error('📍 Current cookies at failure:', document.cookie);
 
           processQueue(refreshError, null);
           isRefreshing = false;
-          refreshPromise = null; // 🔥 Clear refresh promise
+          refreshPromise = null;
 
           // Check if this is a manual logout or session expiration
           const wasManualLogout = isManualLogout();
@@ -298,7 +284,6 @@ api.interceptors.response.use(
           logout();
 
           // Only redirect if not already on login/register page
-          const currentPath = window.location.pathname;
           if (currentPath !== '/login' && currentPath !== '/register') {
             // Only add expired=true if it was NOT a manual logout
             if (wasManualLogout) {
@@ -308,7 +293,7 @@ api.interceptors.response.use(
             }
           }
 
-          throw refreshError; // 🔥 Throw to reject promise
+          throw refreshError;
         }
       })();
 
