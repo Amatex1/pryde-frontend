@@ -1,0 +1,15 @@
+/**
+ * ProfileSidebar.css - Sidebar styling (layout-agnostic)
+ * 
+ * NO width, max-width, or layout rules
+ * These are handled by PageLayout
+ */
+
+.profile-sidebar-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 16px);
+}
+
+/* Sidebar cards inherit from existing Profile.css styles */
+

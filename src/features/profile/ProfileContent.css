@@ -1,0 +1,22 @@
+/**
+ * ProfileContent.css - Content area styling (layout-agnostic)
+ * 
+ * NO width, max-width, or layout rules
+ * These are handled by PageLayout
+ */
+
+.profile-content-area {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 16px);
+}
+
+/* Profile tabs - inherits from Profile.css */
+.profile-tabs {
+  display: flex;
+  gap: var(--space-2, 8px);
+  flex-wrap: wrap;
+}
+
+/* Post cards inherit from existing Profile.css and Feed.css */
+

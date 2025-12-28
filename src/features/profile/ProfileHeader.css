@@ -1,0 +1,16 @@
+/**
+ * ProfileHeader.css - Header styling (layout-agnostic)
+ * 
+ * NO width, max-width, or layout rules
+ * These are handled by PageLayout
+ * 
+ * Styles inherit from existing Profile.css
+ */
+
+.profile-header-content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cover photo and other styles inherit from Profile.css */
+

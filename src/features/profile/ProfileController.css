@@ -1,0 +1,24 @@
+/**
+ * ProfileController.css - Controller-level styling
+ * 
+ * Minimal styles - most styling is in child components
+ * and inherited from Profile.css
+ */
+
+.profile-error {
+  max-width: 600px;
+  margin: 100px auto;
+  padding: var(--space-6, 24px);
+  text-align: center;
+  border-radius: var(--radius-lg, 12px);
+}
+
+.profile-error h2 {
+  margin-bottom: var(--space-3, 12px);
+  color: var(--text-primary);
+}
+
+.profile-error p {
+  color: var(--text-secondary);
+}
+
