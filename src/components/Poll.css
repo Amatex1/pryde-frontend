@@ -1,6 +1,6 @@
 .poll-container {
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
   border-radius: 12px;
   padding: 16px;
   margin: 12px 0;
@@ -38,8 +38,8 @@
 .poll-option-button {
   width: 100%;
   padding: 12px 16px;
-  background: var(--bg-primary);
-  border: 2px solid var(--border-color);
+  background: var(--bg-surface);
+  border: 2px solid var(--border-default);
   border-radius: 8px;
   color: var(--text-primary);
   font-size: 0.95rem;
@@ -191,11 +191,6 @@
 
   .poll-option-button:hover:not(:disabled) {
     transform: none;
-  }
-}
-
-  .poll-option-button:hover:not(:disabled) {
-    transform: none !important;
   }
 }
 

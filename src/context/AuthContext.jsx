@@ -408,6 +408,45 @@ export function AuthProvider({ children }) {
     };
   }, [refreshUser, clearUser]);
 
+  // 🔥 PROACTIVE TOKEN REFRESH - Refresh token every 10 minutes while authenticated
+  // This prevents session expiration during long idle periods (e.g., overnight)
+  useEffect(() => {
+    if (authStatus !== AUTH_STATES.AUTHENTICATED) return;
+
+    const REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
+    let refreshTimer = null;
+
+    const proactiveRefresh = async () => {
+      try {
+        logger.debug('[AuthContext] ⏰ Proactive token refresh...');
+        const success = await attemptSilentRefresh();
+        if (!success) {
+          logger.warn('[AuthContext] Proactive refresh failed - will retry on next interval');
+        }
+      } catch (err) {
+        logger.warn('[AuthContext] Proactive refresh error:', err.message);
+      }
+    };
+
+    // Start the refresh timer
+    refreshTimer = setInterval(proactiveRefresh, REFRESH_INTERVAL);
+
+    // Also refresh when the page becomes visible after being hidden
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        logger.debug('[AuthContext] 👀 Page became visible - checking token...');
+        proactiveRefresh();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      if (refreshTimer) clearInterval(refreshTimer);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [authStatus, attemptSilentRefresh]);
+
   const value = {
     // Core state
     user,
