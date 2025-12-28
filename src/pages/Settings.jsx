@@ -39,6 +39,8 @@ function Settings() {
   const [quietVisuals, setQuietVisuals] = useState(true);
   const [quietWriting, setQuietWriting] = useState(true);
   const [quietMetrics, setQuietMetrics] = useState(false);
+  // BADGE SYSTEM V1: Hide badges toggle
+  const [hideBadges, setHideBadges] = useState(false);
   // NOTE: Verification system removed 2025-12-26 (returns 410 Gone)
   // State and API calls removed to prevent 410 loops
 
@@ -75,6 +77,8 @@ function Settings() {
       setQuietVisuals(settings.quietVisuals ?? getQuietSubToggle('visuals'));
       setQuietWriting(settings.quietWriting ?? getQuietSubToggle('writing'));
       setQuietMetrics(settings.quietMetrics ?? getQuietSubToggle('metrics'));
+      // BADGE SYSTEM V1: Load hide badges setting
+      setHideBadges(settings.hideBadges ?? false);
     }
   }, [currentUser]);
 
@@ -183,6 +187,21 @@ function Settings() {
     } catch (error) {
       logger.error(`Failed to toggle quiet ${toggle}:`, error);
       setMessage(`Failed to update ${toggle} setting`);
+    }
+  };
+
+  // BADGE SYSTEM V1: Handle hide badges toggle
+  const handleHideBadgesToggle = async () => {
+    try {
+      const newValue = !hideBadges;
+      setHideBadges(newValue);
+      await api.patch('/users/me/settings', { hideBadges: newValue });
+      setMessage(newValue ? 'Badges hidden from your profile' : 'Badges visible on your profile');
+    } catch (error) {
+      logger.error('Failed to toggle hide badges:', error);
+      setMessage('Failed to update badge visibility');
+      // Revert on error
+      setHideBadges(!hideBadges);
     }
   };
 
@@ -461,6 +480,24 @@ function Settings() {
                         name="quietMetrics"
                         checked={quietMetrics}
                         onChange={(e) => handleQuietSubToggle('metrics', e.target.checked)}
+                      />
+                      <span className="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  {/* BADGE SYSTEM V1: Hide Badges Toggle */}
+                  <div className="notification-item subtoggle">
+                    <div className="notification-info">
+                      <h3>🏅 Hide Badges</h3>
+                      <p>Hide badges from your profile and posts for a cleaner look.</p>
+                    </div>
+                    <label className="toggle-switch">
+                      <input
+                        type="checkbox"
+                        id="hide-badges-toggle"
+                        name="hideBadges"
+                        checked={hideBadges}
+                        onChange={handleHideBadgesToggle}
                       />
                       <span className="toggle-slider"></span>
                     </label>

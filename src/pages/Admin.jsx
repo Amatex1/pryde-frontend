@@ -250,7 +250,8 @@ function Admin() {
         setSecurityLogs(response.data.logs);
         setSecurityStats(response.data.stats);
       } else if (activeTab === 'badges') {
-        const response = await api.get('/badges');
+        // Use admin catalog endpoint to get all badges including inactive
+        const response = await api.get('/badges/admin/catalog');
         setBadges(response.data || []);
       }
     } catch (error) {
@@ -365,8 +366,12 @@ function Admin() {
   // Badge management handlers
   const handleAssignBadge = async (userId, badgeId) => {
     try {
-      await api.post('/badges/assign', { userId, badgeId });
+      await api.post('/badges/admin/assign', { userId, badgeId });
       showAlert('Badge assigned successfully', 'Success');
+      // Refresh users to show updated badges
+      if (activeTab === 'users') {
+        loadTabData();
+      }
     } catch (error) {
       console.error('Assign badge error:', error);
       showAlert(error.response?.data?.message || 'Failed to assign badge', 'Error');
@@ -384,8 +389,12 @@ function Admin() {
     if (!confirmed) return;
 
     try {
-      await api.post('/badges/revoke', { userId, badgeId });
+      await api.post('/badges/admin/revoke', { userId, badgeId });
       showAlert('Badge revoked successfully', 'Success');
+      // Refresh users to show updated badges
+      if (activeTab === 'users') {
+        loadTabData();
+      }
     } catch (error) {
       console.error('Revoke badge error:', error);
       showAlert(error.response?.data?.message || 'Failed to revoke badge', 'Error');
@@ -1374,13 +1383,18 @@ function BadgesTab({ badges, onRefresh }) {
     id: '',
     label: '',
     type: 'community',
+    assignmentType: 'manual',
     icon: '⭐',
     tooltip: '',
+    description: '',
     priority: 100,
     color: 'default'
   });
   const [creating, setCreating] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [auditLog, setAuditLog] = useState([]);
+  const [showAuditLog, setShowAuditLog] = useState(false);
+  const [loadingAudit, setLoadingAudit] = useState(false);
 
   const handleCreateBadge = async (e) => {
     e.preventDefault();
@@ -1390,13 +1404,15 @@ function BadgesTab({ badges, onRefresh }) {
 
     try {
       setCreating(true);
-      await api.post('/badges', newBadge);
+      await api.post('/badges/admin/create', newBadge);
       setNewBadge({
         id: '',
         label: '',
         type: 'community',
+        assignmentType: 'manual',
         icon: '⭐',
         tooltip: '',
+        description: '',
         priority: 100,
         color: 'default'
       });
@@ -1410,27 +1426,82 @@ function BadgesTab({ badges, onRefresh }) {
     }
   };
 
+  const loadAuditLog = async () => {
+    try {
+      setLoadingAudit(true);
+      const response = await api.get('/badges/admin/audit-log?limit=50');
+      setAuditLog(response.data.logs || []);
+    } catch (error) {
+      console.error('Load audit log error:', error);
+    } finally {
+      setLoadingAudit(false);
+    }
+  };
+
+  const handleSeedAutoBadges = async () => {
+    try {
+      const response = await api.post('/badges/admin/seed');
+      alert(`Seeded ${response.data.results.created} new badges (${response.data.results.existing} already existed)`);
+      onRefresh();
+    } catch (error) {
+      console.error('Seed badges error:', error);
+      alert(error.response?.data?.message || 'Failed to seed badges');
+    }
+  };
+
   return (
     <div className="tab-content">
       <div className="tab-header">
         <h2>🏅 Badge Management</h2>
         <p className="tab-subtitle">Create and manage platform badges. Assign badges to users in the Users tab.</p>
-        <button
-          className="btn-create-badge"
-          onClick={() => setShowForm(!showForm)}
-          style={{
-            marginTop: '1rem',
-            padding: '0.75rem 1.5rem',
-            background: 'var(--gradient-primary)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontWeight: '600'
-          }}
-        >
-          {showForm ? '✕ Cancel' : '+ Create Badge'}
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+          <button
+            className="btn-create-badge"
+            onClick={() => setShowForm(!showForm)}
+            style={{
+              padding: '0.75rem 1.5rem',
+              background: 'var(--gradient-primary)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '600'
+            }}
+          >
+            {showForm ? '✕ Cancel' : '+ Create Badge'}
+          </button>
+          <button
+            onClick={handleSeedAutoBadges}
+            style={{
+              padding: '0.75rem 1.5rem',
+              background: 'linear-gradient(135deg, #10b981, #059669)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '600'
+            }}
+          >
+            🌱 Seed Auto Badges
+          </button>
+          <button
+            onClick={() => {
+              setShowAuditLog(!showAuditLog);
+              if (!showAuditLog) loadAuditLog();
+            }}
+            style={{
+              padding: '0.75rem 1.5rem',
+              background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '600'
+            }}
+          >
+            {showAuditLog ? '✕ Hide Log' : '📋 Audit Log'}
+          </button>
+        </div>
       </div>
 
       {showForm && (
@@ -1518,6 +1589,67 @@ function BadgesTab({ badges, onRefresh }) {
         </form>
       )}
 
+      {/* Audit Log Section */}
+      {showAuditLog && (
+        <div style={{
+          background: 'var(--card-surface)',
+          padding: '1.5rem',
+          borderRadius: '12px',
+          marginBottom: '1.5rem',
+          border: '1px solid var(--border-light)'
+        }}>
+          <h3 style={{ marginBottom: '1rem' }}>📋 Badge Assignment Audit Log</h3>
+          {loadingAudit ? (
+            <p>Loading audit log...</p>
+          ) : auditLog.length === 0 ? (
+            <p style={{ color: 'var(--text-muted)' }}>No badge assignments recorded yet.</p>
+          ) : (
+            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+              {auditLog.map((log, index) => (
+                <div key={log._id || index} style={{
+                  padding: '0.75rem',
+                  borderBottom: '1px solid var(--border-light)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: '1rem'
+                }}>
+                  <div>
+                    <span style={{
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      fontSize: '0.75rem',
+                      background: log.action === 'assigned' ? '#10b981' : '#ef4444',
+                      color: 'white',
+                      marginRight: '0.5rem'
+                    }}>
+                      {log.action}
+                    </span>
+                    <strong>{log.badgeLabel}</strong> → @{log.username}
+                    {log.isAutomatic && (
+                      <span style={{
+                        marginLeft: '0.5rem',
+                        padding: '2px 6px',
+                        background: '#6366f1',
+                        color: 'white',
+                        borderRadius: '4px',
+                        fontSize: '0.7rem'
+                      }}>
+                        AUTO
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                    {new Date(log.createdAt).toLocaleString()}
+                    {log.assignedBy && ` by @${log.assignedByUsername}`}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="badges-list" style={{ display: 'grid', gap: '1rem' }}>
         {badges.length === 0 ? (
           <div className="no-data">
@@ -1536,9 +1668,28 @@ function BadgesTab({ badges, onRefresh }) {
             }}>
               <span style={{ fontSize: '2rem' }}>{badge.icon}</span>
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: '600', fontSize: '1.1rem' }}>{badge.label}</div>
+                <div style={{ fontWeight: '600', fontSize: '1.1rem' }}>
+                  {badge.label}
+                  {badge.assignmentType === 'automatic' && (
+                    <span style={{
+                      marginLeft: '0.5rem',
+                      padding: '2px 6px',
+                      background: '#6366f1',
+                      color: 'white',
+                      borderRadius: '4px',
+                      fontSize: '0.7rem'
+                    }}>
+                      AUTO
+                    </span>
+                  )}
+                </div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{badge.tooltip}</div>
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                {badge.description && (
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                    {badge.description}
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
                   <span style={{
                     padding: '2px 8px',
                     background: badge.type === 'platform' ? 'var(--pryde-purple)' : badge.type === 'community' ? '#10b981' : '#f59e0b',
@@ -1550,6 +1701,11 @@ function BadgesTab({ badges, onRefresh }) {
                     {badge.type}
                   </span>
                   <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>ID: {badge.id}</span>
+                  {badge.automaticRule && (
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                      Rule: {badge.automaticRule}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
