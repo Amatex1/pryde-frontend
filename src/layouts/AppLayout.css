@@ -1,27 +1,126 @@
 /**
  * AppLayout.css - Unified app layout styles
- * 
+ *
  * CONTROLS:
- * - Mobile navigation visibility (CSS-based, no JS)
+ * - Mobile bottom navigation (position, layout, styling)
+ * - Visibility (CSS-based, no JS)
  * - Bottom padding for mobile nav
  */
+
+/* ========================================
+   MOBILE BOTTOM NAVIGATION - BASE STYLES
+   Position fixed at bottom, 5-column grid
+   ======================================== */
+
+.mobile-nav {
+  /* Hidden by default - shown via media query */
+  display: none;
+
+  /* Fixed positioning at bottom */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+
+  /* 5-column grid for nav items */
+  grid-template-columns: repeat(5, 1fr);
+
+  /* Visual styling */
+  border-top: 1px solid var(--border-subtle, #e0e0e0);
+  background: var(--surface-primary, #ffffff);
+
+  /* Safe area for notched devices */
+  padding-bottom: env(safe-area-inset-bottom);
+
+  /* Z-index for layering */
+  z-index: var(--z-sticky, 200);
+  flex-shrink: 0;
+}
+
+/* Nav link items */
+.mobile-nav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--text-secondary, #616161);
+  gap: 2px;
+  padding: 6px 4px;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+
+.mobile-nav a .nav-icon {
+  font-size: 20px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.mobile-nav a small {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+/* Active state */
+.mobile-nav a.active {
+  color: var(--accent, #6C5CE7);
+}
+
+.mobile-nav a.active small {
+  font-weight: 600;
+}
+
+/* Touch feedback */
+.mobile-nav a:active {
+  transform: scale(0.95);
+}
+
+/* ========================================
+   UNREAD MESSAGE BADGE
+   ======================================== */
+
+.mobile-nav-messages .nav-icon {
+  position: relative;
+}
+
+.nav-badge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--accent, #6C5CE7);
+  color: #fff;
+  font-size: 10px;
+  line-height: 16px;
+  text-align: center;
+  font-style: normal;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
 
 /* ========================================
    MOBILE NAVIGATION VISIBILITY
    Hidden on desktop, shown on mobile
    ======================================== */
 
-/* Mobile nav is hidden by default */
-.mobile-nav {
-  display: none;
-}
-
 /* Show mobile nav on mobile/tablet */
 @media (max-width: 1024px) {
   .mobile-nav {
     display: grid;
   }
-  
+
   /* Add bottom padding to page-container to prevent content overlap */
   .page-container {
     padding-bottom: calc(56px + env(safe-area-inset-bottom, 0));
@@ -33,10 +132,299 @@
   .mobile-nav {
     display: none !important;
   }
-  
+
   /* No extra bottom padding needed on desktop */
   .page-container {
     padding-bottom: 0;
+  }
+}
+
+/* ========================================
+   MOBILE FLOATING CREATE POST BUTTON (FAB)
+   ======================================== */
+
+.mobile-create-post {
+  position: fixed;
+  bottom: calc(56px + env(safe-area-inset-bottom) + 16px);
+  right: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent, #6C5CE7);
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 300;
+  border: none;
+  box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+  cursor: pointer;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-create-post:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(108, 92, 231, 0.5);
+}
+
+.mobile-create-post:active {
+  transform: scale(0.95);
+}
+
+/* ========================================
+   MOBILE COMPOSER BOTTOM SHEET
+   ======================================== */
+
+.mobile-composer-sheet {
+  position: fixed;
+  inset: 0;
+  background: var(--surface-primary, #ffffff);
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.mobile-composer-header {
+  display: grid;
+  grid-template-columns: 40px 1fr 80px;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid var(--border-subtle, #e0e0e0);
+  background: var(--surface-primary, #ffffff);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.mobile-composer-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--text-primary, #2b2b2b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-composer-close:hover {
+  background-color: var(--bg-hover, rgba(0, 0, 0, 0.05));
+}
+
+.mobile-composer-title {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #2b2b2b);
+  margin: 0;
+}
+
+.mobile-composer-post {
+  background: var(--accent, #6C5CE7);
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-composer-post:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mobile-composer-post:not(:disabled):active {
+  transform: scale(0.95);
+}
+
+.mobile-composer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-post-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-primary, #2b2b2b);
+  font-family: inherit;
+  padding: 0;
+  margin-bottom: 16px;
+  min-height: 120px;
+}
+
+.mobile-post-input:focus {
+  outline: none;
+}
+
+.mobile-post-input::placeholder {
+  color: var(--text-secondary, #616161);
+}
+
+.mobile-composer-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid var(--border-subtle, #e0e0e0);
+  margin-top: 16px;
+}
+
+.mobile-btn-media,
+.mobile-btn-action {
+  background: none;
+  border: none;
+  font-size: 24px;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-btn-media:hover,
+.mobile-btn-action:hover {
+  background-color: var(--bg-hover, rgba(0, 0, 0, 0.05));
+}
+
+.mobile-btn-action.active {
+  background-color: var(--accent-light, rgba(108, 92, 231, 0.1));
+}
+
+.mobile-privacy-selector {
+  margin-left: auto;
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle, #e0e0e0);
+  background: var(--surface-primary, #ffffff);
+  font-size: 13px;
+  color: var(--text-primary, #2b2b2b);
+  cursor: pointer;
+}
+
+/* ========================================
+   MOBILE FEED ADAPTATIONS
+   ======================================== */
+
+.feed-mobile {
+  padding: 0 !important;
+}
+
+.feed-mobile .feed-tabs {
+  margin: 0 8px 8px 8px;
+  border-radius: 12px;
+}
+
+.feed-mobile .posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 8px;
+}
+
+.feed-mobile .post-card {
+  border-radius: 12px;
+  padding: 12px;
+  margin: 0;
+}
+
+/* ========================================
+   DARK MODE - MOBILE COMPONENTS
+   ======================================== */
+
+[data-theme="dark"] .mobile-nav {
+  background: var(--surface-primary, #2b2b2b);
+  border-color: var(--border-subtle, #3a3a3a);
+}
+
+[data-theme="dark"] .mobile-nav a {
+  color: var(--text-secondary, #b0b0b0);
+}
+
+[data-theme="dark"] .mobile-nav a.active {
+  color: var(--accent, #8B7FE8);
+}
+
+[data-theme="dark"] .nav-badge {
+  background: var(--accent, #8B7FE8);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .mobile-composer-sheet,
+[data-theme="dark"] .mobile-composer-header,
+[data-theme="dark"] .mobile-composer-content {
+  background: var(--surface-primary, #2b2b2b);
+}
+
+[data-theme="dark"] .mobile-composer-title,
+[data-theme="dark"] .mobile-composer-close,
+[data-theme="dark"] .mobile-post-input {
+  color: var(--text-primary, #f7f7f7);
+}
+
+[data-theme="dark"] .mobile-composer-close:hover,
+[data-theme="dark"] .mobile-btn-media:hover,
+[data-theme="dark"] .mobile-btn-action:hover {
+  background-color: var(--bg-hover, rgba(255, 255, 255, 0.05));
+}
+
+[data-theme="dark"] .mobile-privacy-selector {
+  background: var(--surface-secondary, #3a3a3a);
+  border-color: var(--border-subtle, #4a4a4a);
+  color: var(--text-primary, #f7f7f7);
+}
+
+/* ========================================
+   ACCESSIBILITY & TOUCH IMPROVEMENTS
+   ======================================== */
+
+/* Ensure minimum touch target size */
+.mobile-nav a,
+.mobile-create-post {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav a,
+  .mobile-create-post,
+  .mobile-composer-sheet {
+    transition: none;
+    animation: none;
+  }
+
+  .mobile-nav a:active,
+  .mobile-create-post:active {
+    transform: none;
   }
 }
 

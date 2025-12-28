@@ -111,9 +111,10 @@
 }
 
 /* Mobile adjustments */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .pwa-install-prompt {
-    bottom: 0.5rem;
+    /* Position above mobile nav bar (56px + safe area + margin) */
+    bottom: calc(56px + env(safe-area-inset-bottom, 0) + 0.5rem);
     width: calc(100% - 1rem);
   }
 
