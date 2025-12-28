@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { promptInstall, isPWA } from '../utils/pwa';
+import { promptInstall, isPWA, isInstallPromptAvailable } from '../utils/pwa';
 import './PWAInstallPrompt.css';
 
 function PWAInstallPrompt() {
@@ -19,8 +19,16 @@ function PWAInstallPrompt() {
       return;
     }
 
+    // 🔥 Check if install prompt was already captured before this component mounted
+    // This handles the case where beforeinstallprompt fired before React rendered
+    if (isInstallPromptAvailable()) {
+      console.log('[PWA] Install prompt already available on mount');
+      setShowPrompt(true);
+    }
+
     // Listen for install availability
     const handleInstallAvailable = () => {
+      console.log('[PWA] Install available event received');
       setShowPrompt(true);
     };
 

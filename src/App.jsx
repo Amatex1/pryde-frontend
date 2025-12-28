@@ -427,8 +427,8 @@ function AppContent() {
               </Routes>
             </main>
 
-            {/* PWA Install Prompt */}
-            {isAuth && <PWAInstallPrompt />}
+            {/* PWA Install Prompt - Show for all users (auth status doesn't matter for install) */}
+            <PWAInstallPrompt />
 
             {/* Cookie Banner */}
             <CookieBanner />

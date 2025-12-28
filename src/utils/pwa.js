@@ -138,6 +138,14 @@ export async function promptInstall() {
 }
 
 /**
+ * Check if install prompt is available
+ * Used by components to check on mount if prompt was already captured
+ */
+export function isInstallPromptAvailable() {
+  return deferredPrompt !== null;
+}
+
+/**
  * Show install button (integrate with your UI)
  */
 function showInstallButton() {
