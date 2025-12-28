@@ -131,6 +131,7 @@ const FeedStream = forwardRef(function FeedStream({
                     </span>
                   )}
                 </Link>
+                {/* Single-line post header matching comment style */}
                 <div className="post-author-meta">
                   <Link to={`/profile/${post.author?.username}`} className="post-author-name">
                     {post.author?.displayName || post.author?.username || 'User'}
@@ -141,12 +142,8 @@ const FeedStream = forwardRef(function FeedStream({
                   {post.author?.pronouns && (
                     <span className="post-author-pronouns">({post.author.pronouns})</span>
                   )}
-                  <span className="post-author-date">
-                    {new Date(post.createdAt).toLocaleDateString()}
-                  </span>
-                  <span className="post-author-privacy" title={`Visible to: ${post.visibility || 'followers'}`}>
-                    {post.visibility === 'public' ? '🌍' :
-                     post.visibility === 'private' ? '🔒' : '👥'}
+                  <span className="post-timestamp">
+                    {new Date(post.createdAt).toLocaleString()}
                   </span>
                   {post.edited && (
                     <span className="post-author-edited">(edited)</span>

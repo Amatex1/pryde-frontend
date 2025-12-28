@@ -1931,28 +1931,21 @@ function Profile() {
                               <span>{post.author?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
                             )}
                           </div>
-                          <div className="author-info">
-                            <div className="author-name-row">
-                              <span className="author-name">{post.author?.displayName || post.author?.username}</span>
-                              {post.author?.badges?.length > 0 && (
-                                <BadgeContainer badges={post.author.badges} />
-                              )}
-                            </div>
-                            <div className="post-meta-row">
-                              {post.author?.pronouns && (
-                                <span className="author-pronouns">({post.author.pronouns})</span>
-                              )}
-                              <span className="post-time-inline">
-                                {new Date(post.createdAt).toLocaleDateString()}
-                              </span>
-                              <span className="post-privacy-icon" title={`Visible to: ${post.visibility || 'friends'}`}>
-                                {post.visibility === 'public' ? '🌍' : post.visibility === 'private' ? '🔒' : '👥'}
-                              </span>
-                              {post.edited && (
-                                <span className="edited-indicator">(edited)</span>
-                              )}
-                            </div>
-                            {/* DEPRECATED: Edit history button removed 2025-12-26 - showing static indicator only */}
+                          {/* Single-line post header matching comment style */}
+                          <div className="post-author-meta">
+                            <span className="author-name">{post.author?.displayName || post.author?.username}</span>
+                            {post.author?.badges?.length > 0 && (
+                              <BadgeContainer badges={post.author.badges} />
+                            )}
+                            {post.author?.pronouns && (
+                              <span className="author-pronouns">({post.author.pronouns})</span>
+                            )}
+                            <span className="post-timestamp">
+                              {new Date(post.createdAt).toLocaleString()}
+                            </span>
+                            {post.edited && (
+                              <span className="edited-indicator">(edited)</span>
+                            )}
                           </div>
                         </div>
                         <div className="post-header-actions">

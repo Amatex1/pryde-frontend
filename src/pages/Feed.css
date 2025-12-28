@@ -611,13 +611,18 @@
 .post-author-pronouns,
 .post-author-date,
 .post-author-privacy,
-.post-author-edited {
+.post-author-edited,
+.post-timestamp {
   font-size: 13px;
-  opacity: 0.65;
+  color: var(--text-muted);
   line-height: 1.2;
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
+}
+
+.post-timestamp {
+  margin-left: 2px;
 }
 
 .post-author-edited {
