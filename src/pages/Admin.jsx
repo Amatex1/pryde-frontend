@@ -1669,7 +1669,7 @@ function BadgesTab({ badges, onRefresh }) {
           </div>
         ) : (
           badges.map(badge => (
-            <div key={badge.id} className="badge-card" style={{
+            <div key={badge._id || badge.id} className="badge-card" style={{
               display: 'flex',
               alignItems: 'center',
               gap: '1rem',
