@@ -379,7 +379,7 @@
   text-align: center;
   line-height: 1;
   transition: all 0.15s ease;
-  z-index: 10000; /* Above mobile menu when open */
+  z-index: calc(var(--z-modal, 1001) + 100); /* Above mobile menu drawer */
   margin-left: auto;
   flex-shrink: 0;
   position: relative;
@@ -649,8 +649,8 @@
   }
 }
 
-/* Mobile */
-@media (max-width: 768px) {
+/* Mobile & Tablet - Show hamburger menu up to 1023px (matches MobileNavDrawer visibility) */
+@media (max-width: 1023px) {
   .mobile-hamburger-btn {
     display: flex;
   }
@@ -663,7 +663,7 @@
     display: flex;
   }
 
-  /* Hide desktop navbar items on mobile, show only hamburger */
+  /* Hide desktop navbar items on mobile/tablet, show only hamburger */
   .navbar-user > *:not(.mobile-hamburger-btn) {
     display: none !important;
   }
@@ -673,6 +673,10 @@
     align-items: center;
     justify-content: flex-end;
   }
+}
+
+/* Small Mobile - Additional adjustments */
+@media (max-width: 768px) {
 
   /* Ensure profile dropdown appears above everything on mobile */
   .profile-dropdown {

@@ -14,7 +14,7 @@
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
-  z-index: 999;
+  z-index: var(--z-modal-backdrop, 1000);
 }
 
 .mobile-nav-overlay-visible {
@@ -32,7 +32,7 @@
   background: var(--bg-primary, #ffffff);
   transform: translateX(100%);
   transition: transform 0.3s ease;
-  z-index: 1000;
+  z-index: var(--z-modal, 1001);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
