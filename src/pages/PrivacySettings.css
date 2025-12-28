@@ -381,3 +381,69 @@
 [data-theme="dark"] .setting-item select:hover {
   border-color: var(--pryde-purple);
 }
+
+/* ========================================
+   PRIVACY LINK CARDS (Trust & Safety, Guarantees)
+   Theme-aware styling for promotional sections
+   ======================================== */
+
+.privacy-link-card {
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  border: 1px solid var(--border-subtle);
+}
+
+.privacy-link-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.privacy-link-button {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-hover) 100%);
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+}
+
+.privacy-link-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(108, 92, 231, 0.4);
+}
+
+.guarantees-button {
+  background: linear-gradient(135deg, #9B59B6 0%, var(--accent-primary) 100%);
+  box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);
+}
+
+.guarantees-button:hover {
+  box-shadow: 0 6px 16px rgba(155, 89, 182, 0.4);
+}
+
+/* Light mode - subtle gradient backgrounds */
+.trust-safety-card {
+  background: linear-gradient(135deg, rgba(108, 92, 231, 0.08) 0%, rgba(9, 132, 227, 0.05) 100%);
+}
+
+.guarantees-card {
+  background: linear-gradient(135deg, rgba(155, 89, 182, 0.08) 0%, rgba(108, 92, 231, 0.05) 100%);
+}
+
+/* Dark mode - darker gradient backgrounds */
+[data-theme="dark"] .trust-safety-card,
+[data-theme="midnight"] .trust-safety-card {
+  background: linear-gradient(135deg, rgba(108, 92, 231, 0.15) 0%, rgba(9, 132, 227, 0.10) 100%);
+}
+
+[data-theme="dark"] .guarantees-card,
+[data-theme="midnight"] .guarantees-card {
+  background: linear-gradient(135deg, rgba(155, 89, 182, 0.15) 0%, rgba(108, 92, 231, 0.10) 100%);
+}

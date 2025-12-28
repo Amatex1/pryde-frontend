@@ -234,66 +234,30 @@ const PrivacySettings = () => {
       </section>
 
       {/* Phase 6B: Trust & Safety Link */}
-      <section className="privacy-section" style={{
-        background: 'linear-gradient(135deg, #EDEAFF 0%, #F7F7F7 100%)',
-        borderRadius: '12px',
-        padding: '20px',
-        marginTop: '20px'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+      <section className="privacy-section privacy-link-card trust-safety-card">
+        <div className="privacy-link-content">
           <div>
-            <h2 style={{ margin: 0, marginBottom: '5px', fontSize: '1.2rem' }}>🛡️ Trust & Safety</h2>
+            <h2 style={{ margin: 0, marginBottom: '5px', fontSize: '1.2rem', color: 'var(--text-primary)' }}>🛡️ Trust & Safety</h2>
             <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '14px' }}>
               Learn how we keep Pryde safe, how reporting works, and what we can see
             </p>
           </div>
-          <Link
-            to="/trust-and-safety"
-            style={{
-              background: 'linear-gradient(135deg, #6C5CE7 0%, #0984E3 100%)',
-              color: '#fff',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '50px',
-              textDecoration: 'none',
-              fontWeight: '600',
-              whiteSpace: 'nowrap',
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-              boxShadow: '0 4px 12px rgba(108, 92, 231, 0.3)'
-            }}
-          >
+          <Link to="/trust-and-safety" className="privacy-link-button">
             Learn More →
           </Link>
         </div>
       </section>
 
       {/* Phase 7A: Platform Guarantees Link */}
-      <section className="privacy-section" style={{
-        background: 'linear-gradient(135deg, #F0E6FF 0%, #E8F4FF 100%)',
-        borderRadius: '12px',
-        padding: '20px',
-        marginTop: '20px'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+      <section className="privacy-section privacy-link-card guarantees-card">
+        <div className="privacy-link-content">
           <div>
-            <h2 style={{ margin: 0, marginBottom: '5px', fontSize: '1.2rem' }}>💜 Platform Guarantees</h2>
+            <h2 style={{ margin: 0, marginBottom: '5px', fontSize: '1.2rem', color: 'var(--text-primary)' }}>💜 Platform Guarantees</h2>
             <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '14px' }}>
               What Pryde promises — no algorithms, no data selling, and what we'll never do
             </p>
           </div>
-          <Link
-            to="/guarantees"
-            style={{
-              background: 'linear-gradient(135deg, #9B59B6 0%, #6C5CE7 100%)',
-              color: '#fff',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '50px',
-              textDecoration: 'none',
-              fontWeight: '600',
-              whiteSpace: 'nowrap',
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-              boxShadow: '0 4px 12px rgba(155, 89, 182, 0.3)'
-            }}
-          >
+          <Link to="/guarantees" className="privacy-link-button guarantees-button">
             Our Promises →
           </Link>
         </div>
