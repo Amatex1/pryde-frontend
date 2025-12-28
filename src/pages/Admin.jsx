@@ -250,14 +250,21 @@ function Admin() {
         setSecurityLogs(response.data.logs);
         setSecurityStats(response.data.stats);
       } else if (activeTab === 'badges') {
-        // Use admin catalog endpoint to get all badges including inactive
-        const response = await api.get('/badges/admin/catalog');
-        // Flatten the categorized response into a single array
-        const allBadges = [
-          ...(response.data?.automatic?.badges || []),
-          ...(response.data?.manual?.badges || [])
-        ];
-        setBadges(allBadges);
+        // Try admin catalog first, fall back to public endpoint
+        try {
+          const response = await api.get('/badges/admin/catalog');
+          // Flatten the categorized response into a single array
+          const allBadges = [
+            ...(response.data?.automatic?.badges || []),
+            ...(response.data?.manual?.badges || [])
+          ];
+          setBadges(allBadges);
+        } catch (catalogError) {
+          // Fall back to public badges endpoint
+          console.warn('Admin catalog failed, falling back to public endpoint:', catalogError);
+          const response = await api.get('/badges');
+          setBadges(response.data || []);
+        }
       }
     } catch (error) {
       console.error('Load data error:', error);
