@@ -252,7 +252,12 @@ function Admin() {
       } else if (activeTab === 'badges') {
         // Use admin catalog endpoint to get all badges including inactive
         const response = await api.get('/badges/admin/catalog');
-        setBadges(response.data || []);
+        // Flatten the categorized response into a single array
+        const allBadges = [
+          ...(response.data?.automatic?.badges || []),
+          ...(response.data?.manual?.badges || [])
+        ];
+        setBadges(allBadges);
       }
     } catch (error) {
       console.error('Load data error:', error);
