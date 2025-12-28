@@ -1540,3 +1540,239 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ========================================
+   BADGE MANAGEMENT STYLES
+   ======================================== */
+
+/* Generic modal overlay for badge modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Badge column in users table */
+.col-badges {
+  min-width: 120px;
+  max-width: 150px;
+}
+
+.badge-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.badge-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.badge-icon-preview {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.badge-count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: var(--bg-surface);
+  padding: 0.125rem 0.375rem;
+  border-radius: 10px;
+}
+
+.no-badges {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.badge-manage-btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  background: var(--pryde-purple);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+.badge-manage-btn:hover {
+  background: var(--pryde-purple-dark, #5a4fcf);
+}
+
+/* Badge Management Modal */
+.badge-modal {
+  max-width: 500px;
+  width: 90%;
+}
+
+.badge-modal .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.badge-modal .modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.badge-modal .modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0;
+  line-height: 1;
+}
+
+.badge-modal .modal-close:hover {
+  color: var(--text-primary);
+}
+
+.badge-modal .modal-body {
+  padding: 1.5rem;
+}
+
+.badge-section {
+  margin-bottom: 1.5rem;
+}
+
+.badge-section:last-child {
+  margin-bottom: 0;
+}
+
+.badge-section h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.empty-badges {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.badge-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.badge-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.5rem;
+  background: var(--soft-lavender);
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+.badge-item .badge-icon {
+  font-size: 1rem;
+}
+
+.badge-item .badge-label {
+  color: var(--text-primary);
+}
+
+.badge-revoke-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0 0.25rem;
+  font-size: 1rem;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.badge-revoke-btn:hover {
+  color: #ef4444;
+}
+
+.badge-revoke-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.badge-assign-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.badge-select {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.badge-assign-btn {
+  padding: 0.5rem 1rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+.badge-assign-btn:hover:not(:disabled) {
+  background: #059669;
+}
+
+.badge-assign-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .badge-item {
+  background: rgba(108, 92, 231, 0.2);
+}
+
+[data-theme="dark"] .badge-count {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .badge-select {
+  background: var(--bg-card);
+  border-color: var(--border-subtle);
+}

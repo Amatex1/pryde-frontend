@@ -875,10 +875,107 @@ function ReportsTab({ reports, onResolve }) {
   );
 }
 
+// Badge Management Modal Component
+function BadgeManagementModal({ user, badges = [], onAssignBadge, onRevokeBadge, onClose }) {
+  const [selectedBadge, setSelectedBadge] = useState('');
+  const [isAssigning, setIsAssigning] = useState(false);
+  const [isRevoking, setIsRevoking] = useState(null);
+
+  const userBadges = user.badges || [];
+  const availableBadges = badges.filter(b => !userBadges.some(ub => ub.id === b.id));
+
+  const handleAssign = async () => {
+    if (!selectedBadge) return;
+    setIsAssigning(true);
+    try {
+      await onAssignBadge(user._id, selectedBadge);
+      setSelectedBadge('');
+    } finally {
+      setIsAssigning(false);
+    }
+  };
+
+  const handleRevoke = async (badgeId) => {
+    setIsRevoking(badgeId);
+    try {
+      await onRevokeBadge(user._id, badgeId);
+    } finally {
+      setIsRevoking(null);
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content badge-modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>Manage Badges for {user.username}</h3>
+          <button className="modal-close" onClick={onClose}>×</button>
+        </div>
+
+        <div className="modal-body">
+          {/* Current Badges Section */}
+          <div className="badge-section">
+            <h4>Current Badges ({userBadges.length})</h4>
+            {userBadges.length === 0 ? (
+              <p className="empty-badges">No badges assigned</p>
+            ) : (
+              <div className="badge-list">
+                {userBadges.map(badge => (
+                  <div key={badge.id} className="badge-item">
+                    <span className="badge-icon">{badge.icon}</span>
+                    <span className="badge-label">{badge.label}</span>
+                    <button
+                      className="badge-revoke-btn"
+                      onClick={() => handleRevoke(badge.id)}
+                      disabled={isRevoking === badge.id}
+                      title={`Revoke ${badge.label}`}
+                    >
+                      {isRevoking === badge.id ? '...' : '×'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Assign New Badge Section */}
+          <div className="badge-section">
+            <h4>Assign New Badge</h4>
+            {availableBadges.length === 0 ? (
+              <p className="empty-badges">All badges already assigned</p>
+            ) : (
+              <div className="badge-assign-form">
+                <select
+                  value={selectedBadge}
+                  onChange={(e) => setSelectedBadge(e.target.value)}
+                  className="badge-select"
+                >
+                  <option value="">Select a badge...</option>
+                  {availableBadges.map(badge => (
+                    <option key={badge.id} value={badge.id}>
+                      {badge.icon} {badge.label}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  className="badge-assign-btn"
+                  onClick={handleAssign}
+                  disabled={!selectedBadge || isAssigning}
+                >
+                  {isAssigning ? 'Assigning...' : 'Assign Badge'}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Users Tab Component
 function UsersTab({ users, badges = [], onSuspend, onBan, onUnsuspend, onUnban, onChangeRole, onSendPasswordReset, onUpdateEmail, onAssignBadge, onRevokeBadge }) {
-  const [expandedUser, setExpandedUser] = useState(null);
-  const [selectedBadge, setSelectedBadge] = useState('');
+  const [badgeModalUser, setBadgeModalUser] = useState(null);
 
   return (
     <div className="users-list">
@@ -954,99 +1051,36 @@ function UsersTab({ users, badges = [], onSuspend, onBan, onUnsuspend, onUnban, 
                     </select>
                   )}
                 </td>
-                <td data-label="Badges">
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    {/* Show current badges */}
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+                <td data-label="Badges" className="col-badges">
+                  <div className="badge-cell">
+                    {/* Show badge preview (max 2 icons) */}
+                    <div className="badge-preview">
                       {user.badges && user.badges.length > 0 ? (
-                        user.badges.map(badge => (
-                          <span
-                            key={badge.id}
-                            title={`${badge.tooltip} - Click to revoke`}
-                            onClick={() => onRevokeBadge(user._id, badge.id)}
-                            style={{
-                              cursor: 'pointer',
-                              padding: '2px 6px',
-                              background: 'var(--soft-lavender)',
-                              borderRadius: '4px',
-                              fontSize: '0.8rem',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '2px'
-                            }}
-                          >
-                            {badge.icon} {badge.label}
-                          </span>
-                        ))
+                        <>
+                          {user.badges.slice(0, 2).map(badge => (
+                            <span
+                              key={badge.id}
+                              className="badge-icon-preview"
+                              title={badge.tooltip || badge.label}
+                            >
+                              {badge.icon}
+                            </span>
+                          ))}
+                          {user.badges.length > 2 && (
+                            <span className="badge-count">+{user.badges.length - 2}</span>
+                          )}
+                        </>
                       ) : (
-                        <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>No badges</span>
+                        <span className="no-badges">—</span>
                       )}
                     </div>
-                    {/* Badge assignment dropdown */}
-                    {expandedUser === user._id ? (
-                      <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center' }}>
-                        <select
-                          value={selectedBadge}
-                          onChange={(e) => setSelectedBadge(e.target.value)}
-                          style={{ padding: '0.25rem', fontSize: '0.8rem', borderRadius: '4px' }}
-                        >
-                          <option value="">Select badge...</option>
-                          {badges.filter(b => !user.badges?.some(ub => ub.id === b.id)).map(badge => (
-                            <option key={badge.id} value={badge.id}>{badge.icon} {badge.label}</option>
-                          ))}
-                        </select>
-                        <button
-                          onClick={() => {
-                            if (selectedBadge) {
-                              onAssignBadge(user._id, selectedBadge);
-                              setSelectedBadge('');
-                              setExpandedUser(null);
-                            }
-                          }}
-                          disabled={!selectedBadge}
-                          style={{
-                            padding: '0.25rem 0.5rem',
-                            fontSize: '0.75rem',
-                            background: selectedBadge ? '#10b981' : '#ccc',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: selectedBadge ? 'pointer' : 'not-allowed'
-                          }}
-                        >
-                          ✓
-                        </button>
-                        <button
-                          onClick={() => setExpandedUser(null)}
-                          style={{
-                            padding: '0.25rem 0.5rem',
-                            fontSize: '0.75rem',
-                            background: '#ef4444',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => setExpandedUser(user._id)}
-                        style={{
-                          padding: '0.25rem 0.5rem',
-                          fontSize: '0.75rem',
-                          background: 'var(--pryde-purple)',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        + Add Badge
-                      </button>
-                    )}
+                    <button
+                      className="badge-manage-btn"
+                      onClick={() => setBadgeModalUser(user)}
+                      title="Manage badges"
+                    >
+                      Manage
+                    </button>
                   </div>
                 </td>
                 <td data-label="Status">
@@ -1100,6 +1134,27 @@ function UsersTab({ users, badges = [], onSuspend, onBan, onUnsuspend, onUnban, 
             ))}
           </tbody>
         </table>
+      )}
+
+      {/* Badge Management Modal */}
+      {badgeModalUser && (
+        <BadgeManagementModal
+          user={badgeModalUser}
+          badges={badges}
+          onAssignBadge={async (userId, badgeId) => {
+            await onAssignBadge(userId, badgeId);
+            // Update the modal user's badges after assignment
+            const updatedUser = users.find(u => u._id === userId);
+            if (updatedUser) setBadgeModalUser(updatedUser);
+          }}
+          onRevokeBadge={async (userId, badgeId) => {
+            await onRevokeBadge(userId, badgeId);
+            // Update the modal user's badges after revocation
+            const updatedUser = users.find(u => u._id === userId);
+            if (updatedUser) setBadgeModalUser(updatedUser);
+          }}
+          onClose={() => setBadgeModalUser(null)}
+        />
       )}
     </div>
   );
