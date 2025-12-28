@@ -1,0 +1,24 @@
+/**
+ * MessageThread.css - Message thread styling (layout-agnostic)
+ * 
+ * NO width, max-width, or layout rules
+ * These are handled by PageLayout/MessagesLayout
+ * 
+ * Styles inherit from existing Messages.css
+ */
+
+.message-thread-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+/* Other styles inherit from Messages.css */
+

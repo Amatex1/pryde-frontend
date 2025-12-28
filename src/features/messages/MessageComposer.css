@@ -1,0 +1,179 @@
+/**
+ * MessageComposer.css - Message composer styling (layout-agnostic)
+ * 
+ * NO width, max-width, or layout rules
+ * These are handled by PageLayout/MessagesLayout
+ * 
+ * Styles inherit from existing Messages.css
+ */
+
+.message-composer-content {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 1rem;
+  background: var(--bg-secondary, #1a1a1a);
+  border-top: 1px solid var(--border-color, #333);
+}
+
+.message-composer-content.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.unavailable-message {
+  text-align: center;
+  color: var(--text-muted, #888);
+  padding: 0.5rem;
+}
+
+.reply-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  background: var(--bg-tertiary, #252525);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent-color, #7c3aed);
+}
+
+.reply-preview-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow: hidden;
+}
+
+.reply-label {
+  font-size: 0.75rem;
+  color: var(--accent-color, #7c3aed);
+}
+
+.reply-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary, #aaa);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-cancel-reply {
+  background: none;
+  border: none;
+  color: var(--text-muted, #888);
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.content-warning-input {
+  margin-bottom: 0.5rem;
+}
+
+.cw-input {
+  width: 100%;
+  padding: 0.5rem;
+  background: var(--bg-tertiary, #252525);
+  border: 1px solid var(--border-color, #333);
+  border-radius: 8px;
+  color: var(--text-primary, #fff);
+}
+
+.composer-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.composer-actions-left,
+.composer-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.btn-composer {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.btn-composer:hover {
+  background: var(--bg-tertiary, #252525);
+}
+
+.btn-composer.active {
+  background: var(--accent-color, #7c3aed);
+}
+
+.composer-input-wrapper {
+  flex: 1;
+}
+
+.composer-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--bg-tertiary, #252525);
+  border: 1px solid var(--border-color, #333);
+  border-radius: 24px;
+  color: var(--text-primary, #fff);
+  font-size: 0.9375rem;
+}
+
+.composer-input:focus {
+  outline: none;
+  border-color: var(--accent-color, #7c3aed);
+}
+
+.recording-indicator {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-tertiary, #252525);
+  border-radius: 24px;
+}
+
+.recording-dot {
+  width: 12px;
+  height: 12px;
+  background: #ef4444;
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.recording-time {
+  font-family: monospace;
+  color: var(--text-primary, #fff);
+}
+
+.btn-send,
+.btn-send-voice,
+.btn-record {
+  background: var(--accent-color, #7c3aed);
+  border: none;
+  color: white;
+  font-size: 1.25rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.emoji-picker-container {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  z-index: 100;
+}
+
+/* Other styles inherit from Messages.css */
+
