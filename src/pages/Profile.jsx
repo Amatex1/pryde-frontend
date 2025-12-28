@@ -1932,20 +1932,20 @@ function Profile() {
                             )}
                           </div>
                           {/* Single-line post header matching comment style */}
-                          <div className="post-author-meta">
-                            <span className="author-name">{post.author?.displayName || post.author?.username}</span>
-                            {post.author?.badges?.length > 0 && (
-                              <BadgeContainer badges={post.author.badges} />
-                            )}
-                            {post.author?.pronouns && (
-                              <span className="author-pronouns">({post.author.pronouns})</span>
-                            )}
-                            <span className="post-timestamp">
+                          <div className="comment-header-left">
+                            <Link to={`/profile/${post.author?.username}`} className="comment-author" style={{ textDecoration: 'none' }}>
+                              <span className="author-name">{post.author?.displayName || post.author?.username}</span>
+                              {post.author?.badges?.length > 0 && (
+                                <BadgeContainer badges={post.author.badges} />
+                              )}
+                              {post.author?.pronouns && (
+                                <span className="author-pronouns">({post.author.pronouns})</span>
+                              )}
+                            </Link>
+                            <span className="comment-timestamp">
                               {new Date(post.createdAt).toLocaleString()}
+                              {post.edited && <span className="edited-indicator"> (edited)</span>}
                             </span>
-                            {post.edited && (
-                              <span className="edited-indicator">(edited)</span>
-                            )}
                           </div>
                         </div>
                         <div className="post-header-actions">

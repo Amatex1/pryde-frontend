@@ -132,22 +132,20 @@ const FeedStream = forwardRef(function FeedStream({
                   )}
                 </Link>
                 {/* Single-line post header matching comment style */}
-                <div className="post-author-meta">
-                  <Link to={`/profile/${post.author?.username}`} className="post-author-name">
-                    {post.author?.displayName || post.author?.username || 'User'}
+                <div className="comment-header-left">
+                  <Link to={`/profile/${post.author?.username}`} className="comment-author" style={{ textDecoration: 'none' }}>
+                    <span className="author-name">{post.author?.displayName || post.author?.username || 'User'}</span>
+                    {post.author?.isVerified && (
+                      <span className="verified-badge" title="Verified">✓</span>
+                    )}
+                    {post.author?.pronouns && (
+                      <span className="author-pronouns">({post.author.pronouns})</span>
+                    )}
                   </Link>
-                  {post.author?.isVerified && (
-                    <span className="post-author-badge verified-badge" title="Verified">✓</span>
-                  )}
-                  {post.author?.pronouns && (
-                    <span className="post-author-pronouns">({post.author.pronouns})</span>
-                  )}
-                  <span className="post-timestamp">
+                  <span className="comment-timestamp">
                     {new Date(post.createdAt).toLocaleString()}
+                    {post.edited && <span className="edited-indicator"> (edited)</span>}
                   </span>
-                  {post.edited && (
-                    <span className="post-author-edited">(edited)</span>
-                  )}
                 </div>
               </div>
 
