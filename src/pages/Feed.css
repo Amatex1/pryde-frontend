@@ -3447,18 +3447,19 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   text-align: center;
 }
 
-/* Scroll-to-top button */
+/* Scroll-to-top button
+   Uses --mobile-safe-bottom for consistent positioning above mobile nav */
 .scroll-to-top-btn {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  width: 3.5rem;
-  height: 3.5rem;
+  bottom: calc(var(--mobile-safe-bottom, 64px) + var(--space-4, 16px));
+  right: var(--space-4, 16px);
+  width: 3rem;
+  height: 3rem;
   border-radius: 50%;
   background: var(--pryde-purple);
   color: white;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   cursor: pointer;
   z-index: 1000;
   transition: all 0.3s ease;
@@ -3537,13 +3538,7 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
-  .scroll-to-top-btn {
-    bottom: 1rem;
-    right: 1rem;
-    width: 3rem;
-    height: 3rem;
-    font-size: 1.25rem;
-  }
+  /* scroll-to-top-btn already uses --mobile-safe-bottom, no override needed */
 
   .pull-to-refresh-indicator {
     padding: 0.75rem 1.5rem;

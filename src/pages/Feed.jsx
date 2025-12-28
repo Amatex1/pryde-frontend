@@ -74,6 +74,7 @@ function Feed() {
   const [editPostText, setEditPostText] = useState('');
   const [openCommentDropdownId, setOpenCommentDropdownId] = useState(null);
   const [postVisibility, setPostVisibility] = useState('followers');
+  const defaultPostVisibilityRef = useRef('followers'); // Stores user's default from settings
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [hiddenFromUsers, setHiddenFromUsers] = useState([]);
   const [sharedWithUsers, setSharedWithUsers] = useState([]);
@@ -233,6 +234,7 @@ function Feed() {
       setAutoHideContentWarnings(response.data.autoHideContentWarnings || false);
       // Set default post visibility from user's privacy settings
       const defaultVisibility = response.data.defaultPostVisibility || 'followers';
+      defaultPostVisibilityRef.current = defaultVisibility; // Store for reset after posting
       setPostVisibility(defaultVisibility);
     } catch (error) {
       logger.error('Failed to fetch privacy settings:', error);
@@ -1068,7 +1070,7 @@ function Feed() {
 
       setNewPost('');
       setSelectedMedia([]);
-      setPostVisibility('followers');
+      setPostVisibility(defaultPostVisibilityRef.current); // Reset to user's default, not hardcoded
       setHiddenFromUsers([]);
       setSharedWithUsers([]);
       setContentWarning('');

@@ -141,12 +141,13 @@
 
 /* ========================================
    MOBILE FLOATING CREATE POST BUTTON (FAB)
+   Uses shared --mobile-safe-bottom for consistent positioning
    ======================================== */
 
 .mobile-create-post {
   position: fixed;
-  bottom: calc(56px + env(safe-area-inset-bottom) + 16px);
-  right: 16px;
+  bottom: calc(var(--mobile-safe-bottom, 64px) + var(--space-4, 16px));
+  right: var(--space-4, 16px);
   width: 56px;
   height: 56px;
   border-radius: 50%;

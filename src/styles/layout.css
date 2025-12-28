@@ -65,7 +65,14 @@
   /* ========================================
      MOBILE NAV HEIGHT (for sticky calculations)
      ======================================== */
-  --mobile-nav-height: 56px;
+  --mobile-nav-height: 64px;
+
+  /* ========================================
+     MOBILE SAFE ZONE
+     Shared bottom clearance for fixed-position UI
+     All FABs, scroll-to-top, etc. must use this
+     ======================================== */
+  --mobile-safe-bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom, 0px));
 }
 
 /* ========================================

@@ -78,6 +78,7 @@ function Profile() {
   const [uploadingMedia, setUploadingMedia] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [postVisibility, setPostVisibility] = useState('followers');
+  const defaultPostVisibilityRef = useRef('followers'); // Stores user's default from settings
   const [contentWarning, setContentWarning] = useState('');
   const [showContentWarning, setShowContentWarning] = useState(false);
   const [postLoading, setPostLoading] = useState(false);
@@ -150,6 +151,7 @@ function Profile() {
       const response = await api.get('/privacy/settings');
       // Set default post visibility from user's privacy settings
       const defaultVisibility = response.data.defaultPostVisibility || 'followers';
+      defaultPostVisibilityRef.current = defaultVisibility; // Store for reset after posting
       setPostVisibility(defaultVisibility);
     } catch (error) {
       logger.error('Failed to fetch privacy settings:', error);
@@ -708,6 +710,7 @@ function Profile() {
 
       setNewPost('');
       setSelectedMedia([]);
+      setPostVisibility(defaultPostVisibilityRef.current); // Reset to user's default
       setContentWarning('');
       setShowContentWarning(false);
       showToast('Post created successfully!', 'success');

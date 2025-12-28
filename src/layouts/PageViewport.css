@@ -13,25 +13,35 @@
   /* Full viewport sizing */
   min-height: 100dvh; /* Use dvh for mobile viewport safety */
   width: 100%;
-  
+
   /* Single vertical scroll container */
   overflow-y: auto;
   overflow-x: hidden;
-  
+
   /* Smooth touch scrolling on mobile */
   -webkit-overflow-scrolling: touch;
-  
+
   /* Background ownership */
   background: var(--bg, #f7f7f7);
-  
+
   /* Safe area insets for notched devices (iPhone X+, etc.) */
   padding-top: env(safe-area-inset-top, 0);
-  padding-bottom: env(safe-area-inset-bottom, 0);
   padding-left: env(safe-area-inset-left, 0);
   padding-right: env(safe-area-inset-right, 0);
-  
+
+  /* Bottom padding: accounts for mobile nav + safe area
+     Ensures content never ends behind bottom nav */
+  padding-bottom: var(--mobile-safe-bottom, 64px);
+
   /* Smooth transitions for theme changes */
   transition: background-color 0.25s ease-in-out;
+}
+
+/* Desktop: No mobile nav, minimal bottom padding */
+@media (min-width: 1025px) {
+  .page-viewport {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
 }
 
 /* Prevent overscroll bounce on iOS (optional - can be removed if unwanted) */
