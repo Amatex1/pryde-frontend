@@ -16,10 +16,19 @@ const MAX_INLINE_BADGES = 2;
 function BadgeContainer({ badges = [], showLabels = false }) {
   const [showTooltip, setShowTooltip] = useState(false);
 
-  // Sort badges by priority (lower = higher priority)
+  // Filter and sort badges by priority (lower = higher priority)
+  // Only include badges that are valid objects with required fields
   const sortedBadges = useMemo(() => {
     if (!badges || !Array.isArray(badges)) return [];
-    return [...badges].sort((a, b) => (a.priority || 100) - (b.priority || 100));
+    return badges
+      .filter(badge =>
+        badge &&
+        typeof badge === 'object' &&
+        badge.id &&
+        badge.label &&
+        badge.icon
+      )
+      .sort((a, b) => (a.priority || 100) - (b.priority || 100));
   }, [badges]);
 
   const inlineBadges = sortedBadges.slice(0, MAX_INLINE_BADGES);

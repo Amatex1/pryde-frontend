@@ -21,7 +21,9 @@ const BADGE_COLORS = {
 };
 
 function UserBadge({ badge, showLabel = false }) {
-  if (!badge) return null;
+  // Defensive: return null if badge is missing or invalid
+  if (!badge || typeof badge !== 'object') return null;
+  if (!badge.id || !badge.label || !badge.icon) return null;
 
   const colorClass = BADGE_COLORS[badge.color] || BADGE_COLORS.default;
 
