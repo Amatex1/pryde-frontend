@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import OptimizedImage from './OptimizedImage';
 import ReactionButton from './ReactionButton';
+import BadgeContainer from './BadgeContainer';
 import { getImageUrl } from '../utils/imageUrl';
 import { sanitizeContent } from '../utils/sanitize';
 import '../pages/Feed.css';
@@ -123,7 +124,9 @@ const CommentThread = ({
                     style={{ textDecoration: 'none' }}
                   >
                     <span className="author-name">{comment.authorId?.displayName || comment.authorId?.username}</span>
-                    {comment.authorId?.isVerified && <span className="verified-badge">✓</span>}
+                    {comment.authorId?.badges?.length > 0 && (
+                      <BadgeContainer badges={comment.authorId.badges} size="small" />
+                    )}
                     {comment.authorId?.pronouns && (
                       <span className="author-pronouns">({comment.authorId.pronouns})</span>
                     )}
@@ -304,7 +307,9 @@ const CommentThread = ({
                             style={{ textDecoration: 'none' }}
                           >
                             <span className="author-name">{reply.authorId?.displayName || reply.authorId?.username}</span>
-                            {reply.authorId?.isVerified && <span className="verified-badge">✓</span>}
+                            {reply.authorId?.badges?.length > 0 && (
+                              <BadgeContainer badges={reply.authorId.badges} size="small" />
+                            )}
                             {reply.authorId?.pronouns && (
                               <span className="author-pronouns">({reply.authorId.pronouns})</span>
                             )}
