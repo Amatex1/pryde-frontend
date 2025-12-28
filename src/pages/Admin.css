@@ -220,19 +220,31 @@
   font-size: 1.1rem;
 }
 
-/* Users Table */
+/* ========================================
+   USERS TABLE - SCROLL-SAFE LAYOUT
+   ======================================== */
+
 .users-list h2,
 .blocks-list h2,
 .activity-container h2 {
   margin-bottom: 1.5rem;
-  color: var(--pryde-purple);
+  color: var(--text-primary);
+}
+
+/* Scroll-safe container for tables */
+.users-list,
+.blocks-list {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .users-table,
 .blocks-table {
   width: 100%;
+  min-width: 1100px;
   border-collapse: collapse;
-  background: var(--card-surface);
+  background: var(--bg-card);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -243,18 +255,39 @@
   color: white;
 }
 
-.users-table th,
-.blocks-table th {
+/* Sticky header for better UX */
+.users-table thead th,
+.blocks-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--accent-primary);
+  z-index: 2;
   padding: 1rem;
   text-align: left;
   font-weight: 600;
+  white-space: nowrap;
+  vertical-align: middle;
 }
 
 .users-table td,
 .blocks-table td {
   padding: 1rem;
-  border-bottom: 1px solid var(--border-light);
-  color: var(--text-main);
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* Email column - truncate long emails */
+.users-table td[data-label="Email"] {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Actions column - ensure buttons fit */
+.users-table td[data-label="Actions"] {
+  min-width: 180px;
 }
 
 /* Status column - prevent wrapping */
@@ -265,7 +298,7 @@
 
 .users-table tbody tr:hover,
 .blocks-table tbody tr:hover {
-  background: var(--bg-light);
+  background: var(--bg-hover);
 }
 
 .role-badge {
@@ -278,17 +311,17 @@
 
 .role-user {
   background: rgba(158, 158, 158, 0.2);
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .role-moderator {
   background: rgba(9, 132, 227, 0.2);
-  color: var(--electric-blue);
+  color: var(--accent-secondary);
 }
 
 .role-admin {
   background: rgba(108, 92, 231, 0.2);
-  color: var(--pryde-purple);
+  color: var(--accent-primary);
 }
 
 .role-super_admin {
@@ -302,39 +335,40 @@
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  border: 2px solid var(--border-light);
+  border: 2px solid var(--border-subtle);
   cursor: pointer;
   transition: all 0.2s ease;
-  background: white;
+  background: var(--bg-card);
+  color: var(--text-primary);
 }
 
 .role-select:hover {
-  border-color: var(--pryde-purple);
+  border-color: var(--accent-primary);
 }
 
 .role-select:focus {
   outline: none;
-  border-color: var(--electric-blue);
+  border-color: var(--accent-secondary);
   box-shadow: 0 0 0 3px rgba(9, 132, 227, 0.1);
 }
 
 .role-select.role-user {
-  color: var(--text-main);
+  color: var(--text-primary);
   background: rgba(158, 158, 158, 0.1);
 }
 
 .role-select.role-moderator {
-  color: var(--electric-blue);
+  color: var(--accent-secondary);
   background: rgba(9, 132, 227, 0.1);
 }
 
 .role-select.role-admin {
-  color: var(--pryde-purple);
+  color: var(--accent-primary);
   background: rgba(108, 92, 231, 0.1);
 }
 
 .role-select.role-super_admin {
-  color: var(--pryde-purple);
+  color: var(--accent-primary);
   background: rgba(108, 92, 231, 0.2);
   font-weight: 700;
 }
@@ -530,7 +564,26 @@
   text-align: right;
 }
 
-/* Responsive */
+/* ========================================
+   TABLET RESPONSIVE (769px - 1024px)
+   Keep table layout but allow horizontal scroll
+   ======================================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .users-list,
+  .blocks-list {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .users-table,
+  .blocks-table {
+    min-width: 900px;
+  }
+}
+
+/* ========================================
+   MOBILE RESPONSIVE (max-width: 768px)
+   ======================================== */
 @media (max-width: 768px) {
   .admin-container {
     padding: 1rem;
@@ -583,8 +636,8 @@
   .blocks-table tr {
     display: block;
     margin-bottom: 1rem;
-    background: var(--card-surface);
-    border: 1px solid var(--border-light);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 12px;
     padding: 1rem;
   }
@@ -595,13 +648,16 @@
     text-align: left;
     padding: 0.5rem 0;
     border: none;
+    white-space: normal;
+    max-width: 100%;
+    overflow-wrap: break-word;
   }
 
   .users-table td::before,
   .blocks-table td::before {
     content: attr(data-label);
     font-weight: 600;
-    color: var(--pryde-purple);
+    color: var(--accent-primary);
     display: block;
     margin-bottom: 0.25rem;
   }
@@ -755,43 +811,96 @@
   box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
 }
 
+/* ========================================
+   DARK MODE SAFETY NET
+   Ensure browser-native elements respect dark mode
+   ======================================== */
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
 /* Dark Mode Support */
+[data-theme="dark"] .admin-container {
+  color: var(--text-primary);
+}
+
 [data-theme="dark"] .admin-content {
-  background: var(--card-surface);
-  color: var(--text-main);
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .users-list h2,
+[data-theme="dark"] .blocks-list h2 {
+  color: var(--text-primary);
 }
 
 [data-theme="dark"] .users-table,
 [data-theme="dark"] .blocks-table {
-  background: var(--card-surface);
-  color: var(--text-main);
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .users-table thead th,
+[data-theme="dark"] .blocks-table thead th {
+  background: var(--accent-primary);
+  color: white;
 }
 
 [data-theme="dark"] .users-table td,
 [data-theme="dark"] .blocks-table td {
-  color: var(--text-main);
-  border-bottom-color: var(--border-light);
+  color: var(--text-primary);
+  border-bottom-color: var(--border-subtle);
 }
 
 [data-theme="dark"] .users-table tbody tr:hover,
 [data-theme="dark"] .blocks-table tbody tr:hover {
-  background: rgba(108, 92, 231, 0.1);
+  background: rgba(108, 92, 231, 0.15);
+}
+
+/* Dark mode role select - prevent white-on-white */
+[data-theme="dark"] .role-select {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+[data-theme="dark"] .role-select option {
+  background: var(--bg-card);
+  color: var(--text-primary);
 }
 
 [data-theme="dark"] .stat-card {
-  background: var(--card-surface);
-  border: 1px solid var(--border-light);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+}
+
+[data-theme="dark"] .stat-card h3 {
+  color: var(--accent-primary);
+}
+
+[data-theme="dark"] .stat-details {
+  color: var(--text-primary);
 }
 
 [data-theme="dark"] .report-card {
-  background: var(--card-surface);
-  border-left-color: var(--pryde-purple);
+  background: var(--bg-card);
+  border-left-color: var(--accent-primary);
 }
 
 [data-theme="dark"] .content-preview {
-  background: var(--background-light);
-  border-color: var(--border-light);
-  color: var(--text-main);
+  background: var(--bg-surface);
+  border-color: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+/* Admin buttons dark mode */
+[data-theme="dark"] .btn-action {
+  color: white;
+}
+
+[data-theme="dark"] .btn-action.btn-small {
+  color: white;
 }
 
 /* Security Tab Styles */
