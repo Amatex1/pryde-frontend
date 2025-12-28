@@ -82,10 +82,16 @@ export function AuthProvider({ children }) {
     try {
       logger.debug('[AuthContext] 🔄 Attempting silent token refresh...');
 
-      // Call refresh endpoint - httpOnly cookie will be sent automatically
-      const response = await api.post('/refresh', {}, {
+      // Get refresh token from localStorage as fallback for cross-domain setups
+      // (Cloudflare Pages → Render may not send httpOnly cookies due to browser restrictions)
+      const localRefreshToken = getRefreshToken();
+
+      // Call refresh endpoint - httpOnly cookie will be sent automatically via withCredentials
+      // Also send localStorage token as fallback for cross-origin scenarios
+      const response = await api.post('/refresh', {
+        refreshToken: localRefreshToken || undefined
+      }, {
         withCredentials: true,
-        // Don't send localStorage refresh token - rely on httpOnly cookie only
       });
 
       const { accessToken, refreshToken: newRefreshToken, user: userData } = response.data;

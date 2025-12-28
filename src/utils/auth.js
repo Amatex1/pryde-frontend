@@ -221,11 +221,19 @@ export async function refreshAccessToken() {
   try {
     // Import api dynamically to avoid circular dependency
     const { default: api } = await import('./api');
-    const response = await api.post('/auth/refresh');
+
+    // Get refresh token from localStorage as fallback for cross-domain setups
+    const localRefreshToken = getRefreshToken();
+
+    const response = await api.post('/refresh', {
+      refreshToken: localRefreshToken || undefined
+    }, {
+      withCredentials: true
+    });
 
     // If new tokens are returned, store them
-    if (response.data?.token) {
-      setAuthToken(response.data.token);
+    if (response.data?.accessToken || response.data?.token) {
+      setAuthToken(response.data.accessToken || response.data.token);
     }
     if (response.data?.refreshToken) {
       setRefreshToken(response.data.refreshToken);
