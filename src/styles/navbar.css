@@ -1,4 +1,20 @@
 /* =====================================================
+   ⚠️ DEPRECATED - DO NOT ADD NEW CODE HERE
+   =====================================================
+
+   This file is scheduled for removal in a future hardening phase.
+   The Navbar component will be refactored to use:
+   - PageLayout-aware responsive behavior
+   - Feature-specific CSS in src/components/Navbar.css
+
+   These styles may still be required for current Navbar behavior
+   until the Navbar component is migrated to the new system.
+
+   Migration Status: Pending (Navbar migration not yet scheduled)
+   Target Removal: After Navbar uses PageLayout-aware styles
+   ===================================================== */
+
+/* =====================================================
    MOBILE NAVBAR — FLEX ROW (RESET FROM DESKTOP GRID)
    ===================================================== */
 

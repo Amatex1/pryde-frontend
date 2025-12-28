@@ -1,4 +1,20 @@
 /* ====================================================
+   ⚠️ DEPRECATED - DO NOT ADD NEW CODE HERE
+   ====================================================
+
+   This file is scheduled for removal in a future hardening phase.
+   New layout code should use:
+   - CSS variables in PageLayout.css, PageViewport.css
+   - Feature-specific responsive styles in src/features/{feature}/*.css
+
+   The CSS custom properties defined here may still be referenced
+   by legacy components. Safe-area-insets remain useful.
+
+   Migration Status: Pending (Phase 2-4 feature migrations complete)
+   Target Removal: After all legacy pages use PageLayout system
+   ==================================================== */
+
+/* ====================================================
    RESPONSIVE BREAKPOINT SYSTEM
    ==================================================== */
 

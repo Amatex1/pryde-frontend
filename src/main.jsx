@@ -15,7 +15,6 @@ import { setupInstallPrompt, requestPersistentStorage } from './utils/pwa'
 import { initWebVitals } from './utils/webVitals'
 import { initializePushNotifications } from './utils/pushNotifications'
 import { initializeTheme } from './utils/themeManager'
-import { logMobileEnvironment } from './utils/mobileDebug'
 import { initCircuitBreaker } from './utils/authCircuitBreaker'
 import { initServiceWorkerDebug } from './utils/serviceWorkerDebug'
 import { clearStaleSWAndCaches } from './utils/clearStaleSW'
@@ -35,11 +34,10 @@ initCircuitBreaker();
 initializeTheme();
 
 // ========================================
-// MOBILE DEBUG (DEV MODE ONLY)
-// Log mobile environment and initialize service worker debug
+// DEV MODE ONLY
+// Initialize service worker debug and testing infrastructure
 // ========================================
 if (import.meta.env.DEV) {
-  logMobileEnvironment();
   initServiceWorkerDebug();
 
   // 🔥 PHASE 2: Initialize SW testing infrastructure
