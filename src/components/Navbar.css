@@ -1,18 +1,22 @@
 /* ========================================
    NAVBAR - POLISHED WITH DESIGN SYSTEM
    Navbar is bound to same max-width as page content
+   Height controlled by --header-height variable
    ======================================== */
 
 .navbar {
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
-  padding: var(--space-3) var(--space-4);
+  height: var(--header-height, 56px);  /* Phase 8: Use responsive variable */
+  padding: 0 var(--space-4);
   background: var(--bg-card);
   border-bottom: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-soft);
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+  display: flex;
+  align-items: center;
 }
 
 .navbar-inner,

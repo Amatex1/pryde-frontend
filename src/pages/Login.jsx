@@ -34,7 +34,11 @@ function Login() {
     // Reset socket logout flag
     resetLogoutFlag();
 
-    if (searchParams.get('expired') === 'true') {
+    // Handle session-related redirects with calm messaging
+    const reason = searchParams.get('reason');
+    if (reason === 'auth_instability') {
+      setError('Your session ended unexpectedly. Please sign in again.');
+    } else if (searchParams.get('expired') === 'true') {
       setError('Your session timed out. You can sign in again when ready.');
     }
   }, [searchParams]);

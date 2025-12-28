@@ -1,8 +1,12 @@
 /* ========================================
-   QUIET MODE - SUPPLEMENTAL STYLES
-   Phase 5C: Enhanced for accessibility
+   QUIET MODE - SPACING & ANIMATION ONLY
+
+   ⚠️ CRITICAL RULE (Phase 8):
+   - Quiet Mode affects SPACING and ANIMATIONS only
+   - NO color overrides (colors are Dark Mode's job)
+   - This ensures Quiet Mode + Dark Mode work correctly together
+
    Main variables are defined in variables.css
-   This file handles transitions and special cases
    ======================================== */
 
 /* ========================================
@@ -172,157 +176,129 @@ html {
 }
 
 /* ==================================================
-   QUIET MODE — DESIGN PERSONALITY CONTRACT
-   Core philosophy: less chrome, more content
+   QUIET MODE — SPACING & ANIMATION ONLY
+
+   ⚠️ CRITICAL: Phase 8 refactor
+   - Quiet Mode affects SPACING and ANIMATIONS only
+   - NO color overrides (colors are Dark Mode's responsibility)
+   - This ensures Quiet Mode + Dark Mode work together correctly
    ================================================== */
 
+/* ========================================
+   QUIET MODE: SPACING TOKENS
+   Increase vertical rhythm for calmer reading
+   ======================================== */
+
 [data-quiet="true"],
 [data-quiet-mode="true"] {
-  --quiet-bg: #0f1220;
-  --quiet-surface: #15182b;
-  --quiet-border: rgba(255,255,255,0.05);
-  --quiet-text-primary: rgba(255,255,255,0.92);
-  --quiet-text-secondary: rgba(255,255,255,0.62);
-  --quiet-accent: rgba(120,140,255,0.55);
+  /* Increase spacing for breathing room */
+  --quiet-space-multiplier: 1.25;
+
+  /* Card/Surface spacing - more generous */
+  --space-card-padding: calc(var(--space-4) * 1.25);
+
+  /* List item gaps - more vertical rhythm */
+  --space-list-gap: calc(var(--space-4) * 1.25);
+
+  /* Reduced shadow intensity */
+  --shadow-quiet: none;
 }
 
-/* Background override */
-[data-quiet="true"],
-[data-quiet-mode="true"] {
-  background-color: var(--quiet-bg);
-  color: var(--quiet-text-primary);
+/* ========================================
+   QUIET MODE: LAYOUT SPACING ADJUSTMENTS
+   ======================================== */
+
+[data-quiet="true"] .feed-main,
+[data-quiet-mode="true"] .feed-main {
+  gap: calc(var(--space-md) * 1.25);
 }
 
-/* Surfaces */
+[data-quiet="true"] .post-card,
+[data-quiet-mode="true"] .post-card {
+  padding: calc(var(--space-4) * 1.25);
+  box-shadow: var(--shadow-quiet, none);
+}
+
+[data-quiet="true"] .messages-list,
+[data-quiet-mode="true"] .messages-list {
+  gap: calc(var(--space-3) * 1.25);
+}
+
+[data-quiet="true"] .message-bubble,
+[data-quiet-mode="true"] .message-bubble {
+  padding: calc(var(--space-3) * 1.25) calc(var(--space-4) * 1.25);
+}
+
+/* Groups spacing */
+[data-quiet="true"] .groups-grid,
+[data-quiet-mode="true"] .groups-grid {
+  gap: calc(var(--space-4) * 1.25);
+}
+
+[data-quiet="true"] .group-card,
+[data-quiet-mode="true"] .group-card {
+  padding: calc(var(--space-4) * 1.25);
+}
+
+/* Profile spacing */
+[data-quiet="true"] .profile-header,
+[data-quiet-mode="true"] .profile-header {
+  padding: calc(var(--space-5) * 1.25);
+}
+
+/* Lounge spacing */
+[data-quiet="true"] .lounge-feed,
+[data-quiet-mode="true"] .lounge-feed {
+  gap: calc(var(--space-5) * 1.25);
+}
+
+[data-quiet="true"] .lounge-post,
+[data-quiet-mode="true"] .lounge-post {
+  padding: calc(var(--space-4) * 1.25);
+}
+
+/* Journal spacing */
+[data-quiet="true"] .journal-editor textarea,
+[data-quiet-mode="true"] .journal-editor textarea {
+  padding: calc(var(--space-5) * 1.25);
+  line-height: 1.8;  /* More vertical rhythm in long-form content */
+}
+
+/* ========================================
+   QUIET MODE: SHADOW REDUCTION
+   Remove visual noise, not colors
+   ======================================== */
+
 [data-quiet="true"] .card,
 [data-quiet="true"] .panel,
 [data-quiet="true"] .surface,
 [data-quiet-mode="true"] .card,
 [data-quiet-mode="true"] .panel,
 [data-quiet-mode="true"] .surface {
-  background: var(--quiet-surface);
-  border: 1px solid var(--quiet-border);
   box-shadow: none;
 }
 
-/* Text hierarchy */
-[data-quiet="true"] h1,
-[data-quiet="true"] h2,
-[data-quiet="true"] h3,
-[data-quiet-mode="true"] h1,
-[data-quiet-mode="true"] h2,
-[data-quiet-mode="true"] h3 {
-  color: var(--quiet-text-primary);
-}
-
-[data-quiet="true"] .meta,
-[data-quiet="true"] .timestamp,
-[data-quiet="true"] .secondary-text,
-[data-quiet-mode="true"] .meta,
-[data-quiet-mode="true"] .timestamp,
-[data-quiet-mode="true"] .secondary-text {
-  color: var(--quiet-text-secondary);
-}
-
-/* Buttons & actions */
-[data-quiet="true"] button,
-[data-quiet="true"] .btn,
-[data-quiet-mode="true"] button,
-[data-quiet-mode="true"] .btn {
-  background: transparent;
-  border: 1px solid var(--quiet-border);
-  color: var(--quiet-text-primary);
-}
-
-[data-quiet="true"] button.primary,
-[data-quiet="true"] .btn-primary,
-[data-quiet-mode="true"] button.primary,
-[data-quiet-mode="true"] .btn-primary {
-  background: var(--quiet-accent);
-  color: #fff;
-  border: none;
-}
-
-/* Navbar in Quiet Mode */
-[data-quiet="true"] .navbar,
-[data-quiet-mode="true"] .navbar {
-  background: rgba(10,12,24,0.92);
-  border-bottom: 1px solid var(--quiet-border);
-}
-
-/* Messages in Quiet Mode */
-[data-quiet="true"] .message-bubble,
-[data-quiet-mode="true"] .message-bubble {
-  background: rgba(255,255,255,0.04);
-}
-
-[data-quiet="true"] .message-bubble.own,
-[data-quiet-mode="true"] .message-bubble.own {
-  background: rgba(120,140,255,0.22);
-}
-
-/* Groups */
 [data-quiet="true"] .group-card:hover,
 [data-quiet-mode="true"] .group-card:hover {
   box-shadow: none;
   transform: none;
 }
 
-/* Profile header */
-[data-quiet="true"] .profile-header,
-[data-quiet-mode="true"] .profile-header {
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.04),
-    rgba(255,255,255,0)
-  );
-}
+/* ========================================
+   QUIET MODE: ACTION OPACITY REDUCTION
+   Make actions feel less urgent
+   ======================================== */
 
-/* =========================================
-   QUIET MODE — JOURNALS & LOUNGE
-   ========================================= */
-
-[data-quiet="true"] .journal-editor,
-[data-quiet-mode="true"] .journal-editor {
-  background: transparent;
-  border: none;
-}
-
-[data-quiet="true"] .journal-editor textarea,
-[data-quiet-mode="true"] .journal-editor textarea {
-  font-size: 16px;
-  line-height: 1.7;
-  padding: 20px;
-  background: rgba(255,255,255,0.03);
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.04);
-}
-
-[data-quiet="true"] .journal-helper-text,
-[data-quiet-mode="true"] .journal-helper-text {
-  opacity: 0.55;
-  font-style: italic;
-}
-
-/* Lounge tuning */
-[data-quiet="true"] .lounge-feed,
-[data-quiet-mode="true"] .lounge-feed {
-  gap: 24px;
-}
-
-[data-quiet="true"] .lounge-post,
-[data-quiet-mode="true"] .lounge-post {
-  background: rgba(255,255,255,0.03);
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.04);
-}
-
+[data-quiet="true"] .post-actions,
 [data-quiet="true"] .lounge-post-actions,
+[data-quiet-mode="true"] .post-actions,
 [data-quiet-mode="true"] .lounge-post-actions {
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
+[data-quiet="true"] .post-actions:hover,
 [data-quiet="true"] .lounge-post-actions:hover,
+[data-quiet-mode="true"] .post-actions:hover,
 [data-quiet-mode="true"] .lounge-post-actions:hover {
   opacity: 1;
 }

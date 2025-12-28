@@ -1,17 +1,52 @@
 /**
  * Global API Client with Request Deduplication and 429 Backoff
- * 
+ *
  * Features:
  * - Deduplicates inflight requests (prevents duplicate API calls)
  * - Response caching with configurable TTL
  * - Global 429 rate limit handling with backoff
  * - Automatic retry with exponential backoff
- * 
+ * - Normalized error responses (never throws raw errors to components)
+ *
  * Usage:
- * import { apiFetch } from '../utils/apiClient';
- * 
+ * import { apiFetch, ApiError, isApiError } from '../utils/apiClient';
+ *
  * const data = await apiFetch('/api/users/me', {}, { cacheTtl: 60000 });
+ * if (isApiError(data)) {
+ *   // Handle structured error
+ *   console.log(data.message, data.status);
+ * }
  */
+
+/**
+ * Structured API Error object (returned instead of throwing)
+ * @typedef {Object} ApiErrorResponse
+ * @property {boolean} error - Always true for error responses
+ * @property {number} status - HTTP status code (0 for network errors)
+ * @property {string} message - User-friendly error message
+ * @property {string} code - Error code for programmatic handling
+ */
+
+/**
+ * Create a structured API error (for internal use)
+ */
+export function createApiError(status, message, code = 'UNKNOWN_ERROR') {
+  return {
+    error: true,
+    status,
+    message,
+    code,
+  };
+}
+
+/**
+ * Check if a response is an API error
+ * @param {any} response - Response from apiFetch
+ * @returns {boolean}
+ */
+export function isApiError(response) {
+  return response && typeof response === 'object' && response.error === true;
+}
 
 import { API_BASE_URL } from '../config/api.js';
 import { getAuthToken, getRefreshToken, setAuthToken, setRefreshToken } from './auth';
@@ -361,7 +396,7 @@ export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = fal
       // Silence AbortError (expected during logout)
       if (error.name === 'AbortError') {
         logger.debug(`[API] Request aborted: ${url}`);
-        return null;
+        return null; // Aborted requests return null (not an error)
       }
 
       // Silence 401 errors if we're logging out (expected)
@@ -375,8 +410,17 @@ export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = fal
         // If auth module isn't available for any reason, continue with normal error handling
       }
 
+      // Parse status from error message if available
+      const statusMatch = error.message?.match(/(\d{3})/);
+      const status = statusMatch ? parseInt(statusMatch[1], 10) : 0;
+
+      // Return structured error (never throw to components)
       logger.error(`[API] Request failed: ${url}`, error);
-      return null;
+      return createApiError(
+        status,
+        status === 0 ? 'Network error. Please check your connection.' : `Request failed (${status})`,
+        status === 0 ? 'NETWORK_ERROR' : `HTTP_${status}`
+      );
     })
     .finally(() => {
       inflight.delete(cacheKey);

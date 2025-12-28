@@ -917,6 +917,11 @@
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   background: var(--chat-bg, #0f172a);
   flex-shrink: 0;
+
+  /* Phase 8: Keyboard-aware anchoring */
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 }
 
 /* Desktop: No mobile nav padding needed */
@@ -1654,16 +1659,16 @@
     padding-bottom: 1.5rem;  /* Extra vertical spacing before composer */
   }
 
-  /* Message bubbles can reach near edges */
+  /* Message bubbles - readable width on mobile */
   .message-bubble {
-    max-width: 88%;
+    max-width: 85%;  /* Phase 8: Constrained for readability */
     font-size: 0.9375rem;
     padding: 0.75rem 1rem;
   }
 
   /* Allow messages to use more width on mobile */
   .message-content {
-    max-width: 88%;
+    max-width: 85%;  /* Phase 8: Match bubble width */
   }
 
   .message-group.sent .message-content {

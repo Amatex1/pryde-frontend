@@ -56,9 +56,11 @@
   --layout-gap-lg: var(--space-5);  /* 24px */
 
   /* ========================================
-     NAVBAR HEIGHT (for sticky calculations)
+     HEADER/NAVBAR HEIGHT (responsive)
+     Phase 8: Mobile-first, increases for larger screens
      ======================================== */
-  --navbar-height: 60px;
+  --header-height: 56px;  /* Mobile: compact */
+  --navbar-height: 56px;  /* Alias for backwards compatibility */
 
   /* ========================================
      MOBILE NAV HEIGHT (for sticky calculations)
@@ -74,6 +76,8 @@
   :root {
     --page-padding: 24px;
     --page-max-width: 960px;  /* Constrained on tablet */
+    --header-height: 64px;    /* Tablet: more room */
+    --navbar-height: 64px;
   }
 }
 
@@ -84,7 +88,8 @@
   :root {
     --page-padding: 32px;
     --page-max-width: 1200px;  /* Wider on desktop */
-    --navbar-height: 64px;
+    --header-height: 72px;    /* Desktop: full height */
+    --navbar-height: 72px;
   }
 }
 
