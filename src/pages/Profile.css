@@ -2338,23 +2338,25 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 @media (max-width: 768px) {
-  /* Ensure page container fits content - NO extra black space! */
+  /*
+   * NOTE: .page-container width/padding is controlled by layout.css
+   * Only override height behavior here, not width.
+   */
   .profile-page.page-container,
-  .page-container.profile-page,
-  .page-container {
-    min-height: auto !important; /* Let content determine height */
-    height: auto !important;
-    max-height: none !important; /* Remove any height constraints */
-    overflow-y: visible !important;
-    overflow-x: hidden !important;
+  .page-container.profile-page {
+    min-height: auto;
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
+    overflow-x: hidden;
   }
 
   .profile-container {
     padding: 0 1rem 1rem;
-    min-height: auto !important;
-    height: auto !important;
-    max-height: none !important; /* Remove any height constraints */
-    overflow-y: visible !important;
+    min-height: auto;
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
   }
 
   /* FIX: Remove blue box gap between cover and avatar */

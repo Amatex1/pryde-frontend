@@ -1,8 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
-import './index.css'
-import './styles/layout.css' // Layout design tokens and responsive variables (MUST be loaded early)
+import './index.css' // Includes layout.css as LAST import (authority for .page-container)
 import './styles/breakpoints.css' // Responsive breakpoint system + PWA utilities (MUST be loaded early)
 import './styles/darkMode.css'
 import './styles/quiet-mode.css' // MUST be loaded AFTER darkMode.css to override properly

@@ -1,6 +1,6 @@
 /* ========================================
    PRYDE SOCIAL - MAIN STYLES
-   Import order matters: Responsive Base → Global Theme → Variables → Design system → Theme → Components
+   Import order matters: Base → Theme → Design → Components → Layout (LAST)
    ======================================== */
 
 @import './styles/responsiveBase.css';      /* CRITICAL: Responsive foundation (must be first) */
@@ -11,6 +11,7 @@
 @import './styles/professional-layout.css'; /* Professional layout pass - calm + confident */
 @import './styles/components.css';          /* Reusable component styles */
 @import './styles/accessibility.css';       /* Phase 5C: Accessibility & keyboard navigation */
+@import './styles/layout.css';              /* AUTHORITY: Layout tokens and .page-container (MUST be last) */
 
 /* ========================================
    RESPONSIVE FOUNDATION (MOBILE-FIRST)

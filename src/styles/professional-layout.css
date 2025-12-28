@@ -2,45 +2,26 @@
    PRYDE — Professional Layout Pass
    Calm + Confident Edition
    MOBILE-FIRST RESPONSIVE
+
+   NOTE: Layout width/padding now controlled by
+   layout.css CSS variables (--page-max-width, --page-padding)
    ================================ */
 
-/* ---------- 1️⃣ LAYOUT: Mobile-First → Wide App ---------- */
+/* ---------- 1️⃣ LAYOUT: Defer to CSS Variables ---------- */
 
-/* MOBILE: Full width with padding */
-.app-container,
-.page-container,
+/*
+ * REMOVED: Hardcoded max-width and padding rules.
+ * These are now controlled by layout.css via:
+ * - --page-max-width (100% mobile → 960px tablet → 1200px desktop)
+ * - --page-padding (12px mobile → 24px tablet → 32px desktop)
+ *
+ * See: src/styles/layout.css
+ * See: src/layouts/PageContainer.css
+ */
+
+/* Feed layout inherits from page-container, no overrides needed */
 .feed-layout {
   width: 100%;
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 0 16px;
-}
-
-/* TABLET: Increase padding */
-@media (min-width: 768px) {
-  .app-container,
-  .page-container,
-  .feed-layout {
-    padding: 0 24px;
-  }
-}
-
-/* DESKTOP: Constrained width */
-@media (min-width: 1024px) {
-  .app-container,
-  .page-container,
-  .feed-layout {
-    max-width: 1280px;
-  }
-}
-
-/* WIDE DESKTOP: Expand to 1440px */
-@media (min-width: 1440px) {
-  .app-container,
-  .page-container,
-  .feed-layout {
-    max-width: 1440px;
-  }
 }
 
 /* Remove "nervous centering" */

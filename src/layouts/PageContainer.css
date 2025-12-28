@@ -1,31 +1,18 @@
 /**
- * PageContainer.css - Content centering and max-width
+ * PageContainer.css - Component-specific overrides only
  *
- * SINGLE RESPONSIBILITY:
- * - Center content horizontally
- * - Constrain max-width (responsive via --page-max-width)
- * - Apply responsive horizontal padding
+ * ⚠️  IMPORTANT: The canonical .page-container definition is in:
+ *     src/styles/layout.css
  *
- * MOBILE-FIRST APPROACH:
- * - Mobile (≤600px): Full-bleed (100% width, light padding)
- * - Tablet (≥601px): Constrained to 960px
- * - Desktop (≥1025px): Constrained to 1200px
+ * This file should ONLY contain:
+ * - Component-specific overrides for PageContainer
+ * - State-based modifiers (e.g., .page-container.loading)
  *
- * NO column layout rules - that's PageLayout's job
+ * DO NOT add width, max-width, or padding rules here.
+ * Those are controlled by layout.css CSS variables:
+ * - --page-max-width (100% mobile → 960px tablet → 1200px desktop)
+ * - --page-padding (12px mobile → 24px tablet → 32px desktop)
  */
 
-.page-container {
-  /* Full width, constrained by responsive max-width */
-  width: 100%;
-  max-width: var(--page-max-width, 100%);
-  margin-left: auto;
-  margin-right: auto;
-
-  /* Horizontal padding - controlled by CSS variable */
-  padding-left: var(--page-padding, 12px);
-  padding-right: var(--page-padding, 12px);
-
-  /* Prevent content from touching edges */
-  box-sizing: border-box;
-}
+/* Any component-specific styles go here */
 

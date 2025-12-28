@@ -1,12 +1,9 @@
 /* ========================================
    FEED PAGE - POLISHED WITH DESIGN SYSTEM
-   ======================================== */
 
-.page-container {
-  min-height: 100vh;
-  position: relative;
-  z-index: 1;
-}
+   NOTE: .page-container is controlled by layout.css
+   Do not add width/max-width/padding rules here.
+   ======================================== */
 
 /* ========================================
    FEED LAYOUT - CALM, CENTERED GRID

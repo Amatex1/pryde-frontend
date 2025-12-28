@@ -98,3 +98,20 @@
   }
 }
 
+/* ========================================
+   CANONICAL .page-container DEFINITION
+
+   THIS IS THE SINGLE AUTHORITY FOR PAGE WIDTH.
+   No other CSS file should define .page-container width/max-width.
+   ======================================== */
+
+.page-container {
+  width: 100%;
+  box-sizing: border-box;
+  max-width: var(--page-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--page-padding);
+  padding-right: var(--page-padding);
+}
+
