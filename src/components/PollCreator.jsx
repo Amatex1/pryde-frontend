@@ -6,7 +6,8 @@ const PollCreator = ({ onPollChange, initialPoll = null }) => {
     options: ['', ''],
     endsAt: null,
     allowMultipleVotes: false,
-    showResultsBeforeVoting: false
+    showResultsBeforeVoting: false,
+    resultsVisibility: 'public' // 'public' or 'author'
   });
 
   const updatePoll = (updates) => {
@@ -91,6 +92,17 @@ const PollCreator = ({ onPollChange, initialPoll = null }) => {
           <option value={24}>1 day</option>
           <option value={72}>3 days</option>
           <option value={168}>1 week</option>
+        </select>
+      </div>
+
+      <div className="poll-field">
+        <label>Who can see results?</label>
+        <select
+          value={poll.resultsVisibility || 'public'}
+          onChange={(e) => updatePoll({ resultsVisibility: e.target.value })}
+        >
+          <option value="public">🌍 Everyone</option>
+          <option value="author">🔒 Only me</option>
         </select>
       </div>
 

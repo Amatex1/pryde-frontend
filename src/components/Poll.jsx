@@ -4,11 +4,13 @@ import './Poll.css';
 
 const Poll = ({ poll, postId, currentUserId, onVote }) => {
   const [voting, setVoting] = useState(false);
+  const [removingVote, setRemovingVote] = useState(false);
 
   if (!poll || !poll.question) return null;
 
   const hasEnded = poll.endsAt && new Date(poll.endsAt) < new Date();
-  const totalVotes = poll.options.reduce((sum, opt) => sum + (opt.votes?.length || 0), 0);
+  const resultsHidden = poll._resultsHidden; // Backend flag when resultsVisibility is 'author'
+  const totalVotes = resultsHidden ? null : poll.options.reduce((sum, opt) => sum + (opt.votes?.length || 0), 0);
 
   // Check if current user has voted
   const userVotedIndex = poll.options.findIndex(opt =>
@@ -16,10 +18,12 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
   );
   const hasVoted = userVotedIndex !== -1;
 
-  const canSeeResults = hasVoted || poll.showResultsBeforeVoting || hasEnded;
+  // Can see results if: voted, showResultsBeforeVoting enabled, poll ended, OR results are public
+  // If resultsHidden is true, user can only see their own vote, not counts
+  const canSeeResults = (hasVoted || poll.showResultsBeforeVoting || hasEnded) && !resultsHidden;
 
   const handleVote = async (optionIndex) => {
-    if (voting || hasEnded) return;
+    if (voting || removingVote || hasEnded) return;
 
     setVoting(true);
     try {
@@ -33,6 +37,24 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
       alert(error.response?.data?.message || 'Failed to vote');
     } finally {
       setVoting(false);
+    }
+  };
+
+  const handleRemoveVote = async () => {
+    if (voting || removingVote || hasEnded || !hasVoted) return;
+
+    setRemovingVote(true);
+    try {
+      const response = await api.delete(`/posts/${postId}/poll/vote`);
+
+      if (onVote) {
+        onVote(response.data);
+      }
+    } catch (error) {
+      console.error('Error removing vote:', error);
+      alert(error.response?.data?.message || 'Failed to remove vote');
+    } finally {
+      setRemovingVote(false);
     }
   };
 
@@ -83,11 +105,20 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
                   </div>
                   {isSelected && <span className="voted-checkmark">✓</span>}
                 </div>
+              ) : hasVoted && resultsHidden ? (
+                // User voted but results are hidden (author-only visibility)
+                <div className={`poll-option-result ${isSelected ? 'selected' : ''}`}>
+                  <div className="poll-option-content">
+                    <span className="poll-option-text">{option.text}</span>
+                    {isSelected && <span className="poll-voted-indicator">Your vote</span>}
+                  </div>
+                  {isSelected && <span className="voted-checkmark">✓</span>}
+                </div>
               ) : (
                 <button
                   className="poll-option-button"
                   onClick={() => handleVote(index)}
-                  disabled={voting || hasEnded}
+                  disabled={voting || removingVote || hasEnded}
                 >
                   {option.text}
                 </button>
@@ -98,7 +129,11 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
       </div>
 
       <div className="poll-footer">
-        <span className="poll-votes">{totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}</span>
+        {resultsHidden ? (
+          <span className="poll-votes poll-hidden-results">🔒 Results hidden by author</span>
+        ) : (
+          <span className="poll-votes">{totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}</span>
+        )}
         {poll.endsAt && (
           <>
             <span className="poll-separator">•</span>
@@ -111,6 +146,18 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
           <>
             <span className="poll-separator">•</span>
             <span className="poll-info">Multiple votes allowed</span>
+          </>
+        )}
+        {hasVoted && !hasEnded && (
+          <>
+            <span className="poll-separator">•</span>
+            <button
+              className="poll-remove-vote"
+              onClick={handleRemoveVote}
+              disabled={removingVote || voting}
+            >
+              {removingVote ? 'Removing...' : 'Remove my vote'}
+            </button>
           </>
         )}
       </div>
