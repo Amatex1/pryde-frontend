@@ -158,3 +158,44 @@
   padding-right: var(--page-padding);
 }
 
+/* ========================================
+   FLOATING LAYER ANIMATION SYSTEM
+
+   Provides smooth show/hide transitions for
+   fixed-position UI elements (FAB, scroll-to-top).
+
+   Usage:
+     .floating-layer.visible - shown state
+     .floating-layer.hidden  - hidden state (no pointer events)
+   ======================================== */
+
+.floating-layer {
+  transition:
+    transform 160ms ease-out,
+    opacity 120ms ease-out;
+  will-change: transform, opacity;
+}
+
+.floating-layer.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.floating-layer.hidden {
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .floating-layer {
+    transition: none;
+  }
+
+  .floating-layer.hidden {
+    transform: none;
+  }
+}
+

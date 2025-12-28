@@ -121,6 +121,7 @@ function Feed() {
   const [currentDraftId, setCurrentDraftId] = useState(null); // Track current draft being edited
   const [draftSaveStatus, setDraftSaveStatus] = useState(''); // 'saving', 'saved', or ''
   const [showMobileComposer, setShowMobileComposer] = useState(false); // Mobile composer bottom sheet
+  const [isTyping, setIsTyping] = useState(false); // Track typing state for floating UI hiding
 
   // Pagination state
   const [page, setPage] = useState(1);
@@ -1763,16 +1764,17 @@ function Feed() {
         </div>
       )}
 
-      {/* Scroll-to-top button */}
-      {showScrollTop && (
-        <button
-          className="scroll-to-top-btn glossy"
-          onClick={scrollToTop}
-          aria-label="Scroll to top"
-        >
-          ⬆️
-        </button>
-      )}
+      {/* Scroll-to-top button - hidden when composer open or typing */}
+      <button
+        className={`scroll-to-top-btn glossy floating-layer ${
+          showScrollTop && !showMobileComposer && !isTyping ? 'visible' : 'hidden'
+        }`}
+        onClick={scrollToTop}
+        aria-label="Scroll to top"
+        aria-hidden={!showScrollTop || showMobileComposer || isTyping}
+      >
+        ⬆️
+      </button>
 
       <div className={`feed-layout ${isMobile ? 'feed-mobile' : 'feed-desktop'}`}>
         <main className="feed-main">
@@ -1819,6 +1821,8 @@ function Feed() {
                   el.style.height = el.scrollHeight + 'px';
                   setNewPost(el.value);
                 }}
+                onFocus={() => setIsTyping(true)}
+                onBlur={() => setIsTyping(false)}
                 placeholder={showPollCreator ? "Ask a question..." : "Share something, if you feel like it."}
                 className="post-input glossy"
                 rows="1"
@@ -2569,12 +2573,15 @@ function Feed() {
             </div>
           )}
 
-          {/* Mobile Floating Create Post Button */}
+          {/* Mobile Floating Create Post Button - hidden when typing */}
           {isMobile && (
             <button
-              className="mobile-create-post"
+              className={`mobile-create-post floating-layer ${
+                !isTyping && !showMobileComposer ? 'visible' : 'hidden'
+              }`}
               onClick={() => setShowMobileComposer(true)}
               aria-label="Create post"
+              aria-hidden={isTyping || showMobileComposer}
             >
               ＋
             </button>
@@ -2586,7 +2593,10 @@ function Feed() {
               <div className="mobile-composer-header">
                 <button
                   className="mobile-composer-close"
-                  onClick={() => setShowMobileComposer(false)}
+                  onClick={() => {
+                    setShowMobileComposer(false);
+                    setIsTyping(false);
+                  }}
                   aria-label="Close composer"
                 >
                   ✕
@@ -2614,6 +2624,8 @@ function Feed() {
                       el.style.height = el.scrollHeight + 'px';
                       setNewPost(el.value);
                     }}
+                    onFocus={() => setIsTyping(true)}
+                    onBlur={() => setIsTyping(false)}
                     placeholder={showPollCreator ? "Ask a question..." : "Share something, if you feel like it."}
                     className="mobile-post-input"
                     rows="3"
