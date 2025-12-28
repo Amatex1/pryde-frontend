@@ -68,11 +68,42 @@
   --mobile-nav-height: 64px;
 
   /* ========================================
-     MOBILE SAFE ZONE
-     Shared bottom clearance for fixed-position UI
-     All FABs, scroll-to-top, etc. must use this
+     MOBILE FLOATING UI STACKING SYSTEM
+
+     Prevents overlap between fixed-position UI elements.
+     All floating controls MUST use these layers.
+
+     VERTICAL LAYERS (bottom positioning):
+       Layer 0: Base (just above mobile nav)
+       Layer 1: Create Post FAB (z-index: 100)
+       Layer 2: Scroll-to-Top button (z-index: 99)
+       Layer 3: Reserved for future use
+
+     Z-INDEX HIERARCHY (from design-system.css):
+       z-index: 99   - Scroll-to-top
+       z-index: 100  - Create Post FAB
+       z-index: 200  - Mobile nav, sticky headers (--z-sticky)
+       z-index: 200  - Mobile composer sheet
+       z-index: 1000 - Modal backdrops
+       z-index: 1001 - Modals
+       z-index: 10000- Hamburger menu button
      ======================================== */
-  --mobile-safe-bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom, 0px));
+  --mobile-layer-gap: 12px;
+
+  /* Base layer: Just above mobile nav + safe area */
+  --mobile-layer-0: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom, 0px));
+
+  /* Layer 1: Create Post FAB (56px button + gap) */
+  --mobile-layer-1: calc(var(--mobile-layer-0) + var(--mobile-layer-gap));
+
+  /* Layer 2: Scroll-to-Top button (above FAB) */
+  --mobile-layer-2: calc(var(--mobile-layer-1) + 56px + var(--mobile-layer-gap));
+
+  /* Layer 3: Post Submit / Modal actions (above scroll-to-top) */
+  --mobile-layer-3: calc(var(--mobile-layer-2) + 56px + var(--mobile-layer-gap));
+
+  /* DEPRECATED: Legacy alias - use specific layers instead */
+  --mobile-safe-bottom: var(--mobile-layer-0);
 }
 
 /* ========================================

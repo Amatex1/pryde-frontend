@@ -121,9 +121,9 @@
     display: grid;
   }
 
-  /* Add bottom padding to page-container to prevent content overlap */
+  /* Add bottom padding to page-container to clear all stacked floating UI */
   .page-container {
-    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0));
+    padding-bottom: var(--mobile-layer-2, 144px);
   }
 }
 
@@ -141,12 +141,15 @@
 
 /* ========================================
    MOBILE FLOATING CREATE POST BUTTON (FAB)
-   Uses shared --mobile-safe-bottom for consistent positioning
+
+   Uses --mobile-layer-1 for predictable stacking.
+   This ensures the FAB never overlaps the bottom nav
+   and scroll-to-top stacks above it.
    ======================================== */
 
 .mobile-create-post {
   position: fixed;
-  bottom: calc(var(--mobile-safe-bottom, 64px) + var(--space-4, 16px));
+  bottom: var(--mobile-layer-1, 76px); /* Layer 1: Above mobile nav */
   right: var(--space-4, 16px);
   width: 56px;
   height: 56px;
@@ -158,7 +161,7 @@
   border: none;
   box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
   cursor: pointer;
-  z-index: 15;
+  z-index: 100; /* Above mobile nav (z-index: 50), below modals */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -177,13 +180,17 @@
 
 /* ========================================
    MOBILE COMPOSER BOTTOM SHEET
+
+   Full-screen modal for creating posts on mobile.
+   z-index: 200 ensures it appears above all floating UI
+   but below critical modals (alerts, confirmations).
    ======================================== */
 
 .mobile-composer-sheet {
   position: fixed;
   inset: 0;
   background: var(--surface-primary, #ffffff);
-  z-index: 25;
+  z-index: 200; /* Above FAB (100) and scroll-to-top (99), below modals (1000+) */
   display: flex;
   flex-direction: column;
   animation: slideUp 0.3s ease;
@@ -202,12 +209,17 @@
   display: grid;
   grid-template-columns: 40px 1fr 80px;
   align-items: center;
-  padding: 12px;
+  /* Use header height variable for consistent sizing */
+  min-height: var(--header-height, 56px);
+  padding: 0 12px;
+  /* Push below safe area on notched devices */
+  padding-top: env(safe-area-inset-top, 0);
   border-bottom: 1px solid var(--border-subtle, #e0e0e0);
   background: var(--surface-primary, #ffffff);
   position: sticky;
   top: 0;
-  z-index: 1;
+  /* z-index: 10 keeps header above composer content but below modals */
+  z-index: 10;
 }
 
 .mobile-composer-close {

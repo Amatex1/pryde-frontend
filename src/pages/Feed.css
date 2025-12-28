@@ -3448,20 +3448,20 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 }
 
 /* Scroll-to-top button
-   Uses --mobile-safe-bottom for consistent positioning above mobile nav */
+   Uses --mobile-layer-2 for predictable stacking above Create Post FAB */
 .scroll-to-top-btn {
   position: fixed;
-  bottom: calc(var(--mobile-safe-bottom, 64px) + var(--space-4, 16px));
+  bottom: var(--mobile-layer-2, 144px); /* Layer 2: Above FAB */
   right: var(--space-4, 16px);
-  width: 3rem;
-  height: 3rem;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: var(--pryde-purple);
   color: white;
   border: none;
   font-size: 1.25rem;
   cursor: pointer;
-  z-index: 1000;
+  z-index: 99; /* Below FAB (100), above content */
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
   display: flex;
