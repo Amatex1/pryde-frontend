@@ -233,9 +233,15 @@ api.interceptors.response.use(
           // The httpOnly cookie will be sent automatically via withCredentials: true
           const localRefreshToken = getRefreshToken();
 
+          // 🔥 Skip refresh if no token available (prevents 401 spam after logout)
+          if (!localRefreshToken) {
+            logger.debug('⏸️ No refresh token available - skipping refresh');
+            throw new Error('No refresh token available');
+          }
+
           const response = await axios.post(`${API_BASE_URL}/refresh`, {
             // Send localStorage token as fallback - httpOnly cookie takes priority on server
-            refreshToken: localRefreshToken || undefined
+            refreshToken: localRefreshToken
           }, {
             withCredentials: true // 🔥 CRITICAL: Sends httpOnly cookie automatically
           });

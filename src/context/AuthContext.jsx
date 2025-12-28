@@ -86,10 +86,17 @@ export function AuthProvider({ children }) {
       // (Cloudflare Pages → Render may not send httpOnly cookies due to browser restrictions)
       const localRefreshToken = getRefreshToken();
 
+      // 🔥 CRITICAL: Skip refresh call if no token available
+      // This prevents unnecessary 401 errors after logout or on fresh visits
+      if (!localRefreshToken) {
+        logger.debug('[AuthContext] No refresh token in localStorage - skipping silent refresh');
+        return false;
+      }
+
       // Call refresh endpoint - httpOnly cookie will be sent automatically via withCredentials
       // Also send localStorage token as fallback for cross-origin scenarios
       const response = await api.post('/refresh', {
-        refreshToken: localRefreshToken || undefined
+        refreshToken: localRefreshToken
       }, {
         withCredentials: true,
       });
