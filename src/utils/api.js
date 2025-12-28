@@ -11,7 +11,7 @@ import axios from "axios";
 //   auth bootstrap.
 // - Use apiClient.js (apiFetch) for background/fan-out requests that should
 //   respect the authCircuitBreaker and front-end version pinning.
-import { getAuthToken, logout, isManualLogout, setAuthToken, getRefreshToken, setRefreshToken, getCurrentUser } from "./auth";
+import { getAuthToken, logout, isManualLogout, setAuthToken, getRefreshToken, setRefreshToken, getCurrentUser, getIsLoggingOut } from "./auth";
 import logger from './logger';
 import { disconnectSocket, initializeSocket } from './socket';
 
@@ -186,6 +186,12 @@ api.interceptors.response.use(
 
       // Log 401 for debugging (only once per endpoint to reduce spam)
       logger.debug(`🔐 401 on ${endpoint}: ${errorMessage || 'No auth token'}`);
+
+      // 🔥 CRITICAL: Skip refresh if logout is in progress
+      if (getIsLoggingOut()) {
+        logger.debug('⏸️ Skipping refresh - logout in progress');
+        return Promise.reject(error);
+      }
 
       // CRITICAL: Handle account deletion - force logout immediately, no refresh attempt
       if (errorCode === 'ACCOUNT_DELETED' || errorMessage.includes('deleted')) {

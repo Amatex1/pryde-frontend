@@ -49,7 +49,7 @@ export function isApiError(response) {
 }
 
 import { API_BASE_URL } from '../config/api.js';
-import { getAuthToken, getRefreshToken, setAuthToken, setRefreshToken } from './auth';
+import { getAuthToken, getRefreshToken, setAuthToken, setRefreshToken, getIsLoggingOut } from './auth';
 import logger from './logger';
 import { FRONTEND_VERSION } from './pwaSafety';
 import { forceReloadWithCacheClear } from './emergencyRecovery';
@@ -306,6 +306,12 @@ export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = fal
       if (!res.ok) {
         // 🔥 TOKEN REFRESH: On 401, try to refresh token and retry (once)
         if (res.status === 401 && !skipAuth && !options._retried) {
+          // 🔥 CRITICAL: Skip refresh if logout is in progress
+          if (getIsLoggingOut()) {
+            logger.debug(`[API] ⏸️ Skipping refresh for ${url} - logout in progress`);
+            throw new Error('Logout in progress');
+          }
+
           logger.debug(`[API] 🔄 Got 401 for ${url}, attempting token refresh...`);
 
           const newToken = await refreshAccessToken();
