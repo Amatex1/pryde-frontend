@@ -101,42 +101,67 @@ export default function MessageComposer({
         </div>
       )}
 
-      {/* Main input area */}
-      <div className="composer-main">
-        {/* Left actions */}
-        <div className="composer-actions-left">
-          <button
-            className={`btn-composer ${showContentWarning ? 'active' : ''}`}
-            onClick={onToggleContentWarning}
-            title="Add content warning"
-          >
-            ⚠️
-          </button>
+      {/*
+        TWO-ROW LAYOUT FOR MOBILE:
+        - Row 1: Action buttons (attachment, emoji, voice, content warning)
+        - Row 2: Full-width input with send button
+        On desktop, CSS will collapse this into a single row
+      */}
+
+      {/* Row 1: Actions */}
+      <div className="composer-actions-row">
+        <button
+          className={`btn-composer ${showContentWarning ? 'active' : ''}`}
+          onClick={onToggleContentWarning}
+          title="Add content warning"
+        >
+          ⚠️
+        </button>
+        <button
+          className="btn-composer"
+          onClick={handleFileClick}
+          title="Attach media"
+        >
+          📎
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*,video/*"
+          onChange={handleFileChange}
+          style={{ display: 'none' }}
+        />
+        <button
+          className={`btn-composer ${showEmojiPicker ? 'active' : ''}`}
+          onClick={onToggleEmojiPicker}
+          title="Emoji"
+        >
+          😊
+        </button>
+        {!isRecording && !messageText.trim() && (
           <button
             className="btn-composer"
-            onClick={handleFileClick}
-            title="Attach media"
+            onClick={onStartRecording}
+            title="Record voice note"
           >
-            📎
+            🎤
           </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*,video/*"
-            onChange={handleFileChange}
-            style={{ display: 'none' }}
-          />
-        </div>
+        )}
+      </div>
 
-        {/* Text input or recording indicator */}
+      {/* Row 2: Input + Send */}
+      <div className="composer-input-row">
         {isRecording ? (
           <div className="recording-indicator">
             <span className="recording-dot"></span>
             <span className="recording-time">{formatRecordingTime(recordingTime)}</span>
             <button className="btn-cancel-recording" onClick={onCancelRecording}>✕</button>
+            <button className="btn-send-voice" onClick={onStopRecording} title="Send voice note">
+              ✓
+            </button>
           </div>
         ) : (
-          <div className="composer-input-wrapper">
+          <>
             <input
               type="text"
               className="composer-input"
@@ -145,33 +170,13 @@ export default function MessageComposer({
               onChange={(e) => onMessageChange?.(e.target.value)}
               onKeyDown={onKeyDown}
             />
-          </div>
+            {messageText.trim() && (
+              <button className="btn-send" onClick={onSend} title="Send message">
+                ➤
+              </button>
+            )}
+          </>
         )}
-
-        {/* Right actions */}
-        <div className="composer-actions-right">
-          <button
-            className={`btn-composer ${showEmojiPicker ? 'active' : ''}`}
-            onClick={onToggleEmojiPicker}
-            title="Emoji"
-          >
-            😊
-          </button>
-          
-          {isRecording ? (
-            <button className="btn-send-voice" onClick={onStopRecording} title="Send voice note">
-              ✓
-            </button>
-          ) : messageText.trim() ? (
-            <button className="btn-send" onClick={onSend} title="Send message">
-              ➤
-            </button>
-          ) : (
-            <button className="btn-record" onClick={onStartRecording} title="Record voice note">
-              🎤
-            </button>
-          )}
-        </div>
       </div>
 
       {/* Emoji picker */}

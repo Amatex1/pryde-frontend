@@ -1,25 +1,30 @@
 /**
  * PageContainer.css - Content centering and max-width
- * 
+ *
  * SINGLE RESPONSIBILITY:
  * - Center content horizontally
- * - Constrain max-width
+ * - Constrain max-width (responsive via --page-max-width)
  * - Apply responsive horizontal padding
- * 
+ *
+ * MOBILE-FIRST APPROACH:
+ * - Mobile (≤600px): Full-bleed (100% width, light padding)
+ * - Tablet (≥601px): Constrained to 960px
+ * - Desktop (≥1025px): Constrained to 1200px
+ *
  * NO column layout rules - that's PageLayout's job
  */
 
 .page-container {
-  /* Center content */
+  /* Full width, constrained by responsive max-width */
   width: 100%;
-  max-width: var(--container-desktop, 1200px);
+  max-width: var(--page-max-width, 100%);
   margin-left: auto;
   margin-right: auto;
-  
+
   /* Horizontal padding - controlled by CSS variable */
-  padding-left: var(--page-padding, 16px);
-  padding-right: var(--page-padding, 16px);
-  
+  padding-left: var(--page-padding, 12px);
+  padding-right: var(--page-padding, 12px);
+
   /* Prevent content from touching edges */
   box-sizing: border-box;
 }

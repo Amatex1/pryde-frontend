@@ -24,20 +24,21 @@
   --space-6: 32px;
   --space-7: 40px;
   --space-8: 48px;
-  
+
   /* Semantic spacing aliases */
   --space-xs: var(--space-1);
   --space-sm: var(--space-2);
   --space-md: var(--space-4);
   --space-lg: var(--space-5);
   --space-xl: var(--space-6);
-  
+
   /* ========================================
-     PAGE PADDING (Responsive)
-     Mobile default - enhanced via media queries
+     PAGE LAYOUT (Responsive)
+     Mobile-first: full-bleed on small screens
      ======================================== */
-  --page-padding: 16px;
-  
+  --page-padding: 12px;
+  --page-max-width: 100%;  /* Full-bleed on mobile */
+
   /* ========================================
      CONTAINER MAX WIDTHS
      ======================================== */
@@ -46,26 +47,33 @@
   --container-lg: 1024px;
   --container-xl: 1200px;
   --container-desktop: 1200px;
-  
+
   /* ========================================
      LAYOUT GAP TOKENS
      ======================================== */
   --layout-gap-sm: var(--space-3);  /* 12px */
   --layout-gap-md: var(--space-4);  /* 16px */
   --layout-gap-lg: var(--space-5);  /* 24px */
-  
+
   /* ========================================
      NAVBAR HEIGHT (for sticky calculations)
      ======================================== */
   --navbar-height: 60px;
+
+  /* ========================================
+     MOBILE NAV HEIGHT (for sticky calculations)
+     ======================================== */
+  --mobile-nav-height: 56px;
 }
 
 /* ========================================
    TABLET BREAKPOINT (≥601px)
+   Constrain content, increase padding
    ======================================== */
 @media (min-width: 601px) {
   :root {
     --page-padding: 24px;
+    --page-max-width: 960px;  /* Constrained on tablet */
   }
 }
 
@@ -75,6 +83,7 @@
 @media (min-width: 1025px) {
   :root {
     --page-padding: 32px;
+    --page-max-width: 1200px;  /* Wider on desktop */
     --navbar-height: 64px;
   }
 }
@@ -85,6 +94,7 @@
 @media (min-width: 1400px) {
   :root {
     --page-padding: 40px;
+    --page-max-width: 1400px;  /* Widest on large screens */
   }
 }
 
