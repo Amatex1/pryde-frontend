@@ -1,13 +1,46 @@
 /* ========================================
-   QUIET MODE - SPACING & ANIMATION ONLY
+   QUIET MODE V2 - SENSORY-AWARE DESIGN
 
    ⚠️ CRITICAL RULE (Phase 8):
    - Quiet Mode affects SPACING and ANIMATIONS only
    - NO color overrides (colors are Dark Mode's job)
    - This ensures Quiet Mode + Dark Mode work correctly together
 
+   QUIET MODE V2 SUB-TOGGLES:
+   - data-quiet-visuals: Calm visuals (motion, spacing, urgency)
+   - data-quiet-writing: Writing focus mode (distraction-free)
+   - data-quiet-metrics: Hide engagement metrics (likes, counts)
+
    Main variables are defined in variables.css
    ======================================== */
+
+/* ========================================
+   QUIET MODE V2: TOKEN DEFINITIONS
+   ======================================== */
+
+[data-quiet="true"] {
+  /* Spacing & Rhythm */
+  --space-2: 10px;
+  --space-3: 16px;
+  --space-4: 22px;
+  --space-5: 30px;
+  --space-6: 40px;
+
+  --line-height-body: 1.7;
+  --line-height-writing: 1.85;
+
+  /* Motion - faster, subtler transitions */
+  --motion-fast: 120ms;
+  --motion-normal: 180ms;
+  --motion-ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Emphasis - reduced visual weight */
+  --opacity-muted: 0.55;
+  --opacity-soft: 0.75;
+
+  /* Border for quiet surfaces */
+  --border-subtle: rgba(127, 127, 127, 0.15);
+}
 
 /* ========================================
    SMOOTH TRANSITIONS
@@ -301,4 +334,202 @@ html {
 [data-quiet-mode="true"] .post-actions:hover,
 [data-quiet-mode="true"] .lounge-post-actions:hover {
   opacity: 1;
+}
+
+/* ==================================================
+   QUIET MODE V2: METRICS HIDING
+   Hide engagement counts when quietMetrics is enabled
+   ================================================== */
+
+[data-quiet-metrics="true"] .post-metrics,
+[data-quiet-metrics="true"] .reaction-count,
+[data-quiet-metrics="true"] .reply-count,
+[data-quiet-metrics="true"] .like-count,
+[data-quiet-metrics="true"] .view-count,
+[data-quiet-metrics="true"] .share-count,
+[data-quiet-metrics="true"] .comment-count {
+  opacity: var(--opacity-muted, 0.55);
+  font-size: 0;
+  width: 0;
+  overflow: hidden;
+  transition: all var(--motion-normal, 180ms) var(--motion-ease, ease);
+}
+
+/* Reveal metrics on hover for accessibility */
+[data-quiet-metrics="true"] .post-actions:hover .post-metrics,
+[data-quiet-metrics="true"] .post-actions:hover .reaction-count,
+[data-quiet-metrics="true"] .post-actions:hover .reply-count,
+[data-quiet-metrics="true"] .post-actions:hover .like-count,
+[data-quiet-metrics="true"] .post-actions:hover .comment-count {
+  opacity: 1;
+  font-size: inherit;
+  width: auto;
+}
+
+/* Notification badges muted (no pulse) */
+[data-quiet-metrics="true"] .notification-badge,
+[data-quiet-metrics="true"] .unread-count {
+  animation: none !important;
+  opacity: var(--opacity-soft, 0.75);
+}
+
+/* ==================================================
+   QUIET MODE V2: WRITING FOCUS
+   Distraction-free space for journaling and posts
+   ================================================== */
+
+[data-quiet-writing="true"] .journal-editor,
+[data-quiet-writing="true"] .post-composer {
+  /* Narrower text column for readability */
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+[data-quiet-writing="true"] .journal-editor textarea,
+[data-quiet-writing="true"] .post-composer textarea {
+  line-height: var(--line-height-writing, 1.85);
+  padding: calc(var(--space-5, 30px) * 1.3);
+  font-size: 1.05rem;
+}
+
+/* Hide social feedback while writing */
+[data-quiet-writing="true"] .journal-editor .post-metrics,
+[data-quiet-writing="true"] .journal-editor .reaction-preview,
+[data-quiet-writing="true"] .post-composer .engagement-preview {
+  display: none;
+}
+
+/* Hide profile links inside journal view */
+[data-quiet-writing="true"] .journal-view .user-link,
+[data-quiet-writing="true"] .journal-view .profile-link {
+  pointer-events: none;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Softer cursor/caret */
+[data-quiet-writing="true"] textarea,
+[data-quiet-writing="true"] [contenteditable="true"] {
+  caret-color: var(--text-secondary, #888);
+}
+
+/* ==================================================
+   QUIET MODE V2: VISUAL CALM
+   Reduce motion, visual noise, and urgency
+   ================================================== */
+
+[data-quiet-visuals="true"] .btn-primary {
+  box-shadow: none;
+  filter: saturate(0.9);
+}
+
+/* Replace shadows with borders */
+[data-quiet-visuals="true"] .card,
+[data-quiet-visuals="true"] .panel {
+  box-shadow: none;
+  border: 1px solid var(--border-subtle, rgba(127, 127, 127, 0.15));
+}
+
+/* Disable decorative motion */
+[data-quiet-visuals="true"] .pulse,
+[data-quiet-visuals="true"] .bounce,
+[data-quiet-visuals="true"] .shake,
+[data-quiet-visuals="true"] .wiggle {
+  animation: none !important;
+}
+
+/* Reduce hover transforms */
+[data-quiet-visuals="true"] button:hover,
+[data-quiet-visuals="true"] a:hover,
+[data-quiet-visuals="true"] .card:hover {
+  transform: none;
+}
+
+/* Soften CTAs */
+[data-quiet-visuals="true"] .btn-primary:hover,
+[data-quiet-visuals="true"] .btn-submit:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+
+
+/* ==================================================
+   QUIET MODE V2: HIDE METRICS
+   Reduce comparison anxiety by hiding engagement counts
+   ================================================== */
+
+/* Hide reaction counts */
+[data-quiet-metrics="true"] .reaction-count {
+  display: none !important;
+}
+
+/* Hide like counts */
+[data-quiet-metrics="true"] .like-count,
+[data-quiet-metrics="true"] .likes-count {
+  display: none !important;
+}
+
+/* Hide comment counts in action buttons */
+[data-quiet-metrics="true"] .action-btn .action-text {
+  /* Only show the action name, not the count */
+}
+
+/* Hide post stats section */
+[data-quiet-metrics="true"] .post-stats {
+  display: none !important;
+}
+
+/* Hide share counts */
+[data-quiet-metrics="true"] .share-count,
+[data-quiet-metrics="true"] .shares-count {
+  display: none !important;
+}
+
+/* Hide view counts */
+[data-quiet-metrics="true"] .view-count,
+[data-quiet-metrics="true"] .views-count {
+  display: none !important;
+}
+
+/* Hide follower/following counts on profiles */
+[data-quiet-metrics="true"] .follower-count,
+[data-quiet-metrics="true"] .following-count,
+[data-quiet-metrics="true"] .profile-stats .stat-value {
+  display: none !important;
+}
+
+/* Show placeholder text instead of counts */
+[data-quiet-metrics="true"] .profile-stats .stat-label::after {
+  content: " (hidden)";
+  font-size: 0.75em;
+  opacity: 0.5;
+}
+
+/* Hide trending numbers */
+[data-quiet-metrics="true"] .trending-count,
+[data-quiet-metrics="true"] .trending-number {
+  display: none !important;
+}
+
+/* Hide notification counts in badges */
+[data-quiet-metrics="true"] .notification-count,
+[data-quiet-metrics="true"] .unread-count {
+  display: none !important;
+}
+
+/* Soften the visual weight of engagement areas */
+[data-quiet-metrics="true"] .post-actions {
+  opacity: 0.8;
+}
+
+/* Hide reply counts in comments */
+[data-quiet-metrics="true"] .reply-count {
+  display: none !important;
+}
+
+/* Hide "X people reacted" text */
+[data-quiet-metrics="true"] .reaction-summary {
+  display: none !important;
 }

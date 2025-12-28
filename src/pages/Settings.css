@@ -244,6 +244,56 @@
   border-color: var(--border-muted);
 }
 
+/* ========================================
+   QUIET MODE V2: SUB-TOGGLE SECTION
+   Nested toggles for granular control
+   ======================================== */
+
+.quiet-mode-subtoggle-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.subtoggle-header {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.notification-item.subtoggle {
+  background: var(--card-surface);
+  border: 1px solid var(--border-light);
+  margin-left: 1rem;
+  padding: 1rem 1.25rem;
+}
+
+.notification-item.subtoggle .notification-info h3 {
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.notification-item.subtoggle .notification-info p {
+  font-size: 0.85rem;
+}
+
+/* Quiet mode active styling for sub-toggles */
+[data-quiet="true"] .quiet-mode-subtoggle-section {
+  border-top-color: var(--border-subtle, rgba(127, 127, 127, 0.15));
+}
+
+[data-quiet="true"] .notification-item.subtoggle {
+  background: transparent;
+  border-color: var(--border-subtle, rgba(127, 127, 127, 0.15));
+}
+
+/* Softer toggle slider in quiet mode */
+[data-quiet="true"] .toggle-switch input:checked + .toggle-slider {
+  background: linear-gradient(135deg, #7c6fd1 0%, #5a8fd1 100%);
+  filter: saturate(0.8);
+}
+
 .btn-test {
   padding: 0.875rem 1.5rem;
   border-radius: 12px;

@@ -7,7 +7,7 @@ import ProfileUrlSetting from '../components/ProfileUrlSetting'; // Custom profi
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
 import { logout } from '../utils/auth';
-import { setQuietMode } from '../utils/themeManager';
+import { setQuietMode, setQuietSubToggle, getQuietSubToggle } from '../utils/themeManager';
 import { useAuth } from '../context/AuthContext';
 import logger from '../utils/logger';
 import './Settings.css';
@@ -35,6 +35,10 @@ function Settings() {
   const [loading, setLoading] = useState(true); // ✅ Start with loading state
   const [message, setMessage] = useState('');
   const [quietModeEnabled, setQuietModeEnabled] = useState(false); // PHASE 2: Quiet Mode
+  // QUIET MODE V2: Sub-toggles for granular control
+  const [quietVisuals, setQuietVisuals] = useState(true);
+  const [quietWriting, setQuietWriting] = useState(true);
+  const [quietMetrics, setQuietMetrics] = useState(false);
   // NOTE: Verification system removed 2025-12-26 (returns 410 Gone)
   // State and API calls removed to prevent 410 loops
 
@@ -65,6 +69,12 @@ function Settings() {
       const quietMode = currentUser.privacySettings?.quietModeEnabled || false;
       setQuietModeEnabled(quietMode);
       setQuietMode(quietMode);
+
+      // QUIET MODE V2: Load sub-toggle settings from localStorage (with backend sync)
+      const settings = currentUser.privacySettings || {};
+      setQuietVisuals(settings.quietVisuals ?? getQuietSubToggle('visuals'));
+      setQuietWriting(settings.quietWriting ?? getQuietSubToggle('writing'));
+      setQuietMetrics(settings.quietMetrics ?? getQuietSubToggle('metrics'));
     }
   }, [currentUser]);
 
@@ -145,6 +155,34 @@ function Settings() {
     } catch (error) {
       logger.error('Failed to toggle quiet mode:', error);
       setMessage('Failed to update quiet mode');
+    }
+  };
+
+  // QUIET MODE V2: Handle sub-toggle changes
+  const handleQuietSubToggle = async (toggle, value) => {
+    try {
+      // Update local state immediately
+      switch (toggle) {
+        case 'visuals':
+          setQuietVisuals(value);
+          break;
+        case 'writing':
+          setQuietWriting(value);
+          break;
+        case 'metrics':
+          setQuietMetrics(value);
+          break;
+      }
+
+      // Apply to DOM via theme manager
+      setQuietSubToggle(toggle, value);
+
+      // Sync with backend
+      const settingKey = `quiet${toggle.charAt(0).toUpperCase() + toggle.slice(1)}`;
+      await api.patch('/users/me/settings', { [settingKey]: value });
+    } catch (error) {
+      logger.error(`Failed to toggle quiet ${toggle}:`, error);
+      setMessage(`Failed to update ${toggle} setting`);
     }
   };
 
@@ -342,19 +380,20 @@ function Settings() {
             </div>
           )}
 
-          {/* PHASE 2: Quiet Mode */}
+          {/* PHASE 2: Quiet Mode + V2 Sub-toggles */}
           <div className="settings-section">
             <h2 className="section-title">🌿 Quiet Mode</h2>
             <p className="section-description">
-              A peaceful browsing experience with softer colors and hidden metrics.
+              A peaceful browsing experience with softer colors and reduced distractions.
               Perfect for introverts, late-night users, and anyone who prefers a calmer space.
             </p>
 
             <div className="notification-settings">
+              {/* Main Quiet Mode Toggle */}
               <div className="notification-item">
                 <div className="notification-info">
                   <h3>Enable Quiet Mode</h3>
-                  <p>Manually enable Quiet Mode for a calm, distraction-free experience.</p>
+                  <p>Activate a calm, distraction-free experience across the app.</p>
                 </div>
                 <label className="toggle-switch">
                   <input
@@ -367,6 +406,67 @@ function Settings() {
                   <span className="toggle-slider"></span>
                 </label>
               </div>
+
+              {/* QUIET MODE V2: Sub-toggles (only visible when quiet mode is enabled) */}
+              {quietModeEnabled && (
+                <div className="quiet-mode-subtoggle-section">
+                  <p className="subtoggle-header">Customize your quiet experience:</p>
+
+                  {/* Calm Visuals Toggle */}
+                  <div className="notification-item subtoggle">
+                    <div className="notification-info">
+                      <h3>🎨 Calm Visuals</h3>
+                      <p>Reduce motion, soften colors, and minimize visual noise.</p>
+                    </div>
+                    <label className="toggle-switch">
+                      <input
+                        type="checkbox"
+                        id="quiet-visuals-toggle"
+                        name="quietVisuals"
+                        checked={quietVisuals}
+                        onChange={(e) => handleQuietSubToggle('visuals', e.target.checked)}
+                      />
+                      <span className="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  {/* Writing Focus Toggle */}
+                  <div className="notification-item subtoggle">
+                    <div className="notification-info">
+                      <h3>✍️ Writing Focus</h3>
+                      <p>Distraction-free space for journaling and composing posts.</p>
+                    </div>
+                    <label className="toggle-switch">
+                      <input
+                        type="checkbox"
+                        id="quiet-writing-toggle"
+                        name="quietWriting"
+                        checked={quietWriting}
+                        onChange={(e) => handleQuietSubToggle('writing', e.target.checked)}
+                      />
+                      <span className="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  {/* Hide Metrics Toggle */}
+                  <div className="notification-item subtoggle">
+                    <div className="notification-info">
+                      <h3>📊 Hide Metrics</h3>
+                      <p>Hide likes, reaction counts, and follower numbers to reduce comparison.</p>
+                    </div>
+                    <label className="toggle-switch">
+                      <input
+                        type="checkbox"
+                        id="quiet-metrics-toggle"
+                        name="quietMetrics"
+                        checked={quietMetrics}
+                        onChange={(e) => handleQuietSubToggle('metrics', e.target.checked)}
+                      />
+                      <span className="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
