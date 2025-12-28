@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
@@ -9,6 +9,8 @@ import './Profile.css';
 function Following() {
   const { username } = useParams();
   const navigate = useNavigate();
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
   const currentUser = getCurrentUser();
   const [following, setFollowing] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,7 +40,7 @@ function Following() {
   if (loading) {
     return (
       <>
-        <Navbar />
+        <Navbar onMenuClick={onMenuOpen} />
         <div className="profile-container">
           <div className="loading">Loading following...</div>
         </div>
@@ -48,7 +50,7 @@ function Following() {
 
   return (
     <>
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
       <div className="profile-container">
         <div className="following-page">
           <div className="page-header">

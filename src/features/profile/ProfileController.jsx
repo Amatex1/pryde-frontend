@@ -21,7 +21,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import PageLayout from '../../layouts/PageLayout';
 import ProfileHeader from './ProfileHeader';
 import ProfileContent from './ProfileContent';
@@ -44,6 +44,8 @@ import './ProfileController.css';
 export default function ProfileController() {
   const { id } = useParams();
   const navigate = useNavigate();
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
   const currentUser = getCurrentUser();
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const { toasts, showToast, removeToast } = useToast();
@@ -278,7 +280,7 @@ export default function ProfileController() {
   if (loading) {
     return (
       <>
-        <Navbar />
+        <Navbar onMenuClick={onMenuOpen} />
         <ProfileSkeleton />
       </>
     );
@@ -287,7 +289,7 @@ export default function ProfileController() {
   if (profileError) {
     return (
       <>
-        <Navbar />
+        <Navbar onMenuClick={onMenuOpen} />
         <div className="profile-error glossy">
           <h2>Profile Unavailable</h2>
           <p>{profileError}</p>
@@ -298,7 +300,7 @@ export default function ProfileController() {
 
   return (
     <>
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
 
       {/* Profile Header - Full width above layout */}
       <ProfileHeader

@@ -25,11 +25,20 @@ function useDarkMode() {
   return [isDark, toggleDarkMode];
 }
 
-function Navbar() {
+/**
+ * Navbar Component
+ *
+ * @param {Object} props
+ * @param {Function} props.onMenuClick - Optional callback when hamburger menu is clicked
+ *                                       If provided, mobile menu is controlled externally (by AppLayout)
+ *                                       If not provided, uses internal state (legacy behavior)
+ */
+function Navbar({ onMenuClick }) {
   const navigate = useNavigate();
   const isDesktop = useMediaQuery({ minWidth: 1024 });
   const { user, updateUser, clearUser } = useAuth(); // Use centralized auth context
   const [showDropdown, setShowDropdown] = useState(false);
+  // Internal mobile menu state - only used if onMenuClick is not provided
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isDark, toggleDarkMode] = useDarkMode();
   const [quietMode, setQuietMode] = useState(() => getQuietMode());
@@ -38,6 +47,9 @@ function Navbar() {
 
   // ✅ Use singleton hook instead of creating own interval
   const { totalUnread } = useUnreadMessages();
+
+  // Determine if we're using external control
+  const isExternallyControlled = typeof onMenuClick === 'function';
 
   const handleLogout = () => {
     // Clear AuthContext first
@@ -124,18 +136,23 @@ function Navbar() {
             onPointerUp={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              setShowMobileMenu(prev => !prev);
+              // Use external handler if provided, otherwise toggle internal state
+              if (isExternallyControlled) {
+                onMenuClick();
+              } else {
+                setShowMobileMenu(prev => !prev);
+              }
             }}
-            aria-label={showMobileMenu ? 'Close menu' : 'Open menu'}
-            aria-expanded={showMobileMenu}
+            aria-label="Open menu"
+            aria-expanded={false}
             aria-controls="mobile-menu"
           >
-            <span aria-hidden="true">{showMobileMenu ? '✕' : '☰'}</span>
+            <span aria-hidden="true">☰</span>
           </button>
         )}
 
-        {/* Mobile Menu Overlay - Only render on non-desktop */}
-        {!isDesktop && showMobileMenu && (
+        {/* Mobile Menu Overlay - Only render when using internal state (legacy) */}
+        {!isExternallyControlled && !isDesktop && showMobileMenu && (
           <div
             className="mobile-menu-overlay"
             onClick={() => setShowMobileMenu(false)}
@@ -143,8 +160,9 @@ function Navbar() {
           />
         )}
 
-        {/* Mobile Menu - Only render on non-desktop */}
-        {!isDesktop && (
+        {/* Mobile Menu - Only render when using internal state (legacy) */}
+        {/* When externally controlled, MobileNavDrawer handles the menu */}
+        {!isExternallyControlled && !isDesktop && (
         <div
           id="mobile-menu"
           className={`mobile-menu ${showMobileMenu ? 'mobile-menu-visible' : ''}`}

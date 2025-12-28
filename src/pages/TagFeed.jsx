@@ -6,13 +6,15 @@
  */
 
 import { useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import './TagFeed.css';
 
 function TagFeed() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
 
   // Auto-redirect to the group with the same slug
   useEffect(() => {
@@ -38,7 +40,7 @@ function TagFeed() {
 
   return (
     <div className="page-container">
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
       <div className="tag-feed-container">
         <div className="tag-migration-stub glossy">
           <div className="migration-stub-icon">🚀</div>

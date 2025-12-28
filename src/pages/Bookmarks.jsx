@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
@@ -9,6 +9,8 @@ const Bookmarks = () => {
   const [bookmarks, setBookmarks] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
 
   useEffect(() => {
     fetchBookmarks();
@@ -50,7 +52,7 @@ const Bookmarks = () => {
   if (loading) {
     return (
       <div className="page-container">
-        <Navbar />
+        <Navbar onMenuClick={onMenuOpen} />
         <div className="bookmarks-container">
           <div className="bookmarks-header">
             <h1>📚 Bookmarks</h1>
@@ -63,7 +65,7 @@ const Bookmarks = () => {
 
   return (
     <div className="page-container">
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
       <div className="bookmarks-container">
         <div className="bookmarks-header">
           <h1>📚 Bookmarks</h1>

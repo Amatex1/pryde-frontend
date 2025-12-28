@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import './Feed.css';
 
@@ -10,6 +10,8 @@ import './Feed.css';
 function Hashtag() {
   const { tag } = useParams();
   const navigate = useNavigate();
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
 
   // Auto-redirect to the group with the same slug
   useEffect(() => {
@@ -22,7 +24,7 @@ function Hashtag() {
 
   return (
     <div className="page-container feed-page">
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
       <div className="feed-layout hashtag-feed">
         <main className="feed-main">
           <div className="hashtag-header glossy">

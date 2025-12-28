@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import GifPicker from '../components/GifPicker';
 import api from '../utils/api';
@@ -11,6 +11,8 @@ import './Lounge.css';
 
 function Lounge() {
   const navigate = useNavigate();
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [contentWarning, setContentWarning] = useState('');
@@ -333,7 +335,7 @@ function Lounge() {
 
   return (
     <div className="lounge-page">
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
 
       <div className="lounge-container">
         {/* Header */}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import EmojiPicker from '../components/EmojiPicker';
 // DEPRECATED: GifPicker import removed 2025-12-26
@@ -39,6 +39,8 @@ function Messages() {
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const { onlineUsers, isUserOnline } = useOnlineUsers();
   const { user: currentUser, authReady } = useAuth(); // Use centralized auth context
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
 
   // Don't restore selected chat on mobile - always show conversation list first
   const [selectedChat, setSelectedChat] = useState(() => {
@@ -980,7 +982,7 @@ function Messages() {
       data-theme={currentTheme}
       data-quiet-mode={quietMode ? 'true' : 'false'}
     >
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
 
       <div className="messages-container">
         <div className="messages-layout glossy fade-in">

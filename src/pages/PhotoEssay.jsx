@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Toast from '../components/Toast';
 import DraftManager from '../components/DraftManager';
@@ -16,6 +16,8 @@ import './PhotoEssay.css';
 function PhotoEssay() {
   const { id } = useParams();
   const navigate = useNavigate();
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
   const { toasts, showToast, removeToast } = useToast();
   const { modalState, closeModal, showAlert } = useModal();
   const [title, setTitle] = useState('');
@@ -243,7 +245,7 @@ function PhotoEssay() {
 
   return (
     <div className="photo-essay-page">
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
 
       <div className="photo-essay-container">
         <div className="photo-essay-header glossy">

@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import api from '../utils/api';
 import Navbar from '../components/Navbar';
 import './Discover.css';
@@ -15,6 +15,8 @@ function Discover() {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
 
   useEffect(() => {
     fetchGroups();
@@ -38,7 +40,7 @@ function Discover() {
 
   return (
     <>
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
       <div className="discover-container">
         <div className="discover-header">
           <h1>👥 Explore Groups</h1>

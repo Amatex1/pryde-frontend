@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
@@ -10,6 +10,8 @@ function Notifications() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
 
   useEffect(() => {
     fetchNotifications();
@@ -138,7 +140,7 @@ function Notifications() {
 
   return (
     <div className="notifications-page">
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
       
       <div className="notifications-container">
         <div className="notifications-header">

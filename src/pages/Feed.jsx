@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import PasskeyBanner from '../components/PasskeyBanner';
 import ReportModal from '../components/ReportModal';
@@ -44,6 +44,10 @@ function Feed() {
   const { onlineUsers, isUserOnline } = useOnlineUsers();
   const { authReady, isAuthenticated, user: currentUser } = useAuth(); // ✅ Single source of truth for auth
   const { toasts, showToast, removeToast } = useToast();
+
+  // Get menu handler from AppLayout outlet context
+  const outletContext = useOutletContext() || {};
+  const { onMenuOpen } = outletContext;
   const isMobile = useMediaQuery('(max-width: 768px)');
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
@@ -1729,7 +1733,7 @@ function Feed() {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
       <PasskeyBanner />
 
       {/* One Header Rule: quiet in-content title, first-visit only */}

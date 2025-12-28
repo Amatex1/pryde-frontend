@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import api, { getCsrfToken } from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
 import Navbar from '../components/Navbar';
@@ -13,6 +13,8 @@ import { quietCopy } from '../config/uiCopy';
 import './Journal.css';
 
 function Journal() {
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
   const [journals, setJournals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -195,7 +197,7 @@ function Journal() {
 
   return (
     <>
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
       <div className="journal-container">
         <div className="journal-header">
           <h1>📔 My Journal</h1>

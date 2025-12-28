@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import TwoFactorSetup from '../components/security/TwoFactorSetup';
 import SessionManagement from '../components/security/SessionManagement';
@@ -13,6 +13,8 @@ import './Settings.css';
 
 function SecuritySettings() {
   const navigate = useNavigate();
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
   const { modalState, closeModal, showPrompt } = useModal();
   const { user: currentUser, refreshUser } = useAuth(); // Use centralized auth context
   const [loading, setLoading] = useState(true);
@@ -130,7 +132,7 @@ function SecuritySettings() {
   if (loading) {
     return (
       <div className="page-container">
-        <Navbar />
+        <Navbar onMenuClick={onMenuOpen} />
         <div className="settings-container">
           <div className="settings-card glossy fade-in">
             <p>Loading security settings...</p>
@@ -142,12 +144,12 @@ function SecuritySettings() {
 
   return (
     <div className="page-container">
-      <Navbar />
-      
+      <Navbar onMenuClick={onMenuOpen} />
+
       <div className="settings-container">
         <div className="settings-card glossy fade-in">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-            <button 
+            <button
               onClick={() => navigate('/settings')} 
               className="btn-secondary"
               style={{ padding: '8px 12px' }}

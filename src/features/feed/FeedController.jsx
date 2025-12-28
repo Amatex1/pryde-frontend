@@ -21,7 +21,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useOutletContext } from 'react-router-dom';
 import PageLayout from '../../layouts/PageLayout';
 import FeedStream from './FeedStream';
 import FeedSidebar from './FeedSidebar';
@@ -46,6 +46,8 @@ import './FeedController.css';
 export default function FeedController() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const { onlineUsers, isUserOnline } = useOnlineUsers();
   const { authReady, isAuthenticated, user: currentUser } = useAuth();
@@ -122,7 +124,7 @@ export default function FeedController() {
   return (
     <>
       <PageTitle title="Feed" />
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
       <PasskeyBanner />
       
       <PageLayout

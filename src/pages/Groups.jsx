@@ -29,7 +29,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import OptimizedImage from '../components/OptimizedImage';
 import Toast from '../components/Toast';
@@ -42,6 +42,8 @@ import './Groups.css';
 function Groups() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
   const [group, setGroup] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -587,7 +589,7 @@ function Groups() {
   if (loading) {
     return (
       <div className="page-container">
-        <Navbar />
+        <Navbar onMenuClick={onMenuOpen} />
         <div className="group-container">
           <div className="loading">Loading group...</div>
         </div>
@@ -598,7 +600,7 @@ function Groups() {
   if (error || !group) {
     return (
       <div className="page-container">
-        <Navbar />
+        <Navbar onMenuClick={onMenuOpen} />
         <div className="group-container">
           <div className="error">{error || 'Group not found'}</div>
         </div>
@@ -612,7 +614,7 @@ function Groups() {
 
   return (
     <div className="page-container">
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
       <div className="group-container">
         {/* Group Header - Always visible */}
         <div className="group-header glossy">

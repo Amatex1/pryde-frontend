@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ReportModal from '../components/ReportModal';
 import PhotoViewer from '../components/PhotoViewer';
@@ -35,6 +35,8 @@ import './Profile.css';
 function Profile() {
   const { id } = useParams();
   const navigate = useNavigate();
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
   const currentUser = getCurrentUser();
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const [user, setUser] = useState(null);
@@ -1296,7 +1298,7 @@ function Profile() {
   if (loading) {
     return (
       <div className="page-container profile-page">
-        <Navbar />
+        <Navbar onMenuClick={onMenuOpen} />
         <div className="profile-container">
           <ProfileSkeleton />
           <div className="profile-posts">
@@ -1312,7 +1314,7 @@ function Profile() {
   if (!user && !loading) {
     return (
       <div className="page-container profile-page">
-        <Navbar />
+        <Navbar onMenuClick={onMenuOpen} />
         <div className="profile-container">
           <div className="error-container glossy" style={{
             padding: '40px',
@@ -1343,7 +1345,7 @@ function Profile() {
 
   return (
     <div className="page-container profile-page">
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
 
       <div className="profile-container">
         <div className="profile-header glossy fade-in">

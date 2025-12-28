@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import CustomModal from '../components/CustomModal';
 import OptimizedImage from '../components/OptimizedImage';
@@ -14,6 +14,8 @@ function Admin() {
   const { modalState, closeModal, showAlert, showConfirm, showPrompt } = useModal();
   const location = useLocation();
   const navigate = useNavigate();
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
 
   // Get tab from URL or default to dashboard
   const getTabFromUrl = () => {
@@ -429,7 +431,7 @@ function Admin() {
   if (loading) {
     return (
       <div className="page-container">
-        <Navbar />
+        <Navbar onMenuClick={onMenuOpen} />
         <div className="admin-loading">🔒 Verifying admin access...</div>
       </div>
     );
@@ -438,7 +440,7 @@ function Admin() {
   if (error) {
     return (
       <div className="page-container">
-        <Navbar />
+        <Navbar onMenuClick={onMenuOpen} />
         <div className="admin-error">
           <h2>⛔ {error}</h2>
           <p>Redirecting to home...</p>
@@ -451,7 +453,7 @@ function Admin() {
   if (loading) {
     return (
       <div className="page-container">
-        <Navbar />
+        <Navbar onMenuClick={onMenuOpen} />
         <div className="admin-container">
           <div className="admin-header">
             <h1>🛡️ Admin Panel</h1>
@@ -478,7 +480,7 @@ function Admin() {
   if (error) {
     return (
       <div className="page-container">
-        <Navbar />
+        <Navbar onMenuClick={onMenuOpen} />
         <div className="admin-container">
           <div className="admin-header">
             <h1>🛡️ Admin Panel</h1>
@@ -518,7 +520,7 @@ function Admin() {
 
   return (
     <div className="page-container">
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
       <div className="admin-container">
         <div className="admin-header">
           <h1>🛡️ Admin Panel</h1>

@@ -8,13 +8,15 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../utils/api';
 import './GroupsList.css';
 
 function GroupsList() {
   const navigate = useNavigate();
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -264,7 +266,7 @@ function GroupsList() {
 
   return (
     <div className="page-container">
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
       <div className="groups-list-container">
         <header className="groups-list-header glossy">
           <h1>👥 Groups</h1>

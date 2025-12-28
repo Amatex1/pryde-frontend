@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import CustomModal from '../components/CustomModal';
 import InviteManagement from '../components/InviteManagement'; // Phase 7B
@@ -16,6 +16,8 @@ function Settings() {
   const { modalState, closeModal, showAlert, showConfirm, showPrompt } = useModal();
   const navigate = useNavigate();
   const { user: currentUser, refreshUser } = useAuth(); // Use centralized auth context
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
   const [formData, setFormData] = useState({
     fullName: '',
     displayName: '',
@@ -250,7 +252,7 @@ function Settings() {
   if (loading) {
     return (
       <div className="page-container">
-        <Navbar />
+        <Navbar onMenuClick={onMenuOpen} />
         <div className="settings-container">
           <div className="settings-card glossy fade-in">
             <h1 className="settings-title text-shadow">⚙️ Settings</h1>
@@ -265,7 +267,7 @@ function Settings() {
 
   return (
     <div className="page-container">
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
 
       <div className="settings-container">
         <div className="settings-card glossy fade-in">

@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import EventRSVP from '../components/EventRSVP';
 import EventAttendees from '../components/EventAttendees';
@@ -11,6 +11,8 @@ import './Events.css';
 function Events() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterType, setFilterType] = useState('all');
@@ -160,7 +162,7 @@ function Events() {
 
   return (
     <div className="events-page">
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
       <div className="events-container">
         <div className="events-header">
           <h1 className="page-title">🏳️‍🌈 LGBTQ+ Events</h1>

@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import api, { getCsrfToken } from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
 import Navbar from '../components/Navbar';
@@ -12,6 +12,8 @@ import DraftManager from '../components/DraftManager';
 import './Longform.css';
 
 function Longform() {
+  // Get menu handler from AppLayout outlet context
+  const { onMenuOpen } = useOutletContext() || {};
   const [longforms, setLongforms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -190,7 +192,7 @@ function Longform() {
 
   return (
     <>
-      <Navbar />
+      <Navbar onMenuClick={onMenuOpen} />
       <div className="longform-container">
         <div className="longform-header">
           <h1>📝 My Longform Posts</h1>
