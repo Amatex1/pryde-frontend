@@ -2163,7 +2163,7 @@ function Profile() {
                                     postId={post._id}
                                     currentUserId={currentUser?._id}
                                     onVote={(updatedPost) => {
-                                      setPosts(posts.map(p => p._id === updatedPost._id ? updatedPost : p));
+                                      setPosts(prevPosts => prevPosts.map(p => p._id === updatedPost._id ? updatedPost : p));
                                     }}
                                   />
                                 ) : (
