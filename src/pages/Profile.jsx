@@ -15,6 +15,7 @@ import ProfilePostSearch from '../components/ProfilePostSearch';
 import CommentThread from '../components/CommentThread';
 import ReactionButton from '../components/ReactionButton';
 import PinnedPostBadge from '../components/PinnedPostBadge';
+import BadgeContainer from '../components/BadgeContainer';
 // DEPRECATED: EditHistoryModal import removed 2025-12-26
 import Poll from '../components/Poll';
 import { useModal } from '../hooks/useModal';
@@ -1417,7 +1418,9 @@ function Profile() {
             <div className="profile-details">
               <h1 className="profile-name text-shadow">
                 {user.displayName || user.fullName || user.username}
-                {user.isVerified && <span className="verified-badge" title="Verified">✓</span>}
+                {user.badges?.length > 0 && (
+                  <BadgeContainer badges={user.badges} showLabels />
+                )}
                 {user.nickname &&
                  user.nickname !== user.displayName &&
                  user.nickname !== user.username &&
@@ -1931,19 +1934,10 @@ function Profile() {
                           <div className="author-info">
                             <div className="author-name-row">
                               <span className="author-name">{post.author?.displayName || post.author?.username}</span>
-                              {post.author?.isVerified && <span className="verified-badge" title="Verified">✓</span>}
-                              {/* Desktop: show inline */}
-                              {post.author?.pronouns && (
-                                <span className="author-pronouns">({post.author.pronouns})</span>
+                              {post.author?.badges?.length > 0 && (
+                                <BadgeContainer badges={post.author.badges} />
                               )}
-                              <span className="post-time-inline">
-                                {new Date(post.createdAt).toLocaleDateString()}
-                              </span>
-                              <span className="post-privacy-icon" title={`Visible to: ${post.visibility || 'friends'}`}>
-                                {post.visibility === 'public' ? '🌍' : post.visibility === 'private' ? '🔒' : '👥'}
-                              </span>
                             </div>
-                            {/* Mobile: meta row below name */}
                             <div className="post-meta-row">
                               {post.author?.pronouns && (
                                 <span className="author-pronouns">({post.author.pronouns})</span>

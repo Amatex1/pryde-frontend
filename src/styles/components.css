@@ -367,3 +367,10 @@
     max-width: 420px;
   }
 }
+
+
+
+/* ========================================
+   POST HEADER UNIFIED LAYOUT
+   ======================================== */
+@import url('./postHeader.css');

@@ -14,6 +14,7 @@
 
 import { Link } from 'react-router-dom';
 import OptimizedImage from '../../components/OptimizedImage';
+import BadgeContainer from '../../components/BadgeContainer';
 import { getImageUrl } from '../../utils/imageUrl';
 import { sanitizeBio, sanitizeURL, sanitizeText } from '../../utils/sanitize';
 import './ProfileHeader.css';
@@ -95,7 +96,9 @@ export default function ProfileHeader({
         <div className="profile-details">
           <h1 className="profile-name text-shadow">
             {user.displayName || user.fullName || user.username}
-            {user.isVerified && <span className="verified-badge" title="Verified">✓</span>}
+            {user.badges?.length > 0 && (
+              <BadgeContainer badges={user.badges} showLabels />
+            )}
             {user.nickname && user.nickname !== user.displayName && user.nickname !== user.username && (
               <span className="nickname"> "{user.nickname}"</span>
             )}

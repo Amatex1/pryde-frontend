@@ -15,6 +15,8 @@ import ReactionButton from '../components/ReactionButton';
 import PollCreator from '../components/PollCreator';
 import Poll from '../components/Poll';
 import PinnedPostBadge from '../components/PinnedPostBadge';
+import BadgeContainer from '../components/BadgeContainer';
+import { useBadges } from '../hooks/useBadges';
 // DEPRECATED: EditHistoryModal import removed 2025-12-26
 import DraftManager from '../components/DraftManager';
 import Toast from '../components/Toast';
@@ -2029,23 +2031,29 @@ function Feed() {
                         </Link>
                         {/* All meta elements inside .post-author-meta for alignment lock */}
                         <div className="post-author-meta">
-                          <Link to={`/profile/${post.author?.username}`} className="post-author-name" style={{ textDecoration: 'none', color: 'inherit' }}>
-                            {post.author?.displayName || post.author?.username || 'User'}
-                          </Link>
-                          {post.author?.isVerified && <span className="post-author-badge verified-badge" title="Verified">✓</span>}
-                          {post.author?.pronouns && (
-                            <span className="post-author-pronouns">({post.author.pronouns})</span>
-                          )}
-                          <span className="post-author-date">
-                            {new Date(post.createdAt).toLocaleDateString()}
-                          </span>
-                          <span className="post-author-privacy" title={`Visible to: ${post.visibility || 'followers'}`}>
-                            {post.visibility === 'public' ? '🌍' :
-                             post.visibility === 'private' ? '🔒' : '👥'}
-                          </span>
-                          {post.edited && (
-                            <span className="post-author-edited">(edited)</span>
-                          )}
+                          <div className="author-name-row">
+                            <Link to={`/profile/${post.author?.username}`} className="post-author-name" style={{ textDecoration: 'none', color: 'inherit' }}>
+                              {post.author?.displayName || post.author?.username || 'User'}
+                            </Link>
+                            {post.author?.badges?.length > 0 && (
+                              <BadgeContainer badges={post.author.badges} />
+                            )}
+                          </div>
+                          <div className="post-meta-row">
+                            {post.author?.pronouns && (
+                              <span className="post-author-pronouns">({post.author.pronouns})</span>
+                            )}
+                            <span className="post-author-date">
+                              {new Date(post.createdAt).toLocaleDateString()}
+                            </span>
+                            <span className="post-author-privacy" title={`Visible to: ${post.visibility || 'followers'}`}>
+                              {post.visibility === 'public' ? '🌍' :
+                               post.visibility === 'private' ? '🔒' : '👥'}
+                            </span>
+                            {post.edited && (
+                              <span className="post-author-edited">(edited)</span>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <div className="post-header-actions">

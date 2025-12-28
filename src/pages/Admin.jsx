@@ -1274,7 +1274,7 @@ function VerificationTab({ requests, onAction }) {
                   <div className="user-info">
                     <div className="user-name">
                       {request.displayName || request.username}
-                      {request.isVerified && <span className="verified-badge">✓</span>}
+                      {/* REMOVED 2025-12-28: Verification tick replaced by badge system */}
                     </div>
                     <div className="user-username">@{request.username}</div>
                     <div className="user-email">{request.email}</div>
@@ -1313,21 +1313,7 @@ function VerificationTab({ requests, onAction }) {
                 )}
               </div>
 
-              {!request.isVerified && (
-                <div className="verification-actions">
-                  <button
-                    className="btn-approve"
-                    onClick={() => onAction(request._id, 'approve')}
-                  >
-                    ✓ Approve
-                  </button>
-                  <button
-                    className="btn-deny"
-                    onClick={() => onAction(request._id, 'deny')}
-                  >
-                    ✗ Deny
-                  </button>
-                </div>
+              {/* REMOVED 2025-12-28: Verification approval UI removed - badge system replaces this */}
               )}
             </div>
           ))
@@ -1362,7 +1348,7 @@ function PostModal({ post, onClose }) {
             <div className="admin-post-author-info">
               <div className="admin-post-author-name">
                 {post.author?.displayName || post.author?.username}
-                {post.author?.isVerified && <span className="verified-badge">✓</span>}
+                {/* REMOVED 2025-12-28: Verification tick replaced by badge system */}
               </div>
               <div className="admin-post-author-username">@{post.author?.username}</div>
               {post.author?.pronouns && (

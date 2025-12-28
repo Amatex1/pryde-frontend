@@ -19,6 +19,7 @@ import FormattedText from '../../components/FormattedText';
 import ReactionButton from '../../components/ReactionButton';
 import Poll from '../../components/Poll';
 import PinnedPostBadge from '../../components/PinnedPostBadge';
+import BadgeContainer from '../../components/BadgeContainer';
 import CommentThread from '../../components/CommentThread';
 import { getImageUrl } from '../../utils/imageUrl';
 import './ProfileContent.css';
@@ -194,8 +195,12 @@ function ProfilePostCard({ post, currentUser, isOwnProfile, onImageClick, postRe
             )}
           </div>
           <div className="author-info">
-            <span className="author-name">{post.author?.displayName || post.author?.username}</span>
-            {post.author?.isVerified && <span className="verified-badge" title="Verified">✓</span>}
+            <div className="author-name-row">
+              <span className="author-name">{post.author?.displayName || post.author?.username}</span>
+              {post.author?.badges?.length > 0 && (
+                <BadgeContainer badges={post.author.badges} />
+              )}
+            </div>
             <span className="post-time-inline">{new Date(post.createdAt).toLocaleDateString()}</span>
           </div>
         </div>

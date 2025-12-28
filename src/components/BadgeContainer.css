@@ -1,0 +1,90 @@
+/**
+ * BadgeContainer Component Styles
+ * 
+ * Fixed height container for consistent layout.
+ * Handles overflow with tooltip.
+ */
+
+.badge-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  height: 1.25rem; /* Fixed height to match badge height */
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.badge-overflow-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.25rem;
+  min-width: 1.5rem;
+  padding: 0 0.25rem;
+  background: var(--bg-secondary, #f4f4f4);
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--text-muted, #666);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s ease;
+}
+
+.badge-overflow-indicator:hover,
+.badge-overflow-indicator:focus {
+  background: var(--bg-tertiary, #e8e8e8);
+  outline: none;
+}
+
+.badge-overflow-tooltip {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  
+  padding: 0.5rem;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-light, #e0e0e0);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  
+  min-width: max-content;
+  max-width: 200px;
+}
+
+.badge-overflow-tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-bottom-color: var(--bg-primary, #fff);
+}
+
+/* Dark mode */
+[data-theme="dark"] .badge-overflow-indicator {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-muted, #aaa);
+}
+
+[data-theme="dark"] .badge-overflow-indicator:hover,
+[data-theme="dark"] .badge-overflow-indicator:focus {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] .badge-overflow-tooltip {
+  background: var(--bg-secondary, #1a1a1a);
+  border-color: var(--border-dark, #333);
+}
+
+[data-theme="dark"] .badge-overflow-tooltip::before {
+  border-bottom-color: var(--bg-secondary, #1a1a1a);
+}
+
