@@ -3118,6 +3118,17 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
     flex-wrap: nowrap;
   }
 
+  /* Mobile: Allow badges to be visible in author row */
+  .author-name-row {
+    overflow: visible !important; /* Override hidden to show badges */
+    flex-wrap: wrap !important; /* Allow wrapping on mobile */
+  }
+
+  .author-name-row .badge-container {
+    flex-shrink: 0;
+    overflow: visible;
+  }
+
   .post-content {
     font-size: 0.9375rem;
     line-height: 1.6;
@@ -3149,11 +3160,21 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   .comment-author {
     display: block;
     margin-bottom: 0.5rem;
+    overflow: visible; /* Ensure badges are visible */
+  }
+
+  .comment-author .badge-container {
+    display: inline-flex;
+    overflow: visible;
   }
 
   .comment-header-wrapper {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .comment-header-left {
+    overflow: visible; /* Ensure badges visible */
   }
 
   /* Privacy Modal Mobile Fixes */

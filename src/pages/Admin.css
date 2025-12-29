@@ -242,11 +242,18 @@
 .users-table,
 .blocks-table {
   width: 100%;
-  min-width: 1100px;
   border-collapse: collapse;
   background: var(--bg-card);
   border-radius: 12px;
   overflow: hidden;
+}
+
+/* Desktop: min-width to prevent column squishing */
+@media (min-width: 769px) {
+  .users-table,
+  .blocks-table {
+    min-width: 1100px;
+  }
 }
 
 .users-table thead,

@@ -57,25 +57,17 @@
     flex: 1 !important;
   }
 
-  /* Name row - just name and verified badge */
+  /* Name row - name, badges, verified badge */
   .author-name-row {
     display: flex !important;
     flex-direction: row !important;
-    flex-wrap: nowrap !important;
+    flex-wrap: wrap !important; /* Allow wrapping for badges */
     align-items: center !important;
-    gap: 6px !important;
+    gap: 4px !important;
     font-size: 15px !important;
     line-height: 1.3 !important;
     max-width: 100% !important;
-    overflow: hidden !important;
-  }
-
-  /* Name row - wrap allowed but name+badge stay together */
-  .author-name-row {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    align-items: center !important;
-    gap: 4px !important;
+    overflow: visible !important; /* Ensure badges visible */
   }
 
   /* Author name - wrap long text but keep inline with badge */
@@ -89,6 +81,13 @@
     overflow-wrap: break-word !important;
     line-height: 1.3 !important;
     display: inline !important; /* Inline so badge follows */
+  }
+
+  /* Badges visible in author row */
+  .author-name-row .badge-container,
+  .author-name-row .user-badge {
+    flex-shrink: 0 !important;
+    overflow: visible !important;
   }
 
   /* Verified badge - inline with name, never wraps alone */
@@ -214,17 +213,17 @@
     flex: 1 !important;
   }
 
-  /* Name row - just name and verified badge */
+  /* Name row - name, badges, verified badge - allow wrap for badges */
   .author-name-row {
     display: flex !important;
     flex-direction: row !important;
-    flex-wrap: nowrap !important;
+    flex-wrap: wrap !important; /* Allow wrapping for badges */
     align-items: center !important;
     gap: 6px !important;
     font-size: 15px !important;
     line-height: 1.3 !important;
     max-width: 100% !important;
-    overflow: hidden !important;
+    overflow: visible !important; /* Ensure badges visible */
   }
 
   /* Author name - allow full display, truncate with ellipsis */
@@ -236,6 +235,13 @@
     text-overflow: ellipsis !important;
     max-width: none !important; /* Remove max-width limit */
     flex-shrink: 1 !important;
+  }
+
+  /* Badges must remain visible */
+  .author-name-row .badge-container,
+  .author-name-row .user-badge {
+    flex-shrink: 0 !important;
+    overflow: visible !important;
   }
 
   .verified-badge {
