@@ -1,10 +1,15 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../utils/api';
+import { getImageUrl } from '../utils/imageUrl';
 import './Poll.css';
 
 const Poll = ({ poll, postId, currentUserId, onVote }) => {
   const [voting, setVoting] = useState(false);
   const [removingVote, setRemovingVote] = useState(false);
+  const [showVoterModal, setShowVoterModal] = useState(false);
+  const [voterData, setVoterData] = useState(null);
+  const [loadingVoters, setLoadingVoters] = useState(false);
 
   if (!poll || !poll.question) return null;
 
@@ -65,7 +70,7 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
 
   const formatTimeRemaining = () => {
     if (!poll.endsAt) return null;
-    
+
     const now = new Date();
     const end = new Date(poll.endsAt);
     const diff = end - now;
@@ -79,6 +84,22 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
     if (days > 0) return `${days}d ${hours}h left`;
     if (hours > 0) return `${hours}h ${minutes}m left`;
     return `${minutes}m left`;
+  };
+
+  const handleShowVoters = async () => {
+    if (resultsHidden || totalVotes === 0) return;
+
+    setLoadingVoters(true);
+    try {
+      const response = await api.get(`/posts/${postId}/poll/voters`);
+      setVoterData(response.data);
+      setShowVoterModal(true);
+    } catch (error) {
+      console.error('Error fetching voters:', error);
+      alert(error.response?.data?.message || 'Failed to load voters');
+    } finally {
+      setLoadingVoters(false);
+    }
   };
 
   return (
@@ -141,7 +162,14 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
         {resultsHidden ? (
           <span className="poll-votes poll-hidden-results">🔒 Results hidden by author</span>
         ) : (
-          <span className="poll-votes">{totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}</span>
+          <span
+            className={`poll-votes ${totalVotes > 0 ? 'clickable' : ''}`}
+            onClick={totalVotes > 0 ? handleShowVoters : undefined}
+            role={totalVotes > 0 ? 'button' : undefined}
+            tabIndex={totalVotes > 0 ? 0 : undefined}
+          >
+            {loadingVoters ? 'Loading...' : `${totalVotes} ${totalVotes === 1 ? 'vote' : 'votes'}`}
+          </span>
         )}
         {poll.endsAt && (
           <>
@@ -170,6 +198,52 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
           </>
         )}
       </div>
+
+      {/* Voter List Modal */}
+      {showVoterModal && voterData && (
+        <div className="poll-voter-modal-overlay" onClick={() => setShowVoterModal(false)}>
+          <div className="poll-voter-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="poll-voter-modal-header">
+              <h3>📊 {voterData.totalVotes} {voterData.totalVotes === 1 ? 'Vote' : 'Votes'}</h3>
+              <button className="poll-voter-modal-close" onClick={() => setShowVoterModal(false)}>×</button>
+            </div>
+            <div className="poll-voter-modal-content">
+              {voterData.options.map((option) => (
+                <div key={option.optionIndex} className="poll-voter-option">
+                  <div className="poll-voter-option-header">
+                    <span className="poll-voter-option-text">{option.optionText}</span>
+                    <span className="poll-voter-option-count">({option.voters.length})</span>
+                  </div>
+                  {option.voters.length > 0 ? (
+                    <div className="poll-voter-list">
+                      {option.voters.map((voter) => (
+                        <Link
+                          key={voter._id}
+                          to={`/profile/${voter.username}`}
+                          className="poll-voter-item"
+                          onClick={() => setShowVoterModal(false)}
+                          style={{ textDecoration: 'none' }}
+                        >
+                          <div className="poll-voter-avatar">
+                            {voter.profilePhoto ? (
+                              <img src={getImageUrl(voter.profilePhoto)} alt={voter.displayName || voter.username} />
+                            ) : (
+                              <span>{(voter.displayName || voter.username || '?')[0].toUpperCase()}</span>
+                            )}
+                          </div>
+                          <span className="poll-voter-name">{voter.displayName || voter.username}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="poll-no-voters">No votes yet</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
