@@ -306,7 +306,7 @@ function AppContent() {
     checkDomOrder();
   }, []);
 
-  // Dev console signal lock (development only)
+  // Console signal lock (silences noise in prod, filters in dev)
   useEffect(() => {
     setupDevConsole();
   }, []);
