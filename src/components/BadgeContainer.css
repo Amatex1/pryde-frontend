@@ -88,3 +88,24 @@
   border-bottom-color: var(--bg-secondary, #1a1a1a);
 }
 
+/* Mobile: Ensure badges don't get clipped */
+@media (max-width: 768px) {
+  .badge-container {
+    height: auto; /* Allow natural height on mobile */
+    min-height: 1.25rem;
+    flex-shrink: 1; /* Allow shrinking on mobile */
+    overflow: visible;
+  }
+
+  .badge-overflow-tooltip {
+    /* Position tooltip to the right on mobile to prevent edge clipping */
+    left: 0;
+    transform: none;
+  }
+
+  .badge-overflow-tooltip::before {
+    left: 1rem;
+    transform: none;
+  }
+}
+

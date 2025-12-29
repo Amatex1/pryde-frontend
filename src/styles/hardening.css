@@ -255,10 +255,22 @@ button:active,
   overflow-x: auto;
 }
 
-.admin-table,
-.users-table,
-.blocks-table {
-  min-width: 1100px;
+/* Desktop: Tables need min-width to prevent squishing */
+@media (min-width: 769px) {
+  .admin-table,
+  .users-table,
+  .blocks-table {
+    min-width: 1100px;
+  }
+}
+
+/* Mobile: Remove min-width for card layout */
+@media (max-width: 768px) {
+  .admin-table,
+  .users-table,
+  .blocks-table {
+    min-width: 0 !important; /* Allow card layout */
+  }
 }
 
 /* Admin tables sticky header */
