@@ -249,6 +249,16 @@ export function AuthProvider({ children }) {
     sessionStorage.setItem('authReady', 'true');
     setError(null);
 
+    // 🔥 CRITICAL: Fetch CSRF token after login
+    // This ensures the in-memory csrfToken is set before any POST requests
+    try {
+      logger.debug('[AuthContext] 🛡️ Fetching CSRF token after login...');
+      await api.get('/auth/me'); // Any GET request will set the CSRF token via response header
+      logger.debug('[AuthContext] ✅ CSRF token obtained');
+    } catch (csrfErr) {
+      logger.warn('[AuthContext] ⚠️ CSRF token fetch failed (non-blocking):', csrfErr.message);
+    }
+
     // Initialize socket
     if (userData?._id) {
       try {
