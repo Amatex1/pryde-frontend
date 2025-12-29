@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { getCurrentUser } from './utils/auth';
+import { setupAuthLifecycle, cleanupAuthLifecycle } from './utils/authLifecycle';
 import { resetLogoutFlag, onNewMessage, disconnectSocketForLogout } from './utils/socket';
 import { playNotificationSound } from './utils/notifications';
 import { initializeQuietMode } from './utils/quietMode';
@@ -248,6 +249,14 @@ function AppContent() {
   // NOTE: Mobile detection removed - layout now handled by CSS in AppLayout
   // All platforms use the same layout primitives (PageViewport, PageContainer, PageLayout)
 
+  // 🔥 AUTH LIFECYCLE: Proactive token refresh (runs once on mount)
+  // Keeps users logged in like Facebook - refreshes tokens on:
+  // - App load, tab focus, every 10 minutes
+  useEffect(() => {
+    const cleanup = setupAuthLifecycle();
+    return () => cleanup?.();
+  }, []);
+
   // 🔥 AUTHENTICATED USER EFFECTS
   // These only run when user is authenticated
   useEffect(() => {
@@ -283,6 +292,7 @@ function AppContent() {
   useEffect(() => {
     if (authStatus === AUTH_STATES.UNAUTHENTICATED) {
       disconnectSocketForLogout();
+      cleanupAuthLifecycle(); // Stop refresh interval on logout
     }
   }, [authStatus]);
 

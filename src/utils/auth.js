@@ -136,14 +136,23 @@ export const logout = async () => {
     console.debug('Socket disconnect skipped');
   }
 
-  // 🔥 STEP 5: Clear all local auth state BEFORE backend call
+  // 🔥 STEP 5: Stop auth lifecycle refresh interval
+  try {
+    const { cleanupAuthLifecycle } = await import('./authLifecycle');
+    cleanupAuthLifecycle();
+    console.log('✅ Auth lifecycle stopped');
+  } catch (error) {
+    console.debug('Auth lifecycle cleanup skipped');
+  }
+
+  // 🔥 STEP 6: Clear all local auth state BEFORE backend call
   localStorage.removeItem('token');
   localStorage.removeItem('tokenSetTime');
   localStorage.removeItem('refreshToken');
   localStorage.removeItem('user');
   console.log('✅ Local auth state cleared');
 
-  // 🔥 STEP 6: Call backend logout endpoint (best effort)
+  // 🔥 STEP 7: Call backend logout endpoint (best effort)
   try {
     const { default: api } = await import('./api');
     await api.post('/auth/logout').catch(() => {
@@ -155,7 +164,7 @@ export const logout = async () => {
     console.debug('Backend logout skipped');
   }
 
-  // 🔥 STEP 7: Clear all caches
+  // 🔥 STEP 8: Clear all caches
   try {
     const { clearCache } = await import('./apiClient');
     if (clearCache) {
@@ -166,7 +175,7 @@ export const logout = async () => {
     console.debug('Cache clear skipped');
   }
 
-  // 🔥 STEP 8: Clear all draft data
+  // 🔥 STEP 9: Clear all draft data
   try {
     const { clearAllDrafts } = await import('./draftStore');
     clearAllDrafts();
@@ -175,7 +184,7 @@ export const logout = async () => {
     console.error('Failed to clear drafts:', error);
   }
 
-  // 🔥 STEP 9: Clear all mutation guard tracked entities
+  // 🔥 STEP 10: Clear all mutation guard tracked entities
   try {
     const { clearAllEntities } = await import('./mutationGuard');
     clearAllEntities();
@@ -184,7 +193,7 @@ export const logout = async () => {
     console.error('Failed to clear mutation guard:', error);
   }
 
-  // 🔥 STEP 10: Clear session storage
+  // 🔥 STEP 11: Clear session storage
   sessionStorage.clear();
   console.log('✅ Session storage cleared');
 
