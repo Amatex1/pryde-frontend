@@ -1,9 +1,9 @@
 /**
  * GroupHeader.css - Group header styling (layout-agnostic)
- * 
+ *
  * NO width, max-width, or layout rules
  * These are handled by PageLayout/GroupsLayout
- * 
+ *
  * Styles inherit from existing Groups.css
  */
 
@@ -17,6 +17,101 @@
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Cover photo styles */
+.group-header-content.has-cover {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  z-index: 1;
+}
+
+.group-header-content.has-cover .group-header-body {
+  position: relative;
+  z-index: 2;
+}
+
+.group-header-content.has-cover h1,
+.group-header-content.has-cover .group-description,
+.group-header-content.has-cover .group-stats,
+.group-header-content.has-cover .group-icon {
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.group-header-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+/* Cover photo controls */
+.cover-controls {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cover-edit-btn {
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cover-edit-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.cover-edit-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.cover-remove-btn {
+  background: rgba(220, 38, 38, 0.8);
+  color: white;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.cover-remove-btn:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 1);
+}
+
+.cover-remove-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
 
 .group-header-content h1 {

@@ -366,6 +366,37 @@ export default function GroupDetailController() {
     fetchModLogs();
   };
 
+  // Cover photo handlers
+  const handleCoverPhotoUpload = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('coverPhoto', file);
+
+      const response = await api.post(`/groups/${slug}/cover-photo`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      setGroup(prev => ({ ...prev, coverPhoto: response.data.coverPhoto }));
+      showToast('Cover photo updated!', 'success');
+    } catch (err) {
+      console.error('Failed to upload cover photo:', err);
+      showToast(err.response?.data?.message || 'Failed to upload cover photo', 'error');
+    }
+  };
+
+  const handleCoverPhotoRemove = async () => {
+    if (!confirm('Remove the cover photo?')) return;
+
+    try {
+      await api.delete(`/groups/${slug}/cover-photo`);
+      setGroup(prev => ({ ...prev, coverPhoto: null }));
+      showToast('Cover photo removed', 'success');
+    } catch (err) {
+      console.error('Failed to remove cover photo:', err);
+      showToast(err.response?.data?.message || 'Failed to remove cover photo', 'error');
+    }
+  };
+
   // Settings modal handlers
   const openSettingsModal = () => {
     if (group) {
@@ -452,6 +483,8 @@ export default function GroupDetailController() {
         onOpenMembers={openMemberModal}
         onOpenNotifications={() => setShowNotificationSettings(true)}
         onOpenModLog={openModLog}
+        onCoverPhotoUpload={handleCoverPhotoUpload}
+        onCoverPhotoRemove={handleCoverPhotoRemove}
       />
 
       {/* Main content area - layout handled by parent */}
