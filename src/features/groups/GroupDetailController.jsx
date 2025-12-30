@@ -140,21 +140,27 @@ export default function GroupDetailController() {
     try {
       setJoining(true);
       const response = await api.post(`/groups/${slug}/join`);
-      
-      if (response.data.status === 'pending') {
-        setGroup(prev => ({ ...prev, hasPendingRequest: true }));
-        showToast('Join request sent! Waiting for approval.', 'success');
-      } else {
-        setGroup(prev => ({ 
-          ...prev, 
-          isMember: true, 
-          memberCount: (prev.memberCount || 0) + 1 
+
+      // Check if this is a pending request (approval-based group)
+      if (response.data.hasPendingRequest && !response.data.isMember) {
+        setGroup(prev => ({ ...prev, hasPendingRequest: true, isMember: false }));
+        showToast(response.data.message || 'Join request sent! Waiting for approval.', 'success');
+      } else if (response.data.isMember) {
+        // Immediate join (auto-join group)
+        setGroup(prev => ({
+          ...prev,
+          isMember: true,
+          hasPendingRequest: false,
+          memberCount: response.data.memberCount || (prev.memberCount || 0) + 1
         }));
-        showToast('Welcome to the group!', 'success');
-        
+        showToast(response.data.message || 'Welcome to the group!', 'success');
+
         // Fetch posts now that we're a member
         const postsResponse = await api.get(`/groups/${slug}/posts`);
         setPosts(postsResponse.data.posts || []);
+      } else {
+        // Fallback - show message from server
+        showToast(response.data.message || 'Request processed', 'success');
       }
     } catch (err) {
       console.error('Failed to join group:', err);
