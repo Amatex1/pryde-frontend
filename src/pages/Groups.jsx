@@ -270,22 +270,20 @@ function Groups() {
 
     try {
       setUploadingMedia(true);
-      const uploadedUrls = [];
 
-      for (const file of files) {
-        const formData = new FormData();
-        formData.append('file', file);
+      // Upload all files at once using post-media endpoint
+      const formData = new FormData();
+      files.forEach(file => formData.append('media', file));
 
-        const response = await api.post('/upload', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+      const response = await api.post('/upload/post-media', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
 
-        if (response.data.url) {
-          uploadedUrls.push(response.data.url);
-        }
+      // post-media returns { media: [...] }
+      if (response.data.media && response.data.media.length > 0) {
+        const uploadedUrls = response.data.media.map(m => m.url);
+        setPostMedia(prev => [...prev, ...uploadedUrls]);
       }
-
-      setPostMedia(prev => [...prev, ...uploadedUrls]);
     } catch (err) {
       console.error('Failed to upload image:', err);
       alert('Failed to upload image. Please try again.');

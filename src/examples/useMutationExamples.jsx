@@ -181,9 +181,10 @@ function CreatePostWithMediaExample({ setPosts }) {
     mutationKey: 'uploadMedia',
     mutationFn: async (file) => {
       const formData = new FormData();
-      formData.append('file', file);
-      const response = await api.post('/upload', formData);
-      return response.data.url;
+      formData.append('media', file);
+      const response = await api.post('/upload/post-media', formData);
+      // post-media returns { media: [{ url, type }] }
+      return response.data.media?.[0]?.url;
     },
   });
 

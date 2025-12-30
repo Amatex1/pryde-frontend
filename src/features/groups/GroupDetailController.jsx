@@ -232,11 +232,14 @@ export default function GroupDetailController() {
       const formData = new FormData();
       Array.from(files).forEach(file => formData.append('media', file));
 
-      const response = await api.post('/upload/media', formData, {
+      const response = await api.post('/upload/post-media', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      setPostMedia(prev => [...prev, ...response.data.files]);
+      // post-media returns { media: [...] } with url and type for each file
+      if (response.data.media && response.data.media.length > 0) {
+        setPostMedia(prev => [...prev, ...response.data.media]);
+      }
     } catch (err) {
       console.error('Failed to upload media:', err);
       showToast('Failed to upload media', 'error');

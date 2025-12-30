@@ -1660,11 +1660,12 @@ function Messages() {
                     <VoiceRecorder
                       onRecordingComplete={async (audioBlob, duration) => {
                         try {
-                          // Upload voice note
+                          // Upload voice note using the voice-note endpoint
                           const formData = new FormData();
-                          formData.append('file', audioBlob, 'voice-note.webm');
+                          formData.append('audio', audioBlob, 'voice-note.webm');
+                          formData.append('duration', duration);
 
-                          const uploadResponse = await api.post('/upload', formData, {
+                          const uploadResponse = await api.post('/upload/voice-note', formData, {
                             headers: { 'Content-Type': 'multipart/form-data' }
                           });
 
