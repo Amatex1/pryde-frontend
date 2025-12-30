@@ -227,9 +227,9 @@ function PhotoEssay() {
         await api.post('/photo-essays', data);
         showToast('Photo essay created successfully', 'success');
 
-        // Delete draft after successful post
+        // Don't delete draft on successful post - preserve for multiple drafts
+        // Users can manage drafts via draft manager
         if (currentDraftId) {
-          await deleteDraft(currentDraftId);
           setCurrentDraftId(null);
         }
       }

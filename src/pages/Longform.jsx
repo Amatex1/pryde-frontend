@@ -161,9 +161,9 @@ function Longform() {
         tags: tagsArray
       });
 
-      // Delete draft after successful post
+      // Don't delete draft on successful post - preserve for multiple drafts
+      // Users can manage drafts via draft manager
       if (currentDraftId) {
-        await deleteDraft(currentDraftId);
         setCurrentDraftId(null);
       }
 

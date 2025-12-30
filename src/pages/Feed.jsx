@@ -1093,13 +1093,14 @@ function Feed() {
       const response = await api.post('/posts', postData);
       setPosts([response.data, ...posts]);
 
-      // Delete draft after successful post
+      // Don't delete draft on successful post - preserve for recovery/multiple drafts
+      // Users can manage drafts via draft manager
+      // Just reset the current draft ID so next post creates a new draft
       if (currentDraftId) {
-        await deleteDraft(currentDraftId);
         setCurrentDraftId(null);
       }
 
-      // Clear localStorage draft
+      // Clear localStorage draft (local backup only, backend draft preserved)
       clearDraft('feed-create-post');
 
       setNewPost('');
