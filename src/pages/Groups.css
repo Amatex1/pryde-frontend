@@ -16,6 +16,7 @@
 
 /* Phase 5B: Fixed header height - no resize on state change */
 .group-header {
+  position: relative;
   padding: 2rem;
   border-radius: 12px;
   text-align: center;
@@ -25,6 +26,92 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+/* Cover photo overlay for readability */
+.group-header .cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  z-index: 1;
+}
+
+/* Cover photo edit controls */
+.group-header .cover-controls {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.group-header .cover-edit-btn {
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.group-header .cover-edit-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.group-header .cover-edit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.group-header .cover-remove-btn {
+  background: rgba(220, 53, 69, 0.8);
+  color: white;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.group-header .cover-remove-btn:hover:not(:disabled) {
+  background: rgba(220, 53, 69, 1);
+}
+
+/* Group header body - z-index above overlay */
+.group-header .group-header-body {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Has cover photo - white text */
+.group-header.has-cover h1,
+.group-header.has-cover .group-description,
+.group-header.has-cover .group-stats,
+.group-header.has-cover .group-icon {
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.group-header.has-cover .group-stats {
+  border-top-color: rgba(255, 255, 255, 0.3);
 }
 
 .group-icon {

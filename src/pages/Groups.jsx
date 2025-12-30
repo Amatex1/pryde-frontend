@@ -90,6 +90,10 @@ function Groups() {
   const [modLogs, setModLogs] = useState([]);
   const [loadingModLogs, setLoadingModLogs] = useState(false);
 
+  // Cover photo state
+  const coverInputRef = useRef(null);
+  const [uploadingCover, setUploadingCover] = useState(false);
+
   // Phase 5B: AbortController to prevent double-fetch in StrictMode
   useEffect(() => {
     const abortController = new AbortController();
@@ -541,6 +545,48 @@ function Groups() {
     fetchModLogs();
   };
 
+  // Cover photo handlers
+  const handleCoverPhotoUpload = async (file) => {
+    if (!file) return;
+
+    setUploadingCover(true);
+    try {
+      const formData = new FormData();
+      formData.append('coverPhoto', file);
+
+      const response = await api.post(`/groups/${slug}/cover-photo`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      setGroup(prev => ({ ...prev, coverPhoto: response.data.coverPhoto }));
+      showToast('Cover photo updated!', 'success');
+    } catch (err) {
+      console.error('Failed to upload cover photo:', err);
+      showToast(err.response?.data?.message || 'Failed to upload cover photo', 'error');
+    } finally {
+      setUploadingCover(false);
+      if (coverInputRef.current) {
+        coverInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleCoverPhotoRemove = async () => {
+    if (!confirm('Remove the cover photo?')) return;
+
+    setUploadingCover(true);
+    try {
+      await api.delete(`/groups/${slug}/cover-photo`);
+      setGroup(prev => ({ ...prev, coverPhoto: null }));
+      showToast('Cover photo removed', 'success');
+    } catch (err) {
+      console.error('Failed to remove cover photo:', err);
+      showToast(err.response?.data?.message || 'Failed to remove cover photo', 'error');
+    } finally {
+      setUploadingCover(false);
+    }
+  };
+
   // Phase 4B: Fetch notification settings for this group
   const fetchNotificationSettings = async () => {
     try {
@@ -615,13 +661,57 @@ function Groups() {
       <Navbar onMenuClick={onMenuOpen} />
       <div className="group-container">
         {/* Group Header - Always visible */}
-        <div className="group-header glossy">
-          <div className="group-icon">👥</div>
-          <h1>{group.name}</h1>
-          <p className="group-description">{group.description}</p>
-          <div className="group-stats">
-            <span>{group.memberCount} member{group.memberCount !== 1 ? 's' : ''}</span>
-            {group.visibility === 'private' && <span className="visibility-badge">🔒 Private</span>}
+        <div
+          className={`group-header glossy ${group.coverPhoto ? 'has-cover' : ''}`}
+          style={group.coverPhoto ? { backgroundImage: `url(${getImageUrl(group.coverPhoto)})` } : {}}
+        >
+          {/* Cover photo overlay for readability */}
+          {group.coverPhoto && <div className="cover-overlay" />}
+
+          {/* Hidden file input for cover upload */}
+          {isOwner && (
+            <input
+              ref={coverInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={(e) => handleCoverPhotoUpload(e.target.files?.[0])}
+              style={{ display: 'none' }}
+              aria-label="Upload cover photo"
+            />
+          )}
+
+          {/* Cover photo edit controls (owner only) */}
+          {isOwner && (
+            <div className="cover-controls">
+              <button
+                className="cover-edit-btn"
+                onClick={() => coverInputRef.current?.click()}
+                disabled={uploadingCover}
+                aria-label={group.coverPhoto ? 'Change cover photo' : 'Add cover photo'}
+              >
+                {uploadingCover ? '⏳' : '📷'} {group.coverPhoto ? 'Change Cover' : 'Add Cover'}
+              </button>
+              {group.coverPhoto && (
+                <button
+                  className="cover-remove-btn"
+                  onClick={handleCoverPhotoRemove}
+                  disabled={uploadingCover}
+                  aria-label="Remove cover photo"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          )}
+
+          <div className="group-header-body">
+            <div className="group-icon">👥</div>
+            <h1>{group.name}</h1>
+            <p className="group-description">{group.description}</p>
+            <div className="group-stats">
+              <span>{group.memberCount} member{group.memberCount !== 1 ? 's' : ''}</span>
+              {group.visibility === 'private' && <span className="visibility-badge">🔒 Private</span>}
+            </div>
           </div>
 
           {/* Phase 5A: Role badge + Join/Leave CTA (approval-aware) */}
