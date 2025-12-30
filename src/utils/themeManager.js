@@ -9,6 +9,37 @@
  * - data-quiet-metrics: Hide engagement metrics (likes, counts)
  */
 
+// PWA theme colors matching CSS variables
+const THEME_COLORS = {
+  light: '#F5F6FA', // --bg-page light mode
+  dark: '#0F1021'   // --bg-page dark mode
+};
+
+/**
+ * Update PWA theme-color meta tag for mobile browser chrome
+ * @param {string} theme - 'light' or 'dark'
+ */
+const updateThemeColorMeta = (theme) => {
+  const color = THEME_COLORS[theme] || THEME_COLORS.dark;
+
+  // Update all theme-color meta tags (there may be multiple with media queries)
+  const themeColorMetas = document.querySelectorAll('meta[name="theme-color"]');
+  themeColorMetas.forEach(meta => {
+    // Only update the one without media query, or remove media query approach
+    if (!meta.getAttribute('media')) {
+      meta.setAttribute('content', color);
+    }
+  });
+
+  // If no theme-color meta without media query exists, create one
+  if (!document.querySelector('meta[name="theme-color"]:not([media])')) {
+    const meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    meta.content = color;
+    document.head.appendChild(meta);
+  }
+};
+
 /**
  * Initialize theme attributes on document root
  * Called on app startup to ensure proper theme state
@@ -20,6 +51,9 @@ export const initializeTheme = () => {
   // Set data-theme attribute (default: dark)
   const theme = savedDarkMode === 'false' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', theme);
+
+  // 🔒 PWA FIX: Update theme-color meta for mobile browser chrome
+  updateThemeColorMeta(theme);
 
   // Set data-quiet attribute (default: false)
   const quietMode = savedQuietMode === 'true' ? 'true' : 'false';
@@ -58,6 +92,9 @@ export const initializeTheme = () => {
 export const setTheme = (theme) => {
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('darkMode', theme === 'dark' ? 'true' : 'false');
+
+  // 🔒 PWA FIX: Update theme-color meta for mobile browser chrome
+  updateThemeColorMeta(theme);
 };
 
 /**

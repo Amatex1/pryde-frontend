@@ -72,8 +72,15 @@ html {
   /* Smooth transitions for theme changes */
   transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
 
-  /* Background from theme */
-  background: var(--bg);
+  /* 🔒 ROOT BACKGROUND HARD LOCK - Mobile/PWA dark mode fix */
+  background-color: var(--bg-page, var(--bg));
+  color-scheme: light dark;
+}
+
+/* 🔒 DARK MODE ROOT OVERRIDE - Prevents white flash on mobile/PWA */
+html[data-theme="dark"],
+html[data-theme="dark"] body {
+  background-color: var(--bg-page);
 }
 
 /* Prevent mobile font scaling chaos */
@@ -84,9 +91,9 @@ button, input, textarea, select {
 
 body {
   /* Font family and sizing handled by design-system.css */
-  background: var(--bg);
+  background-color: var(--bg-page, var(--bg));
   min-height: 100dvh; /* Use dvh for mobile viewport safety */
-  color: var(--text-main);
+  color: var(--text-primary, var(--text-main));
   transition: background-color 0.3s ease, color 0.3s ease;
 
   /* Prevent horizontal overflow - use % not vw */

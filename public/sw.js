@@ -13,7 +13,7 @@
    - Handle navigation
    ===================================================== */
 
-const VERSION = '2.0.0'; // Increment to force update
+const VERSION = '2.1.0'; // Increment to force update - Mobile/PWA dark mode fix
 
 self.addEventListener('install', (event) => {
   console.log(`[SW ${VERSION}] Installing...`);

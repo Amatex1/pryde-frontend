@@ -24,8 +24,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Pryde Social" />
 
-    <!-- Theme colors -->
-    <meta name="theme-color" content="#6C5CE7" />
+    <!-- Theme colors - dark-aware for PWA chrome -->
+    <meta name="theme-color" content="#F5F6FA" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0F1021" media="(prefers-color-scheme: dark)" />
     <meta name="msapplication-TileColor" content="#6C5CE7" />
     <meta name="msapplication-navbutton-color" content="#6C5CE7" />
 
@@ -66,21 +67,50 @@
 
     <title>Pryde Social - LGBTQ+ Social Network</title>
 
-    <!-- Inline critical CSS to prevent black screen on mobile load -->
+    <!-- Inline critical CSS to prevent theme flash on mobile/PWA load -->
     <style>
-      body {
+      /* Root background hard lock - prevents white flash during load */
+      html, body {
         margin: 0;
         padding: 0;
-        background-color: #1a1a2e;
-        color: #ffffff;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        color-scheme: light dark;
+      }
+
+      /* Light mode default (matches --bg-page light) */
+      html, body, #root {
+        background-color: #F5F6FA;
+        color: #1E1E26;
+      }
+
+      /* Dark mode override (matches --bg-page dark) */
+      @media (prefers-color-scheme: dark) {
+        html, body, #root {
+          background-color: #0F1021;
+          color: #F8F7FF;
+        }
+      }
+
+      /* When data-theme is explicitly set */
+      html[data-theme="dark"],
+      html[data-theme="dark"] body,
+      html[data-theme="dark"] #root {
+        background-color: #0F1021;
+        color: #F8F7FF;
+      }
+
+      html[data-theme="light"],
+      html[data-theme="light"] body,
+      html[data-theme="light"] #root {
+        background-color: #F5F6FA;
+        color: #1E1E26;
       }
 
       #root {
         min-height: 100vh;
-        background-color: #1a1a2e;
+        min-height: 100dvh; /* Dynamic viewport height for mobile */
       }
 
       /* Loading spinner animation */
