@@ -1,14 +1,20 @@
 /**
  * Auth Lifecycle Manager
- * 
+ *
  * Keeps users logged in like major social platforms (Facebook, Instagram, etc.)
  * Proactively refreshes tokens to prevent session expiration during idle periods.
- * 
+ *
  * Strategy:
  * - Refresh on app load (bootstrap)
  * - Refresh on tab focus (user returning)
  * - Refresh every 10 minutes (background keep-alive)
  * - Refresh before token expiry (proactive)
+ * - Refresh when returning from sleep/suspend (PC fix)
+ *
+ * 🔥 PC FIX: Uses timestamp tracking to detect long gaps caused by:
+ * - Browser tab suspension
+ * - Computer sleep/hibernate
+ * - Browser throttling background intervals
  */
 
 import { getAuthToken, getRefreshToken, setAuthToken, setRefreshToken, getIsLoggingOut } from './auth';
@@ -18,6 +24,7 @@ import logger from './logger';
 // Track if lifecycle is already set up (prevent duplicates)
 let lifecycleInitialized = false;
 let refreshInterval = null;
+let lastRefreshCheck = Date.now(); // 🔥 Track when we last checked for refresh
 
 /**
  * Attempt to refresh the session using refresh token
@@ -93,11 +100,24 @@ export function setupAuthLifecycle() {
   }
 
   // 2. Refresh on tab focus (user returning from another tab/app)
+  // 🔥 PC FIX: Also detect if we've been suspended (gap > 5 minutes)
   const handleVisibilityChange = () => {
     if (document.visibilityState === 'visible') {
       // Only refresh if user is logged in
       if (getAuthToken() || getRefreshToken()) {
-        logger.debug('[AuthLifecycle] Tab focused - refreshing session');
+        const now = Date.now();
+        const timeSinceLastCheck = now - lastRefreshCheck;
+        const minutesSinceLastCheck = timeSinceLastCheck / 1000 / 60;
+
+        // 🔥 PC FIX: If more than 5 minutes have passed, we likely woke from sleep
+        // Browsers throttle intervals in background tabs, so this catches that
+        if (minutesSinceLastCheck > 5) {
+          logger.info(`[AuthLifecycle] ⚡ Wake from suspend detected (${minutesSinceLastCheck.toFixed(1)} min gap) - forcing refresh`);
+        } else {
+          logger.debug('[AuthLifecycle] Tab focused - refreshing session');
+        }
+
+        lastRefreshCheck = now;
         refreshSession().catch(() => {});
       }
     }
@@ -107,8 +127,19 @@ export function setupAuthLifecycle() {
 
   // 3. Refresh every 10 minutes (keep session alive during active use)
   // Access tokens expire in 15 minutes, so refreshing at 10 minutes gives buffer
+  // 🔥 PC FIX: Also check for gaps caused by tab throttling/suspension
   refreshInterval = setInterval(() => {
     if (getAuthToken() || getRefreshToken()) {
+      const now = Date.now();
+      const timeSinceLastCheck = now - lastRefreshCheck;
+      const minutesSinceLastCheck = timeSinceLastCheck / 1000 / 60;
+
+      // 🔥 PC FIX: Detect if browser throttled us (gap > 15 minutes)
+      if (minutesSinceLastCheck > 15) {
+        logger.warn(`[AuthLifecycle] ⚠️ Interval gap detected (${minutesSinceLastCheck.toFixed(1)} min) - browser may have throttled us`);
+      }
+
+      lastRefreshCheck = now;
       logger.debug('[AuthLifecycle] Interval refresh');
       refreshSession().catch(() => {});
     }
@@ -117,6 +148,7 @@ export function setupAuthLifecycle() {
   // 4. Refresh on window focus (backup for visibility change)
   const handleWindowFocus = () => {
     if (getAuthToken() || getRefreshToken()) {
+      lastRefreshCheck = Date.now();
       logger.debug('[AuthLifecycle] Window focused - refreshing session');
       refreshSession().catch(() => {});
     }
@@ -124,12 +156,24 @@ export function setupAuthLifecycle() {
 
   window.addEventListener('focus', handleWindowFocus);
 
-  logger.debug('[AuthLifecycle] ✅ Auth lifecycle initialized');
+  // 🔥 PC FIX: Listen for online event (user's network came back)
+  const handleOnline = () => {
+    if (getAuthToken() || getRefreshToken()) {
+      logger.info('[AuthLifecycle] 🌐 Network restored - refreshing session');
+      lastRefreshCheck = Date.now();
+      refreshSession().catch(() => {});
+    }
+  };
+
+  window.addEventListener('online', handleOnline);
+
+  logger.debug('[AuthLifecycle] ✅ Auth lifecycle initialized (PC suspend detection enabled)');
 
   // Return cleanup function
   return () => {
     document.removeEventListener('visibilitychange', handleVisibilityChange);
     window.removeEventListener('focus', handleWindowFocus);
+    window.removeEventListener('online', handleOnline);
     if (refreshInterval) {
       clearInterval(refreshInterval);
       refreshInterval = null;
