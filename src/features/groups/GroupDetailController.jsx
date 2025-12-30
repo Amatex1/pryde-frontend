@@ -77,6 +77,16 @@ export default function GroupDetailController() {
   const [modLogs, setModLogs] = useState([]);
   const [loadingModLogs, setLoadingModLogs] = useState(false);
 
+  // Settings modal state
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [settingsForm, setSettingsForm] = useState({
+    name: '',
+    description: '',
+    visibility: 'listed',
+    joinMode: 'approval'
+  });
+  const [savingSettings, setSavingSettings] = useState(false);
+
   // Derived permissions
   const isOwner = group?.owner === currentUser?._id || group?.owner?._id === currentUser?._id;
   const isModerator = group?.moderators?.some(m => 
@@ -356,6 +366,51 @@ export default function GroupDetailController() {
     fetchModLogs();
   };
 
+  // Settings modal handlers
+  const openSettingsModal = () => {
+    if (group) {
+      setSettingsForm({
+        name: group.name || '',
+        description: group.description || '',
+        visibility: group.visibility || 'listed',
+        joinMode: group.joinMode || 'approval'
+      });
+      setShowSettingsModal(true);
+    }
+  };
+
+  const handleSaveSettings = async (e) => {
+    e.preventDefault();
+    if (savingSettings) return;
+
+    try {
+      setSavingSettings(true);
+      const response = await api.patch(`/groups/${slug}`, {
+        name: settingsForm.name.trim(),
+        description: settingsForm.description.trim(),
+        visibility: settingsForm.visibility,
+        joinMode: settingsForm.joinMode
+      });
+
+      // Update local group state
+      setGroup(prev => ({
+        ...prev,
+        name: response.data.group?.name || settingsForm.name,
+        description: response.data.group?.description || settingsForm.description,
+        visibility: response.data.group?.visibility || settingsForm.visibility,
+        joinMode: response.data.group?.joinMode || settingsForm.joinMode
+      }));
+
+      setShowSettingsModal(false);
+      showToast('Group settings updated!', 'success');
+    } catch (err) {
+      console.error('Failed to save settings:', err);
+      showToast(err.response?.data?.message || 'Failed to save settings', 'error');
+    } finally {
+      setSavingSettings(false);
+    }
+  };
+
   // Loading state
   if (loading) {
     return (
@@ -393,7 +448,7 @@ export default function GroupDetailController() {
         leaving={leaving}
         onJoin={handleJoin}
         onLeave={handleLeave}
-        onOpenSettings={() => navigate(`/groups/${slug}/settings`)}
+        onOpenSettings={openSettingsModal}
         onOpenMembers={openMemberModal}
         onOpenNotifications={() => setShowNotificationSettings(true)}
         onOpenModLog={openModLog}
@@ -446,7 +501,94 @@ export default function GroupDetailController() {
         </div>
       </div>
 
-      {/* TODO: Add modals for members, notifications, mod log */}
+      {/* Group Settings Modal */}
+      {showSettingsModal && (
+        <div className="modal-overlay" onClick={() => setShowSettingsModal(false)}>
+          <div className="settings-modal glossy" onClick={e => e.stopPropagation()}>
+            <h2>Group Settings</h2>
+
+            <form onSubmit={handleSaveSettings}>
+              <div className="form-group">
+                <label htmlFor="groupName">Group Name *</label>
+                <input
+                  id="groupName"
+                  type="text"
+                  value={settingsForm.name}
+                  onChange={(e) => setSettingsForm(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Group name"
+                  maxLength={100}
+                  disabled={savingSettings}
+                  autoFocus
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="groupDescription">Description</label>
+                <textarea
+                  id="groupDescription"
+                  value={settingsForm.description}
+                  onChange={(e) => setSettingsForm(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="What is this group about?"
+                  maxLength={500}
+                  rows={3}
+                  disabled={savingSettings}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="groupVisibility">Visibility</label>
+                <select
+                  id="groupVisibility"
+                  value={settingsForm.visibility}
+                  onChange={(e) => setSettingsForm(prev => ({ ...prev, visibility: e.target.value }))}
+                  disabled={savingSettings}
+                  className="form-select"
+                >
+                  <option value="listed">Listed — Appears in group directory</option>
+                  <option value="unlisted">Unlisted — Only accessible via direct link</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="groupJoinMode">Join Mode</label>
+                <select
+                  id="groupJoinMode"
+                  value={settingsForm.joinMode}
+                  onChange={(e) => setSettingsForm(prev => ({ ...prev, joinMode: e.target.value }))}
+                  disabled={savingSettings}
+                  className="form-select"
+                >
+                  <option value="approval">Approval Required — You approve each join request</option>
+                  <option value="auto">Open — Anyone can join immediately</option>
+                </select>
+                <p className="form-hint">
+                  {settingsForm.joinMode === 'auto'
+                    ? '✨ New members can join instantly without approval'
+                    : '🔒 You\'ll need to approve each join request'}
+                </p>
+              </div>
+
+              <div className="modal-buttons">
+                <button
+                  type="button"
+                  className="btn-cancel"
+                  onClick={() => setShowSettingsModal(false)}
+                  disabled={savingSettings}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn-submit"
+                  disabled={savingSettings || !settingsForm.name.trim()}
+                >
+                  {savingSettings ? 'Saving...' : 'Save Settings'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

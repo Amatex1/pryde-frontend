@@ -49,8 +49,14 @@ export default function GroupHeader({
       
       <div className="group-stats">
         <span>{group.memberCount} member{group.memberCount !== 1 ? 's' : ''}</span>
-        {group.visibility === 'private' && (
-          <span className="visibility-badge">🔒 Private</span>
+        {group.visibility === 'unlisted' && (
+          <span className="visibility-badge">🔗 Unlisted</span>
+        )}
+        {group.joinMode === 'approval' && (
+          <span className="join-mode-badge">🔒 Approval Required</span>
+        )}
+        {group.joinMode === 'auto' && (
+          <span className="join-mode-badge open">✨ Open</span>
         )}
       </div>
 
