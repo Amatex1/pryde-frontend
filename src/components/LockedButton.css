@@ -100,7 +100,7 @@
   white-space: nowrap;
 }
 
-/* Dark mode */
+/* Dark mode - both OS preference and app toggle */
 @media (prefers-color-scheme: dark) {
   .locked-button--secondary {
     background: var(--bg-subtle, #2a2a3e);
@@ -111,5 +111,16 @@
   .locked-button--secondary:hover:not(:disabled) {
     background: var(--bg-hover, #3a3a4e);
   }
+}
+
+/* App theme toggle (overrides OS preference) */
+[data-theme="dark"] .locked-button--secondary {
+  background: var(--bg-subtle, #2a2a3e);
+  border-color: var(--border-subtle, #3a3a4e);
+  color: var(--text-primary, #ffffff);
+}
+
+[data-theme="dark"] .locked-button--secondary:hover:not(:disabled) {
+  background: var(--bg-hover, #3a3a4e);
 }
 

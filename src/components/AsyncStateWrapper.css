@@ -107,11 +107,17 @@
   line-height: 1.5;
 }
 
-/* Dark mode adjustments */
+/* Dark mode adjustments - both OS preference and app toggle */
 @media (prefers-color-scheme: dark) {
   .async-loading-spinner {
     border-color: var(--border-subtle, #3a3a4e);
     border-top-color: var(--color-primary, #6366f1);
   }
+}
+
+/* App theme toggle (overrides OS preference) */
+[data-theme="dark"] .async-loading-spinner {
+  border-color: var(--border-subtle, #3a3a4e);
+  border-top-color: var(--color-primary, #6366f1);
 }
 

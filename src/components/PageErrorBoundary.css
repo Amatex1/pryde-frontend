@@ -107,7 +107,7 @@
   color: var(--text-primary, #1a1a2e);
 }
 
-/* Dark mode */
+/* Dark mode - both OS preference and app toggle */
 @media (prefers-color-scheme: dark) {
   .page-error-boundary {
     background: var(--bg-card, #2a2a3e);
@@ -116,5 +116,14 @@
   .page-error-details {
     background: var(--bg-subtle, #1a1a2e);
   }
+}
+
+/* App theme toggle (overrides OS preference) */
+[data-theme="dark"] .page-error-boundary {
+  background: var(--bg-card, #2a2a3e);
+}
+
+[data-theme="dark"] .page-error-details {
+  background: var(--bg-subtle, #1a1a2e);
 }
 

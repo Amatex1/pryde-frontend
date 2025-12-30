@@ -92,6 +92,12 @@
   }
 }
 
-/* Dark mode */
-/* Light Mode + Quiet Mode - Keep light skeleton */
-[data-theme="light"][data-theme="light"]
+/* Dark mode - proper dark skeleton colors */
+[data-theme="dark"] .skeleton-avatar,
+[data-theme="dark"] .skeleton-name,
+[data-theme="dark"] .skeleton-username,
+[data-theme="dark"] .skeleton-text,
+[data-theme="dark"] .skeleton-button {
+  background: linear-gradient(90deg, #2a2a3e 25%, #3a3a4e 50%, #2a2a3e 75%);
+  background-size: 200% 100%;
+}
