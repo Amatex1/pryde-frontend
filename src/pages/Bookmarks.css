@@ -61,7 +61,7 @@
 }
 
 .bookmark-card {
-  background: #FFFFFF;
+  background: var(--bg-card)FFF;
   border: 1px solid #E0E0E0;
   border-radius: 12px;
   padding: 20px;

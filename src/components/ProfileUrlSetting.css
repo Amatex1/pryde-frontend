@@ -86,7 +86,7 @@
 }
 
 .url-status.error {
-  background: #fff3e0;
+  background: var(--bg-card)3e0;
   color: #e65100;
 }
 

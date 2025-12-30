@@ -354,7 +354,7 @@
 }
 
 .dropdown-item.report:hover {
-  background: #fff8e1;
+  background: var(--bg-card)8e1;
   color: #e67e22;
 }
 

@@ -2109,31 +2109,31 @@
 
 /* Fix dark chat header in Light + Quiet Mode */
 [data-theme="light"][data-quiet-mode="true"] .chat-header {
-  background: #FFFFFF;
+  background: var(--bg-card)FFF;
   border-bottom-color: #E5E7EB;
 }
 
 /* Fix dark input area in Light + Quiet Mode */
 [data-theme="light"][data-quiet-mode="true"] .chat-input-area {
-  background: #FFFFFF;
+  background: var(--bg-card)FFF;
   border-top-color: #E5E7EB;
 }
 
 /* Fix dark sidebar header in Light + Quiet Mode */
 [data-theme="light"][data-quiet-mode="true"] .sidebar-header {
-  background: #FFFFFF;
+  background: var(--bg-card)FFF;
   border-bottom-color: #E5E7EB;
 }
 
 /* Fix dark conversations sidebar in Light + Quiet Mode */
 [data-theme="light"][data-quiet-mode="true"] .conversations-sidebar {
-  background: #FFFFFF;
+  background: var(--bg-card)FFF;
   border-right-color: #E5E7EB;
 }
 
 /* Fix dark messages layout in Light + Quiet Mode */
 [data-theme="light"][data-quiet-mode="true"] .messages-layout {
-  background: #FFFFFF;
+  background: var(--bg-card)FFF;
   border-color: #E5E7EB;
 }
 
