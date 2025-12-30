@@ -852,10 +852,30 @@ function Feed() {
     }
   };
 
+  // Track if content was cleared to detect fresh starts
+  // When user clears all content, we set this flag. Next time they type, we create a new draft.
+  const contentWasClearedRef = useRef(false);
+  const previousHasContentRef = useRef(false);
+
+  // Detect when content is cleared - reset draft ID for next save
+  useEffect(() => {
+    const hasContent = !!(newPost.trim() || selectedMedia.length > 0);
+
+    // If we had content before but now we don't, mark as cleared
+    if (previousHasContentRef.current && !hasContent) {
+      contentWasClearedRef.current = true;
+      logger.debug('📝 Content cleared - next save will create new draft');
+    }
+
+    previousHasContentRef.current = hasContent;
+  }, [newPost, selectedMedia]);
+
   // Auto-save draft
   const autoSaveDraft = useCallback(async () => {
-    // Only auto-save if there's content
-    if (!newPost.trim() && selectedMedia.length === 0) {
+    const hasContent = newPost.trim() || selectedMedia.length > 0;
+
+    // If no content, don't save
+    if (!hasContent) {
       setDraftSaveStatus('');
       return;
     }
@@ -880,8 +900,19 @@ function Feed() {
     try {
       setDraftSaveStatus('saving');
 
+      // Detect "fresh start": user cleared content and is now typing new content
+      // In this case, create a new draft instead of updating the old one
+      let draftIdToUse = currentDraftId;
+      if (currentDraftId && contentWasClearedRef.current) {
+        // User cleared previous draft and started fresh - create new draft
+        logger.debug('🆕 Fresh start detected - creating new draft instead of updating');
+        draftIdToUse = null;
+        contentWasClearedRef.current = false; // Reset flag
+        // Note: Old draft remains in database for recovery, user can delete via draft manager
+      }
+
       const draftData = {
-        draftId: currentDraftId,
+        draftId: draftIdToUse,
         draftType: 'post',
         content: newPost,
         media: selectedMedia,
@@ -928,7 +959,7 @@ function Feed() {
     }
   }, [newPost, selectedMedia, postVisibility, contentWarning, hideMetrics, poll, currentDraftId]);
 
-  // Auto-save on content change (instant save on every edit)
+  // Auto-save on content change (debounced - not too aggressive)
   useEffect(() => {
     if (autoSaveTimerRef.current) {
       clearTimeout(autoSaveTimerRef.current);
@@ -936,7 +967,7 @@ function Feed() {
 
     autoSaveTimerRef.current = setTimeout(() => {
       autoSaveDraft();
-    }, 500); // Auto-save after 0.5 seconds of inactivity (instant save)
+    }, 2000); // Auto-save after 2 seconds of inactivity (less aggressive)
 
     return () => {
       if (autoSaveTimerRef.current) {
