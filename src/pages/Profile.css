@@ -27,18 +27,22 @@
    CRITICAL: These styles MUST match Feed.css exactly
    ======================================== */
 
-/* Post Card - Exact copy from Feed.css */
+/* Post Card - Stacking Context (sync with Feed.css) */
 .profile-page .post-card,
 .post-card {
+  /* STACKING CONTEXT: Create safe layer for children */
+  position: relative !important;
+  overflow: visible !important; /* NEVER hidden - prevents header clipping */
+
+  /* Card visuals */
   padding: var(--space-4) 18px !important;
   border-radius: var(--radius-card) !important;
   background: var(--bg-card) !important;
   border: 1px solid var(--border-subtle) !important;
   box-shadow: var(--shadow-soft) !important;
-  transition: all 0.2s ease !important;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease !important;
   min-width: 0 !important;
   min-height: auto !important; /* Let content define height */
-  overflow: visible !important;
   word-wrap: break-word !important;
   contain: layout !important;
 }
@@ -2626,11 +2630,17 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .profile-layout,
   .profile-main,
   .profile-sidebar,
-  .post-card,
   .create-post,
   .comment-item {
     max-width: 100%;
     overflow-x: hidden;
+    word-wrap: break-word;
+  }
+
+  /* Post-card: overflow visible for header stacking context */
+  .post-card {
+    max-width: 100%;
+    overflow: visible; /* REQUIRED: Prevents header clipping */
     word-wrap: break-word;
   }
 

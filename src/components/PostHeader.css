@@ -10,6 +10,11 @@
  * - Avatar + name + meta treated as one unit
  * - Height identical on desktop, mobile, and PWA
  *
+ * STACKING CONTEXT:
+ * - Header establishes z-index: 2 (above post body)
+ * - No absolute positioning allowed
+ * - Parent container must have overflow: visible
+ *
  * GRID STRUCTURE:
  * [Avatar 40px] [Text Stack 1fr] [Actions 32px]
  */
@@ -29,7 +34,12 @@
   padding: 12px 16px;
   box-sizing: border-box;
 
-  overflow: hidden; /* Prevent any child from breaking layout */
+  /* STACKING CONTEXT: Header always sits above post body */
+  position: relative;
+  z-index: 2;
+
+  /* Text truncation only - layout never clips */
+  overflow: visible;
 }
 
 /* ============================================================

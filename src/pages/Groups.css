@@ -364,10 +364,12 @@
   gap: 1.5rem;
 }
 
-/* Reuse post-card styles from TagFeed.css */
+/* Post-card stacking context (inherits from Feed.css, add overrides here) */
 .group-posts .post-card {
   padding: 1.5rem;
   border-radius: 12px;
+  position: relative;
+  overflow: visible; /* REQUIRED: Prevents header clipping */
 }
 
 /* =====================================================
