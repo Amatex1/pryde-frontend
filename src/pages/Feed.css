@@ -1354,6 +1354,7 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   z-index: 1; /* Below header (z-index: 2) */
 
   /* Content styles */
+  margin-top: 0; /* Header handles its own spacing */
   margin-bottom: 1.5rem;
   padding: 1rem;
   line-height: 1.6;

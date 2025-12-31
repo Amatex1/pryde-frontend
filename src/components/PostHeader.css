@@ -32,6 +32,7 @@
   min-height: 64px;
   max-height: 64px;
   padding: 12px 16px;
+  margin-bottom: 8px; /* Spacing between header and content */
   box-sizing: border-box;
 
   /* STACKING CONTEXT: Header always sits above post body */
@@ -40,9 +41,6 @@
 
   /* Text truncation only - layout never clips */
   overflow: visible;
-
-  /* OPTICAL OFFSET: Corrects visual centering (social apps do this) */
-  transform: translateY(-2px);
 }
 
 /* ============================================================
@@ -222,8 +220,7 @@
     padding: 10px 12px;
     min-height: 56px;
     max-height: 56px;
-    /* MOBILE SAFETY: Reduced offset (mobile text renders slightly taller) */
-    transform: translateY(-1px);
+    margin-bottom: 6px; /* Slightly less spacing on mobile */
   }
 
   .post-header-avatar {
