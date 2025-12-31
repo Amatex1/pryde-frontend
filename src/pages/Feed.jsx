@@ -2067,7 +2067,7 @@ function Feed() {
                         </Link>
                         {/* Post header with two rows for mobile */}
                         <div className="post-author-info">
-                          {/* Row 1: Name + Badges */}
+                          {/* Row 1: Name + Badges + Privacy */}
                           <div className="post-author-name-row">
                             <Link to={`/profile/${post.author?.username}`} className="comment-author" style={{ textDecoration: 'none' }}>
                               <span className="author-name">{post.author?.displayName || post.author?.username || 'User'}</span>
@@ -2075,15 +2075,6 @@ function Feed() {
                             {post.author?.badges?.length > 0 && (
                               <BadgeContainer badges={post.author.badges} />
                             )}
-                          </div>
-                          {/* Row 2: Pronouns · Date · Privacy · (edited) */}
-                          <div className="post-meta-row">
-                            {post.author?.pronouns && (
-                              <span className="author-pronouns">{post.author.pronouns}</span>
-                            )}
-                            <span className="post-time-inline">
-                              {new Date(post.createdAt).toLocaleString()}
-                            </span>
                             <span className="post-privacy-indicator" title={
                               post.visibility === 'public' ? 'Public' :
                               post.visibility === 'private' ? 'Only you' :
@@ -2091,6 +2082,15 @@ function Feed() {
                             }>
                               {post.visibility === 'public' ? '🌍' :
                                post.visibility === 'private' ? '🔒' : '👥'}
+                            </span>
+                          </div>
+                          {/* Row 2: Pronouns · Date · (edited) */}
+                          <div className="post-meta-row">
+                            {post.author?.pronouns && (
+                              <span className="author-pronouns">{post.author.pronouns}</span>
+                            )}
+                            <span className="post-time-inline">
+                              {new Date(post.createdAt).toLocaleString()}
                             </span>
                             {post.edited && <span className="edited-indicator">(edited)</span>}
                           </div>

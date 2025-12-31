@@ -685,7 +685,7 @@
     font-size: 0.75rem;
   }
 
-  .post-meta-row .post-privacy-indicator {
+  .post-author-name-row .post-privacy-indicator {
     font-size: 0.6875rem;
   }
 
@@ -768,12 +768,7 @@
   opacity: 0.6;
 }
 
-.post-meta-row .post-privacy-indicator::before {
-  content: '·';
-  margin-right: 0.5rem;
-  color: var(--text-muted);
-  opacity: 0.6;
-}
+/* Privacy indicator is now in Row 1 (name row), no separator needed */
 
 .post-meta-row .edited-indicator::before {
   content: '·';
