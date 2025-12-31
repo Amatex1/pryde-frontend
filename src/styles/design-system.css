@@ -68,8 +68,13 @@ Noise hides real problems.
   --space-2xl: 32px; /* Page-level spacing (reduced from 48px) */
 
   /* ========================================
-     TYPOGRAPHY SCALE (COMPACT DENSITY)
+     TYPOGRAPHY SCALE (PRE-LAUNCH POLISH)
      Base: 16px (prevents iOS zoom on input focus)
+
+     FONT WEIGHT RULE: Only 3 weights across app
+     - 400 (normal): Body text, metadata
+     - 500 (medium): Buttons, labels
+     - 600 (semibold): Author names, headings
      ======================================== */
   --font-size-xs: 12px;   /* Tiny text (timestamps, metadata) */
   --font-size-sm: 14px;   /* Small text (labels, captions) */
@@ -79,9 +84,19 @@ Noise hides real problems.
   --font-size-2xl: 24px;  /* Headings */
   --font-size-3xl: 32px;  /* Page titles */
 
-  --line-height-tight: 1.3;  /* Headings */
-  --line-height-base: 1.45;  /* Body text (reduced from 1.5) */
-  --line-height-relaxed: 1.5; /* Long-form content (reduced from 1.6) */
+  /* Font weights (LOCKED - only these 3 allowed) */
+  --font-weight-normal: 400;  /* Body text, metadata */
+  --font-weight-medium: 500;  /* Buttons, labels */
+  --font-weight-semibold: 600; /* Author names, headings */
+
+  --line-height-tight: 1.3;   /* Headings */
+  --line-height-body: 1.55;   /* Body text - comfortable reading */
+  --line-height-base: 1.55;   /* Alias for body */
+  --line-height-relaxed: 1.6; /* Long-form content */
+
+  /* Metadata styling (timestamps, pronouns, separators) */
+  --meta-font-size: 0.85em;
+  --meta-opacity: 0.65;
 
   /* ========================================
      CONTAINER WIDTHS (Mobile-first)
@@ -167,7 +182,8 @@ html {
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: var(--font-size-base);
-  line-height: var(--line-height-base);
+  font-weight: var(--font-weight-normal); /* 400 */
+  line-height: var(--line-height-body); /* 1.55 - comfortable reading */
   margin: 0;
   padding: 0;
   overflow-x: hidden;
@@ -175,13 +191,14 @@ body {
 }
 
 /* ========================================
-   TYPOGRAPHY (Mobile-first)
+   TYPOGRAPHY (PRE-LAUNCH POLISH)
+   Only 3 font weights: 400, 500, 600
    ======================================== */
 
 h1, h2, h3, h4, h5, h6 {
   margin: 0 0 var(--space-md) 0;
   line-height: var(--line-height-tight);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold); /* 600 */
 }
 
 h1 { font-size: var(--font-size-2xl); }
@@ -193,7 +210,35 @@ h6 { font-size: var(--font-size-xs); }
 
 p {
   margin: 0 0 var(--font-size-base) 0;
-  line-height: var(--line-height-base);
+  line-height: var(--line-height-body);
+  font-weight: var(--font-weight-normal); /* 400 */
+}
+
+/* Author names in posts and comments */
+.post-author-name,
+.comment-author-name,
+.author-name {
+  font-weight: var(--font-weight-semibold); /* 600 */
+}
+
+/* Metadata (timestamps, pronouns, separators) */
+.post-meta,
+.post-timestamp,
+.post-pronouns,
+.post-separator,
+.comment-meta,
+.meta,
+.timestamp {
+  font-size: var(--meta-font-size); /* 0.85em */
+  opacity: var(--meta-opacity); /* 0.65 */
+  font-weight: var(--font-weight-normal); /* 400 */
+}
+
+/* Buttons and labels */
+button,
+.btn,
+label {
+  font-weight: var(--font-weight-medium); /* 500 */
 }
 
 /* ========================================

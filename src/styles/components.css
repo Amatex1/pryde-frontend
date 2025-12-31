@@ -1,6 +1,90 @@
 ﻿/* ========================================
    PRYDE SOCIAL - REUSABLE COMPONENTS
+   Pre-Launch Polish Pass: 2025-12-31
    ======================================== */
+
+/* ========================================
+   COMPONENT POLISH - SHARED STANDARDS
+   ======================================== */
+
+/* Unified focus ring - calm, not harsh */
+:focus-visible {
+  outline: 2px solid var(--color-primary, #6C5CE7);
+  outline-offset: 2px;
+}
+
+/* No focus ring for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Unified button standards */
+.pryde-btn,
+.btn,
+button:not(.emoji-button):not(.reaction-btn) {
+  /* Consistent padding */
+  padding: var(--space-2, 8px) var(--space-4, 16px);
+
+  /* Consistent radius */
+  border-radius: var(--radius-md, 12px);
+
+  /* Unified hover state */
+  transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+
+/* Menu standards - reduced shadow, softer borders */
+.dropdown-menu,
+.menu,
+.popover,
+.select-menu,
+[role="menu"] {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md, 12px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+[data-theme="dark"] .dropdown-menu,
+[data-theme="dark"] .menu,
+[data-theme="dark"] .popover,
+[data-theme="dark"] [role="menu"] {
+  background: var(--bg-elevated, #1e293b);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Menu item focus - clear outline */
+.dropdown-item:focus-visible,
+.menu-item:focus-visible,
+[role="menuitem"]:focus-visible {
+  background: var(--bg-hover);
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+/* Input standards - calm focus, no harsh glow */
+input,
+textarea,
+select,
+.pryde-input,
+.pryde-textarea {
+  /* Consistent height */
+  min-height: 44px;
+
+  /* Calm focus ring */
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.pryde-input:focus,
+.pryde-textarea:focus {
+  border-color: var(--color-primary, #6C5CE7);
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.12);
+  outline: none;
+}
 
 /* Upload Progress Indicator */
 .upload-progress {
