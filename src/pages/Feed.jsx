@@ -39,6 +39,7 @@ import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
 import { withOptimisticUpdate } from '../utils/consistencyGuard';
 import { quietCopy } from '../config/uiCopy';
 import PageTitle from '../components/PageTitle';
+import CommunityResources from '../components/Sidebar/CommunityResources';
 import './Feed.css';
 
 function Feed() {
@@ -2810,6 +2811,11 @@ function Feed() {
             >
               View helplines
             </Link>
+          </div>
+
+          {/* Community & Resources - Curated LGBTQ+ links */}
+          <div className="sidebar-card glossy">
+            <CommunityResources />
           </div>
 
           {/* Friends List */}
