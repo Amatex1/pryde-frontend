@@ -95,11 +95,16 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-width: 0; /* Enable text truncation */
+  min-width: 0;
   overflow: hidden;
+
+  /* OPTICAL DISTRIBUTION */
+  padding-top: 4px;
+  padding-bottom: 0;
+
   gap: 2px;
-  position: relative; /* Enables optical control of children */
 }
+
 
 /* ============================================================
    POST AUTHOR ROW (Name + Badges only)
@@ -129,9 +134,6 @@
   transition: color 0.15s ease;
   margin: 0;
   padding: 0;
-
-  /* OPTICAL: Moves name DOWN slightly for better visual balance */
-  transform: translateY(2px);
 }
 
 .post-author-name-link:hover .post-author-name {
@@ -161,9 +163,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
-  /* OPTICAL: Raises meta row UP for better visual balance */
-  transform: translateY(-2px);
 }
 
 .post-pronouns {
