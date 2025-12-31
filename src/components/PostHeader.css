@@ -157,12 +157,15 @@
   gap: 6px;
   font-size: 0.8rem;
   line-height: 1.1;
-  margin-top: 2px;
   color: var(--text-muted, #666);
   opacity: 0.75;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  /* OPTICAL: Margin lifts meta row predictably */
+  margin-top: 0;
+  margin-bottom: 2px;
 }
 
 .post-pronouns {
@@ -199,7 +202,7 @@
 .post-meta svg,
 .post-meta img {
   display: block;
-  transform: translateY(-1px);
+  vertical-align: middle;
 }
 
 /* ============================================================
@@ -250,16 +253,19 @@
     height: 36px;
   }
 
+  .post-header-text {
+    /* MOBILE: Reduced optical padding */
+    padding-top: 3px;
+  }
+
   .post-author-name {
     font-size: 0.875rem;
-    /* MOBILE: Reduced optical offset */
-    transform: translateY(1px);
   }
 
   .post-meta {
     font-size: 0.75rem;
-    /* MOBILE: Reduced optical offset */
-    transform: translateY(-1px);
+    /* MOBILE: Reduced optical margin */
+    margin-bottom: 1px;
   }
 
   .post-privacy {
