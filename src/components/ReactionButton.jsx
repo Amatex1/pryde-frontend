@@ -1,12 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import api from '../utils/api';
 import { getSocket } from '../utils/socket';
+import { EmojiPickerOverlay } from './emoji';
 import './ReactionButton.css';
 
 /**
  * Universal ReactionButton Component
  *
  * A reusable Facebook-style reaction button for posts, comments, and replies.
+ * Uses portal-based EmojiPickerOverlay for stable positioning.
  *
  * Props:
  * - targetType: 'post' | 'comment'
@@ -29,8 +31,9 @@ const ReactionButton = ({
   const [showPicker, setShowPicker] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(!!initialUserReaction);
+  const [anchorRect, setAnchorRect] = useState(null);
+  const [pickerMode, setPickerMode] = useState('desktop');
 
-  const pickerRef = useRef(null);
   const buttonRef = useRef(null);
   const hoverTimeoutRef = useRef(null);
 
@@ -97,27 +100,35 @@ const ReactionButton = ({
     };
   }, [targetType, targetId, currentUserId]);
 
-  // Approved Pryde Reaction Set
-  const availableEmojis = [
-    '👍', '❤️', '😂', '😮', '🥺', '😡',
-    '🤗', '🎉', '🔥', '👏', '🏳️‍🌈', '🏳️‍⚧️'
-  ];
+  // Detect mobile/PWA mode
+  const detectMode = useCallback(() => {
+    const isMobile = window.innerWidth <= 768;
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                  window.navigator.standalone === true;
+    return (isMobile || isPWA) ? 'mobile' : 'desktop';
+  }, []);
 
-  // Close picker when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        pickerRef.current && 
-        !pickerRef.current.contains(event.target) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target)
-      ) {
-        setShowPicker(false);
-      }
-    };
+  // Open picker with proper positioning
+  const openPicker = useCallback(() => {
+    const mode = detectMode();
+    setPickerMode(mode);
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    if (mode === 'desktop' && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setAnchorRect({
+        top: rect.top,
+        left: rect.left,
+        bottom: rect.bottom,
+        right: rect.right
+      });
+    }
+
+    setShowPicker(true);
+  }, [detectMode]);
+
+  const closePicker = useCallback(() => {
+    setShowPicker(false);
+    setAnchorRect(null);
   }, []);
 
   // Handle reaction click
@@ -187,7 +198,7 @@ const ReactionButton = ({
         clearTimeout(hoverTimeoutRef.current);
       }
       hoverTimeoutRef.current = setTimeout(() => {
-        setShowPicker(true);
+        openPicker();
       }, 500);
     }
   };
@@ -197,23 +208,34 @@ const ReactionButton = ({
       if (hoverTimeoutRef.current) {
         clearTimeout(hoverTimeoutRef.current);
       }
-      hoverTimeoutRef.current = setTimeout(() => {
-        setShowPicker(false);
-      }, 500);
+      // Don't auto-close on mouse leave - let the overlay handle closing
     }
   };
 
-  // Handle click (mobile)
+  // Handle click
   const handleClick = () => {
-    if (window.innerWidth <= 768) {
-      setShowPicker(!showPicker);
+    if (showPicker) {
+      closePicker();
+    } else if (window.innerWidth <= 768) {
+      // Mobile: always open picker
+      openPicker();
     } else if (!userReaction) {
-      setShowPicker(!showPicker);
+      // Desktop without reaction: open picker
+      openPicker();
     } else {
-      // On desktop, clicking when you have a reaction removes it
+      // Desktop with reaction: toggle off the reaction
       handleReaction(userReaction);
     }
   };
+
+  // Clean up hover timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Calculate total reaction count
   const totalCount = Object.values(reactions).reduce((sum, count) => sum + count, 0);
@@ -254,29 +276,13 @@ const ReactionButton = ({
         </button>
       )}
 
-      {showPicker && (
-        <div 
-          ref={pickerRef}
-          className="reaction-picker"
-          onMouseEnter={() => {
-            if (window.innerWidth > 768 && hoverTimeoutRef.current) {
-              clearTimeout(hoverTimeoutRef.current);
-            }
-          }}
-          onMouseLeave={handleMouseLeave}
-        >
-          {availableEmojis.map(emoji => (
-            <button
-              key={emoji}
-              className={`reaction-emoji ${userReaction === emoji ? 'selected' : ''}`}
-              onClick={() => handleReaction(emoji)}
-              title={emoji}
-            >
-              {emoji}
-            </button>
-          ))}
-        </div>
-      )}
+      <EmojiPickerOverlay
+        open={showPicker}
+        mode={pickerMode}
+        anchorRect={anchorRect}
+        onSelect={handleReaction}
+        onClose={closePicker}
+      />
     </div>
   );
 };
