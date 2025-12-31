@@ -2065,21 +2065,35 @@ function Feed() {
                             <span>{post.author?.displayName?.charAt(0).toUpperCase() || post.author?.username?.charAt(0).toUpperCase() || 'U'}</span>
                           )}
                         </Link>
-                        {/* Single-line post header matching comment style */}
-                        <div className="comment-header-left">
-                          <Link to={`/profile/${post.author?.username}`} className="comment-author" style={{ textDecoration: 'none' }}>
-                            <span className="author-name">{post.author?.displayName || post.author?.username || 'User'}</span>
+                        {/* Post header with two rows for mobile */}
+                        <div className="post-author-info">
+                          {/* Row 1: Name + Badges */}
+                          <div className="post-author-name-row">
+                            <Link to={`/profile/${post.author?.username}`} className="comment-author" style={{ textDecoration: 'none' }}>
+                              <span className="author-name">{post.author?.displayName || post.author?.username || 'User'}</span>
+                            </Link>
                             {post.author?.badges?.length > 0 && (
                               <BadgeContainer badges={post.author.badges} />
                             )}
+                          </div>
+                          {/* Row 2: Pronouns · Date · Privacy · (edited) */}
+                          <div className="post-meta-row">
                             {post.author?.pronouns && (
-                              <span className="author-pronouns">({post.author.pronouns})</span>
+                              <span className="author-pronouns">{post.author.pronouns}</span>
                             )}
-                          </Link>
-                          <span className="comment-timestamp">
-                            {new Date(post.createdAt).toLocaleString()}
-                            {post.edited && <span className="edited-indicator"> (edited)</span>}
-                          </span>
+                            <span className="post-time-inline">
+                              {new Date(post.createdAt).toLocaleString()}
+                            </span>
+                            <span className="post-privacy-indicator" title={
+                              post.visibility === 'public' ? 'Public' :
+                              post.visibility === 'private' ? 'Only you' :
+                              'Connections only'
+                            }>
+                              {post.visibility === 'public' ? '🌍' :
+                               post.visibility === 'private' ? '🔒' : '👥'}
+                            </span>
+                            {post.edited && <span className="edited-indicator">(edited)</span>}
+                          </div>
                         </div>
                       </div>
                       <div className="post-header-actions">
