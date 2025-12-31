@@ -328,7 +328,25 @@ function Groups() {
       }
     } catch (err) {
       console.error('Failed to create post:', err);
-      const message = err.response?.data?.message || 'Failed to create post. Please try again.';
+
+      // Extract more helpful error message for debugging
+      let message = 'Failed to create post. Please try again.';
+
+      if (err.response?.status === 403) {
+        // CSRF or permission error
+        if (err.response?.data?.code === 'CSRF_MISSING' || err.response?.data?.code === 'CSRF_MISMATCH') {
+          message = 'Security token expired. Please refresh the page and try again.';
+        } else if (err.response?.data?.message) {
+          message = err.response.data.message;
+        }
+      } else if (err.response?.status === 401) {
+        message = 'Your session has expired. Please log in again.';
+      } else if (err.response?.status === 429) {
+        message = 'Too many posts. Please wait a moment before trying again.';
+      } else if (err.response?.data?.message) {
+        message = err.response.data.message;
+      }
+
       alert(message);
     } finally {
       setPosting(false);

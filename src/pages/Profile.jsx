@@ -718,7 +718,28 @@ function Profile() {
       showToast('Post created successfully!', 'success');
     } catch (error) {
       logger.error('Failed to create post:', error);
-      showAlert('Failed to create post. Please try again.', 'Post Failed');
+
+      // Extract more helpful error message for debugging
+      let errorMessage = 'Failed to create post. Please try again.';
+
+      if (error.response?.status === 403) {
+        // CSRF or permission error
+        if (error.response?.data?.code === 'CSRF_MISSING' || error.response?.data?.code === 'CSRF_MISMATCH') {
+          errorMessage = 'Security token expired. Please refresh the page and try again.';
+        } else if (error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        }
+      } else if (error.response?.status === 401) {
+        errorMessage = 'Your session has expired. Please log in again.';
+      } else if (error.response?.status === 429) {
+        errorMessage = 'Too many posts. Please wait a moment before trying again.';
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      showAlert(errorMessage, 'Post Failed');
     } finally {
       setPostLoading(false);
     }
