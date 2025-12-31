@@ -40,6 +40,9 @@
 
   /* Text truncation only - layout never clips */
   overflow: visible;
+
+  /* OPTICAL OFFSET: Corrects visual centering (social apps do this) */
+  transform: translateY(-2px);
 }
 
 /* ============================================================
@@ -74,6 +77,7 @@
   height: 40px;
   object-fit: cover;
   border-radius: 50%;
+  display: block; /* Removes inline-image baseline sag */
 }
 
 .post-header-avatar-fallback {
@@ -115,12 +119,14 @@
 .post-author-name {
   font-weight: 600;
   font-size: 0.9375rem;
-  line-height: 1.2;
+  line-height: 1.15; /* Normalised: prevents visual downward pull */
   color: var(--text-primary, #1a1a1a);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   transition: color 0.15s ease;
+  margin: 0;
+  padding: 0;
 }
 
 .post-author-name-link:hover .post-author-name {
@@ -143,6 +149,8 @@
   align-items: center;
   gap: 6px;
   font-size: 0.8rem;
+  line-height: 1.1; /* Normalised: prevents visual downward pull */
+  margin-top: 2px;
   color: var(--text-muted, #666);
   opacity: 0.75;
   white-space: nowrap;
@@ -214,6 +222,8 @@
     padding: 10px 12px;
     min-height: 56px;
     max-height: 56px;
+    /* MOBILE SAFETY: Reduced offset (mobile text renders slightly taller) */
+    transform: translateY(-1px);
   }
 
   .post-header-avatar {
