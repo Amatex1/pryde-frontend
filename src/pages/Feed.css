@@ -233,21 +233,14 @@
   border-color: var(--border-medium);
 }
 
-.post-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-sm);  /* Compact density: 8px */
-  padding: 6px 0; /* Increased vertical padding for better spacing */
-  gap: 10px; /* Consistent gap between elements */
-}
+/* =====================================================
+   POST HEADER — DEPRECATED (see PostHeader.jsx)
 
-.post-header-actions {
-  display: flex;
-  gap: var(--space-2);
-  margin-left: auto; /* Push to the right */
-  flex-shrink: 0; /* Prevent shrinking */
-}
+   The canonical PostHeader component now uses CSS Grid.
+   See: src/components/PostHeader.jsx and PostHeader.css
+
+   Legacy .post-header styles REMOVED to prevent conflicts.
+   ===================================================== */
 
 .post-dropdown-container {
   position: relative;
@@ -3197,20 +3190,9 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
     justify-content: center;
   }
 
-  .post-header {
-    flex-wrap: nowrap;
-  }
-
-  /* Mobile: Allow badges to be visible in author row */
-  .author-name-row {
-    overflow: visible !important; /* Override hidden to show badges */
-    flex-wrap: wrap !important; /* Allow wrapping on mobile */
-  }
-
-  .author-name-row .badge-container {
-    flex-shrink: 0;
-    overflow: visible;
-  }
+  /* Legacy .post-header and .author-name-row mobile overrides REMOVED
+     The canonical PostHeader component handles mobile layout via CSS Grid.
+     See: src/components/PostHeader.css */
 
   .post-content {
     font-size: 0.9375rem;

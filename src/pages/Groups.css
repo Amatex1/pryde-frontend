@@ -370,70 +370,19 @@
   border-radius: 12px;
 }
 
-.group-posts .post-header {
-  margin-bottom: 1rem;
-}
+/* =====================================================
+   POST HEADER — DEPRECATED (see PostHeader.jsx)
 
-.group-posts .post-author {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  text-decoration: none;
-  color: inherit;
-}
+   Groups now uses the canonical PostHeader component.
+   See: src/components/PostHeader.jsx and PostHeader.css
 
-.group-posts .author-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--gradient-primary);
-  flex-shrink: 0;
-}
-
-.group-posts .author-avatar .avatar-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-.group-posts .author-avatar .avatar-fallback {
-  color: white;
-  font-weight: 600;
-  font-size: 1.25rem;
-  text-transform: uppercase;
-}
-
-.group-posts .author-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.group-posts .author-name {
-  font-weight: 600;
-  color: var(--text-main);
-}
-
-.group-posts .post-date {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
+   Legacy .group-posts .post-header styles REMOVED.
+   ===================================================== */
 
 .group-posts .post-content p {
   line-height: 1.6;
   color: var(--text-main);
   margin: 0;
-}
-
-/* Post header with actions */
-.group-posts .post-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
 }
 
 .post-actions {
@@ -1250,10 +1199,7 @@
     padding: 1rem;
   }
 
-  .group-posts .author-avatar {
-    width: 40px;
-    height: 40px;
-  }
+  /* Legacy .author-avatar override removed - PostHeader handles mobile sizing */
 
   .composer-actions {
     flex-wrap: wrap;

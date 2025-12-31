@@ -1,30 +1,31 @@
 /**
- * PostHeader - Canonical post header component
- * 
- * STRUCTURE (NON-NEGOTIABLE):
- * <div class="post-header">
- *   <div class="post-header-left">
- *     <Avatar />
- *     <div class="post-header-text">
- *       <div class="post-author-name">Author Name [Badges] [Privacy]</div>
- *       <div class="post-meta">
- *         <span class="post-pronouns">He/Him</span>
- *         <span class="post-separator">·</span>
- *         <time class="post-timestamp">31/12/2025, 11:08</time>
- *         [edited indicator if applicable]
- *       </div>
+ * PostHeader - Canonical post header component (GRID-BASED)
+ *
+ * STRUCTURE (NON-NEGOTIABLE - CSS GRID):
+ * <div class="post-header">                    <!-- grid: auto 1fr auto -->
+ *   <Avatar />                                 <!-- Column 1: 40px fixed -->
+ *   <div class="post-header-text">             <!-- Column 2: flexible -->
+ *     <div class="post-author-row">
+ *       <span class="post-author-name">Name</span>
+ *       [Badges]
+ *     </div>
+ *     <div class="post-meta">
+ *       [Pronouns] · [Timestamp] · [(edited)] · [Privacy Icon]
  *     </div>
  *   </div>
- *   <div class="post-header-actions">
+ *   <div class="post-header-actions">          <!-- Column 3: 32px fixed -->
  *     {children - menu button}
  *   </div>
  * </div>
- * 
+ *
  * RULES:
+ * - Uses CSS Grid (NOT Flex) for cross-platform consistency
+ * - Header height is FIXED: 64px desktop, 56px mobile
  * - No conditional layout logic
  * - No alternative markup
  * - Header NEVER wraps into multiple rows
  * - Only text truncates - layout does not reflow
+ * - Privacy icon in meta row, NOT inline with name
  */
 
 import { Link } from 'react-router-dom';
@@ -101,39 +102,43 @@ function PostHeader({
 
   return (
     <div className="post-header">
-      <div className="post-header-left">
-        {Avatar}
-        <div className="post-header-text">
-          {/* Row 1: Name + Badges + Privacy */}
-          <div className="post-author-row">
-            {AuthorName}
-            {author.badges?.length > 0 && (
-              <BadgeContainer badges={author.badges} />
-            )}
-            <span className="post-privacy" title={privacyTitle}>
-              {privacyIcon}
-            </span>
-          </div>
-          {/* Row 2: Pronouns · Timestamp · (edited) */}
-          <div className="post-meta">
-            {author.pronouns && (
-              <>
-                <span className="post-pronouns">{author.pronouns}</span>
-                <span className="post-separator">·</span>
-              </>
-            )}
-            <time className="post-timestamp" dateTime={createdAt}>
-              {formattedDate}
-            </time>
-            {edited && (
-              <>
-                <span className="post-separator">·</span>
-                <span className="post-edited">(edited)</span>
-              </>
-            )}
-          </div>
+      {/* Column 1: Avatar (fixed 40px) */}
+      {Avatar}
+
+      {/* Column 2: Text Stack (flexible width) */}
+      <div className="post-header-text">
+        {/* Row 1: Name + Badges only (no privacy icon per spec) */}
+        <div className="post-author-row">
+          {AuthorName}
+          {author.badges?.length > 0 && (
+            <BadgeContainer badges={author.badges} />
+          )}
+        </div>
+        {/* Row 2: Pronouns · Timestamp · (edited) · Privacy */}
+        <div className="post-meta">
+          {author.pronouns && (
+            <>
+              <span className="post-pronouns">{author.pronouns}</span>
+              <span className="post-separator">·</span>
+            </>
+          )}
+          <time className="post-timestamp" dateTime={createdAt}>
+            {formattedDate}
+          </time>
+          {edited && (
+            <>
+              <span className="post-separator">·</span>
+              <span className="post-edited">(edited)</span>
+            </>
+          )}
+          <span className="post-separator">·</span>
+          <span className="post-privacy" title={privacyTitle}>
+            {privacyIcon}
+          </span>
         </div>
       </div>
+
+      {/* Column 3: Actions (fixed 32px) */}
       {children && (
         <div className="post-header-actions">
           {children}

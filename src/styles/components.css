@@ -274,63 +274,13 @@
 }
 
 /* =====================================================
-   POST HEADER — SINGLE META RAIL
-   (name, badge, pronouns, date, privacy)
+   POST HEADER — DEPRECATED (see PostHeader.jsx)
+
+   The canonical PostHeader component now uses CSS Grid.
+   See: src/components/PostHeader.jsx and PostHeader.css
+
+   These legacy styles are REMOVED to prevent conflicts.
    ===================================================== */
-
-.post-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.post-header .post-author {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
-.post-header .post-author > div {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: nowrap;
-  min-width: 0;
-  white-space: nowrap;
-}
-
-.post-header .post-author span,
-.post-header .post-author time,
-.post-header .post-author svg {
-  line-height: 1.2;
-  display: inline-flex;
-  align-items: center;
-  white-space: nowrap;
-}
-
-.post-header .post-author span.post-author-pronouns,
-.post-header .post-author span.post-author-date,
-.post-header .post-author span.post-author-privacy,
-.post-header .post-author span.post-author-edited,
-.post-header .post-author time {
-  font-size: 13px;
-  opacity: 0.65;
-}
-
-/* Verified badge should NOT be dimmed */
-.post-header .post-author span.verified-badge,
-.post-header .post-author span.post-author-badge {
-  opacity: 1 !important;
-}
-
-/* Mobile: Allow post author meta to wrap */
-@media (max-width: 480px) {
-  .post-header .post-author > div {
-    flex-wrap: wrap;
-    gap: 4px 6px;
-  }
-}
 
 /* =====================================================
    NAVBAR — FINAL VISUAL POLISH
