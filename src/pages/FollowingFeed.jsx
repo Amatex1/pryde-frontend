@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
+import PostHeader from '../components/PostHeader';
 import './Feed.css';
 
 function FollowingFeed() {
@@ -94,24 +95,12 @@ function FollowingFeed() {
           <div className="posts-list">
             {posts.map(post => (
               <div key={post._id} className="post-card glossy">
-                <div className="post-header">
-                  <Link to={`/profile/${post.author?.username}`} className="post-author">
-                    <div className="author-avatar">
-                      {post.author?.profilePhoto ? (
-                        <img src={getImageUrl(post.author.profilePhoto)} alt={post.author.username} />
-                      ) : (
-                        <span>{post.author?.displayName?.charAt(0).toUpperCase()}</span>
-                      )}
-                    </div>
-                    <div className="author-info">
-                      <span className="author-name">
-                        {post.author?.displayName}
-                        {post.author?.isVerified && <span className="verified-badge">✓</span>}
-                      </span>
-                      <span className="post-time">{new Date(post.createdAt).toLocaleDateString()}</span>
-                    </div>
-                  </Link>
-                </div>
+                <PostHeader
+                  author={post.author}
+                  createdAt={post.createdAt}
+                  visibility={post.visibility}
+                  edited={post.edited}
+                />
 
                 <div className="post-content">
                   <p>{post.content}</p>

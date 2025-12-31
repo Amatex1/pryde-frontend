@@ -1,25 +1,29 @@
 /**
- * Post Header Unified Styles
- * 
- * Canonical grid layout for post headers across all pages.
- * Structure: Avatar | Identity Column | Actions
- * 
- * Identity Column:
- *   Row 1: Display Name + Badges
- *   Row 2: Pronouns · Date · Privacy · (edited)
+ * DEPRECATED: postHeader.css
+ *
+ * This file is DEPRECATED as of 2025-12-31.
+ *
+ * The canonical PostHeader component now lives at:
+ * - src/components/PostHeader.jsx
+ * - src/components/PostHeader.css
+ *
+ * This file is kept ONLY for backward compatibility with legacy
+ * inline post headers that haven't been migrated yet.
+ *
+ * DO NOT add new styles here.
+ *
+ * The old styles below target classes like .post-author, .author-info, etc.
+ * The new PostHeader component uses prefixed classes like .post-header-left,
+ * .post-header-avatar, .post-author-row, etc.
  */
 
 /* ============================================================
-   POST HEADER GRID LAYOUT
+   LEGACY POST HEADER STYLES (DEPRECATED)
+   Only applies to inline post headers NOT using PostHeader component
    ============================================================ */
 
-.post-header {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: var(--space-3, 0.75rem);
-  align-items: start;
-  position: relative;
-}
+/* REMOVED: grid layout that conflicts with flex layout in new PostHeader.css */
+/* The canonical .post-header flex layout is now defined in PostHeader.css */
 
 /* Avatar column - fixed size */
 .post-header .author-avatar,

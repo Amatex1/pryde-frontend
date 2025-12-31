@@ -16,6 +16,7 @@ import PollCreator from '../components/PollCreator';
 import Poll from '../components/Poll';
 import PinnedPostBadge from '../components/PinnedPostBadge';
 import BadgeContainer from '../components/BadgeContainer';
+import PostHeader from '../components/PostHeader';
 import { useBadges } from '../hooks/useBadges';
 // DEPRECATED: EditHistoryModal import removed 2025-12-26
 import DraftManager from '../components/DraftManager';
@@ -2044,120 +2045,76 @@ function Feed() {
                     className="post-card glossy fade-in"
                     ref={(el) => postRefs.current[post._id] = el}
                   >
-                    <div className="post-header">
-                      {/* Pinned Post Badge */}
-                      {post.isPinned && <PinnedPostBadge />}
+                    {/* Pinned Post Badge */}
+                    {post.isPinned && <PinnedPostBadge />}
 
-                      <div className="post-author">
-                        <Link
-                          to={`/profile/${post.author?.username}`}
-                          className="author-avatar"
-                          style={{ textDecoration: 'none' }}
-                          aria-label={`View ${post.author?.displayName || post.author?.username}'s profile`}
+                    <PostHeader
+                      author={post.author}
+                      createdAt={post.createdAt}
+                      visibility={post.visibility}
+                      edited={post.edited}
+                      isPinned={post.isPinned}
+                    >
+                      <div className="post-dropdown-container">
+                        <button
+                          className="btn-dropdown"
+                          onClick={() => toggleDropdown(post._id)}
+                          title="More options"
                         >
-                          {post.author?.profilePhoto ? (
-                            <OptimizedImage
-                              src={getImageUrl(post.author.profilePhoto)}
-                              alt={post.author.username}
-                              className="avatar-image"
-                            />
-                          ) : (
-                            <span>{post.author?.displayName?.charAt(0).toUpperCase() || post.author?.username?.charAt(0).toUpperCase() || 'U'}</span>
-                          )}
-                        </Link>
-                        {/* Post header with two rows for mobile */}
-                        <div className="post-author-info">
-                          {/* Row 1: Name + Badges + Privacy */}
-                          <div className="post-author-name-row">
-                            <Link to={`/profile/${post.author?.username}`} className="comment-author" style={{ textDecoration: 'none' }}>
-                              <span className="author-name">{post.author?.displayName || post.author?.username || 'User'}</span>
-                            </Link>
-                            {post.author?.badges?.length > 0 && (
-                              <BadgeContainer badges={post.author.badges} />
-                            )}
-                            <span className="post-privacy-indicator" title={
-                              post.visibility === 'public' ? 'Public' :
-                              post.visibility === 'private' ? 'Only you' :
-                              'Connections only'
-                            }>
-                              {post.visibility === 'public' ? '🌍' :
-                               post.visibility === 'private' ? '🔒' : '👥'}
-                            </span>
-                          </div>
-                          {/* Row 2: Pronouns · Date · (edited) */}
-                          <div className="post-meta-row">
-                            {post.author?.pronouns && (
-                              <span className="author-pronouns">{post.author.pronouns}</span>
-                            )}
-                            <span className="post-time-inline">
-                              {new Date(post.createdAt).toLocaleString()}
-                            </span>
-                            {post.edited && <span className="edited-indicator">(edited)</span>}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="post-header-actions">
-                        <div className="post-dropdown-container">
-                          <button
-                            className="btn-dropdown"
-                            onClick={() => toggleDropdown(post._id)}
-                            title="More options"
-                          >
-                            ⋮
-                          </button>
-                          {openDropdownId === post._id && (
-                            <div className="dropdown-menu">
-                              {(post.author?._id === currentUser?.id || post.author?._id === currentUser?._id) ? (
-                                <>
+                          ⋮
+                        </button>
+                        {openDropdownId === post._id && (
+                          <div className="dropdown-menu">
+                            {(post.author?._id === currentUser?.id || post.author?._id === currentUser?._id) ? (
+                              <>
+                                <button
+                                  className="dropdown-item"
+                                  onClick={async () => {
+                                    try {
+                                      const response = await api.post(`/posts/${post._id}/pin`);
+                                      setPosts(posts.map(p => p._id === post._id ? response.data : p));
+                                      setOpenDropdownId(null);
+                                    } catch (error) {
+                                      logger.error('Failed to toggle pin:', error);
+                                    }
+                                  }}
+                                >
+                                  📌 {post.isPinned ? 'Unpin' : 'Pin to Profile'}
+                                </button>
+                                {/* DEPRECATED: View Edit History menu item removed 2025-12-26 */}
+                                {!post.isShared && (
                                   <button
                                     className="dropdown-item"
-                                    onClick={async () => {
-                                      try {
-                                        const response = await api.post(`/posts/${post._id}/pin`);
-                                        setPosts(posts.map(p => p._id === post._id ? response.data : p));
-                                        setOpenDropdownId(null);
-                                      } catch (error) {
-                                        logger.error('Failed to toggle pin:', error);
-                                      }
-                                    }}
+                                    onClick={() => handleEditPost(post)}
                                   >
-                                    📌 {post.isPinned ? 'Unpin' : 'Pin to Profile'}
+                                    ✏️ Edit
                                   </button>
-                                  {/* DEPRECATED: View Edit History menu item removed 2025-12-26 */}
-                                  {!post.isShared && (
-                                    <button
-                                      className="dropdown-item"
-                                      onClick={() => handleEditPost(post)}
-                                    >
-                                      ✏️ Edit
-                                    </button>
-                                  )}
-                                  <button
-                                    className="dropdown-item delete"
-                                    onClick={() => {
-                                      handleDelete(post._id);
-                                      setOpenDropdownId(null);
-                                    }}
-                                  >
-                                    🗑️ Delete
-                                  </button>
-                                </>
-                              ) : (
+                                )}
                                 <button
-                                  className="dropdown-item report"
+                                  className="dropdown-item delete"
                                   onClick={() => {
-                                    setReportModal({ isOpen: true, type: 'post', contentId: post._id, userId: post.author?._id });
+                                    handleDelete(post._id);
                                     setOpenDropdownId(null);
                                   }}
                                 >
-                                  🚩 Report
+                                  🗑️ Delete
                                 </button>
-                              )}
-                            </div>
-                          )}
-                        </div>
+                              </>
+                            ) : (
+                              <button
+                                className="dropdown-item report"
+                                onClick={() => {
+                                  setReportModal({ isOpen: true, type: 'post', contentId: post._id, userId: post.author?._id });
+                                  setOpenDropdownId(null);
+                                }}
+                              >
+                                🚩 Report
+                              </button>
+                            )}
+                          </div>
+                        )}
                       </div>
-                    </div>
+                    </PostHeader>
 
                     <div className="post-content">
                       {/* Show "X shared X's post" if this is a shared post */}

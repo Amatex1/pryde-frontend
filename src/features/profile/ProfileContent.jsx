@@ -21,6 +21,7 @@ import Poll from '../../components/Poll';
 import PinnedPostBadge from '../../components/PinnedPostBadge';
 import BadgeContainer from '../../components/BadgeContainer';
 import CommentThread from '../../components/CommentThread';
+import PostHeader from '../../components/PostHeader';
 import { getImageUrl } from '../../utils/imageUrl';
 import './ProfileContent.css';
 
@@ -180,31 +181,14 @@ function ProfilePostCard({ post, currentUser, isOwnProfile, onImageClick, postRe
       ref={(el) => postRefs && (postRefs.current[post._id] = el)}
     >
       {post.isPinned && <PinnedPostBadge />}
-      
-      <div className="post-header">
-        <div className="post-author">
-          <div className="author-avatar">
-            {post.author?.profilePhoto ? (
-              <OptimizedImage
-                src={getImageUrl(post.author.profilePhoto)}
-                alt={post.author.username}
-                className="avatar-image"
-              />
-            ) : (
-              <span>{post.author?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-            )}
-          </div>
-          <div className="author-info">
-            <div className="author-name-row">
-              <span className="author-name">{post.author?.displayName || post.author?.username}</span>
-              {post.author?.badges?.length > 0 && (
-                <BadgeContainer badges={post.author.badges} />
-              )}
-            </div>
-            <span className="post-time-inline">{new Date(post.createdAt).toLocaleDateString()}</span>
-          </div>
-        </div>
-      </div>
+
+      <PostHeader
+        author={post.author}
+        createdAt={post.createdAt}
+        visibility={post.visibility}
+        edited={post.edited}
+        isPinned={post.isPinned}
+      />
 
       {post.content && (
         <div className="post-content">

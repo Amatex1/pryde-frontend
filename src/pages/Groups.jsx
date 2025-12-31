@@ -32,6 +32,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import OptimizedImage from '../components/OptimizedImage';
+import PostHeader from '../components/PostHeader';
 import Toast from '../components/Toast';
 import { useToast } from '../hooks/useToast';
 import api from '../utils/api';
@@ -913,33 +914,12 @@ function Groups() {
 
                   return (
                     <div key={post._id} className="post-card glossy">
-                      <div className="post-header">
-                        <Link to={`/profile/${post.author?._id}`} className="post-author">
-                          <div className="author-avatar">
-                            {post.author?.profilePhoto ? (
-                              <OptimizedImage
-                                src={getImageUrl(post.author.profilePhoto)}
-                                alt={`${post.author?.username || 'User'} avatar`}
-                                className="avatar-image"
-                                loading="lazy"
-                              />
-                            ) : (
-                              <span className="avatar-fallback">
-                                {post.author?.displayName?.charAt(0).toUpperCase() ||
-                                 post.author?.username?.charAt(0).toUpperCase() || 'U'}
-                              </span>
-                            )}
-                          </div>
-                          <div className="author-info">
-                            <span className="author-name">
-                              {post.author?.displayName || post.author?.username || 'Unknown'}
-                            </span>
-                            <span className="post-date">
-                              {new Date(post.createdAt).toLocaleDateString()}
-                            </span>
-                          </div>
-                        </Link>
-
+                      <PostHeader
+                        author={post.author}
+                        createdAt={post.createdAt}
+                        visibility="group"
+                        edited={post.edited}
+                      >
                         {/* Post actions (edit/delete) */}
                         {(isAuthor || canDelete) && (
                           <div className="post-actions">
@@ -983,7 +963,7 @@ function Groups() {
                             )}
                           </div>
                         )}
-                      </div>
+                      </PostHeader>
 
                       {/* Phase 6A: Locked post indicator */}
                       {post.isLocked && (

@@ -16,6 +16,7 @@ import CommentThread from '../components/CommentThread';
 import ReactionButton from '../components/ReactionButton';
 import PinnedPostBadge from '../components/PinnedPostBadge';
 import BadgeContainer from '../components/BadgeContainer';
+import PostHeader from '../components/PostHeader';
 // DEPRECATED: EditHistoryModal import removed 2025-12-26
 import Poll from '../components/Poll';
 import { useModal } from '../hooks/useModal';
@@ -1918,94 +1919,69 @@ function Profile() {
                       {/* OPTIONAL FEATURES: Pinned post indicator */}
                       {post.isPinned && <PinnedPostBadge />}
 
-                      <div className="post-header">
-                        <div className="post-author">
-                          <div className="author-avatar">
-                            {post.author?.profilePhoto ? (
-                              <OptimizedImage
-                                src={getImageUrl(post.author.profilePhoto)}
-                                alt={post.author.username}
-                                className="avatar-image"
-                              />
-                            ) : (
-                              <span>{post.author?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                            )}
-                          </div>
-                          {/* Single-line post header matching comment style */}
-                          <div className="comment-header-left">
-                            <Link to={`/profile/${post.author?.username}`} className="comment-author" style={{ textDecoration: 'none' }}>
-                              <span className="author-name">{post.author?.displayName || post.author?.username}</span>
-                              {post.author?.badges?.length > 0 && (
-                                <BadgeContainer badges={post.author.badges} />
-                              )}
-                              {post.author?.pronouns && (
-                                <span className="author-pronouns">({post.author.pronouns})</span>
-                              )}
-                            </Link>
-                            <span className="comment-timestamp">
-                              {new Date(post.createdAt).toLocaleString()}
-                              {post.edited && <span className="edited-indicator"> (edited)</span>}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="post-header-actions">
-                          <div className="post-dropdown-container">
-                            <button
-                              className="btn-dropdown"
-                              onClick={() => toggleDropdown(post._id)}
-                              title="More options"
-                            >
-                              ⋮
-                            </button>
-                            {openDropdownId === post._id && (
-                              <div className="dropdown-menu">
-                                {(post.author?._id === currentUser?.id || post.author?._id === currentUser?._id) ? (
-                                  <>
-                                    {/* OPTIONAL FEATURES: Pin/unpin button */}
-                                    <button
-                                      className="dropdown-item"
-                                      onClick={() => {
-                                        handlePinPost(post._id);
-                                        setOpenDropdownId(null);
-                                      }}
-                                    >
-                                      {post.isPinned ? '📌 Unpin' : '📍 Pin'}
-                                    </button>
-                                    {/* DEPRECATED: View Edit History menu item removed 2025-12-26 */}
-                                    {!post.isShared && (
-                                      <button
-                                        className="dropdown-item"
-                                        onClick={() => handleEditPost(post)}
-                                      >
-                                        ✏️ Edit
-                                      </button>
-                                    )}
-                                    <button
-                                      className="dropdown-item delete"
-                                      onClick={() => {
-                                        handleDeletePost(post._id);
-                                        setOpenDropdownId(null);
-                                      }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                  </>
-                                ) : (
+                      <PostHeader
+                        author={post.author}
+                        createdAt={post.createdAt}
+                        visibility={post.visibility}
+                        edited={post.edited}
+                        isPinned={post.isPinned}
+                      >
+                        <div className="post-dropdown-container">
+                          <button
+                            className="btn-dropdown"
+                            onClick={() => toggleDropdown(post._id)}
+                            title="More options"
+                          >
+                            ⋮
+                          </button>
+                          {openDropdownId === post._id && (
+                            <div className="dropdown-menu">
+                              {(post.author?._id === currentUser?.id || post.author?._id === currentUser?._id) ? (
+                                <>
+                                  {/* OPTIONAL FEATURES: Pin/unpin button */}
                                   <button
-                                    className="dropdown-item report"
+                                    className="dropdown-item"
                                     onClick={() => {
-                                      setReportModal({ isOpen: true, type: 'post', contentId: post._id, userId: post.author?._id });
+                                      handlePinPost(post._id);
                                       setOpenDropdownId(null);
                                     }}
                                   >
-                                    🚩 Report
+                                    {post.isPinned ? '📌 Unpin' : '📍 Pin'}
                                   </button>
-                                )}
-                              </div>
-                            )}
-                          </div>
+                                  {/* DEPRECATED: View Edit History menu item removed 2025-12-26 */}
+                                  {!post.isShared && (
+                                    <button
+                                      className="dropdown-item"
+                                      onClick={() => handleEditPost(post)}
+                                    >
+                                      ✏️ Edit
+                                    </button>
+                                  )}
+                                  <button
+                                    className="dropdown-item delete"
+                                    onClick={() => {
+                                      handleDeletePost(post._id);
+                                      setOpenDropdownId(null);
+                                    }}
+                                  >
+                                    🗑️ Delete
+                                  </button>
+                                </>
+                              ) : (
+                                <button
+                                  className="dropdown-item report"
+                                  onClick={() => {
+                                    setReportModal({ isOpen: true, type: 'post', contentId: post._id, userId: post.author?._id });
+                                    setOpenDropdownId(null);
+                                  }}
+                                >
+                                  🚩 Report
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </div>
-                      </div>
+                      </PostHeader>
 
                       <div className="post-content">
                         {editingPostId === post._id ? (

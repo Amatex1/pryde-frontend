@@ -101,58 +101,11 @@
   border-left: 3px solid var(--warning-color, #f59e0b);
 }
 
-.post-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 0.75rem;
-}
-
-.post-author {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-.author-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.author-avatar-placeholder {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--accent-color, #7c3aed);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 600;
-}
-
-.author-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.author-name {
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.verified-badge {
-  color: var(--accent-color, #7c3aed);
-}
-
-.post-time {
-  font-size: 0.75rem;
-  color: var(--text-muted, #888);
-}
+/* ============================================================
+   LEGACY POST HEADER STYLES (DEPRECATED)
+   These styles are kept for backward compatibility.
+   New posts use the canonical PostHeader component.
+   ============================================================ */
 
 .locked-badge {
   font-size: 1.25rem;

@@ -15,6 +15,7 @@
 
 import React, { useRef } from 'react';
 import OptimizedImage from '../../components/OptimizedImage';
+import PostHeader from '../../components/PostHeader';
 import { getImageUrl } from '../../utils/imageUrl';
 import './GroupFeed.css';
 
@@ -202,34 +203,16 @@ function GroupPost({
   return (
     <article className={`group-post glossy ${post.isLocked ? 'locked' : ''}`}>
       {/* Post header */}
-      <div className="post-header">
-        <div className="post-author">
-          {post.author.profilePhoto ? (
-            <OptimizedImage
-              src={getImageUrl(post.author.profilePhoto)}
-              alt={post.author.displayName || post.author.username}
-              className="author-avatar"
-            />
-          ) : (
-            <div className="author-avatar-placeholder">
-              {(post.author.displayName || post.author.username || '?')[0].toUpperCase()}
-            </div>
-          )}
-          <div className="author-info">
-            <span className="author-name">
-              {post.author.displayName || post.author.username}
-              {post.author.isVerified && <span className="verified-badge">✓</span>}
-            </span>
-            <span className="post-time">
-              {new Date(post.createdAt).toLocaleDateString()}
-            </span>
-          </div>
-        </div>
-
+      <PostHeader
+        author={post.author}
+        createdAt={post.createdAt}
+        visibility="group"
+        edited={post.edited}
+      >
         {post.isLocked && (
           <span className="locked-badge" title="Replies disabled">🔒</span>
         )}
-      </div>
+      </PostHeader>
 
       {/* Post content */}
       {isEditing ? (
