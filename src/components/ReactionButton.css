@@ -90,7 +90,8 @@
   display: flex;
   gap: var(--space-1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  /* HIGH z-index to appear above post images and content */
+  z-index: 99999;
   animation: slideUp 0.2s ease;
 }
 

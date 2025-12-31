@@ -44,7 +44,7 @@
   min-width: 0 !important;
   min-height: auto !important; /* Let content define height */
   word-wrap: break-word !important;
-  contain: layout !important;
+  /* REMOVED: contain: layout - was trapping reaction picker behind images */
 }
 
 .profile-page .post-card:hover,
@@ -1633,7 +1633,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   min-height: 150px;
   overflow: visible;
   word-wrap: break-word;
-  contain: layout;
+  /* REMOVED: contain: layout - was trapping reaction picker behind images */
 }
 
 .profile-page .post-card:hover {

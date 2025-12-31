@@ -239,7 +239,7 @@
   /* NO min-height - content defines height naturally */
   /* NO flex-grow - cards don't expand */
   word-wrap: break-word;
-  contain: layout;
+  /* REMOVED: contain: layout - was creating stacking context that trapped reaction picker */
   margin-bottom: var(--space-md);  /* Compact density: 12px */
 }
 
@@ -2160,7 +2160,8 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   max-width: 90vw; /* Prevent overflow on small screens */
   width: max-content;
   box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.15);
-  z-index: 9999;
+  /* HIGH z-index to appear above post images and content */
+  z-index: 99999;
   animation: reactionPopIn 0.2s ease-out;
   touch-action: manipulation;
 }
