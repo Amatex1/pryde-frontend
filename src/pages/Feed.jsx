@@ -2813,6 +2813,9 @@ function Feed() {
             </Link>
           </div>
 
+          {/* Subtle divider between support and resources */}
+          <div className="sidebar-divider" aria-hidden="true" />
+
           {/* Community & Resources - Curated LGBTQ+ links */}
           <div className="sidebar-card glossy">
             <CommunityResources />

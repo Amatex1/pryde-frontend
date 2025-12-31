@@ -1,6 +1,6 @@
 /**
  * Community Resources Sidebar Styles
- * 
+ *
  * Design intent: "Helpful links on a bookshelf — not a news panel"
  * - Minimal visual weight
  * - No cards, borders, or shadows
@@ -29,14 +29,15 @@
   line-height: 1.5;
 }
 
+/* Section labels - library feel, informational not dominant */
 .community-resources-section-title {
-  font-size: 11px;
+  font-size: 0.7rem;
   font-weight: 500;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: var(--space-4) 0 var(--space-2) 0;
-  opacity: 0.7;
+  letter-spacing: 0.08em;
+  margin: 16px 0 8px 0;
+  opacity: 0.6;
 }
 
 .community-resources-section-title:first-of-type {
@@ -49,16 +50,17 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  /* Removed gap - using padding on links for better vertical rhythm */
 }
 
+/* Links - increased breathing room */
 .community-resources-link {
   display: block;
   font-size: 13px;
   color: var(--text-secondary);
   text-decoration: none;
-  padding: var(--space-1) 0;
-  line-height: 1.6;
+  padding: 6px 0;
+  line-height: 1.45;
   transition: color 0.15s ease;
 }
 
@@ -70,6 +72,36 @@
   outline: 2px solid var(--pryde-purple);
   outline-offset: 2px;
   border-radius: 2px;
+}
+
+/* Professional disclaimer - calm, non-legalistic */
+.community-resources-disclaimer {
+  margin-top: 16px;
+  font-size: 0.7rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+  opacity: 0.55;
+}
+
+/* Sidebar divider - subtle gradient, used between sections */
+.sidebar-divider {
+  height: 1px;
+  margin: 16px 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.06),
+    transparent
+  );
+}
+
+[data-theme="light"] .sidebar-divider {
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(0, 0, 0, 0.06),
+    transparent
+  );
 }
 
 /* Dark mode adjustments */

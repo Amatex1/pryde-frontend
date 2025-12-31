@@ -75,6 +75,10 @@ function CommunityResources() {
           ))}
         </ul>
       </nav>
+
+      <p className="community-resources-disclaimer">
+        External links are provided for community reference. Pryde is not affiliated with external sites.
+      </p>
     </aside>
   );
 }
