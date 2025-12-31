@@ -55,12 +55,14 @@ Noise hides real problems.
      SPACING SCALE (COMPACT DENSITY)
      Reduced for modern social platform compactness
      ======================================== */
+  --space-1: 4px;    /* Minimal gaps (aliases --space-xs) */
   --space-xs: 4px;   /* Tiny gaps */
   --space-sm: 8px;   /* Small gaps */
-  --space-2: 12px;   /* Between sm and md */
-  --space-3: 14px;   /* Between sm and md */
+  --space-2: 8px;    /* 8px - standardized for feed polish */
+  --space-3: 12px;   /* 12px - standardized for feed polish */
   --space-md: 12px;  /* Default spacing (reduced from 16px) */
-  --space-4: 16px;   /* Between md and lg (reduced from 18px) */
+  --space-4: 16px;   /* 16px - standardized for feed polish */
+  --space-5: 24px;   /* 24px - between posts (breathing room) */
   --space-lg: 16px;  /* Section spacing (reduced from 24px) */
   --space-xl: 20px;  /* Large section spacing (reduced from 32px) */
   --space-2xl: 32px; /* Page-level spacing (reduced from 48px) */

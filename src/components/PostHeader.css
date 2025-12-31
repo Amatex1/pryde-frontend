@@ -148,16 +148,17 @@
 
 /* ============================================================
    POST META ROW (Pronouns · Timestamp · Edited · Privacy)
+   FEED POLISH: Soften secondary UI for visual hierarchy
    ============================================================ */
 
 .post-meta {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.8rem;
+  font-size: 0.85em; /* FEED POLISH: Relative sizing for hierarchy */
   line-height: 1.1;
   color: var(--text-muted, #666);
-  opacity: 0.75;
+  opacity: 0.65; /* FEED POLISH: Stepped back for hierarchy */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -169,17 +170,21 @@
 
 .post-pronouns {
   color: var(--text-muted, #666);
+  opacity: 0.65; /* FEED POLISH: Secondary */
+  font-size: 0.85em;
   flex-shrink: 0;
 }
 
 .post-separator {
   color: var(--text-muted, #666);
-  opacity: 0.6;
+  opacity: 0.5; /* FEED POLISH: Even more subdued */
   flex-shrink: 0;
 }
 
 .post-timestamp {
   color: var(--text-muted, #666);
+  opacity: 0.65; /* FEED POLISH: Secondary */
+  font-size: 0.85em;
   flex-shrink: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -188,11 +193,14 @@
 .post-edited {
   font-style: italic;
   color: var(--text-muted, #666);
+  opacity: 0.65; /* FEED POLISH: Secondary */
+  font-size: 0.85em;
   flex-shrink: 0;
 }
 
 .post-privacy {
   font-size: 0.75rem;
+  opacity: 0.65; /* FEED POLISH: Secondary */
   flex-shrink: 0;
   cursor: help;
 }
