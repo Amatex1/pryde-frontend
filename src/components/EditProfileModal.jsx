@@ -49,13 +49,19 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
 
   useEffect(() => {
     if (isOpen && user) {
+      // Predefined pronouns list
+      const predefinedPronouns = ['', 'She/Her', 'He/Him', 'They/Them', 'She/They', 'He/They', 'Any Pronouns', 'Ask Me', 'Ze/Zir', 'Xe/Xem', 'Prefer Not to Say'];
+
+      // Check if user has custom pronouns (not in predefined list)
+      const isCustomPronouns = user.pronouns && !predefinedPronouns.includes(user.pronouns);
+
       setFormData({
         fullName: user.fullName || '',
         nickname: user.nickname || '',
         displayNameType: user.displayNameType || 'fullName',
         customDisplayName: user.customDisplayName || '',
-        pronouns: user.pronouns || '',
-        customPronouns: user.customPronouns || '',
+        pronouns: isCustomPronouns ? 'custom' : (user.pronouns || ''),
+        customPronouns: isCustomPronouns ? user.pronouns : (user.customPronouns || ''),
         gender: user.gender || '',
         customGender: user.customGender || '',
         sexualOrientation: user.sexualOrientation || '',
@@ -281,6 +287,8 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
       // formData already contains profilePhoto and coverPhoto from user or upload
       const updateData = {
         ...formData,
+        // If pronouns is 'custom', send the customPronouns value instead
+        pronouns: formData.pronouns === 'custom' ? formData.customPronouns : formData.pronouns,
         coverPhotoPosition: coverPos,
         profilePhotoPosition: avatarPos
       };
@@ -492,8 +500,15 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                 <label>Pronouns</label>
                 <select
                   name="pronouns"
-                  value={formData.pronouns}
-                  onChange={handleChange}
+                  value={formData.pronouns === 'custom' || formData.customPronouns ? 'custom' : formData.pronouns}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === 'custom') {
+                      setFormData({...formData, pronouns: 'custom', customPronouns: ''});
+                    } else {
+                      setFormData({...formData, pronouns: value, customPronouns: ''});
+                    }
+                  }}
                 >
                   <option value="">Select Pronouns (Optional)</option>
                   <option value="She/Her">She/Her</option>
@@ -508,14 +523,15 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                   <option value="Prefer Not to Say">Prefer Not to Say</option>
                   <option value="custom">Custom (type below)</option>
                 </select>
-                {formData.pronouns === 'custom' && (
+                {(formData.pronouns === 'custom' || formData.customPronouns) && (
                   <input
                     type="text"
                     name="customPronouns"
                     value={formData.customPronouns || ''}
-                    onChange={(e) => setFormData({...formData, customPronouns: e.target.value, pronouns: e.target.value})}
+                    onChange={(e) => setFormData({...formData, customPronouns: e.target.value})}
                     placeholder="Enter your pronouns"
                     className="mt-2"
+                    style={{ marginTop: '0.5rem' }}
                   />
                 )}
               </div>
