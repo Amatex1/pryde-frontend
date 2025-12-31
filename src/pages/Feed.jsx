@@ -1114,6 +1114,16 @@ function Feed() {
       setPoll(null);
       setShowPollCreator(false);
       setHideMetrics(false);
+
+      // Mobile UX: Close composer and scroll to top to see the new post
+      if (showMobileComposer) {
+        setShowMobileComposer(false);
+        setIsTyping(false);
+        // Scroll to top after a brief delay to let the composer close
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 100);
+      }
     } catch (error) {
       logger.error('Post creation failed:', error);
 
