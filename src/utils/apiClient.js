@@ -80,6 +80,11 @@ let refreshPromise = null;
 /**
  * Attempt to refresh the access token
  * Uses single-flight pattern to prevent multiple simultaneous refreshes
+ *
+ * 🔥 CRITICAL: httpOnly cookie is the SINGLE SOURCE OF TRUTH
+ * - Always attempt refresh call, even if localStorage is empty
+ * - The httpOnly cookie will be sent automatically via credentials: 'include'
+ *
  * @returns {Promise<string|null>} New access token or null if refresh failed
  */
 async function refreshAccessToken() {
@@ -89,22 +94,21 @@ async function refreshAccessToken() {
     return refreshPromise;
   }
 
-  const refreshToken = getRefreshToken();
-  if (!refreshToken) {
-    logger.debug('[API] ❌ No refresh token available');
-    return null;
-  }
+  // Get localStorage token as OPTIONAL fallback (httpOnly cookie is primary)
+  const localRefreshToken = getRefreshToken();
 
   isRefreshing = true;
   refreshPromise = (async () => {
     try {
-      logger.debug('[API] 🔄 Attempting token refresh...');
+      logger.debug('[API] 🔄 Attempting token refresh via httpOnly cookie...');
 
+      // 🔥 ALWAYS call /refresh - let the httpOnly cookie authenticate
+      // Send localStorage token only as optional backup for cross-domain setups
       const response = await fetch(`${API_BASE_URL}/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ refreshToken })
+        credentials: 'include', // 🔥 CRITICAL: Sends httpOnly cookie automatically
+        body: JSON.stringify(localRefreshToken ? { refreshToken: localRefreshToken } : {})
       });
 
       if (!response.ok) {

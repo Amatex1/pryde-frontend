@@ -74,37 +74,37 @@ export function AuthProvider({ children }) {
   const role = useMemo(() => user?.role || null, [user]);
 
   /**
-   * Attempt silent token refresh using httpOnly cookie
-   * This runs BEFORE checking localStorage to restore sessions across browser restarts
+   * Attempt silent token refresh using httpOnly cookie (primary) or localStorage (fallback)
+   *
+   * 🔥 CRITICAL: httpOnly cookie is the SINGLE SOURCE OF TRUTH
+   * - Always attempt refresh call, even if localStorage is empty
+   * - The httpOnly cookie will be sent automatically via credentials: 'include'
+   * - This restores sessions after browser restart, even if localStorage was cleared
+   *
    * @returns {boolean} true if refresh succeeded
    */
   const attemptSilentRefresh = useCallback(async () => {
     try {
-      logger.debug('[AuthContext] 🔄 Attempting silent token refresh...');
+      logger.debug('[AuthContext] 🔄 Attempting silent token refresh via httpOnly cookie...');
 
-      // Get refresh token from localStorage as fallback for cross-domain setups
-      // (Cloudflare Pages → Render may not send httpOnly cookies due to browser restrictions)
+      // Get refresh token from localStorage as OPTIONAL fallback for cross-domain setups
+      // (Some browsers block cross-site cookies even with SameSite=None)
       const localRefreshToken = getRefreshToken();
 
-      // 🔥 CRITICAL: Skip refresh call if no token available
-      // This prevents unnecessary 401 errors after logout or on fresh visits
-      if (!localRefreshToken) {
-        logger.debug('[AuthContext] No refresh token in localStorage - skipping silent refresh');
-        return false;
-      }
-
-      // Call refresh endpoint - httpOnly cookie will be sent automatically via withCredentials
-      // Also send localStorage token as fallback for cross-origin scenarios
+      // 🔥 ALWAYS call /refresh - let the httpOnly cookie authenticate
+      // The backend checks: req.cookies?.refreshToken || req.body.refreshToken
+      // So the httpOnly cookie takes priority, localStorage is just a backup
       const response = await api.post('/refresh', {
-        refreshToken: localRefreshToken
+        // Send localStorage token only if available (optional backup)
+        ...(localRefreshToken && { refreshToken: localRefreshToken })
       }, {
-        withCredentials: true,
+        withCredentials: true, // 🔥 CRITICAL: Sends httpOnly cookie automatically
       });
 
       const { accessToken, refreshToken: newRefreshToken, user: userData } = response.data;
 
       if (accessToken) {
-        logger.debug('[AuthContext] ✅ Silent refresh succeeded');
+        logger.debug('[AuthContext] ✅ Silent refresh succeeded via httpOnly cookie');
         setAuthToken(accessToken);
 
         // Store new refresh token in localStorage as backup for cross-domain setups
@@ -122,7 +122,7 @@ export function AuthProvider({ children }) {
 
       return false;
     } catch (err) {
-      // Expected to fail if no valid refresh token exists
+      // Expected to fail if no valid session exists (no cookie, user logged out, etc.)
       logger.debug('[AuthContext] Silent refresh failed (expected if not logged in):', err.message);
       return false;
     }
@@ -304,18 +304,22 @@ export function AuthProvider({ children }) {
   /**
    * Manually refresh the access token
    * Note: The api.js interceptor handles this automatically on 401
+   *
+   * 🔥 httpOnly cookie is the SINGLE SOURCE OF TRUTH
    */
   const refreshToken = useCallback(async () => {
     try {
-      logger.debug('[AuthContext] 🔄 Manually refreshing token...');
+      logger.debug('[AuthContext] 🔄 Manually refreshing token via httpOnly cookie...');
 
+      // Get localStorage token as OPTIONAL fallback
       const currentRefreshToken = getRefreshToken();
-      if (!currentRefreshToken) {
-        throw new Error('No refresh token available');
-      }
 
-      const response = await api.post('/auth/refresh', {
-        refreshToken: currentRefreshToken
+      // 🔥 ALWAYS call /refresh - let the httpOnly cookie authenticate
+      const response = await api.post('/refresh', {
+        // Send localStorage token only if available (optional backup)
+        ...(currentRefreshToken && { refreshToken: currentRefreshToken })
+      }, {
+        withCredentials: true
       });
 
       const { accessToken, refreshToken: newRefreshToken } = response.data;

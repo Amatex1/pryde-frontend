@@ -226,22 +226,19 @@ api.interceptors.response.use(
       // 🔥 Create single-flight refresh promise
       refreshPromise = (async () => {
         try {
-          // Try to refresh the token using httpOnly cookie (primary) + localStorage fallback
-          logger.debug('🔄 Token expired, attempting silent refresh...');
+          // 🔥 httpOnly cookie is the SINGLE SOURCE OF TRUTH
+          // Always attempt refresh - the cookie will be sent automatically
+          logger.debug('🔄 Token expired, attempting refresh via httpOnly cookie...');
 
-          // Get refresh token from localStorage as fallback for cross-domain setups
-          // The httpOnly cookie will be sent automatically via withCredentials: true
+          // Get refresh token from localStorage as OPTIONAL fallback for cross-domain setups
+          // (Some browsers block cross-site cookies even with SameSite=None)
           const localRefreshToken = getRefreshToken();
 
-          // 🔥 Skip refresh if no token available (prevents 401 spam after logout)
-          if (!localRefreshToken) {
-            logger.debug('⏸️ No refresh token available - skipping refresh');
-            throw new Error('No refresh token available');
-          }
-
+          // 🔥 ALWAYS call /refresh - let the httpOnly cookie authenticate
+          // Don't skip based on localStorage - the cookie may still be valid
           const response = await axios.post(`${API_BASE_URL}/refresh`, {
-            // Send localStorage token as fallback - httpOnly cookie takes priority on server
-            refreshToken: localRefreshToken
+            // Send localStorage token only if available (optional backup)
+            ...(localRefreshToken && { refreshToken: localRefreshToken })
           }, {
             withCredentials: true // 🔥 CRITICAL: Sends httpOnly cookie automatically
           });
@@ -249,10 +246,10 @@ api.interceptors.response.use(
           const { accessToken, refreshToken: newRefreshToken } = response.data;
 
           if (accessToken) {
-            logger.debug('✅ Token refreshed successfully');
+            logger.debug('✅ Token refreshed successfully via httpOnly cookie');
             setAuthToken(accessToken);
 
-            // Store new refresh token if provided (keeps localStorage in sync)
+            // Store new refresh token if provided (keeps localStorage in sync as backup)
             if (newRefreshToken) {
               setRefreshToken(newRefreshToken);
             }

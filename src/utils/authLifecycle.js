@@ -27,7 +27,12 @@ let refreshInterval = null;
 let lastRefreshCheck = Date.now(); // 🔥 Track when we last checked for refresh
 
 /**
- * Attempt to refresh the session using refresh token
+ * Attempt to refresh the session using httpOnly cookie (primary) or localStorage (fallback)
+ *
+ * 🔥 CRITICAL: httpOnly cookie is the SINGLE SOURCE OF TRUTH
+ * - Always attempt refresh call, even if localStorage is empty
+ * - The httpOnly cookie will be sent automatically via credentials: 'include'
+ *
  * @returns {Promise<string|null>} New access token or null on failure
  */
 export async function refreshSession() {
@@ -37,22 +42,18 @@ export async function refreshSession() {
     return null;
   }
 
-  const refreshToken = getRefreshToken();
-  
-  // If no refresh token exists, user is not logged in
-  if (!refreshToken) {
-    logger.debug('[AuthLifecycle] No refresh token available');
-    return null;
-  }
+  // Get localStorage token as OPTIONAL fallback (httpOnly cookie is primary)
+  const localRefreshToken = getRefreshToken();
 
   try {
-    logger.debug('[AuthLifecycle] Proactive token refresh...');
+    logger.debug('[AuthLifecycle] Proactive token refresh via httpOnly cookie...');
 
+    // 🔥 ALWAYS call /refresh - let the httpOnly cookie authenticate
     const response = await fetch(`${API_BASE_URL}/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include', // Send httpOnly cookies
-      body: JSON.stringify({ refreshToken })
+      credentials: 'include', // 🔥 CRITICAL: Sends httpOnly cookie automatically
+      body: JSON.stringify(localRefreshToken ? { refreshToken: localRefreshToken } : {})
     });
 
     if (!response.ok) {

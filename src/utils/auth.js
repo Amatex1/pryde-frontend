@@ -225,19 +225,23 @@ export const isAuthenticated = () => {
 /**
  * Refresh the access token before an update reload
  * This ensures the user stays logged in after the app reloads
+ *
+ * 🔥 httpOnly cookie is the SINGLE SOURCE OF TRUTH
  */
 export async function refreshAccessToken() {
   try {
     // Import api dynamically to avoid circular dependency
     const { default: api } = await import('./api');
 
-    // Get refresh token from localStorage as fallback for cross-domain setups
+    // Get localStorage token as OPTIONAL fallback (httpOnly cookie is primary)
     const localRefreshToken = getRefreshToken();
 
+    // 🔥 ALWAYS call /refresh - let the httpOnly cookie authenticate
     const response = await api.post('/refresh', {
-      refreshToken: localRefreshToken || undefined
+      // Send localStorage token only if available (optional backup)
+      ...(localRefreshToken && { refreshToken: localRefreshToken })
     }, {
-      withCredentials: true
+      withCredentials: true // 🔥 CRITICAL: Sends httpOnly cookie automatically
     });
 
     // If new tokens are returned, store them
@@ -248,7 +252,7 @@ export async function refreshAccessToken() {
       setRefreshToken(response.data.refreshToken);
     }
 
-    console.log('✅ Token refreshed before update');
+    console.log('✅ Token refreshed before update via httpOnly cookie');
   } catch (err) {
     console.warn('⚠️ Token refresh failed during update:', err.message);
     // Don't throw - we still want to reload even if refresh fails
