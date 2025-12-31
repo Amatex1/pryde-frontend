@@ -41,6 +41,9 @@
 
   /* Text truncation only - layout never clips */
   overflow: visible;
+
+  /* LOCKED: No transforms on container - optics handled inside */
+  transform: none;
 }
 
 /* ============================================================
@@ -95,6 +98,7 @@
   min-width: 0; /* Enable text truncation */
   overflow: hidden;
   gap: 2px;
+  position: relative; /* Enables optical control of children */
 }
 
 /* ============================================================
@@ -117,7 +121,7 @@
 .post-author-name {
   font-weight: 600;
   font-size: 0.9375rem;
-  line-height: 1.15; /* Normalised: prevents visual downward pull */
+  line-height: 1.2;
   color: var(--text-primary, #1a1a1a);
   white-space: nowrap;
   overflow: hidden;
@@ -125,6 +129,9 @@
   transition: color 0.15s ease;
   margin: 0;
   padding: 0;
+
+  /* OPTICAL: Moves name DOWN slightly for better visual balance */
+  transform: translateY(2px);
 }
 
 .post-author-name-link:hover .post-author-name {
@@ -147,13 +154,16 @@
   align-items: center;
   gap: 6px;
   font-size: 0.8rem;
-  line-height: 1.1; /* Normalised: prevents visual downward pull */
+  line-height: 1.1;
   margin-top: 2px;
   color: var(--text-muted, #666);
   opacity: 0.75;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  /* OPTICAL: Raises meta row UP for better visual balance */
+  transform: translateY(-2px);
 }
 
 .post-pronouns {
@@ -184,6 +194,13 @@
   font-size: 0.75rem;
   flex-shrink: 0;
   cursor: help;
+}
+
+/* ICON BASELINE NORMALIZATION: Prevents icon droop next to text */
+.post-meta svg,
+.post-meta img {
+  display: block;
+  transform: translateY(-1px);
 }
 
 /* ============================================================
@@ -236,10 +253,14 @@
 
   .post-author-name {
     font-size: 0.875rem;
+    /* MOBILE: Reduced optical offset */
+    transform: translateY(1px);
   }
 
   .post-meta {
     font-size: 0.75rem;
+    /* MOBILE: Reduced optical offset */
+    transform: translateY(-1px);
   }
 
   .post-privacy {
