@@ -21,6 +21,51 @@ import { initSwApiCollisionDetector } from './utils/swApiCollisionDetector'
 import { initSWTestingInfrastructure } from './utils/swTestingInfrastructure'
 
 // ========================================
+// CHUNK LOAD ERROR RECOVERY
+// Detects stale JS chunk errors and auto-refreshes
+// ========================================
+window.addEventListener('error', (event) => {
+  // Check if it's a script/module loading error
+  const isChunkError =
+    event.message?.includes('Failed to fetch dynamically imported module') ||
+    event.message?.includes('Loading chunk') ||
+    event.message?.includes('Loading module') ||
+    event.message?.includes('Failed to load module script') ||
+    (event.target?.tagName === 'SCRIPT' && event.target?.src?.includes('.js'));
+
+  if (isChunkError) {
+    console.error('[ChunkError] Detected stale chunk error - triggering refresh');
+
+    // Prevent showing this error multiple times
+    const alreadyRefreshing = sessionStorage.getItem('chunk_error_refresh');
+    if (alreadyRefreshing) {
+      console.log('[ChunkError] Already attempted refresh this session');
+      return;
+    }
+
+    // Mark that we're about to refresh
+    sessionStorage.setItem('chunk_error_refresh', 'true');
+
+    // Clear caches and refresh
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        Promise.all(names.map(name => caches.delete(name))).then(() => {
+          console.log('[ChunkError] Caches cleared, refreshing...');
+          window.location.reload();
+        });
+      });
+    } else {
+      window.location.reload();
+    }
+  }
+}, true); // Use capture phase to catch errors early
+
+// Clear the refresh flag on successful load
+window.addEventListener('load', () => {
+  sessionStorage.removeItem('chunk_error_refresh');
+});
+
+// ========================================
 // INITIALIZE CIRCUIT BREAKER IMMEDIATELY
 // Must run before any API calls
 // ========================================
