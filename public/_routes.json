@@ -1,6 +1,20 @@
-{
+﻿{
   "version": 1,
   "include": ["/*"],
-  "exclude": []
+  "exclude": [
+    "/assets/*",
+    "/*.js",
+    "/*.css",
+    "/*.map",
+    "/*.ico",
+    "/*.png",
+    "/*.jpg",
+    "/*.svg",
+    "/*.woff",
+    "/*.woff2",
+    "/*.webp",
+    "/*.json",
+    "/icons/*",
+    "/legal/*"
+  ]
 }
-
