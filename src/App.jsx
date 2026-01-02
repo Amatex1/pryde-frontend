@@ -17,6 +17,7 @@ import { checkDomOrder } from './utils/domOrderCheck';
 import { setupDevConsole } from './utils/devConsole';
 import DebugOverlay from './components/DebugOverlay';
 import OfflineBanner from './components/OfflineBanner';
+import OnboardingTour from './components/onboarding/OnboardingTour';
 
 // Eager load critical components (needed immediately)
 // IMPORTANT: Only load components that DON'T use React Router hooks
@@ -236,11 +237,14 @@ function HashtagToGroupRedirect() {
  * Uses AuthContext for all auth state
  */
 function AppContent() {
-  const { authStatus, isAuthenticated, user, login } = useAuth();
+  const { authStatus, isAuthenticated, user, login, updateUser } = useAuth();
 
   // Update banner state
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [showUpdateBanner, setShowUpdateBanner] = useState(true);
+
+  // Onboarding tour state
+  const [showTour, setShowTour] = useState(false);
 
   // Derived state for convenience
   const isAuth = isAuthenticated;
@@ -248,6 +252,17 @@ function AppContent() {
 
   // NOTE: Mobile detection removed - layout now handled by CSS in AppLayout
   // All platforms use the same layout primitives (PageViewport, PageContainer, PageLayout)
+
+  // 🎯 ONBOARDING TOUR: Show tour for new users who haven't completed/skipped it
+  useEffect(() => {
+    if (isAuthenticated && user && user.showTour === true) {
+      // Small delay to let the feed render first
+      const timer = setTimeout(() => {
+        setShowTour(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, user]);
 
   // 🔥 AUTH LIFECYCLE: Proactive token refresh (runs once on mount)
   // Keeps users logged in like Facebook - refreshes tokens on:
@@ -451,6 +466,24 @@ function AppContent() {
 
       {/* 📴 Offline Banner - Shows when app is offline */}
       <OfflineBanner />
+
+      {/* 🎯 Onboarding Tour - Calm welcome for new users */}
+      <OnboardingTour
+        isOpen={showTour}
+        onClose={() => {
+          setShowTour(false);
+          // Update local user state to prevent tour from showing again
+          if (updateUser) {
+            updateUser({ showTour: false, hasCompletedTour: true });
+          }
+        }}
+        onComplete={() => {
+          // Update local user state
+          if (updateUser) {
+            updateUser({ showTour: false, hasCompletedTour: true });
+          }
+        }}
+      />
     </AuthGate>
   );
 }

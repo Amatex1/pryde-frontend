@@ -1,0 +1,260 @@
+/* ========================================
+   ONBOARDING TOUR - Calm Modal Styles
+   Matches Pryde's calm design language
+   ======================================== */
+
+.onboarding-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay-bg, rgba(0, 0, 0, 0.5));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: tourFadeIn 0.2s ease-out;
+  backdrop-filter: blur(4px);
+  padding: 1rem;
+}
+
+.onboarding-overlay.closing {
+  animation: tourFadeOut 0.15s ease-in forwards;
+}
+
+.onboarding-modal {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--shadow-strong);
+  animation: tourSlideUp 0.2s ease-out;
+  border: 1px solid var(--border-subtle);
+  outline: none;
+}
+
+.onboarding-modal.closing {
+  animation: tourSlideDown 0.15s ease-in forwards;
+}
+
+/* Step Indicator */
+.tour-step-indicator {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.tour-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border-default);
+  transition: all 0.2s ease;
+}
+
+.tour-dot.active {
+  background: var(--accent-primary);
+  transform: scale(1.2);
+}
+
+.tour-dot.completed {
+  background: var(--accent-muted);
+}
+
+/* Content */
+.tour-content {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.tour-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+  line-height: 1.3;
+}
+
+.tour-body {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Optional Action Buttons (Final Step) */
+.tour-actions-optional {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.tour-action-btn {
+  background: var(--bg-hover);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 0.875rem 1.25rem;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.tour-action-btn:hover {
+  background: var(--accent-muted);
+  border-color: var(--accent-primary);
+}
+
+.tour-action-btn:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Navigation */
+.tour-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tour-nav-main {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.tour-btn {
+  padding: 0.625rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+}
+
+.tour-btn:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.tour-btn-skip {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.tour-btn-skip:hover {
+  color: var(--text-secondary);
+  background: var(--bg-hover);
+}
+
+.tour-btn-back {
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+}
+
+.tour-btn-back:hover {
+  background: var(--border-subtle);
+}
+
+.tour-btn-primary {
+  background: var(--accent-primary);
+  color: var(--text-inverse);
+}
+
+.tour-btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+/* Animations */
+@keyframes tourFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes tourFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes tourSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tourSlideDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .onboarding-overlay {
+    padding: 0.75rem;
+    align-items: flex-end;
+  }
+
+  .onboarding-modal {
+    padding: 1.5rem;
+    border-radius: 20px 20px 0 0;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  .tour-title {
+    font-size: 1.25rem;
+  }
+
+  .tour-body {
+    font-size: 0.9375rem;
+  }
+
+  .tour-navigation {
+    flex-direction: column-reverse;
+    gap: 0.75rem;
+  }
+
+  .tour-nav-main {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .tour-nav-main .tour-btn {
+    flex: 1;
+  }
+
+  .tour-btn-skip {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .onboarding-overlay,
+  .onboarding-modal,
+  .tour-dot,
+  .tour-btn,
+  .tour-action-btn {
+    animation: none;
+    transition: none;
+  }
+}
+
