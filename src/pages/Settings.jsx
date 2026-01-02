@@ -43,6 +43,9 @@ function Settings() {
   const [hideBadges, setHideBadges] = useState(false);
   // CURSOR CUSTOMIZATION: Optional cursor styles
   const [cursorStyle, setCursorStyleState] = useState('system');
+  // IDENTITY: LGBTQ+ or Ally (can be updated after registration)
+  const [identity, setIdentity] = useState(null);
+  const [identitySaving, setIdentitySaving] = useState(false);
   // NOTE: Verification system removed 2025-12-26 (returns 410 Gone)
   // State and API calls removed to prevent 410 loops
 
@@ -83,6 +86,8 @@ function Settings() {
       setHideBadges(settings.hideBadges ?? false);
       // CURSOR CUSTOMIZATION: Load cursor style
       setCursorStyleState(settings.cursorStyle ?? getCursorStyle());
+      // IDENTITY: Load from user profile
+      setIdentity(currentUser.identity || null);
     }
   }, [currentUser]);
 
@@ -149,6 +154,22 @@ function Settings() {
       logger.error('Update profile error:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // IDENTITY: Handle identity change
+  const handleIdentityChange = async (newIdentity) => {
+    try {
+      setIdentitySaving(true);
+      await api.put('/users/profile', { identity: newIdentity });
+      setIdentity(newIdentity);
+      await refreshUser();
+      setMessage(newIdentity ? `Identity updated to ${newIdentity}` : 'Identity cleared');
+    } catch (error) {
+      logger.error('Failed to update identity:', error);
+      setMessage('Failed to update identity');
+    } finally {
+      setIdentitySaving(false);
     }
   };
 
@@ -401,6 +422,52 @@ function Settings() {
           </div>
 
           {/* Basic Information moved to Edit Profile modal on Profile page */}
+
+          {/* Identity Selection - Can be updated after registration */}
+          <div className="settings-section">
+            <h2 className="section-title">🌈 Your Identity</h2>
+            <p className="section-description">
+              How do you identify on Pryde? This helps us tailor your experience.
+              {!identity && <span style={{ color: 'var(--pryde-purple)', fontWeight: '500' }}> You skipped this during registration - you can set it now!</span>}
+            </p>
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '12px' }}>
+              <button
+                type="button"
+                onClick={() => handleIdentityChange('LGBTQ+')}
+                disabled={identitySaving}
+                className={identity === 'LGBTQ+' ? 'btn-primary' : 'btn-secondary'}
+                style={{
+                  padding: '12px 24px',
+                  borderRadius: '8px',
+                  fontWeight: '600',
+                  opacity: identitySaving ? 0.7 : 1,
+                  border: identity === 'LGBTQ+' ? '2px solid var(--pryde-purple)' : '2px solid transparent'
+                }}
+              >
+                🌈 I am LGBTQ+
+              </button>
+              <button
+                type="button"
+                onClick={() => handleIdentityChange('Ally')}
+                disabled={identitySaving}
+                className={identity === 'Ally' ? 'btn-primary' : 'btn-secondary'}
+                style={{
+                  padding: '12px 24px',
+                  borderRadius: '8px',
+                  fontWeight: '600',
+                  opacity: identitySaving ? 0.7 : 1,
+                  border: identity === 'Ally' ? '2px solid var(--pryde-purple)' : '2px solid transparent'
+                }}
+              >
+                🤝 I am an Ally
+              </button>
+            </div>
+            {identity && (
+              <p style={{ marginTop: '12px', color: 'var(--text-muted)', fontSize: '14px' }}>
+                Currently set to: <strong>{identity}</strong>
+              </p>
+            )}
+          </div>
 
           {/* Custom Profile URL */}
           <div className="settings-section">
