@@ -7,6 +7,9 @@
  * - data-quiet-visuals: Calm visuals (motion, spacing, urgency)
  * - data-quiet-writing: Writing focus mode (distraction-free)
  * - data-quiet-metrics: Hide engagement metrics (likes, counts)
+ *
+ * CURSOR CUSTOMIZATION adds:
+ * - data-cursor: Optional cursor style (system, soft-rounded, calm-dot, high-contrast, reduced-motion)
  */
 
 // PWA theme colors matching CSS variables
@@ -76,12 +79,24 @@ export const initializeTheme = () => {
     document.documentElement.removeAttribute('data-quiet-metrics');
   }
 
+  // CURSOR CUSTOMIZATION: Initialize cursor style from localStorage
+  const savedCursorStyle = localStorage.getItem('cursorStyle') || 'system';
+  if (savedCursorStyle !== 'system') {
+    // Check reduced motion preference
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches && savedCursorStyle !== 'reduced-motion') {
+      document.documentElement.setAttribute('data-cursor', 'reduced-motion');
+    } else {
+      document.documentElement.setAttribute('data-cursor', savedCursorStyle);
+    }
+  }
+
   return {
     theme,
     quietMode: quietMode === 'true',
     quietVisuals: quietVisuals === 'true',
     quietWriting: quietWriting === 'true',
-    quietMetrics: quietMetrics === 'true'
+    quietMetrics: quietMetrics === 'true',
+    cursorStyle: savedCursorStyle
   };
 };
 
@@ -246,5 +261,98 @@ export const applyUserTheme = (user) => {
   if (settings.quietModeEnabled) {
     setQuietMode(true);
   }
+
+  // CURSOR CUSTOMIZATION: Apply cursor style from user settings
+  if (settings.cursorStyle) {
+    setCursorStyle(settings.cursorStyle);
+  }
+};
+
+// =========================================
+// CURSOR CUSTOMIZATION
+// Optional, accessibility-safe cursor styles
+// =========================================
+
+/**
+ * Valid cursor style options
+ */
+const VALID_CURSOR_STYLES = ['system', 'soft-rounded', 'calm-dot', 'high-contrast', 'reduced-motion'];
+
+/**
+ * Set cursor style
+ * @param {string} style - Cursor style name
+ */
+export const setCursorStyle = (style) => {
+  if (!VALID_CURSOR_STYLES.includes(style)) {
+    console.warn(`Invalid cursor style: ${style}`);
+    style = 'system';
+  }
+
+  // Store preference
+  localStorage.setItem('cursorStyle', style);
+
+  // Apply to DOM - 'system' means no custom cursor
+  if (style === 'system') {
+    document.documentElement.removeAttribute('data-cursor');
+  } else {
+    // Check if user prefers reduced motion - auto-fallback to system
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches && style !== 'reduced-motion') {
+      // User prefers reduced motion but selected a visual cursor
+      // Apply reduced-motion style instead
+      document.documentElement.setAttribute('data-cursor', 'reduced-motion');
+    } else {
+      document.documentElement.setAttribute('data-cursor', style);
+    }
+  }
+};
+
+/**
+ * Get current cursor style
+ * @returns {string} - Current cursor style or 'system'
+ */
+export const getCursorStyle = () => {
+  return localStorage.getItem('cursorStyle') || 'system';
+};
+
+/**
+ * Get all available cursor styles with labels
+ * @returns {Array} - Array of {value, label, description} objects
+ */
+export const getCursorStyleOptions = () => [
+  {
+    value: 'system',
+    label: 'System default',
+    description: 'Use your operating system cursor'
+  },
+  {
+    value: 'soft-rounded',
+    label: 'Soft rounded',
+    description: 'Softer edges for long reading sessions'
+  },
+  {
+    value: 'calm-dot',
+    label: 'Calm dot',
+    description: 'Small circular cursor for content areas'
+  },
+  {
+    value: 'high-contrast',
+    label: 'High contrast',
+    description: 'Larger, high-contrast for better visibility'
+  },
+  {
+    value: 'reduced-motion',
+    label: 'Reduced motion',
+    description: 'System cursor with no hover effects'
+  }
+];
+
+/**
+ * Initialize cursor style from localStorage
+ * Called during app startup
+ */
+export const initializeCursorStyle = () => {
+  const savedStyle = localStorage.getItem('cursorStyle') || 'system';
+  setCursorStyle(savedStyle);
+  return savedStyle;
 };
 

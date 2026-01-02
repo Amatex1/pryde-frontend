@@ -8,6 +8,7 @@ import './styles/quiet-mode.css' // MUST be loaded AFTER darkMode.css to overrid
 import './styles/mobileFriendly.css' // Mobile-friendly layout fixes for PWA
 import './styles/sidebar.css' // Sidebar feature discovery styles
 import './styles/navbar.css' // Desktop navbar grid layout
+import './styles/cursors.css' // Optional cursor customization styles
 // NOTE: Using PUSH-ONLY service worker - NO fetch, NO cache, NO navigation
 // This is safe by design and only handles push notifications
 import { setupInstallPrompt, requestPersistentStorage } from './utils/pwa'

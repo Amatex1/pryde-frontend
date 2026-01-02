@@ -7,7 +7,7 @@ import ProfileUrlSetting from '../components/ProfileUrlSetting'; // Custom profi
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
 import { logout } from '../utils/auth';
-import { setQuietMode, setQuietSubToggle, getQuietSubToggle } from '../utils/themeManager';
+import { setQuietMode, setQuietSubToggle, getQuietSubToggle, setCursorStyle, getCursorStyle, getCursorStyleOptions } from '../utils/themeManager';
 import { useAuth } from '../context/AuthContext';
 import logger from '../utils/logger';
 import './Settings.css';
@@ -41,6 +41,8 @@ function Settings() {
   const [quietMetrics, setQuietMetrics] = useState(false);
   // BADGE SYSTEM V1: Hide badges toggle
   const [hideBadges, setHideBadges] = useState(false);
+  // CURSOR CUSTOMIZATION: Optional cursor styles
+  const [cursorStyle, setCursorStyleState] = useState('system');
   // NOTE: Verification system removed 2025-12-26 (returns 410 Gone)
   // State and API calls removed to prevent 410 loops
 
@@ -79,6 +81,8 @@ function Settings() {
       setQuietMetrics(settings.quietMetrics ?? getQuietSubToggle('metrics'));
       // BADGE SYSTEM V1: Load hide badges setting
       setHideBadges(settings.hideBadges ?? false);
+      // CURSOR CUSTOMIZATION: Load cursor style
+      setCursorStyleState(settings.cursorStyle ?? getCursorStyle());
     }
   }, [currentUser]);
 
@@ -202,6 +206,26 @@ function Settings() {
       setMessage('Failed to update badge visibility');
       // Revert on error
       setHideBadges(!hideBadges);
+    }
+  };
+
+  // CURSOR CUSTOMIZATION: Handle cursor style change
+  const handleCursorStyleChange = async (newStyle) => {
+    const previousStyle = cursorStyle;
+    try {
+      // Update local state and apply to DOM immediately
+      setCursorStyleState(newStyle);
+      setCursorStyle(newStyle);
+
+      // Sync with backend
+      await api.patch('/users/me/settings', { cursorStyle: newStyle });
+      setMessage(newStyle === 'system' ? 'Using system cursor' : `Cursor style: ${newStyle}`);
+    } catch (error) {
+      logger.error('Failed to update cursor style:', error);
+      setMessage('Failed to update cursor style');
+      // Revert on error
+      setCursorStyleState(previousStyle);
+      setCursorStyle(previousStyle);
     }
   };
 
@@ -504,6 +528,36 @@ function Settings() {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* CURSOR CUSTOMIZATION: Optional cursor styles */}
+          <div className="settings-section">
+            <h2 className="section-title">🖱️ Cursor Style</h2>
+            <p className="section-description">
+              Optional cursor styles for people who like small details.
+              The default system cursor is always available.
+            </p>
+
+            <div className="cursor-style-options">
+              {getCursorStyleOptions().map((option) => (
+                <label
+                  key={option.value}
+                  className={`cursor-style-option ${cursorStyle === option.value ? 'selected' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name="cursorStyle"
+                    value={option.value}
+                    checked={cursorStyle === option.value}
+                    onChange={() => handleCursorStyleChange(option.value)}
+                  />
+                  <div className="cursor-option-content">
+                    <span className="cursor-option-label">{option.label}</span>
+                    <span className="cursor-option-description">{option.description}</span>
+                  </div>
+                </label>
+              ))}
             </div>
           </div>
 
