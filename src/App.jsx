@@ -457,6 +457,25 @@ function AppContent() {
 
             {/* Cookie Banner */}
             <CookieBanner />
+
+            {/* 🎯 Onboarding Tour - Calm welcome for new users */}
+            {/* IMPORTANT: Must be inside Router because it uses useNavigate() */}
+            <OnboardingTour
+              isOpen={showTour}
+              onClose={() => {
+                setShowTour(false);
+                // Update local user state to prevent tour from showing again
+                if (updateUser) {
+                  updateUser({ showTour: false, hasCompletedTour: true });
+                }
+              }}
+              onComplete={() => {
+                // Update local user state
+                if (updateUser) {
+                  updateUser({ showTour: false, hasCompletedTour: true });
+                }
+              }}
+            />
           </div>
         </Suspense>
       </Router>
@@ -466,24 +485,6 @@ function AppContent() {
 
       {/* 📴 Offline Banner - Shows when app is offline */}
       <OfflineBanner />
-
-      {/* 🎯 Onboarding Tour - Calm welcome for new users */}
-      <OnboardingTour
-        isOpen={showTour}
-        onClose={() => {
-          setShowTour(false);
-          // Update local user state to prevent tour from showing again
-          if (updateUser) {
-            updateUser({ showTour: false, hasCompletedTour: true });
-          }
-        }}
-        onComplete={() => {
-          // Update local user state
-          if (updateUser) {
-            updateUser({ showTour: false, hasCompletedTour: true });
-          }
-        }}
-      />
     </AuthGate>
   );
 }
