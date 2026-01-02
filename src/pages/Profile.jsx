@@ -1425,7 +1425,10 @@ function Profile() {
                     backgroundPosition: 'center',
                     width: '100%',
                     height: '100%',
-                    transform: user.profilePhotoPosition
+                    // Only apply transform if position was explicitly set (not default 50,50 or 0,0)
+                    transform: user.profilePhotoPosition &&
+                      (user.profilePhotoPosition.x !== 50 || user.profilePhotoPosition.y !== 50) &&
+                      (user.profilePhotoPosition.x !== 0 || user.profilePhotoPosition.y !== 0 || (user.profilePhotoPosition.scale && user.profilePhotoPosition.scale !== 1))
                       ? `translate(${user.profilePhotoPosition.x}px, ${user.profilePhotoPosition.y}px) scale(${user.profilePhotoPosition.scale || 1})`
                       : 'none',
                     transformOrigin: 'center',
