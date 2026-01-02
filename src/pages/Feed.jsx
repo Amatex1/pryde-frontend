@@ -2070,11 +2070,14 @@ function Feed() {
                 const isLiked = post.hasLiked || false;
                 const isFirstPost = postIndex === 0;
 
+                // Check if this is a system post (from pryde_prompts account)
+                const isSystemPost = post.isSystemPost || post.author?.isSystemAccount;
+
                 return (
                   <div
                     key={post._id}
                     id={`post-${post._id}`}
-                    className="post-card glossy fade-in"
+                    className={`post-card glossy fade-in ${isSystemPost ? 'system-post' : ''}`}
                     ref={(el) => postRefs.current[post._id] = el}
                   >
                     {/* Pinned Post Badge */}
@@ -2086,6 +2089,7 @@ function Feed() {
                       visibility={post.visibility}
                       edited={post.edited}
                       isPinned={post.isPinned}
+                      isSystemAccount={isSystemPost}
                     >
                       <div className="post-dropdown-container">
                         <button

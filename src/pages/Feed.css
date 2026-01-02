@@ -255,6 +255,55 @@
 }
 
 /* =====================================================
+   SYSTEM POST STYLING (pryde_prompts account)
+
+   Calm, subtle distinction from user posts:
+   - Slightly different border color (accent-muted)
+   - Small system indicator in header
+   - No bright badges or announcement styling
+   ===================================================== */
+
+.post-card.system-post {
+  border-left: 3px solid var(--accent-muted, #9f7aea);
+  background: var(--bg-elevated, var(--bg-card));
+}
+
+/* Dark mode adjustment */
+[data-theme="dark"] .post-card.system-post {
+  border-left-color: var(--accent-primary, #b794f4);
+}
+
+/* System account badge - subtle, not flashy */
+.system-account-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: var(--bg-hover, rgba(159, 122, 234, 0.1));
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.system-account-badge::before {
+  content: '✦';
+  font-size: 0.65rem;
+  opacity: 0.7;
+}
+
+/* System post footer (gentle reminder text) */
+.post-content em:last-child {
+  display: block;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+/* =====================================================
    POST HEADER — DEPRECATED (see PostHeader.jsx)
 
    The canonical PostHeader component now uses CSS Grid.

@@ -41,6 +41,7 @@ function PostHeader({
   visibility = 'followers',
   edited = false,
   isPinned = false,
+  isSystemAccount = false, // System posts (pryde_prompts)
   children, // Menu button slot
   onAvatarClick,
   linkToProfile = true,
@@ -110,7 +111,13 @@ function PostHeader({
         {/* Row 1: Name + Badges only (no privacy icon per spec) */}
         <div className="post-author-row">
           {AuthorName}
-          {author.badges?.length > 0 && (
+          {/* System account badge for pryde_prompts */}
+          {isSystemAccount && (
+            <span className="system-account-badge" title="Pryde System Account">
+              Pryde
+            </span>
+          )}
+          {author.badges?.length > 0 && !isSystemAccount && (
             <BadgeContainer badges={author.badges} />
           )}
         </div>
@@ -156,11 +163,13 @@ PostHeader.propTypes = {
     profilePhoto: PropTypes.string,
     pronouns: PropTypes.string,
     badges: PropTypes.array,
+    isSystemAccount: PropTypes.bool,
   }).isRequired,
   createdAt: PropTypes.string,
   visibility: PropTypes.oneOf(['public', 'followers', 'private']),
   edited: PropTypes.bool,
   isPinned: PropTypes.bool,
+  isSystemAccount: PropTypes.bool,
   children: PropTypes.node,
   onAvatarClick: PropTypes.func,
   linkToProfile: PropTypes.bool,
