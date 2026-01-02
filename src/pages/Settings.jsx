@@ -355,7 +355,7 @@ function Settings() {
           <h1 className="settings-title text-shadow">⚙️ Settings</h1>
 
           {message && (
-            <div className={`message ${message.includes('success') ? 'success' : 'error'}`}>
+            <div className={`message ${message.toLowerCase().includes('failed') || message.toLowerCase().includes('error') ? 'error' : 'success'}`}>
               {message}
             </div>
           )}
