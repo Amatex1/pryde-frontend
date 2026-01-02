@@ -1,14 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 import './InviteManagement.css';
 
 /**
  * InviteManagement Component (Phase 7B)
- * 
+ *
  * Allows admins and super_admins to create and manage invite codes.
  * Calm, non-gamified interface with no tracking of invited user activity.
+ *
+ * NOTE: This component should only be rendered for admin/super_admin users.
+ * It includes an additional safety check to prevent API calls for non-admin users.
  */
 function InviteManagement() {
+  const { user: currentUser } = useAuth();
   const [invites, setInvites] = useState([]);
   const [canCreate, setCanCreate] = useState({ allowed: false, reason: '' });
   const [loading, setLoading] = useState(true);
@@ -18,7 +23,15 @@ function InviteManagement() {
   const [note, setNote] = useState('');
   const [copiedCode, setCopiedCode] = useState(null);
 
+  // Safety check: only admins should use this component
+  const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'super_admin';
+
   const fetchInvites = useCallback(async () => {
+    // Extra safety: don't call API if not admin
+    if (!isAdmin) {
+      setLoading(false);
+      return;
+    }
     try {
       const response = await api.get('/invites/my-invites');
       setInvites(response.data.invites || []);
@@ -30,7 +43,7 @@ function InviteManagement() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isAdmin]);
 
   useEffect(() => {
     fetchInvites();
@@ -90,6 +103,11 @@ function InviteManagement() {
       year: 'numeric'
     });
   };
+
+  // Don't render anything if not admin (safety check)
+  if (!isAdmin) {
+    return null;
+  }
 
   if (loading) {
     return (
