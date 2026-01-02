@@ -124,15 +124,35 @@ function OnboardingTour({ isOpen, onClose, onComplete }) {
   };
 
   // Action handlers for final step
-  const handleWriteJournal = async () => {
-    await handleFinish();
-    navigate('/journals/new');
-  };
+  const handleWriteJournal = useCallback(async () => {
+    setIsClosing(true);
+    try {
+      await api.post('/auth/tour/complete');
+    } catch (error) {
+      console.error('Failed to save tour completion:', error);
+    }
+    if (onComplete) onComplete();
+    onClose();
+    setIsClosing(false);
+    setCurrentStep(0);
+    // Navigate to journal page (use existing route)
+    navigate('/journal');
+  }, [onClose, onComplete, navigate]);
 
-  const handleViewPrompt = async () => {
-    await handleFinish();
-    navigate('/prompts');
-  };
+  const handleViewPrompt = useCallback(async () => {
+    setIsClosing(true);
+    try {
+      await api.post('/auth/tour/complete');
+    } catch (error) {
+      console.error('Failed to save tour completion:', error);
+    }
+    if (onComplete) onComplete();
+    onClose();
+    setIsClosing(false);
+    setCurrentStep(0);
+    // Navigate to feed where prompts appear (no dedicated /prompts route exists)
+    navigate('/feed');
+  }, [onClose, onComplete, navigate]);
 
   // Focus trap and keyboard handling
   const handleKeyDown = useCallback((e) => {
@@ -209,19 +229,19 @@ function OnboardingTour({ isOpen, onClose, onComplete }) {
           {/* Optional action buttons on final step */}
           {step.showActions && (
             <div className="tour-actions-optional">
-              <button 
+              <button
                 className="tour-action-btn"
                 onClick={handleWriteJournal}
                 type="button"
               >
-                📝 Write a private journal
+                📝 Start a journal entry
               </button>
-              <button 
+              <button
                 className="tour-action-btn"
                 onClick={handleViewPrompt}
                 type="button"
               >
-                💭 View today's prompt
+                💭 Browse the feed
               </button>
             </div>
           )}
