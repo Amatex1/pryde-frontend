@@ -284,12 +284,39 @@
   padding: 2px 8px;
   border-radius: 12px;
   font-weight: 500;
+  white-space: nowrap;
+  vertical-align: middle;
+  margin-left: 0.5rem;
 }
 
 .system-account-badge::before {
   content: '✦';
   font-size: 0.65rem;
   opacity: 0.7;
+}
+
+/* Profile-specific system badge (larger, more prominent) */
+.system-account-badge--profile {
+  font-size: 0.875rem;
+  padding: 4px 12px;
+  margin-left: 0.75rem;
+}
+
+/* System account description on profiles */
+.system-account-description {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-style: italic;
+  margin: 0.5rem 0 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-elevated, rgba(159, 122, 234, 0.05));
+  border-radius: 8px;
+  border-left: 3px solid var(--accent-muted, #9f7aea);
+}
+
+[data-theme="dark"] .system-account-description {
+  background: rgba(159, 122, 234, 0.1);
+  border-left-color: var(--accent-primary, #b794f4);
 }
 
 /* System post footer (gentle reminder text) */

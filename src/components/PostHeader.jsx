@@ -41,12 +41,16 @@ function PostHeader({
   visibility = 'followers',
   edited = false,
   isPinned = false,
-  isSystemAccount = false, // System posts (pryde_prompts)
+  isSystemAccount = false, // System posts (pryde_prompts, pryde_guide, etc.)
   children, // Menu button slot
   onAvatarClick,
   linkToProfile = true,
 }) {
   if (!author) return null;
+
+  // Detect system account from either prop or author field
+  const isSystem = isSystemAccount || author.isSystemAccount;
+  const systemDescription = author.systemDescription || 'This is an automated system account operated by Pryde Social.';
 
   const displayName = author.displayName || author.username || 'User';
   const avatarInitial = displayName.charAt(0).toUpperCase();
@@ -111,13 +115,18 @@ function PostHeader({
         {/* Row 1: Name + Badges only (no privacy icon per spec) */}
         <div className="post-author-row">
           {AuthorName}
-          {/* System account badge for pryde_prompts */}
-          {isSystemAccount && (
-            <span className="system-account-badge" title="Pryde System Account">
-              Pryde
+          {/* System account badge - non-removable, always visible for system accounts */}
+          {isSystem && (
+            <span
+              className="system-account-badge"
+              title={systemDescription}
+              aria-label="System account"
+            >
+              System account
             </span>
           )}
-          {author.badges?.length > 0 && !isSystemAccount && (
+          {/* Regular badges only shown for non-system accounts */}
+          {author.badges?.length > 0 && !isSystem && (
             <BadgeContainer badges={author.badges} />
           )}
         </div>
@@ -164,6 +173,8 @@ PostHeader.propTypes = {
     pronouns: PropTypes.string,
     badges: PropTypes.array,
     isSystemAccount: PropTypes.bool,
+    systemRole: PropTypes.oneOf(['PROMPTS', 'GUIDE', 'MODERATION', 'ANNOUNCEMENTS', null]),
+    systemDescription: PropTypes.string,
   }).isRequired,
   createdAt: PropTypes.string,
   visibility: PropTypes.oneOf(['public', 'followers', 'private']),

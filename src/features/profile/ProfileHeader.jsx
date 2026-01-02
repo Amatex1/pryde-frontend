@@ -96,7 +96,18 @@ export default function ProfileHeader({
         <div className="profile-details">
           <h1 className="profile-name text-shadow">
             {user.displayName || user.fullName || user.username}
-            {user.badges?.length > 0 && (
+            {/* System account badge - always shown for system accounts, non-removable */}
+            {user.isSystemAccount && (
+              <span
+                className="system-account-badge system-account-badge--profile"
+                title={user.systemDescription || 'This is an automated system account operated by Pryde Social.'}
+                aria-label="System account"
+              >
+                System account
+              </span>
+            )}
+            {/* Regular badges only shown for non-system accounts */}
+            {user.badges?.length > 0 && !user.isSystemAccount && (
               <BadgeContainer badges={user.badges} showLabels showAll />
             )}
             {user.nickname && user.nickname !== user.displayName && user.nickname !== user.username && (
@@ -104,6 +115,13 @@ export default function ProfileHeader({
             )}
           </h1>
           <p className="profile-username">@{user.username}</p>
+
+          {/* System account description - prominently displayed for transparency */}
+          {user.isSystemAccount && user.systemDescription && (
+            <p className="system-account-description">
+              {user.systemDescription}
+            </p>
+          )}
 
           <div className="profile-badges">
             {user.pronouns && (
