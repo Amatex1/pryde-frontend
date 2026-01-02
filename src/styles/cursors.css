@@ -54,14 +54,14 @@
    Same size as default, for long reading sessions
    ========================================= */
 
-[data-cursor="soft-rounded"] .main-content,
-[data-cursor="soft-rounded"] .feed-container,
-[data-cursor="soft-rounded"] .journal-content,
-[data-cursor="soft-rounded"] .longform-content,
-[data-cursor="soft-rounded"] .post-content,
-[data-cursor="soft-rounded"] .reading-view,
-[data-cursor="soft-rounded"] .page-content {
-  cursor: url('/src/assets/cursors/soft-rounded.svg') 4 3, auto;
+[data-cursor="soft-rounded"] {
+  cursor: url('/cursors/soft-rounded.svg') 4 3, auto;
+}
+
+[data-cursor="soft-rounded"] .page-container,
+[data-cursor="soft-rounded"] .app-container,
+[data-cursor="soft-rounded"] main {
+  cursor: url('/cursors/soft-rounded.svg') 4 3, auto;
 }
 
 /* =========================================
@@ -70,14 +70,14 @@
    Switches back to arrow on interactive elements
    ========================================= */
 
-[data-cursor="calm-dot"] .main-content,
-[data-cursor="calm-dot"] .feed-container,
-[data-cursor="calm-dot"] .journal-content,
-[data-cursor="calm-dot"] .longform-content,
-[data-cursor="calm-dot"] .post-content,
-[data-cursor="calm-dot"] .reading-view,
-[data-cursor="calm-dot"] .page-content {
-  cursor: url('/src/assets/cursors/calm-dot.svg') 8 8, auto;
+[data-cursor="calm-dot"] {
+  cursor: url('/cursors/calm-dot.svg') 8 8, auto;
+}
+
+[data-cursor="calm-dot"] .page-container,
+[data-cursor="calm-dot"] .app-container,
+[data-cursor="calm-dot"] main {
+  cursor: url('/cursors/calm-dot.svg') 8 8, auto;
 }
 
 /* =========================================
@@ -86,14 +86,14 @@
    For accessibility support, no transparency
    ========================================= */
 
-[data-cursor="high-contrast"] .main-content,
-[data-cursor="high-contrast"] .feed-container,
-[data-cursor="high-contrast"] .journal-content,
-[data-cursor="high-contrast"] .longform-content,
-[data-cursor="high-contrast"] .post-content,
-[data-cursor="high-contrast"] .reading-view,
-[data-cursor="high-contrast"] .page-content {
-  cursor: url('/src/assets/cursors/high-contrast.svg') 5 4, auto;
+[data-cursor="high-contrast"] {
+  cursor: url('/cursors/high-contrast.svg') 5 4, auto;
+}
+
+[data-cursor="high-contrast"] .page-container,
+[data-cursor="high-contrast"] .app-container,
+[data-cursor="high-contrast"] main {
+  cursor: url('/cursors/high-contrast.svg') 5 4, auto;
 }
 
 /* High-contrast cursor for interactive elements */
@@ -130,13 +130,10 @@
    ========================================= */
 
 @media (prefers-reduced-motion: reduce) {
-  [data-cursor] .main-content,
-  [data-cursor] .feed-container,
-  [data-cursor] .journal-content,
-  [data-cursor] .longform-content,
-  [data-cursor] .post-content,
-  [data-cursor] .reading-view,
-  [data-cursor] .page-content {
+  [data-cursor],
+  [data-cursor] .page-container,
+  [data-cursor] .app-container,
+  [data-cursor] main {
     cursor: auto !important;
   }
 }
@@ -147,11 +144,9 @@
    ========================================= */
 
 @media (prefers-contrast: more) {
-  [data-cursor="soft-rounded"] .main-content,
-  [data-cursor="soft-rounded"] .feed-container,
-  [data-cursor="calm-dot"] .main-content,
-  [data-cursor="calm-dot"] .feed-container {
-    cursor: url('/src/assets/cursors/high-contrast.svg') 5 4, auto;
+  [data-cursor="soft-rounded"],
+  [data-cursor="calm-dot"] {
+    cursor: url('/cursors/high-contrast.svg') 5 4, auto;
   }
 }
 

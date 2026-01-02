@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <!-- Calm-dot cursor: Small circular cursor for content/reading areas -->
+  <!-- Automatically switches back to arrow on interactive elements -->
+  <!-- No animation, minimal visual presence -->
+  
+  <!-- Outer ring for visibility -->
+  <circle cx="8" cy="8" r="5" 
+          fill="none" 
+          stroke="rgba(255,255,255,0.9)" 
+          stroke-width="1.5"/>
+  
+  <!-- Inner dot -->
+  <circle cx="8" cy="8" r="3" 
+          fill="rgba(100,100,100,0.8)"/>
+  
+  <!-- Center highlight -->
+  <circle cx="8" cy="8" r="1.5" 
+          fill="rgba(255,255,255,0.6)"/>
+</svg>
+

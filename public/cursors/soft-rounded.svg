@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <!-- Soft-rounded cursor: Slightly rounded arrow with softer edges -->
+  <!-- Same size as default cursor, intended for long reading sessions -->
+  <defs>
+    <filter id="soften" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.3"/>
+    </filter>
+  </defs>
+  <g filter="url(#soften)">
+    <!-- Shadow for depth -->
+    <path d="M4 3 L4 19 L8 15 L12 21 L14 20 L10 14 L16 14 Z" 
+          fill="rgba(0,0,0,0.15)" 
+          transform="translate(1, 1)"/>
+    <!-- Main cursor body -->
+    <path d="M4 3 L4 19 L8 15 L12 21 L14 20 L10 14 L16 14 Z" 
+          fill="#ffffff" 
+          stroke="#333333" 
+          stroke-width="1.2" 
+          stroke-linejoin="round"
+          stroke-linecap="round"/>
+  </g>
+</svg>
+
