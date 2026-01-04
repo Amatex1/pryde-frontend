@@ -112,14 +112,19 @@
    ============================================================ */
 
 .post-author-row {
+  display: flex;
   align-items: center;
   gap: 6px;
   min-width: 0;
+  flex-wrap: nowrap; /* Keep name and badges on same line */
+  max-width: 100%;
 }
 
 .post-author-name-link {
   text-decoration: none;
   min-width: 0;
+  flex-shrink: 1; /* Allow name to shrink */
+  overflow: hidden;
 }
 
 .post-author-name {
@@ -133,16 +138,17 @@
   transition: color 0.15s ease;
   margin: 0;
   padding: 0;
+  display: block;
 }
 
 .post-author-name-link:hover .post-author-name {
   color: var(--pryde-purple, #6B46C1);
 }
 
-/* Badges inline with name */
+/* Badges inline with name - never shrink */
 .post-author-badge,
 .post-author-row .badge-container {
-  margin-left: 6px;
+  margin-left: 4px;
   flex-shrink: 0;
 }
 
@@ -245,8 +251,8 @@
   .post-header {
     padding: 10px 12px;
     min-height: 56px;
-    max-height: 56px;
-    margin-bottom: 6px; /* Slightly less spacing on mobile */
+    max-height: none; /* Allow height to adjust for badges */
+    margin-bottom: 6px;
   }
 
   .post-header-avatar {
@@ -261,17 +267,50 @@
   }
 
   .post-header-text {
-    /* MOBILE: Reduced optical padding */
-    padding-top: 3px;
+    padding-top: 2px;
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  /* Author row with badges - flexible layout */
+  .post-author-row {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Name link takes remaining space */
+  .post-author-name-link {
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
   }
 
   .post-author-name {
     font-size: 0.875rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Badges stay fixed size, never shrink */
+  .post-author-row .badge-container {
+    flex-shrink: 0;
+    margin-left: 2px;
+  }
+
+  /* Smaller badges on mobile */
+  .post-author-row .badge-container .user-badge {
+    font-size: 0.75rem;
+    padding: 0 4px;
+    height: 18px;
   }
 
   .post-meta {
     font-size: 0.75rem;
-    /* MOBILE: Reduced optical margin */
     margin-bottom: 1px;
   }
 
