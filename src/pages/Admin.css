@@ -2125,6 +2125,124 @@
   color: #ff8c00;
 }
 
+/* History Cards */
+.history-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.history-card {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+.history-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3);
+  background: var(--bg-hover);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.history-card-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.history-user-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.history-card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.history-type {
+  padding: 2px 8px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+}
+
+.history-date {
+  white-space: nowrap;
+}
+
+.history-card-body {
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.history-reason,
+.history-content-type {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.history-reason strong,
+.history-content-type strong,
+.history-violations strong,
+.history-content-preview strong {
+  color: var(--text-primary);
+  margin-right: var(--space-1);
+}
+
+.history-violations {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.violation-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+}
+
+.violation-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(220, 53, 69, 0.15);
+  color: #dc3545;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.history-content-preview {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.content-preview-box {
+  margin-top: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--color-warning, #ffc107);
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono, monospace);
+  word-break: break-word;
+  white-space: pre-wrap;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .moderation-sections {

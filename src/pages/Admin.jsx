@@ -2265,32 +2265,62 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
           {history.length === 0 ? (
             <p className="empty-state">No moderation history found</p>
           ) : (
-            <table className="history-table">
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Action</th>
-                  <th>Reason</th>
-                  <th>Type</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {history.map((entry, index) => (
-                  <tr key={index}>
-                    <td>{entry.displayName || entry.username}</td>
-                    <td>
+            <div className="history-cards">
+              {history.map((entry, index) => (
+                <div key={index} className="history-card">
+                  <div className="history-card-header">
+                    <div className="history-card-user">
+                      <span className="history-user-name">
+                        {entry.displayName || entry.username}
+                      </span>
                       <span className={`action-badge action-${entry.action}`}>
                         {entry.action}
                       </span>
-                    </td>
-                    <td>{entry.reason}</td>
-                    <td>{entry.automated ? '🤖 Auto' : '👤 Manual'}</td>
-                    <td>{new Date(entry.timestamp).toLocaleString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                    <div className="history-card-meta">
+                      <span className="history-type">
+                        {entry.automated ? '🤖 Auto' : '👤 Manual'}
+                      </span>
+                      <span className="history-date">
+                        {new Date(entry.timestamp).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="history-card-body">
+                    <div className="history-reason">
+                      <strong>Reason:</strong> {entry.reason}
+                    </div>
+
+                    {entry.contentType && entry.contentType !== 'other' && (
+                      <div className="history-content-type">
+                        <strong>Content Type:</strong> {entry.contentType}
+                      </div>
+                    )}
+
+                    {entry.detectedViolations && entry.detectedViolations.length > 0 && (
+                      <div className="history-violations">
+                        <strong>Detected Violations:</strong>
+                        <div className="violation-tags">
+                          {entry.detectedViolations.map((v, i) => (
+                            <span key={i} className="violation-tag">{v}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {entry.contentPreview && (
+                      <div className="history-content-preview">
+                        <strong>Content Preview:</strong>
+                        <div className="content-preview-box">
+                          {entry.contentPreview}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       )}
