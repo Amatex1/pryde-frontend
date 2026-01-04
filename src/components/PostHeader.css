@@ -309,13 +309,37 @@
     height: 18px;
   }
 
+  /* Meta row - allow wrapping on mobile, don't truncate behind privacy */
   .post-meta {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     margin-bottom: 1px;
+    white-space: normal;
+    flex-wrap: wrap;
+    overflow: visible;
+    text-overflow: clip;
+    gap: 4px;
+    line-height: 1.4;
   }
 
+  /* Privacy icon stays at end but doesn't cause overlap */
   .post-privacy {
-    font-size: 0.6875rem;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+  }
+
+  /* Pronouns can shrink if needed */
+  .post-pronouns {
+    flex-shrink: 1;
+    white-space: nowrap;
+  }
+
+  /* Timestamp can truncate if needed */
+  .post-timestamp {
+    flex-shrink: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
   }
 }
 

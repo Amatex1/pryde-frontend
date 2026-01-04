@@ -1166,6 +1166,57 @@
     font-size: 11px !important;
     white-space: nowrap !important;
   }
+
+  /* ========================================
+     3-DOT MENU BUTTON - LARGER TOUCH TARGET
+     Especially important for replies
+     ======================================== */
+
+  .comment-menu-btn,
+  .btn-comment-dropdown,
+  .comment-header-right button {
+    min-width: 40px !important;
+    min-height: 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    opacity: 1 !important; /* Always visible on mobile */
+    touch-action: manipulation !important;
+  }
+
+  /* Make the SVG icon inside larger */
+  .comment-menu-btn svg,
+  .btn-comment-dropdown svg,
+  .comment-header-right button svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  /* Reply menu buttons - same size as parent comments */
+  .reply .comment-menu-btn,
+  .comment.reply .comment-menu-btn,
+  .comment-replies .comment-menu-btn {
+    min-width: 40px !important;
+    min-height: 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  /* Ensure menu dropdown is properly positioned and sized */
+  .comment-menu {
+    min-width: 160px !important;
+    right: 0 !important;
+    z-index: 100 !important;
+  }
+
+  .comment-menu button {
+    min-height: 44px !important;
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+  }
 }
 
 /* ========================================
