@@ -2101,8 +2101,9 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
         <div className="moderation-settings">
           <div className="settings-section">
             <h3>🔇 Auto-Mute Configuration</h3>
-            <div className="setting-row">
-              <label>
+
+            <div className="setting-row setting-row-checkbox">
+              <label className="checkbox-label">
                 <input
                   type="checkbox"
                   checked={localSettings.autoMute?.enabled ?? true}
@@ -2111,9 +2112,11 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
                     autoMute: { ...localSettings.autoMute, enabled: e.target.checked }
                   })}
                 />
-                Enable Auto-Mute
+                <span>Enable Auto-Mute</span>
               </label>
+              <p className="setting-help">When enabled, users are automatically muted after repeated violations.</p>
             </div>
+
             <div className="setting-row">
               <label>Violation Threshold (mute after X violations):</label>
               <input
@@ -2126,7 +2129,9 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
                   autoMute: { ...localSettings.autoMute, violationThreshold: parseInt(e.target.value) }
                 })}
               />
+              <p className="setting-help">Number of violations before a user gets automatically muted. Lower = stricter.</p>
             </div>
+
             <div className="setting-row">
               <label>Minutes per Violation:</label>
               <input
@@ -2139,7 +2144,9 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
                   autoMute: { ...localSettings.autoMute, minutesPerViolation: parseInt(e.target.value) }
                 })}
               />
+              <p className="setting-help">Mute duration = violations × this value. E.g., 3 violations × 30 min = 90 min mute.</p>
             </div>
+
             <div className="setting-row">
               <label>Max Mute Duration (minutes):</label>
               <input
@@ -2152,7 +2159,9 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
                   autoMute: { ...localSettings.autoMute, maxMuteDuration: parseInt(e.target.value) }
                 })}
               />
+              <p className="setting-help">Maximum mute time regardless of violation count. 1440 min = 24 hours.</p>
             </div>
+
             <div className="setting-row">
               <label>Spam Mute Duration (minutes):</label>
               <input
@@ -2165,11 +2174,14 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
                   autoMute: { ...localSettings.autoMute, spamMuteDuration: parseInt(e.target.value) }
                 })}
               />
+              <p className="setting-help">Immediate mute duration when spam is detected (excessive links, caps, etc.).</p>
             </div>
           </div>
 
           <div className="settings-section">
             <h3>☠️ Toxicity Scoring</h3>
+            <p className="section-help">Toxicity score is calculated per-post. Higher scores = more toxic content.</p>
+
             <div className="setting-row">
               <label>Points per Blocked Word:</label>
               <input
@@ -2182,7 +2194,9 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
                   toxicity: { ...localSettings.toxicity, pointsPerBlockedWord: parseInt(e.target.value) }
                 })}
               />
+              <p className="setting-help">Points added to toxicity score for each blocked word found in content.</p>
             </div>
+
             <div className="setting-row">
               <label>Points for Spam:</label>
               <input
@@ -2195,6 +2209,7 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
                   toxicity: { ...localSettings.toxicity, pointsForSpam: parseInt(e.target.value) }
                 })}
               />
+              <p className="setting-help">Points added when content is flagged as spam (excessive caps, links, emojis).</p>
             </div>
           </div>
 
