@@ -134,7 +134,16 @@ export default function ProfileHeader({
               <span className="badge">{user.sexualOrientation.charAt(0).toUpperCase() + user.sexualOrientation.slice(1)}</span>
             )}
             {user.birthday && (
-              <span className="badge">🎂 {new Date().getFullYear() - new Date(user.birthday).getFullYear()} years old</span>
+              <span className="badge">🎂 {(() => {
+                const birthDate = new Date(user.birthday);
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                  age--;
+                }
+                return age;
+              })()} years old</span>
             )}
           </div>
 
