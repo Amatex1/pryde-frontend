@@ -655,15 +655,15 @@ function Admin() {
               onRefresh={() => loadTabData()}
             /></section>
           )}
-          {activeTab === 'moderation' && (
-            <ModerationTab
+{activeTab === 'moderation' && (
+            <section id=\"content-moderation\" role=\"region\" aria-labelledby=\"tab-moderation\"><ModerationTab
               settings={moderationSettings}
               history={moderationHistory}
               onRefresh={() => loadTabData()}
               showAlert={showAlert}
               showConfirm={showConfirm}
               showPrompt={showPrompt}
-            />
+            /></section>
           )}
         </div>
       </div>
