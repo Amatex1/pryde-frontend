@@ -548,10 +548,19 @@ h1, h2, h3, h4, h5, h6 {
 /* Action Rows */
 button,
 .icon-button {
-  min-height: 36px;
-  padding: 0 10px;
+  /* Keep comfortable touch targets on mobile */
+  min-height: var(--button-height-mobile);
+  padding: 0 12px;
   border-radius: 999px;
   font-size: 13px;
+}
+
+@media (min-width: 1024px) {
+  button,
+  .icon-button {
+    /* Allow desktop to be a bit shorter but still clear */
+    min-height: var(--button-height-desktop);
+  }
 }
 
 /* Mobile Extra Compact */

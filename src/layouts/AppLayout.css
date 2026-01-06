@@ -120,11 +120,6 @@
   .mobile-nav {
     display: grid;
   }
-
-  /* Add bottom padding to page-container to clear all stacked floating UI */
-  .page-container {
-    padding-bottom: var(--mobile-layer-2, 144px);
-  }
 }
 
 /* Hide mobile nav on desktop */

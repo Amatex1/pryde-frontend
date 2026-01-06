@@ -29,10 +29,9 @@
   padding-left: env(safe-area-inset-left, 0);
   padding-right: env(safe-area-inset-right, 0);
 
-  /* Bottom padding: accounts for all stacked floating UI
-     Uses layer-2 which clears mobile nav + FAB + scroll-to-top
-     Ensures feed content never scrolls underneath any floating control */
-  padding-bottom: var(--mobile-layer-2, 144px);
+  /* Bottom padding: single source of truth for mobile stacked UI
+     Use layer-1 so content isn’t pushed too far up on small screens */
+  padding-bottom: var(--mobile-layer-1, 76px);
 
   /* Smooth transitions for theme changes */
   transition: background-color 0.25s ease-in-out;
