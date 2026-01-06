@@ -576,7 +576,7 @@ function Admin() {
           <p className="admin-subtitle">Platform Management & Moderation</p>
         </div>
 
-        <div className="admin-tabs">
+        <div className=\"admin-tabs\" role=\"tablist\" aria-label=\"Admin sections\">
           <button
             className={`admin-tab ${activeTab === 'dashboard' ? 'active' : ''}`}
             onClick={() => handleTabChange('dashboard')}
