@@ -11,6 +11,7 @@
 import js from '@eslint/js';
 import securityPlugin from 'eslint-plugin-security';
 import reactPlugin from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 
 export default [
@@ -20,7 +21,8 @@ export default [
   // React plugin with JSX support
   {
     plugins: {
-      react: reactPlugin
+      react: reactPlugin,
+      'react-hooks': reactHooks
     },
     languageOptions: {
       parserOptions: {
@@ -33,6 +35,10 @@ export default [
       react: {
         version: 'detect'
       }
+    },
+    rules: {
+      // Enforce the official React Hooks rules
+      ...reactHooks.configs.recommended.rules
     }
   },
 

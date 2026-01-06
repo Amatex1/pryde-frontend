@@ -69,7 +69,8 @@ class SWInterceptionLogger {
   getReport() {
     return {
       totalInterceptions: this.interceptions.length,
-      apiInterceptions: this.apiInterceptions.length,
+      // Numeric count of API interceptions (kept separate from the full list)
+      apiInterceptionCount: this.apiInterceptions.length,
       apiHandled: this.apiInterceptions.filter(i => !i.bypassed).length,
       apiBypassed: this.apiInterceptions.filter(i => i.bypassed).length,
       interceptions: this.interceptions,

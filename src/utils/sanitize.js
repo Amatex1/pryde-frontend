@@ -17,7 +17,9 @@ const DEFAULT_CONFIG = {
   ],
   ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
   ALLOW_DATA_ATTR: false,
-  ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
+  // NOTE: '-' is kept unescaped at the end of the character class to satisfy
+  // eslint's no-useless-escape rule without changing the allowed URI patterns.
+  ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.-]+(?:[^a-z+.-:]|$))/i,
   KEEP_CONTENT: true,
   RETURN_TRUSTED_TYPE: false
 };

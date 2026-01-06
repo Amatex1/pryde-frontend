@@ -111,12 +111,17 @@ export const PLATFORM_FLAGS = {
   NO_VIRAL_HASHTAGS,
 };
 
+// Guard list to prevent arbitrary property access (object injection safety)
+const PLATFORM_FLAG_KEYS = new Set(Object.keys(PLATFORM_FLAGS));
+
 /**
  * Check if a feature is locked (should not be built).
  * @param {string} flagName - The flag name to check
  * @returns {boolean} - True if the feature is locked/disabled
  */
 export function isFeatureLocked(flagName) {
+  // Only allow known keys to avoid object injection; unknown flags default to unlocked.
+  if (!PLATFORM_FLAG_KEYS.has(flagName)) return false;
   return PLATFORM_FLAGS[flagName] === true;
 }
 

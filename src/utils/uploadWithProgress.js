@@ -93,12 +93,15 @@ export function uploadWithProgress({
           try {
             const errorData = JSON.parse(xhr.responseText);
             console.error('📋 Error details:', errorData);
-          } catch {}
+          } catch {
+            // Response body is not valid JSON; skip structured error logging.
+          }
         }
         try {
           const errorData = JSON.parse(xhr.responseText);
           reject(new Error(errorData.message || 'Upload forbidden. Please try again.'));
         } catch {
+          // Response body is not valid JSON; fall back to a generic message.
           reject(new Error('Upload forbidden. Please refresh the page and try again.'));
         }
       } else {
@@ -213,7 +216,9 @@ export function uploadMultipleWithProgress({
           try {
             const errorData = JSON.parse(xhr.responseText);
             console.error('📋 Error details:', errorData);
-          } catch {}
+          } catch {
+            // Response body is not valid JSON; skip structured error logging.
+          }
         }
         try {
           const errorData = JSON.parse(xhr.responseText);
