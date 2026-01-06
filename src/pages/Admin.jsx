@@ -633,8 +633,8 @@ function Admin() {
 {activeTab === 'activity' && activity && (
             <section id=\"content-activity\" role=\"region\" aria-labelledby=\"tab-activity\"><ActivityTab activity={activity} onViewPost={handleViewPost} /></section>
           )}
-          {activeTab === 'security' && (
-            loading ? (
+{activeTab === 'security' && (
+            loading ? ("REPLACED") : (
               <div className="loading-state">
                 <div className="shimmer" style={{ height: '100px', borderRadius: '12px', marginBottom: '1rem' }}></div>
                 <div className="shimmer" style={{ height: '60px', borderRadius: '12px', marginBottom: '1rem' }}></div>
