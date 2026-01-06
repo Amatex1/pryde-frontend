@@ -576,44 +576,54 @@ function Admin() {
           <p className="admin-subtitle">Platform Management & Moderation</p>
         </div>
 
-        <div className="admin-tabs">
-          <button
-            className={`admin-tab ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => handleTabChange('dashboard')}
-          >
+        <div className="admin-tabs" role="tablist" aria-label="Admin sections">
+<button id="tab-dashboard" aria-controls="content-dashboard" role="tab" aria-selected={activeTab === 'dashboard'} className={`admin-tab ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => handleTabChange('dashboard')}>
+
             📊 Dashboard
           </button>
-          <button
+<button
+            role="tab"
+            aria-selected={activeTab === 'reports'}
             className={`admin-tab ${activeTab === 'reports' ? 'active' : ''}`}
             onClick={() => handleTabChange('reports')}
           >
             🚩 Reports
           </button>
-          <button
+<button
+            role="tab"
+            aria-selected={activeTab === 'users'}
             className={`admin-tab ${activeTab === 'users' ? 'active' : ''}`}
             onClick={() => handleTabChange('users')}
           >
             👥 Users
           </button>
-          <button
+<button
+            role="tab"
+            aria-selected={activeTab === 'blocks'}
             className={`admin-tab ${activeTab === 'blocks' ? 'active' : ''}`}
             onClick={() => handleTabChange('blocks')}
           >
             🚫 Blocks
           </button>
-          <button
+<button
+            role="tab"
+            aria-selected={activeTab === 'activity'}
             className={`admin-tab ${activeTab === 'activity' ? 'active' : ''}`}
             onClick={() => handleTabChange('activity')}
           >
             📈 Activity
           </button>
-          <button
+<button
+            role="tab"
+            aria-selected={activeTab === 'security'}
             className={`admin-tab ${activeTab === 'security' ? 'active' : ''}`}
             onClick={() => handleTabChange('security')}
           >
             🔒 Security
           </button>
-          <button
+<button
+            role="tab"
+            aria-selected={activeTab === 'badges'}
             className={`admin-tab ${activeTab === 'badges' ? 'active' : ''}`}
             onClick={() => handleTabChange('badges')}
           >
@@ -1154,7 +1164,7 @@ function UsersTab({ users, badges = [], onSuspend, onBan, onUnsuspend, onUnban, 
                     </span>
                   ) : (
                     <>
-                      <button
+<button id="tab-dashboard"
                         className="btn-action"
                         onClick={() => onSendPasswordReset(user._id, user.email, user.username)}
                         title="Send password reset link"
