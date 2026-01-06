@@ -611,8 +611,9 @@ function Admin() {
 {activeTab === 'reports' && (
             <section id=\"content-reports\" role=\"region\" aria-labelledby=\"tab-reports\"><ReportsTab reports={reports} onResolve={handleResolveReport} /></section>
           )}
-          {activeTab === 'users' && (
-            <UsersTab
+{activeTab === 'users' && (
+              <section id=\"content-users\" role=\"region\" aria-labelledby=\"tab-users\"><UsersTab
+
               users={users}
               badges={badges}
               onSuspend={handleSuspendUser}
