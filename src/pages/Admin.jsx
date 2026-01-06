@@ -606,7 +606,7 @@ function Admin() {
 
         <div className="admin-content">
           {activeTab === 'dashboard' && stats && (
-            <DashboardTab stats={stats} />
+            <section id=\"content-dashboard\" role=\"region\" aria-labelledby=\"tab-dashboard\"><DashboardTab stats={stats} /></section>
           )}
           {activeTab === 'reports' && (
             <ReportsTab reports={reports} onResolve={handleResolveReport} />
