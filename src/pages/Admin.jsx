@@ -577,10 +577,7 @@ function Admin() {
         </div>
 
         <div className="admin-tabs">
-          <button
-            className={`admin-tab ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => handleTabChange('dashboard')}
-          >
+<button id=\"tab-dashboard\" aria-controls=\"content-dashboard\" role=\"tab\" aria-selected={activeTab === 'dashboard'} className={`admin-tab ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => handleTabChange('dashboard')} >
             📊 Dashboard
           </button>
           <button
