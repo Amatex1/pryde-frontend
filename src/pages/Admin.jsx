@@ -649,11 +649,11 @@ function Admin() {
               />
             )
           )}
-          {activeTab === 'badges' && (
-            <BadgesTab
+{activeTab === 'badges' && (
+            <section id=\"content-badges\" role=\"region\" aria-labelledby=\"tab-badges\"><BadgesTab
               badges={badges}
               onRefresh={() => loadTabData()}
-            />
+            /></section>
           )}
           {activeTab === 'moderation' && (
             <ModerationTab
