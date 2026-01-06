@@ -608,8 +608,8 @@ function Admin() {
           {activeTab === 'dashboard' && stats && (
             <section id=\"content-dashboard\" role=\"region\" aria-labelledby=\"tab-dashboard\"><DashboardTab stats={stats} /></section>
           )}
-          {activeTab === 'reports' && (
-            <ReportsTab reports={reports} onResolve={handleResolveReport} />
+{activeTab === 'reports' && (
+            <section id=\"content-reports\" role=\"region\" aria-labelledby=\"tab-reports\"><ReportsTab reports={reports} onResolve={handleResolveReport} /></section>
           )}
           {activeTab === 'users' && (
             <UsersTab
