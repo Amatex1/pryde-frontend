@@ -581,58 +581,25 @@ function Admin() {
 
             📊 Dashboard
           </button>
-<button
-            role="tab"
-            aria-selected={activeTab === 'reports'}
-            className={`admin-tab ${activeTab === 'reports' ? 'active' : ''}`}
-            onClick={() => handleTabChange('reports')}
-          >
+<button id=\"tab-reports\" aria-controls=\"content-reports\" role=\"tab\" aria-selected={activeTab === 'reports'} className={`admin-tab ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => handleTabChange('reports')} >
             🚩 Reports
           </button>
-<button
-            role="tab"
-            aria-selected={activeTab === 'users'}
-            className={`admin-tab ${activeTab === 'users' ? 'active' : ''}`}
-            onClick={() => handleTabChange('users')}
-          >
+<button id=\"tab-users\" aria-controls=\"content-users\" role=\"tab\" aria-selected={activeTab === 'users'} className={`admin-tab ${activeTab === 'users' ? 'active' : ''}`} onClick={() => handleTabChange('users')} >
             👥 Users
           </button>
-<button
-            role="tab"
-            aria-selected={activeTab === 'blocks'}
-            className={`admin-tab ${activeTab === 'blocks' ? 'active' : ''}`}
-            onClick={() => handleTabChange('blocks')}
-          >
+<button id=\"tab-blocks\" aria-controls=\"content-blocks\" role=\"tab\" aria-selected={activeTab === 'blocks'} className={`admin-tab ${activeTab === 'blocks' ? 'active' : ''}`} onClick={() => handleTabChange('blocks')} >
             🚫 Blocks
           </button>
-<button
-            role="tab"
-            aria-selected={activeTab === 'activity'}
-            className={`admin-tab ${activeTab === 'activity' ? 'active' : ''}`}
-            onClick={() => handleTabChange('activity')}
-          >
+<button id=\"tab-activity\" aria-controls=\"content-activity\" role=\"tab\" aria-selected={activeTab === 'activity'} className={`admin-tab ${activeTab === 'activity' ? 'active' : ''}`} onClick={() => handleTabChange('activity')} >
             📈 Activity
           </button>
-<button
-            role="tab"
-            aria-selected={activeTab === 'security'}
-            className={`admin-tab ${activeTab === 'security' ? 'active' : ''}`}
-            onClick={() => handleTabChange('security')}
-          >
+<button id=\"tab-security\" aria-controls=\"content-security\" role=\"tab\" aria-selected={activeTab === 'security'} className={`admin-tab ${activeTab === 'security' ? 'active' : ''}`} onClick={() => handleTabChange('security')} >
             🔒 Security
           </button>
-<button
-            role="tab"
-            aria-selected={activeTab === 'badges'}
-            className={`admin-tab ${activeTab === 'badges' ? 'active' : ''}`}
-            onClick={() => handleTabChange('badges')}
-          >
+<button id=\"tab-badges\" aria-controls=\"content-badges\" role=\"tab\" aria-selected={activeTab === 'badges'} className={`admin-tab ${activeTab === 'badges' ? 'active' : ''}`} onClick={() => handleTabChange('badges')} >
             🏅 Badges
           </button>
-          <button
-            className={`admin-tab ${activeTab === 'moderation' ? 'active' : ''}`}
-            onClick={() => handleTabChange('moderation')}
-          >
+<button id=\"tab-moderation\" aria-controls=\"content-moderation\" role=\"tab\" aria-selected={activeTab === 'moderation'} className={`admin-tab ${activeTab === 'moderation' ? 'active' : ''}`} onClick={() => handleTabChange('moderation')} >
             🔧 Moderation
           </button>
         </div>
