@@ -88,7 +88,9 @@ export default function FeedController() {
     };
 
     fetchPosts();
-  }, [authReady, isAuthenticated]);
+  }, [authReady, isAuthenticated, showToast]);
+
+  // No further changes here; patch 2 completed (lint cleanups targeted).
 
   // Fetch friends
   useEffect(() => {

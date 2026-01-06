@@ -1,4 +1,4 @@
-﻿/* ========================================
+/* ========================================
    PRYDE SOCIAL - REUSABLE COMPONENTS
    Pre-Launch Polish Pass: 2025-12-31
    ======================================== */
@@ -6,6 +6,7 @@
 /* ========================================
    COMPONENT POLISH - SHARED STANDARDS
    ======================================== */
+@import url('./postHeader.css');
 
 /* Unified focus ring - calm, not harsh */
 :focus-visible {
@@ -403,8 +404,8 @@ select:focus,
 }
 
 
+@import url('./postHeader.css');
 
 /* ========================================
    POST HEADER UNIFIED LAYOUT
    ======================================== */
-@import url('./postHeader.css');
