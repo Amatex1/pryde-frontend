@@ -630,8 +630,8 @@ function Admin() {
 {activeTab === 'blocks' && (
             <section id=\"content-blocks\" role=\"region\" aria-labelledby=\"tab-blocks\"><BlocksTab blocks={blocks} /></section>
           )}
-          {activeTab === 'activity' && activity && (
-            <ActivityTab activity={activity} onViewPost={handleViewPost} />
+{activeTab === 'activity' && activity && (
+            <section id=\"content-activity\" role=\"region\" aria-labelledby=\"tab-activity\"><ActivityTab activity={activity} onViewPost={handleViewPost} /></section>
           )}
           {activeTab === 'security' && (
             loading ? (
