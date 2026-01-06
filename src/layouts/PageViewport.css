@@ -29,9 +29,10 @@
   padding-left: env(safe-area-inset-left, 0);
   padding-right: env(safe-area-inset-right, 0);
 
-  /* Bottom padding: single source of truth for mobile stacked UI
-     Use layer-1 so content isn’t pushed too far up on small screens */
-  padding-bottom: var(--mobile-layer-1, 76px);
+  /* Bottom padding: single source of truth for stacked mobile UI.
+     Use layer-2 so content stays clear of the scroll-to-top button
+     (which sits at layer-2) while still only applying padding once. */
+  padding-bottom: var(--mobile-layer-2, 144px);
 
   /* Smooth transitions for theme changes */
   transition: background-color 0.25s ease-in-out;
