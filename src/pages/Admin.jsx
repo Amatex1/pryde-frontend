@@ -627,8 +627,8 @@ function Admin() {
               onRevokeBadge={handleRevokeBadge}
             />
           )}
-          {activeTab === 'blocks' && (
-            <BlocksTab blocks={blocks} />
+{activeTab === 'blocks' && (
+            <section id=\"content-blocks\" role=\"region\" aria-labelledby=\"tab-blocks\"><BlocksTab blocks={blocks} /></section>
           )}
           {activeTab === 'activity' && activity && (
             <ActivityTab activity={activity} onViewPost={handleViewPost} />
