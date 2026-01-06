@@ -2776,7 +2776,15 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     overflow: visible !important;
   }
 
-  /* Ensure badges in profile-name are visible */
+  /* Ensure badges in profile-name are visible and wrap if needed */
+  .profile-name {
+    display: flex;
+    flex-wrap: wrap; /* Allow name and badges to wrap on mobile */
+    align-items: center;
+    gap: 0.5rem;
+    overflow: visible; /* Don't clip badges */
+  }
+
   .profile-name .badge-container,
   .profile-name .user-badge {
     flex-shrink: 0;

@@ -162,12 +162,12 @@
   align-items: center;
   gap: 6px;
   font-size: 0.85em; /* FEED POLISH: Relative sizing for hierarchy */
-  line-height: 1.1;
+  line-height: 1.3; /* Increased from 1.1 for better wrapping */
   color: var(--text-muted, #666);
   opacity: 0.65; /* FEED POLISH: Stepped back for hierarchy */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal; /* Allow wrapping on mobile */
+  overflow: visible; /* Don't cut off content */
+  flex-wrap: wrap; /* Allow items to wrap to next line */
 
   /* OPTICAL: Margin lifts meta row predictably */
   margin-top: 0;
@@ -249,10 +249,11 @@
 
 @media (max-width: 480px) {
   .post-header {
-    padding: 10px 12px;
+    padding: 10px 8px; /* Reduced horizontal padding for more space */
     min-height: 56px;
     max-height: none; /* Allow height to adjust for badges */
     margin-bottom: 6px;
+    align-items: start; /* Align to top for better multi-line layout */
   }
 
   .post-header-avatar {
@@ -267,19 +268,20 @@
   }
 
   .post-header-text {
-    padding-top: 2px;
-    overflow: hidden;
+    padding-top: 0; /* Remove top padding for tighter layout */
+    overflow: visible; /* Don't clip badges */
     min-width: 0;
   }
 
   /* Author row with badges - flexible layout */
   .post-author-row {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap; /* Allow wrapping if name + badges too long */
     align-items: center;
     gap: 4px;
     min-width: 0;
     max-width: 100%;
+    overflow: visible; /* Don't clip badges */
   }
 
   /* Name link takes remaining space */
@@ -300,30 +302,32 @@
   .post-author-row .badge-container {
     flex-shrink: 0;
     margin-left: 2px;
+    overflow: visible; /* Ensure badges aren't clipped */
   }
 
   /* Smaller badges on mobile */
   .post-author-row .badge-container .user-badge {
-    font-size: 0.75rem;
+    font-size: 0.7rem; /* Slightly smaller for mobile */
     padding: 0 4px;
-    height: 18px;
+    height: 16px; /* Reduced from 18px for tighter fit */
   }
 
   /* Meta row - allow wrapping on mobile, don't truncate behind privacy */
   .post-meta {
     font-size: 0.7rem;
     margin-bottom: 1px;
+    margin-top: 2px; /* Small gap from name row */
     white-space: normal;
     flex-wrap: wrap;
     overflow: visible;
     text-overflow: clip;
-    gap: 4px;
-    line-height: 1.4;
+    gap: 3px; /* Tighter gap on mobile */
+    line-height: 1.5; /* Better line height for wrapped content */
   }
 
   /* Privacy icon stays at end but doesn't cause overlap */
   .post-privacy {
-    font-size: 0.65rem;
+    font-size: 0.7rem; /* Slightly larger for visibility */
     flex-shrink: 0;
   }
 
@@ -331,6 +335,12 @@
   .post-pronouns {
     flex-shrink: 1;
     white-space: nowrap;
+  }
+
+  /* Timestamp should not shrink */
+  .post-timestamp {
+    flex-shrink: 0;
+    font-size: 0.7rem;
   }
 
   /* Timestamp can truncate if needed */

@@ -93,8 +93,10 @@
   .badge-container {
     height: auto; /* Allow natural height on mobile */
     min-height: 1.25rem;
-    flex-shrink: 1; /* Allow shrinking on mobile */
+    flex-shrink: 0; /* Don't shrink badges - let them wrap instead */
     overflow: visible;
+    flex-wrap: wrap; /* Allow badges to wrap to next line */
+    gap: 0.25rem;
   }
 
   .badge-overflow-tooltip {
