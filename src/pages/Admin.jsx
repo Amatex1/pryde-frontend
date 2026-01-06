@@ -580,10 +580,7 @@ function Admin() {
           <button id="tab-dashboard" aria-controls="content-dashboard" role="tab" aria-selected={activeTab === 'dashboard'} className={`admin-tab ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => handleTabChange('dashboard')} >
             📊 Dashboard
           </button>
-          <button
-            className={`admin-tab ${activeTab === 'reports' ? 'active' : ''}`}
-            onClick={() => handleTabChange('reports')}
-          >
+          <button id=\"tab-reports\" aria-controls=\"content-reports\" role=\"tab\" aria-selected={activeTab === 'reports'} className={`admin-tab ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => handleTabChange('reports')} >
             🚩 Reports
           </button>
           <button
