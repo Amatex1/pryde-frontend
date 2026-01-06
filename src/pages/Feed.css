@@ -17,7 +17,7 @@
   gap: 12px;
   max-width: 100%;
   margin: 0 auto;
-  padding: 0 var(--space-md);
+  padding: 0 4px; /* Reduced from var(--space-md) for wider posts on mobile */
 }
 
 /* DESKTOP: Switch to grid layout */
@@ -3649,7 +3649,7 @@ html:not([data-theme]) .post-actions {
 /* Extra small devices */
 @media (max-width: 480px) {
   .feed-layout {
-    padding: 0 0.5rem 1rem;
+    padding: 0 4px 1rem; /* Minimal horizontal padding for maximum width */
   }
 
   /* FEED POLISH: Tighter mobile spacing */

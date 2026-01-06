@@ -36,7 +36,7 @@
      PAGE LAYOUT (Responsive)
      Mobile-first: full-bleed on small screens
      ======================================== */
-  --page-padding: 12px;
+  --page-padding: 4px; /* Reduced from 12px for wider content on mobile */
   --page-max-width: 100%;  /* Full-bleed on mobile */
 
   /* ========================================
