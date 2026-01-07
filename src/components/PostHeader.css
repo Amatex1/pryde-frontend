@@ -28,7 +28,7 @@
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: start; /* Align to top like Facebook */
-  column-gap: 8px; /* Tighter gap like Facebook */
+  column-gap: 12px; /* Comfortable gap between avatar and text */
 
   min-height: 52px; /* More compact */
   padding: 12px 16px;
@@ -119,9 +119,9 @@
 .post-author {
   display: flex;
   flex-direction: column;
-  gap: 0px; /* No gap - tight like Facebook */
+  gap: 2px; /* Small gap between name and meta */
   min-width: 0;
-  padding-top: 2px; /* Slight optical adjustment */
+  padding-top: 0; /* No padding - align with avatar top */
 }
 
 /* Facebook-style: Name and badges row */
@@ -131,7 +131,7 @@
   gap: 6px;
   flex-wrap: nowrap;
   min-width: 0;
-  line-height: 1.3333; /* 20px for 15px font */
+  line-height: 1.2; /* Tighter line height */
 }
 
 .post-author-name-link {
@@ -143,9 +143,9 @@
 
 /* Facebook-style: Display name bold and prominent */
 .post-author-name {
-  font-weight: 700; /* Bolder for Facebook style */
+  font-weight: 600; /* Bold but not too heavy */
   font-size: 0.9375rem; /* 15px */
-  line-height: 1.3333; /* 20px */
+  line-height: 1.2; /* Tighter line height */
   color: var(--text-primary, #050505);
   white-space: nowrap;
   overflow: hidden;
@@ -153,7 +153,7 @@
   transition: color 0.15s ease;
   margin: 0;
   padding: 0;
-  display: block;
+  display: inline-block; /* Inline for better alignment */
 }
 
 .post-author-name-link:hover .post-author-name {
@@ -165,12 +165,12 @@
 .author-meta {
   font-size: 0.8125rem; /* 13px - smaller like Facebook */
   color: var(--text-secondary, #65676b);
-  line-height: 1.3846; /* 18px */
+  line-height: 1.2; /* Tighter line height */
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 4px;
-  margin-top: 1px; /* Tight spacing like Facebook */
+  margin-top: 0; /* No extra margin */
 }
 
 /* Facebook-style: Username in gray */
@@ -356,21 +356,23 @@
   /* Facebook-style: Compact author layout on mobile */
   .post-author {
     min-width: 0;
-    gap: 0px; /* Tight spacing */
+    gap: 2px; /* Small gap between name and meta */
     padding-top: 0;
   }
 
   .author-line {
     gap: 4px;
     flex-wrap: nowrap; /* Keep name and badges on same line */
+    line-height: 1.2;
   }
 
   .post-author-name {
     font-size: 0.9375rem; /* 15px - same as desktop for consistency */
-    font-weight: 700;
+    font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.2;
   }
 
   .author-meta {
@@ -378,6 +380,8 @@
     white-space: normal;
     gap: 3px;
     flex-wrap: wrap;
+    line-height: 1.2;
+    margin-top: 0;
   }
 
   /* Badges stay fixed size, never shrink */
