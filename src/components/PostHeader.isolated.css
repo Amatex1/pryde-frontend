@@ -101,121 +101,133 @@
 .ph-author-info {
   display: flex;
   flex-direction: column;
-  gap: 0; /* No gap - we'll use margin-top on meta-row */
+  gap: 2px; /* Tiny gap between name row and meta row */
   min-width: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  line-height: 1; /* Tighter line height */
+  padding-top: 2px; /* Slight top padding for optical alignment */
+  line-height: 1.4;
 }
 
-/* Name Row */
+/* Name Row - Name + Badges on same baseline */
 .ph-name-row {
   display: flex;
-  align-items: baseline; /* Align all items to text baseline */
-  gap: 6px;
+  align-items: center; /* Center align for better badge alignment */
+  gap: 8px; /* Space between name and badges */
   flex-wrap: nowrap;
   min-width: 0;
-  line-height: 1.2;
+  line-height: 1.4;
   margin-bottom: 0;
 }
 
 .ph-name-link {
   text-decoration: none;
-  display: inline-block;
-  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.4;
 }
 
 .ph-name {
-  font-weight: 600;
-  font-size: 0.9375rem; /* 15px */
-  line-height: 1.2;
-  color: var(--text-primary, #050505);
+  font-weight: 600; /* Semi-bold for clean look */
+  font-size: 0.9375rem; /* 15px - clean readable size */
+  line-height: 1.4;
+  color: var(--text-primary, #2B2B2B);
   white-space: nowrap;
   transition: color 0.15s ease;
   display: inline;
   margin: 0;
   padding: 0;
+  letter-spacing: -0.01em;
 }
 
 .ph-name-link:hover .ph-name {
   color: var(--pryde-purple, #6B46C1);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
-/* System Badge */
+/* System Badge - Clean pill style */
 .ph-system-badge {
-  font-size: 0.75rem;
-  padding: 2px 6px;
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 600;
+  padding: 2px 8px;
   background: var(--pryde-purple, #6B46C1);
   color: white;
-  border-radius: 4px;
+  border-radius: 12px;
   display: inline-flex;
   align-items: center;
-  line-height: 1.2;
+  line-height: 1.4;
+  height: 20px; /* Fixed height for consistency */
+  flex-shrink: 0;
+  text-transform: capitalize;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+}
+
+/* Badge Container - Align with name */
+.ph-name-row .badge-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px; /* Match system badge height */
   flex-shrink: 0;
 }
 
-/* Override BadgeContainer alignment to match name baseline */
-.ph-name-row .badge-container {
-  vertical-align: baseline;
-  align-self: baseline; /* Force baseline alignment in flex */
-}
-
-/* Meta Row - Username · Timestamp · Privacy on same line */
+/* Meta Row - Username · Timestamp · Privacy on second line */
 .ph-meta-row {
-  font-size: 0.75rem; /* 12px - smaller */
-  color: var(--text-secondary, #65676b);
-  line-height: 1.1; /* Even tighter */
+  font-size: 0.875rem; /* 14px */
+  color: var(--text-secondary, #616161);
+  line-height: 1.4;
   display: flex;
-  align-items: center; /* Horizontal layout */
-  flex-wrap: wrap; /* Allow wrapping on very small screens */
-  gap: 4px; /* Space between elements */
-  margin-top: 2px; /* Tiny gap between name and metadata */
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px; /* Comfortable spacing */
+  margin-top: 0;
   padding-top: 0;
 }
 
-/* Username - inline with timestamp */
+/* Username */
 .ph-username {
-  color: var(--text-secondary, #65676b);
+  color: var(--text-secondary, #616161);
   font-weight: 400;
-  font-size: 0.75rem; /* 12px - smaller than before */
-  line-height: 1.1; /* Tight */
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.4;
   margin: 0;
   padding: 0;
 }
 
 .ph-separator {
-  color: var(--text-secondary, #65676b);
+  color: var(--text-muted, #9ca3af);
   font-weight: 400;
   flex-shrink: 0;
   user-select: none;
+  opacity: 0.6;
+  font-size: 0.875rem;
 }
 
 .ph-timestamp {
-  color: var(--text-secondary, #65676b);
-  font-size: 0.8125rem; /* 13px */
+  color: var(--text-secondary, #616161);
+  font-size: 0.875rem; /* 14px */
   font-weight: 400;
   flex-shrink: 1;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: text-decoration 0.15s ease;
+  transition: color 0.15s ease;
 }
 
 .ph-timestamp:hover {
-  text-decoration: underline;
+  color: var(--pryde-purple, #6B46C1);
   cursor: pointer;
 }
 
 .ph-edited {
-  color: var(--text-secondary, #65676b);
-  font-size: 0.8125rem; /* 13px */
+  color: var(--text-secondary, #616161);
+  font-size: 0.875rem; /* 14px */
   font-weight: 400;
   flex-shrink: 0;
+  font-style: italic;
 }
 
 .ph-privacy {
-  font-size: 0.75rem; /* 12px */
-  color: var(--text-secondary, #65676b);
+  font-size: 0.875rem; /* 14px */
+  color: var(--text-secondary, #616161);
   flex-shrink: 0;
   cursor: help;
   transition: opacity 0.15s ease;
@@ -274,14 +286,14 @@
 
 @media (max-width: 480px) {
   .ph-post-header {
-    padding: 8px 10px; /* Even more compact on mobile */
+    padding: 8px 10px;
     min-height: auto;
     margin-bottom: 6px;
     column-gap: 8px;
   }
 
   .ph-avatar {
-    width: 36px; /* Smaller on mobile */
+    width: 36px;
     height: 36px;
   }
 
@@ -291,23 +303,24 @@
   }
 
   .ph-name {
-    font-size: 0.875rem; /* 14px - slightly smaller on mobile */
+    font-size: 0.875rem; /* 14px on mobile */
     font-weight: 600;
   }
 
   .ph-meta-row {
-    font-size: 0.7rem; /* 11px on mobile - even smaller */
-    gap: 3px; /* Slightly more gap on mobile for readability */
+    font-size: 0.8125rem; /* 13px on mobile */
+    gap: 5px;
   }
 
   .ph-username,
   .ph-timestamp,
-  .ph-edited {
-    font-size: 0.7rem; /* 11px on mobile */
+  .ph-edited,
+  .ph-separator {
+    font-size: 0.8125rem; /* 13px on mobile */
   }
 
   .ph-privacy {
-    font-size: 0.7rem;
+    font-size: 0.8125rem;
   }
 }
 
@@ -316,7 +329,7 @@
    ============================================================ */
 
 [data-theme="dark"] .ph-name {
-  color: var(--text-primary, #f0f0f0);
+  color: var(--text-primary, #e0e0e0);
 }
 
 [data-theme="dark"] .ph-name-link:hover .ph-name {
@@ -329,7 +342,7 @@
 [data-theme="dark"] .ph-timestamp,
 [data-theme="dark"] .ph-edited,
 [data-theme="dark"] .ph-privacy {
-  color: var(--text-muted, #999);
+  color: var(--text-secondary, #a0a0a0);
 }
 
 [data-theme="dark"] .ph-avatar {
