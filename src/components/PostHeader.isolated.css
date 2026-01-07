@@ -121,9 +121,8 @@
 
 .fb-name-link {
   text-decoration: none;
-  min-width: 0;
-  flex-shrink: 1;
-  overflow: hidden;
+  display: inline; /* Inline to prevent extra spacing */
+  vertical-align: baseline; /* Align with text baseline */
 }
 
 .fb-name {
