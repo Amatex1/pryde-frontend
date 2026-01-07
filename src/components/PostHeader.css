@@ -119,7 +119,7 @@
 .post-author {
   display: flex;
   flex-direction: column;
-  gap: 2px; /* Small gap between name and meta */
+  gap: 0; /* No gap - super tight like Facebook */
   min-width: 0;
   padding-top: 0; /* No padding - align with avatar top */
 }
@@ -131,7 +131,7 @@
   gap: 6px;
   flex-wrap: nowrap;
   min-width: 0;
-  line-height: 1.2; /* Tighter line height */
+  line-height: 1; /* Super tight line height */
 }
 
 .post-author-name-link {
@@ -145,7 +145,7 @@
 .post-author-name {
   font-weight: 600; /* Bold but not too heavy */
   font-size: 0.9375rem; /* 15px */
-  line-height: 1.2; /* Tighter line height */
+  line-height: 1.3; /* Comfortable line height for readability */
   color: var(--text-primary, #050505);
   white-space: nowrap;
   overflow: hidden;
@@ -165,12 +165,12 @@
 .author-meta {
   font-size: 0.8125rem; /* 13px - smaller like Facebook */
   color: var(--text-secondary, #65676b);
-  line-height: 1.2; /* Tighter line height */
+  line-height: 1.3; /* Comfortable line height */
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 4px;
-  margin-top: 0; /* No extra margin */
+  margin-top: -2px; /* Negative margin to pull closer to name */
 }
 
 /* Facebook-style: Username in gray */
@@ -356,14 +356,14 @@
   /* Facebook-style: Compact author layout on mobile */
   .post-author {
     min-width: 0;
-    gap: 2px; /* Small gap between name and meta */
+    gap: 0; /* No gap - super tight like Facebook */
     padding-top: 0;
   }
 
   .author-line {
     gap: 4px;
     flex-wrap: nowrap; /* Keep name and badges on same line */
-    line-height: 1.2;
+    line-height: 1;
   }
 
   .post-author-name {
@@ -372,7 +372,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 1.2;
+    line-height: 1.3;
   }
 
   .author-meta {
@@ -380,8 +380,8 @@
     white-space: normal;
     gap: 3px;
     flex-wrap: wrap;
-    line-height: 1.2;
-    margin-top: 0;
+    line-height: 1.3;
+    margin-top: -2px; /* Pull closer to name */
   }
 
   /* Badges stay fixed size, never shrink */
