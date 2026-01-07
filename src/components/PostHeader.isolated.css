@@ -32,18 +32,18 @@
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: start;
-  column-gap: 12px;
-  
-  /* Spacing */
-  min-height: 52px;
-  padding: 12px 16px;
-  margin-bottom: 12px;
-  
+  column-gap: 10px; /* Reduced from 12px */
+
+  /* Spacing - MUCH more compact */
+  min-height: auto; /* Remove fixed height */
+  padding: 8px 12px; /* Reduced from 12px 16px */
+  margin-bottom: 8px; /* Reduced from 12px */
+
   /* Positioning */
   position: relative;
   z-index: 2;
   overflow: visible;
-  
+
   /* Visual */
   background: transparent;
   border: none;
@@ -101,19 +101,21 @@
 .fb-author-info {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 0; /* No gap - we'll use margin-top on meta-row */
   min-width: 0;
   padding-top: 0;
+  line-height: 1; /* Tighter line height */
 }
 
 /* Name Row */
 .fb-name-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px; /* Reduced from 6px */
   flex-wrap: nowrap;
   min-width: 0;
   line-height: 1;
+  margin-bottom: 1px; /* Tiny gap before username */
 }
 
 .fb-name-link {
@@ -154,12 +156,12 @@
 .fb-meta-row {
   font-size: 0.75rem; /* 12px - smaller */
   color: var(--text-secondary, #65676b);
-  line-height: 1.3;
+  line-height: 1.2; /* Tighter from 1.3 */
   display: flex;
   flex-direction: column; /* Stack vertically */
   align-items: flex-start; /* Left align */
-  gap: 2px; /* Small gap between username and timestamp row */
-  margin-top: -2px; /* Pull closer to name */
+  gap: 1px; /* Reduced from 2px - tighter spacing */
+  margin-top: 0; /* Remove negative margin */
 }
 
 /* Username - on its own line, smaller */
@@ -168,7 +170,8 @@
   font-weight: 400;
   font-size: 0.75rem; /* 12px - smaller than before */
   display: block; /* Full width */
-  line-height: 1.2;
+  line-height: 1.1; /* Even tighter */
+  margin-bottom: 1px; /* Tiny gap before timestamp row */
 }
 
 /* Timestamp row - separate from username */
@@ -177,6 +180,7 @@
   align-items: center;
   gap: 4px;
   flex-wrap: wrap;
+  line-height: 1.1; /* Tight line height */
 }
 
 .fb-separator {
@@ -269,39 +273,41 @@
 
 @media (max-width: 480px) {
   .fb-post-header {
-    padding: 12px 12px;
-    min-height: 48px;
-    margin-bottom: 8px;
+    padding: 8px 10px; /* Even more compact on mobile */
+    min-height: auto;
+    margin-bottom: 6px;
     column-gap: 8px;
   }
 
   .fb-avatar {
-    width: 40px;
-    height: 40px;
+    width: 36px; /* Smaller on mobile */
+    height: 36px;
   }
 
   .fb-avatar-img {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
   }
 
   .fb-name {
-    font-size: 0.9375rem; /* 15px - same as desktop */
+    font-size: 0.875rem; /* 14px - slightly smaller on mobile */
     font-weight: 600;
   }
 
   .fb-meta-row {
     font-size: 0.7rem; /* 11px on mobile - even smaller */
-    gap: 2px;
+    gap: 1px; /* Tighter on mobile */
   }
 
   .fb-username {
     font-size: 0.7rem; /* 11px on mobile */
+    line-height: 1.1;
   }
 
   .fb-timestamp-row {
     font-size: 0.7rem;
     gap: 3px;
+    line-height: 1.1;
   }
 
   .fb-timestamp,
