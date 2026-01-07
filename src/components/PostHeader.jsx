@@ -164,30 +164,32 @@ function PostHeader({
           )}
         </div>
 
-        {/* Row 2: Username · Timestamp · (edited) · Privacy - Facebook style */}
+        {/* Row 2: Username on top, then Timestamp · (edited) · Privacy */}
         <div className="fb-meta-row">
-          {/* Username in gray */}
+          {/* Username on its own line */}
           <span className="fb-username">@{author.username}</span>
-          <span className="fb-separator">·</span>
 
-          {/* Timestamp */}
-          <time className="fb-timestamp" dateTime={createdAt}>
-            {formattedDate}
-          </time>
+          {/* Timestamp row */}
+          <div className="fb-timestamp-row">
+            {/* Timestamp */}
+            <time className="fb-timestamp" dateTime={createdAt}>
+              {formattedDate}
+            </time>
 
-          {/* Edited indicator */}
-          {edited && (
-            <>
-              <span className="fb-separator">·</span>
-              <span className="fb-edited">(edited)</span>
-            </>
-          )}
+            {/* Edited indicator */}
+            {edited && (
+              <>
+                <span className="fb-separator">·</span>
+                <span className="fb-edited">(edited)</span>
+              </>
+            )}
 
-          {/* Privacy icon */}
-          <span className="fb-separator">·</span>
-          <span className="fb-privacy" title={privacyTitle}>
-            {privacyIcon}
-          </span>
+            {/* Privacy icon */}
+            <span className="fb-separator">·</span>
+            <span className="fb-privacy" title={privacyTitle}>
+              {privacyIcon}
+            </span>
+          </div>
         </div>
       </div>
 

@@ -67,7 +67,6 @@ button, input, textarea, select {
 /* ============================= */
 
 .header-row,
-.post-header,
 .message-header,
 .profile-header-row {
   display: flex;
@@ -77,7 +76,6 @@ button, input, textarea, select {
 }
 
 .header-title,
-.author-name,
 .message-title {
   flex: 1;
   min-width: 0;
@@ -87,12 +85,14 @@ button, input, textarea, select {
 }
 
 .header-actions,
-.post-header-actions,
 .message-actions {
   display: flex;
   gap: 8px;
   flex-shrink: 0;
 }
+
+/* PostHeader (.post-header, .post-header-actions, .author-name) removed -
+   now handled by PostHeader.isolated.css with fb-* classes */
 
 /* ============================= */
 /* 4️⃣ INPUTS & COMPOSERS */

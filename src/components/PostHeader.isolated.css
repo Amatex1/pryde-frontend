@@ -150,22 +150,33 @@
   flex-shrink: 0;
 }
 
-/* Meta Row */
+/* Meta Row - Username on its own line */
 .fb-meta-row {
-  font-size: 0.8125rem; /* 13px */
+  font-size: 0.75rem; /* 12px - smaller */
   color: var(--text-secondary, #65676b);
   line-height: 1.3;
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 4px;
+  flex-direction: column; /* Stack vertically */
+  align-items: flex-start; /* Left align */
+  gap: 2px; /* Small gap between username and timestamp row */
   margin-top: -2px; /* Pull closer to name */
 }
 
+/* Username - on its own line, smaller */
 .fb-username {
   color: var(--text-secondary, #65676b);
   font-weight: 400;
-  font-size: 0.8125rem; /* 13px */
+  font-size: 0.75rem; /* 12px - smaller than before */
+  display: block; /* Full width */
+  line-height: 1.2;
+}
+
+/* Timestamp row - separate from username */
+.fb-timestamp-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
 }
 
 .fb-separator {
@@ -280,14 +291,22 @@
   }
 
   .fb-meta-row {
-    font-size: 0.75rem; /* 12px on mobile */
+    font-size: 0.7rem; /* 11px on mobile - even smaller */
+    gap: 2px;
+  }
+
+  .fb-username {
+    font-size: 0.7rem; /* 11px on mobile */
+  }
+
+  .fb-timestamp-row {
+    font-size: 0.7rem;
     gap: 3px;
   }
 
-  .fb-username,
   .fb-timestamp,
   .fb-edited {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
   }
 
   .fb-privacy {
