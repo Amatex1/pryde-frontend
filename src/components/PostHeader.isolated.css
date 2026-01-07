@@ -111,31 +111,28 @@
 /* Name Row */
 .ph-name-row {
   display: flex;
-  align-items: baseline; /* Changed from center to baseline - aligns text properly */
-  gap: 4px; /* Reduced from 6px */
+  align-items: baseline; /* Align all items to text baseline */
+  gap: 6px;
   flex-wrap: nowrap;
   min-width: 0;
-  line-height: 1;
-  margin-bottom: 0; /* No gap - let meta-row control spacing */
+  line-height: 1.2;
+  margin-bottom: 0;
 }
 
 .ph-name-link {
   text-decoration: none;
-  display: inline-flex; /* Changed to inline-flex to work with flex parent */
-  align-items: baseline;
-  line-height: 1;
+  display: inline-block;
+  line-height: 1.2;
 }
 
 .ph-name {
   font-weight: 600;
   font-size: 0.9375rem; /* 15px */
-  line-height: 1; /* Super tight - no extra space */
+  line-height: 1.2;
   color: var(--text-primary, #050505);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   transition: color 0.15s ease;
-  display: inline-block;
+  display: inline;
   margin: 0;
   padding: 0;
 }
@@ -152,7 +149,16 @@
   background: var(--pryde-purple, #6B46C1);
   color: white;
   border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.2;
   flex-shrink: 0;
+}
+
+/* Override BadgeContainer alignment to match name baseline */
+.ph-name-row .badge-container {
+  vertical-align: baseline;
+  align-self: baseline; /* Force baseline alignment in flex */
 }
 
 /* Meta Row - Username · Timestamp · Privacy on same line */
