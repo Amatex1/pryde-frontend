@@ -107,17 +107,22 @@
 
 
 /* ============================================================
-   POST AUTHOR ROW (Name + Badges only)
-   Privacy icon moved to meta row per spec
+   POST AUTHOR - NEW SINGLE-LINE LAYOUT
+   Name, badges, and meta all on one line (wraps on mobile)
    ============================================================ */
 
-.post-author-row {
+.post-author {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.author-line {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  flex-wrap: wrap; /* Allows meta to drop below name on small screens */
   min-width: 0;
-  flex-wrap: nowrap; /* Keep name and badges on same line */
-  max-width: 100%;
 }
 
 .post-author-name-link {
@@ -145,11 +150,33 @@
   color: var(--pryde-purple, #6B46C1);
 }
 
+.author-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted, #666);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 /* Badges inline with name - never shrink */
 .post-author-badge,
-.post-author-row .badge-container {
+.author-line .badge-container {
   margin-left: 4px;
   flex-shrink: 0;
+}
+
+/* ============================================================
+   LEGACY POST AUTHOR ROW (kept for backward compatibility)
+   ============================================================ */
+
+.post-author-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex-wrap: nowrap; /* Keep name and badges on same line */
+  max-width: 100%;
 }
 
 /* ============================================================
@@ -273,7 +300,45 @@
     min-width: 0;
   }
 
-  /* Author row with badges - flexible layout */
+  /* New author-line layout - wraps on mobile */
+  .post-author {
+    min-width: 0;
+  }
+
+  .author-line {
+    gap: 6px;
+    flex-wrap: wrap; /* Meta drops to second line on mobile */
+  }
+
+  .post-author-name {
+    font-size: 0.875rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .author-meta {
+    font-size: 0.75rem;
+    flex-basis: 100%; /* Force meta to new line on mobile */
+    white-space: normal;
+    gap: 3px;
+  }
+
+  /* Badges stay fixed size, never shrink */
+  .author-line .badge-container {
+    flex-shrink: 0;
+    margin-left: 2px;
+    overflow: visible; /* Ensure badges aren't clipped */
+  }
+
+  /* Smaller badges on mobile */
+  .author-line .badge-container .user-badge {
+    font-size: 0.7rem; /* Slightly smaller for mobile */
+    padding: 0 4px;
+    height: 16px; /* Reduced from 18px for tighter fit */
+  }
+
+  /* Legacy author row with badges - flexible layout */
   .post-author-row {
     display: flex;
     flex-wrap: wrap; /* Allow wrapping if name + badges too long */
@@ -289,13 +354,6 @@
     flex-shrink: 1;
     min-width: 0;
     overflow: hidden;
-  }
-
-  .post-author-name {
-    font-size: 0.875rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
   /* Badges stay fixed size, never shrink */

@@ -110,11 +110,12 @@ function PostHeader({
       {/* Column 1: Avatar (fixed 40px) */}
       {Avatar}
 
-      {/* Column 2: Text Stack (flexible width) */}
-      <div className="post-header-text">
-        {/* Row 1: Name + Badges only (no privacy icon per spec) */}
-        <div className="post-author-row">
+      {/* Column 2: Author info (flexible width) */}
+      <div className="post-author">
+        <div className="author-line">
+          {/* Author name */}
           {AuthorName}
+
           {/* System account badge - non-removable, always visible for system accounts */}
           {isSystem && (
             <span
@@ -125,31 +126,23 @@ function PostHeader({
               System account
             </span>
           )}
+
           {/* Regular badges only shown for non-system accounts */}
           {author.badges?.length > 0 && !isSystem && (
             <BadgeContainer badges={author.badges} />
           )}
-        </div>
-        {/* Row 2: Pronouns · Timestamp · (edited) · Privacy */}
-        <div className="post-meta">
-          {author.pronouns && (
-            <>
-              <span className="post-pronouns">{author.pronouns}</span>
-              <span className="post-separator">·</span>
-            </>
-          )}
-          <time className="post-timestamp" dateTime={createdAt}>
-            {formattedDate}
-          </time>
-          {edited && (
-            <>
-              <span className="post-separator">·</span>
-              <span className="post-edited">(edited)</span>
-            </>
-          )}
-          <span className="post-separator">·</span>
-          <span className="post-privacy" title={privacyTitle}>
-            {privacyIcon}
+
+          {/* Author meta: pronouns · date · (edited) · privacy */}
+          <span className="author-meta">
+            {author.pronouns && <>{author.pronouns} · </>}
+            <time className="post-timestamp" dateTime={createdAt}>
+              {formattedDate}
+            </time>
+            {edited && <> · (edited)</>}
+            {' · '}
+            <span className="post-privacy" title={privacyTitle}>
+              {privacyIcon}
+            </span>
           </span>
         </div>
       </div>
