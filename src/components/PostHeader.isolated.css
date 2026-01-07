@@ -111,7 +111,7 @@
 /* Name Row */
 .ph-name-row {
   display: flex;
-  align-items: center;
+  align-items: baseline; /* Changed from center to baseline - aligns text properly */
   gap: 4px; /* Reduced from 6px */
   flex-wrap: nowrap;
   min-width: 0;
@@ -121,8 +121,9 @@
 
 .ph-name-link {
   text-decoration: none;
-  display: inline; /* Inline to prevent extra spacing */
-  vertical-align: baseline; /* Align with text baseline */
+  display: inline-flex; /* Changed to inline-flex to work with flex parent */
+  align-items: baseline;
+  line-height: 1;
 }
 
 .ph-name {
@@ -135,8 +136,8 @@
   text-overflow: ellipsis;
   transition: color 0.15s ease;
   display: inline-block;
-  margin-bottom: 0;
-  padding-bottom: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .ph-name-link:hover .ph-name {
@@ -163,7 +164,7 @@
   align-items: center; /* Horizontal layout */
   flex-wrap: wrap; /* Allow wrapping on very small screens */
   gap: 4px; /* Space between elements */
-  margin-top: 0; /* No gap - sits right under name */
+  margin-top: 2px; /* Tiny gap between name and metadata */
   padding-top: 0;
 }
 
