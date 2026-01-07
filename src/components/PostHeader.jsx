@@ -33,7 +33,7 @@ import PropTypes from 'prop-types';
 import OptimizedImage from './OptimizedImage';
 import BadgeContainer from './BadgeContainer';
 import { getImageUrl } from '../utils/imageUrl';
-import './PostHeader.css';
+import './PostHeader.isolated.css'; // ISOLATED: No external dependencies
 
 function PostHeader({
   author,
@@ -104,51 +104,53 @@ function PostHeader({
     <OptimizedImage
       src={getImageUrl(author.profilePhoto)}
       alt={author.username}
-      className="post-header-avatar-img"
+      className="fb-avatar-img"
     />
   ) : (
-    <span className="post-header-avatar-fallback">{avatarInitial}</span>
+    <span className="fb-avatar-fallback">{avatarInitial}</span>
   );
 
   const Avatar = linkToProfile ? (
-    <Link 
-      to={profileUrl} 
-      className="post-header-avatar"
+    <Link
+      to={profileUrl}
+      className="fb-avatar"
       onClick={onAvatarClick}
       aria-label={`View ${displayName}'s profile`}
     >
       {avatarContent}
     </Link>
   ) : (
-    <div className="post-header-avatar" onClick={onAvatarClick}>
+    <div className="fb-avatar" onClick={onAvatarClick}>
       {avatarContent}
     </div>
   );
 
   // Author name element
   const AuthorName = linkToProfile ? (
-    <Link to={profileUrl} className="post-author-name-link">
-      <span className="post-author-name">{displayName}</span>
+    <Link to={profileUrl} className="fb-name-link">
+      <span className="fb-name">{displayName}</span>
     </Link>
   ) : (
-    <span className="post-author-name">{displayName}</span>
+    <span className="fb-name">{displayName}</span>
   );
 
   return (
-    <div className="post-header">
+    <div className="fb-post-header">
       {/* Column 1: Avatar (fixed 40px) */}
-      {Avatar}
+      <div className="fb-avatar-wrapper">
+        {Avatar}
+      </div>
 
       {/* Column 2: Author info (flexible width) - Facebook style */}
-      <div className="post-author">
+      <div className="fb-author-info">
         {/* Row 1: Display Name (bold, prominent) + Badges */}
-        <div className="author-line">
+        <div className="fb-name-row">
           {AuthorName}
 
           {/* System account badge - non-removable, always visible for system accounts */}
           {isSystem && (
             <span
-              className="system-account-badge"
+              className="fb-system-badge"
               title={systemDescription}
               aria-label="System account"
             >
@@ -163,27 +165,27 @@ function PostHeader({
         </div>
 
         {/* Row 2: Username · Timestamp · (edited) · Privacy - Facebook style */}
-        <div className="author-meta">
+        <div className="fb-meta-row">
           {/* Username in gray */}
-          <span className="post-username">@{author.username}</span>
-          <span className="post-separator">·</span>
+          <span className="fb-username">@{author.username}</span>
+          <span className="fb-separator">·</span>
 
           {/* Timestamp */}
-          <time className="post-timestamp" dateTime={createdAt}>
+          <time className="fb-timestamp" dateTime={createdAt}>
             {formattedDate}
           </time>
 
           {/* Edited indicator */}
           {edited && (
             <>
-              <span className="post-separator">·</span>
-              <span className="post-edited">(edited)</span>
+              <span className="fb-separator">·</span>
+              <span className="fb-edited">(edited)</span>
             </>
           )}
 
           {/* Privacy icon */}
-          <span className="post-separator">·</span>
-          <span className="post-privacy" title={privacyTitle}>
+          <span className="fb-separator">·</span>
+          <span className="fb-privacy" title={privacyTitle}>
             {privacyIcon}
           </span>
         </div>
@@ -191,7 +193,7 @@ function PostHeader({
 
       {/* Column 3: Actions (fixed 32px) */}
       {children && (
-        <div className="post-header-actions">
+        <div className="fb-actions">
           {children}
         </div>
       )}
