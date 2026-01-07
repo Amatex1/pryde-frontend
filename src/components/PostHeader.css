@@ -107,28 +107,30 @@
 
 
 /* ============================================================
-   POST AUTHOR - NEW SINGLE-LINE LAYOUT
-   Name, badges, and meta all on one line (wraps on mobile)
+   POST AUTHOR - TWO-ROW LAYOUT
+   Row 1: Name + Badges
+   Row 2: Meta (pronouns · date · edited · privacy)
    ============================================================ */
 
 .post-author {
   display: flex;
   flex-direction: column;
+  gap: 4px;
   min-width: 0;
 }
 
 .author-line {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-wrap: wrap; /* Allows meta to drop below name on small screens */
+  gap: 6px;
+  flex-wrap: nowrap;
   min-width: 0;
 }
 
 .post-author-name-link {
   text-decoration: none;
   min-width: 0;
-  flex-shrink: 1; /* Allow name to shrink */
+  flex-shrink: 1;
   overflow: hidden;
 }
 
@@ -153,9 +155,10 @@
 .author-meta {
   font-size: 0.85rem;
   color: var(--text-muted, #666);
-  white-space: nowrap;
+  line-height: 1.3;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 4px;
 }
 
@@ -300,14 +303,15 @@
     min-width: 0;
   }
 
-  /* New author-line layout - wraps on mobile */
+  /* New author layout - two rows on mobile */
   .post-author {
     min-width: 0;
+    gap: 2px;
   }
 
   .author-line {
-    gap: 6px;
-    flex-wrap: wrap; /* Meta drops to second line on mobile */
+    gap: 4px;
+    flex-wrap: wrap;
   }
 
   .post-author-name {
@@ -319,23 +323,23 @@
 
   .author-meta {
     font-size: 0.75rem;
-    flex-basis: 100%; /* Force meta to new line on mobile */
     white-space: normal;
     gap: 3px;
+    flex-wrap: wrap;
   }
 
   /* Badges stay fixed size, never shrink */
   .author-line .badge-container {
     flex-shrink: 0;
     margin-left: 2px;
-    overflow: visible; /* Ensure badges aren't clipped */
+    overflow: visible;
   }
 
   /* Smaller badges on mobile */
   .author-line .badge-container .user-badge {
-    font-size: 0.7rem; /* Slightly smaller for mobile */
+    font-size: 0.7rem;
     padding: 0 4px;
-    height: 16px; /* Reduced from 18px for tighter fit */
+    height: 16px;
   }
 
   /* Legacy author row with badges - flexible layout */
