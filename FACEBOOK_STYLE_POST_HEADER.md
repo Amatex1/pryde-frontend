@@ -36,14 +36,20 @@ Updated the post header to match Facebook's clean, modern design on both mobile 
 
 #### Header Container:
 - More compact: `min-height: 52px` (was 64px)
-- Tighter spacing: `column-gap: 8px` (was 12px)
+- Comfortable spacing: `column-gap: 12px` (avatar to text)
 - Aligned to top: `align-items: start`
 - Added smooth transitions
 
 #### Typography:
-- **Display Name:** `font-weight: 700` (bolder), `font-size: 0.9375rem` (15px)
+- **Display Name:** `font-weight: 600` (bold but not heavy), `font-size: 0.9375rem` (15px)
+- **Line Heights:** `1.2` (tight and compact like Facebook)
 - **Username:** `font-size: 0.8125rem` (13px), gray color
 - **Meta Text:** `font-size: 0.8125rem` (13px), `color: #65676b`
+
+#### Spacing:
+- **Name to Meta Gap:** `2px` (small but readable)
+- **No extra padding:** Author container aligned with avatar top
+- **No margin-top:** Meta row sits directly below name
 
 #### Three-Dot Menu Button:
 - Circular: `border-radius: 50%`
