@@ -580,7 +580,7 @@ function Admin() {
           <button id="tab-dashboard" aria-controls="content-dashboard" role="tab" aria-selected={activeTab === 'dashboard'} className={`admin-tab ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => handleTabChange('dashboard')} >
             📊 Dashboard
           </button>
-          <button id=\"tab-reports\" aria-controls=\"content-reports\" role=\"tab\" aria-selected={activeTab === 'reports'} className={`admin-tab ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => handleTabChange('reports')} >
+          <button id="tab-reports" aria-controls="content-reports" role="tab" aria-selected={activeTab === 'reports'} className={`admin-tab ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => handleTabChange('reports')} >
             🚩 Reports
           </button>
           <button
@@ -623,7 +623,7 @@ function Admin() {
 
         <div className="admin-content">
 {activeTab === 'dashboard' && stats && (
-            <section id=\"content-dashboard\" role=\"region\" aria-labelledby=\"tab-dashboard\"><DashboardTab stats={stats} /></section>
+            <section id="content-dashboard" role="region" aria-labelledby="tab-dashboard"><DashboardTab stats={stats} /></section>
           )}
           {activeTab === 'reports' && (
             <ReportsTab reports={reports} onResolve={handleResolveReport} />
