@@ -81,10 +81,10 @@ api.interceptors.request.use(
       const csrfToken = getCsrfToken();
       if (csrfToken) {
         config.headers['X-XSRF-TOKEN'] = csrfToken;
-        logger.debug(`🛡️ CSRF token attached to ${method} ${config.url}:`, csrfToken.substring(0, 20) + '...');
+        logger.debug(`🛡️ CSRF token attached to ${method} ${config.url} (redacted)`);
       } else {
         logger.warn(`⚠️ No CSRF token found for ${method} ${config.url}`);
-        logger.warn(`📋 Current cookies: ${document.cookie}`);
+        // CSRF: cookie logging removed
       }
     }
 
@@ -140,7 +140,7 @@ api.interceptors.response.use(
       // Check if it's a CSRF error
       if (errorMessage.includes('CSRF') || errorMessage.includes('csrf')) {
         logger.error('🛡️ CSRF token error:', errorMessage);
-        logger.error('📋 Current cookies:', document.cookie);
+        logger.error('CSRF token error: cookies data redacted for security');
         logger.error('📋 Request headers:', originalRequest.headers);
 
         // If CSRF token is missing or expired, make a GET request to get a new token

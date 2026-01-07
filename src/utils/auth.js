@@ -1,6 +1,6 @@
 export const setAuthToken = (token) => {
   if (token) {
-    console.log('🔑 Setting access token (first 20 chars):', token.substring(0, 20) + '...');
+    console.log('🔑 Setting access token (redacted)');
     console.log('⏰ Token set at:', new Date().toISOString());
     localStorage.setItem('token', token);
     localStorage.setItem('tokenSetTime', Date.now().toString());
@@ -13,7 +13,7 @@ export const setAuthToken = (token) => {
 
 export const setRefreshToken = (token) => {
   if (token) {
-    console.log('🔄 Setting refresh token (first 20 chars):', token.substring(0, 20) + '...');
+    console.log('🔄 Setting refresh token (redacted)');
     localStorage.setItem('refreshToken', token);
   } else {
     console.log('🗑️ Removing refresh token');

@@ -409,3 +409,20 @@ select:focus,
 /* ========================================
    POST HEADER UNIFIED LAYOUT
    ======================================== */
+
+@media (max-width: 600px) {
+  .pryde-btn, .btn {
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+  .pryde-input, .pryde-textarea {
+    min-height: 48px;
+    font-size: 16px;
+  }
+  .pryde-container {
+    padding: 0 14px;
+  }
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+}
