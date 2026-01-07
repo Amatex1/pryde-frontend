@@ -8,14 +8,15 @@
     "build": "vite build",
     "build:prod": "vite build --mode production",
     "preview": "vite preview",
-    "lint": "eslint src/",
+    "lint": "eslint . --ext .js,.jsx",
     "lint:features": "eslint src/features/ src/pages/",
-    "lint:fix": "eslint src/ --fix",
+    "lint:fix": "eslint . --ext .js,.jsx --fix",
     "server:dev": "cd server && npm run dev",
     "server:start": "cd server && npm start",
     "optimize-images": "node scripts/optimize-images.js",
     "test": "mocha server/test/**/*.test.js --timeout 10000",
-    "test:watch": "mocha server/test/**/*.test.js --timeout 10000 --watch"
+    "test:watch": "mocha server/test/**/*.test.js --timeout 10000 --watch",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",
@@ -48,9 +49,9 @@
     "@vitejs/plugin-react": "^4.0.3",
     "autoprefixer": "^10.4.22",
     "axios": "^1.13.2",
-    "eslint": "^9.39.1",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react": "^7.29.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-security": "^3.0.1",
     "globals": "^16.5.0",
     "mocha": "^11.7.5",
@@ -63,6 +64,8 @@
     "vite": "^7.2.4",
     "vite-plugin-pwa": "^1.2.0",
     "web-vitals": "^5.1.0",
-    "workbox-window": "^7.4.0"
+    "workbox-window": "^7.4.0",
+    "eslint-config-prettier": "^8.6.0",
+    "prettier": "^3.0.0"
   }
 }
