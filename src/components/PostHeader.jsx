@@ -104,53 +104,53 @@ function PostHeader({
     <OptimizedImage
       src={getImageUrl(author.profilePhoto)}
       alt={author.username}
-      className="fb-avatar-img"
+      className="ph-avatar-img"
     />
   ) : (
-    <span className="fb-avatar-fallback">{avatarInitial}</span>
+    <span className="ph-avatar-fallback">{avatarInitial}</span>
   );
 
   const Avatar = linkToProfile ? (
     <Link
       to={profileUrl}
-      className="fb-avatar"
+      className="ph-avatar"
       onClick={onAvatarClick}
       aria-label={`View ${displayName}'s profile`}
     >
       {avatarContent}
     </Link>
   ) : (
-    <div className="fb-avatar" onClick={onAvatarClick}>
+    <div className="ph-avatar" onClick={onAvatarClick}>
       {avatarContent}
     </div>
   );
 
   // Author name element
   const AuthorName = linkToProfile ? (
-    <Link to={profileUrl} className="fb-name-link">
-      <span className="fb-name">{displayName}</span>
+    <Link to={profileUrl} className="ph-name-link">
+      <span className="ph-name">{displayName}</span>
     </Link>
   ) : (
-    <span className="fb-name">{displayName}</span>
+    <span className="ph-name">{displayName}</span>
   );
 
   return (
-    <div className="fb-post-header">
+    <div className="ph-post-header">
       {/* Column 1: Avatar (fixed 40px) */}
-      <div className="fb-avatar-wrapper">
+      <div className="ph-avatar-wrapper">
         {Avatar}
       </div>
 
-      {/* Column 2: Author info (flexible width) - Facebook style */}
-      <div className="fb-author-info">
+      {/* Column 2: Author info (flexible width) */}
+      <div className="ph-author-info">
         {/* Row 1: Display Name (bold, prominent) + Badges */}
-        <div className="fb-name-row">
+        <div className="ph-name-row">
           {AuthorName}
 
           {/* System account badge - non-removable, always visible for system accounts */}
           {isSystem && (
             <span
-              className="fb-system-badge"
+              className="ph-system-badge"
               title={systemDescription}
               aria-label="System account"
             >
@@ -165,27 +165,27 @@ function PostHeader({
         </div>
 
         {/* Row 2: Username · Timestamp · (edited) · Privacy - all on same line */}
-        <div className="fb-meta-row">
+        <div className="ph-meta-row">
           {/* Username */}
-          <span className="fb-username">@{author.username}</span>
-          <span className="fb-separator">·</span>
+          <span className="ph-username">@{author.username}</span>
+          <span className="ph-separator">·</span>
 
           {/* Timestamp */}
-          <time className="fb-timestamp" dateTime={createdAt}>
+          <time className="ph-timestamp" dateTime={createdAt}>
             {formattedDate}
           </time>
 
           {/* Edited indicator */}
           {edited && (
             <>
-              <span className="fb-separator">·</span>
-              <span className="fb-edited">(edited)</span>
+              <span className="ph-separator">·</span>
+              <span className="ph-edited">(edited)</span>
             </>
           )}
 
           {/* Privacy icon */}
-          <span className="fb-separator">·</span>
-          <span className="fb-privacy" title={privacyTitle}>
+          <span className="ph-separator">·</span>
+          <span className="ph-privacy" title={privacyTitle}>
             {privacyIcon}
           </span>
         </div>
@@ -193,7 +193,7 @@ function PostHeader({
 
       {/* Column 3: Actions (fixed 32px) */}
       {children && (
-        <div className="fb-actions">
+        <div className="ph-actions">
           {children}
         </div>
       )}
