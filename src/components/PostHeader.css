@@ -23,16 +23,16 @@
    POST HEADER - MAIN CONTAINER (CSS GRID)
    ============================================================ */
 
+/* Facebook-style: Compact, clean header */
 .post-header {
   display: grid;
   grid-template-columns: auto 1fr auto;
-  align-items: center;
-  column-gap: 12px;
+  align-items: start; /* Align to top like Facebook */
+  column-gap: 8px; /* Tighter gap like Facebook */
 
-  min-height: 64px;
-  max-height: 64px;
+  min-height: 52px; /* More compact */
   padding: 12px 16px;
-  margin-bottom: 8px; /* Spacing between header and content */
+  margin-bottom: 12px; /* Spacing between header and content */
   box-sizing: border-box;
 
   /* STACKING CONTEXT: Header always sits above post body */
@@ -44,6 +44,9 @@
 
   /* LOCKED: No transforms on container - optics handled inside */
   transform: none;
+
+  /* Smooth transitions */
+  transition: background-color 0.15s ease;
 }
 
 /* ============================================================
@@ -112,19 +115,23 @@
    Row 2: Meta (pronouns · date · edited · privacy)
    ============================================================ */
 
+/* Facebook-style: Author info container */
 .post-author {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0px; /* No gap - tight like Facebook */
   min-width: 0;
+  padding-top: 2px; /* Slight optical adjustment */
 }
 
+/* Facebook-style: Name and badges row */
 .author-line {
   display: flex;
   align-items: center;
   gap: 6px;
   flex-wrap: nowrap;
   min-width: 0;
+  line-height: 1.3333; /* 20px for 15px font */
 }
 
 .post-author-name-link {
@@ -134,11 +141,12 @@
   overflow: hidden;
 }
 
+/* Facebook-style: Display name bold and prominent */
 .post-author-name {
-  font-weight: 600;
-  font-size: 0.9375rem;
-  line-height: 1.2;
-  color: var(--text-primary, #1a1a1a);
+  font-weight: 700; /* Bolder for Facebook style */
+  font-size: 0.9375rem; /* 15px */
+  line-height: 1.3333; /* 20px */
+  color: var(--text-primary, #050505);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -150,16 +158,26 @@
 
 .post-author-name-link:hover .post-author-name {
   color: var(--pryde-purple, #6B46C1);
+  text-decoration: underline;
 }
 
+/* Facebook-style: Meta row with username, timestamp, privacy */
 .author-meta {
-  font-size: 0.85rem;
-  color: var(--text-muted, #666);
-  line-height: 1.3;
+  font-size: 0.8125rem; /* 13px - smaller like Facebook */
+  color: var(--text-secondary, #65676b);
+  line-height: 1.3846; /* 18px */
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 4px;
+  margin-top: 1px; /* Tight spacing like Facebook */
+}
+
+/* Facebook-style: Username in gray */
+.post-username {
+  color: var(--text-secondary, #65676b);
+  font-weight: 400;
+  font-size: 0.8125rem; /* 13px */
 }
 
 /* Badges inline with name - never shrink */
@@ -204,41 +222,49 @@
   margin-bottom: 2px;
 }
 
-.post-pronouns {
-  color: var(--text-muted, #666);
-  opacity: 0.65; /* FEED POLISH: Secondary */
-  font-size: 0.85em;
-  flex-shrink: 0;
-}
-
+/* Facebook-style: Separator dots */
 .post-separator {
-  color: var(--text-muted, #666);
-  opacity: 0.5; /* FEED POLISH: Even more subdued */
+  color: var(--text-secondary, #65676b);
+  font-weight: 400;
   flex-shrink: 0;
+  user-select: none;
 }
 
+/* Facebook-style: Timestamp */
 .post-timestamp {
-  color: var(--text-muted, #666);
-  opacity: 0.65; /* FEED POLISH: Secondary */
-  font-size: 0.85em;
+  color: var(--text-secondary, #65676b);
+  font-size: 0.8125rem; /* 13px */
+  font-weight: 400;
   flex-shrink: 1;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: text-decoration 0.15s ease;
 }
 
+.post-timestamp:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Facebook-style: Edited indicator */
 .post-edited {
-  font-style: italic;
-  color: var(--text-muted, #666);
-  opacity: 0.65; /* FEED POLISH: Secondary */
-  font-size: 0.85em;
+  color: var(--text-secondary, #65676b);
+  font-size: 0.8125rem; /* 13px */
+  font-weight: 400;
   flex-shrink: 0;
 }
 
+/* Facebook-style: Privacy icon */
 .post-privacy {
-  font-size: 0.75rem;
-  opacity: 0.65; /* FEED POLISH: Secondary */
+  font-size: 0.75rem; /* 12px */
+  color: var(--text-secondary, #65676b);
   flex-shrink: 0;
   cursor: help;
+  transition: opacity 0.15s ease;
+}
+
+.post-privacy:hover {
+  opacity: 0.7;
 }
 
 /* ICON BASELINE NORMALIZATION: Prevents icon droop next to text */
@@ -249,24 +275,47 @@
 }
 
 /* ============================================================
-   ACTIONS COLUMN (KEBAB MENU - FIXED SIZE)
+   ACTIONS COLUMN (KEBAB MENU - FACEBOOK STYLE)
    ============================================================ */
 
 .post-header-actions {
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* Align to top like Facebook */
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 36px; /* Slightly larger hit area */
+  height: 36px;
   flex: none; /* Prevent flex shrink/grow */
+  margin-top: -4px; /* Optical alignment with text */
 }
 
-/* Ensure buttons in actions column don't use positioning hacks */
+/* Facebook-style: Three-dot menu button */
 .post-header-actions button,
 .post-header-actions .btn-dropdown {
-  position: static !important; /* No absolute positioning */
-  transform: none !important; /* No transform hacks */
-  margin: 0 !important; /* No margin hacks */
+  position: static !important;
+  transform: none !important;
+  margin: 0 !important;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%; /* Circular like Facebook */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: var(--text-secondary, #65676b);
+  transition: background-color 0.15s ease;
+}
+
+.post-header-actions button:hover,
+.post-header-actions .btn-dropdown:hover {
+  background-color: var(--bg-hover, rgba(0, 0, 0, 0.05));
+}
+
+.post-header-actions button:active,
+.post-header-actions .btn-dropdown:active {
+  background-color: var(--bg-active, rgba(0, 0, 0, 0.1));
 }
 
 /* ============================================================
@@ -277,52 +326,55 @@
    - Layout never shifts vertically
    ============================================================ */
 
+/* Facebook-style mobile layout */
 @media (max-width: 480px) {
   .post-header {
-    padding: 10px 8px; /* Reduced horizontal padding for more space */
-    min-height: 56px;
-    max-height: none; /* Allow height to adjust for badges */
-    margin-bottom: 6px;
-    align-items: start; /* Align to top for better multi-line layout */
+    padding: 12px 12px; /* Facebook-style padding */
+    min-height: 48px; /* Compact like Facebook mobile */
+    margin-bottom: 8px;
+    align-items: start;
+    column-gap: 8px;
   }
 
   .post-header-avatar {
-    width: 36px;
-    height: 36px;
+    width: 40px; /* Keep 40px like Facebook mobile */
+    height: 40px;
   }
 
   .post-header-avatar img,
   .post-header-avatar-img {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
   }
 
   .post-header-text {
-    padding-top: 0; /* Remove top padding for tighter layout */
-    overflow: visible; /* Don't clip badges */
+    padding-top: 0;
+    overflow: visible;
     min-width: 0;
   }
 
-  /* New author layout - two rows on mobile */
+  /* Facebook-style: Compact author layout on mobile */
   .post-author {
     min-width: 0;
-    gap: 2px;
+    gap: 0px; /* Tight spacing */
+    padding-top: 0;
   }
 
   .author-line {
     gap: 4px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* Keep name and badges on same line */
   }
 
   .post-author-name {
-    font-size: 0.875rem;
+    font-size: 0.9375rem; /* 15px - same as desktop for consistency */
+    font-weight: 700;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   .author-meta {
-    font-size: 0.75rem;
+    font-size: 0.75rem; /* 12px on mobile */
     white-space: normal;
     gap: 3px;
     flex-wrap: wrap;

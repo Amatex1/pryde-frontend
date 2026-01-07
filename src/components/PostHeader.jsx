@@ -55,11 +55,40 @@ function PostHeader({
   const displayName = author.displayName || author.username || 'User';
   const avatarInitial = displayName.charAt(0).toUpperCase();
   const profileUrl = `/profile/${author.username}`;
-  
-  // Format timestamp
-  const formattedDate = createdAt 
-    ? new Date(createdAt).toLocaleString()
-    : '';
+
+  // Format timestamp - Facebook style
+  const formatTimestamp = (date) => {
+    if (!date) return '';
+
+    const postDate = new Date(date);
+    const now = new Date();
+    const diffMs = now - postDate;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    // Less than 1 minute
+    if (diffMins < 1) return 'Just now';
+
+    // Less than 1 hour - show minutes
+    if (diffMins < 60) return `${diffMins}m`;
+
+    // Less than 24 hours - show hours
+    if (diffHours < 24) return `${diffHours}h`;
+
+    // Less than 7 days - show days
+    if (diffDays < 7) return `${diffDays}d`;
+
+    // Less than 1 year - show "Month Day"
+    if (postDate.getFullYear() === now.getFullYear()) {
+      return postDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    // Over 1 year - show "Month Day, Year"
+    return postDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const formattedDate = formatTimestamp(createdAt);
 
   // Privacy icon mapping
   const privacyIcon = visibility === 'public' ? '🌍' 
@@ -110,9 +139,9 @@ function PostHeader({
       {/* Column 1: Avatar (fixed 40px) */}
       {Avatar}
 
-      {/* Column 2: Author info (flexible width) */}
+      {/* Column 2: Author info (flexible width) - Facebook style */}
       <div className="post-author">
-        {/* Row 1: Name and badges */}
+        {/* Row 1: Display Name (bold, prominent) + Badges */}
         <div className="author-line">
           {AuthorName}
 
@@ -133,14 +162,27 @@ function PostHeader({
           )}
         </div>
 
-        {/* Row 2: Meta information - pronouns · date · (edited) · privacy */}
+        {/* Row 2: Username · Timestamp · (edited) · Privacy - Facebook style */}
         <div className="author-meta">
-          {author.pronouns && <>{author.pronouns} · </>}
+          {/* Username in gray */}
+          <span className="post-username">@{author.username}</span>
+          <span className="post-separator">·</span>
+
+          {/* Timestamp */}
           <time className="post-timestamp" dateTime={createdAt}>
             {formattedDate}
           </time>
-          {edited && <> · (edited)</>}
-          {' · '}
+
+          {/* Edited indicator */}
+          {edited && (
+            <>
+              <span className="post-separator">·</span>
+              <span className="post-edited">(edited)</span>
+            </>
+          )}
+
+          {/* Privacy icon */}
+          <span className="post-separator">·</span>
           <span className="post-privacy" title={privacyTitle}>
             {privacyIcon}
           </span>
