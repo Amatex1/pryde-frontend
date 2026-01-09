@@ -227,6 +227,39 @@ export default function ProfileController() {
     }
   }, [user, followStatus, isOwnProfile, updatePrivacyPermissions]);
 
+  // ✅ Listen for real-time profile updates
+  useEffect(() => {
+    if (!isOwnProfile || !user?._id) return;
+
+    const cleanupFunctions = [];
+
+    const setupListeners = (socket) => {
+      const handleProfileUpdate = (data) => {
+        logger.debug('👤 Real-time profile update received:', data);
+        if (data.user._id === user._id) {
+          setUser(prevUser => ({ ...prevUser, ...data.user }));
+
+          // Refresh badges if they changed
+          if (data.user.badges) {
+            api.get(`/badges/user/${data.user._id}`)
+              .then(response => setUserBadges(response.data || []))
+              .catch(err => logger.error('Failed to refresh badges:', err));
+          }
+        }
+      };
+
+      socket.on('profile:updated', handleProfileUpdate);
+      cleanupFunctions.push(() => socket.off('profile:updated', handleProfileUpdate));
+    };
+
+    const cancelSocketRetry = setupSocketListeners(setupListeners);
+
+    return () => {
+      cancelSocketRetry();
+      cleanupFunctions.forEach(cleanup => cleanup?.());
+    };
+  }, [isOwnProfile, user?._id]);
+
   // ========== HANDLERS ==========
   const handleFollow = async () => {
     try {
