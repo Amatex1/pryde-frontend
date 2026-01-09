@@ -4,6 +4,7 @@ import { getImageUrl } from '../utils/imageUrl';
 import { compressAvatar, compressCoverPhoto } from '../utils/compressImage';
 import { uploadWithProgress } from '../utils/uploadWithProgress';
 import './EditProfileModal.css';
+import BadgeSettings from './BadgeSettings';
 
 function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
   const [formData, setFormData] = useState({
@@ -871,6 +872,16 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                   </label>
                 </div>
               </div>
+            </section>
+
+            {/* Badge Settings */}
+            <section className="form-section">
+              <h3>🏅 Badge Settings</h3>
+              <p className="section-description">Choose which badges to display on your profile (up to 3).</p>
+              <BadgeSettings onUpdate={() => {
+                // Optionally refresh user data after badge update
+                console.log('Badges updated');
+              }} />
             </section>
 
             {/* Accessibility & Communication */}
