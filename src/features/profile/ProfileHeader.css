@@ -1,9 +1,9 @@
 /**
  * ProfileHeader.css - Header styling (layout-agnostic)
- * 
+ *
  * NO width, max-width, or layout rules
  * These are handled by PageLayout
- * 
+ *
  * Styles inherit from existing Profile.css
  */
 
@@ -13,4 +13,22 @@
 }
 
 /* Cover photo and other styles inherit from Profile.css */
+
+/* ────────────────────────────────────────
+   PROFILE ACTIONS CONTAINER
+   Below identity spine
+   ──────────────────────────────────────── */
+
+.profile-actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .profile-actions-container {
+    padding: 0 1rem 1rem 1rem;
+  }
+}
 

@@ -15,8 +15,10 @@
 import { Link } from 'react-router-dom';
 import OptimizedImage from '../../components/OptimizedImage';
 import TieredBadgeDisplay from '../../components/TieredBadgeDisplay';
+import ProfileIdentitySpine from './ProfileIdentitySpine';
 import { getImageUrl } from '../../utils/imageUrl';
 import { sanitizeBio, sanitizeURL, sanitizeText } from '../../utils/sanitize';
+import { separateBadgesByTier } from '../../utils/badgeTiers';
 import './ProfileHeader.css';
 
 export default function ProfileHeader({
@@ -93,53 +95,11 @@ export default function ProfileHeader({
           )}
         </div>
 
-        <div className="profile-details">
-          <h1 className="profile-name text-shadow">
-            {user.displayName || user.fullName || user.username}
-            {user.nickname && user.nickname !== user.displayName && user.nickname !== user.username && (
-              <span className="nickname"> "{user.nickname}"</span>
-            )}
-          </h1>
-          <p className="profile-username">@{user.username}</p>
+        {/* NEW: Identity Spine - Calm, vertical layout */}
+        <ProfileIdentitySpine user={user} postsCount={postsCount} />
 
-          {/* PHASE A: Tiered Badge System */}
-          {!user.isSystemAccount && user.badges?.length > 0 && (
-            <TieredBadgeDisplay badges={user.badges} context="profile" />
-          )}
-
-          {/* System account description - prominently displayed for transparency */}
-          {user.isSystemAccount && user.systemDescription && (
-            <p className="system-account-description">
-              {user.systemDescription}
-            </p>
-          )}
-
-          <div className="profile-badges">
-            {user.pronouns && (
-              <span className="badge">{user.pronouns.charAt(0).toUpperCase() + user.pronouns.slice(1)}</span>
-            )}
-            {user.gender && (
-              <span className="badge">{user.gender.charAt(0).toUpperCase() + user.gender.slice(1)}</span>
-            )}
-            {user.sexualOrientation && (
-              <span className="badge">{user.sexualOrientation.charAt(0).toUpperCase() + user.sexualOrientation.slice(1)}</span>
-            )}
-            {user.birthday && (
-              <span className="badge">🎂 {(() => {
-                const birthDate = new Date(user.birthday);
-                const today = new Date();
-                let age = today.getFullYear() - birthDate.getFullYear();
-                const monthDiff = today.getMonth() - birthDate.getMonth();
-                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                  age--;
-                }
-                return age;
-              })()} years old</span>
-            )}
-          </div>
-
-          {user.bio && <p className="profile-bio">{sanitizeBio(user.bio)}</p>}
-
+        {/* Action Buttons Container */}
+        <div className="profile-actions-container">
           {/* Own Profile Actions */}
           {isOwnProfile && (
             <div className="profile-action-buttons self-profile-actions">
@@ -190,33 +150,19 @@ export default function ProfileHeader({
             </div>
           )}
 
-          {/* Profile Meta */}
-          <div className="profile-meta">
-            {user.location && (
-              <span className="meta-item">📍 {sanitizeText(user.location)}</span>
-            )}
-            {user.website && (
-              <a href={sanitizeURL(user.website)} target="_blank" rel="noopener noreferrer" className="meta-item">
-                🔗 {sanitizeText(user.website)}
-              </a>
-            )}
-          </div>
-
-          {/* Profile Stats */}
-          <div className="profile-stats">
-            <div className="stat-item">
-              <span className="stat-value">{postsCount}</span>
-              <span className="stat-label">Posts</span>
+          {/* Profile Meta (location, website) */}
+          {(user.location || user.website) && (
+            <div className="profile-meta">
+              {user.location && (
+                <span className="meta-item">📍 {sanitizeText(user.location)}</span>
+              )}
+              {user.website && (
+                <a href={sanitizeURL(user.website)} target="_blank" rel="noopener noreferrer" className="meta-item">
+                  🔗 {sanitizeText(user.website)}
+                </a>
+              )}
             </div>
-            <Link to={`/profile/${user.username}/followers`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
-              <span className="stat-value">{user.followers?.length || 0}</span>
-              <span className="stat-label">Followers</span>
-            </Link>
-            <Link to={`/profile/${user.username}/following`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
-              <span className="stat-value">{user.following?.length || 0}</span>
-              <span className="stat-label">Following</span>
-            </Link>
-          </div>
+          )}
         </div>
       </div>
     </div>
