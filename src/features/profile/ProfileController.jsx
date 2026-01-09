@@ -290,8 +290,21 @@ export default function ProfileController() {
     }
   };
 
-  const handleProfileUpdate = (updatedUser) => {
+  const handleProfileUpdate = async (updatedUser) => {
     setUser(updatedUser);
+
+    // Refresh badges after profile update
+    if (updatedUser._id) {
+      try {
+        const badgesResponse = await api.get(`/badges/user/${updatedUser._id}`);
+        if (isMountedRef.current) {
+          setUserBadges(badgesResponse.data || []);
+        }
+      } catch (badgeError) {
+        logger.error('Failed to refresh user badges:', badgeError);
+      }
+    }
+
     showToast('Profile updated successfully!', 'success');
   };
 

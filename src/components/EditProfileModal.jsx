@@ -878,9 +878,14 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
             <section className="form-section">
               <h3>🏅 Badge Settings</h3>
               <p className="section-description">Choose which badges to display on your profile (up to 3).</p>
-              <BadgeSettings onUpdate={() => {
-                // Optionally refresh user data after badge update
-                console.log('Badges updated');
+              <BadgeSettings onUpdate={async () => {
+                // Refresh user data after badge update
+                try {
+                  const response = await api.get(`/users/${user.username}`);
+                  onUpdate(response.data);
+                } catch (error) {
+                  console.error('Failed to refresh user data:', error);
+                }
               }} />
             </section>
 
