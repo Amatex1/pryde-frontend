@@ -1,0 +1,157 @@
+/**
+ * PHASE E: Quiet Chrome - Calm Navigation
+ *
+ * All navigation bars, toolbars, and panels should be neutral and quiet.
+ * Brand color used ONLY for active states and primary CTAs.
+ *
+ * Goals:
+ * - No gradients
+ * - No glow
+ * - Subtle border only
+ * - Neutral background
+ * - Brand color for active tab, primary CTA, new message indicator only
+ */
+
+/* ────────────────────────────────────────
+   NAVBAR: Quiet, Framing
+   ──────────────────────────────────────── */
+
+.navbar,
+.app-header,
+.top-nav {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: none; /* Remove all shadows */
+  backdrop-filter: none; /* Remove blur effects */
+}
+
+[data-theme="dark"] .navbar,
+[data-theme="dark"] .app-header,
+[data-theme="dark"] .top-nav {
+  background: var(--bg-card);
+  border-color: var(--border-dark);
+}
+
+/* ────────────────────────────────────────
+   NAVBAR ITEMS: Neutral by Default
+   ──────────────────────────────────────── */
+
+.navbar-item,
+.nav-link,
+.navbar-link {
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  box-shadow: none;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.navbar-item:hover,
+.nav-link:hover,
+.navbar-link:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  box-shadow: none; /* No hover glow */
+}
+
+/* Active state: Brand color ONLY */
+.navbar-item.active,
+.nav-link.active,
+.navbar-link.active {
+  background: var(--pryde-purple);
+  color: white;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .navbar-item:hover,
+[data-theme="dark"] .nav-link:hover,
+[data-theme="dark"] .navbar-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ────────────────────────────────────────
+   NOTIFICATION BADGE: Brand Color Only
+   ──────────────────────────────────────── */
+
+.notification-badge,
+.nav-badge,
+.unread-badge {
+  background: var(--pryde-purple);
+  color: white;
+  border: 2px solid var(--bg-card);
+  box-shadow: none; /* No glow */
+}
+
+/* ────────────────────────────────────────
+   SEARCH BAR: Flat, Minimal
+   ──────────────────────────────────────── */
+
+.navbar-search,
+.search-bar {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  box-shadow: none;
+  transition: border-color 0.15s ease;
+}
+
+.navbar-search:focus,
+.search-bar:focus {
+  border-color: var(--pryde-purple);
+  box-shadow: none; /* No focus glow */
+  outline: none;
+}
+
+[data-theme="dark"] .navbar-search,
+[data-theme="dark"] .search-bar {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ────────────────────────────────────────
+   DROPDOWN MENUS: Flat, Clean
+   ──────────────────────────────────────── */
+
+.navbar-dropdown,
+.dropdown-menu {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle depth only */
+}
+
+[data-theme="dark"] .navbar-dropdown,
+[data-theme="dark"] .dropdown-menu {
+  background: var(--bg-card);
+  border-color: var(--border-dark);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.dropdown-item {
+  background: transparent;
+  color: var(--text-primary);
+  border: none;
+  transition: background 0.15s ease;
+}
+
+.dropdown-item:hover {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ────────────────────────────────────────
+   MOBILE NAV: Flat Bottom Bar
+   ──────────────────────────────────────── */
+
+.mobile-nav {
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-light);
+  box-shadow: none;
+}
+
+[data-theme="dark"] .mobile-nav {
+  background: var(--bg-card);
+  border-color: var(--border-dark);
+}

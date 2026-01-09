@@ -1,287 +1,304 @@
-/* =====================================================
-   ⚠️ DEPRECATED - DO NOT ADD NEW CODE HERE
-   =====================================================
+﻿/* ========================================
+   NAVBAR - PLATFORM-GRADE DESIGN
+   Calm, Confident, Professional
+   ======================================== */
 
-   This file is scheduled for removal in a future hardening phase.
-   The Navbar component will be refactored to use:
-   - PageLayout-aware responsive behavior
-   - Feature-specific CSS in src/components/Navbar.css
-
-   These styles may still be required for current Navbar behavior
-   until the Navbar component is migrated to the new system.
-
-   Migration Status: Pending (Navbar migration not yet scheduled)
-   Target Removal: After Navbar uses PageLayout-aware styles
-   ===================================================== */
-
-/* =====================================================
-   MOBILE NAVBAR — FLEX ROW (RESET FROM DESKTOP GRID)
-   ===================================================== */
-
-@media (max-width: 1023px) {
-  nav.navbar.glossy {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    padding: 10px 16px !important;
-    background: var(--bg-card, #0f1220e6) !important;
-  }
-
-  nav.navbar.glossy > .navbar-logo {
-    flex-shrink: 0;
-  }
-
-  nav.navbar.glossy > .navbar-utility-search {
-    display: none !important; /* Hidden on mobile - search is in mobile menu */
-  }
-
-  /* Hide navbar-actions on mobile - hamburger menu has all these options */
-  nav.navbar.glossy > .navbar-actions {
-    display: none !important;
-  }
-
-  /* Make hamburger button visible and properly positioned */
-  nav.navbar.glossy .mobile-hamburger-btn {
-    display: flex !important;
-    order: 999; /* Push to the end */
-  }
+.navbar {
+  height: var(--navbar-height);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: none; /* No animations */
 }
 
-/* =====================================================
-   DESKTOP NAVBAR — CONTAINED, FRAMED, FINAL
-   Navbar aligns with post container width
-   Soft rounded border, centered wider search
-   Right-aligned: Profile → Bell → Messages (icon only)
-   ===================================================== */
+/* ========================================
+   NAVBAR CONTAINER
+   ======================================== */
 
-@media (min-width: 1024px) {
+.navbar-container,
+.navbar-inner {
+  max-width: var(--page-max-width);
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 var(--page-padding-mobile);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
 
-  /* Outer navbar becomes transparent holder */
-  .navbar {
-    background: transparent;
-    padding: 12px 0;
-    justify-content: center;
-    overflow: visible !important;
-  }
-
-  /* Inner constrained container (matches feed width) */
+@media (min-width: 768px) {
   .navbar-container,
   .navbar-inner {
-    display: grid;
-    grid-template-columns: auto minmax(520px, 720px) auto;
-    align-items: center;
-    gap: 24px;
-    width: 100%;
-    max-width: var(--content-max-width, 1200px);
-    margin: 0 auto;
-    padding: 10px 16px;
-    background: #0f1220e6;
-    border-radius: 14px;
-    overflow: visible !important;
-  }
-
-  /* LEFT — Brand */
-  .navbar-logo,
-  .navbar-brand {
-    grid-column: 1;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  /* CENTER — Search */
-  .navbar-search,
-  .global-search {
-    grid-column: 2;
-    width: 100%;
-    max-width: 720px;
-    justify-self: center;
-  }
-
-  .navbar-search input,
-  .global-search input {
-    height: 42px;
-    font-size: 15px;
-    padding: 0 18px;
-    border-radius: 12px;
-  }
-
-  /* RIGHT — Actions (right-aligned) */
-  .navbar-right,
-  .navbar-actions {
-    grid-column: 3;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 12px;
-    position: relative;
-    overflow: visible !important;
-  }
-
-  /* All action children flex-aligned */
-  .navbar-actions > * {
-    display: flex;
-    align-items: center;
-  }
-
-  /* Icons baseline */
-  .navbar-actions svg {
-    vertical-align: middle;
-  }
-
-  /* Messages icon — icon only */
-  .navbar-messages span,
-  .navbar-messages .label,
-  .nav-button .nav-text {
-    display: none;
-  }
-
-  /* Notification bell */
-  .navbar-notifications,
-  .notification-bell {
-    display: flex;
-    align-items: center;
-  }
-
-  /* Profile anchor is the terminal edge */
-  .navbar-user {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-left: 6px;
-    position: relative;
-    overflow: visible !important;
-  }
-
-  /* Profile dropdown container */
-  .profile-dropdown-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    position: relative;
-    overflow: visible !important;
-  }
-
-  /* Profile dropdown — flush right, visible */
-  .profile-dropdown {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    left: auto;
-    z-index: 9999 !important;
-    min-width: 220px;
-  }
-
-  .navbar-avatar-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-  }
-
-  .navbar-avatar,
-  .user-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  .navbar-username,
-  .user-name {
-    max-width: 120px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 14px;
-  }
-
-  /* Dropdown alignment */
-  .navbar-dropdown,
-  .user-dropdown {
-    right: 0;
-    left: auto;
-  }
-
-  /* Search visual centering */
-  .navbar-search,
-  .global-search {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-
-  /* Safety: no mobile controls on desktop */
-  .hamburger,
-  .menu-toggle,
-  .mobile-menu-button,
-  .mobile-hamburger-btn,
-  .navbar-toggle {
-    display: none !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-  }
-
-  /* =====================================================
-     COMPACT SEARCH VARIANT (RIGHT NAV)
-     ===================================================== */
-
-  .global-search-compact {
-    display: flex;
-    align-items: center;
-  }
-
-  .global-search-compact .search-input {
-    width: 478px;
-    height: 36px;
-    font-size: 14px;
-    border-radius: 10px;
-    padding: 0 14px;
-  }
-
-  .search-input[data-variant="compact"] {
-    background: rgba(255,255,255,0.06);
-  }
-
-  /* =====================================================
-     TRUE CENTER SEARCH FIX
-     Make navbar a true 3-column grid with centered search
-     ===================================================== */
-
-  /* Make navbar a true 3-column grid */
-  nav.navbar.glossy {
-    display: grid !important;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    justify-items: center;
-    padding: 12px 24px;
-    background: transparent;
-  }
-
-  /* Left: brand */
-  nav.navbar.glossy > .navbar-logo {
-    justify-self: start;
-  }
-
-  /* Center: search */
-  .navbar-utility-search {
-    grid-column: 2;
-    justify-self: center;
-    width: 100%;
-    max-width: 480px;
-    position: static !important;
-    transform: none !important;
-  }
-
-  .navbar-utility-search input {
-    width: 100%;
-  }
-
-  /* Right: actions */
-  nav.navbar.glossy > .navbar-actions,
-  nav.navbar.glossy > .navbar-right {
-    justify-self: end;
+    padding: 0 var(--page-padding-tablet);
   }
 }
 
+@media (min-width: 1024px) {
+  .navbar-container,
+  .navbar-inner {
+    padding: 0 var(--page-padding-desktop);
+    gap: var(--space-6);
+  }
+}
+
+/* ========================================
+   NAVBAR SECTIONS
+   ======================================== */
+
+.navbar-logo,
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.navbar-logo img {
+  height: 40px;
+  width: auto;
+}
+
+.navbar-brand-text {
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+/* ========================================
+   NAVBAR SEARCH (Desktop)
+   ======================================== */
+
+.navbar-search,
+.global-search {
+  flex: 1;
+  max-width: 600px;
+  display: none; /* Hide on mobile */
+}
+
+@media (min-width: 768px) {
+  .navbar-search,
+  .global-search {
+    display: block;
+  }
+}
+
+.navbar-search input {
+  width: 100%;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--input-radius);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  font-size: 0.9375rem;
+  transition: border-color 0.2s ease;
+}
+
+.navbar-search input:focus {
+  outline: none;
+  border-color: var(--color-brand);
+  background: var(--color-surface);
+}
+
+/* ========================================
+   NAVBAR ACTIONS
+   ======================================== */
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Hide on mobile - use hamburger menu */
+@media (max-width: 767px) {
+  .navbar-actions {
+    display: none;
+  }
+}
+
+/* ========================================
+   NAVBAR BUTTONS
+   ======================================== */
+
+.navbar-btn {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--button-radius);
+  font-weight: var(--font-weight-medium);
+  font-size: 0.9375rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+}
+
+.navbar-btn:hover {
+  background: var(--color-surface-muted);
+}
+
+/* Primary CTA in navbar */
+.navbar-btn-primary {
+  background: var(--color-brand);
+  color: var(--color-text-inverse);
+}
+
+.navbar-btn-primary:hover {
+  background: var(--color-brand-hover);
+}
+
+/* ========================================
+   NAVBAR ICONS
+   ======================================== */
+
+.navbar-icon-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text);
+  transition: background 0.2s ease;
+  position: relative;
+}
+
+.navbar-icon-btn:hover {
+  background: var(--color-surface-muted);
+}
+
+/* Notification badge */
+.navbar-icon-btn .badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: var(--color-danger);
+  border-radius: 50%;
+  border: 2px solid var(--color-surface);
+}
+
+/* ========================================
+   MOBILE HAMBURGER
+   ======================================== */
+
+.mobile-hamburger-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text);
+}
+
+@media (min-width: 768px) {
+  .mobile-hamburger-btn {
+    display: none;
+  }
+}
+
+.mobile-hamburger-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* ========================================
+   PROFILE DROPDOWN
+   ======================================== */
+
+.navbar-profile {
+  position: relative;
+}
+
+.navbar-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1);
+  border-radius: 50px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.navbar-profile-btn:hover {
+  background: var(--color-surface-muted);
+}
+
+.navbar-profile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-border);
+}
+
+.navbar-profile-name {
+  font-size: 0.9375rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  display: none; /* Hide on mobile */
+}
+
+@media (min-width: 1024px) {
+  .navbar-profile-name {
+    display: block;
+  }
+}
+
+/* ========================================
+   REMOVE ALL DECORATIVE EFFECTS
+   ======================================== */
+
+/* No gradients */
+.navbar,
+.navbar-container,
+.navbar-inner {
+  background: var(--color-surface) !important;
+  background-image: none !important;
+}
+
+/* No glow effects */
+.navbar,
+.navbar-btn,
+.navbar-icon-btn {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* No animations */
+.navbar * {
+  animation: none !important;
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+
+.navbar-btn:focus,
+.navbar-icon-btn:focus,
+.navbar-profile-btn:focus {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar * {
+    transition: none !important;
+  }
+}

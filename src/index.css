@@ -1,23 +1,61 @@
-/* ========================================
-   PRYDE SOCIAL - MAIN STYLES
-   Import order matters: Base → Theme → Design → Components → Layout (LAST)
+﻿/* ========================================
+   PRYDE SOCIAL - PLATFORM-GRADE DESIGN SYSTEM
+   Import order: Tokens �+' Layout �+' Components �+' Pages
    ======================================== */
 
-@import './styles/responsiveBase.css';      /* CRITICAL: Responsive foundation (must be first) */
+/* FOUNDATION: Design tokens (colors, spacing, typography) */
+@import './styles/tokens.css';              /* NEW: Platform-grade design tokens */
+
+/* BASE STYLES */
+@import './styles/responsiveBase.css';      /* Responsive foundation */
 @import './styles/globalTheme.css';         /* Global theming system */
-@import './styles/variables.css';           /* Unified variable system */
-@import './styles/design-system.css';       /* Unified mobile-first design system */
-@import './styles/theme.css';               /* Brand colors and theme variables */
-@import './styles/professional-layout.css'; /* Professional layout pass - calm + confident */
-@import './styles/components.css';          /* Reusable component styles */
-@import './styles/accessibility.css';       /* Phase 5C: Accessibility & keyboard navigation */
-@import './styles/hardening.css';           /* Global hardening pass - layout stability, dark mode, quiet mode */
-@import './styles/layout.css';              /* AUTHORITY: Layout tokens and .page-container (MUST be last) */
+@import './styles/variables.css';           /* Legacy variables (to be migrated) */
+@import './styles/design-system.css';       /* Design system */
+@import './styles/theme.css';               /* Brand colors */
+
+/* LAYOUT SYSTEM */
+@import './styles/layout.css';              /* UPDATED: Platform-grade layout system */
+@import './styles/professional-layout.css'; /* Professional layout pass */
+
+/* COMPONENTS */
+@import './styles/components.css';          /* Reusable components */
+@import './styles/navbar.css';              /* UPDATED: Platform-grade navbar */
+
+/* UTILITIES */
+@import './styles/accessibility.css';       /* Accessibility */
+@import './styles/hardening.css';           /* Hardening pass */
+
+/* CALM MODE: Platform-grade transformation (PHASE A-F) */
+@import './components/Navbar.calm.css';     /* Quiet chrome */
+@import './pages/Profile.calm.css';         /* Profile layout spine */
+@import './pages/Feed.calm.css';            /* Feed rhythm refactor */
+@import './pages/Mobile.calm.css';          /* Mobile-first calm mode */
+@import './pages/Messages.calm.css';        /* Messages DM experience */
 
 /* ========================================
-   GLOBAL LINK RESET
-   UI elements must not look like traditional hyperlinks.
-   Underlines are reserved for inline text links only.
+   GLOBAL RESETS
+   ======================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: var(--line-height-normal);
+}
+
+/* ========================================
+   LINK RESET
+   UI elements must not look like traditional hyperlinks
    ======================================== */
 
 a {
@@ -25,19 +63,13 @@ a {
   text-decoration: none;
 }
 
-/* ========================================
-   EXPLICIT INLINE LINK STYLE
-   Use .link ONLY for real text links:
-   - "View helplines"
-   - Inline text references
-   - Legal / help links inside paragraphs
-   ======================================== */
-
+/* Inline text links */
 .link {
-  color: var(--color-accent, #9b87f5);
+  color: var(--color-brand);
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-skip-ink: auto;
+  transition: opacity 0.2s ease;
 }
 
 .link:hover {
@@ -45,363 +77,50 @@ a {
 }
 
 .link:focus-visible {
-  outline: 2px solid var(--color-accent, #9b87f5);
+  outline: 2px solid var(--color-brand);
   outline-offset: 2px;
 }
 
 /* ========================================
-   RESPONSIVE FOUNDATION (MOBILE-FIRST)
+   TYPOGRAPHY DEFAULTS
    ======================================== */
 
-/* HTML base - design-system.css handles font-size */
-html {
-  /* Prevent horizontal overflow on all devices */
-  overflow-x: hidden;
-  width: 100%;
-  font-size: 16px; /* Explicit base font size */
-  -webkit-text-size-adjust: 100%; /* Prevent iOS font scaling */
-
-  /* Smooth scrolling */
-  scroll-behavior: smooth;
-
-  /* Better text rendering */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-
-  /* Smooth transitions for theme changes */
-  transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
-
-  /* 🔒 ROOT BACKGROUND HARD LOCK - Mobile/PWA dark mode fix */
-  background-color: var(--bg-page, var(--bg));
-  color-scheme: light dark;
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text);
 }
 
-/* 🔒 DARK MODE ROOT OVERRIDE - Prevents white flash on mobile/PWA */
-html[data-theme="dark"],
-html[data-theme="dark"] body {
-  background-color: var(--bg-page);
-}
-
-/* Prevent mobile font scaling chaos */
-button, input, textarea, select {
-  font-family: inherit;
-  font-size: 1rem;
-}
-
-body {
-  /* Font family and sizing handled by design-system.css */
-  background-color: var(--bg-page, var(--bg));
-  min-height: 100dvh; /* Use dvh for mobile viewport safety */
-  color: var(--text-primary, var(--text-main));
-  transition: background-color 0.3s ease, color 0.3s ease;
-
-  /* Prevent horizontal overflow - use % not vw */
-  overflow-x: hidden;
-  width: 100%;
-
-  /* Better touch scrolling on mobile */
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Root container responsive sizing */
-#root {
-  width: 100%;
-  min-width: 320px;
-  overflow-x: hidden;
-  min-height: 100dvh; /* Use dvh for mobile */
-}
-
-/* App container - wraps all routes */
-.app-container {
-  width: 100%;
-  min-width: 320px;
-  min-height: 100dvh;
-  background: var(--bg);
-  overflow-x: hidden;
-}
-
-/* Font scaling removed - handled by design-system.css */
-
-/* ========================================
-   SAFE AREA SUPPORT (PWA / NOTCHES)
-   ======================================== */
-
-.safe-area {
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-}
-
-.safe-area-bottom {
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.safe-area-top {
-  padding-top: env(safe-area-inset-top);
+p {
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
 }
 
 /* ========================================
-   LEGACY VARIABLE MAPPINGS
-   Map old variables to new theme system for backward compatibility
+   BUTTON RESET
    ======================================== */
 
-:root {
-  /* Map old color names to new theme system */
-  --pryde-purple: var(--color-primary);
-  --electric-blue: var(--color-accent);
-  --soft-lavender: var(--color-primary-soft);
-
-  /* Map old background/surface names */
-  --bg-light: var(--bg);
-  --card-surface: var(--bg-card);
-  --border-light: var(--border-subtle);
-
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
-  --gradient-soft: linear-gradient(135deg, var(--color-primary-soft) 0%, var(--color-primary) 100%);
-
-  /* Semantic Colors */
-  --success: var(--color-success);
-  --error: var(--color-danger);
-  --warning: var(--color-warning);
-
-  /* Legacy support (will be removed) */
-  --gold: var(--color-primary);
-  --gold-light: var(--color-accent);
-  --gold-dark: var(--color-primary);
-  --dark-bg: var(--text-main);
-  --dark-secondary: var(--border-subtle);
-  --dark-card: var(--bg-card);
-}
-
-/* NOTE: Dark Mode CSS is in darkMode.css, loaded separately in main.jsx */
-/* NOTE: Quiet Mode CSS is in quiet-mode.css, loaded after darkMode.css */
-
-/* Scrollbar styling - Uses CSS variables only */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--border-subtle);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--accent-primary);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-hover);
-}
-
-/* Glossy effect utility - Uses CSS variables only */
-.glossy {
-  background: var(--bg-surface);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-soft);
-}
-
-.glossy-gradient {
-  background: var(--gradient-primary);
-  box-shadow: var(--shadow-medium);
-  color: var(--text-inverse);
-}
-
-.text-shadow {
-  text-shadow: var(--shadow-soft);
-}
-
-/* Button styles */
 button {
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-button:hover {
-  transform: translateY(-2px);
-}
-
-button:active {
-  transform: translateY(0);
-}
-
-/* Input styles */
-input, textarea {
   font-family: inherit;
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-in {
-  animation: fadeIn 0.2s ease-out;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-.shimmer {
-  background: linear-gradient(
-    90deg,
-    var(--accent-muted) 0%,
-    var(--accent-primary) 50%,
-    var(--accent-muted) 100%
-  );
-  background-size: 1000px 100%;
-  animation: shimmer 2s infinite;
-}
-
-/* Utility Classes for New Theme */
-.bg-gradient-primary {
-  background: var(--gradient-primary);
-}
-
-.bg-gradient-soft {
-  background: var(--gradient-soft);
-}
-
-.text-purple {
-  color: var(--accent-primary);
-}
-
-.text-blue {
-  color: var(--accent-secondary);
-}
-
-.border-purple {
-  border-color: var(--accent-primary);
-}
-
-.hover-lift {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-strong);
+  cursor: pointer;
 }
 
 /* ========================================
-   UNIVERSAL RESPONSIVE UTILITIES
-   Auto-fit for all device sizes
+   ACCESSIBILITY
    ======================================== */
 
-/* Prevent any element from causing horizontal scroll */
-img, video, iframe, embed, object {
-  max-width: 100%;
-  height: auto;
-}
-
-/* Responsive containers - uses fluid system */
-.container {
-  width: 100%;
-  max-width: var(--fluid-container-max, 3000px);
-  padding-left: var(--fluid-space-md, 1rem);
-  padding-right: var(--fluid-space-md, 1rem);
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Responsive text sizing using clamp for fluid scaling */
-.text-responsive {
-  font-size: clamp(0.875rem, 2vw, 1rem);
-}
-
-.heading-responsive {
-  font-size: clamp(1.5rem, 4vw, 2.5rem);
-}
-
-/* Responsive spacing */
-.spacing-responsive {
-  padding: clamp(0.5rem, 2vw, 2rem);
-}
-
-/* Hide/Show based on device size */
-.mobile-only {
-  display: none;
-}
-
-.desktop-only {
-  display: block;
-}
-
-@media (max-width: 768px) {
-  .mobile-only {
-    display: block;
-  }
-
-  .desktop-only {
-    display: none;
-  }
-
-  .tablet-hide {
-    display: none;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
-@media (max-width: 480px) {
-  .phone-hide {
-    display: none;
-  }
-}
-
-/* Responsive grid system - auto-adjusts columns based on screen size */
-.grid-responsive {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-}
-
-/* Touch-friendly sizing for mobile devices */
-@media (max-width: 768px) {
-  button:not(.no-touch-target),
-  a:not(.no-touch-target),
-  input[type="button"]:not(.no-touch-target),
-  input[type="submit"]:not(.no-touch-target) {
-    min-height: 44px; /* Apple's recommended touch target size */
-    min-width: 44px;
-  }
-}
-
-/* Safe area padding for notched devices (iPhone X, etc.) */
-@supports (padding: max(0px)) {
-  body {
-    padding-left: max(0px, env(safe-area-inset-left));
-    padding-right: max(0px, env(safe-area-inset-right));
-  }
-}
-
-/* Prevent layout shift on all devices */
-* {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Ensure all fixed/absolute positioned elements stay within viewport */
-[style*="position: fixed"],
-[style*="position: absolute"] {
-  max-width: 100vw;
-}
-
-/* Loading spinner animation for lazy-loaded routes */
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
 }

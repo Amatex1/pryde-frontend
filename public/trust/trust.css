@@ -1,0 +1,391 @@
+﻿/* ========================================
+   PRYDE TRUST CENTER - PROFESSIONAL STATIC STYLES
+   Platform-grade, crawlable, accessible
+   ======================================== */
+
+/* ========================================
+   RESET & BASE
+   ======================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.6;
+  color: #1E1E26;
+  background: #F5F6FA;
+}
+
+/* ========================================
+   LAYOUT CONTAINER
+   ======================================== */
+
+.trust-container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ========================================
+   HEADER
+   ======================================== */
+
+.trust-header {
+  background: #FFFFFF;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 16px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.trust-header-inner {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.trust-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #1E1E26;
+}
+
+.trust-logo img {
+  height: 36px;
+  width: auto;
+}
+
+.trust-logo-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1E1E26;
+}
+
+.trust-nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.trust-nav a {
+  text-decoration: none;
+  color: #6B6E80;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.trust-nav a:hover {
+  color: #6C5CE7;
+}
+
+.trust-nav a.btn-primary {
+  background: #6C5CE7;
+  color: #FFFFFF;
+  padding: 8px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.trust-nav a.btn-primary:hover {
+  background: #5a4bd8;
+  color: #FFFFFF;
+}
+
+/* ========================================
+   MAIN CONTENT
+   ======================================== */
+
+.trust-main {
+  padding: 48px 0;
+  min-height: calc(100vh - 200px);
+}
+
+.trust-page-header {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+}
+
+.trust-page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  color: #1E1E26;
+}
+
+.trust-page-meta {
+  font-size: 0.875rem;
+  color: #9CA0B3;
+  margin-bottom: 16px;
+}
+
+.trust-page-intro {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: #6B6E80;
+  margin-bottom: 24px;
+}
+
+.trust-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.trust-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.trust-btn-primary {
+  background: #6C5CE7;
+  color: #FFFFFF;
+}
+
+.trust-btn-primary:hover {
+  background: #5a4bd8;
+}
+
+.trust-btn-secondary {
+  background: transparent;
+  color: #6B6E80;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.trust-btn-secondary:hover {
+  background: #F4F5FA;
+  border-color: #6C5CE7;
+  color: #6C5CE7;
+}
+
+/* ========================================
+   PDF VIEWER
+   ======================================== */
+
+.trust-pdf-viewer {
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 32px;
+}
+
+.trust-pdf-viewer iframe {
+  width: 100%;
+  height: 800px;
+  border: none;
+  display: block;
+}
+
+.trust-pdf-fallback {
+  padding: 48px 24px;
+  text-align: center;
+  background: #F4F5FA;
+}
+
+.trust-pdf-fallback p {
+  font-size: 1rem;
+  color: #6B6E80;
+  margin-bottom: 16px;
+}
+
+/* ========================================
+   TRUST CENTER INDEX
+   ======================================== */
+
+.trust-index-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+@media (min-width: 768px) {
+  .trust-index-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.trust-index-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 24px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: block;
+}
+
+.trust-index-card:hover {
+  border-color: #6C5CE7;
+  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.1);
+}
+
+.trust-index-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1E1E26;
+  margin-bottom: 8px;
+}
+
+.trust-index-card p {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #6B6E80;
+  margin: 0;
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+
+.trust-footer {
+  background: #FFFFFF;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 48px 0 32px;
+  margin-top: 64px;
+}
+
+.trust-footer-inner {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.trust-footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+@media (min-width: 768px) {
+  .trust-footer-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.trust-footer-section h4 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1E1E26;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+}
+
+.trust-footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.trust-footer-links li {
+  margin-bottom: 12px;
+}
+
+.trust-footer-links a {
+  text-decoration: none;
+  color: #6B6E80;
+  font-size: 0.9375rem;
+  transition: color 0.2s ease;
+}
+
+.trust-footer-links a:hover {
+  color: #6C5CE7;
+}
+
+.trust-footer-bottom {
+  padding-top: 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  text-align: center;
+  color: #9CA0B3;
+  font-size: 0.875rem;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 767px) {
+  .trust-page-title {
+    font-size: 2rem;
+  }
+
+  .trust-pdf-viewer iframe {
+    height: 600px;
+  }
+
+  .trust-nav {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid #6C5CE7;
+  outline-offset: 2px;
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+
+@media print {
+  .trust-header,
+  .trust-footer,
+  .trust-actions {
+    display: none;
+  }
+
+  .trust-main {
+    padding: 0;
+  }
+
+  .trust-pdf-viewer {
+    border: none;
+  }
+}

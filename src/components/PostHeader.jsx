@@ -31,7 +31,7 @@
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import OptimizedImage from './OptimizedImage';
-import BadgeContainer from './BadgeContainer';
+import TieredBadgeDisplay from './TieredBadgeDisplay';
 import { getImageUrl } from '../utils/imageUrl';
 import './PostHeader.isolated.css'; // ISOLATED: No external dependencies
 
@@ -158,9 +158,9 @@ function PostHeader({
             </span>
           )}
 
-          {/* Regular badges only shown for non-system accounts */}
+          {/* PHASE A: Tiered badges - only Tier 1 shown in feed */}
           {author.badges?.length > 0 && !isSystem && (
-            <BadgeContainer badges={author.badges} />
+            <TieredBadgeDisplay badges={author.badges} context="feed" />
           )}
         </div>
 

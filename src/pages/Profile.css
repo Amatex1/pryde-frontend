@@ -531,7 +531,7 @@ div.profile-layout,
   font-size: 1.1rem;
 }
 
-.profile-badges {
+.profile-identity-pills {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
@@ -2432,12 +2432,12 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     overflow: visible !important; /* Ensure badges aren't clipped */
   }
 
-  .profile-badges {
+  .profile-identity-pills {
     overflow: visible !important;
     max-width: 100%;
   }
 
-  .profile-badges .badge {
+  .profile-identity-pills .badge {
     font-size: 0.75rem;
     padding: 0.375rem 0.75rem;
   }
@@ -3177,3 +3177,356 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 [data-theme="dark"] .user-card:hover {
   background: rgba(255, 255, 255, 0.05);
 }
+
+/* ----------------------------------------
+   PHASE A: Tiered Badge Display in Profile
+   Calm, hierarchical badge presentation
+   ---------------------------------------- */
+
+.profile-details .tiered-badge-display {
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Tier 1 badges inline with name - moved to TieredBadgeDisplay.css */
+
+/* Identity pills (pronouns, gender, age) - separate from badges */
+.profile-identity-pills {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.profile-identity-pills .badge {
+  /* Keep existing badge styling for identity pills */
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
+}
+
+.profile-identity-pills .badge:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border-medium);
+}
+
+[data-theme="dark"] .profile-identity-pills .badge {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .profile-identity-pills .badge:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .profile-details .tiered-badge-display {
+    margin-top: 0.5rem;
+    margin-bottom: 0.375rem;
+  }
+  
+  .profile-identity-pills {
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .profile-identity-pills .badge {
+    font-size: 0.75rem;
+    padding: 0.3125rem 0.625rem;
+  }
+}
+
+
+/* ----------------------------------------
+   PHASE B: Profile Layout Spine
+   Single vertical identity column
+   No floating elements, no overlapping visuals
+   ---------------------------------------- */
+
+/* Profile header: Cover photo only, no decorative shadows */
+.profile-header {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 0;
+  background: transparent;
+  box-shadow: none; /* Remove decorative shadows */
+}
+
+.profile-header.glossy {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+/* Cover photo: Clean, no decoration */
+.cover-photo {
+  width: 100%;
+  height: 200px;
+  background: var(--bg-secondary);
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 769px) {
+  .cover-photo {
+    height: 280px;
+  }
+}
+
+.cover-photo-image,
+.cover-placeholder {
+  width: 100%;
+  height: 100%;
+}
+
+.cover-placeholder {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+}
+
+/* Profile info: Vertical spine starts here */
+.profile-info {
+  padding: 1.5rem;
+  background: var(--bg-primary);
+  border-radius: 0 0 12px 12px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media (min-width: 769px) {
+  .profile-info {
+    padding: 2rem;
+    gap: 1.25rem;
+  }
+}
+
+/* Avatar: Centered, no overlap */
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid var(--bg-primary);
+  background: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Subtle, not decorative */
+  margin-top: -60px; /* Half of avatar height for overlap */
+}
+
+@media (min-width: 769px) {
+  .profile-avatar {
+    width: 140px;
+    height: 140px;
+    font-size: 3.5rem;
+    margin-top: -70px;
+  }
+}
+
+[data-theme="dark"] .profile-avatar {
+  border-color: var(--bg-secondary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.profile-avatar img,
+.profile-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Profile details: Vertical spine */
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 600px;
+  gap: 0.75rem;
+}
+
+/* Profile name: Clear hierarchy */
+.profile-name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.2;
+  text-shadow: none; /* Remove decorative text shadow */
+}
+
+@media (min-width: 769px) {
+  .profile-name {
+    font-size: 2rem;
+  }
+}
+
+.profile-name .nickname {
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Username: Muted, secondary */
+.profile-username {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Bio: Readable, centered */
+.profile-bio {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0.5rem 0 0 0;
+  max-width: 500px;
+}
+
+/* Meta info: Location, website */
+.profile-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.meta-item:hover {
+  color: var(--text-primary);
+}
+
+/* Stats: Clean, horizontal row */
+.profile-stats {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+  width: 100%;
+}
+
+[data-theme="dark"] .profile-stats {
+  border-top-color: var(--border-dark);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.stat-item:hover {
+  opacity: 0.8;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Action buttons: Centered, clean */
+.profile-action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.profile-action-buttons button {
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: none; /* No decorative shadows */
+}
+
+.profile-action-buttons button:hover {
+  background: var(--bg-secondary);
+  border-color: var(--border-dark);
+}
+
+.btn-add-friend,
+.btn-message {
+  background: var(--pryde-purple);
+  color: white;
+  border-color: var(--pryde-purple);
+}
+
+.btn-add-friend:hover,
+.btn-message:hover {
+  background: var(--pryde-purple-dark, #5a3a9f);
+  border-color: var(--pryde-purple-dark, #5a3a9f);
+}
+
+/* Mobile: Stack vertically */
+@media (max-width: 768px) {
+  .profile-info {
+    padding: 1.25rem 1rem;
+  }
+  
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+    font-size: 2.5rem;
+    margin-top: -50px;
+  }
+  
+  .profile-name {
+    font-size: 1.5rem;
+  }
+  
+  .profile-stats {
+    gap: 1.5rem;
+  }
+  
+  .stat-value {
+    font-size: 1.125rem;
+  }
+}
+

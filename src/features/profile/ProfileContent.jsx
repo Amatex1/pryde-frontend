@@ -19,7 +19,6 @@ import FormattedText from '../../components/FormattedText';
 import ReactionButton from '../../components/ReactionButton';
 import Poll from '../../components/Poll';
 import PinnedPostBadge from '../../components/PinnedPostBadge';
-import BadgeContainer from '../../components/BadgeContainer';
 import CommentThread from '../../components/CommentThread';
 import PostHeader from '../../components/PostHeader';
 import { getImageUrl } from '../../utils/imageUrl';

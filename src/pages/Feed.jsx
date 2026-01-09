@@ -15,7 +15,6 @@ import ReactionButton from '../components/ReactionButton';
 import PollCreator from '../components/PollCreator';
 import Poll from '../components/Poll';
 import PinnedPostBadge from '../components/PinnedPostBadge';
-import BadgeContainer from '../components/BadgeContainer';
 import PostHeader from '../components/PostHeader';
 import { useBadges } from '../hooks/useBadges';
 // DEPRECATED: EditHistoryModal import removed 2025-12-26
@@ -41,6 +40,8 @@ import { quietCopy } from '../config/uiCopy';
 import PageTitle from '../components/PageTitle';
 import CommunityResources from '../components/Sidebar/CommunityResources';
 import './Feed.css';
+import './Feed.calm.css'; // PHASE C: Calm mode overrides
+import './Mobile.calm.css'; // PHASE D: Mobile-first calm mode
 
 function Feed() {
   const [searchParams] = useSearchParams();

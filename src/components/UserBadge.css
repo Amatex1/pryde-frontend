@@ -1,8 +1,8 @@
-/**
- * UserBadge Component Styles
+﻿/**
+ * UserBadge Component Styles - PHASE A: Calm, Platform-Grade
  * 
- * Non-hierarchical badge system with consistent sizing.
- * Fixed height to prevent layout shifts.
+ * Removed: Gradients, glows, decorative effects, transform animations
+ * Added: Subtle, confident styling with clear hierarchy
  */
 
 .user-badge {
@@ -10,17 +10,18 @@
   align-items: center;
   gap: 0.25rem;
   height: 1.25rem; /* Fixed height for alignment */
-  padding: 0 0.375rem;
-  border-radius: 9999px;
+  padding: 0 0.5rem;
+  border-radius: 6px; /* Reduced from 9999px for more platform-grade feel */
   font-size: 0.75rem;
   font-weight: 500;
   white-space: nowrap;
   vertical-align: middle;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition: opacity 0.15s ease, background 0.15s ease;
+  border: 1px solid transparent;
 }
 
 .user-badge:hover {
-  transform: scale(1.05);
+  opacity: 0.9;
   cursor: help;
 }
 
@@ -31,91 +32,140 @@
 
 .user-badge-label {
   font-size: 0.6875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
-/* Color variants */
+/* ────────────────────────────────────────
+   Color Variants - Flat, No Gradients
+   ──────────────────────────────────────── */
+
 .badge-default {
-  background: var(--soft-lavender, #f0e6ff);
-  color: var(--pryde-purple, #6B46C1);
+  background: var(--bg-secondary, #f4f4f4);
+  color: var(--text-secondary, #666);
+  border-color: var(--border-light, #e0e0e0);
 }
 
+/* Rainbow: Simplified to purple (primary brand color) */
 .badge-rainbow {
-  background: linear-gradient(135deg, #ff6b6b, #ffa500, #ffeb3b, #4caf50, #2196f3, #9c27b0);
+  background: var(--pryde-purple, #6B46C1);
   color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  border-color: var(--pryde-purple, #6B46C1);
 }
 
 .badge-purple {
   background: var(--pryde-purple, #6B46C1);
   color: white;
+  border-color: var(--pryde-purple, #6B46C1);
 }
 
+/* Gold: Flat, muted */
 .badge-gold {
-  background: linear-gradient(135deg, #ffd700, #ffb347);
-  color: #333;
+  background: #f59e0b;
+  color: white;
+  border-color: #f59e0b;
 }
 
+/* Silver: Flat, neutral */
 .badge-silver {
-  background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
-  color: #333;
+  background: #9ca3af;
+  color: white;
+  border-color: #9ca3af;
 }
 
 .badge-lavender {
-  background: var(--soft-lavender, #f0e6ff);
-  color: var(--pryde-purple, #6B46C1);
+  background: #e9d5ff;
+  color: #7c3aed;
+  border-color: #d8b4fe;
 }
 
 .badge-teal {
   background: #14b8a6;
   color: white;
+  border-color: #14b8a6;
 }
 
 .badge-blue {
   background: #3b82f6;
   color: white;
+  border-color: #3b82f6;
 }
 
-/* Dark mode adjustments */
-[data-theme="dark"] .badge-default {
-  background: rgba(107, 70, 193, 0.3);
-  color: #d8b4fe;
-}
-
-[data-theme="dark"] .badge-lavender {
-  background: rgba(107, 70, 193, 0.3);
-  color: #d8b4fe;
-}
-
-[data-theme="dark"] .badge-gold {
-  background: linear-gradient(135deg, #b8860b, #daa520);
-  color: #fff;
-}
-
-[data-theme="dark"] .badge-silver {
-  background: linear-gradient(135deg, #808080, #a0a0a0);
-  color: #fff;
-}
-
-[data-theme="dark"] .badge-teal {
-  background: #0d9488;
-  color: #fff;
-}
-
-[data-theme="dark"] .badge-blue {
-  background: #2563eb;
-  color: #fff;
-}
-
-/* Green variant for profile_complete badge */
 .badge-green {
   background: #10b981;
   color: white;
+  border-color: #10b981;
+}
+
+/* ────────────────────────────────────────
+   Dark Mode - Muted, Calm
+   ──────────────────────────────────────── */
+
+[data-theme="dark"] .badge-default {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary, #aaa);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .badge-rainbow,
+[data-theme="dark"] .badge-purple {
+  background: rgba(107, 70, 193, 0.8);
+  color: #e9d5ff;
+  border-color: rgba(107, 70, 193, 0.9);
+}
+
+[data-theme="dark"] .badge-lavender {
+  background: rgba(107, 70, 193, 0.25);
+  color: #d8b4fe;
+  border-color: rgba(107, 70, 193, 0.35);
+}
+
+[data-theme="dark"] .badge-gold {
+  background: rgba(245, 158, 11, 0.8);
+  color: #fef3c7;
+  border-color: rgba(245, 158, 11, 0.9);
+}
+
+[data-theme="dark"] .badge-silver {
+  background: rgba(156, 163, 175, 0.6);
+  color: #f3f4f6;
+  border-color: rgba(156, 163, 175, 0.7);
+}
+
+[data-theme="dark"] .badge-teal {
+  background: rgba(20, 184, 166, 0.8);
+  color: #ccfbf1;
+  border-color: rgba(20, 184, 166, 0.9);
+}
+
+[data-theme="dark"] .badge-blue {
+  background: rgba(59, 130, 246, 0.8);
+  color: #dbeafe;
+  border-color: rgba(59, 130, 246, 0.9);
 }
 
 [data-theme="dark"] .badge-green {
-  background: #059669;
-  color: #fff;
+  background: rgba(16, 185, 129, 0.8);
+  color: #d1fae5;
+  border-color: rgba(16, 185, 129, 0.9);
 }
 
+/* ────────────────────────────────────────
+   Mobile Responsive
+   ──────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .user-badge {
+    height: 1.125rem;
+    padding: 0 0.4375rem;
+    font-size: 0.6875rem;
+  }
+  
+  .user-badge-icon {
+    font-size: 0.8125rem;
+  }
+  
+  .user-badge-label {
+    font-size: 0.625rem;
+  }
+}

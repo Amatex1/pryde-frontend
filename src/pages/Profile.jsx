@@ -15,7 +15,7 @@ import ProfilePostSearch from '../components/ProfilePostSearch';
 import CommentThread from '../components/CommentThread';
 import ReactionButton from '../components/ReactionButton';
 import PinnedPostBadge from '../components/PinnedPostBadge';
-import BadgeContainer from '../components/BadgeContainer';
+import TieredBadgeDisplay from '../components/TieredBadgeDisplay';
 import PostHeader from '../components/PostHeader';
 // DEPRECATED: EditHistoryModal import removed 2025-12-26
 import Poll from '../components/Poll';
@@ -33,6 +33,7 @@ import { uploadMultipleWithProgress } from '../utils/uploadWithProgress';
 import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
 import { withOptimisticUpdate } from '../utils/consistencyGuard';
 import './Profile.css';
+import './Mobile.calm.css'; // PHASE D: Mobile-first calm mode
 
 function Profile() {
   const { id } = useParams();
@@ -1443,9 +1444,6 @@ function Profile() {
             <div className="profile-details">
               <h1 className="profile-name text-shadow">
                 {user.displayName || user.fullName || user.username}
-                {user.badges?.length > 0 && (
-                  <BadgeContainer badges={user.badges} showLabels showAll />
-                )}
                 {user.nickname &&
                  user.nickname !== user.displayName &&
                  user.nickname !== user.username &&
@@ -1453,7 +1451,10 @@ function Profile() {
               </h1>
               <p className="profile-username">@{user.username}</p>
 
-              <div className="profile-badges">
+              {/* PHASE A: Tiered Badge System */}
+              <TieredBadgeDisplay badges={user.badges} context="profile" />
+
+              <div className="profile-identity-pills">
                 {user.pronouns && (
                   <span className="badge">
                     {user.pronouns.charAt(0).toUpperCase() + user.pronouns.slice(1)}

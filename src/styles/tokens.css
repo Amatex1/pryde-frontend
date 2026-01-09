@@ -1,0 +1,170 @@
+﻿/* ========================================
+   PRYDE SOCIAL - PLATFORM-GRADE DESIGN TOKENS
+   Calm, Confident, Professional
+   ======================================== */
+
+:root {
+  /* ========================================
+     LAYOUT TOKENS
+     ======================================== */
+  --page-max-width: 1140px;
+  --page-padding-desktop: 24px;
+  --page-padding-mobile: 16px;
+  --card-radius: 12px;
+  --input-radius: 10px;
+  --border-soft: 1px solid rgba(255, 255, 255, 0.08);
+
+  /* ========================================
+     NEUTRAL COLOR SYSTEM
+     UI chrome uses ONLY these colors
+     ======================================== */
+  
+  /* Backgrounds */
+  --color-bg: #F5F6FA;
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #F4F5FA;
+  --color-surface-elevated: #FFFFFF;
+  
+  /* Borders */
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-subtle: #E2E4EC;
+  --color-border-strong: #B8BAC9;
+  
+  /* Text */
+  --color-text: #1E1E26;
+  --color-text-secondary: #6B6E80;
+  --color-meta: #9CA0B3;
+  --color-text-inverse: #FFFFFF;
+  
+  /* ========================================
+     BRAND COLOR (Limited Usage)
+     Only for: active states, primary CTA, brand indicators
+     ======================================== */
+  --color-brand: #6C5CE7;
+  --color-brand-hover: #5a4bd8;
+  --color-brand-muted: rgba(108, 92, 231, 0.15);
+  
+  /* ========================================
+     SEMANTIC COLORS
+     ======================================== */
+  --color-success: #00B894;
+  --color-success-soft: rgba(0, 184, 148, 0.15);
+  --color-danger: #FF7675;
+  --color-danger-soft: rgba(255, 118, 117, 0.15);
+  --color-warning: #FDCB6E;
+  --color-warning-soft: rgba(253, 203, 110, 0.15);
+  
+  /* ========================================
+     SHADOWS (Minimal)
+     ======================================== */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
+  
+  /* ========================================
+     SPACING SCALE
+     ======================================== */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 40px;
+  --space-8: 48px;
+  
+  /* ========================================
+     TYPOGRAPHY SCALE
+     ======================================== */
+  --font-size-h1: 2.5rem;
+  --font-size-h2: 2rem;
+  --font-size-h3: 1.5rem;
+  --font-size-body: 1rem;
+  --font-size-meta: 0.875rem;
+  
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.8;
+}
+
+/* ========================================
+   DARK MODE TOKENS
+   ======================================== */
+[data-theme="dark"] {
+  --color-bg: #1E1E26;
+  --color-surface: #2A2A35;
+  --color-surface-muted: #25252F;
+  --color-surface-elevated: #2F2F3A;
+  
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-subtle: rgba(255, 255, 255, 0.06);
+  --color-border-strong: rgba(255, 255, 255, 0.12);
+  
+  --color-text: #FFFFFF;
+  --color-text-secondary: #B8BAC9;
+  --color-meta: #9CA0B3;
+  --color-text-inverse: #1E1E26;
+  
+  --border-soft: 1px solid rgba(255, 255, 255, 0.08);
+  
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* ========================================
+   DESIGN RULES
+   ======================================== */
+
+/* Rule 1: Cards must be flat and matte */
+.card {
+  background: var(--color-surface);
+  border: var(--border-soft);
+  border-radius: var(--card-radius);
+  box-shadow: none;
+}
+
+/* Rule 2: Only primary CTAs get brand color */
+.btn-primary {
+  background: var(--color-brand);
+  color: var(--color-text-inverse);
+  border: none;
+  border-radius: var(--input-radius);
+  padding: var(--space-3) var(--space-5);
+  font-weight: var(--font-weight-semibold);
+  transition: background 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: var(--color-brand-hover);
+}
+
+/* Rule 3: Secondary buttons are subtle */
+.btn-secondary {
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--input-radius);
+  padding: var(--space-3) var(--space-5);
+  font-weight: var(--font-weight-medium);
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--color-surface-muted);
+  border-color: var(--color-brand);
+}
+
+/* Rule 4: Metadata is always muted */
+.meta {
+  color: var(--color-meta);
+  font-size: var(--font-size-meta);
+}
+
+/* Rule 5: No decorative gradients */
+/* Gradients only allowed on primary CTAs and active tabs */

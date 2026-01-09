@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import OptimizedImage from './OptimizedImage';
 import ReactionButton from './ReactionButton';
-import BadgeContainer from './BadgeContainer';
+import TieredBadgeDisplay from './TieredBadgeDisplay';
 import { getImageUrl } from '../utils/imageUrl';
 import { sanitizeContent } from '../utils/sanitize';
 import '../pages/Feed.css';
@@ -125,7 +125,7 @@ const CommentThread = ({
                   >
                     <span className="author-name">{comment.authorId?.displayName || comment.authorId?.username}</span>
                     {comment.authorId?.badges?.length > 0 && (
-                      <BadgeContainer badges={comment.authorId.badges} size="small" />
+                      <TieredBadgeDisplay badges={comment.authorId.badges} context="card" />
                     )}
                     {comment.authorId?.pronouns && (
                       <span className="author-pronouns">({comment.authorId.pronouns})</span>
@@ -308,7 +308,7 @@ const CommentThread = ({
                           >
                             <span className="author-name">{reply.authorId?.displayName || reply.authorId?.username}</span>
                             {reply.authorId?.badges?.length > 0 && (
-                              <BadgeContainer badges={reply.authorId.badges} size="small" />
+                              <TieredBadgeDisplay badges={reply.authorId.badges} context="card" />
                             )}
                             {reply.authorId?.pronouns && (
                               <span className="author-pronouns">({reply.authorId.pronouns})</span>

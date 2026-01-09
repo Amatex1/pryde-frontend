@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import prydeLogo from '../assets/pryde-logo.png';
 import './Footer.css';
 
@@ -29,29 +29,29 @@ function Footer() {
 
         {/* Legal Links */}
         <div className="footer-links-container">
-          <Link to="/guarantees">Platform Guarantees</Link>
+          <a href="/guarantees">Platform Guarantees</a>
           <span className="separator">•</span>
-          <Link to="/terms">Terms of Service</Link>
+          <a href="/terms">Terms of Service</a>
           <span className="separator">•</span>
-          <Link to="/privacy">Privacy Policy</Link>
+          <a href="/privacy">Privacy Policy</a>
           <span className="separator">•</span>
-          <Link to="/trust-and-safety">Trust & Safety</Link>
+          <a href="/trust-safety">Trust & Safety</a>
           <span className="separator">•</span>
-          <Link to="/security">Security</Link>
+          <a href="/security">Security</a>
           <span className="separator">•</span>
-          <Link to="/community">Community Guidelines</Link>
+          <a href="/community">Community Guidelines</a>
           <span className="separator">•</span>
-          <Link to="/acceptable-use">Acceptable Use</Link>
+          <a href="/acceptable-use">Acceptable Use</a>
           <span className="separator">•</span>
-          <Link to="/safety">Safety Center</Link>
+          <a href="/safety">Safety Center</a>
           <span className="separator">•</span>
-          <Link to="/cookie-policy">Cookie Policy</Link>
+          <a href="/cookies">Cookie Policy</a>
           <span className="separator">•</span>
-          <Link to="/dmca">DMCA</Link>
+          <a href="/dmca">DMCA</a>
           <span className="separator">•</span>
-          <Link to="/faq">FAQ</Link>
+          <a href="/faq">FAQ</a>
           <span className="separator">•</span>
-          <Link to="/contact">Contact</Link>
+          <a href="/contact">Contact</a>
         </div>
       </div>
 

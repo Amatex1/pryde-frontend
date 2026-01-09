@@ -1,0 +1,455 @@
+﻿/**
+ * PHASE D: Mobile-First Calm Mode
+ * 
+ * Mobile should feel like a quiet reading app, not a social dashboard.
+ * 
+ * Goals:
+ * - Single column layout
+ * - No sidebars on mobile
+ * - Increased touch targets (44px minimum)
+ * - Reduced saturation
+ * - Flat surfaces, no gradients
+ * - Vertical stacking
+ */
+
+/* ────────────────────────────────────────
+   MOBILE BREAKPOINT: 768px and below
+   ──────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  
+  /* ────────────────────────────────────────
+     FEED LAYOUT: Single Column
+     ──────────────────────────────────────── */
+  
+  .feed-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+  }
+  
+  .feed-main {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.75rem;
+  }
+  
+  /* Hide sidebar on mobile by default */
+  .feed-sidebar {
+    display: none;
+  }
+  
+  /* Show sidebar below feed when explicitly toggled */
+  .feed-sidebar.mobile-visible {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 1rem;
+  }
+  
+  /* ────────────────────────────────────────
+     POST CARDS: Full Width, Calm
+     ──────────────────────────────────────── */
+  
+  .post-card {
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    box-shadow: none;
+  }
+  
+  [data-theme="dark"] .post-card {
+    background: var(--bg-card);
+    border-color: var(--border-dark);
+  }
+  
+  /* ────────────────────────────────────────
+     TOUCH TARGETS: Minimum 44px
+     ──────────────────────────────────────── */
+  
+  .reaction-button,
+  .btn-comment,
+  .btn-share,
+  .btn-bookmark {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .post-actions {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+    margin-top: 0.75rem;
+    border-top: 1px solid var(--border-light);
+  }
+  
+  [data-theme="dark"] .post-actions {
+    border-top-color: var(--border-dark);
+  }
+  
+  /* ────────────────────────────────────────
+     BUTTONS: Larger, Easier to Tap
+     ──────────────────────────────────────── */
+  
+  .btn-post,
+  .btn-submit-reply,
+  .btn-show-cw,
+  .btn-add-friend,
+  .btn-message {
+    min-height: 44px;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    border-radius: 8px;
+  }
+  
+  /* ────────────────────────────────────────
+     COMPOSER: Full Width
+     ──────────────────────────────────────── */
+  
+  .create-post {
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    box-shadow: none;
+  }
+  
+  .post-input {
+    min-height: 44px;
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+  
+  /* ────────────────────────────────────────
+     PROFILE: Vertical Stack
+     ──────────────────────────────────────── */
+  
+  .profile-container {
+    padding: 0;
+  }
+  
+  .profile-header {
+    border-radius: 0;
+    margin-bottom: 0;
+  }
+  
+  .cover-photo {
+    height: 160px;
+    border-radius: 0;
+  }
+  
+  .profile-info {
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+    margin-top: -50px;
+    border-width: 3px;
+  }
+  
+  .profile-details {
+    width: 100%;
+    padding: 0;
+  }
+  
+  .profile-name {
+    font-size: 1.5rem;
+  }
+  
+  .profile-username {
+    font-size: 0.9375rem;
+  }
+  
+  /* Hide Tier 2 & 3 badges on mobile for cleanliness */
+  .badge-tier-2 {
+    display: none;
+  }
+  
+  .badge-tier-3-trigger {
+    display: none;
+  }
+  
+  /* Keep Tier 1 badges visible but smaller */
+  .badge-tier-1 .user-badge {
+    height: 1.125rem;
+    font-size: 0.6875rem;
+    padding: 0 0.4375rem;
+  }
+  
+  /* Identity pills: Smaller, wrapped */
+  .profile-identity-pills {
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .profile-identity-pills .badge {
+    font-size: 0.75rem;
+    padding: 0.3125rem 0.625rem;
+  }
+  
+  /* Stats: Compact */
+  .profile-stats {
+    gap: 1.5rem;
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
+  }
+  
+  .stat-value {
+    font-size: 1.125rem;
+  }
+  
+  .stat-label {
+    font-size: 0.75rem;
+  }
+  
+  /* Action buttons: Stack vertically if needed */
+  .profile-action-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  
+  .profile-action-buttons button {
+    width: 100%;
+    min-height: 44px;
+  }
+  
+  /* ────────────────────────────────────────
+     TABS: Full Width, Larger Touch Targets
+     ──────────────────────────────────────── */
+  
+  .feed-tabs {
+    display: flex;
+    gap: 0;
+    padding: 0;
+    border-radius: 0;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-light);
+    margin-bottom: 0.75rem;
+  }
+  
+  .feed-tab {
+    flex: 1;
+    min-height: 48px;
+    padding: 0.75rem 1rem;
+    border-radius: 0;
+    font-size: 0.9375rem;
+    border: none;
+    border-bottom: 2px solid transparent;
+  }
+  
+  .feed-tab.active {
+    background: transparent;
+    border-bottom-color: var(--pryde-purple);
+    color: var(--pryde-purple);
+    box-shadow: none;
+  }
+  
+  [data-theme="dark"] .feed-tab.active {
+    color: rgba(107, 70, 193, 0.9);
+    border-bottom-color: rgba(107, 70, 193, 0.9);
+  }
+  
+  /* ────────────────────────────────────────
+     FLOATING ACTION BUTTON: Larger
+     ──────────────────────────────────────── */
+  
+  .fab-compose {
+    width: 56px;
+    height: 56px;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  [data-theme="dark"] .fab-compose {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+  
+  /* ────────────────────────────────────────
+     MODALS: Full Screen on Mobile
+     ──────────────────────────────────────── */
+  
+  .modal-content,
+  .badge-tier-3-modal {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    margin: 0;
+  }
+  
+  /* ────────────────────────────────────────
+     REDUCED SATURATION: Calm Colors
+     ──────────────────────────────────────── */
+  
+  /* Reduce purple saturation on mobile */
+  .btn-post,
+  .btn-submit-reply,
+  .fab-compose,
+  .feed-tab.active {
+    filter: saturate(0.85);
+  }
+  
+  /* Muted backgrounds */
+  .post-card,
+  .create-post,
+  .sidebar-card {
+    background: var(--bg-card);
+  }
+  
+  [data-theme="dark"] .post-card,
+  [data-theme="dark"] .create-post,
+  [data-theme="dark"] .sidebar-card {
+    background: var(--bg-card);
+  }
+  
+  /* ────────────────────────────────────────
+     SPACING: Tighter on Mobile
+     ──────────────────────────────────────── */
+  
+  .post-header {
+    margin-bottom: 0.625rem;
+  }
+  
+  .post-content {
+    margin-bottom: 0.625rem;
+  }
+  
+  .post-actions {
+    margin-top: 0.625rem;
+    padding-top: 0.625rem;
+  }
+  
+  /* ────────────────────────────────────────
+     TYPOGRAPHY: Readable on Small Screens
+     ──────────────────────────────────────── */
+  
+  .post-content {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+  
+  .post-author-name {
+    font-size: 0.9375rem;
+  }
+  
+  .post-timestamp {
+    font-size: 0.8125rem;
+  }
+  
+  /* ────────────────────────────────────────
+     IMAGES: Responsive
+     ──────────────────────────────────────── */
+  
+  .post-media img,
+  .post-media video {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+  
+  /* ────────────────────────────────────────
+     COMMENTS: Compact
+     ──────────────────────────────────────── */
+  
+  .comment-item {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .comment-author-avatar {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .comment-content {
+    font-size: 0.875rem;
+  }
+  
+  /* ────────────────────────────────────────
+     NO FLOATING UI (except FAB)
+     ──────────────────────────────────────── */
+  
+  .profile-upload-buttons,
+  .btn-edit-profile-cover {
+    position: static;
+    margin-top: 0.5rem;
+  }
+  
+  /* ────────────────────────────────────────
+     REMOVE ALL GRADIENTS ON MOBILE
+     ──────────────────────────────────────── */
+  
+  *[style*="gradient"] {
+    background-image: none !important;
+    background: var(--bg-card) !important;
+  }
+  
+  .verified-badge,
+  .post-author-avatar,
+  .content-warning-overlay {
+    background-image: none !important;
+  }
+  
+}
+
+/* ────────────────────────────────────────
+   EXTRA SMALL SCREENS: 480px and below
+   ──────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  
+  .feed-main {
+    padding: 0.5rem;
+  }
+  
+  .post-card,
+  .create-post {
+    padding: 0.875rem;
+    margin-bottom: 0.875rem;
+  }
+  
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    margin-top: -40px;
+  }
+  
+  .profile-name {
+    font-size: 1.375rem;
+  }
+  
+  .profile-stats {
+    gap: 1rem;
+  }
+  
+  .stat-value {
+    font-size: 1rem;
+  }
+  
+  .fab-compose {
+    width: 52px;
+    height: 52px;
+    bottom: 1rem;
+    right: 1rem;
+  }
+  
+}
+

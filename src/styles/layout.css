@@ -1,20 +1,24 @@
-/**
- * layout.css - Layout Design Tokens and Responsive Variables
- * 
- * THIS FILE DEFINES:
- * - Spacing tokens used by layout primitives
- * - --page-padding responsive variable
- * - Breakpoint-specific layout adjustments
+﻿/**
+ * layout.css - Platform-Grade Layout System
  * 
  * RULES:
- * - Only layout-related tokens and media queries
- * - Feature components must NOT override these
- * - All layout decisions flow from these variables
+ * - All public pages MUST use .page-container
+ * - No full-width layouts except hero sections
+ * - Consistent spacing throughout
+ * - No random spacing values
  */
 
 :root {
   /* ========================================
-     SPACING TOKENS (Layout-specific)
+     LAYOUT TOKENS
+     ======================================== */
+  --page-max-width: 1140px;
+  --page-padding-desktop: 24px;
+  --page-padding-tablet: 20px;
+  --page-padding-mobile: 16px;
+  
+  /* ========================================
+     SPACING SCALE (No random values allowed)
      ======================================== */
   --space-1: 4px;
   --space-2: 8px;
@@ -24,149 +28,99 @@
   --space-6: 32px;
   --space-7: 40px;
   --space-8: 48px;
-
-  /* Semantic spacing aliases */
-  --space-xs: var(--space-1);
-  --space-sm: var(--space-2);
-  --space-md: var(--space-4);
-  --space-lg: var(--space-5);
-  --space-xl: var(--space-6);
-
+  
+  /* Semantic spacing */
+  --section-gap: 48px;  /* Between major sections */
+  --card-gap: 24px;     /* Between cards */
+  --card-padding: 24px; /* Inside cards */
+  
   /* ========================================
-     PAGE LAYOUT (Responsive)
-     Mobile-first: full-bleed on small screens
+     BORDER RADIUS
      ======================================== */
-  --page-padding: 4px; /* Reduced from 12px for wider content on mobile */
-  --page-max-width: 100%;  /* Full-bleed on mobile */
-
+  --card-radius: 12px;
+  --input-radius: 10px;
+  --button-radius: 10px;
+  
   /* ========================================
-     CONTAINER MAX WIDTHS
+     NAVBAR
      ======================================== */
-  --container-sm: 640px;
-  --container-md: 768px;
-  --container-lg: 1024px;
-  --container-xl: 1200px;
-  --container-desktop: 1200px;
-
+  --navbar-height: 64px;
+  --navbar-padding: var(--space-4);
+  
   /* ========================================
-     LAYOUT GAP TOKENS
-     ======================================== */
-  --layout-gap-sm: var(--space-3);  /* 12px */
-  --layout-gap-md: var(--space-4);  /* 16px */
-  --layout-gap-lg: var(--space-5);  /* 24px */
-
-  /* ========================================
-     HEADER/NAVBAR HEIGHT (responsive)
-     Phase 8: Mobile-first, increases for larger screens
-     ======================================== */
-  --header-height: 56px;  /* Mobile: compact */
-  --navbar-height: 56px;  /* Alias for backwards compatibility */
-
-  /* ========================================
-     MOBILE NAV HEIGHT (for sticky calculations)
+     MOBILE SPECIFIC
      ======================================== */
   --mobile-nav-height: 64px;
-
-  /* ========================================
-     MOBILE FLOATING UI STACKING SYSTEM
-
-     Prevents overlap between fixed-position UI elements.
-     All floating controls MUST use these layers.
-
-     VERTICAL LAYERS (bottom positioning):
-       Layer 0: Base (just above mobile nav)
-       Layer 1: Create Post FAB (z-index: 100)
-       Layer 2: Scroll-to-Top button (z-index: 99)
-       Layer 3: Reserved for future use
-
-     Z-INDEX HIERARCHY (from design-system.css):
-       z-index: 99   - Scroll-to-top
-       z-index: 100  - Create Post FAB
-       z-index: 200  - Mobile nav, sticky headers (--z-sticky)
-       z-index: 200  - Mobile composer sheet
-       z-index: 1000 - Modal backdrops
-       z-index: 1001 - Modals
-       z-index: 10000- Hamburger menu button
-     ======================================== */
   --mobile-layer-gap: 12px;
-
-  /* Base layer: Just above mobile nav + safe area */
   --mobile-layer-0: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom, 0px));
-
-  /* Layer 1: Create Post FAB (56px button + gap) */
   --mobile-layer-1: calc(var(--mobile-layer-0) + var(--mobile-layer-gap));
-
-  /* Layer 2: Scroll-to-Top button (above FAB) */
   --mobile-layer-2: calc(var(--mobile-layer-1) + 56px + var(--mobile-layer-gap));
-
-  /* Layer 3: Post Submit / Modal actions (above scroll-to-top) */
   --mobile-layer-3: calc(var(--mobile-layer-2) + 56px + var(--mobile-layer-gap));
-
-  /* DEPRECATED: Legacy alias - use specific layers instead */
-  --mobile-safe-bottom: var(--mobile-layer-0);
 }
 
 /* ========================================
-   TABLET BREAKPOINT (≥601px)
-   Constrain content, increase padding
-   ======================================== */
-@media (min-width: 601px) {
-  :root {
-    --page-padding: 24px;
-    --page-max-width: 960px;  /* Constrained on tablet */
-    --header-height: 64px;    /* Tablet: more room */
-    --navbar-height: 64px;
-  }
-}
-
-/* ========================================
-   DESKTOP BREAKPOINT (≥1025px)
-   ======================================== */
-@media (min-width: 1025px) {
-  :root {
-    --page-padding: 32px;
-    --page-max-width: 1200px;  /* Wider on desktop */
-    --header-height: 72px;    /* Desktop: full height */
-    --navbar-height: 72px;
-  }
-}
-
-/* ========================================
-   WIDE DESKTOP (≥1400px)
-   ======================================== */
-@media (min-width: 1400px) {
-  :root {
-    --page-padding: 40px;
-    --page-max-width: 1400px;  /* Widest on large screens */
-  }
-}
-
-/* ========================================
-   CANONICAL .page-container DEFINITION
-
-   THIS IS THE SINGLE AUTHORITY FOR PAGE WIDTH.
-   No other CSS file should define .page-container width/max-width.
+   PAGE CONTAINER - CANONICAL DEFINITION
+   This is the ONLY place where page width is defined
    ======================================== */
 
 .page-container {
   width: 100%;
-  box-sizing: border-box;
   max-width: var(--page-max-width);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--page-padding);
-  padding-right: var(--page-padding);
+  margin: 0 auto;
+  padding-left: var(--page-padding-mobile);
+  padding-right: var(--page-padding-mobile);
+  box-sizing: border-box;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .page-container {
+    padding-left: var(--page-padding-tablet);
+    padding-right: var(--page-padding-tablet);
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .page-container {
+    padding-left: var(--page-padding-desktop);
+    padding-right: var(--page-padding-desktop);
+  }
 }
 
 /* ========================================
-   FLOATING LAYER ANIMATION SYSTEM
+   SECTION SPACING
+   Consistent rhythm between sections
+   ======================================== */
 
-   Provides smooth show/hide transitions for
-   fixed-position UI elements (FAB, scroll-to-top).
+.section {
+  padding-top: var(--section-gap);
+  padding-bottom: var(--section-gap);
+}
 
-   Usage:
-     .floating-layer.visible - shown state
-     .floating-layer.hidden  - hidden state (no pointer events)
+.section + .section {
+  padding-top: 0; /* Avoid double spacing */
+}
+
+/* ========================================
+   CARD SYSTEM
+   Flat, matte, professional
+   ======================================== */
+
+.card {
+  background: var(--color-surface);
+  border: var(--border-soft);
+  border-radius: var(--card-radius);
+  padding: var(--card-padding);
+  box-shadow: none; /* NO shadows on cards */
+}
+
+.card + .card {
+  margin-top: var(--card-gap);
+}
+
+/* ========================================
+   FLOATING LAYER SYSTEM (Mobile)
    ======================================== */
 
 .floating-layer {
@@ -188,14 +142,47 @@
   pointer-events: none;
 }
 
-/* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   .floating-layer {
     transition: none;
   }
-
   .floating-layer.hidden {
     transform: none;
   }
 }
 
+/* ========================================
+   GRID SYSTEM (Optional)
+   ======================================== */
+
+.grid {
+  display: grid;
+  gap: var(--card-gap);
+}
+
+.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+/* ========================================
+   RESPONSIVE BREAKPOINTS
+   ======================================== */
+
+/* Mobile: < 768px (default) */
+/* Tablet: 768px - 1023px */
+@media (min-width: 768px) {
+  :root {
+    --navbar-height: 68px;
+  }
+}
+
+/* Desktop: >= 1024px */
+@media (min-width: 1024px) {
+  :root {
+    --navbar-height: 72px;
+  }
+}

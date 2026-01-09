@@ -14,7 +14,7 @@
 
 import { Link } from 'react-router-dom';
 import OptimizedImage from '../../components/OptimizedImage';
-import BadgeContainer from '../../components/BadgeContainer';
+import TieredBadgeDisplay from '../../components/TieredBadgeDisplay';
 import { getImageUrl } from '../../utils/imageUrl';
 import { sanitizeBio, sanitizeURL, sanitizeText } from '../../utils/sanitize';
 import './ProfileHeader.css';
@@ -96,25 +96,16 @@ export default function ProfileHeader({
         <div className="profile-details">
           <h1 className="profile-name text-shadow">
             {user.displayName || user.fullName || user.username}
-            {/* System account badge - always shown for system accounts, non-removable */}
-            {user.isSystemAccount && (
-              <span
-                className="system-account-badge system-account-badge--profile"
-                title={user.systemDescription || 'This is an automated system account operated by Pryde Social.'}
-                aria-label="System account"
-              >
-                System account
-              </span>
-            )}
-            {/* Regular badges only shown for non-system accounts */}
-            {user.badges?.length > 0 && !user.isSystemAccount && (
-              <BadgeContainer badges={user.badges} showLabels showAll />
-            )}
             {user.nickname && user.nickname !== user.displayName && user.nickname !== user.username && (
               <span className="nickname"> "{user.nickname}"</span>
             )}
           </h1>
           <p className="profile-username">@{user.username}</p>
+
+          {/* PHASE A: Tiered Badge System */}
+          {!user.isSystemAccount && user.badges?.length > 0 && (
+            <TieredBadgeDisplay badges={user.badges} context="profile" />
+          )}
 
           {/* System account description - prominently displayed for transparency */}
           {user.isSystemAccount && user.systemDescription && (

@@ -1,0 +1,312 @@
+/**
+ * PHASE B: Profile Layout Spine - Calm Mode
+ * 
+ * Transform profiles from decorated trading cards to calm, authoritative identity displays.
+ * 
+ * Goals:
+ * - Single vertical identity column
+ * - No floating elements
+ * - No overlapping visuals
+ * - Everything snaps to one vertical grid
+ * - Remove decorative shadows & background art
+ */
+
+/* ────────────────────────────────────────
+   PROFILE HEADER: Calm, Structured
+   ──────────────────────────────────────── */
+
+.profile-header {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  box-shadow: none; /* Remove all shadows */
+  overflow: visible; /* Allow avatar to overlap naturally */
+}
+
+[data-theme="dark"] .profile-header {
+  background: var(--bg-card);
+  border-color: var(--border-dark);
+}
+
+/* Cover photo: Separate, no decorative overlay */
+.cover-photo {
+  height: 200px;
+  background: var(--bg-secondary);
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.cover-photo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cover-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+}
+
+/* ────────────────────────────────────────
+   PROFILE INFO: Vertical Spine
+   ──────────────────────────────────────── */
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 1.5rem 1.5rem;
+  gap: 1rem; /* Consistent 16px spacing */
+}
+
+/* Avatar: Clean, centered */
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid var(--bg-card);
+  margin-top: -60px; /* Overlap cover by half */
+  background: var(--bg-secondary);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle depth only */
+}
+
+[data-theme="dark"] .profile-avatar {
+  border-color: var(--bg-card);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.profile-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Profile details: Vertical stack, centered */
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+  width: 100%;
+}
+
+/* Display name: Prominent but calm */
+.profile-name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  text-shadow: none; /* Remove decorative shadow */
+}
+
+/* Username: Muted, secondary */
+.profile-username {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Pronouns/age pills: Flat, muted */
+.profile-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.profile-badges .badge {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  box-shadow: none; /* No glow */
+}
+
+[data-theme="dark"] .profile-badges .badge {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Bio: Readable, calm */
+.profile-bio {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0.5rem 0 0;
+}
+
+/* ────────────────────────────────────────
+   PROFILE STATS: Horizontal, Balanced
+   ──────────────────────────────────────── */
+
+.profile-stats {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+}
+
+[data-theme="dark"] .profile-stats {
+  border-color: var(--border-dark);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.15s ease;
+}
+
+.stat-item:hover {
+  opacity: 0.8;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+/* ────────────────────────────────────────
+   ACTION BUTTONS: Calm, Flat
+   ──────────────────────────────────────── */
+
+.profile-action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.profile-action-buttons button,
+.profile-action-buttons .btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: none; /* No glow */
+}
+
+.profile-action-buttons button:hover,
+.profile-action-buttons .btn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border-medium);
+}
+
+.profile-action-buttons .btn-primary {
+  background: var(--pryde-purple);
+  color: white;
+  border-color: var(--pryde-purple);
+}
+
+.profile-action-buttons .btn-primary:hover {
+  background: var(--pryde-purple-dark, #5a3ba1);
+  border-color: var(--pryde-purple-dark, #5a3ba1);
+}
+
+[data-theme="dark"] .profile-action-buttons button,
+[data-theme="dark"] .profile-action-buttons .btn {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .profile-action-buttons button:hover,
+[data-theme="dark"] .profile-action-buttons .btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ────────────────────────────────────────
+   SIDEBAR CARDS: Flat, Minimal
+   ──────────────────────────────────────── */
+
+.sidebar-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: none; /* Remove all shadows */
+}
+
+[data-theme="dark"] .sidebar-card {
+  background: var(--bg-card);
+  border-color: var(--border-dark);
+}
+
+.sidebar-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+/* Interest tags: Flat, muted */
+.interests-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.interest-tag {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  box-shadow: none;
+}
+
+[data-theme="dark"] .interest-tag {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ────────────────────────────────────────
+   MOBILE RESPONSIVE
+   ──────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+    margin-top: -50px;
+  }
+
+  .profile-name {
+    font-size: 1.5rem;
+  }
+
+  .profile-stats {
+    gap: 1.5rem;
+  }
+
+  .stat-value {
+    font-size: 1.125rem;
+  }
+}
+
+

@@ -22,7 +22,7 @@ import ReactionButton from '../../components/ReactionButton';
 import Poll from '../../components/Poll';
 import PinnedPostBadge from '../../components/PinnedPostBadge';
 import CommentThread from '../../components/CommentThread';
-import BadgeContainer from '../../components/BadgeContainer';
+import TieredBadgeDisplay from '../../components/TieredBadgeDisplay';
 import { getImageUrl } from '../../utils/imageUrl';
 import { quietCopy } from '../../config/uiCopy';
 import './FeedStream.css';
@@ -137,7 +137,7 @@ const FeedStream = forwardRef(function FeedStream({
                   <Link to={`/profile/${post.author?.username}`} className="comment-author" style={{ textDecoration: 'none' }}>
                     <span className="author-name">{post.author?.displayName || post.author?.username || 'User'}</span>
                     {post.author?.badges?.length > 0 && (
-                      <BadgeContainer badges={post.author.badges} size="small" />
+                      <TieredBadgeDisplay badges={post.author.badges} context="feed" />
                     )}
                     {post.author?.pronouns && (
                       <span className="author-pronouns">({post.author.pronouns})</span>
