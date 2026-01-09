@@ -1,5 +1,10 @@
 import { NavLink } from 'react-router-dom';
-import { Home, Search, Plus, MessageCircle, User } from 'lucide-react';
+// PERFORMANCE: Tree-shake lucide-react - import only used icons
+import Home from 'lucide-react/dist/esm/icons/home';
+import Search from 'lucide-react/dist/esm/icons/search';
+import Plus from 'lucide-react/dist/esm/icons/plus';
+import MessageCircle from 'lucide-react/dist/esm/icons/message-circle';
+import User from 'lucide-react/dist/esm/icons/user';
 import { useUnreadMessages } from '../hooks/useUnreadMessages';
 import { useAuth } from '../context/AuthContext';
 

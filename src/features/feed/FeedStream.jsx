@@ -14,7 +14,7 @@
  */
 
 import { Link } from 'react-router-dom';
-import { forwardRef } from 'react';
+import { forwardRef, memo } from 'react';
 import PostSkeleton from '../../components/PostSkeleton';
 import OptimizedImage from '../../components/OptimizedImage';
 import FormattedText from '../../components/FormattedText';
@@ -177,5 +177,6 @@ const FeedStream = forwardRef(function FeedStream({
   );
 });
 
-export default FeedStream;
+// PERFORMANCE: Memoize to prevent unnecessary re-renders when parent state changes
+export default memo(FeedStream);
 

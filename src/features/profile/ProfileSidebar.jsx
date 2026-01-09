@@ -1,19 +1,20 @@
 /**
  * ProfileSidebar - Sidebar content for Profile page
- * 
+ *
  * RESPONSIBILITIES:
  * - Render user interests, looking for, social links
  * - Receive all data via props
- * 
+ *
  * RULES:
  * - NO layout logic (widths, grids, media queries)
  * - NO data fetching
  * - Layout-agnostic: renders the same on all platforms
  */
 
+import { memo } from 'react';
 import './ProfileSidebar.css';
 
-export default function ProfileSidebar({
+const ProfileSidebar = memo(function ProfileSidebar({
   user,
   isOwnProfile = false,
 }) {
@@ -81,5 +82,7 @@ export default function ProfileSidebar({
       )}
     </div>
   );
-}
+});
+
+export default ProfileSidebar;
 

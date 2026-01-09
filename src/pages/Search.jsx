@@ -8,7 +8,10 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search as SearchIcon, X } from 'lucide-react';
+// PERFORMANCE: Tree-shake lucide-react - import only used icons
+import ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left';
+import SearchIcon from 'lucide-react/dist/esm/icons/search';
+import X from 'lucide-react/dist/esm/icons/x';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import './Search.css';

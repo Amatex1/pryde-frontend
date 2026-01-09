@@ -77,10 +77,17 @@ const GifPicker = ({ onGifSelect, onClose }) => {
     }
   };
 
+  // PERFORMANCE: Debounce GIF search to reduce API calls
+  useEffect(() => {
+    const delaySearch = setTimeout(() => {
+      searchGifs(searchQuery);
+    }, 300);
+    return () => clearTimeout(delaySearch);
+  }, [searchQuery]);
+
   const handleSearch = (e) => {
     e.preventDefault();
     e.stopPropagation(); // Prevent bubbling to parent form
-    searchGifs(searchQuery);
   };
 
   const handleCategoryClick = (category) => {

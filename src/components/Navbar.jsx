@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { logout } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
+import { prefetchRoute, prefetchOnIdle } from '../utils/routePrefetch';
 import DarkModeToggle from './DarkModeToggle';
 import GlobalSearch from './GlobalSearch';
 import NotificationBell from './NotificationBell';
@@ -105,6 +106,11 @@ function Navbar({ onMenuClick }) {
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // PERFORMANCE: Prefetch critical routes on idle
+  useEffect(() => {
+    prefetchOnIdle(['/messages', '/profile', '/lounge']);
   }, []);
 
   return (
@@ -298,7 +304,13 @@ function Navbar({ onMenuClick }) {
           <SkeletonNavbarActions />
         ) : (
           <div className="navbar-actions">
-            <Link to="/messages" className="nav-button" title="Messages">
+            <Link
+              to="/messages"
+              className="nav-button"
+              title="Messages"
+              onMouseEnter={() => prefetchRoute('/messages')}
+              onFocus={() => prefetchRoute('/messages')}
+            >
               <span className="nav-icon">💬</span>
               <span className="nav-label">Messages</span>
               {totalUnread > 0 && (

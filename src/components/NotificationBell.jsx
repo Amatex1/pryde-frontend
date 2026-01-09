@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
@@ -7,7 +7,7 @@ import { getSocket } from '../utils/socket';
 import logger from '../utils/logger';
 import './NotificationBell.css';
 
-const NotificationBell = () => {
+const NotificationBell = memo(() => {
   const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -284,6 +284,7 @@ const NotificationBell = () => {
       )}
     </div>
   );
-};
+});
 
+// PERFORMANCE: Component is already memoized with memo() wrapper
 export default NotificationBell;

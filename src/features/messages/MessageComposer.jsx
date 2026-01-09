@@ -14,9 +14,11 @@
  * - Layout-agnostic: renders the same on all platforms
  */
 
-import React, { useRef, useState } from 'react';
-import EmojiPicker from 'emoji-picker-react';
+import React, { useRef, useState, lazy, Suspense } from 'react';
 import './MessageComposer.css';
+
+// PERFORMANCE: Lazy load emoji picker to save ~200KB from initial bundle
+const EmojiPicker = lazy(() => import('emoji-picker-react'));
 
 export default function MessageComposer({
   // State
@@ -179,10 +181,12 @@ export default function MessageComposer({
         )}
       </div>
 
-      {/* Emoji picker */}
+      {/* Emoji picker - PERFORMANCE: Lazy loaded with Suspense */}
       {showEmojiPicker && (
         <div className="emoji-picker-container">
-          <EmojiPicker onEmojiClick={(emoji) => onEmojiSelect?.(emoji.emoji)} />
+          <Suspense fallback={<div className="emoji-loading">Loading emojis...</div>}>
+            <EmojiPicker onEmojiClick={(emoji) => onEmojiSelect?.(emoji.emoji)} />
+          </Suspense>
         </div>
       )}
     </div>
