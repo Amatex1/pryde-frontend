@@ -20,15 +20,18 @@
   padding: 0 4px; /* Reduced from var(--space-md) for wider posts on mobile */
 }
 
-/* DESKTOP: Switch to grid layout */
+/* DESKTOP: Switch to grid layout - LEFT-WEIGHTED like Twitter */
 @media (min-width: 1024px) {
   .feed-layout {
     display: grid;
-    grid-template-columns: minmax(0, 640px) 320px;
-    gap: 24px;
-    justify-content: center;
+    grid-template-columns: minmax(600px, 820px) 300px; /* Wider feed: 600-820px, fixed sidebar: 300px */
+    gap: 32px; /* More breathing room */
+    justify-content: flex-start; /* LEFT-WEIGHTED - not centered */
     align-items: start;
     max-width: 1400px;
+    margin-left: auto; /* Push slightly right */
+    margin-right: auto;
+    padding-left: 48px; /* Add left padding for left-weighted feel */
   }
 }
 

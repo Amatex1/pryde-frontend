@@ -28,9 +28,7 @@
 
 /* Feed container: Transparent, no background, no border, no shadow */
 .feed-layout {
-  max-width: 760px; /* Wider for modern feel: 720-760px */
-  margin: 0 auto;
-  padding: 0;
+  /* Width controlled by Feed.css grid - no max-width override */
   background: transparent !important; /* Kill any background */
   border: none !important; /* Kill any border */
   box-shadow: none !important; /* Kill any shadow */
@@ -56,17 +54,17 @@
 }
 
 /* ────────────────────────────────────────
-   POST CARDS: No boxes, separated by space
+   POST CARDS: THE ONLY FRAMED OBJECTS
+   Posts are visually contained - everything else is transparent
    ──────────────────────────────────────── */
 
 .post-card {
-  background: transparent !important; /* No background - posts float on page */
-  border: none !important; /* No border */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important; /* Subtle divider only */
-  border-radius: 0 !important; /* No rounded corners */
-  padding: 1.5rem 0; /* 24px vertical, no horizontal padding */
+  background: var(--color-surface) !important; /* Solid background */
+  border: var(--border-post) !important; /* THE ONE TRUE BORDER */
+  border-radius: 14px !important; /* Rounded corners */
+  padding: 1.25rem 1.5rem !important; /* 20px vertical, 24px horizontal */
   margin-bottom: 0; /* Spacing handled by .posts-list gap */
-  box-shadow: none !important; /* No shadows */
+  box-shadow: none !important; /* No shadows - flat and matte */
   transition: border-color 0.15s ease;
   display: flex;
   flex-direction: column;
@@ -74,22 +72,18 @@
 }
 
 .post-card:hover {
-  border-bottom-color: rgba(255, 255, 255, 0.08) !important; /* Slightly more visible on hover */
+  border-color: rgba(255, 255, 255, 0.12) !important; /* Slightly more visible on hover */
   box-shadow: none !important; /* No hover shadow */
   transform: none !important; /* No transform */
-  background: transparent !important; /* Keep transparent */
 }
 
 [data-theme="dark"] .post-card {
-  background: transparent !important;
-  border: none !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-  box-shadow: none !important;
+  background: var(--color-surface) !important;
+  border: var(--border-post) !important;
 }
 
 [data-theme="dark"] .post-card:hover {
-  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
-  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
 /* System posts: Subtle left accent only */
@@ -232,18 +226,21 @@
 }
 
 /* ────────────────────────────────────────
-   COMPOSER: Secondary Visual Weight
+   COMPOSER: Floats in feed - NO border, NO background
+   Only the textarea and buttons are visible
    ──────────────────────────────────────── */
 
 .create-post {
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  box-shadow: none; /* No shadow - ranks below feed cards */
+  background: transparent !important; /* No background */
+  border: none !important; /* No border */
+  box-shadow: none !important; /* No shadow */
+  padding: 0 !important; /* No padding on container */
+  margin-bottom: 1.5rem;
 }
 
 [data-theme="dark"] .create-post {
-  background: var(--bg-card);
-  border-color: var(--border-dark);
+  background: transparent !important;
+  border: none !important;
 }
 
 /* ────────────────────────────────────────
@@ -294,23 +291,28 @@
 }
 
 /* ────────────────────────────────────────
-   SIDEBAR: Muted, Secondary
+   SIDEBAR: Transparent - NO borders, NO backgrounds
+   Merges into page background
    ──────────────────────────────────────── */
 
 .feed-sidebar {
-  background: transparent;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .sidebar-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
-  box-shadow: none;
+  background: transparent !important; /* No background */
+  border: none !important; /* No border */
+  border-radius: 0 !important; /* No rounded corners */
+  box-shadow: none !important; /* No shadow */
   margin-bottom: 1.5rem;
+  padding: 0 !important; /* No padding on container */
 }
 
 [data-theme="dark"] .sidebar-card {
-  border-color: var(--border-dark);
+  background: transparent !important;
+  border: none !important;
 }
 
 .friend-sidebar-item:hover {
@@ -388,12 +390,11 @@
   }
 
   .create-post {
-    padding: 1rem !important;
+    padding: 0 !important; /* No padding - transparent container */
     margin-bottom: 1.5rem !important;
-    background: transparent !important;
-    border: none !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: none !important;
+    background: transparent !important; /* No background */
+    border: none !important; /* No border */
+    box-shadow: none !important; /* No shadow */
   }
 
   .sidebar-card {
@@ -431,21 +432,23 @@
 
 /* ════════════════════════════════════════
    PHASE B: COMPOSER (COLLAPSIBLE)
+   Floats in feed - NO border, NO background panel
    ════════════════════════════════════════ */
 
-/* Composer container: Calm, secondary to feed */
+/* Composer container: Transparent, only textarea/buttons visible */
 .create-post {
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
-  padding: 1rem;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
   margin-bottom: 1.5rem;
-  box-shadow: none;
+  box-shadow: none !important;
   transition: all 0.2s ease;
 }
 
 [data-theme="dark"] .create-post {
-  border-color: var(--border-dark);
+  background: transparent !important;
+  border: none !important;
 }
 
 /* Default state: One-line prompt */
@@ -1052,16 +1055,17 @@ textarea[name="newPost"]:focus {
   }
 
   /* ────────────────────────────────────────
-     Mobile Post Cards: No boxes, full width
+     Mobile Post Cards: Framed, edge-to-edge minus padding
      ──────────────────────────────────────── */
 
   .post-card {
-    padding: 1.5rem 0 !important; /* Vertical padding only */
-    border-radius: 0 !important; /* No rounded corners */
-    background: transparent !important; /* No background */
-    border: none !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important; /* Subtle divider */
-    box-shadow: none !important;
+    padding: 1rem 1.25rem !important; /* 16px vertical, 20px horizontal */
+    border-radius: 12px !important; /* Rounded corners on mobile */
+    background: var(--color-surface) !important; /* Solid background */
+    border: var(--border-post) !important; /* THE ONE TRUE BORDER */
+    box-shadow: none !important; /* No shadow */
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
 
   /* Avatar: Slightly larger on mobile */
