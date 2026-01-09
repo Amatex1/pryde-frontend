@@ -49,18 +49,18 @@ export default function ProfileHeader({
 
   return (
     <div className="profile-header-content">
-      {/* Cover Photo */}
+      {/* Cover Photo - LCP FIX: Use OptimizedImage instead of background-image */}
       <div className="cover-photo">
         {user.coverPhoto ? (
-          <div
+          <OptimizedImage
+            src={getImageUrl(user.coverPhoto)}
+            alt={`${user.displayName || user.username}'s cover photo`}
             className="cover-photo-image"
             onClick={() => onPhotoClick?.(getImageUrl(user.coverPhoto))}
-            style={{
-              backgroundImage: `url(${getImageUrl(user.coverPhoto)})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              cursor: 'pointer'
-            }}
+            loading="eager"
+            fetchPriority="high"
+            aspectRatio="3/1"
+            style={{ cursor: 'pointer', width: '100%', height: '100%', objectFit: 'cover' }}
           />
         ) : (
           <div className="cover-placeholder shimmer"></div>
@@ -80,15 +80,15 @@ export default function ProfileHeader({
       <div className="profile-info">
         <div className="profile-avatar">
           {user.profilePhoto ? (
-            <div
+            <OptimizedImage
+              src={getImageUrl(user.profilePhoto)}
+              alt={`${user.displayName || user.username}'s profile photo`}
               className="profile-avatar-image"
               onClick={() => onPhotoClick?.(getImageUrl(user.profilePhoto))}
-              style={{
-                backgroundImage: `url(${getImageUrl(user.profilePhoto)})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                cursor: 'pointer'
-              }}
+              loading="eager"
+              fetchPriority="high"
+              aspectRatio="1/1"
+              style={{ cursor: 'pointer', width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
             />
           ) : (
             <span>{user.displayName?.charAt(0).toUpperCase()}</span>

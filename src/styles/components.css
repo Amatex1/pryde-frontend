@@ -322,6 +322,7 @@ select:focus,
     align-items: center;
     padding: 12px 0;
     background: transparent;
+    min-height: 60px; /* CLS FIX: Reserve space for navbar */
   }
 
   nav.navbar.glossy > .feed-layout.feed-desktop {

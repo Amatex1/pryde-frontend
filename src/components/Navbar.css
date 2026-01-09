@@ -954,11 +954,13 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 120px; /* CLS FIX: Reserve space for logo */
   }
 
   .navbar-search {
     grid-column: 2;
     justify-self: center;
+    min-width: 300px; /* CLS FIX: Reserve space for search */
     width: 100%;
     max-width: 420px;
   }
@@ -979,6 +981,7 @@
     gap: 14px;
     position: relative;
     overflow: visible;
+    min-width: 200px; /* CLS FIX: Reserve space for actions */
   }
 
   /* --- Kill hamburger completely on desktop --- */
