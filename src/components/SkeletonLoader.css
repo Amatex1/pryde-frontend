@@ -1,0 +1,139 @@
+/**
+ * SkeletonLoader Styles
+ * 
+ * Shimmer animation for loading states
+ */
+
+/* Base skeleton box with shimmer animation */
+.skeleton-box {
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary, #f0f0f0) 0%,
+    var(--bg-tertiary, #e0e0e0) 50%,
+    var(--bg-secondary, #f0f0f0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+[data-theme="dark"] .skeleton-box {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Navbar skeleton components */
+.skeleton-navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 200px;
+}
+
+.skeleton-notification-bell,
+.skeleton-message-button {
+  display: flex;
+  align-items: center;
+}
+
+/* Profile header skeleton */
+.skeleton-profile-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0;
+  background: var(--bg-card);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.skeleton-profile-avatar {
+  margin-top: -60px;
+  margin-left: 1.5rem;
+  z-index: 1;
+}
+
+.skeleton-profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+}
+
+/* Post skeleton */
+.skeleton-post {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skeleton-post-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.skeleton-post-author {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.skeleton-post-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-post-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* Feed skeleton */
+.skeleton-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Sidebar skeleton */
+.skeleton-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-box {
+    animation: none;
+    background: var(--bg-secondary);
+  }
+  
+  [data-theme="dark"] .skeleton-box {
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+

@@ -2070,6 +2070,8 @@ function Feed() {
                 // PHASE 1 REFACTOR: Use hasLiked boolean instead of checking likes array
                 const isLiked = post.hasLiked || false;
                 const isFirstPost = postIndex === 0;
+                // PERFORMANCE: Lazy load images for posts after first 3
+                const shouldEagerLoad = postIndex < 3;
 
                 // Check if this is a system post (from pryde_prompts account)
                 const isSystemPost = post.isSystemPost || post.author?.isSystemAccount;
@@ -2344,7 +2346,7 @@ function Feed() {
                                               onClick={() => setPhotoViewerImage(getImageUrl(media.url))}
                                               style={{ cursor: 'pointer' }}
                                               fetchPriority={isFirstPost && index === 0 ? 'high' : undefined}
-                                              loading={isFirstPost && index === 0 ? 'eager' : 'lazy'}
+                                              loading={shouldEagerLoad && index === 0 ? 'eager' : 'lazy'}
                                               responsiveSizes={media.sizes}
                                             />
                                           )}

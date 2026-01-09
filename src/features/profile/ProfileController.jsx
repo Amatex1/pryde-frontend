@@ -20,7 +20,7 @@
  * - All business logic lives here
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import PageLayout from '../../layouts/PageLayout';
 import ProfileHeader from './ProfileHeader';
@@ -29,10 +29,12 @@ import ProfileSidebar from './ProfileSidebar';
 import Navbar from '../../components/Navbar';
 import ProfileSkeleton from '../../components/ProfileSkeleton';
 import ReportModal from '../../components/ReportModal';
-import PhotoViewer from '../../components/PhotoViewer';
 import CustomModal from '../../components/CustomModal';
-import EditProfileModal from '../../components/EditProfileModal';
 import Toast from '../../components/Toast';
+
+// CODE SPLITTING: Lazy load modals to reduce initial bundle size
+const PhotoViewer = lazy(() => import('../../components/PhotoViewer'));
+const EditProfileModal = lazy(() => import('../../components/EditProfileModal'));
 import { useModal } from '../../hooks/useModal';
 import { useToast } from '../../hooks/useToast';
 import api from '../../utils/api';
@@ -349,20 +351,24 @@ export default function ProfileController() {
         }
       />
 
-      {/* Modals */}
+      {/* Modals - CODE SPLITTING: Wrapped in Suspense for lazy loading */}
       {editProfileModal && (
-        <EditProfileModal
-          user={user}
-          onClose={() => setEditProfileModal(false)}
-          onUpdate={handleProfileUpdate}
-        />
+        <Suspense fallback={<div className="modal-loading">Loading...</div>}>
+          <EditProfileModal
+            user={user}
+            onClose={() => setEditProfileModal(false)}
+            onUpdate={handleProfileUpdate}
+          />
+        </Suspense>
       )}
 
       {photoViewerImage && (
-        <PhotoViewer
-          image={photoViewerImage}
-          onClose={() => setPhotoViewerImage(null)}
-        />
+        <Suspense fallback={<div className="modal-loading">Loading...</div>}>
+          <PhotoViewer
+            image={photoViewerImage}
+            onClose={() => setPhotoViewerImage(null)}
+          />
+        </Suspense>
       )}
 
       {reportModal.isOpen && (

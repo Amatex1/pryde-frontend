@@ -6,6 +6,7 @@ import { getImageUrl } from '../utils/imageUrl';
 import DarkModeToggle from './DarkModeToggle';
 import GlobalSearch from './GlobalSearch';
 import NotificationBell from './NotificationBell';
+import { SkeletonNavbarActions } from './SkeletonLoader';
 import api from '../utils/api';
 import { getTheme, toggleTheme as toggleThemeManager, getQuietMode, setQuietMode as setQuietModeManager } from '../utils/themeManager';
 import prydeLogo from '../assets/pryde-logo.png';
@@ -292,32 +293,35 @@ function Navbar({ onMenuClick }) {
         </div>
         )}
 
-        {/* Right: Actions */}
-        <div className="navbar-actions">
-          <Link to="/messages" className="nav-button" title="Messages">
-            <span className="nav-icon">💬</span>
-            <span className="nav-label">Messages</span>
-            {totalUnread > 0 && (
-              <span className="nav-badge">{totalUnread > 99 ? '99+' : totalUnread}</span>
-            )}
-          </Link>
-          <NotificationBell />
+        {/* Right: Actions - Show skeleton while user is loading */}
+        {!user ? (
+          <SkeletonNavbarActions />
+        ) : (
+          <div className="navbar-actions">
+            <Link to="/messages" className="nav-button" title="Messages">
+              <span className="nav-icon">💬</span>
+              <span className="nav-label">Messages</span>
+              {totalUnread > 0 && (
+                <span className="nav-badge">{totalUnread > 99 ? '99+' : totalUnread}</span>
+              )}
+            </Link>
+            <NotificationBell />
 
-          <div className="profile-dropdown-container" ref={dropdownRef}>
-            <button
-              className="user-profile-trigger"
-              onClick={() => setShowDropdown(!showDropdown)}
-              aria-label={`${showDropdown ? 'Close' : 'Open'} profile menu`}
-              aria-expanded={showDropdown}
-              aria-haspopup="true"
-            >
-              <div className="user-avatar">
-                {user?.profilePhoto ? (
-                  <img src={getImageUrl(user.profilePhoto)} alt={user?.username || 'User'} />
-                ) : (
-                  <span>{user?.username?.charAt(0).toUpperCase() || '?'}</span>
-                )}
-              </div>
+            <div className="profile-dropdown-container" ref={dropdownRef}>
+              <button
+                className="user-profile-trigger"
+                onClick={() => setShowDropdown(!showDropdown)}
+                aria-label={`${showDropdown ? 'Close' : 'Open'} profile menu`}
+                aria-expanded={showDropdown}
+                aria-haspopup="true"
+              >
+                <div className="user-avatar">
+                  {user?.profilePhoto ? (
+                    <img src={getImageUrl(user.profilePhoto)} alt={user?.username || 'User'} />
+                  ) : (
+                    <span>{user?.username?.charAt(0).toUpperCase() || '?'}</span>
+                  )}
+                </div>
               <span className="user-name">{user?.displayName || user?.username}</span>
               <span className="dropdown-arrow" aria-hidden="true">{showDropdown ? '▲' : '▼'}</span>
             </button>
@@ -415,7 +419,8 @@ function Navbar({ onMenuClick }) {
               </div>
             )}
           </div>
-        </div>
+          </div>
+        )}
     </nav>
   );
 }
