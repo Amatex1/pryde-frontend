@@ -1,23 +1,25 @@
 /**
  * ProfileIdentitySpine - Calm, confident, human identity display
- * 
+ *
  * MISSION: Profiles feel like real people in a real community
- * 
+ *
  * VERTICAL ORDER:
  * 1. Avatar
  * 2. Display Name + Role Icon
  * 3. Username
  * 4. Role Sublabel (Founder/Admin/Moderator only)
- * 5. Pronouns / Gender / Age (neutral pills)
- * 6. Bio (emotional core)
- * 7. Stats (muted, below bio)
- * 
+ * 5. Public Badges (up to 3, with labels, soft pills)
+ * 6. Pronouns / Gender / Age (neutral pills)
+ * 7. Bio (emotional core)
+ * 8. Stats (muted, below bio)
+ *
  * RULES:
  * - Single vertical column
  * - No floating elements
  * - No side-by-side blocks
  * - Bio is the largest readable block
  * - Stats are muted and below bio
+ * - All badges MUST have readable labels (no icon-only badges)
  */
 
 import { Link } from 'react-router-dom';
@@ -28,10 +30,11 @@ import './ProfileIdentitySpine.css';
 
 export default function ProfileIdentitySpine({ user, postsCount }) {
   if (!user) return null;
-  
+
   const primaryRole = getPrimaryRole(user);
   const roleDisplay = getRoleDisplay(primaryRole);
-  const tier1Badges = getTier1BadgesForHeader(user.badges);
+  // Get public badges (STATUS and COSMETIC only, max 3)
+  const publicBadges = getTier1BadgesForHeader(user.badges);
   
   // Calculate age from birthday
   const getAge = () => {
@@ -60,28 +63,28 @@ export default function ProfileIdentitySpine({ user, postsCount }) {
             </span>
           )}
         </h1>
-        
-        {/* Tier 1 badges (verified, etc.) - excluding role badges */}
-        {tier1Badges.length > 0 && (
-          <div className="pis-tier1-badges">
-            {tier1Badges.map(badge => (
-              <UserBadge key={badge.id} badge={badge} showLabel={false} />
-            ))}
-          </div>
-        )}
       </div>
-      
+
       {/* 2. Username */}
       <p className="pis-username">@{user.username}</p>
-      
+
       {/* 3. Role Sublabel (Founder/Admin/Moderator only) */}
       {roleDisplay.showSublabel && (
         <p className={`pis-role-sublabel ${roleDisplay.className}`}>
           {roleDisplay.sublabel}
         </p>
       )}
-      
-      {/* 4. Pronouns / Gender / Age (neutral pills, single row) */}
+
+      {/* 4. Public Badges (up to 3, with labels, soft pills) */}
+      {publicBadges.length > 0 && (
+        <div className="pis-public-badges">
+          {publicBadges.map(badge => (
+            <UserBadge key={badge.id} badge={badge} showLabel={true} />
+          ))}
+        </div>
+      )}
+
+      {/* 5. Pronouns / Gender / Age (neutral pills, single row) */}
       {(user.pronouns || user.gender || age) && (
         <div className="pis-traits">
           {user.pronouns && (
@@ -101,27 +104,27 @@ export default function ProfileIdentitySpine({ user, postsCount }) {
           )}
         </div>
       )}
-      
-      {/* 5. Bio (emotional core - largest readable block) */}
+
+      {/* 6. Bio (emotional core - largest readable block) */}
       {user.bio && (
         <p className="pis-bio">{sanitizeBio(user.bio)}</p>
       )}
-      
-      {/* 6. Stats (muted, horizontal row below bio) */}
+
+      {/* 7. Stats (muted, horizontal row below bio) */}
       <div className="pis-stats">
         <div className="pis-stat-item">
           <span className="pis-stat-value">{postsCount}</span>
           <span className="pis-stat-label">Posts</span>
         </div>
-        <Link 
-          to={`/profile/${user.username}/followers`} 
+        <Link
+          to={`/profile/${user.username}/followers`}
           className="pis-stat-item"
         >
           <span className="pis-stat-value">{user.followers?.length || 0}</span>
           <span className="pis-stat-label">Followers</span>
         </Link>
-        <Link 
-          to={`/profile/${user.username}/following`} 
+        <Link
+          to={`/profile/${user.username}/following`}
           className="pis-stat-item"
         >
           <span className="pis-stat-value">{user.following?.length || 0}</span>

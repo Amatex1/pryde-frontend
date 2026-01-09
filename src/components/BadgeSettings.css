@@ -1,0 +1,151 @@
+/**
+ * BadgeSettings Styles
+ * 
+ * Calm, intentional badge management UI
+ */
+
+.badge-settings {
+  padding: 1.5rem;
+  max-width: 800px;
+}
+
+.badge-settings h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.badge-settings-description {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.badge-section {
+  margin-bottom: 2rem;
+}
+
+.badge-section h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.badge-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: 10px;
+  border: 2px solid var(--border-subtle, #E2E4EC);
+  background: var(--card-surface);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.badge-item:hover:not(.disabled) {
+  border-color: var(--accent-primary, #6C5CE7);
+  background: var(--bg-subtle, #F4F5FA);
+}
+
+.badge-item.selected {
+  border-color: var(--accent-primary, #6C5CE7);
+  background: rgba(108, 92, 231, 0.05);
+}
+
+.badge-item.disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+  border-color: var(--border-light, #D1D5DB);
+}
+
+.badge-status {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.badge-item.selected .badge-status {
+  color: var(--accent-primary, #6C5CE7);
+  font-weight: 600;
+}
+
+.no-badges {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 2rem;
+  background: var(--bg-subtle, #F4F5FA);
+  border-radius: 10px;
+}
+
+.save-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background: var(--accent-primary, #6C5CE7);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 1rem;
+}
+
+.save-button:hover:not(:disabled) {
+  background: var(--accent-hover, #5B4BC6);
+  transform: translateY(-1px);
+}
+
+.save-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.message {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.message.success {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.message.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Dark mode */
+[data-theme="dark"] .badge-item {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="dark"] .badge-item:hover:not(.disabled) {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .badge-item.selected {
+  background: rgba(108, 92, 231, 0.15);
+}
+
+[data-theme="dark"] .no-badges {
+  background: rgba(255, 255, 255, 0.03);
+}
+

@@ -30,58 +30,70 @@ export const ROLE_TYPES = {
  */
 export function getPrimaryRole(user) {
   if (!user) return ROLE_TYPES.MEMBER;
-  
+
   // Check for founder badge (highest priority)
-  if (user.badges?.some(badge => badge.id === 'founder' || badge.id === 'pryde_team')) {
+  // Updated to use 'founder' badge ID (not 'pryde_team')
+  if (user.badges?.some(badge => badge.id === 'founder')) {
     return ROLE_TYPES.FOUNDER;
   }
-  
+
   // Check user.role field
   if (user.role === 'admin' || user.role === 'super_admin') {
     return ROLE_TYPES.ADMIN;
   }
-  
+
   if (user.role === 'moderator') {
     return ROLE_TYPES.MODERATOR;
   }
-  
+
   return ROLE_TYPES.MEMBER;
 }
 
 /**
  * Get role display configuration
+ *
+ * MISSION: Calm, authoritative, human — not flashy, not decorative
+ *
+ * FOUNDER:
+ * - Icon: ✦ (small, Pryde purple, inline with name)
+ * - Sublabel: "Founder & Creator" (no pill, no box, no emoji)
+ *
+ * ADMIN/MODERATOR:
+ * - Icon: Subtle shield (small, muted)
+ * - Sublabel: "Administrator" or "Moderator" (same typography as Founder)
+ *
  * @param {string} roleType - One of ROLE_TYPES
- * @returns {Object} - { icon, sublabel, showIcon, showSublabel }
+ * @returns {Object} - { icon, sublabel, showIcon, showSublabel, className }
  */
 export function getRoleDisplay(roleType) {
   switch (roleType) {
     case ROLE_TYPES.FOUNDER:
       return {
-        icon: '✦', // Small sparkle/star glyph
+        icon: '✦', // Small sparkle - calm, not loud
         sublabel: 'Founder & Creator',
         showIcon: true,
         showSublabel: true,
         className: 'role-founder'
       };
-      
+
     case ROLE_TYPES.ADMIN:
       return {
-        icon: '🛡️', // Shield icon
+        icon: '🛡️', // Subtle shield
         sublabel: 'Administrator',
         showIcon: true,
         showSublabel: true,
         className: 'role-admin'
       };
-      
+
     case ROLE_TYPES.MODERATOR:
       return {
-        icon: '🛡️', // Shield icon
+        icon: '🛡️', // Subtle shield
         sublabel: 'Moderator',
         showIcon: true,
         showSublabel: true,
         className: 'role-moderator'
       };
-      
+
     case ROLE_TYPES.MEMBER:
     default:
       return {
@@ -105,32 +117,22 @@ export function hasSpecialRole(user) {
 }
 
 /**
- * Get only Tier 1 (identity) badges for header display
- * Excludes role badges since they're shown separately
- * @param {Array} badges - User's badges array
- * @returns {Array} - Filtered Tier 1 badges (excluding role badges)
+ * Get only non-CORE_ROLE badges for header display
+ * CORE_ROLE badges (Founder/Admin/Moderator/Verified) are shown via role display
+ * This returns STATUS and COSMETIC badges that user has chosen to display publicly
+ *
+ * @param {Array} badges - User's badges array (already filtered by publicBadges on backend)
+ * @returns {Array} - Filtered badges (excluding CORE_ROLE badges)
  */
 export function getTier1BadgesForHeader(badges) {
   if (!badges || !Array.isArray(badges)) return [];
-  
-  const TIER_1_BADGE_IDS = [
-    'pryde_team',
-    'founder',
-    'moderator',
-    'verified',
-    'admin'
-  ];
-  
-  // Filter to Tier 1 badges only
-  const tier1Badges = badges.filter(badge => 
-    TIER_1_BADGE_IDS.includes(badge.id)
+
+  // Exclude CORE_ROLE badges since they're shown via role display
+  // Only show STATUS and COSMETIC badges that user has chosen to display
+  const displayBadges = badges.filter(badge =>
+    badge.category !== 'CORE_ROLE'
   );
-  
-  // Exclude role badges (founder, admin, moderator) since they're shown via role display
-  const roleExcludedBadges = tier1Badges.filter(badge => 
-    !['founder', 'pryde_team', 'admin', 'moderator'].includes(badge.id)
-  );
-  
-  return roleExcludedBadges;
+
+  return displayBadges;
 }
 

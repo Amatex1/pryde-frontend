@@ -57,13 +57,6 @@
   opacity: 0.8;
 }
 
-/* Tier 1 badges (verified, etc.) */
-.pis-tier1-badges {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-}
-
 /* ────────────────────────────────────────
    USERNAME
    ──────────────────────────────────────── */
@@ -106,6 +99,46 @@
 [data-theme="dark"] .pis-role-sublabel.role-moderator {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ────────────────────────────────────────
+   PUBLIC BADGES: Up to 3, with labels
+   Soft pills, muted background, no glow
+   ──────────────────────────────────────── */
+
+.pis-public-badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+/* Override UserBadge styles for profile display */
+.pis-public-badges .user-badge {
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  background: var(--bg-subtle, #F4F5FA);
+  border: 1px solid var(--border-subtle, #E2E4EC);
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+[data-theme="dark"] .pis-public-badges .user-badge {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+}
+
+.pis-public-badges .user-badge-icon {
+  font-size: 1rem;
+}
+
+.pis-public-badges .user-badge-label {
+  font-size: 0.875rem;
 }
 
 /* ────────────────────────────────────────
