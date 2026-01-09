@@ -54,6 +54,7 @@ export default function ProfileController() {
 
   // Core data state
   const [user, setUser] = useState(null);
+  const [userBadges, setUserBadges] = useState([]); // Full badge objects
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingPosts, setLoadingPosts] = useState(true);
@@ -89,6 +90,22 @@ export default function ProfileController() {
       if (isMountedRef.current) {
         setUser(response.data);
         setProfileError(null);
+
+        // Fetch user's badges (with visibility settings applied)
+        if (response.data._id) {
+          try {
+            const badgesResponse = await api.get(`/badges/user/${response.data._id}`);
+            if (isMountedRef.current) {
+              setUserBadges(badgesResponse.data || []);
+            }
+          } catch (badgeError) {
+            logger.error('Failed to fetch user badges:', badgeError);
+            // Non-critical error, continue without badges
+            if (isMountedRef.current) {
+              setUserBadges([]);
+            }
+          }
+        }
       }
     } catch (error) {
       logger.error('Failed to fetch user profile:', error);
@@ -307,6 +324,7 @@ export default function ProfileController() {
       {/* Profile Header - Full width above layout */}
       <ProfileHeader
         user={user}
+        userBadges={userBadges}
         isOwnProfile={isOwnProfile}
         postsCount={posts.length}
         followStatus={followStatus}

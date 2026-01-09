@@ -28,13 +28,16 @@ import { sanitizeBio } from '../../utils/sanitize';
 import UserBadge from '../../components/UserBadge';
 import './ProfileIdentitySpine.css';
 
-export default function ProfileIdentitySpine({ user, postsCount }) {
+export default function ProfileIdentitySpine({ user, userBadges = [], postsCount }) {
   if (!user) return null;
 
-  const primaryRole = getPrimaryRole(user);
+  // Create a user object with badge objects for role detection
+  const userWithBadges = { ...user, badges: userBadges };
+  const primaryRole = getPrimaryRole(userWithBadges);
   const roleDisplay = getRoleDisplay(primaryRole);
   // Get public badges (STATUS and COSMETIC only, max 3)
-  const publicBadges = getTier1BadgesForHeader(user.badges);
+  // userBadges already has visibility settings applied from backend
+  const publicBadges = getTier1BadgesForHeader(userBadges);
   
   // Calculate age from birthday
   const getAge = () => {

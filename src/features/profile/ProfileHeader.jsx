@@ -23,6 +23,7 @@ import './ProfileHeader.css';
 
 export default function ProfileHeader({
   user,
+  userBadges = [], // Full badge objects with visibility applied
   isOwnProfile = false,
   postsCount = 0,
   // Follow/friend state
@@ -96,7 +97,7 @@ export default function ProfileHeader({
         </div>
 
         {/* NEW: Identity Spine - Calm, vertical layout */}
-        <ProfileIdentitySpine user={user} postsCount={postsCount} />
+        <ProfileIdentitySpine user={user} userBadges={userBadges} postsCount={postsCount} />
 
         {/* Action Buttons Container */}
         <div className="profile-actions-container">
