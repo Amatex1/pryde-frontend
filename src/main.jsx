@@ -6,6 +6,7 @@ import './styles/breakpoints.css' // Responsive breakpoint system + PWA utilitie
 import './styles/darkMode.css'
 import './styles/quiet-mode.css' // MUST be loaded AFTER darkMode.css to override properly
 import './styles/mobileFriendly.css' // Mobile-friendly layout fixes for PWA
+import './styles/mobile-brand.css' // Mobile purple brand surface (MUST be loaded AFTER mobileFriendly.css)
 import './styles/sidebar.css' // Sidebar feature discovery styles
 import './styles/navbar.css' // Desktop navbar grid layout
 import './styles/cursors.css' // Optional cursor customization styles

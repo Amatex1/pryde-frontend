@@ -1,0 +1,147 @@
+/**
+ * MOBILE BRAND SURFACE - Pryde Purple Background
+ * 
+ * Restore Pryde's queer, warm, alive purple brand surface on mobile.
+ * Remove grey SaaS look. Make feed feel edge-to-edge and immersive.
+ * 
+ * PHASES:
+ * A - Restore Brand Surface (Purple background)
+ * B - Full-Width Mobile Feed (Edge-to-edge)
+ * C - Anchor Posts to Left (No floating panels)
+ * D - Post Card Rules (Only posts have borders)
+ * E - Calm Mobile Chrome (Transparent bars)
+ * 
+ * Target: "Warm, queer, modern — not boxed, not corporate."
+ */
+
+/* ════════════════════════════════════════
+   PHASE A: RESTORE BRAND SURFACE
+   Purple background on mobile - NOT grey
+   ════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  /* Page background: Pryde purple */
+  body {
+    background: var(--color-brand-bg) !important;
+    background-image: none !important;
+  }
+  
+  /* Feed containers: Transparent - purple shows through */
+  .feed-layout,
+  .feed-container,
+  .feed-wrapper,
+  .page-container {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  
+  /* ════════════════════════════════════════
+     PHASE B: FULL-WIDTH MOBILE FEED
+     Edge-to-edge, no centering, minimal gutters
+     ════════════════════════════════════════ */
+  
+  .feed-layout {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .feed-main {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 12px !important; /* 12px side gutters only */
+    margin: 0 !important;
+  }
+  
+  /* ════════════════════════════════════════
+     PHASE C: ANCHOR POSTS TO LEFT
+     No floating panels, align to left edge
+     ════════════════════════════════════════ */
+  
+  .post-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-inline: 0 !important;
+  }
+  
+  /* ════════════════════════════════════════
+     PHASE D: POST CARD RULES
+     Posts are ONLY framed objects
+     ════════════════════════════════════════ */
+  
+  .post-card {
+    background: var(--color-surface) !important;
+    border: var(--border-post) !important;
+    border-radius: 14px !important;
+    padding: 16px !important;
+    box-shadow: none !important;
+  }
+  
+  /* No inner white blocks */
+  .post-card > * {
+    background: transparent !important;
+  }
+  
+  /* ════════════════════════════════════════
+     PHASE E: CALM MOBILE CHROME
+     Transparent bars, sit on purple surface
+     ════════════════════════════════════════ */
+  
+  /* Top bars: Transparent */
+  .navbar,
+  .mobile-header,
+  .feed-header {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  
+  /* Tab bars: Transparent */
+  .feed-tabs,
+  .tab-bar,
+  .navigation-tabs {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  
+  /* Composer: Transparent container */
+  .create-post,
+  .composer-container {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+  
+  /* Brand color ONLY for active states */
+  .feed-tab.active,
+  .tab.active,
+  .nav-item.active {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: white !important;
+    border-bottom: 2px solid white !important;
+  }
+  
+  /* Primary CTA: White on purple */
+  .btn-post,
+  .btn-primary,
+  .fab-compose {
+    background: white !important;
+    color: var(--color-brand-bg) !important;
+    border: none !important;
+    font-weight: 600 !important;
+  }
+  
+  /* Unread indicator: White dot */
+  .unread-indicator,
+  .notification-badge {
+    background: white !important;
+    color: var(--color-brand-bg) !important;
+  }
+}
+

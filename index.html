@@ -80,10 +80,18 @@
         color-scheme: light dark;
       }
 
-      /* Light mode default (matches --bg-page light) */
+      /* Light mode default - Purple on mobile, grey on desktop */
       html, body, #root {
         background-color: #F5F6FA;
         color: #1E1E26;
+      }
+
+      /* Mobile: Pryde purple background */
+      @media (max-width: 768px) {
+        html, body, #root {
+          background-color: #6C5CE7;
+          color: #FFFFFF;
+        }
       }
 
       /* Dark mode override (matches --bg-page dark) */
@@ -91,6 +99,14 @@
         html, body, #root {
           background-color: #0F1021;
           color: #F8F7FF;
+        }
+
+        /* Mobile dark mode: Darker purple */
+        @media (max-width: 768px) {
+          html, body, #root {
+            background-color: #5a4bd8;
+            color: #FFFFFF;
+          }
         }
       }
 
@@ -107,6 +123,16 @@
       html[data-theme="light"] #root {
         background-color: #F5F6FA;
         color: #1E1E26;
+      }
+
+      /* Mobile light mode: Purple */
+      @media (max-width: 768px) {
+        html[data-theme="light"],
+        html[data-theme="light"] body,
+        html[data-theme="light"] #root {
+          background-color: #6C5CE7;
+          color: #FFFFFF;
+        }
       }
 
       #root {

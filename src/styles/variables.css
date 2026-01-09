@@ -42,6 +42,11 @@
   --accent-muted: rgba(108, 92, 231, 0.15);
   --accent-secondary: #0984E3;
 
+  /* Brand background for mobile - Pryde purple */
+  --color-brand-bg: #6C5CE7;
+  --color-brand-bg-light: #7C6CE7;
+  --color-brand-bg-dark: #5a4bd8;
+
   /* ========================================
      SEMANTIC COLORS
      ======================================== */
@@ -117,6 +122,11 @@
   --accent-hover: #7F6FF2;
   --accent-muted: rgba(108, 92, 231, 0.20);
   --accent-secondary: #0984E3;
+
+  /* Brand background for mobile - Pryde purple (dark mode) */
+  --color-brand-bg: #5a4bd8;
+  --color-brand-bg-light: #6C5CE7;
+  --color-brand-bg-dark: #4a3bc8;
 
   /* SEMANTIC COLORS - Slightly adjusted for dark backgrounds */
   --color-success: #00D9A5;
