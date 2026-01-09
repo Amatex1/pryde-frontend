@@ -23,39 +23,50 @@
 
 /* ════════════════════════════════════════
    PHASE A: FEED FRAME & RHYTHM
+   Kill nested containers - one continuous surface
    ════════════════════════════════════════ */
 
-/* Feed container: Single main column, fixed readable max width */
+/* Feed container: Transparent, no background, no border, no shadow */
 .feed-layout {
-  max-width: 680px; /* Readable width on desktop */
+  max-width: 760px; /* Wider for modern feel: 720-760px */
   margin: 0 auto;
   padding: 0;
+  background: transparent !important; /* Kill any background */
+  border: none !important; /* Kill any border */
+  box-shadow: none !important; /* Kill any shadow */
 }
 
 .feed-main {
   width: 100%;
   padding: 1rem;
   gap: 2rem; /* Consistent 32px between sections */
+  background: transparent !important; /* Kill any background */
+  border: none !important; /* Kill any border */
+  box-shadow: none !important; /* Kill any shadow */
 }
 
-/* Posts list: Consistent vertical spacing */
+/* Posts list: Consistent vertical spacing, no container */
 .posts-list {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* 24px between post cards */
+  gap: 2rem; /* 32px between posts - more breathing room */
+  background: transparent !important; /* Kill any background */
+  border: none !important; /* Kill any border */
+  box-shadow: none !important; /* Kill any shadow */
 }
 
 /* ────────────────────────────────────────
-   POST CARDS: Calm, Consistent Structure
+   POST CARDS: No boxes, separated by space
    ──────────────────────────────────────── */
 
 .post-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
-  padding: 1rem; /* 16px inside post */
+  background: transparent !important; /* No background - posts float on page */
+  border: none !important; /* No border */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important; /* Subtle divider only */
+  border-radius: 0 !important; /* No rounded corners */
+  padding: 1.5rem 0; /* 24px vertical, no horizontal padding */
   margin-bottom: 0; /* Spacing handled by .posts-list gap */
-  box-shadow: none; /* Remove all shadows */
+  box-shadow: none !important; /* No shadows */
   transition: border-color 0.15s ease;
   display: flex;
   flex-direction: column;
@@ -63,29 +74,33 @@
 }
 
 .post-card:hover {
-  border-color: var(--border-medium);
-  box-shadow: none; /* No hover shadow */
-  transform: none; /* No transform */
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important; /* Slightly more visible on hover */
+  box-shadow: none !important; /* No hover shadow */
+  transform: none !important; /* No transform */
+  background: transparent !important; /* Keep transparent */
 }
 
 [data-theme="dark"] .post-card {
-  background: var(--bg-card);
-  border-color: var(--border-dark);
-  box-shadow: none;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .post-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+  background: transparent !important;
 }
 
-/* System posts: Subtle left border only */
+/* System posts: Subtle left accent only */
 .post-card.system-post {
-  border-left: 3px solid var(--pryde-purple);
-  background: var(--bg-card);
+  border-left: 3px solid var(--pryde-purple) !important;
+  padding-left: 1rem !important; /* Add padding when left border exists */
+  background: transparent !important;
 }
 
 [data-theme="dark"] .post-card.system-post {
-  border-left-color: rgba(107, 70, 193, 0.6);
+  border-left-color: rgba(107, 70, 193, 0.6) !important;
 }
 
 /* ────────────────────────────────────────
@@ -358,21 +373,29 @@
 }
 
 /* ────────────────────────────────────────
-   MOBILE: Consistent Spacing
+   MOBILE: No boxes, full width
    ──────────────────────────────────────── */
 
 @media (max-width: 768px) {
   .post-card {
-    padding: 0.875rem;
-    margin-bottom: 1.25rem; /* 20px on mobile */
-    border-radius: 10px;
+    padding: 1.5rem 0 !important; /* Vertical padding only */
+    margin-bottom: 0 !important; /* Spacing handled by gap */
+    border-radius: 0 !important; /* No rounded corners */
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: none !important;
   }
-  
+
   .create-post {
-    padding: 0.875rem;
-    margin-bottom: 1.25rem;
+    padding: 1rem !important;
+    margin-bottom: 1.5rem !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
   }
-  
+
   .sidebar-card {
     margin-bottom: 1.25rem;
   }
@@ -996,17 +1019,23 @@ textarea[name="newPost"]:focus {
 
 @media (max-width: 768px) {
   /* ────────────────────────────────────────
-     Mobile Feed: One column, no side widgets
+     Mobile Feed: Full width, no boxes, no squeeze
      ──────────────────────────────────────── */
 
   .feed-layout {
-    max-width: 100%;
-    padding: 0;
+    max-width: 100% !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   .feed-main {
-    padding: 0.75rem;
+    padding: 0 1rem !important; /* 16px side padding only */
     gap: 1.5rem;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   /* Hide sidebar on mobile */
@@ -1014,18 +1043,25 @@ textarea[name="newPost"]:focus {
     display: none;
   }
 
-  /* Posts list: Tighter spacing on mobile */
+  /* Posts list: Breathing room on mobile */
   .posts-list {
-    gap: 1rem; /* 16px between posts on mobile */
+    gap: 1.5rem !important; /* 24px between posts on mobile */
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   /* ────────────────────────────────────────
-     Mobile Post Cards: Full width, larger touch targets
+     Mobile Post Cards: No boxes, full width
      ──────────────────────────────────────── */
 
   .post-card {
-    padding: 0.875rem;
-    border-radius: 8px;
+    padding: 1.5rem 0 !important; /* Vertical padding only */
+    border-radius: 0 !important; /* No rounded corners */
+    background: transparent !important; /* No background */
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important; /* Subtle divider */
+    box-shadow: none !important;
   }
 
   /* Avatar: Slightly larger on mobile */

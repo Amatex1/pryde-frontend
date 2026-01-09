@@ -1,41 +1,69 @@
 /**
  * MESSAGES CALM MODE - Platform-Grade DM Experience
- * 
+ *
  * Transform Messages UI into Signal/Discord-style calm, readable DM experience.
- * 
- * PHASE A: Conversation List Hierarchy
- * PHASE B: Thread Header + Actions
- * PHASE C: Message Bubble System
+ * ONE SURFACE - No nested cards, no white boxes, no squished layouts.
+ *
+ * PHASE A: Conversation List Hierarchy (No boxes)
+ * PHASE B: Thread Header + Actions (Clean)
+ * PHASE C: Message Bubble System (Floating on background)
  * PHASE D: Composer (Sticky, Calm)
- * PHASE E: Mobile-first Navigation
+ * PHASE E: Mobile-first Navigation (Full width)
  */
 
 /* ────────────────────────────────────────
-   PHASE A: Conversation List Hierarchy
+   MESSAGES LAYOUT: One continuous surface
    ──────────────────────────────────────── */
 
-/* Sidebar: Stable width on desktop */
+/* Messages container: Transparent, no boxes */
+.messages-container {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.messages-layout {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* ────────────────────────────────────────
+   PHASE A: Conversation List (No boxes)
+   ──────────────────────────────────────── */
+
+/* Sidebar: Stable width on desktop, no background card */
 .conversations-sidebar {
   width: 320px;
   min-width: 320px;
   max-width: 320px;
-  background: var(--bg-card);
-  border-right: 1px solid var(--border-light);
+  background: transparent !important; /* No background */
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important; /* Subtle divider */
+  border-left: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .conversations-sidebar {
-  border-color: var(--border-dark);
+  border-right-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-/* Sidebar header: Clean, minimal */
+/* Sidebar header: Clean, minimal, no background */
 .sidebar-header {
   padding: 1rem;
-  border-bottom: 1px solid var(--border-light);
-  background: var(--bg-card);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: transparent !important; /* No background */
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .sidebar-header {
-  border-color: var(--border-dark);
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .sidebar-title {
@@ -84,30 +112,36 @@
   border-color: var(--border-dark);
 }
 
-/* Conversation item: Clean hierarchy */
+/* Conversation item: Clean hierarchy, no boxes */
 .conversation-item {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
   cursor: pointer;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important; /* Subtle divider */
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  background: transparent !important; /* No background */
   transition: background 0.15s ease;
   min-height: 72px; /* Consistent height */
+  box-shadow: none !important;
 }
 
 .conversation-item:hover {
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.03) !important; /* Very subtle hover */
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .conversation-item.active {
-  background: var(--bg-secondary);
-  border-left: 3px solid var(--pryde-purple);
+  background: rgba(255, 255, 255, 0.05) !important; /* Subtle active state */
+  border-left: 3px solid var(--pryde-purple) !important;
   padding-left: calc(1rem - 3px);
 }
 
 [data-theme="dark"] .conversation-item {
-  border-color: var(--border-dark);
+  border-bottom-color: rgba(255, 255, 255, 0.05) !important;
 }
 
 /* Avatar: Consistent size */
@@ -227,7 +261,7 @@
 }
 
 /* ────────────────────────────────────────
-   PHASE B: Thread Header + Actions
+   PHASE B: Thread Header + Actions (No boxes)
    ──────────────────────────────────────── */
 
 .thread-header {
@@ -235,13 +269,17 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem;
-  border-bottom: 1px solid var(--border-light);
-  background: var(--bg-card);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; /* Subtle divider */
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  background: transparent !important; /* No background */
   min-height: 64px;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .thread-header {
-  border-color: var(--border-dark);
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .thread-header-left {
@@ -339,17 +377,19 @@
 }
 
 /* ────────────────────────────────────────
-   PHASE C: Message Bubble System
+   PHASE C: Message Bubble System (Floating on background)
    ──────────────────────────────────────── */
 
 .messages-thread {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem;
+  padding: 1.5rem; /* More breathing room */
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  background: var(--bg-primary);
+  background: transparent !important; /* No background - bubbles float on page */
+  border: none !important;
+  box-shadow: none !important;
 }
 
 /* Message group: Messages from same sender within 2-4 minutes */
@@ -357,7 +397,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem; /* More space between groups */
 }
 
 .message-group.sent {
@@ -368,11 +408,11 @@
   align-items: flex-start;
 }
 
-/* Message bubble: Calm, readable */
+/* Message bubble: Calm, readable, floating */
 .message-bubble {
   max-width: 70%;
-  padding: 0.625rem 0.875rem;
-  border-radius: 16px;
+  padding: 0.75rem 1rem; /* Slightly more padding */
+  border-radius: 18px; /* Slightly more rounded */
   font-size: 0.9375rem;
   line-height: 1.5;
   word-wrap: break-word;
@@ -381,46 +421,51 @@
   white-space: pre-wrap;
   position: relative;
   transition: background 0.15s ease;
+  box-shadow: none !important; /* No shadows */
 }
 
-/* Incoming bubble: Neutral surface */
+/* Incoming bubble: Subtle neutral background, no border */
 .message-bubble.received {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
+  background: rgba(255, 255, 255, 0.05) !important; /* Very subtle background */
+  border: none !important; /* No border */
   color: var(--text-primary);
-  border-radius: 16px 16px 16px 4px;
+  border-radius: 18px 18px 18px 4px;
 }
 
 [data-theme="dark"] .message-bubble.received {
-  background: var(--bg-secondary);
-  border-color: var(--border-dark);
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: none !important;
 }
 
-/* Outgoing bubble: Brand-tinted but muted */
+/* Outgoing bubble: Brand-tinted, no border */
 .message-bubble.sent {
-  background: rgba(139, 92, 246, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: rgba(139, 92, 246, 0.12) !important; /* Subtle purple tint */
+  border: none !important; /* No border */
   color: var(--text-primary);
-  border-radius: 16px 16px 4px 16px;
+  border-radius: 18px 18px 4px 18px;
 }
 
 [data-theme="dark"] .message-bubble.sent {
-  background: rgba(139, 92, 246, 0.2);
-  border-color: rgba(139, 92, 246, 0.4);
+  background: rgba(139, 92, 246, 0.15) !important;
+  border: none !important;
 }
 
-/* No gradients, no glow */
+/* No gradients, no glow, subtle hover */
 .message-bubble:hover {
-  /* Subtle hover state only */
   opacity: 0.95;
+  box-shadow: none !important;
 }
 
-/* Message timestamp: Small + muted */
+/* Message timestamp: Small, muted, no pill, no box */
 .message-timestamp {
   font-size: 0.6875rem;
   color: var(--text-muted);
   margin-top: 0.25rem;
   display: block;
+  background: transparent !important; /* No background */
+  border: none !important; /* No border */
+  padding: 0 !important; /* No padding */
+  box-shadow: none !important; /* No shadow */
 }
 
 .message-group.sent .message-timestamp {
@@ -532,20 +577,24 @@
 }
 
 /* ────────────────────────────────────────
-   PHASE D: Composer (Sticky, Calm)
+   PHASE D: Composer (Sticky, Calm, No boxes)
    ──────────────────────────────────────── */
 
 .message-composer {
-  padding: 1rem;
-  border-top: 1px solid var(--border-light);
-  background: var(--bg-card);
+  padding: 1rem 1.5rem; /* More horizontal padding */
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important; /* Subtle divider */
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  background: transparent !important; /* No background */
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .message-composer {
-  border-color: var(--border-dark);
+  border-top-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* Composer input row */
@@ -684,12 +733,32 @@
    ──────────────────────────────────────── */
 
 @media (max-width: 768px) {
-  /* Mobile: Full-screen conversation list */
+  /* Mobile: Full width, no boxes, no squeeze */
+  .messages-container {
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .messages-layout {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* Mobile: Full-screen conversation list, no boxes */
   .conversations-sidebar {
-    width: 100%;
-    min-width: 100%;
-    max-width: 100%;
-    border-right: none;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    border-right: none !important;
+    border-left: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
   }
 
   /* Mobile: Show back button in thread header */
@@ -712,15 +781,26 @@
     display: none;
   }
 
-  /* Mobile: Full-width bubbles (80% max) */
+  /* Mobile: Wider bubbles (85% max) for better use of space */
   .message-bubble {
-    max-width: 80%;
+    max-width: 85% !important;
+  }
+
+  /* Mobile: Thread area - full width, no side padding */
+  .messages-thread {
+    padding: 1rem !important; /* 16px all around */
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   /* Mobile: Touch targets minimum 44px */
   .conversation-item {
     min-height: 72px;
     padding: 1rem;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
   }
 
   .conv-avatar {
@@ -740,9 +820,14 @@
     min-height: 48px;
   }
 
-  /* Mobile: Composer respects safe area */
+  /* Mobile: Composer - no boxes, respects safe area */
   .message-composer {
-    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    padding: 1rem !important;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+    background: transparent !important;
+    border: none !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
   }
 
   /* Mobile: Message actions always visible (no hover) */
