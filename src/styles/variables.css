@@ -46,6 +46,7 @@
   --color-brand-bg: #6C5CE7;
   --color-brand-bg-light: #7C6CE7;
   --color-brand-bg-dark: #5a4bd8;
+  --color-text-on-brand: #FFFFFF; /* White text on purple */
 
   /* ========================================
      SEMANTIC COLORS
@@ -127,6 +128,7 @@
   --color-brand-bg: #5a4bd8;
   --color-brand-bg-light: #6C5CE7;
   --color-brand-bg-dark: #4a3bc8;
+  --color-text-on-brand: #FFFFFF; /* White text on purple */
 
   /* SEMANTIC COLORS - Slightly adjusted for dark backgrounds */
   --color-success: #00D9A5;

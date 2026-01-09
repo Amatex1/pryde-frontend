@@ -1,0 +1,257 @@
+/**
+ * PURPLE IDENTITY - Eliminate Grey SaaS Surfaces
+ * 
+ * Restore Pryde's purple identity across all breakpoints.
+ * Enforce the one-surface rule: Page = Purple, Content = White
+ * No third grey layer allowed.
+ * 
+ * PHASES:
+ * A - Force Header to Purple (all breakpoints)
+ * B - Kill Grey Surface Tokens (replace with var(--color-surface))
+ * C - Make Polls Transparent (embedded in posts)
+ * D - Add Comment Separation (clear visual hierarchy)
+ * 
+ * Target: "Warm, queer, calm — not corporate, not boxed."
+ */
+
+/* ════════════════════════════════════════
+   PHASE A: FORCE HEADER TO PURPLE
+   All breakpoints - desktop and mobile
+   ════════════════════════════════════════ */
+
+/* Navbar: Purple background on all screens */
+.navbar,
+.app-header,
+.top-nav,
+.mobile-header {
+  background: var(--color-brand-bg) !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: white !important;
+}
+
+/* Navbar text and icons: White on purple */
+.navbar *,
+.navbar a,
+.navbar button,
+.navbar-item,
+.nav-link,
+.navbar-link,
+.navbar-btn {
+  color: white !important;
+}
+
+/* Navbar search: Transparent with white border */
+.navbar-search,
+.search-bar {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
+.navbar-search::placeholder,
+.search-bar::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Active nav items: White background */
+.navbar-item.active,
+.nav-link.active,
+.navbar-link.active {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
+/* ════════════════════════════════════════
+   PHASE B: KILL GREY SURFACE TOKENS
+   Only two surfaces: Page (purple) and Content (white)
+   ════════════════════════════════════════ */
+
+/* Replace all grey backgrounds with white */
+.feed-container,
+.message-container,
+.poll-container,
+.sidebar-card,
+.create-post,
+.composer-container {
+  background: var(--color-surface) !important;
+}
+
+/* Kill grey hover states */
+.navbar-item:hover,
+.nav-link:hover,
+.navbar-link:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* ════════════════════════════════════════
+   PHASE C: MAKE POLLS TRANSPARENT
+   Polls embedded inside posts, not widgets
+   ════════════════════════════════════════ */
+
+.poll-container {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 12px 0 !important;
+  margin: 12px 0 !important;
+}
+
+.poll-option-button,
+.poll-option-result {
+  background: rgba(108, 92, 231, 0.04) !important;
+  border: 1px solid rgba(108, 92, 231, 0.15) !important;
+  box-shadow: none !important;
+}
+
+.poll-option-button:hover:not(:disabled) {
+  background: rgba(108, 92, 231, 0.08) !important;
+  border-color: var(--color-brand) !important;
+  transform: none !important;
+}
+
+.poll-option-result.selected {
+  background: rgba(108, 92, 231, 0.12) !important;
+  border-color: var(--color-brand) !important;
+}
+
+/* Poll bar: Brand-tinted */
+.poll-option-bar {
+  background: linear-gradient(90deg, var(--color-brand), var(--color-brand-light)) !important;
+  opacity: 0.15 !important;
+}
+
+/* ════════════════════════════════════════
+   PHASE D: ADD COMMENT SEPARATION
+   Clear visual hierarchy between post and comments
+   ════════════════════════════════════════ */
+
+/* Divider between post content and comments */
+.comments-section,
+.post-comments {
+  border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
+  margin-top: 16px !important;
+  padding-top: 16px !important;
+}
+
+[data-theme="dark"] .comments-section,
+[data-theme="dark"] .post-comments {
+  border-top-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Comment input: Subtle border, no background panel */
+.comment-input-box,
+.reply-input-box {
+  background: transparent !important;
+  border: 1px solid var(--border-post) !important;
+  border-radius: 12px !important;
+  padding: 12px !important;
+}
+
+/* Comment input field */
+.comment-input,
+.reply-input {
+  background: var(--color-surface) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 10px !important;
+}
+
+[data-theme="dark"] .comment-input,
+[data-theme="dark"] .reply-input {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Replies: No background boxes, spacing only */
+.comment-replies,
+.comment.reply {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* ════════════════════════════════════════
+   DESKTOP OVERRIDES
+   Ensure purple header on desktop too
+   ════════════════════════════════════════ */
+
+@media (min-width: 769px) {
+  .navbar,
+  .app-header {
+    background: var(--color-brand-bg) !important;
+    border-bottom: none !important;
+  }
+
+  /* Desktop nav items */
+  .navbar-actions a,
+  .navbar-actions button {
+    color: white !important;
+  }
+
+  /* Desktop search */
+  .navbar-search {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+  }
+}
+
+/* ════════════════════════════════════════
+   MOBILE SPECIFIC
+   Ensure consistency on mobile
+   ════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  /* Mobile nav bar */
+  .mobile-nav {
+    background: var(--color-brand-bg) !important;
+    border-top: none !important;
+  }
+
+  .mobile-nav a {
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+
+  .mobile-nav a.active {
+    color: white !important;
+  }
+
+  /* Mobile comment input - not fixed position */
+  .reply-input-box:not(.mobile-fixed) {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+  }
+}
+
+/* ════════════════════════════════════════
+   TEXT ON BRAND COLOR
+   Ensure readability on purple
+   ════════════════════════════════════════ */
+
+.navbar .user-profile-trigger,
+.navbar .notification-icon,
+.navbar .nav-icon {
+  color: white !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.navbar .notification-badge,
+.navbar .nav-badge {
+  background: white !important;
+  color: var(--color-brand-bg) !important;
+}
+
+/* ════════════════════════════════════════
+   KILL ALL GREY HARDCODED COLORS
+   Replace with semantic tokens
+   ════════════════════════════════════════ */
+
+/* Kill #f0f0f0, #eaeaea, #ddd, etc. */
+*[style*="#f0f0f0"],
+*[style*="#eaeaea"],
+*[style*="#ddd"],
+*[style*="rgb(240, 240, 240)"] {
+  background: var(--color-surface) !important;
+}
+
+
