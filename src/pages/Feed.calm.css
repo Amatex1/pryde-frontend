@@ -90,7 +90,7 @@
 .post-card.system-post {
   border-left: 3px solid var(--pryde-purple) !important;
   padding-left: 1rem !important; /* Add padding when left border exists */
-  background: transparent !important;
+  /* background: Use default surface color from .post-card */
 }
 
 [data-theme="dark"] .post-card.system-post {
