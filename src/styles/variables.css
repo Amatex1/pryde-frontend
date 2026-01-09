@@ -5,18 +5,23 @@
 
 :root {
   /* ========================================
-     BACKGROUNDS
+     BACKGROUNDS - PURPLE IDENTITY SYSTEM
+     Two surfaces only: Purple page + White content
      ======================================== */
-  --bg-page: #F5F6FA;
-  --bg-surface: #FFFFFF;
-  --bg-card: #FFFFFF;
-  --bg-hover: rgba(108, 92, 231, 0.05);
-  --bg-subtle: #FAFBFC;
+  --color-background: var(--color-brand-bg); /* Purple page */
+  --color-surface: #FFFFFF; /* White content */
 
-  /* Surface system for elevated elements */
-  --surface-default: #FFFFFF;
-  --surface-muted: #F4F5FA;
-  --surface-elevated: #FFFFFF;
+  /* Legacy mappings - all collapse to two-surface system */
+  --bg-page: var(--color-background);
+  --bg-surface: var(--color-surface);
+  --bg-card: var(--color-surface);
+  --bg-hover: rgba(108, 92, 231, 0.05);
+  --bg-subtle: var(--color-surface); /* NO GREY - use white */
+
+  /* Surface system - all collapse to white */
+  --surface-default: var(--color-surface);
+  --surface-muted: var(--color-surface); /* NO GREY - use white */
+  --surface-elevated: var(--color-surface);
   --surface-border: rgba(0, 0, 0, 0.08);
 
   /* ========================================
@@ -94,17 +99,22 @@
    ======================================== */
 
 [data-theme="dark"] {
-  /* BACKGROUNDS */
-  --bg-page: #0F1021;
-  --bg-surface: #15162A;
-  --bg-card: #1A1B30;
-  --bg-hover: rgba(108, 92, 231, 0.08);
-  --bg-subtle: #1F2038;
+  /* BACKGROUNDS - PURPLE IDENTITY SYSTEM (DARK MODE)
+     Two surfaces only: Purple page + Dark content */
+  --color-background: var(--color-brand-bg); /* Purple page */
+  --color-surface: #15162A; /* Dark content surface */
 
-  /* Surface system for elevated elements */
-  --surface-default: #12172A;
-  --surface-muted: #161C33;
-  --surface-elevated: #1B2140;
+  /* Legacy mappings - all collapse to two-surface system */
+  --bg-page: var(--color-background);
+  --bg-surface: var(--color-surface);
+  --bg-card: var(--color-surface);
+  --bg-hover: rgba(108, 92, 231, 0.08);
+  --bg-subtle: var(--color-surface); /* NO GREY - use dark surface */
+
+  /* Surface system - all collapse to dark surface */
+  --surface-default: var(--color-surface);
+  --surface-muted: var(--color-surface); /* NO GREY - use dark surface */
+  --surface-elevated: var(--color-surface);
   --surface-border: rgba(255, 255, 255, 0.08);
 
   /* TEXT */

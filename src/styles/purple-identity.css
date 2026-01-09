@@ -85,8 +85,39 @@
 }
 
 /* ════════════════════════════════════════
-   PHASE C: MAKE POLLS TRANSPARENT
-   Polls embedded inside posts, not widgets
+   PHASE C: POST, COMPOSER, POLLS, COMMENTS
+   All use var(--color-surface) + var(--border-post)
+   No other backgrounds allowed
+   ════════════════════════════════════════ */
+
+/* Posts: One surface color */
+.post-card,
+.feed-post,
+.post-container {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--border-post, var(--border-default)) !important;
+}
+
+/* Composer: Match posts exactly */
+.composer-container,
+.create-post,
+.post-composer {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--border-post, var(--border-default)) !important;
+}
+
+/* Remove any hardcoded backgrounds */
+.post-card,
+.feed-post,
+.composer-container,
+.create-post {
+  /* Kill hardcoded colors */
+  background-color: var(--color-surface) !important;
+}
+
+/* ════════════════════════════════════════
+   PHASE D: POLL NORMALIZATION
+   Transparent container, subtle options
    ════════════════════════════════════════ */
 
 .poll-container {
@@ -122,14 +153,14 @@
 }
 
 /* ════════════════════════════════════════
-   PHASE D: ADD COMMENT SEPARATION
-   Clear visual hierarchy between post and comments
+   PHASE E: COMMENT SEPARATION
+   Divider between post body and comments
    ════════════════════════════════════════ */
 
 /* Divider between post content and comments */
 .comments-section,
 .post-comments {
-  border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
   margin-top: 16px !important;
   padding-top: 16px !important;
 }
@@ -242,15 +273,52 @@
 }
 
 /* ════════════════════════════════════════
-   KILL ALL GREY HARDCODED COLORS
-   Replace with semantic tokens
+   PHASE F: KILL HARDCODED GREYS
+   Replace all with tokens
    ════════════════════════════════════════ */
 
-/* Kill #f0f0f0, #eaeaea, #ddd, etc. */
+/* Kill inline grey backgrounds */
 *[style*="#f0f0f0"],
 *[style*="#eaeaea"],
 *[style*="#ddd"],
-*[style*="rgb(240, 240, 240)"] {
+*[style*="#e0e0e0"],
+*[style*="#f5f5f5"],
+*[style*="rgb(240, 240, 240)"],
+*[style*="rgb(234, 234, 234)"],
+*[style*="rgba(240"] {
+  background: var(--color-surface) !important;
+}
+
+/* Kill hardcoded white backgrounds (except buttons) */
+*[style*="background: white"]:not(button):not(.btn),
+*[style*="background: #fff"]:not(button):not(.btn),
+*[style*="background: #ffffff"]:not(button):not(.btn) {
+  background: var(--color-surface) !important;
+}
+
+/* ════════════════════════════════════════
+   PHASE G: VALIDATION
+   Target: "Purple world, soft surfaces, calm reading"
+   ════════════════════════════════════════ */
+
+/* Ensure page background is always purple */
+body,
+html,
+#root,
+.app-container {
+  background: var(--color-background) !important;
+}
+
+/* Ensure all content surfaces are white (light) or dark (dark mode) */
+[data-theme="light"] .post-card,
+[data-theme="light"] .composer-container,
+[data-theme="light"] .feed-container {
+  background: var(--color-surface) !important;
+}
+
+[data-theme="dark"] .post-card,
+[data-theme="dark"] .composer-container,
+[data-theme="dark"] .feed-container {
   background: var(--color-surface) !important;
 }
 
