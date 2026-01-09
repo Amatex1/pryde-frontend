@@ -37,7 +37,8 @@ import {
   setRefreshToken,
   setCurrentUser,
   getRefreshToken,
-  logout as authLogout
+  logout as authLogout,
+  isManualLogout
 } from '../utils/auth';
 import { listenForAuthEvents, closeAuthSync, broadcastLogin, broadcastLogout } from '../utils/authSync';
 import { clearCachePattern } from '../utils/apiClient';
@@ -150,6 +151,21 @@ export function AuthProvider({ children }) {
       // 🔥 NEW: If no access token, attempt silent refresh using httpOnly cookie
       // This restores sessions after browser restart, tab close, or PWA relaunch
       if (!token) {
+        // 🔥 CRITICAL: Skip silent refresh if user just logged out manually
+        // This prevents unnecessary 401 errors on the login page
+        const wasManualLogout = isManualLogout();
+        const isOnLoginPage = window.location.pathname === '/login' || window.location.pathname === '/register';
+
+        if (wasManualLogout || isOnLoginPage) {
+          logger.debug('[AuthContext] Skipping silent refresh (manual logout or login page)');
+          setUser(null);
+          setAuthStatus(AUTH_STATES.UNAUTHENTICATED);
+          markAuthStatusUnauthenticated();
+          markAuthReady();
+          sessionStorage.setItem('authReady', 'true');
+          return { authenticated: false };
+        }
+
         logger.debug('[AuthContext] No access token - attempting silent refresh...');
         const refreshed = await attemptSilentRefresh();
 
