@@ -27,17 +27,22 @@
 }
 
 .badge-tier-1 .user-badge {
-  /* Override any decorative styles */
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
+  /* Icon-only display: no background, no border, no padding */
+  background: transparent;
+  border: none;
   box-shadow: none;
-  font-weight: 500;
-  opacity: 0.95;
+  padding: 0;
+  height: auto;
+  font-size: 1.25rem; /* Larger icon for visibility */
+}
+
+.badge-tier-1 .user-badge-icon {
+  font-size: 1.25rem; /* Match parent for consistent sizing */
 }
 
 [data-theme="dark"] .badge-tier-1 .user-badge {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: transparent;
+  border: none;
 }
 
 /* ────────────────────────────────────────

@@ -1774,7 +1774,6 @@ function Profile() {
               )}
             </div>
           )}
-        </div>
 
         <div className="profile-layout">
           {/* Sidebar for Create Post Section */}
@@ -2672,7 +2671,6 @@ function Profile() {
       {/* REMOVED: PhotoRepositionModal - All image editing moved to Edit Profile modal */}
 
       {/* DEPRECATED: EditHistoryModal removed 2025-12-26 */}
-      </div>
     </div>
   );
 }
