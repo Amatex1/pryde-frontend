@@ -1516,7 +1516,7 @@ function Profile() {
                   backgroundPosition: 'center',
                   width: '100%',
                   height: '100%',
-                  opacity: 0.85,
+                  opacity: 0.92,
                   transform: user.coverPhotoPosition
                     ? `translate(${user.coverPhotoPosition.x}px, ${user.coverPhotoPosition.y}px) scale(${user.coverPhotoPosition.scale || 1})`
                     : 'none',
@@ -1543,37 +1543,36 @@ function Profile() {
             <div className="upload-message-banner">{uploadMessage}</div>
           )}
 
-          {/* Profile Card - Stability */}
-          <div className="profile-card">
-            {/* Avatar - Identity */}
-            <div className="profile-avatar">
-              {user.profilePhoto ? (
-                <div
-                  className="profile-avatar-image"
-                  onClick={() => setPhotoViewerImage(getImageUrl(user.profilePhoto))}
-                  style={{
-                    backgroundImage: `url(${getImageUrl(user.profilePhoto)})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    width: '100%',
-                    height: '100%',
-                    transform: user.profilePhotoPosition &&
-                      (user.profilePhotoPosition.x !== 50 || user.profilePhotoPosition.y !== 50) &&
-                      (user.profilePhotoPosition.x !== 0 || user.profilePhotoPosition.y !== 0 || (user.profilePhotoPosition.scale && user.profilePhotoPosition.scale !== 1))
-                      ? `translate(${user.profilePhotoPosition.x}px, ${user.profilePhotoPosition.y}px) scale(${user.profilePhotoPosition.scale || 1})`
-                      : 'none',
-                    transformOrigin: 'center',
-                    cursor: 'pointer'
-                  }}
-                />
-              ) : (
-                <span>{user.displayName?.charAt(0).toUpperCase()}</span>
-              )}
-            </div>
+          {/* Avatar OVERLAY - moved outside profile-card so it can truly overlap cover */}
+          <div className="profile-avatar profile-avatar--overlay">
+            {user.profilePhoto ? (
+              <div
+                className="profile-avatar-image"
+                onClick={() => setPhotoViewerImage(getImageUrl(user.profilePhoto))}
+                style={{
+                  backgroundImage: `url(${getImageUrl(user.profilePhoto)})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  width: '100%',
+                  height: '100%',
+                  transform: user.profilePhotoPosition &&
+                    (user.profilePhotoPosition.x !== 50 || user.profilePhotoPosition.y !== 50) &&
+                    (user.profilePhotoPosition.x !== 0 || user.profilePhotoPosition.y !== 0 || (user.profilePhotoPosition.scale && user.profilePhotoPosition.scale !== 1))
+                    ? `translate(${user.profilePhotoPosition.x}px, ${user.profilePhotoPosition.y}px) scale(${user.profilePhotoPosition.scale || 1})`
+                    : 'none',
+                  transformOrigin: 'center',
+                  cursor: 'pointer'
+                }}
+              />
+            ) : (
+              <span>{user.displayName?.charAt(0).toUpperCase()}</span>
+            )}
+          </div>
 
-            {/* Identity Stack - wrapped in identity card for desktop hybrid layout */}
+          {/* Profile Card - Hybrid layout with identity content */}
+          <div className="profile-card profile-card--hybrid">
+            {/* Identity Stack */}
             <div className="profile-identity">
-              <div className="profile-identity-card">
                 {/* 1. Display Name (largest) */}
                 <h1 className="profile-name">
                   {user.displayName || user.fullName || user.username}
@@ -1654,7 +1653,6 @@ function Profile() {
                     <span className="stat-label">Following</span>
                   </Link>
                 </div>
-              </div>
 
               {/* Action Buttons */}
               {/* Notes to self button - own profile only */}
