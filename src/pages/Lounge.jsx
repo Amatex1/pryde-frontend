@@ -191,6 +191,14 @@ function Lounge() {
 
       // Listen for online users list (for privileged users)
       socket.on('global_chat:online_users_list', ({ users }) => {
+        console.log('📥 Lounge: Received online users list', users.length, 'users');
+
+        // Clear timeout if it exists
+        if (socketRef.onlineUsersTimeout) {
+          clearTimeout(socketRef.onlineUsersTimeout);
+          socketRef.onlineUsersTimeout = null;
+        }
+
         setOnlineUsers(users);
         setLoadingOnlineUsers(false);
       });
@@ -397,6 +405,7 @@ function Lounge() {
 
     setShowOnlineUsersModal(true);
     setLoadingOnlineUsers(true);
+    setOnlineUsers([]); // Clear previous list
 
     // Request online users list from server
     const socket = socketRef.current;
@@ -405,13 +414,19 @@ function Lounge() {
       socket.emit('global_chat:get_online_users');
 
       // Set timeout to stop loading if no response after 5 seconds
-      setTimeout(() => {
-        setLoadingOnlineUsers(false);
-        if (onlineUsers.length === 0) {
-          setError('Failed to load online users. Please try again.');
-          setTimeout(() => setError(''), 3000);
-        }
+      const timeoutId = setTimeout(() => {
+        setLoadingOnlineUsers(prev => {
+          // Only show error if still loading (response didn't arrive)
+          if (prev) {
+            setError('Failed to load online users. Please try again.');
+            setTimeout(() => setError(''), 3000);
+          }
+          return false;
+        });
       }, 5000);
+
+      // Store timeout ID to clear it if response arrives
+      socketRef.onlineUsersTimeout = timeoutId;
     } else {
       setLoadingOnlineUsers(false);
       setError('Not connected. Please refresh the page.');
