@@ -30,9 +30,11 @@ function Lounge() {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [loadingOnlineUsers, setLoadingOnlineUsers] = useState(false);
   const [isQuietMode, setIsQuietMode] = useState(document.documentElement.getAttribute('data-quiet') === 'true');
+  const [typingUsers, setTypingUsers] = useState(new Map()); // Map of userId -> timeout
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const socketRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
 
   // Listen for quiet mode changes
   useEffect(() => {
@@ -168,6 +170,39 @@ function Lounge() {
         setLoadingOnlineUsers(false);
       });
 
+      // Listen for typing indicator
+      socket.on('global_chat:user_typing', ({ userId, isTyping }) => {
+        setTypingUsers(prev => {
+          const newMap = new Map(prev);
+
+          if (isTyping) {
+            // Clear existing timeout for this user
+            if (newMap.has(userId)) {
+              clearTimeout(newMap.get(userId));
+            }
+
+            // Set new timeout to remove typing indicator after 3 seconds
+            const timeout = setTimeout(() => {
+              setTypingUsers(current => {
+                const updated = new Map(current);
+                updated.delete(userId);
+                return updated;
+              });
+            }, 3000);
+
+            newMap.set(userId, timeout);
+          } else {
+            // User stopped typing
+            if (newMap.has(userId)) {
+              clearTimeout(newMap.get(userId));
+              newMap.delete(userId);
+            }
+          }
+
+          return newMap;
+        });
+      });
+
       // Handle errors
       socket.on('error', (data) => {
         setError(data.message);
@@ -182,8 +217,12 @@ function Lounge() {
         socket.off('global_message:deleted');
         socket.off('global_chat:online_count');
         socket.off('global_chat:online_users_list');
+        socket.off('global_chat:user_typing');
         socket.off('error');
       }
+
+      // Clear all typing timeouts
+      typingUsers.forEach(timeout => clearTimeout(timeout));
     };
   }, []);
 
@@ -306,6 +345,27 @@ function Lounge() {
   const closeOnlineUsersModal = () => {
     setShowOnlineUsersModal(false);
     setOnlineUsers([]);
+  };
+
+  // Handle typing in input
+  const handleInputChange = (e) => {
+    setNewMessage(e.target.value);
+
+    // Emit typing indicator
+    const socket = socketRef.current;
+    if (socket && e.target.value.trim()) {
+      socket.emit('global_chat:typing', { isTyping: true });
+
+      // Clear previous timeout
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+
+      // Set timeout to stop typing indicator after 2 seconds of inactivity
+      typingTimeoutRef.current = setTimeout(() => {
+        socket.emit('global_chat:typing', { isTyping: false });
+      }, 2000);
+    }
   };
 
   // Format timestamp
@@ -465,6 +525,22 @@ function Lounge() {
                 </div>
               ))}
 
+              {/* Typing indicator */}
+              {typingUsers.size > 0 && (
+                <div className="lounge-typing-indicator">
+                  <div className="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                  <span className="typing-text">
+                    {typingUsers.size === 1
+                      ? 'Someone is typing...'
+                      : `${typingUsers.size} people are typing...`}
+                  </span>
+                </div>
+              )}
+
               <div ref={messagesEndRef} />
             </>
           )}
@@ -531,7 +607,7 @@ function Lounge() {
               type="text"
               placeholder={selectedGif ? "Add a caption (optional)..." : "Type a message..."}
               value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
+              onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               maxLength={2000}
               className="lounge-input"
