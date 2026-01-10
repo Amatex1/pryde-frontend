@@ -960,14 +960,6 @@ function Feed() {
 
   // Auto-save draft
   const autoSaveDraft = useCallback(async () => {
-    const hasContent = newPost.trim() || selectedMedia.length > 0;
-
-    // If no content, don't save
-    if (!hasContent) {
-      setDraftSaveStatus('');
-      return;
-    }
-
     // CRITICAL: Check if user is authenticated before attempting autosave
     // currentUser is from useAuth() context - no localStorage call needed
     if (!currentUser || !isAuthenticated) {
