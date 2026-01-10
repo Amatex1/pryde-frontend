@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useSearchParams, useOutletContext } from 'react-router-dom';
+import { FixedSizeList as List } from 'react-window';
 import Navbar from '../components/Navbar';
 import EmojiPicker from '../components/EmojiPicker';
 import GifPicker from '../components/GifPicker';
@@ -1051,6 +1052,149 @@ function Messages() {
     }
   };
 
+  // ⚡ PERFORMANCE: Memoize filtered conversations to prevent re-filtering on every render
+  const filteredConversations = useMemo(() => {
+    return conversations.filter(conv => {
+      // Tab filter (archived/unread/all)
+      const isArchived = archivedConversations.includes(conv._id);
+      if (activeTab === 'archived') return isArchived;
+      if (activeTab === 'unread') return !isArchived && (conv.unread > 0 || conv.manuallyUnread);
+      if (isArchived) return false; // 'all' tab shows non-archived
+
+      // Name filter - search by participant displayName or username
+      if (conversationFilter.trim()) {
+        const q = conversationFilter.toLowerCase();
+        const otherUser = conv.otherUser || (
+          conv.lastMessage?.sender?._id === currentUser?._id
+            ? conv.lastMessage?.recipient
+            : conv.lastMessage?.sender
+        );
+        const displayName = otherUser?.displayName || otherUser?.username || '';
+        const username = otherUser?.username || '';
+        return displayName.toLowerCase().includes(q) || username.toLowerCase().includes(q);
+      }
+
+      return true;
+    });
+  }, [conversations, archivedConversations, activeTab, conversationFilter, currentUser]);
+
+  // ⚡ PERFORMANCE: Memoized Row component for virtual scrolling
+  const ConversationRow = useCallback(({ index, style }) => {
+    const conv = filteredConversations[index];
+    if (!conv) return null;
+
+    // Use the otherUser field from backend, or fallback to lastMessage sender/recipient
+    const otherUser = conv.otherUser || (
+      conv.lastMessage?.sender?._id === currentUser?._id
+        ? conv.lastMessage?.recipient
+        : conv.lastMessage?.sender
+    );
+    // Detect self-chat (Notes to self)
+    const isSelfChat = otherUser?._id === currentUser?._id;
+
+    return (
+      <div style={style}>
+        <div
+          className={`conversation-item ${selectedChat === otherUser?._id && selectedChatType === 'user' ? 'active' : ''} ${conv.manuallyUnread ? 'manually-unread' : ''} ${conv.unread > 0 ? 'has-unread' : ''}`}
+        >
+          <div
+            className="conv-clickable"
+            onClick={() => {
+              setSelectedChat(otherUser?._id);
+              setSelectedChatType('user');
+              setShowMobileSidebar(false);
+            }}
+          >
+            <div className="conv-avatar">
+              {otherUser?.profilePhoto ? (
+                <img src={getImageUrl(otherUser.profilePhoto)} alt={isSelfChat ? 'Notes to self' : getDisplayName(otherUser)} />
+              ) : (
+                <span>{isSelfChat ? '📝' : getDisplayNameInitial(otherUser)}</span>
+              )}
+              {/* Unread indicator (red dot) */}
+              {conv.unread > 0 && (
+                <span className="unread-indicator"></span>
+              )}
+              {/* Online status dot - hide for self-chat */}
+              {!isSelfChat && onlineUsers.includes(conv._id) && (
+                <span className="status-dot online"></span>
+              )}
+            </div>
+            <div className="conv-info">
+              <div className="conv-header">
+                <div className="conv-name">{isSelfChat ? '📝 Notes to self' : getDisplayName(otherUser)}</div>
+                <div className="conv-time">
+                  {conv.lastMessage?.createdAt ? new Date(conv.lastMessage.createdAt).toLocaleTimeString() : ''}
+                </div>
+              </div>
+              {/* Show @username for others, not for self-chat */}
+              {!isSelfChat && getUsername(otherUser) && (
+                <div className="conv-username">{getUsername(otherUser)}</div>
+              )}
+              <div className="conv-last-message">
+                {mutedConversations.includes(conv._id) && '🔕 '}
+                {conv.lastMessage?.voiceNote?.url ? '🎤 Voice note' : (conv.lastMessage?.content || 'No messages')}
+              </div>
+            </div>
+            {conv.unread > 0 && (
+              <div className="unread-badge">{conv.unread}</div>
+            )}
+          </div>
+
+          {/* 3-dot dropdown menu */}
+          <div className="conv-actions">
+            <button
+              className="btn-conv-menu"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenDropdown(openDropdown === conv._id ? null : conv._id);
+              }}
+            >
+              ⋮
+            </button>
+
+            {openDropdown === conv._id && (
+              <div className="conv-dropdown">
+                {activeTab !== 'archived' && (
+                  <button onClick={(e) => { e.stopPropagation(); handleMarkAsUnread(conv._id); }}>
+                    📧 Mark as Unread
+                  </button>
+                )}
+                {activeTab === 'archived' ? (
+                  <button onClick={(e) => { e.stopPropagation(); handleUnarchiveConversation(conv._id); }}>
+                    📤 Unarchive
+                  </button>
+                ) : (
+                  <button onClick={(e) => { e.stopPropagation(); handleArchiveConversation(conv._id); }}>
+                    📦 Archive
+                  </button>
+                )}
+                {mutedConversations.includes(conv._id) ? (
+                  <button onClick={(e) => { e.stopPropagation(); handleUnmuteConversation(conv._id); }}>
+                    🔔 Unmute
+                  </button>
+                ) : (
+                  <button onClick={(e) => { e.stopPropagation(); handleMuteConversation(conv._id); }}>
+                    🔕 Mute
+                  </button>
+                )}
+                <button onClick={(e) => { e.stopPropagation(); handleDeleteConversation(conv._id); }}>
+                  🗑️ Delete
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleBlockUser(otherUser?._id); }}
+                  className="danger"
+                >
+                  🚫 Block User
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }, [filteredConversations, currentUser, selectedChat, selectedChatType, onlineUsers, mutedConversations, archivedConversations, activeTab, openDropdown]);
+
   return (
     <div
       className="page-container messages-page"
@@ -1191,8 +1335,25 @@ function Messages() {
                     </>
                   )}
 
-                  {/* Direct Messages */}
+                  {/* Direct Messages - Virtual Scrolling */}
                   {conversations.length > 0 && (
+                    <>
+                      <div className="section-label">Direct Messages</div>
+                      {/* ⚡ PERFORMANCE: Virtual scrolling - only renders visible conversations */}
+                      <List
+                        height={window.innerHeight - 300} // Dynamic height based on viewport
+                        itemCount={filteredConversations.length}
+                        itemSize={85} // Height of each conversation item in pixels (matches CSS)
+                        width="100%"
+                        className="virtual-conversation-list"
+                      >
+                        {ConversationRow}
+                      </List>
+                    </>
+                  )}
+
+                  {/* OLD CODE - REPLACED WITH VIRTUAL SCROLLING ABOVE */}
+                  {false && conversations.length > 0 && (
                     <>
                       <div className="section-label">Direct Messages</div>
                       {conversations

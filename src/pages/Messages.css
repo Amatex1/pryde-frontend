@@ -143,6 +143,30 @@
   overflow-y: auto;
 }
 
+/* ⚡ PERFORMANCE: Virtual scrolling list styling */
+.virtual-conversation-list {
+  /* Override react-window default styles */
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+.virtual-conversation-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.virtual-conversation-list::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.virtual-conversation-list::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 4px;
+}
+
+.virtual-conversation-list::-webkit-scrollbar-thumb:hover {
+  background: var(--pryde-purple);
+}
+
 .conversation-item {
   padding: 1rem 1.5rem;
   display: flex;
