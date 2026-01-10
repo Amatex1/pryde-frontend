@@ -2569,6 +2569,8 @@ function Profile() {
                 )}
               </div>
             )}
+            </div>
+            {/* End of profile-posts */}
           </div>
           {/* End of profile-main */}
 
