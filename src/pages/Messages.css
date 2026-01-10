@@ -8,13 +8,15 @@
   margin: 0 auto;
   padding: 0 var(--page-padding, 12px) var(--space-6);
   height: calc(100dvh - 150px);
+  padding-top: var(--space-4); /* Add top padding to prevent navbar overlap */
 }
 
 /* MOBILE: Full-bleed container */
 @media (max-width: 600px) {
   .messages-container {
     max-width: 100%;
-    padding: 0;  /* No padding - full edge-to-edge */
+    padding: 0;  /* No horizontal padding - full edge-to-edge */
+    padding-top: var(--space-2); /* Keep top padding to prevent navbar overlap */
     height: calc(100dvh - var(--navbar-height, 60px) - var(--mobile-nav-height, 56px));
   }
 }
@@ -734,6 +736,8 @@
   margin-top: 0.25rem;
   opacity: 0;
   transition: opacity 0.2s;
+  position: relative;
+  z-index: 10; /* Ensure actions appear above other content */
 }
 
 .message-group:hover .message-actions {
