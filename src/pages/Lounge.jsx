@@ -128,7 +128,107 @@ function Lounge() {
     }
   }, [newMessage, selectedGif, contentWarning]);
 
-  // Socket.IO setup - FIX: Use named handlers to prevent duplicates
+  // 🔥 FIX: Create stable handler functions with useCallback to prevent re-creation
+  const handleNewMessage = useCallback((message) => {
+    console.log('📨 Lounge: Received new message', message);
+
+    // Use functional update for better performance
+    setMessages(prev => {
+      // Check for duplicates (in case of double-emit)
+      if (prev.some(m => m._id === message._id)) {
+        console.warn('⚠️ Duplicate message received, skipping');
+        return prev;
+      }
+      return [...prev, message];
+    });
+
+    // Auto-scroll if user is near bottom (reduced delay)
+    if (isNearBottom()) {
+      setTimeout(scrollToBottom, 50);
+    }
+  }, []);
+
+  const handleDeletedMessage = useCallback(({ messageId }) => {
+    setMessages(prev => prev.map(msg =>
+      msg._id === messageId
+        ? { ...msg, isDeleted: true }
+        : msg
+    ));
+  }, []);
+
+  const handleOnlineCount = useCallback(({ count }) => {
+    setOnlineCount(count);
+  }, []);
+
+  const handleOnlineUsersList = useCallback(({ users }) => {
+    console.log('📥 Lounge: Received online users list', users.length, 'users');
+
+    // Clear timeout if it exists
+    if (socketRef.onlineUsersTimeout) {
+      clearTimeout(socketRef.onlineUsersTimeout);
+      socketRef.onlineUsersTimeout = null;
+    }
+
+    // Update cache
+    setOnlineUsersCache({ users, timestamp: Date.now() });
+
+    setOnlineUsers(users);
+    setLoadingOnlineUsers(false);
+  }, []);
+
+  const handleUserTyping = useCallback(({ userId, isTyping }) => {
+    setTypingUsers(prev => {
+      const newMap = new Map(prev);
+
+      if (isTyping) {
+        // Clear existing timeout for this user
+        if (newMap.has(userId)) {
+          clearTimeout(newMap.get(userId));
+        }
+
+        // Set new timeout to remove typing indicator after 3 seconds
+        const timeout = setTimeout(() => {
+          setTypingUsers(current => {
+            const updated = new Map(current);
+            updated.delete(userId);
+            return updated;
+          });
+        }, 3000);
+
+        newMap.set(userId, timeout);
+      } else {
+        // User stopped typing - delay removal by 500ms to prevent flicker
+        if (newMap.has(userId)) {
+          clearTimeout(newMap.get(userId));
+
+          const removeTimeout = setTimeout(() => {
+            setTypingUsers(current => {
+              const updated = new Map(current);
+              updated.delete(userId);
+              return updated;
+            });
+          }, 500);
+
+          newMap.set(userId, removeTimeout);
+        }
+      }
+
+      return newMap;
+    });
+  }, []);
+
+  const handleSocketError = useCallback((data) => {
+    console.error('❌ Lounge: Socket error', data);
+    setError(data.message);
+    setTimeout(() => setError(''), 5000);
+    setLoadingOnlineUsers(false);
+  }, []);
+
+  const handleTransportUpgrade = useCallback((transport) => {
+    console.log('⚡ Lounge: Transport upgraded to', transport.name);
+  }, []);
+
+  // Socket.IO setup - FIX: Use ref to prevent re-running on handler changes
   useEffect(() => {
     const socket = getSocket();
     socketRef.current = socket;
@@ -144,105 +244,13 @@ function Lounge() {
       transport: socket.io?.engine?.transport?.name || 'unknown'
     });
 
-    // 🔥 FIX: Create named handler functions so we can properly remove them
-    const handleNewMessage = (message) => {
-      console.log('📨 Lounge: Received new message', message);
-
-      // Use functional update for better performance
-      setMessages(prev => {
-        // Check for duplicates (in case of double-emit)
-        if (prev.some(m => m._id === message._id)) {
-          console.warn('⚠️ Duplicate message received, skipping');
-          return prev;
-        }
-        return [...prev, message];
-      });
-
-      // Auto-scroll if user is near bottom (reduced delay)
-      if (isNearBottom()) {
-        setTimeout(scrollToBottom, 50);
-      }
-    };
-
-    const handleDeletedMessage = ({ messageId }) => {
-      setMessages(prev => prev.map(msg =>
-        msg._id === messageId
-          ? { ...msg, isDeleted: true }
-          : msg
-      ));
-    };
-
-    const handleOnlineCount = ({ count }) => {
-      setOnlineCount(count);
-    };
-
-    const handleOnlineUsersList = ({ users }) => {
-      console.log('📥 Lounge: Received online users list', users.length, 'users');
-
-      // Clear timeout if it exists
-      if (socketRef.onlineUsersTimeout) {
-        clearTimeout(socketRef.onlineUsersTimeout);
-        socketRef.onlineUsersTimeout = null;
-      }
-
-      // Update cache
-      setOnlineUsersCache({ users, timestamp: Date.now() });
-
-      setOnlineUsers(users);
-      setLoadingOnlineUsers(false);
-    };
-
-    const handleUserTyping = ({ userId, isTyping }) => {
-      setTypingUsers(prev => {
-        const newMap = new Map(prev);
-
-        if (isTyping) {
-          // Clear existing timeout for this user
-          if (newMap.has(userId)) {
-            clearTimeout(newMap.get(userId));
-          }
-
-          // Set new timeout to remove typing indicator after 3 seconds
-          const timeout = setTimeout(() => {
-            setTypingUsers(current => {
-              const updated = new Map(current);
-              updated.delete(userId);
-              return updated;
-            });
-          }, 3000);
-
-          newMap.set(userId, timeout);
-        } else {
-          // User stopped typing - delay removal by 500ms to prevent flicker
-          if (newMap.has(userId)) {
-            clearTimeout(newMap.get(userId));
-
-            const removeTimeout = setTimeout(() => {
-              setTypingUsers(current => {
-                const updated = new Map(current);
-                updated.delete(userId);
-                return updated;
-              });
-            }, 500);
-
-            newMap.set(userId, removeTimeout);
-          }
-        }
-
-        return newMap;
-      });
-    };
-
-    const handleError = (data) => {
-      console.error('❌ Lounge: Socket error', data);
-      setError(data.message);
-      setTimeout(() => setError(''), 5000);
-      setLoadingOnlineUsers(false);
-    };
-
-    const handleTransportUpgrade = (transport) => {
-      console.log('⚡ Lounge: Transport upgraded to', transport.name);
-    };
+    // 🔥 CRITICAL FIX: Check if listeners are already attached
+    // This prevents duplicate listeners in React StrictMode
+    const listenerCount = socket.listeners('global_message:new').length;
+    if (listenerCount > 0) {
+      console.warn(`⚠️ Lounge: ${listenerCount} listeners already attached, skipping setup`);
+      return;
+    }
 
     // Function to set up listeners
     const setupListeners = () => {
@@ -252,14 +260,16 @@ function Lounge() {
       socket.emit('global_chat:join');
       console.log('📡 Lounge: Emitted global_chat:join');
 
-      // 🔥 FIX: Attach named handlers (can be properly removed)
+      // 🔥 FIX: Attach stable handlers (can be properly removed)
       socket.on('global_message:new', handleNewMessage);
       socket.on('global_message:deleted', handleDeletedMessage);
       socket.on('global_chat:online_count', handleOnlineCount);
       socket.on('global_chat:online_users_list', handleOnlineUsersList);
       socket.on('global_chat:user_typing', handleUserTyping);
-      socket.on('error', handleError);
+      socket.on('error', handleSocketError);
       socket.io.engine.on('upgrade', handleTransportUpgrade);
+
+      console.log('✅ Lounge: Listeners attached. Current count:', socket.listeners('global_message:new').length);
     };
 
     // Set up listeners immediately if connected, or wait for connection
@@ -276,25 +286,28 @@ function Lounge() {
 
     return () => {
       console.log('🧹 Lounge: Cleaning up Socket.IO listeners');
+      console.log('🔍 Before cleanup - listener count:', socket?.listeners('global_message:new').length);
 
-      // 🔥 FIX: Remove specific named handlers to prevent duplicates
+      // 🔥 FIX: Remove specific stable handlers to prevent duplicates
       if (socket && typeof socket.off === 'function') {
         socket.off('global_message:new', handleNewMessage);
         socket.off('global_message:deleted', handleDeletedMessage);
         socket.off('global_chat:online_count', handleOnlineCount);
         socket.off('global_chat:online_users_list', handleOnlineUsersList);
         socket.off('global_chat:user_typing', handleUserTyping);
-        socket.off('error', handleError);
+        socket.off('error', handleSocketError);
 
         if (socket.io?.engine) {
           socket.io.engine.off('upgrade', handleTransportUpgrade);
         }
       }
 
+      console.log('🔍 After cleanup - listener count:', socket?.listeners('global_message:new').length);
+
       // Clear all typing timeouts
       typingUsers.forEach(timeout => clearTimeout(timeout));
     };
-  }, []);
+  }, [handleNewMessage, handleDeletedMessage, handleOnlineCount, handleOnlineUsersList, handleUserTyping, handleSocketError, handleTransportUpgrade]);
 
   // Load more messages (pagination)
   const loadMoreMessages = async () => {
