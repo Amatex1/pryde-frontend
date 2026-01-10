@@ -14,6 +14,7 @@ import '../styles/PausableGif.css';
  */
 const PausableGif = ({ src, alt = 'GIF', className = '', loading = 'lazy' }) => {
   const [isPaused, setIsPaused] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const canvasRef = useRef(null);
   const imgRef = useRef(null);
 
@@ -24,7 +25,7 @@ const PausableGif = ({ src, alt = 'GIF', className = '', loading = 'lazy' }) => 
       // Pause: Capture current frame to canvas
       const img = imgRef.current;
       const canvas = canvasRef.current;
-      
+
       if (img && canvas) {
         const ctx = canvas.getContext('2d');
         canvas.width = img.naturalWidth || img.width;
@@ -36,6 +37,10 @@ const PausableGif = ({ src, alt = 'GIF', className = '', loading = 'lazy' }) => 
     setIsPaused(!isPaused);
   };
 
+  const handleImageLoad = () => {
+    setIsLoaded(true);
+  };
+
   return (
     <div className={`pausable-gif-container ${className}`} onClick={handleClick}>
       {/* Animated GIF (hidden when paused) */}
@@ -44,17 +49,18 @@ const PausableGif = ({ src, alt = 'GIF', className = '', loading = 'lazy' }) => 
         src={src}
         alt={alt}
         loading={loading}
+        onLoad={handleImageLoad}
         className={`pausable-gif ${isPaused ? 'paused' : ''}`}
       />
-      
+
       {/* Static canvas showing frozen frame (visible when paused) */}
       <canvas
         ref={canvasRef}
         className={`pausable-gif-canvas ${isPaused ? 'visible' : ''}`}
       />
-      
-      {/* Play/Pause icon overlay */}
-      {isPaused && (
+
+      {/* Play/Pause icon overlay - only show after image is loaded */}
+      {isPaused && isLoaded && (
         <div className="gif-play-icon">
           <svg
             width="64"
