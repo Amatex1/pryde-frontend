@@ -69,6 +69,7 @@ function Feed() {
   const [commentText, setCommentText] = useState({});
   const [commentGif, setCommentGif] = useState({});
   const [showGifPicker, setShowGifPicker] = useState(null);
+  const [selectedPostGif, setSelectedPostGif] = useState(null); // GIF for main post creation
   const [commentModalOpen, setCommentModalOpen] = useState(null); // Track which post's comment modal is open
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editCommentText, setEditCommentText] = useState('');
@@ -996,7 +997,8 @@ function Feed() {
         visibility: postVisibility,
         contentWarning: contentWarning,
         hideMetrics: hideMetrics,
-        poll: poll
+        poll: poll,
+        gifUrl: selectedPostGif // Include GIF in draft
       };
 
       // Save to localStorage as backup (works offline)
@@ -1034,7 +1036,7 @@ function Feed() {
       // Even if backend fails, localStorage backup is already saved
       setDraftSaveStatus('');
     }
-  }, [newPost, selectedMedia, postVisibility, contentWarning, hideMetrics, poll, currentDraftId]);
+  }, [newPost, selectedMedia, postVisibility, contentWarning, hideMetrics, poll, selectedPostGif, currentDraftId]);
 
   // Auto-save on content change (debounced - not too aggressive)
   useEffect(() => {
@@ -1085,6 +1087,7 @@ function Feed() {
     setContentWarning(draft.contentWarning || '');
     setHideMetrics(draft.hideMetrics || false);
     setPoll(draft.poll || null);
+    setSelectedPostGif(draft.gifUrl || null); // Restore GIF from draft
     setCurrentDraftId(draft._id);
     setShowContentWarning(!!draft.contentWarning);
     setShowPollCreator(!!draft.poll);
@@ -1126,11 +1129,11 @@ function Feed() {
 
   const handlePostSubmit = async (e) => {
     e.preventDefault();
-    // Allow posting with just a poll, or content, or media
+    // Allow posting with just a poll, content, media, or GIF
     // Check if content is empty (only whitespace) but preserve actual spaces/newlines
     const hasContent = newPost && newPost.length > 0 && newPost.trim().length > 0;
-    if (!hasContent && selectedMedia.length === 0 && !poll) {
-      showAlert('Please add some content, media, or a poll to your post', 'Empty Post');
+    if (!hasContent && selectedMedia.length === 0 && !poll && !selectedPostGif) {
+      showAlert('Please add some content, media, GIF, or a poll to your post', 'Empty Post');
       return;
     }
 
@@ -1154,7 +1157,8 @@ function Feed() {
         visibility: postVisibility,
         contentWarning: contentWarning,
         poll: poll, // Include poll data if present
-        hideMetrics: hideMetrics // Include hideMetrics setting
+        hideMetrics: hideMetrics, // Include hideMetrics setting
+        gifUrl: selectedPostGif // Include GIF if selected
       };
 
       // PHASE 1 REFACTOR: Custom privacy removed
@@ -1181,6 +1185,7 @@ function Feed() {
 
       setNewPost('');
       setSelectedMedia([]);
+      setSelectedPostGif(null); // Clear GIF
       setPostVisibility(defaultPostVisibilityRef.current); // Reset to user's default, not hardcoded
       setHiddenFromUsers([]);
       setSharedWithUsers([]);
@@ -2032,13 +2037,23 @@ function Feed() {
                     name="mediaUpload"
                     type="file"
                     multiple
-                    accept="image/*,video/*"
+                    accept="image/*,image/gif,video/*"
                     onChange={handleMediaSelect}
                     disabled={uploadingMedia || selectedMedia.length >= 3}
                     style={{ display: 'none' }}
                   />
                   {uploadingMedia ? `⏳ Uploading... ${uploadProgress}%` : '📷 Add Photos/Videos'}
                 </label>
+
+                <button
+                  type="button"
+                  className="btn-gif"
+                  onClick={() => setShowGifPicker(showGifPicker === 'main-post' ? null : 'main-post')}
+                  disabled={selectedPostGif !== null}
+                  title="Add GIF"
+                >
+                  GIF
+                </button>
 
                 <button
                   type="button"
@@ -2106,6 +2121,31 @@ function Feed() {
                   {loading ? 'Publishing...' : 'Publish ✨'}
                 </button>
               </div>
+
+              {/* GIF Preview */}
+              {selectedPostGif && (
+                <div className="post-gif-preview">
+                  <img src={selectedPostGif} alt="Selected GIF" />
+                  <button
+                    type="button"
+                    className="btn-remove-gif"
+                    onClick={() => setSelectedPostGif(null)}
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+
+              {/* GIF Picker */}
+              {showGifPicker === 'main-post' && (
+                <GifPicker
+                  onGifSelect={(gifUrl) => {
+                    setSelectedPostGif(gifUrl);
+                    setShowGifPicker(null);
+                  }}
+                  onClose={() => setShowGifPicker(null)}
+                />
+              )}
             </form>
           </div>
           )}
@@ -2427,6 +2467,13 @@ function Feed() {
                                           )}
                                         </div>
                                       ))}
+                                    </div>
+                                  )}
+
+                                  {/* Display GIF if present */}
+                                  {post.gifUrl && (!post.contentWarning || !autoHideContentWarnings || revealedPosts[post._id]) && (
+                                    <div className="post-gif">
+                                      <img src={post.gifUrl} alt="GIF" loading="lazy" />
                                     </div>
                                   )}
                                 </>

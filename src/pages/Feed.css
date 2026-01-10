@@ -4558,6 +4558,41 @@ button[data-action="gif"] {
   border-radius: 12px;
 }
 
+/* Post GIF Preview (in composer) */
+.post-gif-preview {
+  position: relative;
+  margin-top: 1rem;
+  max-width: 25rem /* 400px */;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.post-gif-preview img {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+}
+
+/* Post GIF Display (in feed) */
+.post-gif {
+  margin-top: 1rem;
+  max-width: 31.25rem /* 500px */;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.post-gif img {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.post-gif img:hover {
+  transform: scale(1.02);
+}
+
 /* ========================================
    MOBILE SAFETY - REPLY COMPOSER
    ======================================== */
