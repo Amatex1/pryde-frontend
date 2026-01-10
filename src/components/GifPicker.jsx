@@ -46,9 +46,10 @@ const GifPicker = ({ onGifSelect, onClose }) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://tenor.googleapis.com/v2/featured?key=${TENOR_API_KEY}&client_key=${TENOR_CLIENT_KEY}&limit=20`
+        `https://tenor.googleapis.com/v2/featured?key=${TENOR_API_KEY}&client_key=${TENOR_CLIENT_KEY}&limit=20&media_filter=gif,tinygif`
       );
       const data = await response.json();
+      console.log('Tenor API Response:', data); // Debug log
       setGifs(data.results || []);
     } catch (error) {
       console.error('Error fetching trending GIFs:', error);
@@ -66,9 +67,10 @@ const GifPicker = ({ onGifSelect, onClose }) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=${TENOR_API_KEY}&client_key=${TENOR_CLIENT_KEY}&limit=20`
+        `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=${TENOR_API_KEY}&client_key=${TENOR_CLIENT_KEY}&limit=20&media_filter=gif,tinygif`
       );
       const data = await response.json();
+      console.log('Search API Response:', data); // Debug log
       setGifs(data.results || []);
     } catch (error) {
       console.error('Error searching GIFs:', error);
@@ -156,19 +158,33 @@ const GifPicker = ({ onGifSelect, onClose }) => {
           {loading ? (
             <div className="gif-loading">Loading GIFs...</div>
           ) : gifs.length > 0 ? (
-            gifs.map((gif) => (
-              <div
-                key={gif.id}
-                className="gif-item"
-                onClick={() => handleGifClick(gif)}
-              >
-                <img
-                  src={gif.media_formats?.tinygif?.url || gif.media_formats?.gif?.url}
-                  alt={gif.content_description || 'GIF'}
-                  loading="lazy"
-                />
-              </div>
-            ))
+            gifs.map((gif) => {
+              // Try multiple URL formats for compatibility
+              const gifUrl = gif.media_formats?.tinygif?.url ||
+                            gif.media_formats?.gif?.url ||
+                            gif.media?.[0]?.tinygif?.url ||
+                            gif.media?.[0]?.gif?.url;
+
+              console.log('GIF URL:', gifUrl, 'Full GIF object:', gif); // Debug
+
+              return (
+                <div
+                  key={gif.id}
+                  className="gif-item"
+                  onClick={() => handleGifClick(gif)}
+                >
+                  <img
+                    src={gifUrl}
+                    alt={gif.content_description || 'GIF'}
+                    loading="lazy"
+                    onError={(e) => {
+                      console.error('Failed to load GIF:', gifUrl);
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+              );
+            })
           ) : (
             <div className="gif-no-results">No GIFs found</div>
           )}
