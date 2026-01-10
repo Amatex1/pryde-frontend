@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useSearchParams, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import EmojiPicker from '../components/EmojiPicker';
@@ -266,12 +266,23 @@ function Messages() {
       const fetchMessages = async () => {
         try {
           setLoadingMessages(true);
+          const startTime = performance.now();
+
           const endpoint = selectedChatType === 'group'
             ? `/messages/group/${selectedChat}`
             : `/messages/${selectedChat}`;
           logger.debug('📥 Fetching messages from:', endpoint);
-          const response = await api.get(endpoint);
-          logger.debug('✅ Loaded messages:', response.data.length);
+
+          // ⚡ PERFORMANCE: Add limit parameter to reduce initial load
+          const response = await api.get(endpoint, {
+            params: {
+              limit: 50 // Only load last 50 messages initially
+            }
+          });
+
+          const fetchTime = performance.now() - startTime;
+          logger.debug(`✅ Loaded ${response.data.length} messages in ${Math.round(fetchTime)}ms`);
+
           setMessages(response.data);
 
           // Mark all unread messages as read and remove manual unread status
