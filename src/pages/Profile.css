@@ -287,8 +287,6 @@ div.profile-layout,
 
 /* Profile Card - Stability */
 .profile-card {
-  max-width: 960px;
-  margin: -80px auto 0;
   padding: 24px;
   border-radius: 16px;
   background: transparent;
