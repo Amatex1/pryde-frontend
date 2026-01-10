@@ -65,6 +65,7 @@ function Messages() {
   const [groupChats, setGroupChats] = useState([]);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMessages, setLoadingMessages] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [showNewChatModal, setShowNewChatModal] = useState(false);
   const [showNewGroupModal, setShowNewGroupModal] = useState(false);
@@ -236,6 +237,7 @@ function Messages() {
     if (selectedChat) {
       const fetchMessages = async () => {
         try {
+          setLoadingMessages(true);
           const endpoint = selectedChatType === 'group'
             ? `/messages/group/${selectedChat}`
             : `/messages/${selectedChat}`;
@@ -272,6 +274,8 @@ function Messages() {
           }
         } catch (error) {
           logger.error('Error fetching messages:', error);
+        } finally {
+          setLoadingMessages(false);
         }
       };
 
@@ -332,8 +336,16 @@ function Messages() {
         }
       };
 
-      // Clear messages first to show loading state
+      // ✅ Clear messages and user info IMMEDIATELY when switching chats
       setMessages([]);
+      setSelectedUser(null);
+      setSelectedGroup(null);
+      setMessage(''); // Clear input field
+      setSelectedFile(null); // Clear any selected file
+      setSelectedGif(null); // Clear any selected GIF
+      setReplyingTo(null); // Clear reply state
+      setLoadingMessages(true);
+
       fetchMessages();
       fetchChatInfo();
     } else {
@@ -341,8 +353,13 @@ function Messages() {
       setSelectedUser(null);
       setSelectedGroup(null);
       setMessages([]);
+      setMessage('');
+      setSelectedFile(null);
+      setSelectedGif(null);
+      setReplyingTo(null);
       setIsRecipientUnavailable(false);
       setRecipientUnavailableReason('');
+      setLoadingMessages(false);
     }
   }, [selectedChat, selectedChatType]);
 
@@ -1359,6 +1376,14 @@ function Messages() {
                 <div className="chat-messages">
                   {!currentUser ? (
                     <div className="loading-messages">Loading messages...</div>
+                  ) : loadingMessages ? (
+                    <div className="loading-messages">Loading messages...</div>
+                  ) : messages.length === 0 ? (
+                    <div className="empty-chat-state">
+                      <div className="empty-chat-icon">💬</div>
+                      <p>No messages yet</p>
+                      <p className="empty-chat-hint">Start the conversation!</p>
+                    </div>
                   ) : (
                     messages.map((msg, index) => {
                       const isSent = msg.sender._id === currentUser._id;
