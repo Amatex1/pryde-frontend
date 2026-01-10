@@ -205,7 +205,29 @@ function Messages() {
     }
   }, [searchParams, setSearchParams, currentUser]);
 
-  // Fetch conversations and group chats
+  // Define fetchConversations outside useEffect so it can be reused
+  const fetchConversations = async () => {
+    try {
+      const [messagesRes, groupsRes] = await Promise.all([
+        api.get('/messages'),
+        api.get('/groupChats')
+      ]);
+      // Sort conversations by lastMessage timestamp (most recent first)
+      const sortedConversations = [...messagesRes.data].sort((a, b) => {
+        const timeA = a.lastMessage?.createdAt ? new Date(a.lastMessage.createdAt).getTime() : 0;
+        const timeB = b.lastMessage?.createdAt ? new Date(b.lastMessage.createdAt).getTime() : 0;
+        return timeB - timeA;
+      });
+      setConversations(sortedConversations);
+      setGroupChats(groupsRes.data);
+      setLoading(false);
+    } catch (error) {
+      logger.error('Error fetching conversations:', error);
+      setLoading(false);
+    }
+  };
+
+  // Fetch conversations and group chats on mount
   useEffect(() => {
     // 🔒 AUTH GUARD: Wait for auth to be ready before making API calls
     if (!authReady) {
@@ -213,26 +235,6 @@ function Messages() {
       return;
     }
 
-    const fetchConversations = async () => {
-      try {
-        const [messagesRes, groupsRes] = await Promise.all([
-          api.get('/messages'),
-          api.get('/groupChats')
-        ]);
-        // Sort conversations by lastMessage timestamp (most recent first)
-        const sortedConversations = [...messagesRes.data].sort((a, b) => {
-          const timeA = a.lastMessage?.createdAt ? new Date(a.lastMessage.createdAt).getTime() : 0;
-          const timeB = b.lastMessage?.createdAt ? new Date(b.lastMessage.createdAt).getTime() : 0;
-          return timeB - timeA;
-        });
-        setConversations(sortedConversations);
-        setGroupChats(groupsRes.data);
-        setLoading(false);
-      } catch (error) {
-        logger.error('Error fetching conversations:', error);
-        setLoading(false);
-      }
-    };
     fetchConversations();
   }, [authReady]);
 
