@@ -29,6 +29,7 @@ function Lounge() {
   const [showOnlineUsersModal, setShowOnlineUsersModal] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [loadingOnlineUsers, setLoadingOnlineUsers] = useState(false);
+  const [onlineUsersCache, setOnlineUsersCache] = useState({ users: [], timestamp: 0 });
   const [isQuietMode, setIsQuietMode] = useState(document.documentElement.getAttribute('data-quiet') === 'true');
   const [typingUsers, setTypingUsers] = useState(new Map()); // Map of userId -> timeout
   const messagesEndRef = useRef(null);
@@ -199,11 +200,14 @@ function Lounge() {
           socketRef.onlineUsersTimeout = null;
         }
 
+        // Update cache
+        setOnlineUsersCache({ users, timestamp: Date.now() });
+
         setOnlineUsers(users);
         setLoadingOnlineUsers(false);
       });
 
-      // Listen for typing indicator (OPTIMIZED - 1.5s auto-clear)
+      // Listen for typing indicator (OPTIMIZED - 3s auto-clear with debounce)
       socket.on('global_chat:user_typing', ({ userId, isTyping }) => {
         setTypingUsers(prev => {
           const newMap = new Map(prev);
@@ -214,21 +218,30 @@ function Lounge() {
               clearTimeout(newMap.get(userId));
             }
 
-            // Set new timeout to remove typing indicator after 1.5 seconds
+            // Set new timeout to remove typing indicator after 3 seconds
             const timeout = setTimeout(() => {
               setTypingUsers(current => {
                 const updated = new Map(current);
                 updated.delete(userId);
                 return updated;
               });
-            }, 1500);
+            }, 3000);
 
             newMap.set(userId, timeout);
           } else {
-            // User stopped typing
+            // User stopped typing - delay removal by 500ms to prevent flicker
             if (newMap.has(userId)) {
               clearTimeout(newMap.get(userId));
-              newMap.delete(userId);
+
+              const removeTimeout = setTimeout(() => {
+                setTypingUsers(current => {
+                  const updated = new Map(current);
+                  updated.delete(userId);
+                  return updated;
+                });
+              }, 500);
+
+              newMap.set(userId, removeTimeout);
             }
           }
 
@@ -404,6 +417,20 @@ function Lounge() {
     }
 
     setShowOnlineUsersModal(true);
+
+    // Check if we have cached data less than 10 seconds old
+    const now = Date.now();
+    const cacheAge = now - onlineUsersCache.timestamp;
+
+    if (cacheAge < 10000 && onlineUsersCache.users.length > 0) {
+      // Use cached data
+      console.log('📦 Lounge: Using cached online users list');
+      setOnlineUsers(onlineUsersCache.users);
+      setLoadingOnlineUsers(false);
+      return;
+    }
+
+    // Fetch fresh data
     setLoadingOnlineUsers(true);
     setOnlineUsers([]); // Clear previous list
 
@@ -440,18 +467,18 @@ function Lounge() {
     setOnlineUsers([]);
   };
 
-  // Handle typing in input (OPTIMIZED - throttled to max 1 emit per 300ms)
+  // Handle typing in input (OPTIMIZED - throttled to max 1 emit per 1s)
   const handleInputChange = (e) => {
     setNewMessage(e.target.value);
 
     // Emit typing indicator (throttled)
     const socket = socketRef.current;
     if (socket && socket.connected && e.target.value.trim()) {
-      // Only emit if we haven't emitted in the last 300ms
+      // Only emit if we haven't emitted in the last 1 second
       const now = Date.now();
       const lastEmit = socketRef.lastTypingEmit || 0;
 
-      if (now - lastEmit > 300) {
+      if (now - lastEmit > 1000) {
         socket.emit('global_chat:typing', { isTyping: true });
         socketRef.lastTypingEmit = now;
       }
@@ -461,11 +488,20 @@ function Lounge() {
         clearTimeout(typingTimeoutRef.current);
       }
 
-      // Set timeout to stop typing indicator after 1 second of inactivity
+      // Set timeout to stop typing indicator after 2 seconds of inactivity
       typingTimeoutRef.current = setTimeout(() => {
         socket.emit('global_chat:typing', { isTyping: false });
         socketRef.lastTypingEmit = 0;
-      }, 1000);
+      }, 2000);
+    } else if (!e.target.value.trim()) {
+      // If input is empty, immediately stop typing indicator
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      if (socket && socket.connected) {
+        socket.emit('global_chat:typing', { isTyping: false });
+        socketRef.lastTypingEmit = 0;
+      }
     }
   };
 
