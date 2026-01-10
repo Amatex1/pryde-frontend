@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, lazy, Suspense } from 'react';
 import { useSearchParams, useOutletContext } from 'react-router-dom';
-import { FixedSizeList } from 'react-window';
+import { List } from 'react-window';
 import Navbar from '../components/Navbar';
 import CustomModal from '../components/CustomModal';
 import MessageSearch from '../components/MessageSearch';
@@ -1354,7 +1354,7 @@ function Messages() {
                     <>
                       <div className="section-label">Direct Messages</div>
                       {/* ⚡ PERFORMANCE: Virtual scrolling - only renders visible conversations */}
-                      <FixedSizeList
+                      <List
                         height={window.innerHeight - 300} // Dynamic height based on viewport
                         itemCount={filteredConversations.length}
                         itemSize={85} // Height of each conversation item in pixels (matches CSS)
@@ -1362,7 +1362,7 @@ function Messages() {
                         className="virtual-conversation-list"
                       >
                         {ConversationRow}
-                      </FixedSizeList>
+                      </List>
                     </>
                   )}
 
