@@ -1474,11 +1474,19 @@ function Profile() {
       <Navbar onMenuClick={onMenuOpen} />
 
       <div className="profile-container">
-        <div className="profile-header glossy fade-in">
-          <div className="cover-photo">
+        {/*
+          PROFILE HEADER CANON
+          Cover = atmosphere
+          Avatar = identity
+          Card = stability
+          Never change this hierarchy
+        */}
+        <div className="profile-header fade-in">
+          {/* Cover Photo - Atmosphere */}
+          <div className="profile-cover">
             {user.coverPhoto ? (
               <div
-                className="cover-photo-image"
+                className="profile-cover-image"
                 onClick={() => setPhotoViewerImage(getImageUrl(user.coverPhoto))}
                 style={{
                   backgroundImage: `url(${getImageUrl(user.coverPhoto)})`,
@@ -1486,6 +1494,7 @@ function Profile() {
                   backgroundPosition: 'center',
                   width: '100%',
                   height: '100%',
+                  opacity: 0.85,
                   transform: user.coverPhotoPosition
                     ? `translate(${user.coverPhotoPosition.x}px, ${user.coverPhotoPosition.y}px) scale(${user.coverPhotoPosition.scale || 1})`
                     : 'none',
@@ -1494,7 +1503,7 @@ function Profile() {
                 }}
               />
             ) : (
-              <div className="cover-placeholder shimmer"></div>
+              <div className="profile-cover-placeholder"></div>
             )}
             {/* Edit Profile button in top right of cover photo */}
             {isOwnProfile && (
@@ -1512,8 +1521,9 @@ function Profile() {
             <div className="upload-message-banner">{uploadMessage}</div>
           )}
 
-          <div className="profile-info">
-            {/* Photo Upload Buttons - REMOVED: All image editing moved to Edit Profile modal */}
+          {/* Profile Card - Stability */}
+          <div className="profile-card">
+            {/* Avatar - Identity */}
             <div className="profile-avatar">
               {user.profilePhoto ? (
                 <div
@@ -1525,7 +1535,6 @@ function Profile() {
                     backgroundPosition: 'center',
                     width: '100%',
                     height: '100%',
-                    // Only apply transform if position was explicitly set (not default 50,50 or 0,0)
                     transform: user.profilePhotoPosition &&
                       (user.profilePhotoPosition.x !== 50 || user.profilePhotoPosition.y !== 50) &&
                       (user.profilePhotoPosition.x !== 0 || user.profilePhotoPosition.y !== 0 || (user.profilePhotoPosition.scale && user.profilePhotoPosition.scale !== 1))
@@ -1540,19 +1549,26 @@ function Profile() {
               )}
             </div>
 
-            <div className="profile-details">
-              <h1 className="profile-name text-shadow">
+            {/* Identity Stack */}
+            <div className="profile-identity">
+              {/* 1. Display Name (largest) */}
+              <h1 className="profile-name">
                 {user.displayName || user.fullName || user.username}
                 {user.nickname &&
                  user.nickname !== user.displayName &&
                  user.nickname !== user.username &&
                  <span className="nickname"> "{user.nickname}"</span>}
               </h1>
+
+              {/* 2. @handle (muted) */}
               <p className="profile-username">@{user.username}</p>
 
-              {/* PHASE A: Tiered Badge System */}
+              {/* 3. Founder / Creator role (single elegant pill) */}
               <TieredBadgeDisplay badges={user.badges} context="profile" />
 
+              {/* 4. Badges (small muted row) - handled by TieredBadgeDisplay */}
+
+              {/* 5. Pronouns & tags */}
               <div className="profile-identity-pills">
                 {user.pronouns && (
                   <span className="badge">
@@ -1569,7 +1585,6 @@ function Profile() {
                     {user.sexualOrientation.charAt(0).toUpperCase() + user.sexualOrientation.slice(1)}
                   </span>
                 )}
-                {/* DEPRECATED: Relationship Status UI removed 2025-12-26 */}
                 {user.birthday && (
                   <span className="badge">
                     🎂 {(() => {
@@ -1584,11 +1599,40 @@ function Profile() {
                     })()} years old
                   </span>
                 )}
-
               </div>
 
+              {/* 6. Bio */}
               {user.bio && <p className="profile-bio">{sanitizeBio(user.bio)}</p>}
 
+              {/* Meta info (location, website) */}
+              <div className="profile-meta">
+                {user.location && (
+                  <span className="meta-item">📍 {sanitizeText(user.location)}</span>
+                )}
+                {user.website && (
+                  <a href={sanitizeURL(user.website)} target="_blank" rel="noopener noreferrer" className="meta-item">
+                    🔗 {sanitizeText(user.website)}
+                  </a>
+                )}
+              </div>
+
+              {/* Stats */}
+              <div className="profile-stats">
+                <div className="stat-item">
+                  <span className="stat-value">{posts.length}</span>
+                  <span className="stat-label">Posts</span>
+                </div>
+                <Link to={`/profile/${user.username}/followers`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <span className="stat-value">{user.followers?.length || 0}</span>
+                  <span className="stat-label">Followers</span>
+                </Link>
+                <Link to={`/profile/${user.username}/following`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <span className="stat-value">{user.following?.length || 0}</span>
+                  <span className="stat-label">Following</span>
+                </Link>
+              </div>
+
+              {/* Action Buttons */}
               {/* Notes to self button - own profile only */}
               {isOwnProfile && (
                 <div className="profile-action-buttons self-profile-actions">
@@ -1672,34 +1716,9 @@ function Profile() {
                   </div>
                 </div>
               )}
-
-              <div className="profile-meta">
-                {user.location && (
-                  <span className="meta-item">📍 {sanitizeText(user.location)}</span>
-                )}
-                {user.website && (
-                  <a href={sanitizeURL(user.website)} target="_blank" rel="noopener noreferrer" className="meta-item">
-                    🔗 {sanitizeText(user.website)}
-                  </a>
-                )}
-              </div>
-
-              <div className="profile-stats">
-                <div className="stat-item">
-                  <span className="stat-value">{posts.length}</span>
-                  <span className="stat-label">Posts</span>
-                </div>
-                <Link to={`/profile/${user.username}/followers`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <span className="stat-value">{user.followers?.length || 0}</span>
-                  <span className="stat-label">Followers</span>
-                </Link>
-                <Link to={`/profile/${user.username}/following`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <span className="stat-value">{user.following?.length || 0}</span>
-                  <span className="stat-label">Following</span>
-                </Link>
-              </div>
             </div>
           </div>
+        </div>
 
           {/* Mobile Sidebar - Shown under cover photo on mobile only */}
           {isOwnProfile && activeTab === 'posts' && (
