@@ -166,9 +166,9 @@ function Journal() {
         tags: tagsArray
       });
 
-      // Don't delete draft on successful post - preserve for multiple drafts
-      // Users can manage drafts via draft manager
+      // Delete draft after successful post to prevent duplicates
       if (currentDraftId) {
+        deleteDraft(currentDraftId);
         setCurrentDraftId(null);
       }
 

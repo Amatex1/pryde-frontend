@@ -955,23 +955,7 @@ function Feed() {
     }
   };
 
-  // Track if content was cleared to detect fresh starts
-  // When user clears all content, we set this flag. Next time they type, we create a new draft.
-  const contentWasClearedRef = useRef(false);
-  const previousHasContentRef = useRef(false);
 
-  // Detect when content is cleared - reset draft ID for next save
-  useEffect(() => {
-    const hasContent = !!(newPost.trim() || selectedMedia.length > 0);
-
-    // If we had content before but now we don't, mark as cleared
-    if (previousHasContentRef.current && !hasContent) {
-      contentWasClearedRef.current = true;
-      logger.debug('📝 Content cleared - next save will create new draft');
-    }
-
-    previousHasContentRef.current = hasContent;
-  }, [newPost, selectedMedia]);
 
   // Auto-save draft
   const autoSaveDraft = useCallback(async () => {
@@ -1003,19 +987,9 @@ function Feed() {
     try {
       setDraftSaveStatus('saving');
 
-      // Detect "fresh start": user cleared content and is now typing new content
-      // In this case, create a new draft instead of updating the old one
-      let draftIdToUse = currentDraftId;
-      if (currentDraftId && contentWasClearedRef.current) {
-        // User cleared previous draft and started fresh - create new draft
-        logger.debug('🆕 Fresh start detected - creating new draft instead of updating');
-        draftIdToUse = null;
-        contentWasClearedRef.current = false; // Reset flag
-        // Note: Old draft remains in database for recovery, user can delete via draft manager
-      }
-
+      // Always update existing draft if we have one, or create new if we don't
       const draftData = {
-        draftId: draftIdToUse,
+        draftId: currentDraftId,
         draftType: 'post',
         content: newPost,
         media: selectedMedia,
@@ -1196,14 +1170,13 @@ function Feed() {
       const response = await api.post('/posts', postData);
       setPosts([response.data, ...posts]);
 
-      // Don't delete draft on successful post - preserve for recovery/multiple drafts
-      // Users can manage drafts via draft manager
-      // Just reset the current draft ID so next post creates a new draft
+      // Delete draft after successful post to prevent duplicates
       if (currentDraftId) {
+        deleteDraft(currentDraftId);
         setCurrentDraftId(null);
       }
 
-      // Clear localStorage draft (local backup only, backend draft preserved)
+      // Clear localStorage draft
       clearDraft('feed-create-post');
 
       setNewPost('');
