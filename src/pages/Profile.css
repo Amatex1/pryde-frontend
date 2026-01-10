@@ -291,8 +291,8 @@ div.profile-layout,
   margin: -80px auto 0;
   padding: 24px;
   border-radius: 16px;
-  background: var(--surface-1, var(--bg-card));
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  background: transparent;
+  box-shadow: none;
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 24px;
@@ -300,7 +300,7 @@ div.profile-layout,
 }
 
 [data-theme="dark"] .profile-card {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: none;
 }
 
 /* Mobile: Single column layout */
