@@ -19,6 +19,8 @@ import TieredBadgeDisplay from '../components/TieredBadgeDisplay';
 import PostHeader from '../components/PostHeader';
 // DEPRECATED: EditHistoryModal import removed 2025-12-26
 import Poll from '../components/Poll';
+import GifPicker from '../components/GifPicker';
+import PollCreator from '../components/PollCreator';
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
@@ -85,6 +87,10 @@ function Profile() {
   const [contentWarning, setContentWarning] = useState('');
   const [showContentWarning, setShowContentWarning] = useState(false);
   const [postLoading, setPostLoading] = useState(false);
+  const [selectedPostGif, setSelectedPostGif] = useState(null); // GIF for main post creation
+  const [showGifPicker, setShowGifPicker] = useState(false); // Show/hide GIF picker
+  const [poll, setPoll] = useState(null); // Poll data for new post
+  const [showPollCreator, setShowPollCreator] = useState(false); // Show/hide poll creator
   const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
   const { toasts, showToast, removeToast } = useToast();
   const actionsMenuRef = useRef(null);
@@ -787,9 +793,20 @@ function Profile() {
 
   const handlePostSubmit = async (e) => {
     e.preventDefault();
-    if (!newPost.trim() && selectedMedia.length === 0) {
-      showAlert('Please add some content or media to your post', 'Empty Post');
+    // Allow posting with just a poll, content, media, or GIF
+    const hasContent = newPost && newPost.length > 0 && newPost.trim().length > 0;
+    if (!hasContent && selectedMedia.length === 0 && !poll && !selectedPostGif) {
+      showAlert('Please add some content, media, GIF, or a poll to your post', 'Empty Post');
       return;
+    }
+
+    // If poll is present, require at least 2 options with text
+    if (poll && poll.options) {
+      const validOptions = poll.options.filter(opt => opt.trim() !== '');
+      if (validOptions.length < 2) {
+        showAlert('Poll must have at least 2 options', 'Invalid Poll');
+        return;
+      }
     }
 
     setPostLoading(true);
@@ -801,7 +818,9 @@ function Profile() {
         content: contentWithEmojis,
         media: selectedMedia,
         visibility: postVisibility,
-        contentWarning: contentWarning
+        contentWarning: contentWarning,
+        poll: poll, // Include poll data if present
+        gifUrl: selectedPostGif // Include GIF if selected
       };
 
       const response = await api.post('/posts', postData);
@@ -812,6 +831,9 @@ function Profile() {
 
       setNewPost('');
       setSelectedMedia([]);
+      setSelectedPostGif(null); // Clear GIF
+      setPoll(null); // Clear poll
+      setShowPollCreator(false); // Hide poll creator
       setPostVisibility(defaultPostVisibilityRef.current); // Reset to user's default
       setContentWarning('');
       setShowContentWarning(false);
@@ -1998,6 +2020,25 @@ function Profile() {
 
                     <button
                       type="button"
+                      className="btn-gif"
+                      onClick={() => setShowGifPicker(!showGifPicker)}
+                      disabled={selectedPostGif !== null}
+                      title="Add GIF"
+                    >
+                      GIF
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`btn-poll ${showPollCreator ? 'active' : ''}`}
+                      onClick={() => setShowPollCreator(!showPollCreator)}
+                      title="Add poll"
+                    >
+                      📊 Poll
+                    </button>
+
+                    <button
+                      type="button"
                       className={`btn-content-warning ${showContentWarning ? 'active' : ''}`}
                       onClick={() => setShowContentWarning(!showContentWarning)}
                       title="Add content warning"
@@ -2022,6 +2063,39 @@ function Profile() {
                       {postLoading ? 'Publishing...' : 'Publish ✨'}
                     </button>
                   </div>
+
+                  {/* Poll Creator */}
+                  {showPollCreator && (
+                    <PollCreator
+                      onPollChange={setPoll}
+                      initialPoll={poll}
+                    />
+                  )}
+
+                  {/* GIF Preview */}
+                  {selectedPostGif && (
+                    <div className="post-gif-preview">
+                      <img src={selectedPostGif} alt="Selected GIF" />
+                      <button
+                        type="button"
+                        className="btn-remove-gif"
+                        onClick={() => setSelectedPostGif(null)}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
+
+                  {/* GIF Picker */}
+                  {showGifPicker && (
+                    <GifPicker
+                      onGifSelect={(gifUrl) => {
+                        setSelectedPostGif(gifUrl);
+                        setShowGifPicker(false);
+                      }}
+                      onClose={() => setShowGifPicker(false)}
+                    />
+                  )}
                 </form>
               </div>
             )}
@@ -2670,6 +2744,21 @@ function Profile() {
           onClose={() => setReactionDetailsModal({ isOpen: false, targetType: null, targetId: null })}
         />
       )}
+
+      {/* Modal for confirmations (delete post, etc.) */}
+      <CustomModal
+        isOpen={modalState.isOpen}
+        onClose={closeModal}
+        type={modalState.type}
+        title={modalState.title}
+        message={modalState.message}
+        placeholder={modalState.placeholder}
+        confirmText={modalState.confirmText}
+        cancelText={modalState.cancelText}
+        onConfirm={modalState.onConfirm}
+        inputType={modalState.inputType}
+        defaultValue={modalState.defaultValue}
+      />
 
       {/* REMOVED: PhotoRepositionModal - All image editing moved to Edit Profile modal */}
 
