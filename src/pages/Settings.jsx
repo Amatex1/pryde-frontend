@@ -479,6 +479,40 @@ function Settings() {
             />
           </div>
 
+          {/* Email Verification Section */}
+          <div className="settings-section">
+            <h2 className="section-title">📧 Email Verification</h2>
+            {currentUser?.emailVerified ? (
+              <div className="verification-verified">
+                <div className="verified-icon">✓</div>
+                <div className="verified-text">
+                  <h3>Email Verified</h3>
+                  <p>Your email address has been verified. You have full access to all features.</p>
+                </div>
+              </div>
+            ) : (
+              <div className="verification-info">
+                <p>
+                  Please verify your email address to create posts and comments.
+                  Check your inbox for the verification link.
+                </p>
+                <button
+                  onClick={async () => {
+                    try {
+                      await api.post('/auth/resend-verification');
+                      showAlert('Verification email sent! Check your inbox.', 'Success');
+                    } catch (error) {
+                      showAlert(error.response?.data?.message || 'Failed to send verification email', 'Error');
+                    }
+                  }}
+                  className="btn-verification"
+                >
+                  Resend Verification Email
+                </button>
+              </div>
+            )}
+          </div>
+
           {/* NOTE: Verification Request Section removed 2025-12-26
               The verification system has been intentionally removed.
               Endpoint returns 410 Gone. */}

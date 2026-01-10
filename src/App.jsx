@@ -83,6 +83,7 @@ const InviteRequired = lazyWithReload(() => import('./pages/InviteRequired')); /
 const Footer = lazyWithReload(() => import('./components/Footer'));
 const ForgotPassword = lazyWithReload(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazyWithReload(() => import('./pages/ResetPassword'));
+const VerifyEmail = lazyWithReload(() => import('./pages/VerifyEmail'));
 const Feed = lazyWithReload(() => import('./pages/Feed'));
 const FeedController = lazyWithReload(() => import('./features/feed/FeedController')); // New layout system
 const FollowingFeed = lazyWithReload(() => import('./pages/FollowingFeed'));
@@ -383,6 +384,7 @@ function AppContent() {
                     authLoading ? <PageLoader /> :
                     !isAuth ? <ResetPassword /> : <Navigate to="/feed" />
                   } />
+                  <Route path="/verify-email" element={<VerifyEmail />} />
 
                   {/* Reactivate Account */}
                   <Route path="/reactivate" element={

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useSearchParams, useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import PasskeyBanner from '../components/PasskeyBanner';
+import EmailVerificationBanner from '../components/EmailVerificationBanner';
 import ReportModal from '../components/ReportModal';
 import PhotoViewer from '../components/PhotoViewer';
 import CustomModal from '../components/CustomModal';
@@ -1904,6 +1905,7 @@ function Feed() {
       onTouchEnd={handleTouchEnd}
     >
       <Navbar onMenuClick={onMenuOpen} />
+      <EmailVerificationBanner />
       <PasskeyBanner />
 
       {/* One Header Rule: quiet in-content title, first-visit only */}

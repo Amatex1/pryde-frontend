@@ -391,8 +391,12 @@ function Register({ setIsAuth }) {
         {showPasskeySetup ? (
           <div className="passkey-setup-container">
             <div className="passkey-setup-info">
-              <h3>Your account is ready</h3>
-              <p>You can add a passkey for faster sign-in, or skip this for now.</p>
+              <h3>Your account is ready! 🎉</h3>
+              <p style={{ marginBottom: '1rem' }}>
+                <strong>📧 Check your email</strong> - We've sent you a verification link.
+                You'll need to verify your email to create posts and comments.
+              </p>
+              <p>You can also add a passkey for faster sign-in, or skip this for now.</p>
             </div>
 
             <PasskeySetup
