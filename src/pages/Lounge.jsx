@@ -136,12 +136,27 @@ function Lounge() {
     const socket = getSocket();
     socketRef.current = socket;
 
-    if (socket && typeof socket.on === 'function' && typeof socket.emit === 'function') {
+    if (!socket) {
+      console.error('❌ Socket not initialized in Lounge');
+      return;
+    }
+
+    console.log('🔌 Lounge: Socket initialized', {
+      connected: socket.connected,
+      id: socket.id
+    });
+
+    // Function to set up listeners
+    const setupListeners = () => {
+      console.log('📡 Lounge: Setting up Socket.IO listeners');
+
       // Join global chat room
       socket.emit('global_chat:join');
+      console.log('📡 Lounge: Emitted global_chat:join');
 
       // Listen for new messages
       socket.on('global_message:new', (message) => {
+        console.log('📨 Lounge: Received new message', message);
         setMessages(prev => [...prev, message]);
 
         // Auto-scroll if user is near bottom
@@ -205,13 +220,27 @@ function Lounge() {
 
       // Handle errors
       socket.on('error', (data) => {
+        console.error('❌ Lounge: Socket error', data);
         setError(data.message);
         setTimeout(() => setError(''), 5000);
         setLoadingOnlineUsers(false);
       });
+    };
+
+    // Set up listeners immediately if connected, or wait for connection
+    if (socket.connected) {
+      console.log('✅ Lounge: Socket already connected, setting up listeners');
+      setupListeners();
+    } else {
+      console.log('⏳ Lounge: Socket not connected yet, waiting...');
+      socket.once('connect', () => {
+        console.log('✅ Lounge: Socket connected, setting up listeners');
+        setupListeners();
+      });
     }
 
     return () => {
+      console.log('🧹 Lounge: Cleaning up Socket.IO listeners');
       if (socket && typeof socket.off === 'function') {
         socket.off('global_message:new');
         socket.off('global_message:deleted');
@@ -278,14 +307,32 @@ function Lounge() {
       setSending(true);
       setError('');
 
-      // Send via Socket.IO for real-time delivery
-      if (socketRef.current) {
-        socketRef.current.emit('global_message:send', {
-          text: newMessage.trim() || '',
-          gifUrl: selectedGif || null,
-          contentWarning: contentWarning.trim() || null
-        });
+      const socket = socketRef.current;
+
+      if (!socket) {
+        console.error('❌ Lounge: Socket not available');
+        setError('Connection error. Please refresh the page.');
+        setTimeout(() => setError(''), 5000);
+        return;
       }
+
+      if (!socket.connected) {
+        console.error('❌ Lounge: Socket not connected');
+        setError('Not connected. Please check your internet connection.');
+        setTimeout(() => setError(''), 5000);
+        return;
+      }
+
+      const messageData = {
+        text: newMessage.trim() || '',
+        gifUrl: selectedGif || null,
+        contentWarning: contentWarning.trim() || null
+      };
+
+      console.log('📤 Lounge: Sending message via Socket.IO', messageData);
+
+      // Send via Socket.IO for real-time delivery
+      socket.emit('global_message:send', messageData);
 
       // Clear localStorage draft
       clearDraft('lounge-message');
@@ -295,8 +342,10 @@ function Lounge() {
       setSelectedGif(null);
       setContentWarning('');
       setShowCWInput(false);
+
+      console.log('✅ Lounge: Message sent successfully');
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('❌ Lounge: Error sending message:', error);
       setError('Failed to send message');
       setTimeout(() => setError(''), 5000);
     } finally {
