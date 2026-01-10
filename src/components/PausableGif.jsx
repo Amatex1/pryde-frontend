@@ -3,10 +3,11 @@ import '../styles/PausableGif.css';
 
 /**
  * PausableGif Component
- * 
+ *
  * Displays a GIF with click-to-pause functionality
  * Shows a play/pause icon overlay when paused
- * 
+ * Shows a fallback when the GIF fails to load
+ *
  * @param {string} src - GIF URL
  * @param {string} alt - Alt text for accessibility
  * @param {string} className - Additional CSS classes
@@ -15,11 +16,14 @@ import '../styles/PausableGif.css';
 const PausableGif = ({ src, alt = 'GIF', className = '', loading = 'lazy' }) => {
   const [isPaused, setIsPaused] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const canvasRef = useRef(null);
   const imgRef = useRef(null);
 
   const handleClick = (e) => {
     e.stopPropagation(); // Prevent triggering parent click handlers
+
+    if (hasError) return; // Don't toggle pause on broken images
 
     if (!isPaused) {
       // Pause: Capture current frame to canvas
@@ -39,7 +43,25 @@ const PausableGif = ({ src, alt = 'GIF', className = '', loading = 'lazy' }) => 
 
   const handleImageLoad = () => {
     setIsLoaded(true);
+    setHasError(false);
   };
+
+  const handleImageError = () => {
+    setHasError(true);
+    setIsLoaded(false);
+  };
+
+  // Show fallback for broken GIFs
+  if (hasError) {
+    return (
+      <div className={`pausable-gif-container gif-error ${className}`}>
+        <div className="gif-error-content">
+          <span className="gif-error-icon">🎞️</span>
+          <span className="gif-error-text">GIF unavailable</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`pausable-gif-container ${className}`} onClick={handleClick}>
@@ -50,6 +72,7 @@ const PausableGif = ({ src, alt = 'GIF', className = '', loading = 'lazy' }) => 
         alt={alt}
         loading={loading}
         onLoad={handleImageLoad}
+        onError={handleImageError}
         className={`pausable-gif ${isPaused ? 'paused' : ''}`}
       />
 

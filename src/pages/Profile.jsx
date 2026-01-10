@@ -871,10 +871,46 @@ function Profile() {
   const fetchCommentsForPost = async (postId) => {
     try {
       const response = await api.get(`/posts/${postId}/comments`);
+      const comments = response.data || [];
       setPostComments(prev => ({
         ...prev,
-        [postId]: response.data
+        [postId]: comments
       }));
+
+      // Auto-fetch and show replies for comments that have them
+      const commentsWithReplies = comments.filter(c => c.replyCount > 0);
+      if (commentsWithReplies.length > 0) {
+        // Fetch all replies in parallel
+        const replyPromises = commentsWithReplies.map(async (comment) => {
+          try {
+            const replyResponse = await api.get(`/comments/${comment._id}/replies`);
+            return { commentId: comment._id, replies: replyResponse.data || [] };
+          } catch (err) {
+            logger.error(`Failed to fetch replies for comment ${comment._id}:`, err);
+            return { commentId: comment._id, replies: [] };
+          }
+        });
+
+        const replyResults = await Promise.all(replyPromises);
+
+        // Batch update replies state
+        setCommentReplies(prev => {
+          const updated = { ...prev };
+          replyResults.forEach(({ commentId, replies }) => {
+            updated[commentId] = replies;
+          });
+          return updated;
+        });
+
+        // Auto-show all replies
+        setShowReplies(prev => {
+          const updated = { ...prev };
+          commentsWithReplies.forEach(comment => {
+            updated[comment._id] = true;
+          });
+          return updated;
+        });
+      }
     } catch (error) {
       logger.error('Failed to fetch comments:', error);
     }
