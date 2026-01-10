@@ -3604,13 +3604,144 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .profile-name {
     font-size: 1.5rem;
   }
-  
+
   .profile-stats {
     gap: 1.5rem;
   }
-  
+
   .stat-value {
     font-size: 1.125rem;
   }
 }
 
+
+/* ==============================================
+   HYBRID A + C: Desktop Profile Header Redesign
+   Facebook-style avatar overlap + Pryde identity card
+   Only applies at viewport >= 1025px
+   ============================================== */
+
+@media (min-width: 1025px) {
+  /* Profile Header Container */
+  .profile-header {
+    position: relative;
+    padding-bottom: 24px;
+    overflow: visible;
+  }
+
+  /* Cover Photo - Reduced visual dominance */
+  .profile-cover {
+    height: 240px;
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
+  }
+
+  /* Profile Card - Horizontal layout container */
+  .profile-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    position: relative;
+    padding: 0 24px;
+  }
+
+  /* Avatar - Overlaps cover from bottom-left */
+  .profile-avatar {
+    position: absolute;
+    top: -48px;
+    left: 32px;
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    border: 4px solid var(--surface-1, var(--bg-card));
+    background: var(--surface-1, var(--bg-card));
+    z-index: 3;
+    flex-shrink: 0;
+  }
+
+  [data-theme="dark"] .profile-avatar {
+    border-color: var(--bg-secondary, #1a1a2e);
+    background: var(--bg-secondary, #1a1a2e);
+  }
+
+  /* Identity Stack - Positioned to right of avatar */
+  .profile-identity {
+    margin-left: 160px; /* Avatar width + gap */
+    margin-top: -20px;
+    flex: 1;
+    align-items: flex-start;
+  }
+
+  /* Identity Card - Glass morphism container */
+  .profile-identity-card {
+    padding: 20px 24px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+  }
+
+  [data-theme="dark"] .profile-identity-card {
+    background: rgba(18, 18, 30, 0.85);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Name - Compact spacing */
+  .profile-identity-card .profile-name {
+    margin-bottom: 4px;
+    font-size: 1.75rem;
+  }
+
+  /* Handle - Muted appearance */
+  .profile-identity-card .profile-username {
+    margin-bottom: 8px;
+    opacity: 0.7;
+  }
+
+  /* Badges - Compact row */
+  .profile-identity-card .tiered-badge-display {
+    margin-bottom: 10px;
+  }
+
+  /* Bio - Readable line height */
+  .profile-identity-card .profile-bio {
+    margin-top: 8px;
+    line-height: 1.45;
+    max-width: 100%;
+    padding: 0;
+  }
+
+  /* Meta info inside card */
+  .profile-identity-card .profile-meta {
+    margin-top: 8px;
+  }
+
+  /* Stats - Secondary visual weight, inside card */
+  .profile-identity-card .profile-stats {
+    display: flex;
+    gap: 24px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.1));
+    font-size: 0.9rem;
+    opacity: 0.85;
+    justify-content: flex-start;
+  }
+
+  [data-theme="dark"] .profile-identity-card .profile-stats {
+    border-top-color: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Action buttons outside the card */
+  .profile-identity .profile-action-buttons {
+    margin-top: 16px;
+    margin-left: 0;
+  }
+
+  /* Content area - Reduce vertical waste */
+  .profile-content {
+    margin-top: 24px;
+  }
+}

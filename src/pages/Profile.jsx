@@ -1571,87 +1571,89 @@ function Profile() {
               )}
             </div>
 
-            {/* Identity Stack */}
+            {/* Identity Stack - wrapped in identity card for desktop hybrid layout */}
             <div className="profile-identity">
-              {/* 1. Display Name (largest) */}
-              <h1 className="profile-name">
-                {user.displayName || user.fullName || user.username}
-                {user.nickname &&
-                 user.nickname !== user.displayName &&
-                 user.nickname !== user.username &&
-                 <span className="nickname"> "{user.nickname}"</span>}
-              </h1>
+              <div className="profile-identity-card">
+                {/* 1. Display Name (largest) */}
+                <h1 className="profile-name">
+                  {user.displayName || user.fullName || user.username}
+                  {user.nickname &&
+                   user.nickname !== user.displayName &&
+                   user.nickname !== user.username &&
+                   <span className="nickname"> "{user.nickname}"</span>}
+                </h1>
 
-              {/* 2. @handle (muted) */}
-              <p className="profile-username">@{user.username}</p>
+                {/* 2. @handle (muted) */}
+                <p className="profile-username">@{user.username}</p>
 
-              {/* 3. Founder / Creator role (single elegant pill) */}
-              <TieredBadgeDisplay badges={user.badges} context="profile" />
+                {/* 3. Founder / Creator role (single elegant pill) */}
+                <TieredBadgeDisplay badges={user.badges} context="profile" />
 
-              {/* 4. Badges (small muted row) - handled by TieredBadgeDisplay */}
+                {/* 4. Badges (small muted row) - handled by TieredBadgeDisplay */}
 
-              {/* 5. Pronouns & tags */}
-              <div className="profile-identity-pills">
-                {user.pronouns && (
-                  <span className="badge">
-                    {user.pronouns.charAt(0).toUpperCase() + user.pronouns.slice(1)}
-                  </span>
-                )}
-                {user.gender && (
-                  <span className="badge">
-                    {user.gender.charAt(0).toUpperCase() + user.gender.slice(1)}
-                  </span>
-                )}
-                {user.sexualOrientation && (
-                  <span className="badge">
-                    {user.sexualOrientation.charAt(0).toUpperCase() + user.sexualOrientation.slice(1)}
-                  </span>
-                )}
-                {user.birthday && (
-                  <span className="badge">
-                    🎂 {(() => {
-                      const birthDate = new Date(user.birthday);
-                      const today = new Date();
-                      let age = today.getFullYear() - birthDate.getFullYear();
-                      const monthDiff = today.getMonth() - birthDate.getMonth();
-                      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                        age--;
-                      }
-                      return age;
-                    })()} years old
-                  </span>
-                )}
-              </div>
-
-              {/* 6. Bio */}
-              {user.bio && <p className="profile-bio">{sanitizeBio(user.bio)}</p>}
-
-              {/* Meta info (location, website) */}
-              <div className="profile-meta">
-                {user.location && (
-                  <span className="meta-item">📍 {sanitizeText(user.location)}</span>
-                )}
-                {user.website && (
-                  <a href={sanitizeURL(user.website)} target="_blank" rel="noopener noreferrer" className="meta-item">
-                    🔗 {sanitizeText(user.website)}
-                  </a>
-                )}
-              </div>
-
-              {/* Stats */}
-              <div className="profile-stats">
-                <div className="stat-item">
-                  <span className="stat-value">{posts.length}</span>
-                  <span className="stat-label">Posts</span>
+                {/* 5. Pronouns & tags */}
+                <div className="profile-identity-pills">
+                  {user.pronouns && (
+                    <span className="badge">
+                      {user.pronouns.charAt(0).toUpperCase() + user.pronouns.slice(1)}
+                    </span>
+                  )}
+                  {user.gender && (
+                    <span className="badge">
+                      {user.gender.charAt(0).toUpperCase() + user.gender.slice(1)}
+                    </span>
+                  )}
+                  {user.sexualOrientation && (
+                    <span className="badge">
+                      {user.sexualOrientation.charAt(0).toUpperCase() + user.sexualOrientation.slice(1)}
+                    </span>
+                  )}
+                  {user.birthday && (
+                    <span className="badge">
+                      🎂 {(() => {
+                        const birthDate = new Date(user.birthday);
+                        const today = new Date();
+                        let age = today.getFullYear() - birthDate.getFullYear();
+                        const monthDiff = today.getMonth() - birthDate.getMonth();
+                        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                          age--;
+                        }
+                        return age;
+                      })()} years old
+                    </span>
+                  )}
                 </div>
-                <Link to={`/profile/${user.username}/followers`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <span className="stat-value">{user.followers?.length || 0}</span>
-                  <span className="stat-label">Followers</span>
-                </Link>
-                <Link to={`/profile/${user.username}/following`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <span className="stat-value">{user.following?.length || 0}</span>
-                  <span className="stat-label">Following</span>
-                </Link>
+
+                {/* 6. Bio */}
+                {user.bio && <p className="profile-bio">{sanitizeBio(user.bio)}</p>}
+
+                {/* Meta info (location, website) */}
+                <div className="profile-meta">
+                  {user.location && (
+                    <span className="meta-item">📍 {sanitizeText(user.location)}</span>
+                  )}
+                  {user.website && (
+                    <a href={sanitizeURL(user.website)} target="_blank" rel="noopener noreferrer" className="meta-item">
+                      🔗 {sanitizeText(user.website)}
+                    </a>
+                  )}
+                </div>
+
+                {/* Stats */}
+                <div className="profile-stats">
+                  <div className="stat-item">
+                    <span className="stat-value">{posts.length}</span>
+                    <span className="stat-label">Posts</span>
+                  </div>
+                  <Link to={`/profile/${user.username}/followers`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <span className="stat-value">{user.followers?.length || 0}</span>
+                    <span className="stat-label">Followers</span>
+                  </Link>
+                  <Link to={`/profile/${user.username}/following`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <span className="stat-value">{user.following?.length || 0}</span>
+                    <span className="stat-label">Following</span>
+                  </Link>
+                </div>
               </div>
 
               {/* Action Buttons */}
