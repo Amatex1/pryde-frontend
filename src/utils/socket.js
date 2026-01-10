@@ -9,8 +9,11 @@ let socket = null;
 let isLoggingOut = false; // Flag to prevent reconnection during logout
 
 // Initialize socket with userId (Blink expects this)
+// Returns socket instance or null (never undefined)
 export const initializeSocket = (userId) => {
-    return connectSocket(userId);
+    const result = connectSocket(userId);
+    // Ensure we never return undefined - always return null or socket
+    return result !== undefined ? result : null;
 };
 
 // Connect socket
