@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import OptimizedImage from './OptimizedImage';
 import ReactionButton from './ReactionButton';
 import TieredBadgeDisplay from './TieredBadgeDisplay';
+import PausableGif from './PausableGif';
 import { getImageUrl } from '../utils/imageUrl';
 import { sanitizeContent } from '../utils/sanitize';
 import '../pages/Feed.css';
@@ -202,7 +203,7 @@ const CommentThread = ({
                   <p className="comment-text">{sanitizeContent(comment.content)}</p>
                   {comment.gifUrl && (
                     <div className="comment-gif">
-                      <img src={comment.gifUrl} alt="GIF" />
+                      <PausableGif src={comment.gifUrl} alt="GIF" />
                     </div>
                   )}
                 </>

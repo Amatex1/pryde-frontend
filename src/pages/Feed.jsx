@@ -17,6 +17,7 @@ import PollCreator from '../components/PollCreator';
 import Poll from '../components/Poll';
 import PinnedPostBadge from '../components/PinnedPostBadge';
 import PostHeader from '../components/PostHeader';
+import PausableGif from '../components/PausableGif';
 import { useBadges } from '../hooks/useBadges';
 // DEPRECATED: EditHistoryModal import removed 2025-12-26
 import DraftManager from '../components/DraftManager';
@@ -2479,7 +2480,7 @@ function Feed() {
                                   {/* Display GIF if present */}
                                   {post.gifUrl && (!post.contentWarning || !autoHideContentWarnings || revealedPosts[post._id]) && (
                                     <div className="post-gif">
-                                      <img src={post.gifUrl} alt="GIF" loading="lazy" />
+                                      <PausableGif src={post.gifUrl} alt="GIF" loading="lazy" />
                                     </div>
                                   )}
                                 </>
