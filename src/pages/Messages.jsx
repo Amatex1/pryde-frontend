@@ -179,15 +179,37 @@ function Messages() {
     }
   }, [selectedChat, selectedChatType]);
 
-  // Log socket connection status on mount
+  // Log socket connection status on mount and periodically check
   useEffect(() => {
-    logger.debug('🔌 Socket connection status:', isSocketConnected());
-    const socket = getSocket();
-    if (socket) {
-      logger.debug('✅ Socket instance exists');
-    } else {
-      logger.error('❌ Socket instance not found!');
-    }
+    const checkSocket = () => {
+      const socket = getSocket();
+      const connected = isSocketConnected();
+      logger.debug('🔌 Socket status check:', {
+        exists: !!socket,
+        connected,
+        socketId: socket?.id
+      });
+
+      if (!socket) {
+        logger.error('❌ Socket instance not found! Messages will not work in real-time.');
+      } else if (!connected) {
+        logger.warn('⚠️ Socket exists but not connected. Waiting for connection...');
+      } else {
+        logger.debug('✅ Socket connected and ready');
+      }
+    };
+
+    // Check immediately
+    checkSocket();
+
+    // Check every 5 seconds for the first minute
+    const interval = setInterval(checkSocket, 5000);
+    const timeout = setTimeout(() => clearInterval(interval), 60000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
   }, []);
 
   // Check for chat parameter in URL and open that chat
@@ -502,6 +524,13 @@ function Messages() {
         setMessages((prev) => [...prev, response.data]);
       } else {
         // Check if socket is connected
+        const socket = getSocket();
+        if (!socket) {
+          logger.error('❌ Socket not initialized!');
+          alert('Connection not established. Please refresh the page.');
+          return;
+        }
+
         if (!isSocketConnected()) {
           logger.error('❌ Socket not connected!');
           alert('Connection lost. Please refresh the page.');
@@ -509,14 +538,26 @@ function Messages() {
         }
 
         // Send via Socket.IO for real-time delivery
-        logger.debug('🔌 Emitting send_message via socket');
-        socketSendMessage({
+        logger.debug('🔌 Emitting send_message via socket', {
+          socketId: socket.id,
           recipientId: selectedChat,
-          content: message,
-          attachment: attachmentUrl,
-          voiceNote: voiceNote,
-          contentWarning: contentWarning
+          hasContent: !!message,
+          hasAttachment: !!attachmentUrl
         });
+
+        try {
+          socketSendMessage({
+            recipientId: selectedChat,
+            content: message,
+            attachment: attachmentUrl,
+            voiceNote: voiceNote,
+            contentWarning: contentWarning
+          });
+        } catch (error) {
+          logger.error('❌ Error sending message via socket:', error);
+          alert('Failed to send message. Please try again.');
+          return;
+        }
       }
       // Clear localStorage draft
       const draftKey = `message-${selectedChatType}-${selectedChat}`;
