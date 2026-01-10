@@ -169,7 +169,7 @@
   color: var(--text-main);
   background: rgba(255, 255, 255, 0.02); /* Barely visible */
   resize: none; /* Disabled - auto-resize via JS */
-  min-height: 44px; /* Minimum touch target */
+  min-height: 120px; /* Increased from 44px for better UX */
   max-height: none; /* Allow expansion */
   font-family: inherit;
   margin-bottom: 1rem;

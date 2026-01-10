@@ -985,6 +985,20 @@ function Feed() {
       return;
     }
 
+    // CRITICAL: Don't save empty drafts - prevents ghost drafts after posting
+    const hasContent = newPost && newPost.trim().length > 0;
+    const hasMedia = selectedMedia && selectedMedia.length > 0;
+    const hasGif = selectedPostGif !== null;
+    const hasPoll = poll !== null;
+
+    if (!hasContent && !hasMedia && !hasGif && !hasPoll) {
+      logger.debug('⏸️ Skipping autosave - no content to save');
+      // Clear any existing draft since there's no content
+      clearDraft('feed-create-post');
+      setDraftSaveStatus('');
+      return;
+    }
+
     try {
       setDraftSaveStatus('saving');
 
@@ -1963,7 +1977,7 @@ function Feed() {
                 onChange={(e) => {
                   const el = e.target;
                   el.style.height = 'auto';
-                  el.style.height = el.scrollHeight + 'px';
+                  el.style.height = Math.max(el.scrollHeight, 120) + 'px'; // Minimum 120px
                   setNewPost(el.value);
                 }}
                 onPaste={handlePaste}
@@ -1971,8 +1985,8 @@ function Feed() {
                 onBlur={() => setIsTyping(false)}
                 placeholder={showPollCreator ? "Ask a question..." : "Share something, if you feel like it."}
                 className="post-input glossy"
-                rows="1"
-                style={{ overflow: 'hidden', resize: 'none' }}
+                rows="4"
+                style={{ overflow: 'hidden', resize: 'none', minHeight: '120px' }}
               />
 
               {selectedMedia.length > 0 && (
