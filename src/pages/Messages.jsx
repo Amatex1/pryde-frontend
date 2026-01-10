@@ -194,12 +194,16 @@ function Messages() {
   useEffect(() => {
     const chatId = searchParams.get('chat');
     if (chatId) {
-      setSelectedChat(chatId);
-      setSelectedChatType('user');
+      // Handle "Notes to self" - use current user's ID
+      const actualChatId = chatId === 'self' ? currentUser?._id : chatId;
+      if (actualChatId) {
+        setSelectedChat(actualChatId);
+        setSelectedChatType('user');
+      }
       // Remove the parameter from URL after opening the chat
       setSearchParams({});
     }
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, currentUser]);
 
   // Fetch conversations and group chats
   useEffect(() => {
