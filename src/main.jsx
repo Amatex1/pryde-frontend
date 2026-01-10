@@ -69,6 +69,22 @@ window.addEventListener('load', () => {
 });
 
 // ========================================
+// UNHANDLED PROMISE REJECTION HANDLER
+// Catches async errors that don't have .catch() handlers
+// ========================================
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('[UnhandledPromise] Unhandled promise rejection:', event.reason);
+
+  // Prevent the default browser error handling
+  event.preventDefault();
+
+  // Log to help debug
+  if (event.reason instanceof Error) {
+    console.error('[UnhandledPromise] Error stack:', event.reason.stack);
+  }
+});
+
+// ========================================
 // INITIALIZE CIRCUIT BREAKER IMMEDIATELY
 // Must run before any API calls
 // ========================================

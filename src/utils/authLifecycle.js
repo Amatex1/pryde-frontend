@@ -97,7 +97,9 @@ export function setupAuthLifecycle() {
 
   // 1. Refresh on app load (if user has tokens)
   if (getAuthToken() || getRefreshToken()) {
-    refreshSession().catch(() => {});
+    refreshSession().catch((err) => {
+      logger.warn('[AuthLifecycle] App load refresh failed:', err);
+    });
   }
 
   // 2. Refresh on tab focus (user returning from another tab/app)
@@ -119,7 +121,9 @@ export function setupAuthLifecycle() {
         }
 
         lastRefreshCheck = now;
-        refreshSession().catch(() => {});
+        refreshSession().catch((err) => {
+          logger.warn('[AuthLifecycle] Visibility change refresh failed:', err);
+        });
       }
     }
   };
@@ -142,7 +146,9 @@ export function setupAuthLifecycle() {
 
       lastRefreshCheck = now;
       logger.debug('[AuthLifecycle] Interval refresh');
-      refreshSession().catch(() => {});
+      refreshSession().catch((err) => {
+        logger.warn('[AuthLifecycle] Interval refresh failed:', err);
+      });
     }
   }, 10 * 60 * 1000); // 10 minutes
 
@@ -151,7 +157,9 @@ export function setupAuthLifecycle() {
     if (getAuthToken() || getRefreshToken()) {
       lastRefreshCheck = Date.now();
       logger.debug('[AuthLifecycle] Window focused - refreshing session');
-      refreshSession().catch(() => {});
+      refreshSession().catch((err) => {
+        logger.warn('[AuthLifecycle] Window focus refresh failed:', err);
+      });
     }
   };
 
@@ -162,7 +170,9 @@ export function setupAuthLifecycle() {
     if (getAuthToken() || getRefreshToken()) {
       logger.info('[AuthLifecycle] 🌐 Network restored - refreshing session');
       lastRefreshCheck = Date.now();
-      refreshSession().catch(() => {});
+      refreshSession().catch((err) => {
+        logger.warn('[AuthLifecycle] Online refresh failed:', err);
+      });
     }
   };
 
