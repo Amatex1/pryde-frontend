@@ -1,13 +1,15 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback, lazy, Suspense } from 'react';
 import { useSearchParams, useOutletContext } from 'react-router-dom';
-import { FixedSizeList as List } from 'react-window';
+import { FixedSizeList } from 'react-window';
 import Navbar from '../components/Navbar';
-import EmojiPicker from '../components/EmojiPicker';
-import GifPicker from '../components/GifPicker';
 import CustomModal from '../components/CustomModal';
 import MessageSearch from '../components/MessageSearch';
-import VoiceRecorder from '../components/VoiceRecorder';
-import AudioPlayer from '../components/AudioPlayer';
+
+// ⚡ PERFORMANCE: Lazy load heavy components to reduce initial bundle size
+const EmojiPicker = lazy(() => import('../components/EmojiPicker'));
+const GifPicker = lazy(() => import('../components/GifPicker'));
+const VoiceRecorder = lazy(() => import('../components/VoiceRecorder'));
+const AudioPlayer = lazy(() => import('../components/AudioPlayer'));
 import { useModal } from '../hooks/useModal';
 import { useOnlineUsers } from '../hooks/useOnlineUsers';
 import { useAuth } from '../context/AuthContext';
@@ -31,6 +33,7 @@ import { compressImage } from '../utils/compressImage';
 import { uploadWithProgress } from '../utils/uploadWithProgress';
 import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
 import { withOptimisticUpdate } from '../utils/consistencyGuard';
+import { debounce } from '../utils/debounce';
 import { quietCopy } from '../config/uiCopy';
 import './Messages.css';
 import '../styles/themes/messages.css';
@@ -74,6 +77,7 @@ function Messages() {
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [conversationFilter, setConversationFilter] = useState(''); // Filter conversations by name
+  const [debouncedFilter, setDebouncedFilter] = useState(''); // ⚡ PERFORMANCE: Debounced filter to reduce re-renders
   const [friends, setFriends] = useState([]);
   const [groupName, setGroupName] = useState('');
   const [groupDescription, setGroupDescription] = useState('');
@@ -142,6 +146,15 @@ function Messages() {
     // Compare dates (ignoring time)
     return currentDate.toDateString() !== previousDate.toDateString();
   };
+
+  // ⚡ PERFORMANCE: Debounce conversation filter to reduce re-renders during typing
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedFilter(conversationFilter);
+    }, 300); // 300ms delay
+
+    return () => clearTimeout(handler);
+  }, [conversationFilter]);
 
   // Listen for theme and quiet mode changes
   useEffect(() => {
@@ -1053,6 +1066,7 @@ function Messages() {
   };
 
   // ⚡ PERFORMANCE: Memoize filtered conversations to prevent re-filtering on every render
+  // Uses debounced filter to reduce re-renders during typing
   const filteredConversations = useMemo(() => {
     return conversations.filter(conv => {
       // Tab filter (archived/unread/all)
@@ -1061,9 +1075,9 @@ function Messages() {
       if (activeTab === 'unread') return !isArchived && (conv.unread > 0 || conv.manuallyUnread);
       if (isArchived) return false; // 'all' tab shows non-archived
 
-      // Name filter - search by participant displayName or username
-      if (conversationFilter.trim()) {
-        const q = conversationFilter.toLowerCase();
+      // Name filter - search by participant displayName or username (DEBOUNCED)
+      if (debouncedFilter.trim()) {
+        const q = debouncedFilter.toLowerCase();
         const otherUser = conv.otherUser || (
           conv.lastMessage?.sender?._id === currentUser?._id
             ? conv.lastMessage?.recipient
@@ -1076,7 +1090,7 @@ function Messages() {
 
       return true;
     });
-  }, [conversations, archivedConversations, activeTab, conversationFilter, currentUser]);
+  }, [conversations, archivedConversations, activeTab, debouncedFilter, currentUser]);
 
   // ⚡ PERFORMANCE: Memoized Row component for virtual scrolling
   const ConversationRow = useCallback(({ index, style }) => {
@@ -1340,7 +1354,7 @@ function Messages() {
                     <>
                       <div className="section-label">Direct Messages</div>
                       {/* ⚡ PERFORMANCE: Virtual scrolling - only renders visible conversations */}
-                      <List
+                      <FixedSizeList
                         height={window.innerHeight - 300} // Dynamic height based on viewport
                         itemCount={filteredConversations.length}
                         itemSize={85} // Height of each conversation item in pixels (matches CSS)
@@ -1348,7 +1362,7 @@ function Messages() {
                         className="virtual-conversation-list"
                       >
                         {ConversationRow}
-                      </List>
+                      </FixedSizeList>
                     </>
                   )}
 
@@ -1669,12 +1683,14 @@ function Messages() {
                               >
                                 {sanitizeMessage(msg.content)}
 
-                                {/* Voice Note Player */}
+                                {/* Voice Note Player - Lazy Loaded */}
                                 {msg.voiceNote?.url && (
-                                  <AudioPlayer
-                                    url={getImageUrl(msg.voiceNote.url)}
-                                    duration={msg.voiceNote.duration}
-                                  />
+                                  <Suspense fallback={<div className="loading-spinner">Loading...</div>}>
+                                    <AudioPlayer
+                                      url={getImageUrl(msg.voiceNote.url)}
+                                      duration={msg.voiceNote.duration}
+                                    />
+                                  </Suspense>
                                 )}
 
                                 {/* Display reactions */}
@@ -1909,8 +1925,9 @@ function Messages() {
                   </div>
                   {/* DEPRECATED: GifPicker removed 2025-12-26 */}
                   {showVoiceRecorder && (
-                    <VoiceRecorder
-                      onRecordingComplete={async (audioBlob, duration) => {
+                    <Suspense fallback={<div className="loading-spinner">Loading...</div>}>
+                      <VoiceRecorder
+                        onRecordingComplete={async (audioBlob, duration) => {
                         try {
                           // Upload voice note using the voice-note endpoint
                           const formData = new FormData();
@@ -1935,7 +1952,8 @@ function Messages() {
                         }
                       }}
                       onCancel={() => setShowVoiceRecorder(false)}
-                    />
+                      />
+                    </Suspense>
                   )}
                 </form>
               </>
@@ -2138,26 +2156,30 @@ function Messages() {
           </div>
         )}
 
-        {/* Emoji Picker Modal */}
+        {/* Emoji Picker Modal - Lazy Loaded */}
         {showEmojiPicker && (
-          <EmojiPicker
-            onEmojiSelect={handleEmojiSelect}
-            onClose={() => {
-              setShowEmojiPicker(false);
-              setReactingToMessage(null);
-            }}
-          />
+          <Suspense fallback={<div className="loading-spinner">Loading...</div>}>
+            <EmojiPicker
+              onEmojiSelect={handleEmojiSelect}
+              onClose={() => {
+                setShowEmojiPicker(false);
+                setReactingToMessage(null);
+              }}
+            />
+          </Suspense>
         )}
 
-        {/* GIF Picker Modal */}
+        {/* GIF Picker Modal - Lazy Loaded */}
         {showGifPicker && (
-          <GifPicker
-            onGifSelect={(gifUrl) => {
-              setSelectedGif(gifUrl);
-              setShowGifPicker(false);
-            }}
-            onClose={() => setShowGifPicker(false)}
-          />
+          <Suspense fallback={<div className="loading-spinner">Loading...</div>}>
+            <GifPicker
+              onGifSelect={(gifUrl) => {
+                setSelectedGif(gifUrl);
+                setShowGifPicker(false);
+              }}
+              onClose={() => setShowGifPicker(false)}
+            />
+          </Suspense>
         )}
 
         {/* Custom Modal */}
