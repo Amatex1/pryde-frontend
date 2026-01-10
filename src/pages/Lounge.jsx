@@ -155,14 +155,23 @@ function Lounge() {
       socket.emit('global_chat:join');
       console.log('📡 Lounge: Emitted global_chat:join');
 
-      // Listen for new messages
+      // Listen for new messages (OPTIMIZED - immediate state update)
       socket.on('global_message:new', (message) => {
         console.log('📨 Lounge: Received new message', message);
-        setMessages(prev => [...prev, message]);
 
-        // Auto-scroll if user is near bottom
+        // Use functional update for better performance
+        setMessages(prev => {
+          // Check for duplicates (in case of double-emit)
+          if (prev.some(m => m._id === message._id)) {
+            console.warn('⚠️ Duplicate message received, skipping');
+            return prev;
+          }
+          return [...prev, message];
+        });
+
+        // Auto-scroll if user is near bottom (reduced delay)
         if (isNearBottom()) {
-          setTimeout(scrollToBottom, 100);
+          setTimeout(scrollToBottom, 50);
         }
       });
 
@@ -391,8 +400,22 @@ function Lounge() {
 
     // Request online users list from server
     const socket = socketRef.current;
-    if (socket) {
+    if (socket && socket.connected) {
+      console.log('📡 Lounge: Requesting online users list');
       socket.emit('global_chat:get_online_users');
+
+      // Set timeout to stop loading if no response after 5 seconds
+      setTimeout(() => {
+        setLoadingOnlineUsers(false);
+        if (onlineUsers.length === 0) {
+          setError('Failed to load online users. Please try again.');
+          setTimeout(() => setError(''), 3000);
+        }
+      }, 5000);
+    } else {
+      setLoadingOnlineUsers(false);
+      setError('Not connected. Please refresh the page.');
+      setTimeout(() => setError(''), 3000);
     }
   };
 
