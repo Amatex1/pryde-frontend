@@ -11,7 +11,7 @@ import PostSkeleton from '../components/PostSkeleton';
 import OptimizedImage from '../components/OptimizedImage';
 import CommentThread from '../components/CommentThread';
 import ReactionButton from '../components/ReactionButton';
-// DEPRECATED: GifPicker import removed 2025-12-26
+import GifPicker from '../components/GifPicker';
 import PollCreator from '../components/PollCreator';
 import Poll from '../components/Poll';
 import PinnedPostBadge from '../components/PinnedPostBadge';
@@ -813,6 +813,105 @@ function Feed() {
     } finally {
       setUploadingMedia(false);
       setUploadProgress(0);
+    }
+  };
+
+  // Handle paste events for images and image URLs
+  const handlePaste = async (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    // Check if we've hit the media limit
+    if (selectedMedia.length >= 3) {
+      showAlert('You can only upload up to 3 media files per post', 'Upload Limit Reached');
+      return;
+    }
+
+    // Check for pasted images (direct image paste)
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+
+      // Handle direct image paste
+      if (item.type.startsWith('image/')) {
+        e.preventDefault(); // Prevent default paste behavior
+
+        const file = item.getAsFile();
+        if (!file) continue;
+
+        setUploadingMedia(true);
+        setUploadProgress(0);
+
+        try {
+          // Compress image before upload
+          const compressed = await compressPostMedia(file);
+
+          // Upload with progress tracking
+          const response = await uploadMultipleWithProgress({
+            url: `${api.defaults.baseURL}/upload/post-media`,
+            files: [compressed],
+            fieldName: 'media',
+            onProgress: (percent) => {
+              setUploadProgress(percent);
+            }
+          });
+
+          if (response?.media?.length > 0) {
+            setSelectedMedia([...selectedMedia, ...response.media]);
+            showToast('Image pasted successfully', 'success');
+          }
+        } catch (error) {
+          logger.error('Pasted image upload failed:', error);
+          showAlert('Failed to upload pasted image. Please try again.', 'Upload Failed');
+        } finally {
+          setUploadingMedia(false);
+          setUploadProgress(0);
+        }
+        return; // Exit after handling image
+      }
+    }
+
+    // Check for pasted text that might be an image URL
+    const text = e.clipboardData?.getData('text');
+    if (text) {
+      // Check if text is an image URL
+      const imageUrlPattern = /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i;
+      if (imageUrlPattern.test(text.trim())) {
+        e.preventDefault(); // Prevent pasting the URL as text
+
+        setUploadingMedia(true);
+        setUploadProgress(0);
+
+        try {
+          // Fetch the image from URL and convert to blob
+          const response = await fetch(text.trim());
+          if (!response.ok) throw new Error('Failed to fetch image from URL');
+
+          const blob = await response.blob();
+          const file = new File([blob], 'pasted-image.jpg', { type: blob.type });
+
+          // Compress and upload
+          const compressed = await compressPostMedia(file);
+          const uploadResponse = await uploadMultipleWithProgress({
+            url: `${api.defaults.baseURL}/upload/post-media`,
+            files: [compressed],
+            fieldName: 'media',
+            onProgress: (percent) => {
+              setUploadProgress(percent);
+            }
+          });
+
+          if (uploadResponse?.media?.length > 0) {
+            setSelectedMedia([...selectedMedia, ...uploadResponse.media]);
+            showToast('Image URL pasted successfully', 'success');
+          }
+        } catch (error) {
+          logger.error('Pasted image URL upload failed:', error);
+          showAlert('Failed to upload image from URL. Please try uploading directly.', 'Upload Failed');
+        } finally {
+          setUploadingMedia(false);
+          setUploadProgress(0);
+        }
+      }
     }
   };
 
@@ -1887,6 +1986,7 @@ function Feed() {
                   el.style.height = el.scrollHeight + 'px';
                   setNewPost(el.value);
                 }}
+                onPaste={handlePaste}
                 onFocus={() => setIsTyping(true)}
                 onBlur={() => setIsTyping(false)}
                 placeholder={showPollCreator ? "Ask a question..." : "Share something, if you feel like it."}
@@ -2504,7 +2604,14 @@ function Feed() {
                           >
                             Cancel
                           </button>
-                          {/* DEPRECATED: GIF button removed 2025-12-26 */}
+                          <button
+                            type="button"
+                            onClick={() => setShowGifPicker(showGifPicker === `reply-${replyingToComment._id}` ? null : `reply-${replyingToComment._id}`)}
+                            className="btn-gif"
+                            title="Add GIF"
+                          >
+                            GIF
+                          </button>
                           <button
                             type="submit"
                             className="reply-submit-btn"
@@ -2525,7 +2632,15 @@ function Feed() {
                             </button>
                           </div>
                         )}
-                        {/* DEPRECATED: GifPicker removed 2025-12-26 */}
+                        {showGifPicker === `reply-${replyingToComment._id}` && (
+                          <GifPicker
+                            onGifSelect={(gifUrl) => {
+                              setReplyGif(gifUrl);
+                              setShowGifPicker(null);
+                            }}
+                            onClose={() => setShowGifPicker(null)}
+                          />
+                        )}
                       </form>
                     )}
 
@@ -2554,7 +2669,14 @@ function Feed() {
                             placeholder="Reply, if you feel like it."
                             className="comment-input glossy"
                           />
-                          {/* DEPRECATED: GIF button removed 2025-12-26 */}
+                          <button
+                            type="button"
+                            onClick={() => setShowGifPicker(showGifPicker === `comment-${post._id}` ? null : `comment-${post._id}`)}
+                            className="btn-gif"
+                            title="Add GIF"
+                          >
+                            GIF
+                          </button>
                           <button
                             type="submit"
                             className="comment-submit-btn"
@@ -2575,7 +2697,15 @@ function Feed() {
                             </button>
                           </div>
                         )}
-                        {/* DEPRECATED: GifPicker removed 2025-12-26 */}
+                        {showGifPicker === `comment-${post._id}` && (
+                          <GifPicker
+                            onGifSelect={(gifUrl) => {
+                              setCommentGif(prev => ({ ...prev, [post._id]: gifUrl }));
+                              setShowGifPicker(null);
+                            }}
+                            onClose={() => setShowGifPicker(null)}
+                          />
+                        )}
                       </form>
                     )}
                   </div>
@@ -2656,6 +2786,7 @@ function Feed() {
                       el.style.height = el.scrollHeight + 'px';
                       setNewPost(el.value);
                     }}
+                    onPaste={handlePaste}
                     onFocus={() => setIsTyping(true)}
                     onBlur={() => setIsTyping(false)}
                     placeholder={showPollCreator ? "Ask a question..." : "Share something, if you feel like it."}
@@ -3123,9 +3254,24 @@ function Feed() {
                     </button>
                   </div>
                 )}
-                {/* DEPRECATED: GifPicker removed 2025-12-26 */}
+                {showGifPicker === `modal-comment-${commentModalOpen}` && (
+                  <GifPicker
+                    onGifSelect={(gifUrl) => {
+                      setCommentGif(prev => ({ ...prev, [commentModalOpen]: gifUrl }));
+                      setShowGifPicker(null);
+                    }}
+                    onClose={() => setShowGifPicker(null)}
+                  />
+                )}
                 <div className="comment-modal-actions">
-                  {/* DEPRECATED: GIF button removed 2025-12-26 */}
+                  <button
+                    type="button"
+                    onClick={() => setShowGifPicker(showGifPicker === `modal-comment-${commentModalOpen}` ? null : `modal-comment-${commentModalOpen}`)}
+                    className="btn-gif"
+                    title="Add GIF"
+                  >
+                    GIF
+                  </button>
                   <button
                     type="submit"
                     className="btn-submit-comment"

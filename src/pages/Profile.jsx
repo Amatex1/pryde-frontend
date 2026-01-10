@@ -647,6 +647,105 @@ function Profile() {
     }
   };
 
+  // Handle paste events for images and image URLs
+  const handlePaste = async (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    // Check if we've hit the media limit
+    if (selectedMedia.length >= 3) {
+      showAlert('You can only upload up to 3 media files per post', 'Upload Limit Reached');
+      return;
+    }
+
+    // Check for pasted images (direct image paste)
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+
+      // Handle direct image paste
+      if (item.type.startsWith('image/')) {
+        e.preventDefault(); // Prevent default paste behavior
+
+        const file = item.getAsFile();
+        if (!file) continue;
+
+        setUploadingMedia(true);
+        setUploadProgress(0);
+
+        try {
+          // Compress image before upload
+          const compressed = await compressPostMedia(file);
+
+          // Upload with progress tracking
+          const response = await uploadMultipleWithProgress({
+            url: `${api.defaults.baseURL}/upload/post-media`,
+            files: [compressed],
+            fieldName: 'media',
+            onProgress: (percent) => {
+              setUploadProgress(percent);
+            }
+          });
+
+          if (response?.media?.length > 0) {
+            setSelectedMedia([...selectedMedia, ...response.media]);
+            showToast('Image pasted successfully', 'success');
+          }
+        } catch (error) {
+          logger.error('Pasted image upload failed:', error);
+          showAlert('Failed to upload pasted image. Please try again.', 'Upload Failed');
+        } finally {
+          setUploadingMedia(false);
+          setUploadProgress(0);
+        }
+        return; // Exit after handling image
+      }
+    }
+
+    // Check for pasted text that might be an image URL
+    const text = e.clipboardData?.getData('text');
+    if (text) {
+      // Check if text is an image URL
+      const imageUrlPattern = /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i;
+      if (imageUrlPattern.test(text.trim())) {
+        e.preventDefault(); // Prevent pasting the URL as text
+
+        setUploadingMedia(true);
+        setUploadProgress(0);
+
+        try {
+          // Fetch the image from URL and convert to blob
+          const response = await fetch(text.trim());
+          if (!response.ok) throw new Error('Failed to fetch image from URL');
+
+          const blob = await response.blob();
+          const file = new File([blob], 'pasted-image.jpg', { type: blob.type });
+
+          // Compress and upload
+          const compressed = await compressPostMedia(file);
+          const uploadResponse = await uploadMultipleWithProgress({
+            url: `${api.defaults.baseURL}/upload/post-media`,
+            files: [compressed],
+            fieldName: 'media',
+            onProgress: (percent) => {
+              setUploadProgress(percent);
+            }
+          });
+
+          if (uploadResponse?.media?.length > 0) {
+            setSelectedMedia([...selectedMedia, ...uploadResponse.media]);
+            showToast('Image URL pasted successfully', 'success');
+          }
+        } catch (error) {
+          logger.error('Pasted image URL upload failed:', error);
+          showAlert('Failed to upload image from URL. Please try uploading directly.', 'Upload Failed');
+        } finally {
+          setUploadingMedia(false);
+          setUploadProgress(0);
+        }
+      }
+    }
+  };
+
   const removeMedia = async (index) => {
     const mediaToRemove = selectedMedia[index];
 
@@ -1806,6 +1905,7 @@ function Profile() {
                       el.style.height = el.scrollHeight + 'px';
                       setNewPost(el.value);
                     }}
+                    onPaste={handlePaste}
                     placeholder="What are you reflecting on today?"
                     className="post-input glossy"
                     rows="1"

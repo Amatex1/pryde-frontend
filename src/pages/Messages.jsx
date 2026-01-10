@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import EmojiPicker from '../components/EmojiPicker';
-// DEPRECATED: GifPicker import removed 2025-12-26
+import GifPicker from '../components/GifPicker';
 import CustomModal from '../components/CustomModal';
 import MessageSearch from '../components/MessageSearch';
 import VoiceRecorder from '../components/VoiceRecorder';
@@ -1610,7 +1610,15 @@ function Messages() {
                       >
                         {uploadingFile ? `${uploadProgress}%` : '📎'}
                       </button>
-                      {/* DEPRECATED: GIF button removed 2025-12-26 */}
+                      <button
+                        type="button"
+                        className="icon-btn"
+                        onClick={() => setShowGifPicker(!showGifPicker)}
+                        disabled={selectedFile || isRecipientUnavailable}
+                        title="Add GIF"
+                      >
+                        GIF
+                      </button>
                       <button
                         type="button"
                         className="icon-btn"
@@ -1894,6 +1902,17 @@ function Messages() {
               setShowEmojiPicker(false);
               setReactingToMessage(null);
             }}
+          />
+        )}
+
+        {/* GIF Picker Modal */}
+        {showGifPicker && (
+          <GifPicker
+            onGifSelect={(gifUrl) => {
+              setSelectedGif(gifUrl);
+              setShowGifPicker(false);
+            }}
+            onClose={() => setShowGifPicker(false)}
           />
         )}
 
