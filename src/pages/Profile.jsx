@@ -2576,6 +2576,7 @@ function Profile() {
         </div>
         {/* End of profile-layout */}
       </div>
+      {/* End of profile-container */}
 
       <ReportModal
         isOpen={reportModal.isOpen}
