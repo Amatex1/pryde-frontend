@@ -7,6 +7,7 @@ import { prefetchRoute, prefetchOnIdle } from '../utils/routePrefetch';
 import DarkModeToggle from './DarkModeToggle';
 import GlobalSearch from './GlobalSearch';
 import NotificationBell from './NotificationBell';
+import MessagesDropdown from './MessagesDropdown';
 import { SkeletonNavbarActions } from './SkeletonLoader';
 import api from '../utils/api';
 import { getTheme, toggleTheme as toggleThemeManager, getQuietMode, setQuietMode as setQuietModeManager } from '../utils/themeManager';
@@ -304,19 +305,7 @@ function Navbar({ onMenuClick }) {
           <SkeletonNavbarActions />
         ) : (
           <div className="navbar-actions">
-            <Link
-              to="/messages"
-              className="nav-button"
-              title="Messages"
-              onMouseEnter={() => prefetchRoute('/messages')}
-              onFocus={() => prefetchRoute('/messages')}
-            >
-              <span className="nav-icon">💬</span>
-              <span className="nav-label">Messages</span>
-              {totalUnread > 0 && (
-                <span className="nav-badge">{totalUnread > 99 ? '99+' : totalUnread}</span>
-              )}
-            </Link>
+            <MessagesDropdown />
             <NotificationBell />
 
             <div className="profile-dropdown-container" ref={dropdownRef}>

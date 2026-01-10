@@ -10,7 +10,7 @@
    - Network-first for API calls
    ===================================================== */
 
-const VERSION = '2.2.0'; // Increment to force update - Added caching for performance
+const VERSION = '2.3.0'; // Increment to force update - Skip external domains to avoid CSP violations
 const STATIC_CACHE = `pryde-static-${VERSION}`;
 const IMAGE_CACHE = `pryde-images-${VERSION}`;
 const API_CACHE = `pryde-api-${VERSION}`;
@@ -68,7 +68,15 @@ self.addEventListener('fetch', (event) => {
   // Skip non-http(s) requests
   if (!url.protocol.startsWith('http')) return;
 
-  // Strategy 1: Cache-first for images (faster repeat visits)
+  // 🔥 CRITICAL: Skip external domains - let browser handle them directly
+  // This prevents CSP violations when trying to cache third-party resources
+  const ownDomain = self.location.hostname;
+  if (url.hostname !== ownDomain && !url.hostname.includes('pryde-backend')) {
+    // Don't intercept external requests (tenor, hcaptcha, fonts, etc.)
+    return;
+  }
+
+  // Strategy 1: Cache-first for images (faster repeat visits) - SAME ORIGIN ONLY
   if (request.destination === 'image' || url.pathname.match(/\.(jpg|jpeg|png|gif|webp|avif|svg)$/i)) {
     event.respondWith(cacheFirst(request, IMAGE_CACHE));
     return;
