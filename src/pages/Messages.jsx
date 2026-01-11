@@ -244,7 +244,7 @@ function Messages() {
   const fetchConversations = async () => {
     try {
       const [messagesRes, groupsRes] = await Promise.all([
-        api.get('/messages'),
+        api.get('/messages/list'),
         api.get('/groupChats')
       ]);
       // Sort conversations by lastMessage timestamp (most recent first)

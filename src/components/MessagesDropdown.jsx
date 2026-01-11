@@ -21,7 +21,7 @@ const MessagesDropdown = memo(() => {
     if (!userId) return;
     try {
       setLoading(true);
-      const response = await api.get('/messages');
+      const response = await api.get('/messages/list');
       // Sort by lastMessage timestamp and take top 5
       const sorted = [...response.data].sort((a, b) => {
         const timeA = a.lastMessage?.createdAt ? new Date(a.lastMessage.createdAt).getTime() : 0;
