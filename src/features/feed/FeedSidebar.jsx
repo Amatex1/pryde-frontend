@@ -1,34 +1,19 @@
 /**
  * FeedSidebar - Sidebar content for Feed page
- * 
+ *
  * RESPONSIBILITIES:
- * - Render sidebar UI (explore links, support, friends list)
- * - Receive data via props
- * 
+ * - Render sidebar UI (explore links, support, suggested connections)
+ *
  * RULES:
  * - NO layout logic (widths, grids, media queries)
- * - NO data fetching (receives data via props)
  * - Layout-agnostic: renders the same on all platforms
  */
 
 import { Link } from 'react-router-dom';
-import OptimizedImage from '../../components/OptimizedImage';
-import { getImageUrl } from '../../utils/imageUrl';
-import { getDisplayName } from '../../utils/getDisplayName';
+import SuggestedConnections from '../../components/Sidebar/SuggestedConnections';
 import './FeedSidebar.css';
 
-export default function FeedSidebar({
-  friends = [],
-  onlineUsers = [],
-  unreadMessageCounts = {},
-  friendSearchQuery = '',
-  onFriendSearchChange,
-  getTimeSince,
-}) {
-  const filteredFriends = friends.filter(friend =>
-    getDisplayName(friend).toLowerCase().includes(friendSearchQuery.toLowerCase())
-  );
-
+export default function FeedSidebar() {
   return (
     <div className="feed-sidebar-content">
       {/* Explore Pryde - Feature Discovery */}
@@ -72,88 +57,9 @@ export default function FeedSidebar({
         </Link>
       </div>
 
-      {/* Friends List */}
+      {/* Suggested Connections */}
       <div className="sidebar-card glossy">
-        <h3 className="sidebar-title">Recent Conversations</h3>
-
-        {/* Search Bar */}
-        <div className="friends-search-bar">
-          <input
-            id="friends-search-input"
-            name="friendSearch"
-            type="text"
-            placeholder="Search friends..."
-            value={friendSearchQuery}
-            onChange={(e) => onFriendSearchChange?.(e.target.value)}
-            className="friends-search-input"
-          />
-        </div>
-
-        <div className="friends-sidebar-list">
-          {filteredFriends.map((friend) => {
-            const isOnline = onlineUsers.includes(friend._id);
-            const unreadCount = unreadMessageCounts[friend._id] || 0;
-            
-            return (
-              <div key={friend._id} className="friend-sidebar-item">
-                <div className="friend-sidebar-main">
-                  <div className="friend-sidebar-avatar">
-                    {friend.profilePhoto ? (
-                      <OptimizedImage
-                        src={getImageUrl(friend.profilePhoto)}
-                        alt={getDisplayName(friend)}
-                        className="avatar-image"
-                      />
-                    ) : (
-                      <span>{getDisplayName(friend).charAt(0).toUpperCase()}</span>
-                    )}
-                    <span className={`status-dot ${isOnline ? 'online' : 'offline'}`} />
-                  </div>
-                  <div className="friend-sidebar-info">
-                    <div className="friend-sidebar-name">{getDisplayName(friend)}</div>
-                    <div className={`friend-sidebar-status ${isOnline ? 'online-status' : 'offline-status'}`}>
-                      {isOnline ? 'Online' : getTimeSince?.(friend.lastSeen) || 'Offline'}
-                    </div>
-                  </div>
-                  <div className="friend-sidebar-actions-top">
-                    <Link
-                      to={`/messages?chat=${friend._id}`}
-                      className="btn-friend-action"
-                      title="Chat"
-                    >
-                      💬
-                      {unreadCount > 0 && (
-                        <span className="friend-message-badge">
-                          {unreadCount > 99 ? '99+' : unreadCount}
-                        </span>
-                      )}
-                    </Link>
-                    <Link
-                      to={`/profile/${friend._id}`}
-                      className="btn-friend-action"
-                      title="View Profile"
-                    >
-                      👤
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-
-          {filteredFriends.length === 0 && friends.length > 0 && (
-            <div className="no-friends">
-              <p>No matching friends</p>
-            </div>
-          )}
-
-          {friends.length === 0 && (
-            <div className="no-friends">
-              <p>No friends yet</p>
-              <p className="friends-hint">Add friends to start chatting!</p>
-            </div>
-          )}
-        </div>
+        <SuggestedConnections />
       </div>
     </div>
   );

@@ -34,8 +34,6 @@ import ReactionDetailsModal from '../../components/ReactionDetailsModal';
 import Toast from '../../components/Toast';
 import PageTitle from '../../components/PageTitle';
 import { useModal } from '../../hooks/useModal';
-import { useOnlineUsers } from '../../hooks/useOnlineUsers';
-import { useUnreadMessages } from '../../hooks/useUnreadMessages';
 import { useToast } from '../../hooks/useToast';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
@@ -48,22 +46,18 @@ export default function FeedController() {
   const navigate = useNavigate();
   // Get menu handler from AppLayout outlet context
   const { onMenuOpen } = useOutletContext() || {};
-  const { modalState, closeModal, showAlert, showConfirm } = useModal();
-  const { onlineUsers, isUserOnline } = useOnlineUsers();
+  const { modalState, closeModal } = useModal();
   const { authReady, isAuthenticated, user: currentUser } = useAuth();
   const { toasts, showToast, removeToast } = useToast();
-  const { unreadCounts } = useUnreadMessages();
 
   // Core data state
   const [posts, setPosts] = useState([]);
-  const [friends, setFriends] = useState([]);
   const [blockedUsers, setBlockedUsers] = useState([]);
   const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
-  
+
   // UI state
   const [loading, setLoading] = useState(true);
   const [quietMode, setQuietMode] = useState(false);
-  const [friendSearchQuery, setFriendSearchQuery] = useState('');
   const [revealedPosts, setRevealedPosts] = useState({});
   
   // Refs
@@ -90,36 +84,9 @@ export default function FeedController() {
     fetchPosts();
   }, [authReady, isAuthenticated, showToast]);
 
-  // No further changes here; patch 2 completed (lint cleanups targeted).
-
-  // Fetch friends
-  useEffect(() => {
-    if (!authReady || !isAuthenticated) return;
-    
-    const fetchFriends = async () => {
-      try {
-        const response = await api.get('/friends');
-        setFriends(response.data || []);
-      } catch (error) {
-        logger.error('Failed to fetch friends:', error);
-      }
-    };
-
-    fetchFriends();
-  }, [authReady, isAuthenticated]);
-
   // Handlers
   const handleRevealPost = useCallback((postId) => {
     setRevealedPosts(prev => ({ ...prev, [postId]: true }));
-  }, []);
-
-  const getTimeSince = useCallback((date) => {
-    if (!date) return 'Offline';
-    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-    if (seconds < 60) return 'Just now';
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-    return `${Math.floor(seconds / 86400)}d ago`;
   }, []);
 
   // Render
@@ -146,16 +113,7 @@ export default function FeedController() {
             commentRefs={commentRefs}
           />
         }
-        secondary={
-          <FeedSidebar
-            friends={friends}
-            onlineUsers={onlineUsers}
-            unreadMessageCounts={unreadCounts}
-            friendSearchQuery={friendSearchQuery}
-            onFriendSearchChange={setFriendSearchQuery}
-            getTimeSince={getTimeSince}
-          />
-        }
+        secondary={<FeedSidebar />}
       />
 
       {/* Toasts */}
