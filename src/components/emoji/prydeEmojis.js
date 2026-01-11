@@ -1,5 +1,8 @@
 /**
  * Pryde Emoji Set - Curated reactions for the Pryde community
+ *
+ * IMPORTANT: This list MUST match the backend APPROVED_REACTIONS in server/models/Reaction.js
+ * Backend source of truth: '👍', '❤️', '😂', '😮', '🥺', '😡', '🤗', '🎉', '🔥', '👏', '🏳️‍🌈', '🏳️‍⚧️'
  */
 
 export const PRYDE_REACTIONS = [
@@ -7,7 +10,7 @@ export const PRYDE_REACTIONS = [
   { id: 'love', emoji: '❤️', label: 'Love' },
   { id: 'laugh', emoji: '😂', label: 'Laugh' },
   { id: 'shocked', emoji: '😮', label: 'Shocked' },
-  { id: 'sad', emoji: '😢', label: 'Sad' },
+  { id: 'sad', emoji: '🥺', label: 'Sad' },  // Backend uses 🥺 (pleading face), not 😢
   { id: 'angry', emoji: '😡', label: 'Angry' },
   { id: 'hug', emoji: '🤗', label: 'Hug' },
   { id: 'party', emoji: '🎉', label: 'Party' },
