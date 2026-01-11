@@ -94,6 +94,13 @@ export const connectSocket = (userId) => {
         socket.on('connect_error', (error) => {
             logger.error('❌ Socket connection error:', error.message);
 
+            // 🔥 CRITICAL: Log detailed error info for debugging
+            if (error.message.includes('timeout')) {
+                logger.error('⏱️ Socket authentication timeout - backend may be slow or down');
+            } else if (error.message.includes('Authentication')) {
+                logger.error('🔑 Socket authentication failed - token may be invalid');
+            }
+
             // 🔥 CRITICAL: If we're logging out, stop reconnection attempts
             if (isLoggingOut) {
                 logger.debug('🚫 Stopping reconnection - logout in progress');
