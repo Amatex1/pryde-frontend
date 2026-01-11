@@ -1770,29 +1770,60 @@ html:not([data-theme]) .post-actions {
 }
 
 /* ========================================
-   REPLY INDENTATION (FACEBOOK-STYLE CLEAN)
-   Indent only, no boxes or thread lines
+   REPLY INDENTATION & VISUAL HIERARCHY
+   Clear nesting with subtle thread line
    ======================================== */
 
 .comment-replies {
-  margin-left: 32px;  /* Reduced from 40px */
-  padding-left: 0;
-  padding-top: 0;
+  margin-left: 2.5rem;  /* 40px - clear indentation */
+  padding-left: 1rem;
+  padding-top: 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 0;
-  margin-top: 0;
-  border-left: none;
+  margin-top: 0.5rem;
+  border-left: 2px solid var(--border-subtle, rgba(128, 128, 128, 0.2));
 }
 
+/* Reply comments - visually lighter than parents */
+.comment--reply,
 .comment.reply {
   background: transparent;
-  margin-left: 32px !important;  /* Reduced from 40px */
-  margin-top: 4px !important;  /* Reduced from 6px */
+  margin-left: 0 !important;  /* Parent container handles indent */
+  margin-top: 0.5rem !important;
   position: relative;
+  font-size: 0.95em;  /* Slightly smaller text */
+  opacity: 0.95;  /* Subtle visual weight reduction */
 }
 
-/* Remove vertical dividers / thread lines */
+/* First reply tighter to parent */
+.comment--reply:first-child,
+.comment.reply:first-child {
+  margin-top: 0 !important;
+}
+
+/* Reply author name - slightly lighter weight */
+.comment--reply .comment-author .author-name,
+.comment.reply .comment-author .author-name {
+  font-weight: 500;  /* Lighter than parent's 600 */
+}
+
+/* Reply avatar smaller */
+.comment--reply .comment-avatar,
+.comment.reply .comment-avatar {
+  width: 26px;
+  height: 26px;
+}
+
+/* Reply bubble slightly smaller */
+.comment--reply .comment-body,
+.comment.reply .comment-body {
+  font-size: 13px !important;
+  padding: 4px 8px !important;
+}
+
+/* Remove old ::before pseudo-element */
+.comment--reply::before,
 .comment.reply::before {
   display: none;
 }
@@ -3062,12 +3093,18 @@ html:not([data-theme]) .post-actions {
   background: transparent;
 }
 
+[data-theme="dark"] .comment--reply,
 [data-theme="dark"] .comment.reply {
   background: transparent;
 }
 
 [data-theme="dark"] .comment-content {
   background: transparent;
+}
+
+/* Dark Mode - Reply thread line */
+[data-theme="dark"] .comment-replies {
+  border-left-color: var(--border-subtle, rgba(255, 255, 255, 0.1));
 }
 
 /* Dark Mode - Friends Sidebar */
@@ -3582,26 +3619,31 @@ html:not([data-theme]) .post-actions {
     margin-left: 0 !important;
   }
 
+  /* Mobile reply indent - narrower for space */
+  .comment--reply,
+  .comment.reply,
   .reply {
-    margin-left: 12px !important;  /* Minimal indent for more horizontal space */
+    margin-left: 0 !important;  /* Parent container handles indent */
   }
 
   .comment-replies {
-    margin-left: 8px !important;  /* Minimal reply indent */
-    padding-left: 0 !important;
+    margin-left: 1rem !important;  /* Tighter on mobile */
+    padding-left: 0.75rem !important;
+    border-left: 2px solid var(--border-subtle, rgba(128, 128, 128, 0.15));
   }
 
-  .comment.reply {
-    margin-left: 0 !important;  /* Parent handles indent */
-  }
-
+  .comment--reply .comment-avatar,
+  .comment.reply .comment-avatar,
   .reply .comment-avatar {
     width: 24px;
     height: 24px;
   }
 
+  .comment--reply .comment-body,
+  .comment.reply .comment-body,
   .reply .comment-body {
     max-width: calc(100% - 32px) !important; /* Full width minus smaller avatar */
+    font-size: 13px !important;
   }
 
   /* Larger touch target for 3-dot menu on mobile */

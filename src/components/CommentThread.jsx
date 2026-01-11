@@ -263,7 +263,7 @@ const CommentThread = ({
             return (
               <div
                 key={reply._id}
-                className="comment reply"
+                className="comment comment--reply"
                 ref={(el) => commentRefs.current[reply._id] = el}
               >
                 {reply.isDeleted ? (
