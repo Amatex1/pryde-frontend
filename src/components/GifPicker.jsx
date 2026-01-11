@@ -5,11 +5,13 @@ const GifPicker = ({ onGifSelect, onClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [gifs, setGifs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('trending');
   const pickerRef = useRef(null);
 
-  // Giphy API key - get your own at https://developers.giphy.com/
-  const GIPHY_API_KEY = import.meta.env.VITE_GIPHY_API_KEY || 'GlVGYHkr3WSBnllca54iNt0yFbjz7L65';
+  // Giphy API key - public beta key for development
+  // For production, get your own at https://developers.giphy.com/
+  const GIPHY_API_KEY = import.meta.env.VITE_GIPHY_API_KEY || 'dc6zaTOxFJmzC';
 
   const categories = [
     { id: 'trending', label: '🔥 Trending', search: '' },
@@ -38,14 +40,20 @@ const GifPicker = ({ onGifSelect, onClose }) => {
 
   const fetchTrendingGifs = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const response = await fetch(
-        `https://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_API_KEY}&limit=24&rating=pg-13`
+        `https://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_API_KEY}&limit=24&rating=pg`
       );
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
       const data = await response.json();
       setGifs(data.data || []);
-    } catch (error) {
-      console.error('Error fetching trending GIFs:', error);
+    } catch (err) {
+      console.error('Error fetching trending GIFs:', err);
+      setError('Failed to load GIFs. Please try again.');
+      setGifs([]);
     } finally {
       setLoading(false);
     }
@@ -58,14 +66,20 @@ const GifPicker = ({ onGifSelect, onClose }) => {
     }
 
     setLoading(true);
+    setError(null);
     try {
       const response = await fetch(
-        `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(query)}&limit=24&rating=pg-13`
+        `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(query)}&limit=24&rating=pg`
       );
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
       const data = await response.json();
       setGifs(data.data || []);
-    } catch (error) {
-      console.error('Error searching GIFs:', error);
+    } catch (err) {
+      console.error('Error searching GIFs:', err);
+      setError('Failed to search GIFs. Please try again.');
+      setGifs([]);
     } finally {
       setLoading(false);
     }
@@ -156,10 +170,17 @@ const GifPicker = ({ onGifSelect, onClose }) => {
         <div className="gif-grid">
           {loading ? (
             <div className="gif-loading">Loading GIFs...</div>
+          ) : error ? (
+            <div className="gif-error">{error}</div>
           ) : gifs.length > 0 ? (
             gifs.map((gif) => {
-              // Giphy uses images object with different sizes
-              const previewUrl = gif.images?.fixed_height_small?.url || gif.images?.preview_gif?.url;
+              // Giphy uses images object with different sizes - try multiple fallbacks
+              const previewUrl = gif.images?.fixed_height_small?.url ||
+                                gif.images?.fixed_width_small?.url ||
+                                gif.images?.downsized?.url ||
+                                gif.images?.original?.url;
+
+              if (!previewUrl) return null;
 
               return (
                 <div

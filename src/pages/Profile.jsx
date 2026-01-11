@@ -51,10 +51,12 @@ function Profile() {
   const [uploadMessage, setUploadMessage] = useState('');
   const [showCommentBox, setShowCommentBox] = useState({});
   const [commentText, setCommentText] = useState({});
+  const [commentGif, setCommentGif] = useState({}); // GIFs for comments
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editCommentText, setEditCommentText] = useState('');
   const [replyingToComment, setReplyingToComment] = useState(null);
   const [replyText, setReplyText] = useState('');
+  const [replyGif, setReplyGif] = useState(null); // GIF for reply
   const [openCommentDropdownId, setOpenCommentDropdownId] = useState(null);
   const commentRefs = useRef({});
   const [showReplies, setShowReplies] = useState({}); // Track which comments have replies visible
@@ -88,7 +90,7 @@ function Profile() {
   const [showContentWarning, setShowContentWarning] = useState(false);
   const [postLoading, setPostLoading] = useState(false);
   const [selectedPostGif, setSelectedPostGif] = useState(null); // GIF for main post creation
-  const [showGifPicker, setShowGifPicker] = useState(false); // Show/hide GIF picker
+  const [showGifPicker, setShowGifPicker] = useState(null); // Track which GIF picker is open (null, 'main-post', 'comment-{postId}', 'reply-{commentId}')
   const [poll, setPoll] = useState(null); // Poll data for new post
   const [showPollCreator, setShowPollCreator] = useState(false); // Show/hide poll creator
   const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
@@ -1039,16 +1041,25 @@ function Profile() {
 
   const handleCommentSubmit = async (postId, e) => {
     e.preventDefault();
-    const content = commentText[postId];
 
-    if (!content || !content.trim()) return;
+    // Block submission if GIF picker is open
+    if (showGifPicker !== null) {
+      return;
+    }
+
+    const content = commentText[postId];
+    const gifUrl = commentGif[postId];
+
+    // Either content or GIF must be provided
+    if ((!content || !content.trim()) && !gifUrl) return;
 
     try {
       // Convert emoji shortcuts before posting
-      const contentWithEmojis = convertEmojiShortcuts(content);
+      const contentWithEmojis = content ? convertEmojiShortcuts(content) : '';
 
       await api.post(`/posts/${postId}/comments`, {
         content: contentWithEmojis,
+        gifUrl: gifUrl || null,
         parentCommentId: null // Top-level comment
       });
 
@@ -1056,6 +1067,7 @@ function Profile() {
       // This prevents duplicate comments from appearing
 
       setCommentText(prev => ({ ...prev, [postId]: '' }));
+      setCommentGif(prev => ({ ...prev, [postId]: null }));
       showToast('Comment added successfully', 'success');
     } catch (error) {
       logger.error('Failed to comment:', error);
@@ -1164,16 +1176,23 @@ function Profile() {
   const handleSubmitReply = async (e) => {
     e.preventDefault();
 
-    if (!replyText || !replyText.trim()) return;
+    // Block submission if GIF picker is open
+    if (showGifPicker !== null) {
+      return;
+    }
+
+    // Either text or GIF must be provided
+    if ((!replyText || !replyText.trim()) && !replyGif) return;
     if (!replyingToComment) return;
 
     try {
       const { postId, commentId } = replyingToComment;
       // Convert emoji shortcuts before posting
-      const contentWithEmojis = convertEmojiShortcuts(replyText);
+      const contentWithEmojis = replyText ? convertEmojiShortcuts(replyText) : '';
 
       await api.post(`/posts/${postId}/comments`, {
         content: contentWithEmojis,
+        gifUrl: replyGif || null,
         parentCommentId: commentId // Reply to comment
       });
 
@@ -1181,6 +1200,7 @@ function Profile() {
       // This prevents duplicate replies from appearing
 
       setReplyText('');
+      setReplyGif(null);
       setReplyingToComment(null);
       showToast('Reply added successfully', 'success');
     } catch (error) {
@@ -1192,6 +1212,7 @@ function Profile() {
   const handleCancelReply = () => {
     setReplyingToComment(null);
     setReplyText('');
+    setReplyGif(null);
   };
 
   // Helper function to get user's reaction emoji
@@ -2057,7 +2078,7 @@ function Profile() {
                     <button
                       type="button"
                       className="btn-gif"
-                      onClick={() => setShowGifPicker(!showGifPicker)}
+                      onClick={() => setShowGifPicker(showGifPicker === 'main-post' ? null : 'main-post')}
                       disabled={selectedPostGif !== null}
                       title="Add GIF"
                     >
@@ -2123,13 +2144,13 @@ function Profile() {
                   )}
 
                   {/* GIF Picker */}
-                  {showGifPicker && (
+                  {showGifPicker === 'main-post' && (
                     <GifPicker
                       onGifSelect={(gifUrl) => {
                         setSelectedPostGif(gifUrl);
-                        setShowGifPicker(false);
+                        setShowGifPicker(null);
                       }}
-                      onClose={() => setShowGifPicker(false)}
+                      onClose={() => setShowGifPicker(null)}
                     />
                   )}
                 </form>
@@ -2518,17 +2539,25 @@ function Profile() {
                         <form onSubmit={handleSubmitReply} className="reply-input-box">
                           <div className="reply-input-wrapper">
                             <input
-                              id={`profile-reply-${replyingToComment}`}
+                              id={`profile-reply-${replyingToComment.commentId}`}
                               name="reply"
                               type="text"
                               value={replyText}
                               onChange={(e) => setReplyText(e.target.value)}
-                              placeholder="Write a reply..."
+                              placeholder={replyGif ? "Add a caption (optional)..." : "Write a reply..."}
                               className="reply-input"
                               autoFocus
                             />
                             <div className="reply-actions">
-                              <button type="submit" className="btn-submit-reply" disabled={!replyText.trim()}>
+                              <button
+                                type="button"
+                                onClick={() => setShowGifPicker(showGifPicker === `reply-${replyingToComment.commentId}` ? null : `reply-${replyingToComment.commentId}`)}
+                                className="btn-gif"
+                                title="Add GIF"
+                              >
+                                GIF
+                              </button>
+                              <button type="submit" className="btn-submit-reply" disabled={!replyText.trim() && !replyGif}>
                                 Send
                               </button>
                               <button type="button" onClick={handleCancelReply} className="btn-cancel-reply">
@@ -2536,6 +2565,27 @@ function Profile() {
                               </button>
                             </div>
                           </div>
+                          {replyGif && (
+                            <div className="reply-gif-preview">
+                              <img src={replyGif} alt="Selected GIF" />
+                              <button
+                                type="button"
+                                className="btn-remove-gif"
+                                onClick={() => setReplyGif(null)}
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          )}
+                          {showGifPicker === `reply-${replyingToComment.commentId}` && (
+                            <GifPicker
+                              onGifSelect={(gifUrl) => {
+                                setReplyGif(gifUrl);
+                                setShowGifPicker(null);
+                              }}
+                              onClose={() => setShowGifPicker(null)}
+                            />
+                          )}
                         </form>
                       )}
 
@@ -2556,17 +2606,46 @@ function Profile() {
                               type="text"
                               value={commentText[post._id] || ''}
                               onChange={(e) => handleCommentChange(post._id, e.target.value)}
-                              placeholder="Write a comment..."
+                              placeholder={commentGif[post._id] ? "Add a caption (optional)..." : "Write a comment..."}
                               className="comment-input glossy"
                             />
                             <button
+                              type="button"
+                              onClick={() => setShowGifPicker(showGifPicker === `comment-${post._id}` ? null : `comment-${post._id}`)}
+                              className="btn-gif"
+                              title="Add GIF"
+                            >
+                              GIF
+                            </button>
+                            <button
                               type="submit"
                               className="comment-submit-btn"
-                              disabled={!commentText[post._id]?.trim()}
+                              disabled={!commentText[post._id]?.trim() && !commentGif[post._id]}
                             >
                               ➤
                             </button>
                           </div>
+                          {commentGif[post._id] && (
+                            <div className="comment-gif-preview">
+                              <img src={commentGif[post._id]} alt="Selected GIF" />
+                              <button
+                                type="button"
+                                className="btn-remove-gif"
+                                onClick={() => setCommentGif(prev => ({ ...prev, [post._id]: null }))}
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          )}
+                          {showGifPicker === `comment-${post._id}` && (
+                            <GifPicker
+                              onGifSelect={(gifUrl) => {
+                                setCommentGif(prev => ({ ...prev, [post._id]: gifUrl }));
+                                setShowGifPicker(null);
+                              }}
+                              onClose={() => setShowGifPicker(null)}
+                            />
+                          )}
                         </form>
                       )}
                     </div>
