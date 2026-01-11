@@ -48,27 +48,14 @@ const NotificationBell = memo(() => {
       return;
     }
 
-    // ✅ Prevent duplicate listener setup (React Strict Mode protection)
-    if (listenersSetupRef.current) {
-      logger.debug('⚠️ NotificationBell listeners already set up, skipping');
-      return;
-    }
-
     // ✅ Fetch once on mount (NO POLLING!)
     fetchNotifications();
 
-    const socket = getSocket();
+    let socket = getSocket();
+    let retryInterval = null;
+    let cleanupFn = null;
 
-    // ✅ Check if socket is available before setting up listeners
-    if (!socket) {
-      logger.debug('⏳ Socket not initialized yet, skipping notification listeners');
-      return;
-    }
-
-    logger.debug('🔔 Setting up NotificationBell socket listeners');
-    listenersSetupRef.current = true;
-
-    // ✅ Listen for real-time notification events
+    // ✅ Define event handlers
     const handleNewNotification = (data) => {
       logger.debug('🔔 Real-time notification received:', data);
 
@@ -118,21 +105,59 @@ const NotificationBell = memo(() => {
       setUnreadCount(prev => Math.max(0, prev - 1));
     };
 
-    socket.on('notification:new', handleNewNotification);
-    socket.on('notification:read', handleNotificationRead);
-    socket.on('notification:read_all', handleNotificationReadAll);
-    socket.on('notification:deleted', handleNotificationDeleted);
+    // ✅ Attach listeners to socket
+    const attachListeners = (s) => {
+      logger.debug('🔔 Attaching NotificationBell socket listeners');
+      s.on('notification:new', handleNewNotification);
+      s.on('notification:read', handleNotificationRead);
+      s.on('notification:read_all', handleNotificationReadAll);
+      s.on('notification:deleted', handleNotificationDeleted);
+      listenersSetupRef.current = true;
+    };
+
+    // ✅ Detach listeners from socket
+    const detachListeners = (s) => {
+      if (s && typeof s.off === 'function') {
+        logger.debug('🧹 Cleaning up NotificationBell socket listeners');
+        s.off('notification:new', handleNewNotification);
+        s.off('notification:read', handleNotificationRead);
+        s.off('notification:read_all', handleNotificationReadAll);
+        s.off('notification:deleted', handleNotificationDeleted);
+      }
+      listenersSetupRef.current = false;
+    };
+
+    // ✅ Try to setup immediately
+    if (socket && !listenersSetupRef.current) {
+      attachListeners(socket);
+      cleanupFn = () => detachListeners(socket);
+    } else if (!socket) {
+      // Socket not ready - retry until available
+      logger.debug('⏳ Socket not initialized yet, will retry...');
+
+      retryInterval = setInterval(() => {
+        socket = getSocket();
+        if (socket && !listenersSetupRef.current) {
+          clearInterval(retryInterval);
+          retryInterval = null;
+          attachListeners(socket);
+          cleanupFn = () => detachListeners(socket);
+        }
+      }, 500);
+
+      // Stop retrying after 10 seconds
+      setTimeout(() => {
+        if (retryInterval) {
+          clearInterval(retryInterval);
+          retryInterval = null;
+          logger.warn('⚠️ Socket not available after 10s, notification listeners not set up');
+        }
+      }, 10000);
+    }
 
     return () => {
-      logger.debug('🧹 Cleaning up NotificationBell socket listeners');
-      listenersSetupRef.current = false;
-
-      if (socket && typeof socket.off === 'function') {
-        socket.off('notification:new', handleNewNotification);
-        socket.off('notification:read', handleNotificationRead);
-        socket.off('notification:read_all', handleNotificationReadAll);
-        socket.off('notification:deleted', handleNotificationDeleted);
-      }
+      if (retryInterval) clearInterval(retryInterval);
+      if (cleanupFn) cleanupFn();
     };
   }, [userId]); // ✅ Use userId instead of user object to prevent infinite loop
 
