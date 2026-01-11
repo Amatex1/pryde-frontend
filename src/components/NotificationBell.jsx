@@ -23,7 +23,8 @@ const NotificationBell = memo(() => {
   const listenersSetupRef = useRef(false); // Prevent duplicate listener setup
   const navigate = useNavigate();
   const user = getCurrentUser();
-  const userId = user?.id; // Extract userId to use as dependency
+  // Support both `id` (from login response) and `_id` (from /auth/me response)
+  const userId = user?.id || user?._id;
 
   // NOTE: Push notification subscription is now handled in Settings page
   // where users can explicitly enable/disable notifications with a user gesture.
