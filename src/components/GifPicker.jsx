@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import './GifPicker.css';
 
 const GifPicker = ({ onGifSelect, onClose }) => {
@@ -8,9 +8,8 @@ const GifPicker = ({ onGifSelect, onClose }) => {
   const [selectedCategory, setSelectedCategory] = useState('trending');
   const pickerRef = useRef(null);
 
-  // Tenor API key - using public demo key (replace with your own in production)
-  const TENOR_API_KEY = 'AIzaSyAyimkuYQYF_FXVALexPuGQctUWRURdCYQ';
-  const TENOR_CLIENT_KEY = 'pryde_social';
+  // Giphy API key - get your own at https://developers.giphy.com/
+  const GIPHY_API_KEY = import.meta.env.VITE_GIPHY_API_KEY || 'GlVGYHkr3WSBnllca54iNt0yFbjz7L65';
 
   const categories = [
     { id: 'trending', label: '🔥 Trending', search: '' },
@@ -20,7 +19,7 @@ const GifPicker = ({ onGifSelect, onClose }) => {
     { id: 'sad', label: '😢 Sad', search: 'sad' },
     { id: 'excited', label: '🎉 Excited', search: 'excited' },
     { id: 'dance', label: '💃 Dance', search: 'dance' },
-    { id: 'thumbs', label: '👍 Thumbs Up', search: 'thumbs up' },
+    { id: 'pride', label: '🏳️‍🌈 Pride', search: 'pride lgbtq' },
   ];
 
   // Close when clicking outside
@@ -37,28 +36,22 @@ const GifPicker = ({ onGifSelect, onClose }) => {
     };
   }, [onClose]);
 
-  // Load trending GIFs on mount
-  useEffect(() => {
-    fetchTrendingGifs();
-  }, []);
-
-  const fetchTrendingGifs = async () => {
+  const fetchTrendingGifs = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://tenor.googleapis.com/v2/featured?key=${TENOR_API_KEY}&client_key=${TENOR_CLIENT_KEY}&limit=20&media_filter=gif,tinygif`
+        `https://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_API_KEY}&limit=24&rating=pg-13`
       );
       const data = await response.json();
-      console.log('Tenor API Response:', data); // Debug log
-      setGifs(data.results || []);
+      setGifs(data.data || []);
     } catch (error) {
       console.error('Error fetching trending GIFs:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [GIPHY_API_KEY]);
 
-  const searchGifs = async (query) => {
+  const searchGifs = useCallback(async (query) => {
     if (!query.trim()) {
       fetchTrendingGifs();
       return;
@@ -67,25 +60,31 @@ const GifPicker = ({ onGifSelect, onClose }) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=${TENOR_API_KEY}&client_key=${TENOR_CLIENT_KEY}&limit=20&media_filter=gif,tinygif`
+        `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(query)}&limit=24&rating=pg-13`
       );
       const data = await response.json();
-      console.log('Search API Response:', data); // Debug log
-      setGifs(data.results || []);
+      setGifs(data.data || []);
     } catch (error) {
       console.error('Error searching GIFs:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [GIPHY_API_KEY, fetchTrendingGifs]);
+
+  // Load trending GIFs on mount
+  useEffect(() => {
+    fetchTrendingGifs();
+  }, [fetchTrendingGifs]);
 
   // PERFORMANCE: Debounce GIF search to reduce API calls
   useEffect(() => {
     const delaySearch = setTimeout(() => {
-      searchGifs(searchQuery);
+      if (searchQuery) {
+        searchGifs(searchQuery);
+      }
     }, 300);
     return () => clearTimeout(delaySearch);
-  }, [searchQuery]);
+  }, [searchQuery, searchGifs]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -103,8 +102,8 @@ const GifPicker = ({ onGifSelect, onClose }) => {
   };
 
   const handleGifClick = (gif) => {
-    // Get the medium quality GIF URL
-    const gifUrl = gif.media_formats?.gif?.url || gif.media_formats?.tinygif?.url;
+    // Use the fixed_height or original GIF URL from Giphy
+    const gifUrl = gif.images?.fixed_height?.url || gif.images?.original?.url;
     if (gifUrl) {
       onGifSelect(gifUrl);
       onClose();
@@ -159,13 +158,8 @@ const GifPicker = ({ onGifSelect, onClose }) => {
             <div className="gif-loading">Loading GIFs...</div>
           ) : gifs.length > 0 ? (
             gifs.map((gif) => {
-              // Try multiple URL formats for compatibility
-              const gifUrl = gif.media_formats?.tinygif?.url ||
-                            gif.media_formats?.gif?.url ||
-                            gif.media?.[0]?.tinygif?.url ||
-                            gif.media?.[0]?.gif?.url;
-
-              console.log('GIF URL:', gifUrl, 'Full GIF object:', gif); // Debug
+              // Giphy uses images object with different sizes
+              const previewUrl = gif.images?.fixed_height_small?.url || gif.images?.preview_gif?.url;
 
               return (
                 <div
@@ -174,11 +168,10 @@ const GifPicker = ({ onGifSelect, onClose }) => {
                   onClick={() => handleGifClick(gif)}
                 >
                   <img
-                    src={gifUrl}
-                    alt={gif.content_description || 'GIF'}
+                    src={previewUrl}
+                    alt={gif.title || 'GIF'}
                     loading="lazy"
                     onError={(e) => {
-                      console.error('Failed to load GIF:', gifUrl);
                       e.target.style.display = 'none';
                     }}
                   />
@@ -191,7 +184,11 @@ const GifPicker = ({ onGifSelect, onClose }) => {
         </div>
 
         <div className="gif-picker-footer">
-          <span>Powered by Tenor</span>
+          <img
+            src="https://giphy.com/static/img/giphy_logo_square_social.png"
+            alt="Powered by GIPHY"
+            className="giphy-attribution"
+          />
         </div>
       </div>
     </div>
