@@ -3563,27 +3563,44 @@ html:not([data-theme]) .post-actions {
 
   /* Mobile even tighter (like Facebook) */
   .comment {
-    gap: 6px !important;
+    gap: 4px !important;
     margin-top: 2px !important;  /* Even tighter on mobile */
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    width: 100% !important;
   }
 
   .comment-body {
-    max-width: 100%;
-    padding: 5px 8px !important;  /* Compact on mobile */
-    font-size: 13px !important;
+    max-width: calc(100% - 40px) !important; /* Full width minus avatar */
+    padding: 6px 10px !important;
+    font-size: 14px !important;
   }
 
   .comment-actions {
     font-size: 12px;  /* Keep compact on mobile */
+    margin-left: 0 !important;
   }
 
   .reply {
-    margin-left: 26px !important;  /* Reduced from 32px */
+    margin-left: 12px !important;  /* Minimal indent for more horizontal space */
+  }
+
+  .comment-replies {
+    margin-left: 8px !important;  /* Minimal reply indent */
+    padding-left: 0 !important;
+  }
+
+  .comment.reply {
+    margin-left: 0 !important;  /* Parent handles indent */
   }
 
   .reply .comment-avatar {
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .reply .comment-body {
+    max-width: calc(100% - 32px) !important; /* Full width minus smaller avatar */
   }
 
   /* Larger touch target for 3-dot menu on mobile */
