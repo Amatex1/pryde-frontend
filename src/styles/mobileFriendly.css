@@ -191,7 +191,7 @@
     line-height: 1.6 !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
-    hyphens: auto !important;
+    hyphens: none !important;
   }
 
   /* Username and metadata */

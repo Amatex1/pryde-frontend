@@ -191,6 +191,16 @@ body {
 }
 
 /* ========================================
+   NO HYPHENS - GLOBAL RULE
+   Prevents automatic hyphenation on all devices
+   ======================================== */
+* {
+  hyphens: none !important;
+  -webkit-hyphens: none !important;
+  -ms-hyphens: none !important;
+}
+
+/* ========================================
    TYPOGRAPHY (PRE-LAUNCH POLISH)
    Only 3 font weights: 400, 500, 600
    ======================================== */

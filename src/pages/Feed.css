@@ -3465,7 +3465,7 @@ html:not([data-theme]) .post-actions {
     word-wrap: break-word;
     overflow-wrap: break-word;
     word-break: break-word;
-    hyphens: auto;
+    hyphens: none;
   }
 
   /* Prevent text from being too small */
