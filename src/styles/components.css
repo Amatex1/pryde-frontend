@@ -386,8 +386,24 @@ select:focus,
   max-width: 100%;
 }
 
-/* Tablet: constrain search width so it doesn't overlap with other elements */
-@media (min-width: 768px) and (max-width: 1023px) {
+/* Small tablet (768-900px): very constrained search */
+@media (min-width: 768px) and (max-width: 900px) {
+  .navbar-utility-search {
+    max-width: 180px;
+    margin: 0 var(--space-1);
+  }
+
+  .navbar-utility-search input,
+  .navbar-utility-search .search-input {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Larger tablet (901-1023px): slightly more room */
+@media (min-width: 901px) and (max-width: 1023px) {
   .navbar-utility-search {
     max-width: 280px;
     margin: 0 var(--space-2);
