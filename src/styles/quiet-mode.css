@@ -533,3 +533,47 @@ html {
 [data-quiet-metrics="true"] .reaction-summary {
   display: none !important;
 }
+
+/* ==================================================
+   NOTIFICATION SYSTEM: CALM-FIRST COMPLIANCE
+   Per notification system canonical implementation spec
+   ================================================== */
+
+/* Disable ALL animations on notification badges in Quiet Mode */
+[data-quiet="true"] .notification-badge,
+[data-quiet="true"] .nav-badge,
+[data-quiet="true"] .unread-dot {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Softer badge colors in Quiet Mode (no urgency red) */
+[data-quiet="true"] .notification-badge {
+  background: var(--accent-primary, #7c5cff) !important;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Soften unread indicator dot */
+[data-quiet="true"] .unread-dot {
+  background: var(--accent-primary, #7c5cff) !important;
+  opacity: 0.8;
+}
+
+/* Notification dropdown - calmer styling */
+[data-quiet="true"] .notification-dropdown {
+  border-color: var(--border-light) !important;
+}
+
+/* Unread items - subtle highlight only */
+[data-quiet="true"] .notification-item.unread {
+  background: var(--color-surface-hover, rgba(124, 92, 255, 0.05)) !important;
+}
+
+/* Quiet Visuals: Additional motion reduction */
+[data-quiet-visuals="true"] .notification-bell .bell-button:hover {
+  transform: none !important;
+}
+
+[data-quiet-visuals="true"] .notification-item {
+  transition: background-color 0.15s ease !important;
+}

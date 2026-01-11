@@ -5,6 +5,10 @@ import { getImageUrl } from '../utils/imageUrl';
 import { getCurrentUser } from '../utils/auth';
 import { getSocket } from '../utils/socket';
 import logger from '../utils/logger';
+import {
+  filterSocialNotifications,
+  shouldIncrementBellCount,
+} from '../constants/notificationTypes';
 import './NotificationBell.css';
 
 const NotificationBell = memo(() => {
@@ -25,10 +29,10 @@ const NotificationBell = memo(() => {
   const fetchNotifications = async () => {
     try {
       const response = await api.get('/notifications');
-      // Filter out message notifications - they should only appear in Messages page
-      const filteredNotifications = response.data.filter(n => n.type !== 'message');
-      setNotifications(filteredNotifications.slice(0, 10)); // Show only latest 10
-      setUnreadCount(filteredNotifications.filter(n => !n.read).length);
+      // Filter to SOCIAL types only - MESSAGE types go to Messages badge
+      const socialNotifications = filterSocialNotifications(response.data);
+      setNotifications(socialNotifications.slice(0, 10)); // Show only latest 10
+      setUnreadCount(socialNotifications.filter(n => !n.read).length);
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
     }
@@ -64,8 +68,8 @@ const NotificationBell = memo(() => {
     const handleNewNotification = (data) => {
       logger.debug('🔔 Real-time notification received:', data);
 
-      // Filter out message notifications
-      if (data.notification.type === 'message') {
+      // Validate: only SOCIAL types increment bell count
+      if (!shouldIncrementBellCount(data.notification)) {
         return;
       }
 
@@ -193,6 +197,7 @@ const NotificationBell = memo(() => {
     }
   };
 
+  // CALM-FIRST: Notification text with no exclamation marks or urgency language
   const getNotificationText = (notification) => {
     const senderName = notification.sender?.displayName || notification.sender?.username || 'Someone';
     const groupName = notification.groupName || 'a group';
@@ -203,21 +208,35 @@ const NotificationBell = memo(() => {
       case 'comment':
         return `${senderName} commented on your post`;
       case 'friend_request':
-        return `${senderName} sent you a friend request`;
+        return `${senderName} sent you a connection request`;
       case 'friend_accept':
-        return `${senderName} accepted your friend request`;
+        return `${senderName} accepted your request`;
       case 'mention':
-        return `${senderName} mentioned you in a post`;
+        return `${senderName} mentioned you`;
       case 'share':
         return `${senderName} shared your post`;
       case 'reaction':
         return `${senderName} reacted to your post`;
       case 'group_post':
-        return `${senderName} posted in ${groupName}`;
+        return `New post in ${groupName}`;
       case 'group_mention':
         return `${senderName} mentioned you in ${groupName}`;
+      case 'resonance':
+        return 'Someone quietly resonated with your post';
+      case 'circle_invite':
+        return `${senderName} invited you to a circle`;
+      case 'circle_post':
+        return `New post in your circle`;
+      case 'login_approval':
+        return 'New login attempt needs approval';
+      case 'system':
+        return notification.message || 'System update';
+      case 'moderation':
+        return notification.message || 'Moderation update';
       default:
-        return notification.message || 'New notification';
+        // CALM-FIRST: Strip exclamation marks from any message
+        const msg = notification.message || 'New update';
+        return msg.replace(/!/g, '');
     }
   };
 
