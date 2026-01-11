@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import GifPicker from '../components/GifPicker';
+import FormattedText from '../components/FormattedText';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import { getSocket } from '../utils/socket';
@@ -677,7 +678,7 @@ function Lounge() {
 
                         {msg.text && (
                           <div className="lounge-message-text">
-                            {msg.text}
+                            <FormattedText text={msg.text} />
                           </div>
                         )}
 

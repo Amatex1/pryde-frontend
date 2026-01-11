@@ -76,6 +76,20 @@ export const connectSocket = (userId) => {
             logger.debug('🆔 Socket ID:', socket.id);
         });
 
+        // DEV WARNING: Detect deprecated event names (Phase R)
+        // These events should no longer be emitted by the server
+        if (process.env.NODE_ENV === 'development') {
+            socket.on('new_message', () => {
+                console.warn('[Socket] ⚠️ Deprecated event received: "new_message". Server should emit "message:new" instead.');
+            });
+            socket.on('newMessage', () => {
+                console.warn('[Socket] ⚠️ Deprecated event received: "newMessage". Server should emit "message:new" instead.');
+            });
+            socket.on('message_sent', () => {
+                console.warn('[Socket] ⚠️ Deprecated event received: "message_sent". Server should emit "message:sent" instead.');
+            });
+        }
+
         socket.on('connect_error', (error) => {
             logger.error('❌ Socket connection error:', error.message);
 
@@ -226,7 +240,7 @@ export const getSocket = () => socket;
 export const isSocketConnected = () => socket && socket.connected;
 
 // -----------------------------
-// MESSAGES
+// MESSAGES (Phase R: Unified event naming)
 // -----------------------------
 export const sendMessage = (data) => {
     if (socket) {
@@ -238,28 +252,36 @@ export const sendMessage = (data) => {
     }
 };
 
+/**
+ * Listen for message sent confirmation (message:sent)
+ * Phase R: Unified to 'message:sent' event
+ */
 export const onMessageSent = (callback) => {
     if (socket && typeof socket.on === 'function') {
-        // Don't remove previous listeners - allow multiple components to listen
-        socket.on("message_sent", callback);
+        // UNIFIED: Listen to 'message:sent' (Phase R)
+        socket.on("message:sent", callback);
     }
     // Return cleanup function
     return () => {
         if (socket && typeof socket.off === 'function') {
-            socket.off("message_sent", callback);
+            socket.off("message:sent", callback);
         }
     };
 };
 
+/**
+ * Listen for new messages (message:new)
+ * Phase R: Unified to 'message:new' event
+ */
 export const onNewMessage = (callback) => {
     if (socket && typeof socket.on === 'function') {
-        // Don't remove previous listeners - allow multiple components to listen
-        socket.on("new_message", callback);
+        // UNIFIED: Listen to 'message:new' (Phase R)
+        socket.on("message:new", callback);
     }
     // Return cleanup function
     return () => {
         if (socket && typeof socket.off === 'function') {
-            socket.off("new_message", callback);
+            socket.off("message:new", callback);
         }
     };
 };

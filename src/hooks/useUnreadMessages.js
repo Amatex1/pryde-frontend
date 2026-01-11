@@ -2,22 +2,23 @@ import { useEffect, useState } from 'react';
 import { apiFetch } from '../utils/apiClient';
 import logger from '../utils/logger';
 import { isAuthConfirmed, subscribeToAuthStatus, AUTH_STATUS } from '../state/authStatus';
+import { getSocket } from '../utils/socket';
+import SOCKET_EVENTS from '../constants/socketEvents';
 
 /**
- * useUnreadMessages Hook - SINGLETON PATTERN
+ * useUnreadMessages Hook - SINGLETON PATTERN (PHASE R: Socket-first)
  *
- * Prevents duplicate polling by using a shared state across all instances.
- * Only one timer runs globally, all components share the same count.
+ * PHASE R: Now uses Socket.IO for real-time updates instead of polling.
+ * Polling is ONLY used as fallback when socket is disconnected.
  *
  * Features:
- * - Singleton polling (prevents request storms)
+ * - Socket.IO real-time updates (primary)
+ * - Fallback polling only when socket disconnected
+ * - Singleton pattern (prevents duplicate subscriptions)
  * - Shared state across all hook instances
- * - Hard guard against rapid fetches (2 min minimum)
- * - Cached responses (60s TTL)
- * - 3-minute polling interval
- * - 🔥 AUTH-GATED: Only polls when user is authenticated
+ * - 🔥 AUTH-GATED: Only activates when user is authenticated
  *
- * @returns {number} count - The number of unread messages
+ * @returns {{ totalUnread: number, unreadByUser: Array }} Unread message data
  */
 
 // Shared state across all hook instances (SINGLETON)
@@ -29,6 +30,7 @@ let lastFetch = 0;
 const listeners = new Set();
 let globalInterval = null;
 let authUnsubscribe = null;
+let socketListenersSetup = false;
 
 /**
  * Fetch unread count (singleton - only one fetch at a time)
@@ -89,7 +91,85 @@ async function fetchUnread() {
 }
 
 /**
- * Start global polling interval (singleton)
+ * PHASE R: Setup socket listeners for real-time message updates
+ */
+function setupSocketListeners() {
+  if (socketListenersSetup) return;
+
+  const socket = getSocket();
+  if (!socket) {
+    logger.debug('[useUnreadMessages] Socket not available, will use polling fallback');
+    return;
+  }
+
+  socketListenersSetup = true;
+  logger.debug('[useUnreadMessages] Setting up socket listeners for real-time sync');
+
+  // Handle new message received - increment unread count
+  const handleNewMessage = (data) => {
+    logger.debug('[useUnreadMessages] Socket: new message received', data);
+    // Increment total unread count
+    const newCache = {
+      ...unreadCache,
+      totalUnread: unreadCache.totalUnread + 1
+    };
+    // Update user-specific count if we have sender info
+    if (data.sender && data.sender._id) {
+      const existingUser = newCache.unreadByUser.find(u => u.userId === data.sender._id);
+      if (existingUser) {
+        existingUser.count += 1;
+      } else {
+        newCache.unreadByUser = [...newCache.unreadByUser, {
+          userId: data.sender._id,
+          username: data.sender.username,
+          displayName: data.sender.displayName,
+          count: 1
+        }];
+      }
+    }
+    unreadCache = newCache;
+    listeners.forEach(fn => fn(unreadCache));
+  };
+
+  // Handle message read - decrement unread count
+  const handleMessageRead = (data) => {
+    logger.debug('[useUnreadMessages] Socket: message read', data);
+    // Refresh from server to get accurate count
+    lastFetch = 0; // Reset guard
+    fetchUnread();
+  };
+
+  // Handle all messages read
+  const handleMessagesReadAll = () => {
+    logger.debug('[useUnreadMessages] Socket: all messages read');
+    unreadCache = { totalUnread: 0, unreadByUser: [] };
+    listeners.forEach(fn => fn(unreadCache));
+  };
+
+  // Subscribe to socket events (Phase R: Unified event naming)
+  // UNIFIED: Only listen to 'message:new' - legacy events removed
+  socket.on(SOCKET_EVENTS.MESSAGE.NEW, handleNewMessage);
+  socket.on(SOCKET_EVENTS.MESSAGE.READ, handleMessageRead);
+  socket.on('messages:read_all', handleMessagesReadAll);
+
+  // Handle socket disconnect - start polling as fallback
+  socket.on('disconnect', () => {
+    logger.debug('[useUnreadMessages] Socket disconnected, starting polling fallback');
+    startPolling();
+  });
+
+  // Handle socket reconnect - stop polling
+  socket.on('connect', () => {
+    logger.debug('[useUnreadMessages] Socket reconnected, stopping polling');
+    stopPolling();
+    // Refresh count after reconnect
+    lastFetch = 0;
+    fetchUnread();
+  });
+}
+
+/**
+ * Start global polling interval (FALLBACK ONLY - when socket disconnected)
  */
 function startPolling() {
   if (globalInterval) return; // Already polling
@@ -100,7 +180,14 @@ function startPolling() {
     return;
   }
 
-  logger.debug('[useUnreadMessages] Starting global polling (3 min interval)');
+  // PHASE R: Check if socket is connected - if so, don't poll
+  const socket = getSocket();
+  if (socket?.connected) {
+    logger.debug('[useUnreadMessages] Socket connected, skipping polling');
+    return;
+  }
+
+  logger.debug('[useUnreadMessages] Starting fallback polling (3 min interval)');
   globalInterval = setInterval(fetchUnread, 180_000); // 3 minutes
 }
 
@@ -111,7 +198,7 @@ function stopPolling() {
   if (globalInterval) {
     clearInterval(globalInterval);
     globalInterval = null;
-    logger.debug('[useUnreadMessages] Stopped global polling');
+    logger.debug('[useUnreadMessages] Stopped polling');
   }
 }
 
@@ -121,6 +208,7 @@ function stopPolling() {
 function clearCache() {
   unreadCache = { totalUnread: 0, unreadByUser: [] };
   lastFetch = 0;
+  socketListenersSetup = false;
   listeners.forEach(fn => fn(unreadCache));
   logger.debug('[useUnreadMessages] Cache cleared');
 }
@@ -134,8 +222,8 @@ function handleAuthChange(newStatus) {
     stopPolling();
     clearCache();
   } else if (newStatus === AUTH_STATUS.AUTHENTICATED && listeners.size > 0) {
-    // User logged in and we have listeners - start polling
-    startPolling();
+    // User logged in - setup socket listeners and fetch
+    setupSocketListeners();
     fetchUnread(); // Fetch immediately on login
   }
 }
@@ -157,13 +245,14 @@ export function useUnreadMessages() {
       authUnsubscribe = subscribeToAuthStatus(handleAuthChange);
     }
 
-    // Fetch immediately if cache is stale AND user is authenticated
+    // PHASE R: Setup socket listeners for real-time updates
     if (isAuthConfirmed()) {
       fetchUnread();
 
-      // Start polling if this is the first listener
+      // Setup socket listeners (primary) - polling will only start if socket unavailable
       if (listeners.size === 1) {
-        startPolling();
+        setupSocketListeners();
+        // startPolling is now only called as fallback when socket disconnects
       }
     }
 

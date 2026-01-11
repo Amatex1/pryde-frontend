@@ -84,12 +84,12 @@ export default function MessagesController() {
     }
   }, [selectedChatId, selectedChatType]);
 
-  // Socket event handlers
+  // Socket event handlers (Phase R: Unified to message:new)
   useEffect(() => {
     if (!socket) return;
 
     const handleNewMessage = (message) => {
-      if (message.conversationId === selectedChatId || 
+      if (message.conversationId === selectedChatId ||
           message.sender._id === selectedChatId ||
           message.recipient === selectedChatId) {
         setMessages(prev => [...prev, message]);
@@ -105,11 +105,13 @@ export default function MessagesController() {
       }
     };
 
-    socket.on('newMessage', handleNewMessage);
+    // UNIFIED: Using 'message:new' instead of 'newMessage' (Phase R)
+    // Deprecated: 'newMessage' event naming removed
+    socket.on('message:new', handleNewMessage);
     socket.on('typing', handleTyping);
 
     return () => {
-      socket.off('newMessage', handleNewMessage);
+      socket.off('message:new', handleNewMessage);
       socket.off('typing', handleTyping);
     };
   }, [socket, selectedChatId]);

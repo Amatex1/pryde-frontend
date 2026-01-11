@@ -4,8 +4,8 @@ import OptimizedImage from './OptimizedImage';
 import ReactionButton from './ReactionButton';
 import TieredBadgeDisplay from './TieredBadgeDisplay';
 import PausableGif from './PausableGif';
+import FormattedText from './FormattedText';
 import { getImageUrl } from '../utils/imageUrl';
-import { sanitizeContent } from '../utils/sanitize';
 import '../pages/Feed.css';
 
 /**
@@ -211,7 +211,9 @@ const CommentThread = ({
                 </div>
               ) : (
                 <>
-                  <p className="comment-text">{sanitizeContent(comment.content)}</p>
+                  <p className="comment-text">
+                    <FormattedText text={comment.content} />
+                  </p>
                   {comment.gifUrl && (
                     <div className="comment-gif">
                       <PausableGif src={comment.gifUrl} alt="GIF" />
@@ -384,7 +386,9 @@ const CommentThread = ({
                         </div>
                       ) : (
                         <>
-                          <p className="comment-text">{reply.content}</p>
+                          <p className="comment-text">
+                            <FormattedText text={reply.content} />
+                          </p>
                           {reply.gifUrl && (
                             <div className="comment-gif">
                               <img src={reply.gifUrl} alt="GIF" />

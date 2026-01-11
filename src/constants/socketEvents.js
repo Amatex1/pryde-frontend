@@ -44,24 +44,26 @@ export const COMMENT_EVENTS = {
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// MESSAGE EVENTS
+// MESSAGE EVENTS (Phase R: Unified naming)
 // ═══════════════════════════════════════════════════════════════════
 export const MESSAGE_EVENTS = {
   // Client → Server
   SEND: 'send_message',
-  
-  // Server → Client
-  SENT: 'message:sent',
-  RECEIVED: 'message:received',
+
+  // Server → Client (UNIFIED - Phase R)
+  NEW: 'message:new',           // Primary event for new messages
+  SENT: 'message:sent',         // Confirmation for sender
   DELETED: 'message:deleted',
   EDITED: 'message:edited',
   REACTION_ADDED: 'message:reactionAdded',
   REACTION_REMOVED: 'message:reactionRemoved',
   READ: 'message:read',
-  
-  // Legacy events
+
+  // DEPRECATED: Legacy events (kept for dev warnings only)
+  // DO NOT use these - they are no longer emitted by the server
   LEGACY_RECEIVED: 'new_message',
   LEGACY_SENT: 'message_sent',
+  LEGACY_CAMELCASE: 'newMessage',
 };
 
 // ═══════════════════════════════════════════════════════════════════

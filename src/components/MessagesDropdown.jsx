@@ -43,22 +43,50 @@ const MessagesDropdown = memo(() => {
     }
   }, [showDropdown, userId]);
 
-  // Listen for new messages via socket
+  // Listen for new messages via socket (Phase R: Unified to message:new)
   useEffect(() => {
     if (!userId) return;
     const socket = getSocket();
     if (!socket) return;
 
-    const handleNewMessage = () => {
+    const handleNewMessage = (message) => {
+      // Update conversations list immediately with the new message
+      setConversations((prev) => {
+        // Find sender ID (the other person)
+        const senderId = message.sender?._id;
+        if (!senderId || senderId === userId) return prev;
+
+        // Check if conversation exists
+        const existingIndex = prev.findIndex(c =>
+          c.otherUser?._id === senderId || c._id === senderId
+        );
+
+        if (existingIndex >= 0) {
+          // Update existing conversation and move to top
+          const updated = [...prev];
+          const conv = { ...updated[existingIndex], lastMessage: message };
+          updated.splice(existingIndex, 1);
+          return [conv, ...updated].slice(0, 5);
+        } else {
+          // New conversation - add to top
+          const newConv = {
+            _id: senderId,
+            otherUser: message.sender,
+            lastMessage: message
+          };
+          return [newConv, ...prev].slice(0, 5);
+        }
+      });
+
+      // If dropdown is open, also do a full refetch for accuracy
       if (showDropdown) fetchConversations();
     };
 
+    // UNIFIED: Only listen to 'message:new' (Phase R)
     socket.on('message:new', handleNewMessage);
-    socket.on('message:received', handleNewMessage);
 
     return () => {
       socket.off('message:new', handleNewMessage);
-      socket.off('message:received', handleNewMessage);
     };
   }, [userId, showDropdown]);
 

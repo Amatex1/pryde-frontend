@@ -154,6 +154,15 @@
   margin: 0;
 }
 
+/* PHASE R: Push notification blocked hint */
+.notification-blocked-hint {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  font-style: italic;
+  opacity: 0.8;
+}
+
 .toggle-switch {
   position: relative;
   display: inline-block;

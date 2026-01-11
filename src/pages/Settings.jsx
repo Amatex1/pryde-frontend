@@ -10,6 +10,11 @@ import { logout } from '../utils/auth';
 import { setQuietMode, setQuietSubToggle, getQuietSubToggle, setCursorStyle, getCursorStyle, getCursorStyleOptions } from '../utils/themeManager';
 import { useAuth } from '../context/AuthContext';
 import logger from '../utils/logger';
+import {
+  subscribeToPushNotifications,
+  unsubscribeFromPushNotifications,
+  isPushNotificationSubscribed
+} from '../utils/pushNotifications';
 import './Settings.css';
 
 function Settings() {
@@ -46,12 +51,34 @@ function Settings() {
   // IDENTITY: LGBTQ+ or Ally (can be updated after registration)
   const [identity, setIdentity] = useState(null);
   const [identitySaving, setIdentitySaving] = useState(false);
+  // PHASE R: Push Notifications
+  const [pushEnabled, setPushEnabled] = useState(false);
+  const [pushPermission, setPushPermission] = useState('default'); // 'granted', 'denied', 'default'
+  const [pushLoading, setPushLoading] = useState(false);
   // NOTE: Verification system removed 2025-12-26 (returns 410 Gone)
   // State and API calls removed to prevent 410 loops
 
   // ✅ Fetch data on mount
   useEffect(() => {
     fetchInitialData();
+  }, []);
+
+  // PHASE R: Check push notification status on mount
+  useEffect(() => {
+    const checkPushStatus = async () => {
+      // Check browser permission
+      if ('Notification' in window) {
+        setPushPermission(Notification.permission);
+      }
+      // Check if subscribed to push
+      try {
+        const isSubscribed = await isPushNotificationSubscribed();
+        setPushEnabled(isSubscribed);
+      } catch (error) {
+        logger.debug('Could not check push subscription status:', error);
+      }
+    };
+    checkPushStatus();
   }, []);
 
   // ✅ Update form data when currentUser changes
@@ -247,6 +274,60 @@ function Settings() {
       // Revert on error
       setCursorStyleState(previousStyle);
       setCursorStyle(previousStyle);
+    }
+  };
+
+  // PHASE R: Handle push notification toggle
+  const handlePushNotificationToggle = async () => {
+    // User-initiated click required (no auto-prompt)
+    if (pushLoading) return;
+
+    // Check if browser supports notifications
+    if (!('Notification' in window)) {
+      setMessage('Your browser does not support push notifications');
+      return;
+    }
+
+    // If permission is denied, inform user
+    if (Notification.permission === 'denied') {
+      setMessage('Notifications are blocked in your browser settings');
+      return;
+    }
+
+    setPushLoading(true);
+
+    try {
+      if (pushEnabled) {
+        // Unsubscribe
+        const success = await unsubscribeFromPushNotifications();
+        if (success) {
+          setPushEnabled(false);
+          setMessage('Push notifications disabled');
+        } else {
+          setMessage('Failed to disable push notifications');
+        }
+      } else {
+        // Subscribe - this will trigger browser permission prompt if needed
+        const success = await subscribeToPushNotifications();
+        if (success) {
+          setPushEnabled(true);
+          setPushPermission('granted');
+          setMessage('Push notifications enabled');
+        } else {
+          // Check if permission was denied
+          if (Notification.permission === 'denied') {
+            setPushPermission('denied');
+            setMessage('Notifications are blocked in your browser settings');
+          } else {
+            setMessage('Failed to enable push notifications');
+          }
+        }
+      }
+    } catch (error) {
+      logger.error('Push notification toggle error:', error);
+      setMessage('Failed to update push notification settings');
+    } finally {
+      setPushLoading(false);
     }
   };
 
@@ -523,6 +604,39 @@ function Settings() {
               <InviteManagement />
             </div>
           )}
+
+          {/* PHASE R: Push Notifications */}
+          <div className="settings-section">
+            <h2 className="section-title">🔔 Notifications</h2>
+            <p className="section-description">
+              Control how you receive notifications from Pryde.
+            </p>
+
+            <div className="notification-settings">
+              <div className="notification-item">
+                <div className="notification-info">
+                  <h3>Push Notifications</h3>
+                  <p>Receive notifications when Pryde isn't open.</p>
+                  {pushPermission === 'denied' && (
+                    <p className="notification-blocked-hint">
+                      Notifications are blocked in your browser settings.
+                    </p>
+                  )}
+                </div>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    id="push-notifications-toggle"
+                    name="pushNotifications"
+                    checked={pushEnabled}
+                    onChange={handlePushNotificationToggle}
+                    disabled={pushLoading || pushPermission === 'denied'}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
 
           {/* PHASE 2: Quiet Mode + V2 Sub-toggles */}
           <div className="settings-section">

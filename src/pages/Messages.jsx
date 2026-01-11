@@ -466,15 +466,31 @@ function Messages() {
         });
       });
 
-      // Listen for sent message confirmation
+      // Listen for sent message confirmation (message:sent - Phase R unified)
       const cleanupMessageSent = onMessageSent((sentMessage) => {
-        logger.debug('✅ Received message_sent event:', sentMessage);
+        logger.debug('✅ Received message:sent event:', sentMessage);
 
-        // Only add to messages if this is the selected chat
+        // Only process if this is the selected chat
         if (selectedChat === sentMessage.recipient._id) {
-          logger.debug('✅ Sent message is for selected chat, adding to messages');
+          logger.debug('✅ Sent message is for selected chat, reconciling...');
           setMessages((prev) => {
-            // Prevent duplicates - check if message already exists
+            // OPTIMISTIC UI RECONCILIATION: Replace temp message with real one
+            // Find any optimistic message (starts with temp_) and replace it
+            const hasOptimistic = prev.some(msg => msg._isOptimistic);
+            if (hasOptimistic) {
+              logger.debug('🔄 Replacing optimistic message with confirmed message');
+              // Replace the first optimistic message with the confirmed one
+              let replaced = false;
+              return prev.map(msg => {
+                if (!replaced && msg._isOptimistic) {
+                  replaced = true;
+                  return sentMessage;
+                }
+                return msg;
+              });
+            }
+
+            // No optimistic message found - check for duplicates and add
             if (prev.some(msg => msg._id === sentMessage._id)) {
               logger.debug('⚠️ Message already exists, skipping');
               return prev;
@@ -546,22 +562,41 @@ function Messages() {
 
     // Use GIF URL if selected, otherwise use file attachment
     const attachmentUrl = selectedGif || selectedFile?.url;
+    const messageContent = message.trim();
 
-    logger.debug('📤 Sending message:', {
+    // Generate temporary ID for optimistic update
+    const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    // Create optimistic message object
+    const optimisticMessage = {
+      _id: tempId,
+      sender: {
+        _id: currentUser?._id,
+        username: currentUser?.username,
+        profilePhoto: currentUser?.profilePhoto
+      },
+      recipient: { _id: selectedChat },
+      content: messageContent,
+      attachment: attachmentUrl || null,
+      contentWarning: contentWarning || null,
+      createdAt: new Date().toISOString(),
+      _isOptimistic: true // Flag for reconciliation
+    };
+
+    logger.debug('📤 Sending message (optimistic UI):', {
+      tempId,
       recipientId: selectedChat,
-      content: message,
+      content: messageContent,
       attachment: attachmentUrl,
-      contentWarning: contentWarning,
-      chatType: selectedChatType,
-      socketConnected: isSocketConnected()
+      chatType: selectedChatType
     });
 
     try {
       if (selectedChatType === 'group') {
-        // Send group message via API
+        // Send group message via API (no optimistic for groups yet)
         const response = await api.post('/messages', {
           groupChatId: selectedChat,
-          content: message,
+          content: messageContent,
           attachment: attachmentUrl,
           voiceNote: voiceNote,
           contentWarning: contentWarning
@@ -582,24 +617,29 @@ function Messages() {
           return;
         }
 
+        // OPTIMISTIC UI: Add message immediately before server confirms
+        setMessages((prev) => [...prev, optimisticMessage]);
+
         // Send via Socket.IO for real-time delivery
         logger.debug('🔌 Emitting send_message via socket', {
           socketId: socket.id,
-          recipientId: selectedChat,
-          hasContent: !!message,
-          hasAttachment: !!attachmentUrl
+          tempId,
+          recipientId: selectedChat
         });
 
         try {
           socketSendMessage({
             recipientId: selectedChat,
-            content: message,
+            content: messageContent,
             attachment: attachmentUrl,
             voiceNote: voiceNote,
-            contentWarning: contentWarning
+            contentWarning: contentWarning,
+            _tempId: tempId // Send tempId for reconciliation
           });
         } catch (error) {
           logger.error('❌ Error sending message via socket:', error);
+          // ROLLBACK: Remove optimistic message on error
+          setMessages((prev) => prev.filter(m => m._id !== tempId));
           alert('Failed to send message. Please try again.');
           return;
         }
@@ -623,6 +663,8 @@ function Messages() {
       }
     } catch (error) {
       logger.error('❌ Error sending message:', error);
+      // ROLLBACK: Remove optimistic message on error
+      setMessages((prev) => prev.filter(m => m._id !== tempId));
       alert('Failed to send message');
     }
   };

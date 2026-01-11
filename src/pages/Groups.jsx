@@ -34,6 +34,7 @@ import Navbar from '../components/Navbar';
 import OptimizedImage from '../components/OptimizedImage';
 import PostHeader from '../components/PostHeader';
 import Toast from '../components/Toast';
+import FormattedText from '../components/FormattedText';
 import { useToast } from '../hooks/useToast';
 import api from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
@@ -989,7 +990,9 @@ function Groups() {
                       )}
 
                       <div className="post-content">
-                        {post.content && <p>{post.content}</p>}
+                        {post.content && (
+                          <p><FormattedText text={post.content} /></p>
+                        )}
 
                         {/* Display post media */}
                         {post.media && post.media.length > 0 && (
