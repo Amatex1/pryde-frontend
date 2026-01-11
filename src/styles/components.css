@@ -372,6 +372,34 @@ select:focus,
    NAVBAR — FINAL VISUAL POLISH
    ===================================================== */
 
+/* Base styles for navbar-utility-search - ensure it stays contained */
+.navbar-utility-search {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  min-width: 0; /* Prevent overflow */
+  max-width: 350px; /* Constrain on tablets */
+}
+
+.navbar-utility-search .global-search {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Tablet: constrain search width so it doesn't overlap with other elements */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .navbar-utility-search {
+    max-width: 280px;
+    margin: 0 var(--space-2);
+  }
+
+  .navbar-utility-search input,
+  .navbar-utility-search .search-input {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
 @media (min-width: 1024px) {
 
   /* Remove navbar border so it blends with background */
@@ -388,13 +416,12 @@ select:focus,
     background: transparent;
   }
 
-  /* PERFECTLY center the search bar */
+  /* PERFECTLY center the search bar on desktop */
   .navbar-utility-search {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    display: flex;
-    justify-content: center;
+    max-width: 420px;
   }
 
   .navbar-utility-search input,
