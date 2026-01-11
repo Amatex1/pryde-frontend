@@ -36,30 +36,39 @@ export function sendToAnalytics({ name, delta, value, id, rating }) {
 
   // Send to analytics in production
   if (import.meta.env.PROD) {
-    // Google Analytics 4
-    if (window.gtag) {
-      window.gtag('event', name, {
-        event_category: 'Web Vitals',
-        value: Math.round(name === 'CLS' ? delta * 1000 : delta),
-        event_label: id,
-        non_interaction: true,
-      });
+    // Google Analytics 4 - wrapped in try/catch to prevent adblock errors
+    try {
+      if (window.gtag) {
+        window.gtag('event', name, {
+          event_category: 'Web Vitals',
+          value: Math.round(name === 'CLS' ? delta * 1000 : delta),
+          event_label: id,
+          non_interaction: true,
+        });
+      }
+    } catch (error) {
+      // Silently ignore analytics errors (likely blocked by adblock)
+      // This is expected and should not affect app functionality
     }
 
     // Custom analytics endpoint (optional)
-    if (window.navigator.sendBeacon) {
-      const body = JSON.stringify({
-        name,
-        value: Math.round(name === 'CLS' ? value * 1000 : value),
-        delta: Math.round(name === 'CLS' ? delta * 1000 : delta),
-        rating,
-        id,
-        url: window.location.href,
-        timestamp: Date.now()
-      });
+    try {
+      if (window.navigator.sendBeacon) {
+        const body = JSON.stringify({
+          name,
+          value: Math.round(name === 'CLS' ? value * 1000 : value),
+          delta: Math.round(name === 'CLS' ? delta * 1000 : delta),
+          rating,
+          id,
+          url: window.location.href,
+          timestamp: Date.now()
+        });
 
-      // Send to your backend analytics endpoint
-      // window.navigator.sendBeacon('/api/analytics/web-vitals', body);
+        // Send to your backend analytics endpoint
+        // window.navigator.sendBeacon('/api/analytics/web-vitals', body);
+      }
+    } catch (error) {
+      // Silently ignore beacon errors
     }
   }
 }

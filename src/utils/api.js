@@ -64,6 +64,14 @@ const setCsrfToken = (token) => {
 // Add auth token and CSRF token to requests
 api.interceptors.request.use(
   (config) => {
+    // 🚨 SECURITY: Block accidental Cloudflare API calls from frontend
+    // Cloudflare API should NEVER be called directly from browser
+    const url = config.url || '';
+    if (url.includes('/api/v4/accounts') || url.includes('/api/v4/user') || url.includes('cloudflare.com/client/v4')) {
+      logger.error('[SECURITY] Blocked Cloudflare API call from frontend:', url);
+      throw new Error(`Blocked illegal Cloudflare API call: ${url}`);
+    }
+
     // Ensure headers object exists
     if (!config.headers) {
       config.headers = {};
