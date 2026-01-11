@@ -783,6 +783,194 @@
   transform: scale(1.1);
 }
 
+/* ========================================
+   MESSAGE 3-DOT MENU
+   ======================================== */
+
+.message-actions-menu {
+  position: relative;
+  display: inline-block;
+  margin-top: 0.25rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.message-group:hover .message-actions-menu {
+  opacity: 1;
+}
+
+.btn-message-menu {
+  background: var(--bg-tertiary, rgba(255, 255, 255, 0.1));
+  border: none;
+  cursor: pointer;
+  font-size: 1.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  color: var(--text-secondary, #94A3B8);
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.btn-message-menu:hover {
+  background: var(--bg-hover, rgba(255, 255, 255, 0.15));
+  color: var(--text-primary, #fff);
+}
+
+.message-menu-dropdown {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background: var(--bg-card, #1E293B);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 8px;
+  padding: 0.5rem 0;
+  min-width: 150px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+}
+
+.message-menu-dropdown .menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  color: var(--text-primary, #fff);
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s;
+}
+
+.message-menu-dropdown .menu-item:hover {
+  background: var(--bg-hover, rgba(255, 255, 255, 0.1));
+}
+
+.message-menu-dropdown .menu-item-danger {
+  color: var(--error-color, #EF4444);
+}
+
+.message-menu-dropdown .menu-item-danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* Sent messages - align menu to right */
+.message-group.sent .message-menu-dropdown {
+  left: auto;
+  right: 0;
+}
+
+/* ========================================
+   DELETED MESSAGE PLACEHOLDER
+   ======================================== */
+
+.message-bubble.message-deleted {
+  background: var(--bg-tertiary, rgba(255, 255, 255, 0.05)) !important;
+  color: var(--text-muted, #64748B) !important;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+
+.message-deleted .deleted-icon {
+  opacity: 0.6;
+}
+
+.message-deleted .deleted-text {
+  font-size: 0.875rem;
+}
+
+/* ========================================
+   DELETE CONFIRMATION MODAL
+   ======================================== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.delete-modal {
+  background: var(--bg-card, #1E293B);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 350px;
+  width: 90%;
+  text-align: center;
+}
+
+.delete-modal h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary, #fff);
+  font-size: 1.25rem;
+}
+
+.delete-modal p {
+  margin: 0 0 1.5rem 0;
+  color: var(--text-secondary, #94A3B8);
+  font-size: 0.9375rem;
+}
+
+.delete-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.delete-modal-actions button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-delete-for-all {
+  background: var(--error-color, #EF4444);
+  color: #fff;
+}
+
+.btn-delete-for-all:hover {
+  background: #DC2626;
+}
+
+.btn-delete-for-me {
+  background: var(--bg-tertiary, rgba(255, 255, 255, 0.1));
+  color: var(--text-primary, #fff);
+}
+
+.btn-delete-for-me:hover {
+  background: var(--bg-hover, rgba(255, 255, 255, 0.15));
+}
+
+.delete-modal .btn-cancel {
+  background: transparent;
+  color: var(--text-muted, #64748B);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+}
+
+.delete-modal .btn-cancel:hover {
+  background: var(--bg-tertiary, rgba(255, 255, 255, 0.05));
+}
+
 .message-reactions {
   display: flex;
   flex-wrap: wrap;

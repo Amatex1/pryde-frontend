@@ -32,6 +32,10 @@ function Lounge() {
   const [onlineUsersCache, setOnlineUsersCache] = useState({ users: [], timestamp: 0 });
   const [isQuietMode, setIsQuietMode] = useState(document.documentElement.getAttribute('data-quiet') === 'true');
   const [typingUsers, setTypingUsers] = useState(new Map()); // Map of userId -> timeout
+  const [openMessageMenu, setOpenMessageMenu] = useState(null); // Track which message's action menu is open
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteMessageId, setDeleteMessageId] = useState(null);
+  const [deleteIsSender, setDeleteIsSender] = useState(false);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const socketRef = useRef(null);
@@ -148,12 +152,19 @@ function Lounge() {
     }
   }, []);
 
-  const handleDeletedMessage = useCallback(({ messageId }) => {
-    setMessages(prev => prev.map(msg =>
-      msg._id === messageId
-        ? { ...msg, isDeleted: true }
-        : msg
-    ));
+  const handleDeletedMessage = useCallback(({ messageId, deleteForAll }) => {
+    if (deleteForAll) {
+      // Show deleted placeholder for delete-for-all
+      setMessages(prev => prev.map(msg =>
+        msg._id === messageId
+          ? { ...msg, isDeleted: true }
+          : msg
+      ));
+    } else {
+      // Remove from view (should not typically happen via socket for delete-for-self)
+      // This is just a fallback
+      setMessages(prev => prev.filter(msg => msg._id !== messageId));
+    }
   }, []);
 
   const handleOnlineCount = useCallback(({ count }) => {
@@ -407,13 +418,36 @@ function Lounge() {
     }
   };
 
-  // Delete message (admin only)
-  const handleDeleteMessage = async (messageId) => {
-    if (!window.confirm('Are you sure you want to delete this message?')) return;
+  // Open delete confirmation modal
+  const openDeleteModal = (messageId, isSender) => {
+    setDeleteMessageId(messageId);
+    setDeleteIsSender(isSender);
+    setDeleteModalOpen(true);
+  };
+
+  // Delete message with options
+  const handleDeleteMessage = async (deleteForAll = false) => {
+    if (!deleteMessageId) return;
 
     try {
-      await api.delete(`/global-chat/messages/${messageId}`);
-      // Message will be updated via Socket.IO event
+      const queryParam = deleteForAll ? '?deleteForAll=true' : '';
+      await api.delete(`/global-chat/messages/${deleteMessageId}${queryParam}`);
+
+      if (deleteForAll) {
+        // Message will be updated via Socket.IO event for delete-for-all
+        // But also update locally immediately for responsiveness
+        setMessages(prev => prev.map(msg =>
+          msg._id === deleteMessageId
+            ? { ...msg, isDeleted: true }
+            : msg
+        ));
+      } else {
+        // Remove from view for this user only (delete for self)
+        setMessages(prev => prev.filter(msg => msg._id !== deleteMessageId));
+      }
+
+      setDeleteModalOpen(false);
+      setDeleteMessageId(null);
     } catch (error) {
       console.error('Error deleting message:', error);
       setError('Failed to delete message');
@@ -658,27 +692,53 @@ function Lounge() {
                           </div>
                         )}
 
-                        <div className="lounge-message-actions">
-                          {msg.sender?.id !== currentUser?._id && (
-                            <button
-                              type="button"
-                              className="lounge-action-btn"
-                              onClick={() => handleMessageUser(msg.sender?.id)}
-                              title="Send private message"
-                            >
-                              💬 DM
-                            </button>
-                          )}
-
-                          {isAdmin && (
-                            <button
-                              type="button"
-                              className="lounge-action-btn lounge-action-delete"
-                              onClick={() => handleDeleteMessage(msg._id)}
-                              title="Delete message"
-                            >
-                              🗑️ Delete
-                            </button>
+                        {/* 3-dot menu for message actions */}
+                        <div className="lounge-message-actions-menu">
+                          <button
+                            className="btn-lounge-menu"
+                            onClick={() => setOpenMessageMenu(openMessageMenu === msg._id ? null : msg._id)}
+                            title="More actions"
+                          >
+                            ⋮
+                          </button>
+                          {openMessageMenu === msg._id && (
+                            <div className="lounge-menu-dropdown">
+                              {msg.sender?.id !== currentUser?._id && (
+                                <button
+                                  onClick={() => { handleMessageUser(msg.sender?.id); setOpenMessageMenu(null); }}
+                                  className="menu-item"
+                                >
+                                  💬 Send DM
+                                </button>
+                              )}
+                              {/* Sender can delete for all or for self */}
+                              {msg.sender?.id === currentUser?._id && (
+                                <button
+                                  onClick={() => { openDeleteModal(msg._id, true); setOpenMessageMenu(null); }}
+                                  className="menu-item menu-item-danger"
+                                >
+                                  🗑️ Delete
+                                </button>
+                              )}
+                              {/* Non-sender can delete for self only */}
+                              {msg.sender?.id !== currentUser?._id && (
+                                <button
+                                  onClick={() => { openDeleteModal(msg._id, false); setOpenMessageMenu(null); }}
+                                  className="menu-item menu-item-danger"
+                                >
+                                  🗑️ Delete for me
+                                </button>
+                              )}
+                              {/* Admin can also delete for all */}
+                              {isAdmin && msg.sender?.id !== currentUser?._id && (
+                                <button
+                                  onClick={() => { openDeleteModal(msg._id, true); setOpenMessageMenu(null); }}
+                                  className="menu-item menu-item-danger"
+                                >
+                                  🛡️ Mod Delete
+                                </button>
+                              )}
+                            </div>
                           )}
                         </div>
                       </div>
@@ -858,6 +918,38 @@ function Lounge() {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Message Confirmation Modal */}
+      {deleteModalOpen && (
+        <div className="modal-overlay" onClick={() => setDeleteModalOpen(false)}>
+          <div className="delete-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Delete Message</h3>
+            <p>How would you like to delete this message?</p>
+            <div className="delete-modal-actions">
+              {(deleteIsSender || isAdmin) && (
+                <button
+                  className="btn-delete-for-all"
+                  onClick={() => handleDeleteMessage(true)}
+                >
+                  🗑️ Delete for everyone
+                </button>
+              )}
+              <button
+                className="btn-delete-for-me"
+                onClick={() => handleDeleteMessage(false)}
+              >
+                👤 Delete for me
+              </button>
+              <button
+                className="btn-cancel"
+                onClick={() => setDeleteModalOpen(false)}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>

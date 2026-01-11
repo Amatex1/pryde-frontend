@@ -103,6 +103,7 @@ function Messages() {
   const [showContentWarning, setShowContentWarning] = useState(false);
   const [isRecipientUnavailable, setIsRecipientUnavailable] = useState(false);
   const [recipientUnavailableReason, setRecipientUnavailableReason] = useState('');
+  const [openMessageMenu, setOpenMessageMenu] = useState(null); // Track which message's action menu is open
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -497,11 +498,31 @@ function Messages() {
         }
       });
 
+      // Listen for message deletion events
+      const handleMessageDeleted = (data) => {
+        logger.debug('🗑️ Received message:deleted event:', data);
+        if (data.deleteForAll) {
+          // Show deleted placeholder
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg._id === data.messageId
+                ? { ...msg, isDeleted: true, content: '', attachment: null }
+                : msg
+            )
+          );
+        } else {
+          // Remove from view (deleted for self)
+          setMessages((prev) => prev.filter((msg) => msg._id !== data.messageId));
+        }
+      };
+      socket.on('message:deleted', handleMessageDeleted);
+
       // Return cleanup function
       return () => {
         cleanupNewMessage?.();
         cleanupMessageSent?.();
         cleanupTyping?.();
+        socket.off('message:deleted', handleMessageDeleted);
       };
     };
 
@@ -775,20 +796,40 @@ function Messages() {
     setEditMessageText('');
   };
 
-  const handleDeleteMessage = async (messageId) => {
-    const confirmed = await showConfirm(
-      'Are you sure you want to delete this message?',
-      'Delete Message',
-      'Delete',
-      'Cancel'
-    );
-    if (!confirmed) return;
+  // State for delete confirmation modal
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteMessageId, setDeleteMessageId] = useState(null);
+  const [deleteIsSender, setDeleteIsSender] = useState(false);
+
+  const openDeleteModal = (messageId, isSender) => {
+    setDeleteMessageId(messageId);
+    setDeleteIsSender(isSender);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteMessage = async (deleteForAll = false) => {
+    if (!deleteMessageId) return;
 
     try {
-      await api.delete(`/messages/${messageId}`);
+      const queryParam = deleteForAll ? '?deleteForAll=true' : '';
+      await api.delete(`/messages/${deleteMessageId}${queryParam}`);
 
-      // Remove the message from the list
-      setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
+      if (deleteForAll) {
+        // Mark message as deleted (show placeholder)
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg._id === deleteMessageId
+              ? { ...msg, isDeleted: true, content: '', attachment: null }
+              : msg
+          )
+        );
+      } else {
+        // Remove from view for this user
+        setMessages((prev) => prev.filter((msg) => msg._id !== deleteMessageId));
+      }
+
+      setDeleteModalOpen(false);
+      setDeleteMessageId(null);
     } catch (error) {
       logger.error('❌ Error deleting message:', error);
       showAlert('Failed to delete message. Please try again.', 'Delete Failed');
@@ -1490,7 +1531,13 @@ function Messages() {
                             <div className="message-sender-name">{getDisplayName(msg.sender)}</div>
                           </div>
 
-                          {isEditing ? (
+                          {/* Show deleted message placeholder */}
+                          {msg.isDeleted ? (
+                            <div className="message-bubble message-deleted">
+                              <span className="deleted-icon">🗑️</span>
+                              <span className="deleted-text">This message was deleted</span>
+                            </div>
+                          ) : isEditing ? (
                             <div className="message-edit-box">
                               <input
                                 type="text"
@@ -1570,38 +1617,54 @@ function Messages() {
                                 {msg.edited && <div className="message-edited-indicator">(edited)</div>}
                               </div>
 
-                              <div className="message-actions">
+                              {/* 3-dot menu for message actions */}
+                              <div className="message-actions-menu">
                                 <button
-                                  onClick={() => setReplyingTo(msg)}
-                                  className="btn-message-action"
-                                  title="Reply to message"
+                                  className="btn-message-menu"
+                                  onClick={() => setOpenMessageMenu(openMessageMenu === msg._id ? null : msg._id)}
+                                  title="More actions"
                                 >
-                                  ↩️
+                                  ⋮
                                 </button>
-                                <button
-                                  onClick={() => handleReactToMessage(msg._id)}
-                                  className="btn-message-action"
-                                  title="React to message"
-                                >
-                                  😊
-                                </button>
-                                {isSent && (
-                                  <>
+                                {openMessageMenu === msg._id && (
+                                  <div className="message-menu-dropdown">
                                     <button
-                                      onClick={() => handleEditMessage(msg._id, msg.content)}
-                                      className="btn-message-action"
-                                      title="Edit message"
+                                      onClick={() => { setReplyingTo(msg); setOpenMessageMenu(null); }}
+                                      className="menu-item"
                                     >
-                                      ✏️
+                                      ↩️ Reply
                                     </button>
                                     <button
-                                      onClick={() => handleDeleteMessage(msg._id)}
-                                      className="btn-message-action"
-                                      title="Delete message"
+                                      onClick={() => { handleReactToMessage(msg._id); setOpenMessageMenu(null); }}
+                                      className="menu-item"
                                     >
-                                      🗑️
+                                      😊 React
                                     </button>
-                                  </>
+                                    {isSent && (
+                                      <>
+                                        <button
+                                          onClick={() => { handleEditMessage(msg._id, msg.content); setOpenMessageMenu(null); }}
+                                          className="menu-item"
+                                        >
+                                          ✏️ Edit
+                                        </button>
+                                        <button
+                                          onClick={() => { openDeleteModal(msg._id, true); setOpenMessageMenu(null); }}
+                                          className="menu-item menu-item-danger"
+                                        >
+                                          🗑️ Delete
+                                        </button>
+                                      </>
+                                    )}
+                                    {!isSent && (
+                                      <button
+                                        onClick={() => { openDeleteModal(msg._id, false); setOpenMessageMenu(null); }}
+                                        className="menu-item menu-item-danger"
+                                      >
+                                        🗑️ Delete for me
+                                      </button>
+                                    )}
+                                  </div>
                                 )}
                               </div>
                             </>
@@ -2039,6 +2102,38 @@ function Messages() {
           inputType={modalState.inputType}
           defaultValue={modalState.defaultValue}
         />
+
+        {/* Delete Message Confirmation Modal */}
+        {deleteModalOpen && (
+          <div className="modal-overlay" onClick={() => setDeleteModalOpen(false)}>
+            <div className="delete-modal" onClick={(e) => e.stopPropagation()}>
+              <h3>Delete Message</h3>
+              <p>How would you like to delete this message?</p>
+              <div className="delete-modal-actions">
+                {deleteIsSender && (
+                  <button
+                    className="btn-delete-for-all"
+                    onClick={() => handleDeleteMessage(true)}
+                  >
+                    🗑️ Delete for everyone
+                  </button>
+                )}
+                <button
+                  className="btn-delete-for-me"
+                  onClick={() => handleDeleteMessage(false)}
+                >
+                  👤 Delete for me
+                </button>
+                <button
+                  className="btn-cancel"
+                  onClick={() => setDeleteModalOpen(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
