@@ -577,3 +577,131 @@ html {
 [data-quiet-visuals="true"] .notification-item {
   transition: background-color 0.15s ease !important;
 }
+
+/* ==================================================
+   FEED: QUIET MODE INFINITE SCROLL DISABLED
+   Users must click "Load more" - no auto-fetch
+   ================================================== */
+
+/* Load more button: no animation in quiet mode */
+[data-quiet="true"] .btn-load-more {
+  animation: none !important;
+  transition: background-color 0.2s ease !important;
+}
+
+[data-quiet="true"] .btn-load-more:hover {
+  transform: none !important;
+}
+
+/* End of feed message - clearer stopping point */
+[data-quiet="true"] .end-of-feed {
+  border-top: 1px solid var(--border-light);
+  padding-top: var(--space-4, 1.5rem);
+  margin-top: var(--space-4, 1.5rem);
+}
+
+/* Hide infinite scroll loading spinner in quiet mode */
+[data-quiet="true"] .infinite-scroll-loader {
+  display: none !important;
+}
+
+/* ==================================================
+   ONLINE PRESENCE: QUIET MODE
+   No visibility pressure - softened or hidden indicators
+   ================================================== */
+
+/* Hide the pulsing online dot in quiet mode */
+[data-quiet="true"] .online-presence .online-dot {
+  display: none !important;
+}
+
+/* Remove pulse animation from status dots */
+[data-quiet="true"] .online-presence .status-dot {
+  animation: none !important;
+}
+
+/* Softer indicator styling */
+[data-quiet="true"] .online-presence .online-indicator {
+  background: var(--color-surface-hover, rgba(255, 255, 255, 0.05));
+}
+
+/* Hide "Online" and "Last seen" text */
+[data-quiet="true"] .online-presence.quiet-mode .friend-status {
+  opacity: 0.6;
+  font-style: italic;
+}
+
+/* ==================================================
+   NAVIGATION: QUIET MODE SIMPLIFICATION
+   Hide non-essential nav items to reduce density
+   Core items remain: Feed, Messages, Profile, Settings
+   ================================================== */
+
+/* Hide Discover/Groups link in navigation */
+[data-quiet="true"] .mobile-menu-item[href="/discover"],
+[data-quiet="true"] .mobile-menu-item[href="/groups"],
+[data-quiet="true"] .nav-link[href="/discover"],
+[data-quiet="true"] .nav-link[href="/groups"] {
+  display: none !important;
+}
+
+/* Hide Events in quiet mode */
+[data-quiet="true"] .mobile-menu-item[href="/events"],
+[data-quiet="true"] .nav-link[href="/events"] {
+  display: none !important;
+}
+
+/* Hide "Explore Pryde" section header in mobile menu */
+[data-quiet="true"] .mobile-menu-section-header {
+  display: none !important;
+}
+
+/* Hide explore links in sidebar */
+[data-quiet="true"] .explore-links {
+  display: none !important;
+}
+
+/* Ensure core navigation items remain visible */
+[data-quiet="true"] .mobile-menu-item[href="/feed"],
+[data-quiet="true"] .mobile-menu-item[href="/messages"],
+[data-quiet="true"] .mobile-menu-item[href="/settings"],
+[data-quiet="true"] .mobile-menu-item[href*="/profile"] {
+  display: flex !important;
+}
+
+/* No gaps in navigation - use CSS grid for clean layout */
+[data-quiet="true"] .mobile-menu-items {
+  gap: 0.5rem;
+}
+
+/* Hide suggested connections link */
+[data-quiet="true"] .suggested-see-more {
+  display: none !important;
+}
+
+/* ==================================================
+   POST COMPOSER: QUIET MODE SIMPLIFIED UI
+   Collapse advanced options behind "More Options" button
+   ================================================== */
+
+/* "More posting options" button styling */
+[data-quiet="true"] .btn-more-options {
+  background: var(--color-surface-hover, rgba(255, 255, 255, 0.05));
+  border: 1px dashed var(--border-light);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+[data-quiet="true"] .btn-more-options:hover {
+  background: var(--color-surface-active, rgba(255, 255, 255, 0.1));
+  color: var(--text-primary);
+}
+
+/* Cleaner post actions bar in quiet mode */
+[data-quiet="true"] .post-actions-bar {
+  gap: 0.5rem;
+}

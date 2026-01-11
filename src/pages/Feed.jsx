@@ -39,6 +39,7 @@ import { uploadMultipleWithProgress } from '../utils/uploadWithProgress';
 import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
 import { withOptimisticUpdate } from '../utils/consistencyGuard';
 import { quietCopy } from '../config/uiCopy';
+import { getQuietMode } from '../utils/themeManager';
 import PageTitle from '../components/PageTitle';
 import CommunityResources from '../components/Sidebar/CommunityResources';
 import './Feed.css';
@@ -128,6 +129,10 @@ function Feed() {
   const [draftSaveStatus, setDraftSaveStatus] = useState(''); // 'saving', 'saved', or ''
   const [showMobileComposer, setShowMobileComposer] = useState(false); // Mobile composer bottom sheet
   const [isTyping, setIsTyping] = useState(false); // Track typing state for floating UI hiding
+
+  // QUIET MODE: Collapse advanced posting options
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
+  const isQuietMode = getQuietMode();
 
   // Pagination state
   const [page, setPage] = useState(1);
@@ -312,12 +317,20 @@ function Feed() {
   }, [posts, searchParams, fetchingPosts, postComments]);
 
   // Handle scroll detection for scroll-to-top button and infinite scroll
+  // QUIET MODE: Disable auto-fetch on scroll - require explicit "Load more" click
   useEffect(() => {
+    const isQuietMode = getQuietMode();
+
     const handleScroll = () => {
       // Show/hide scroll-to-top button
       setShowScrollTop(window.scrollY > 500);
 
-      // Infinite scroll detection
+      // QUIET MODE: No infinite scroll - enforce finite page with clear stopping point
+      if (isQuietMode) {
+        return; // User must click "Load more" button manually
+      }
+
+      // Infinite scroll detection (only when NOT in quiet mode)
       const scrollHeight = document.documentElement.scrollHeight;
       const scrollTop = window.scrollY;
       const clientHeight = window.innerHeight;
@@ -2080,60 +2093,76 @@ function Feed() {
               )}
 
               <div className="post-actions-bar">
-                <label className="btn-media-upload">
-                  <input
-                    id="media-upload-input"
-                    name="mediaUpload"
-                    type="file"
-                    multiple
-                    accept="image/*,image/gif,video/*"
-                    onChange={handleMediaSelect}
-                    disabled={uploadingMedia || selectedMedia.length >= 3}
-                    style={{ display: 'none' }}
-                  />
-                  {uploadingMedia ? `⏳ Uploading... ${uploadProgress}%` : '📷 Add Photos/Videos'}
-                </label>
+                {/* QUIET MODE: Show "More Options" button to reveal advanced options */}
+                {isQuietMode && !showAdvancedOptions && (
+                  <button
+                    type="button"
+                    className="btn-more-options"
+                    onClick={() => setShowAdvancedOptions(true)}
+                  >
+                    ➕ More posting options
+                  </button>
+                )}
 
-                <button
-                  type="button"
-                  className="btn-gif"
-                  onClick={() => setShowGifPicker(showGifPicker === 'main-post' ? null : 'main-post')}
-                  disabled={selectedPostGif !== null}
-                  title="Add GIF"
-                >
-                  GIF
-                </button>
+                {/* Advanced options - hidden by default in quiet mode */}
+                {(!isQuietMode || showAdvancedOptions) && (
+                  <>
+                    <label className="btn-media-upload">
+                      <input
+                        id="media-upload-input"
+                        name="mediaUpload"
+                        type="file"
+                        multiple
+                        accept="image/*,image/gif,video/*"
+                        onChange={handleMediaSelect}
+                        disabled={uploadingMedia || selectedMedia.length >= 3}
+                        style={{ display: 'none' }}
+                      />
+                      {uploadingMedia ? `⏳ Uploading... ${uploadProgress}%` : '📷 Add Photos/Videos'}
+                    </label>
 
-                <button
-                  type="button"
-                  className={`btn-poll ${showPollCreator ? 'active' : ''}`}
-                  onClick={() => setShowPollCreator(!showPollCreator)}
-                  title="Add poll"
-                >
-                  📊 Poll
-                </button>
+                    <button
+                      type="button"
+                      className="btn-gif"
+                      onClick={() => setShowGifPicker(showGifPicker === 'main-post' ? null : 'main-post')}
+                      disabled={selectedPostGif !== null}
+                      title="Add GIF"
+                    >
+                      GIF
+                    </button>
 
-                <button
-                  type="button"
-                  className={`btn-content-warning ${showContentWarning ? 'active' : ''}`}
-                  onClick={() => setShowContentWarning(!showContentWarning)}
-                  title="Add content warning"
-                >
-                  ⚠️ CW
-                </button>
+                    <button
+                      type="button"
+                      className={`btn-poll ${showPollCreator ? 'active' : ''}`}
+                      onClick={() => setShowPollCreator(!showPollCreator)}
+                      title="Add poll"
+                    >
+                      📊 Poll
+                    </button>
 
-                <label className="hide-metrics-checkbox" title="Hide likes, comments, and shares count">
-                  <input
-                    id="hide-metrics-checkbox"
-                    name="hideMetrics"
-                    type="checkbox"
-                    checked={hideMetrics}
-                    onChange={(e) => setHideMetrics(e.target.checked)}
-                  />
-                  <span>🔇 Hide Metrics</span>
-                </label>
+                    <button
+                      type="button"
+                      className={`btn-content-warning ${showContentWarning ? 'active' : ''}`}
+                      onClick={() => setShowContentWarning(!showContentWarning)}
+                      title="Add content warning"
+                    >
+                      ⚠️ CW
+                    </button>
 
-                {/* PHASE 1 REFACTOR: Simplified privacy options */}
+                    <label className="hide-metrics-checkbox" title="Hide likes, comments, and shares count">
+                      <input
+                        id="hide-metrics-checkbox"
+                        name="hideMetrics"
+                        type="checkbox"
+                        checked={hideMetrics}
+                        onChange={(e) => setHideMetrics(e.target.checked)}
+                      />
+                      <span>🔇 Hide Metrics</span>
+                    </label>
+                  </>
+                )}
+
+                {/* PHASE 1 REFACTOR: Simplified privacy options - always visible */}
                 <label htmlFor="post-privacy-selector" style={{ display: 'none' }}>
                   Post Privacy
                 </label>

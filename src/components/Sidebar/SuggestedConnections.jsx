@@ -1,8 +1,11 @@
 /**
  * SuggestedConnections - Shows suggested users to follow
- * 
+ *
  * Displays users the current user might want to connect with,
  * based on shared interests, location, or mutual connections.
+ *
+ * QUIET MODE: Component is completely hidden to enforce
+ * "No algorithmic discovery" contract.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -10,10 +13,17 @@ import { Link } from 'react-router-dom';
 import api from '../../utils/api';
 import { getImageUrl } from '../../utils/imageUrl';
 import { getDisplayName } from '../../utils/getDisplayName';
+import { getQuietMode } from '../../utils/themeManager';
 import OptimizedImage from '../OptimizedImage';
 import './SuggestedConnections.css';
 
 export default function SuggestedConnections() {
+  // QUIET MODE: Fully disappear - no placeholder, no empty container
+  const isQuietMode = getQuietMode();
+  if (isQuietMode) {
+    return null;
+  }
+
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [followingIds, setFollowingIds] = useState(new Set());

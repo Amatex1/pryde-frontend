@@ -3,14 +3,24 @@ import { Link } from 'react-router-dom';
 import { onUserOnline, onUserOffline, onOnlineUsers } from '../utils/socket';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUtils';
+import { getQuietMode } from '../utils/themeManager';
 import './OnlinePresence.css';
 
+/**
+ * OnlinePresence - Shows online friends with status indicators
+ *
+ * QUIET MODE: Hide presence indicators and timestamps to reduce
+ * visibility pressure. Shows "Quiet" instead of "Online"/"Last seen".
+ */
 function OnlinePresence() {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [allFriends, setAllFriends] = useState([]);
   const [filteredFriends, setFilteredFriends] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Check quiet mode for presence softening
+  const isQuietMode = getQuietMode();
 
   // Helper function to get image URL
   const getImageUrl = (path) => {
@@ -102,15 +112,30 @@ function OnlinePresence() {
     };
   }, [showDropdown]);
 
+  // QUIET MODE: Get presence status text
+  const getPresenceStatus = (friend) => {
+    const isOnline = onlineUsers.includes(friend._id);
+
+    if (isQuietMode) {
+      // No timestamps, no "Online" - just neutral "Available" or nothing
+      return isOnline ? 'Available' : '';
+    }
+
+    return isOnline ? 'Online' : getTimeSince(friend.lastSeen);
+  };
+
   return (
-    <div className="online-presence">
+    <div className={`online-presence ${isQuietMode ? 'quiet-mode' : ''}`}>
       <button
         className="online-indicator glossy"
         onClick={() => setShowDropdown(!showDropdown)}
-        title={`${onlineUsers.length} users online`}
+        title={isQuietMode ? 'Friends' : `${onlineUsers.length} users online`}
       >
-        <span className="online-dot"></span>
-        <span className="online-count">{onlineUsers.length}</span>
+        {/* QUIET MODE: Hide the pulsing green dot */}
+        {!isQuietMode && <span className="online-dot"></span>}
+        <span className="online-count">
+          {isQuietMode ? '👤' : onlineUsers.length}
+        </span>
       </button>
 
       {showDropdown && (
@@ -172,13 +197,17 @@ function OnlinePresence() {
                           {(friend.displayName || friend.username).charAt(0).toUpperCase()}
                         </div>
                       )}
-                      {isOnline && <span className="status-dot online"></span>}
+                      {/* QUIET MODE: Hide online status dot */}
+                      {!isQuietMode && isOnline && <span className="status-dot online"></span>}
                     </div>
                     <div className="friend-info">
                       <span className="friend-name">{friend.displayName || friend.username}</span>
-                      <span className="friend-status">
-                        {isOnline ? 'Online' : getTimeSince(friend.lastSeen)}
-                      </span>
+                      {/* QUIET MODE: Show neutral status or nothing */}
+                      {getPresenceStatus(friend) && (
+                        <span className="friend-status">
+                          {getPresenceStatus(friend)}
+                        </span>
+                      )}
                     </div>
                   </Link>
                 );
