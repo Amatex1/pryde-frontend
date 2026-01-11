@@ -6,6 +6,7 @@ import FormattedText from '../components/FormattedText';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import { getSocket } from '../utils/socket';
+import { emitValidated } from '../utils/emitValidated';
 import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
 import { quietCopy } from '../config/uiCopy';
 import './Lounge.css';
@@ -268,8 +269,8 @@ function Lounge() {
     const setupListeners = () => {
       console.log('📡 Lounge: Setting up Socket.IO listeners');
 
-      // Join global chat room
-      socket.emit('global_chat:join');
+      // Join global chat room (using validated emit)
+      emitValidated(socket, 'global_chat:join', {});
       console.log('📡 Lounge: Emitted global_chat:join');
 
       // 🔥 FIX: Attach stable handlers (can be properly removed)
@@ -397,8 +398,8 @@ function Lounge() {
 
       console.log('📤 Lounge: Sending message via Socket.IO', messageData);
 
-      // Send via Socket.IO for real-time delivery
-      socket.emit('global_message:send', messageData);
+      // Send via Socket.IO for real-time delivery (validated emit)
+      emitValidated(socket, 'global_message:send', messageData);
 
       // Clear localStorage draft
       clearDraft('lounge-message');
@@ -491,7 +492,7 @@ function Lounge() {
     const socket = socketRef.current;
     if (socket && socket.connected) {
       console.log('📡 Lounge: Requesting online users list');
-      socket.emit('global_chat:get_online_users');
+      emitValidated(socket, 'global_chat:get_online_users', {});
 
       // Set timeout to stop loading if no response after 5 seconds
       const timeoutId = setTimeout(() => {
@@ -524,7 +525,7 @@ function Lounge() {
   const handleInputChange = (e) => {
     setNewMessage(e.target.value);
 
-    // Emit typing indicator (throttled)
+    // Emit typing indicator (throttled, using validated emit)
     const socket = socketRef.current;
     if (socket && socket.connected && e.target.value.trim()) {
       // Only emit if we haven't emitted in the last 1 second
@@ -532,7 +533,7 @@ function Lounge() {
       const lastEmit = socketRef.lastTypingEmit || 0;
 
       if (now - lastEmit > 1000) {
-        socket.emit('global_chat:typing', { isTyping: true });
+        emitValidated(socket, 'global_chat:typing', { isTyping: true });
         socketRef.lastTypingEmit = now;
       }
 
@@ -543,7 +544,7 @@ function Lounge() {
 
       // Set timeout to stop typing indicator after 2 seconds of inactivity
       typingTimeoutRef.current = setTimeout(() => {
-        socket.emit('global_chat:typing', { isTyping: false });
+        emitValidated(socket, 'global_chat:typing', { isTyping: false });
         socketRef.lastTypingEmit = 0;
       }, 2000);
     } else if (!e.target.value.trim()) {
@@ -552,7 +553,7 @@ function Lounge() {
         clearTimeout(typingTimeoutRef.current);
       }
       if (socket && socket.connected) {
-        socket.emit('global_chat:typing', { isTyping: false });
+        emitValidated(socket, 'global_chat:typing', { isTyping: false });
         socketRef.lastTypingEmit = 0;
       }
     }

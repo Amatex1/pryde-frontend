@@ -5,6 +5,10 @@ import { isAuthConfirmed, subscribeToAuthStatus, AUTH_STATUS } from '../state/au
 import { getSocket } from '../utils/socket';
 import SOCKET_EVENTS from '../constants/socketEvents';
 
+// PHASE 3c: Multi-tab sync using BroadcastChannel
+let broadcastChannel = null;
+const CHANNEL_NAME = 'pryde-unread-sync';
+
 /**
  * useUnreadMessages Hook - SINGLETON PATTERN (PHASE R: Socket-first)
  *
@@ -93,6 +97,10 @@ async function fetchUnread() {
 /**
  * PHASE R: Setup socket listeners for real-time message updates
  */
+// PHASE 3b: Track seen message IDs to prevent duplicate processing
+const seenMessageIds = new Set();
+const MAX_SEEN_IDS = 500; // Prevent memory leak
+
 function setupSocketListeners() {
   if (socketListenersSetup) return;
 
@@ -107,6 +115,23 @@ function setupSocketListeners() {
 
   // Handle new message received - increment unread count
   const handleNewMessage = (data) => {
+    // PHASE 3b: Duplicate event protection
+    const messageId = data._id || data.id;
+    if (messageId && seenMessageIds.has(messageId)) {
+      logger.debug('[useUnreadMessages] Duplicate message ID, ignoring:', messageId);
+      return;
+    }
+    if (messageId) {
+      seenMessageIds.add(messageId);
+      // Cleanup old IDs to prevent memory leak
+      if (seenMessageIds.size > MAX_SEEN_IDS) {
+        const idsArray = Array.from(seenMessageIds);
+        for (let i = 0; i < 100; i++) {
+          seenMessageIds.delete(idsArray[i]);
+        }
+      }
+    }
+
     logger.debug('[useUnreadMessages] Socket: new message received', data);
     // Increment total unread count
     const newCache = {
@@ -144,6 +169,9 @@ function setupSocketListeners() {
     logger.debug('[useUnreadMessages] Socket: all messages read');
     unreadCache = { totalUnread: 0, unreadByUser: [] };
     listeners.forEach(fn => fn(unreadCache));
+
+    // PHASE 3c: Broadcast to other tabs
+    broadcastToOtherTabs({ type: 'READ_ALL' });
   };
 
   // Subscribe to socket events (Phase R: Unified event naming)
@@ -151,6 +179,9 @@ function setupSocketListeners() {
   socket.on(SOCKET_EVENTS.MESSAGE.NEW, handleNewMessage);
   socket.on(SOCKET_EVENTS.MESSAGE.READ, handleMessageRead);
   socket.on('messages:read_all', handleMessagesReadAll);
+
+  // PHASE 3c: Setup multi-tab sync
+  setupMultiTabSync();
 
   // Handle socket disconnect - start polling as fallback
   socket.on('disconnect', () => {
@@ -166,6 +197,57 @@ function setupSocketListeners() {
     lastFetch = 0;
     fetchUnread();
   });
+}
+
+/**
+ * PHASE 3c: Setup multi-tab synchronization using BroadcastChannel
+ */
+function setupMultiTabSync() {
+  if (broadcastChannel) return; // Already setup
+
+  if (typeof BroadcastChannel === 'undefined') {
+    logger.debug('[useUnreadMessages] BroadcastChannel not supported');
+    return;
+  }
+
+  broadcastChannel = new BroadcastChannel(CHANNEL_NAME);
+
+  broadcastChannel.onmessage = (event) => {
+    const { type, data } = event.data;
+    logger.debug('[useUnreadMessages] Multi-tab sync received:', type);
+
+    switch (type) {
+      case 'READ_ALL':
+        // Another tab marked all as read
+        unreadCache = { totalUnread: 0, unreadByUser: [] };
+        listeners.forEach(fn => fn(unreadCache));
+        break;
+      case 'SYNC':
+        // Another tab is sharing its state
+        if (data) {
+          unreadCache = data;
+          listeners.forEach(fn => fn(unreadCache));
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
+  logger.debug('[useUnreadMessages] Multi-tab sync initialized');
+}
+
+/**
+ * PHASE 3c: Broadcast state to other tabs
+ */
+function broadcastToOtherTabs(message) {
+  if (broadcastChannel) {
+    try {
+      broadcastChannel.postMessage(message);
+    } catch (e) {
+      logger.debug('[useUnreadMessages] Broadcast failed:', e.message);
+    }
+  }
 }
 
 /**

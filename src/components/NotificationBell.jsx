@@ -11,6 +11,10 @@ import {
 } from '../constants/notificationTypes';
 import './NotificationBell.css';
 
+// PHASE 3b: Track seen notification IDs to prevent duplicate processing
+const seenNotificationIds = new Set();
+const MAX_SEEN_NOTIFICATION_IDS = 200;
+
 const NotificationBell = memo(() => {
   const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -67,6 +71,23 @@ const NotificationBell = memo(() => {
     // ✅ Listen for real-time notification events
     const handleNewNotification = (data) => {
       logger.debug('🔔 Real-time notification received:', data);
+
+      // PHASE 3b: Duplicate event protection
+      const notifId = data.notification?._id;
+      if (notifId && seenNotificationIds.has(notifId)) {
+        logger.debug('🔔 Duplicate notification ID, ignoring:', notifId);
+        return;
+      }
+      if (notifId) {
+        seenNotificationIds.add(notifId);
+        // Cleanup old IDs to prevent memory leak
+        if (seenNotificationIds.size > MAX_SEEN_NOTIFICATION_IDS) {
+          const idsArray = Array.from(seenNotificationIds);
+          for (let i = 0; i < 50; i++) {
+            seenNotificationIds.delete(idsArray[i]);
+          }
+        }
+      }
 
       // Validate: only SOCIAL types increment bell count
       if (!shouldIncrementBellCount(data.notification)) {

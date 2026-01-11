@@ -2,6 +2,7 @@
 import { io } from "socket.io-client";
 import API_CONFIG from "../config/api";
 import logger from './logger';
+import { emitValidated } from './emitValidated';
 
 const SOCKET_URL = API_CONFIG.SOCKET_URL;
 
@@ -118,6 +119,14 @@ export const connectSocket = (userId) => {
 
         socket.io.on('reconnect', (attemptNumber) => {
             logger.debug(`✅ Reconnected after ${attemptNumber} attempts`);
+
+            // PHASE 3a: Re-join user room on reconnect for cross-device sync
+            if (userId) {
+                logger.debug(`🔄 Re-joining user room after reconnect: user_${userId}`);
+                // The server automatically joins the user room on connection
+                // But we emit a join event to ensure state is refreshed
+                emitValidated(socket, 'join', { room: `user_${userId}` });
+            }
         });
 
         socket.io.on('reconnect_error', (error) => {
@@ -240,13 +249,13 @@ export const getSocket = () => socket;
 export const isSocketConnected = () => socket && socket.connected;
 
 // -----------------------------
-// MESSAGES (Phase R: Unified event naming)
+// MESSAGES (Phase R: Unified event naming + Validated emits)
 // -----------------------------
 export const sendMessage = (data) => {
     if (socket) {
         logger.debug('🔌 Socket connected:', socket.connected);
         logger.debug('📤 Emitting send_message:', data);
-        socket.emit("send_message", data);
+        emitValidated(socket, "send_message", data);
     } else {
         logger.error('❌ Socket not initialized!');
     }
@@ -290,7 +299,7 @@ export const onNewMessage = (callback) => {
 // TYPING INDICATOR
 // -----------------------------
 export const emitTyping = (conversationId, userId) => {
-    if (socket) socket.emit("typing", { conversationId, userId });
+    if (socket) emitValidated(socket, "typing", { recipientId: conversationId, isTyping: true, userId });
 };
 
 export const onUserTyping = (callback) => {
@@ -310,11 +319,11 @@ export const onUserTyping = (callback) => {
 // FRIEND REQUESTS
 // -----------------------------
 export const emitFriendRequestSent = (data) => {
-    if (socket) socket.emit("friendRequestSent", data);
+    if (socket) emitValidated(socket, "friend_request_sent", data);
 };
 
 export const emitFriendRequestAccepted = (data) => {
-    if (socket) socket.emit("friendRequestAccepted", data);
+    if (socket) emitValidated(socket, "friend_request_accepted", data);
 };
 
 export const onFriendRequestReceived = (callback) => {
@@ -348,7 +357,7 @@ export const onFriendRequestAccepted = (callback) => {
 export const requestOnlineUsers = () => {
     if (socket && socket.connected) {
         logger.debug('📡 Requesting online users list from server');
-        socket.emit('get_online_users');
+        emitValidated(socket, 'get_online_users', {});
     } else {
         logger.warn('⚠️ Cannot request online users - socket not connected');
     }
