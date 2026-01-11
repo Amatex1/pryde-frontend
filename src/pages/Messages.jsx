@@ -618,47 +618,63 @@ function Messages() {
       } else {
         // Check if socket is connected
         const socket = getSocket();
-        console.log('🔌 Socket check:', { socket: !!socket, connected: socket?.connected, socketId: socket?.id });
-
-        if (!socket) {
-          console.error('❌ Socket not initialized!');
-          alert('Connection not established. Please refresh the page.');
-          return;
-        }
-
-        if (!isSocketConnected()) {
-          console.error('❌ Socket not connected!');
-          alert('Connection lost. Please refresh the page.');
-          return;
-        }
+        const socketConnected = socket && isSocketConnected();
+        console.log('🔌 Socket check:', { socket: !!socket, connected: socketConnected, socketId: socket?.id });
 
         // OPTIMISTIC UI: Add message immediately before server confirms
         setMessages((prev) => [...prev, optimisticMessage]);
 
-        // Send via Socket.IO for real-time delivery
-        console.log('🔌 About to emit send_message via socket', {
-          socketId: socket.id,
-          tempId,
-          recipientId: selectedChat,
-          content: messageContent
-        });
-
-        try {
-          socketSendMessage({
+        if (socketConnected) {
+          // ✅ PREFERRED: Send via Socket.IO for real-time delivery
+          console.log('🔌 Sending via Socket.IO', {
+            socketId: socket.id,
+            tempId,
             recipientId: selectedChat,
-            content: messageContent,
-            attachment: attachmentUrl,
-            voiceNote: voiceNote,
-            contentWarning: contentWarning,
-            _tempId: tempId // Send tempId for reconciliation
+            content: messageContent
           });
-          console.log('✅ socketSendMessage called successfully');
-        } catch (error) {
-          console.error('❌ Error sending message via socket:', error);
-          // ROLLBACK: Remove optimistic message on error
-          setMessages((prev) => prev.filter(m => m._id !== tempId));
-          alert('Failed to send message. Please try again.');
-          return;
+
+          try {
+            socketSendMessage({
+              recipientId: selectedChat,
+              content: messageContent,
+              attachment: attachmentUrl,
+              voiceNote: voiceNote,
+              contentWarning: contentWarning,
+              _tempId: tempId // Send tempId for reconciliation
+            });
+            console.log('✅ socketSendMessage called successfully');
+          } catch (error) {
+            console.error('❌ Error sending message via socket:', error);
+            // ROLLBACK: Remove optimistic message on error
+            setMessages((prev) => prev.filter(m => m._id !== tempId));
+            alert('Failed to send message. Please try again.');
+            return;
+          }
+        } else {
+          // 🔥 FALLBACK: Use REST API if socket not connected
+          console.warn('⚠️ Socket not connected, falling back to REST API');
+
+          try {
+            const response = await api.post('/messages', {
+              recipient: selectedChat,
+              content: messageContent,
+              attachment: attachmentUrl,
+              voiceNote: voiceNote,
+              contentWarning: contentWarning
+            });
+
+            // Replace optimistic message with real one
+            setMessages((prev) =>
+              prev.map(m => m._id === tempId ? response.data : m)
+            );
+            console.log('✅ Message sent via REST API');
+          } catch (error) {
+            console.error('❌ Error sending message via REST API:', error);
+            // ROLLBACK: Remove optimistic message on error
+            setMessages((prev) => prev.filter(m => m._id !== tempId));
+            alert('Failed to send message. Please try again.');
+            return;
+          }
         }
       }
       // Clear localStorage draft
