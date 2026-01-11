@@ -1955,29 +1955,30 @@ html:not([data-theme]) .post-actions {
   right: 0;
   top: 100%;
   margin-top: 4px;
-  min-width: 140px;
+  min-width: 120px;
   background: var(--bg-card);
   border: 1px solid var(--border-soft, var(--border-subtle));
   border-radius: 8px;
   box-shadow: var(--shadow-card, var(--shadow-medium));
-  z-index: 10;
-  overflow: hidden;
+  z-index: 100;
+  overflow: visible;
 }
 
 .comment-menu button,
 .post-menu button {
   width: 100%;
-  padding: 8px 12px;
+  padding: 10px 14px;
   background: none;
   border: none;
   text-align: left;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-primary);
   cursor: pointer;
   transition: background 0.15s ease;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  white-space: nowrap;
 }
 
 .comment-menu button:hover,

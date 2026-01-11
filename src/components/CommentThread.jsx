@@ -137,42 +137,53 @@ const CommentThread = ({
                     {comment.isEdited && <span className="edited-indicator"> (edited)</span>}
                   </span>
                 </div>
-                {isOwnComment && (
-                  <div className="comment-header-right" ref={menuRef}>
-                    <button
-                      className="comment-menu-btn"
-                      onClick={() => setOpenMenuId(openMenuId === comment._id ? null : comment._id)}
-                      aria-label="Comment options"
-                    >
-                      <svg viewBox="0 0 16 16" fill="currentColor">
-                        <circle cx="8" cy="3" r="1.5" />
-                        <circle cx="8" cy="8" r="1.5" />
-                        <circle cx="8" cy="13" r="1.5" />
-                      </svg>
-                    </button>
-                    {openMenuId === comment._id && (
-                      <div className="comment-menu">
+                <div className="comment-header-right" ref={menuRef}>
+                  <button
+                    className="comment-menu-btn"
+                    onClick={() => setOpenMenuId(openMenuId === comment._id ? null : comment._id)}
+                    aria-label="Comment options"
+                  >
+                    <svg viewBox="0 0 16 16" fill="currentColor">
+                      <circle cx="8" cy="3" r="1.5" />
+                      <circle cx="8" cy="8" r="1.5" />
+                      <circle cx="8" cy="13" r="1.5" />
+                    </svg>
+                  </button>
+                  {openMenuId === comment._id && (
+                    <div className="comment-menu">
+                      {isOwnComment ? (
+                        <>
+                          <button
+                            onClick={() => {
+                              handleEditComment(comment._id, comment.content);
+                              setOpenMenuId(null);
+                            }}
+                          >
+                            ✏️ Edit
+                          </button>
+                          <button
+                            className="delete"
+                            onClick={() => {
+                              handleDeleteComment(postId, comment._id, false);
+                              setOpenMenuId(null);
+                            }}
+                          >
+                            🗑️ Delete
+                          </button>
+                        </>
+                      ) : (
                         <button
                           onClick={() => {
-                            handleEditComment(comment._id, comment.content);
+                            setReportModal({ isOpen: true, type: 'comment', contentId: comment._id, userId: comment.authorId?._id });
                             setOpenMenuId(null);
                           }}
                         >
-                          ✏️ Edit
+                          🚩 Report
                         </button>
-                        <button
-                          className="delete"
-                          onClick={() => {
-                            handleDeleteComment(postId, comment._id, false);
-                            setOpenMenuId(null);
-                          }}
-                        >
-                          🗑️ Delete
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {isEditing ? (
@@ -229,33 +240,7 @@ const CommentThread = ({
                     {showReplies[comment._id] ? '▲' : '▼'} View {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}
                   </button>
                 )}
-                {isOwnComment ? (
-                  <>
-                    <button
-                      className="comment-action-btn edit-btn"
-                      onClick={() => handleEditComment(comment._id, comment.content)}
-                      style={{ display: 'none' }}
-                    >
-                      ✏️ Edit
-                    </button>
-                    <button
-                      className="comment-action-btn delete-btn"
-                      onClick={() => handleDeleteComment(postId, comment._id, false)}
-                      style={{ display: 'none' }}
-                    >
-                      🗑️ Delete
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    className="comment-action-btn"
-                    onClick={() => {
-                      setReportModal({ isOpen: true, type: 'comment', contentId: comment._id, userId: comment.authorId?._id });
-                    }}
-                  >
-                    🚩 Report
-                  </button>
-                )}
+{/* Edit/Delete/Report moved to 3-dot menu */}
               </div>
             </div>
           </>
@@ -320,42 +305,53 @@ const CommentThread = ({
                             {reply.isEdited && <span className="edited-indicator"> (edited)</span>}
                           </span>
                         </div>
-                        {isOwnReply && (
-                          <div className="comment-header-right" ref={menuRef}>
-                            <button
-                              className="comment-menu-btn"
-                              onClick={() => setOpenMenuId(openMenuId === reply._id ? null : reply._id)}
-                              aria-label="Reply options"
-                            >
-                              <svg viewBox="0 0 16 16" fill="currentColor">
-                                <circle cx="8" cy="3" r="1.5" />
-                                <circle cx="8" cy="8" r="1.5" />
-                                <circle cx="8" cy="13" r="1.5" />
-                              </svg>
-                            </button>
-                            {openMenuId === reply._id && (
-                              <div className="comment-menu">
+                        <div className="comment-header-right" ref={menuRef}>
+                          <button
+                            className="comment-menu-btn"
+                            onClick={() => setOpenMenuId(openMenuId === reply._id ? null : reply._id)}
+                            aria-label="Reply options"
+                          >
+                            <svg viewBox="0 0 16 16" fill="currentColor">
+                              <circle cx="8" cy="3" r="1.5" />
+                              <circle cx="8" cy="8" r="1.5" />
+                              <circle cx="8" cy="13" r="1.5" />
+                            </svg>
+                          </button>
+                          {openMenuId === reply._id && (
+                            <div className="comment-menu">
+                              {isOwnReply ? (
+                                <>
+                                  <button
+                                    onClick={() => {
+                                      handleEditComment(reply._id, reply.content);
+                                      setOpenMenuId(null);
+                                    }}
+                                  >
+                                    ✏️ Edit
+                                  </button>
+                                  <button
+                                    className="delete"
+                                    onClick={() => {
+                                      handleDeleteComment(postId, reply._id, true);
+                                      setOpenMenuId(null);
+                                    }}
+                                  >
+                                    🗑️ Delete
+                                  </button>
+                                </>
+                              ) : (
                                 <button
                                   onClick={() => {
-                                    handleEditComment(reply._id, reply.content);
+                                    setReportModal({ isOpen: true, type: 'comment', contentId: reply._id, userId: reply.authorId?._id });
                                     setOpenMenuId(null);
                                   }}
                                 >
-                                  ✏️ Edit
+                                  🚩 Report
                                 </button>
-                                <button
-                                  className="delete"
-                                  onClick={() => {
-                                    handleDeleteComment(postId, reply._id, true);
-                                    setOpenMenuId(null);
-                                  }}
-                                >
-                                  🗑️ Delete
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        )}
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
 
                       {isEditingReply ? (
@@ -404,33 +400,7 @@ const CommentThread = ({
                         >
                           💬 Reply
                         </button>
-                        {isOwnReply ? (
-                          <>
-                            <button
-                              className="comment-action-btn edit-btn"
-                              onClick={() => handleEditComment(reply._id, reply.content)}
-                              style={{ display: 'none' }}
-                            >
-                              ✏️ Edit
-                            </button>
-                            <button
-                              className="comment-action-btn delete-btn"
-                              onClick={() => handleDeleteComment(postId, reply._id, true)}
-                              style={{ display: 'none' }}
-                            >
-                              🗑️ Delete
-                            </button>
-                          </>
-                        ) : (
-                          <button
-                            className="comment-action-btn"
-                            onClick={() => {
-                              setReportModal({ isOpen: true, type: 'comment', contentId: reply._id, userId: reply.authorId?._id });
-                            }}
-                          >
-                            🚩 Report
-                          </button>
-                        )}
+{/* Edit/Delete/Report moved to 3-dot menu */}
                       </div>
                     </div>
                   </>
