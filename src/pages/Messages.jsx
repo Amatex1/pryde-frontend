@@ -557,8 +557,21 @@ function Messages() {
   }, [selectedChat, currentUser]);
 
   const handleSendMessage = async (e, voiceNote = null) => {
+    // 🔍 TEMP DEBUG - remove after fixing message issue
+    console.log('🚀 handleSendMessage called', {
+      hasMessage: !!message.trim(),
+      hasFile: !!selectedFile,
+      hasGif: !!selectedGif,
+      hasVoiceNote: !!voiceNote,
+      selectedChat,
+      selectedChatType
+    });
+
     if (e) e.preventDefault();
-    if ((!message.trim() && !selectedFile && !selectedGif && !voiceNote) || !selectedChat) return;
+    if ((!message.trim() && !selectedFile && !selectedGif && !voiceNote) || !selectedChat) {
+      console.log('❌ Early return - missing content or selectedChat');
+      return;
+    }
 
     // Use GIF URL if selected, otherwise use file attachment
     const attachmentUrl = selectedGif || selectedFile?.url;
@@ -583,7 +596,7 @@ function Messages() {
       _isOptimistic: true // Flag for reconciliation
     };
 
-    logger.debug('📤 Sending message (optimistic UI):', {
+    console.log('📤 Sending message (optimistic UI):', {
       tempId,
       recipientId: selectedChat,
       content: messageContent,
@@ -605,14 +618,16 @@ function Messages() {
       } else {
         // Check if socket is connected
         const socket = getSocket();
+        console.log('🔌 Socket check:', { socket: !!socket, connected: socket?.connected, socketId: socket?.id });
+
         if (!socket) {
-          logger.error('❌ Socket not initialized!');
+          console.error('❌ Socket not initialized!');
           alert('Connection not established. Please refresh the page.');
           return;
         }
 
         if (!isSocketConnected()) {
-          logger.error('❌ Socket not connected!');
+          console.error('❌ Socket not connected!');
           alert('Connection lost. Please refresh the page.');
           return;
         }
@@ -621,10 +636,11 @@ function Messages() {
         setMessages((prev) => [...prev, optimisticMessage]);
 
         // Send via Socket.IO for real-time delivery
-        logger.debug('🔌 Emitting send_message via socket', {
+        console.log('🔌 About to emit send_message via socket', {
           socketId: socket.id,
           tempId,
-          recipientId: selectedChat
+          recipientId: selectedChat,
+          content: messageContent
         });
 
         try {
@@ -636,8 +652,9 @@ function Messages() {
             contentWarning: contentWarning,
             _tempId: tempId // Send tempId for reconciliation
           });
+          console.log('✅ socketSendMessage called successfully');
         } catch (error) {
-          logger.error('❌ Error sending message via socket:', error);
+          console.error('❌ Error sending message via socket:', error);
           // ROLLBACK: Remove optimistic message on error
           setMessages((prev) => prev.filter(m => m._id !== tempId));
           alert('Failed to send message. Please try again.');
