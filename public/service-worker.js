@@ -13,7 +13,7 @@
  */
 
 // 🔥 CACHE VERSION - Increment this to force cache invalidation
-const CACHE_VERSION = 'pryde-cache-v6';
+const CACHE_VERSION = 'pryde-cache-v7-websocket-fix';
 const isDev = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
 
 /**
@@ -57,6 +57,25 @@ self.addEventListener('activate', (event) => {
 
 // Fetch handler with navigation bypass
 self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+
+  // ========================================
+  // 🚫 CRITICAL: NEVER INTERCEPT REALTIME CONNECTIONS
+  // ========================================
+  // WebSocket upgrade requests MUST bypass service worker
+  // Otherwise they will stall indefinitely
+  if (
+    url.pathname.startsWith('/socket.io') ||
+    event.request.headers.get('upgrade') === 'websocket' ||
+    event.request.headers.get('upgrade') === 'Websocket' ||
+    event.request.headers.get('Upgrade') === 'websocket'
+  ) {
+    if (isDev) {
+      console.log('[SW] 🔌 WebSocket/Socket.IO request - bypassing:', event.request.url);
+    }
+    return; // Browser handles WebSocket upgrade
+  }
+
   // ========================================
   // 🔥 CRITICAL: HARD BYPASS ALL NAVIGATION REQUESTS
   // ========================================
