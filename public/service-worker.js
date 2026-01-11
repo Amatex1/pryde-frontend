@@ -12,6 +12,8 @@
  * - Browser handles all redirects correctly
  */
 
+// 🔥 CACHE VERSION - Increment this to force cache invalidation
+const CACHE_VERSION = 'pryde-cache-v6';
 const isDev = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
 
 /**
@@ -26,13 +28,31 @@ function isNavigationRequest(request) {
 }
 
 self.addEventListener('install', () => {
+  console.log('[SW] Installing service worker version:', CACHE_VERSION);
   // Skip waiting to activate immediately
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-  // Take control of all clients immediately
-  event.waitUntil(self.clients.claim());
+  console.log('[SW] Activating service worker version:', CACHE_VERSION);
+
+  event.waitUntil(
+    // Delete ALL old caches
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_VERSION) {
+            console.log('[SW] Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => {
+      console.log('[SW] All old caches deleted');
+      // Take control of all clients immediately
+      return self.clients.claim();
+    })
+  );
 });
 
 // Fetch handler with navigation bypass

@@ -16,8 +16,9 @@ export default function buildVersionPlugin() {
     name: 'build-version-plugin',
 
     buildStart() {
-      // Generate version info at build start
-      buildVersion = process.env.VITE_APP_VERSION || new Date().toISOString().split('T')[0].replace(/-/g, '-');
+      // Read buildVersion from package.json
+      const packageJson = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf-8'));
+      buildVersion = packageJson.buildVersion || process.env.VITE_APP_VERSION || new Date().toISOString().split('T')[0].replace(/-/g, '-');
       buildTime = new Date().toISOString();
 
       console.log('📦 Building with version:', buildVersion);

@@ -85,6 +85,18 @@ window.addEventListener('unhandledrejection', (event) => {
 });
 
 // ========================================
+// LOG BUILD VERSION (CRITICAL FOR CACHE DEBUGGING)
+// ========================================
+const buildVersionMeta = document.querySelector('meta[name="build-version"]');
+const buildTimeMeta = document.querySelector('meta[name="build-time"]');
+const buildVersion = buildVersionMeta?.content || 'unknown';
+const buildTime = buildTimeMeta?.content || 'unknown';
+
+console.info('🚀 Pryde Frontend Build:', buildVersion);
+console.info('🕐 Build Time:', buildTime);
+console.info('🌐 Environment:', import.meta.env.MODE);
+
+// ========================================
 // INITIALIZE CIRCUIT BREAKER IMMEDIATELY
 // Must run before any API calls
 // ========================================
