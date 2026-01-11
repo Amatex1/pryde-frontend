@@ -378,7 +378,7 @@ select:focus,
   display: flex;
   justify-content: center;
   min-width: 0; /* Prevent overflow */
-  max-width: 350px; /* Constrain on tablets */
+  max-width: 280px; /* Conservative default */
 }
 
 .navbar-utility-search .global-search {
@@ -400,7 +400,38 @@ select:focus,
   }
 }
 
-@media (min-width: 1024px) {
+/* Small desktop: use flex layout, no absolute positioning */
+@media (min-width: 1024px) and (max-width: 1719px) {
+  /* Remove navbar border so it blends with background */
+  nav.navbar.glossy {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent;
+  }
+
+  /* Inner navbar container — no border */
+  nav.navbar.glossy > .feed-layout.feed-desktop {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent;
+  }
+
+  /* Flex-based search - stays in flow, doesn't overlap */
+  .navbar-utility-search {
+    flex: 1;
+    max-width: 400px;
+    margin: 0 var(--space-3);
+  }
+
+  .navbar-utility-search input,
+  .navbar-utility-search .search-input {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Large desktop: absolute center the search bar */
+@media (min-width: 1720px) {
 
   /* Remove navbar border so it blends with background */
   nav.navbar.glossy {
@@ -416,7 +447,7 @@ select:focus,
     background: transparent;
   }
 
-  /* PERFECTLY center the search bar on desktop */
+  /* PERFECTLY center the search bar on large desktop */
   .navbar-utility-search {
     position: absolute;
     left: 50%;
