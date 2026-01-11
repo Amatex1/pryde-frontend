@@ -9,9 +9,8 @@ const GifPicker = ({ onGifSelect, onClose }) => {
   const [selectedCategory, setSelectedCategory] = useState('trending');
   const pickerRef = useRef(null);
 
-  // Giphy API key - public beta key for development
-  // For production, get your own at https://developers.giphy.com/
-  const GIPHY_API_KEY = import.meta.env.VITE_GIPHY_API_KEY || 'dc6zaTOxFJmzC';
+  // Giphy API key
+  const GIPHY_API_KEY = import.meta.env.VITE_GIPHY_API_KEY || 'mERDJnQ0WOvMcsf5YaYmSPwkkf1scKhZ';
 
   const categories = [
     { id: 'trending', label: '🔥 Trending', search: '' },
