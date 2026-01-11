@@ -150,6 +150,27 @@
   <body>
     <div id="root"></div>
     <div id="overlay-root"></div>
+
+    <!-- Service Worker Registration (Production Only) -->
+    <script>
+      // Only register in production (not localhost)
+      if (window.location.hostname === 'prydeapp.com') {
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js', {
+              scope: '/',
+              updateViaCache: 'none'
+            }).then(reg => {
+              console.log('[PWA] ✅ Service worker registered from index.html');
+              console.log('[PWA] 📍 Scope:', reg.scope);
+            }).catch(err => {
+              console.error('[PWA] Service worker registration failed:', err);
+            });
+          });
+        }
+      }
+    </script>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
