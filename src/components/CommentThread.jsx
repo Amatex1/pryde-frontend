@@ -225,6 +225,11 @@ const CommentThread = ({
                   targetType="comment"
                   targetId={comment._id}
                   currentUserId={currentUser?.id}
+                  onCountClick={() => setReactionDetailsModal({
+                    isOpen: true,
+                    targetType: 'comment',
+                    targetId: comment._id
+                  })}
                 />
                 <button
                   className="comment-action-btn"
@@ -393,6 +398,11 @@ const CommentThread = ({
                           targetType="comment"
                           targetId={reply._id}
                           currentUserId={currentUser?.id}
+                          onCountClick={() => setReactionDetailsModal({
+                            isOpen: true,
+                            targetType: 'comment',
+                            targetId: reply._id
+                          })}
                         />
                         <button
                           className="comment-action-btn reply-btn"
