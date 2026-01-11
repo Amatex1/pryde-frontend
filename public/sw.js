@@ -10,7 +10,7 @@
    - Network-first for API calls
    ===================================================== */
 
-const VERSION = '2.3.0'; // Increment to force update - Skip external domains to avoid CSP violations
+const VERSION = '2.4.0-websocket-fix'; // Increment to force update - Fixed WebSocket bypass + notification permission
 const STATIC_CACHE = `pryde-static-${VERSION}`;
 const IMAGE_CACHE = `pryde-images-${VERSION}`;
 const API_CACHE = `pryde-api-${VERSION}`;
@@ -61,6 +61,21 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
+
+  // ========================================
+  // 🚫 CRITICAL: NEVER INTERCEPT REALTIME CONNECTIONS
+  // ========================================
+  // WebSocket upgrade requests MUST bypass service worker
+  // Otherwise they will stall indefinitely
+  if (
+    url.pathname.startsWith('/socket.io') ||
+    request.headers.get('upgrade') === 'websocket' ||
+    request.headers.get('upgrade') === 'Websocket' ||
+    request.headers.get('Upgrade') === 'websocket'
+  ) {
+    console.log('[SW] 🔌 WebSocket/Socket.IO request - bypassing:', request.url);
+    return; // Browser handles WebSocket upgrade
+  }
 
   // Skip non-GET requests
   if (request.method !== 'GET') return;
@@ -149,13 +164,30 @@ self.addEventListener('push', (event) => {
     badge = '/badge.png'
   } = payload;
 
+  // 🔥 CRITICAL: Check notification permission before showing
+  // This prevents "No notification permission" errors
   event.waitUntil(
-    self.registration.showNotification(title, {
-      body,
-      icon,
-      badge,
-      data: { url },
-    })
+    (async () => {
+      try {
+        // Check if we have permission
+        const permission = await self.registration.pushManager.permissionState({
+          userVisibleOnly: true
+        });
+
+        if (permission === 'granted') {
+          await self.registration.showNotification(title, {
+            body,
+            icon,
+            badge,
+            data: { url },
+          });
+        } else {
+          console.log('[SW] Push notification received but permission not granted:', permission);
+        }
+      } catch (error) {
+        console.error('[SW] Error showing notification:', error);
+      }
+    })()
   );
 });
 
