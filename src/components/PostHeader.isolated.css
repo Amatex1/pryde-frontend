@@ -170,6 +170,24 @@
   flex-shrink: 0;
 }
 
+/* FIX: System badge overlapping at 500px-520px */
+@media (max-width: 520px) {
+  .ph-name-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .ph-system-badge {
+    font-size: 0.625rem; /* 10px - smaller */
+    padding: 2px 6px;
+    margin-left: 0;
+  }
+
+  .ph-display-name {
+    max-width: calc(100% - 100px); /* Prevent overflow */
+  }
+}
+
 /* Meta Row - Username · Timestamp · Privacy on second line */
 .ph-meta-row {
   font-size: 0.875rem; /* 14px */
