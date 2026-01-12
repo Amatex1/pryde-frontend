@@ -494,7 +494,8 @@ function Lounge() {
       console.log('📡 Lounge: Requesting online users list');
       emitValidated(socket, 'global_chat:get_online_users', {});
 
-      // Set timeout to stop loading if no response after 5 seconds
+      // Set timeout to stop loading if no response after 10 seconds (increased from 5s)
+      // This gives the server more time for DB queries when cache is cold or many users online
       const timeoutId = setTimeout(() => {
         setLoadingOnlineUsers(prev => {
           // Only show error if still loading (response didn't arrive)
@@ -504,7 +505,7 @@ function Lounge() {
           }
           return false;
         });
-      }, 5000);
+      }, 10000); // Increased from 5000ms to 10000ms
 
       // Store timeout ID to clear it if response arrives
       socketRef.onlineUsersTimeout = timeoutId;
