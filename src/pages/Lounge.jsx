@@ -73,15 +73,29 @@ function Lounge() {
     return scrollHeight - scrollTop - clientHeight < 100;
   };
 
-  // 🚀 OPTIMIZED: Fetch initial messages and online count in parallel
+  // 🚀 OPTIMIZED: Combine all initial data loading into ONE useEffect
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
 
-        // 🔥 FIX: Load messages and online count in parallel for faster loading
+        // 1. Get current user from localStorage (synchronous)
+        const user = JSON.parse(localStorage.getItem('user'));
+        setCurrentUser(user);
+
+        // 2. Restore draft from localStorage (synchronous)
+        const localDraft = loadDraft('lounge-message');
+        if (localDraft) {
+          setNewMessage(localDraft.text || '');
+          setSelectedGif(localDraft.gifUrl || null);
+          setContentWarning(localDraft.contentWarning || '');
+          setShowCWInput(!!localDraft.contentWarning);
+        }
+
+        // 3. Load messages and online count in parallel (asynchronous)
+        // 🚀 PERFORMANCE: Reduced from 50 to 30 messages for faster initial load
         const [messagesResponse, onlineCountResponse] = await Promise.all([
-          api.get('/global-chat/messages?limit=50'),
+          api.get('/global-chat/messages?limit=30'),
           api.get('/global-chat/online-count').catch(() => ({ data: { count: 0 } }))
         ]);
 
@@ -92,8 +106,8 @@ function Lounge() {
           setOnlineCount(onlineCountResponse.data.count);
         }
 
-        // Scroll to bottom after loading
-        setTimeout(scrollToBottom, 100);
+        // Scroll to bottom after loading (reduced timeout)
+        setTimeout(scrollToBottom, 50);
       } catch (error) {
         console.error('Error fetching messages:', error);
         setError('Failed to load messages');
@@ -103,24 +117,7 @@ function Lounge() {
     };
 
     fetchData();
-  }, []);
-
-  // Get current user
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    setCurrentUser(user);
-  }, []);
-
-  // Restore localStorage draft on mount
-  useEffect(() => {
-    const localDraft = loadDraft('lounge-message');
-    if (localDraft) {
-      setNewMessage(localDraft.text || '');
-      setSelectedGif(localDraft.gifUrl || null);
-      setContentWarning(localDraft.contentWarning || '');
-      setShowCWInput(!!localDraft.contentWarning);
-    }
-  }, []);
+  }, []); // Single useEffect for all initial data loading
 
   // Auto-save draft to localStorage
   useEffect(() => {
@@ -329,7 +326,8 @@ function Lounge() {
     try {
       setLoadingMore(true);
       const oldestMessage = messages[0];
-      const response = await api.get(`/global-chat/messages?before=${oldestMessage.createdAt}&limit=50`);
+      // 🚀 PERFORMANCE: Reduced from 50 to 30 messages per page
+      const response = await api.get(`/global-chat/messages?before=${oldestMessage.createdAt}&limit=30`);
 
       const newMessages = response.data.messages || [];
       setMessages(prev => [...newMessages, ...prev]);
