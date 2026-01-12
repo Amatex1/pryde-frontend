@@ -3656,7 +3656,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .profile-avatar.profile-avatar--overlay {
     position: absolute;
     left: 28px;
-    top: 148px; /* Position to overlap bottom of 200px cover (200 - 124/2 = 138, +10 for better overlap) */
+    /* No top positioning - allows natural flow and better overlap */
     width: 124px;
     height: 124px;
     border-radius: 50%;
@@ -3664,7 +3664,6 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     border: 4px solid var(--bg-primary, rgba(10, 10, 18, 1));
     background: var(--bg-primary, rgba(10, 10, 18, 1));
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-    z-index: 10; /* Ensure avatar is above cover */
   }
 
   [data-theme="light"] .profile-avatar.profile-avatar--overlay {
