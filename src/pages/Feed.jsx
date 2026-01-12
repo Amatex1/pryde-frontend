@@ -42,6 +42,7 @@ import { quietCopy } from '../config/uiCopy';
 import { getQuietMode } from '../utils/themeManager';
 import PageTitle from '../components/PageTitle';
 import CommunityResources from '../components/Sidebar/CommunityResources';
+import SuggestedConnections from '../components/Sidebar/SuggestedConnections';
 import './Feed.css';
 import './Feed.calm.css'; // PHASE C: Calm mode overrides
 import './Mobile.calm.css'; // PHASE D: Mobile-first calm mode
@@ -3059,97 +3060,9 @@ function Feed() {
             <CommunityResources />
           </div>
 
-          {/* Friends List */}
+          {/* Suggested Connections */}
           <div className="sidebar-card glossy">
-            <h3 className="sidebar-title">Recent Conversations</h3>
-
-            {/* Search Bar */}
-            <div className="friends-search-bar">
-              <input
-                id="friends-search-input"
-                name="friendSearch"
-                type="text"
-                placeholder="Search friends..."
-                value={friendSearchQuery}
-                onChange={(e) => setFriendSearchQuery(e.target.value)}
-                className="friends-search-input"
-              />
-            </div>
-
-            <div className="friends-sidebar-list">
-              {/* All Friends - Unified List */}
-              {friends
-                .filter(friend =>
-                  getDisplayName(friend).toLowerCase().includes(friendSearchQuery.toLowerCase())
-                )
-                .map((friend) => {
-                  const isOnline = onlineUsers.includes(friend._id);
-                  logger.debug(`Friend ${getDisplayName(friend)} (${friend._id}):`, {
-                    isOnline,
-                    onlineUsers,
-                    friendId: friend._id
-                  });
-                  const unreadCount = unreadMessageCounts[friend._id] || 0;
-                  return (
-                    <div key={friend._id} className="friend-sidebar-item">
-                      <div className="friend-sidebar-main">
-                        <div className="friend-sidebar-avatar">
-                          {friend.profilePhoto ? (
-                            <OptimizedImage
-                              src={getImageUrl(friend.profilePhoto)}
-                              alt={getDisplayName(friend)}
-                              className="avatar-image"
-                            />
-                          ) : (
-                            <span>{getDisplayName(friend).charAt(0).toUpperCase()}</span>
-                          )}
-                          <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>
-                        </div>
-                        <div className="friend-sidebar-info">
-                          <div className="friend-sidebar-name">{getDisplayName(friend)}</div>
-                          <div className={`friend-sidebar-status ${isOnline ? 'online-status' : 'offline-status'}`}>
-                            {isOnline ? 'Online' : getTimeSince(friend.lastSeen)}
-                          </div>
-                        </div>
-                        <div className="friend-sidebar-actions-top">
-                          <Link
-                            to={`/messages?chat=${friend._id}`}
-                            className="btn-friend-action"
-                            title="Chat"
-                          >
-                            💬
-                            {unreadCount > 0 && (
-                              <span className="friend-message-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
-                            )}
-                          </Link>
-                          <Link
-                            to={`/profile/${friend._id}`}
-                            className="btn-friend-action"
-                            title="View Profile"
-                          >
-                            👤
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              {friends.filter(f =>
-                getDisplayName(f).toLowerCase().includes(friendSearchQuery.toLowerCase())
-              ).length === 0 && friends.length > 0 && (
-                <div className="no-friends">
-                  <p>No matching friends</p>
-                </div>
-              )}
-
-              {/* No Friends at All */}
-              {friends.length === 0 && (
-                <div className="no-friends">
-                  <p>No friends yet</p>
-                  <p className="friends-hint">Add friends to start chatting!</p>
-                </div>
-              )}
-            </div>
+            <SuggestedConnections />
           </div>
         </aside>
       </div>
