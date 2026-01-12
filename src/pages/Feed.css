@@ -52,6 +52,13 @@
   width: 100%;
 }
 
+/* FIX: Hide sidebar on tablet/mobile (500px-1023px), show in hamburger menu instead */
+@media (max-width: 1023px) {
+  .feed-sidebar {
+    display: none !important;
+  }
+}
+
 /* ========================================
    CREATE POST SECTION - CALM, OPTIONAL, NON-PERFORMATIVE
    Composer feels secondary to feed

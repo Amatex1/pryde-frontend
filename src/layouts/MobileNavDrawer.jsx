@@ -175,6 +175,10 @@ export default function MobileNavDrawer({ open, onClose }) {
             <span className="mobile-nav-icon" aria-hidden="true">📅</span>
             <span>Events</span>
           </Link>
+          <Link to="/discover" className="mobile-nav-item" onClick={handleLinkClick}>
+            <span className="mobile-nav-icon" aria-hidden="true">👥</span>
+            <span>Find Followers</span>
+          </Link>
 
           {user?.role && ['moderator', 'admin', 'super_admin'].includes(user.role) && (
             <Link to="/admin" className="mobile-nav-item" onClick={handleLinkClick}>
