@@ -23,11 +23,11 @@ function TieredBadgeDisplay({ badges = [], context = 'profile' }) {
   // Tier 1: Identity badges (always visible, inline)
   const renderTier1 = () => {
     if (tier1.length === 0) return null;
-    
+
     return (
       <div className="badge-tier-1">
         {tier1.map(badge => (
-          <UserBadge key={badge.id} badge={badge} showLabel={false} />
+          <UserBadge key={badge.id} badge={badge} showLabel={true} />
         ))}
       </div>
     );
