@@ -62,8 +62,14 @@ export default function BadgeSettings({ onUpdate }) {
     if (publicBadges.includes(badgeId)) {
       setPublicBadges(publicBadges.filter(id => id !== badgeId));
     } else {
-      if (publicBadges.length >= 3) {
-        setMessage('You can only display up to 3 public badges');
+      // Count only non-CORE_ROLE badges toward the 3-badge limit
+      const nonCoreRolePublicBadges = publicBadges.filter(id => {
+        const badge = badges.find(b => b.id === id);
+        return badge && badge.category !== 'CORE_ROLE';
+      });
+
+      if (nonCoreRolePublicBadges.length >= 3) {
+        setMessage('You can only display up to 3 public badges (excluding core role badges)');
         return;
       }
       setPublicBadges([...publicBadges, badgeId]);
@@ -72,6 +78,12 @@ export default function BadgeSettings({ onUpdate }) {
 
   const coreRoleBadges = badges.filter(b => b.category === 'CORE_ROLE');
   const controllableBadges = badges.filter(b => b.category !== 'CORE_ROLE');
+
+  // Count only non-CORE_ROLE badges for the display counter
+  const nonCoreRolePublicCount = publicBadges.filter(id => {
+    const badge = badges.find(b => b.id === id);
+    return badge && badge.category !== 'CORE_ROLE';
+  }).length;
 
   if (loading) return <div>Loading badges...</div>;
 
@@ -100,7 +112,7 @@ export default function BadgeSettings({ onUpdate }) {
       {/* Controllable Badges */}
       {controllableBadges.length > 0 && (
         <div className="badge-section">
-          <h4>Your Badges ({publicBadges.length}/3 selected)</h4>
+          <h4>Your Badges ({nonCoreRolePublicCount}/3 selected)</h4>
           <div className="badge-grid">
             {controllableBadges.map(badge => (
               <div 
