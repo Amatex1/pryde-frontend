@@ -44,8 +44,9 @@ export const connectSocket = (userId) => {
         logger.debug('🔑 Token preview:', token ? token.substring(0, 20) + '...' : 'null');
 
         socket = io(SOCKET_URL, {
-            // ✅ WebSocket first for better performance, polling as fallback
-            transports: ["websocket", "polling"],
+            // 🔥 CRITICAL: WebSocket ONLY - no polling fallback
+            // This forces WebSocket or fails clearly (helps debug connection issues)
+            transports: ["websocket"],
             // ✅ Send JWT via auth object (NOT query params)
             // Identity comes from verified JWT, not client-provided userId
             auth: {
@@ -54,12 +55,12 @@ export const connectSocket = (userId) => {
             // ❌ REMOVED: query: { userId } - Identity now from JWT only
             // ✅ Conditional reconnection (disabled during logout)
             reconnection: true,
-            reconnectionAttempts: Infinity, // Never give up reconnecting
+            reconnectionAttempts: 10, // Try 10 times then give up (was Infinity)
             reconnectionDelay: 1000, // Start with 1 second
             reconnectionDelayMax: 5000, // Max 5 seconds between attempts
             timeout: 20000, // 20 second timeout for better stability
             forceNew: true, // Force new connection to use new token
-            upgrade: true, // Allow upgrade to websocket after polling connects
+            upgrade: false, // No upgrade needed (already WebSocket-only)
             withCredentials: true, // Enable cookies for cross-origin
             // ✅ Enhanced stability settings
             autoConnect: true, // Auto-connect on initialization
@@ -75,6 +76,14 @@ export const connectSocket = (userId) => {
             logger.debug('✅ Socket connected successfully!');
             logger.debug('🔌 Transport:', socket.io.engine.transport.name);
             logger.debug('🆔 Socket ID:', socket.id);
+
+            // 🔥 DIAGNOSTIC: Log transport type prominently
+            if (socket.io.engine.transport.name === 'polling') {
+                console.error('⚠️ WARNING: Using POLLING transport (slow)! WebSocket failed to connect.');
+                console.error('This will cause 2-3 minute delays in messages.');
+            } else {
+                console.log('✅ Using WebSocket transport (fast, real-time)');
+            }
         });
 
         // DEV WARNING: Detect deprecated event names (Phase R)
@@ -93,12 +102,22 @@ export const connectSocket = (userId) => {
 
         socket.on('connect_error', (error) => {
             logger.error('❌ Socket connection error:', error.message);
+            console.error('❌ Socket connection error:', error);
 
-            // 🔥 CRITICAL: Log detailed error info for debugging
+            // 🔥 DIAGNOSTIC: Log detailed error info for debugging
             if (error.message.includes('timeout')) {
                 logger.error('⏱️ Socket authentication timeout - backend may be slow or down');
+                console.error('⏱️ This usually means the backend is not responding or CORS is blocking the request');
             } else if (error.message.includes('Authentication')) {
                 logger.error('🔑 Socket authentication failed - token may be invalid');
+                console.error('🔑 Check if your JWT token is valid and not expired');
+            } else if (error.message.includes('websocket')) {
+                console.error('🔌 WebSocket connection failed!');
+                console.error('Possible causes:');
+                console.error('1. Cloudflare Pages blocking WebSocket');
+                console.error('2. CORS not allowing WebSocket upgrade');
+                console.error('3. Backend not accepting WebSocket connections');
+                console.error('4. Firewall/proxy blocking WebSocket');
             }
 
             // 🔥 CRITICAL: If we're logging out, stop reconnection attempts
