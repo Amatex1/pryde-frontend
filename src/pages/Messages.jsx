@@ -441,16 +441,17 @@ function Messages() {
 
       // Listen for new messages
       const cleanupNewMessage = onNewMessage((newMessage) => {
-        logger.debug('📨 Received new_message event:', newMessage);
+        logger.debug('📨 Received message:new event:', newMessage);
 
-        // Check if this message is for the currently selected chat
-        // Message is relevant if the sender is the selected chat OR the recipient is the selected chat
-        const isRelevantMessage =
-          selectedChat === newMessage.sender._id ||
-          selectedChat === newMessage.recipient._id;
+        // 🔥 CRITICAL FIX: Only process messages where WE are the RECIPIENT
+        // The sender gets their own message via 'message:sent', not 'message:new'
+        // This prevents duplicate messages on the sender's side
+        const isRecipient = currentUser?._id === newMessage.recipient._id;
+        const isSenderInSelectedChat = selectedChat === newMessage.sender._id;
 
-        if (isRelevantMessage) {
-          logger.debug('✅ Message is for selected chat, adding to messages');
+        // Only add message if we're the recipient AND the sender is the selected chat
+        if (isRecipient && isSenderInSelectedChat) {
+          logger.debug('✅ Message is for selected chat (we are recipient), adding to messages');
           setMessages((prev) => {
             // Prevent duplicates - check if message already exists
             if (prev.some(msg => msg._id === newMessage._id)) {
@@ -458,6 +459,15 @@ function Messages() {
               return prev;
             }
             return [...prev, newMessage];
+          });
+        } else {
+          logger.debug('⏭️ Skipping message:new (not recipient or wrong chat)', {
+            isRecipient,
+            isSenderInSelectedChat,
+            currentUserId: currentUser?._id,
+            recipientId: newMessage.recipient._id,
+            senderId: newMessage.sender._id,
+            selectedChat
           });
         }
 
@@ -653,17 +663,35 @@ function Messages() {
           });
 
           try {
-            socketSendMessage({
+            const messagePayload = {
               recipientId: selectedChat,
               content: messageContent,
               attachment: attachmentUrl,
               voiceNote: voiceNote,
               contentWarning: contentWarning,
               _tempId: tempId // Send tempId for reconciliation
+            };
+
+            console.log('📤 [SEND] Calling socketSendMessage with payload:', {
+              recipientId: selectedChat,
+              hasContent: !!messageContent,
+              contentLength: messageContent?.length,
+              contentPreview: messageContent?.substring(0, 50),
+              hasAttachment: !!attachmentUrl,
+              hasVoiceNote: !!voiceNote,
+              socketConnected: socket?.connected,
+              socketId: socket?.id
             });
+
+            socketSendMessage(messagePayload);
             console.log('✅ socketSendMessage called successfully');
           } catch (error) {
             console.error('❌ Error sending message via socket:', error);
+            console.error('Error details:', {
+              name: error.name,
+              message: error.message,
+              stack: error.stack
+            });
             // ROLLBACK: Remove optimistic message on error
             setMessages((prev) => prev.filter(m => m._id !== tempId));
             alert('Failed to send message. Please try again.');

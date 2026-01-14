@@ -37,7 +37,7 @@ const ALLOWED_CLIENT_EVENTS = [
 
 // Required payload keys per event (for validation)
 const REQUIRED_KEYS = {
-  'send_message': ['recipientId', 'content'],
+  'send_message': ['recipientId'], // Only recipientId required - content OR attachment OR voiceNote
   'typing': ['recipientId', 'isTyping'],
   'global_chat:typing': ['isTyping'],
   'global_message:send': ['text']
