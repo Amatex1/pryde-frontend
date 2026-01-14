@@ -558,6 +558,8 @@ function Messages() {
 
       // Listen for sent message confirmation (message:sent - Phase R unified)
       const cleanupMessageSent = onMessageSent((sentMessage) => {
+        // 🔥 TEMP DEBUG - always log to console
+        console.log('✅ [Messages.jsx] Received message:sent event:', sentMessage);
         logger.debug('✅ Received message:sent event:', sentMessage);
 
         // 🔥 CRITICAL: Clear the rollback timeout - message confirmed!

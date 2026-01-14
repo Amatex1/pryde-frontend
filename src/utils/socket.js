@@ -301,6 +301,13 @@ export const onMessageSent = (callback) => {
     if (socket && typeof socket.on === 'function') {
         // UNIFIED: Listen to 'message:sent' (Phase R)
         socket.on("message:sent", callback);
+        logger.debug('✅ [onMessageSent] Listener attached for message:sent');
+    } else {
+        // 🔥 CRITICAL: Log when listener fails to attach
+        console.error('❌ [onMessageSent] FAILED to attach listener - socket is null or invalid!', {
+            socketExists: !!socket,
+            hasOnMethod: socket && typeof socket.on === 'function'
+        });
     }
     // Return cleanup function
     return () => {
@@ -318,6 +325,13 @@ export const onNewMessage = (callback) => {
     if (socket && typeof socket.on === 'function') {
         // UNIFIED: Listen to 'message:new' (Phase R)
         socket.on("message:new", callback);
+        logger.debug('✅ [onNewMessage] Listener attached for message:new');
+    } else {
+        // 🔥 CRITICAL: Log when listener fails to attach
+        console.error('❌ [onNewMessage] FAILED to attach listener - socket is null or invalid!', {
+            socketExists: !!socket,
+            hasOnMethod: socket && typeof socket.on === 'function'
+        });
     }
     // Return cleanup function
     return () => {
