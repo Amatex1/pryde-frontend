@@ -263,3 +263,124 @@ After testing, please provide:
 
 **Next:** Deploy backend and test with the instructions above. Report findings!
 
+---
+
+## 🔧 **CHANGES MADE:**
+
+### **Backend (pryde-backend):**
+
+**Commit 1: d3a1ed7 - Critical bug fixes + logging**
+- ✅ Fixed `.lean()` bug in duplicate message handling (line 771)
+- ✅ Added comprehensive logging for message flow
+- ✅ Added socket connection logging
+- ✅ Added online users count logging
+
+**Commit 2: 2a19b20 - Add message:error event**
+- ✅ Added `message:error` to allowed socket events
+- ✅ Added validation for `message:error` payload
+
+### **Frontend (pryde-frontend):**
+
+**Commit: 5362837 - Error handling + audit report**
+- ✅ Added `message:error` listener in Messages.jsx
+- ✅ Fixed duplicate cleanup in message listeners
+- ✅ Created MESSAGE_SYSTEM_AUDIT_REPORT.md
+
+---
+
+## 🎯 **MOST LIKELY ISSUES:**
+
+Based on the audit, here are the most likely causes (in order):
+
+### **1. 🔥 CRITICAL: Duplicate Message Decryption Bug (FIXED)**
+**Probability: HIGH**
+- Messages were using `.lean()` which skips `toJSON()` decryption
+- Recipients would receive encrypted hex strings
+- **Status:** ✅ FIXED in commit d3a1ed7
+
+### **2. Socket Not Connecting on Mobile**
+**Probability: MEDIUM**
+- Mobile browser might not be connecting to Socket.IO
+- WebSocket might be blocked by network/firewall
+- **How to check:** Look for connection logs in mobile console
+
+### **3. User Not Joining Room**
+**Probability: MEDIUM**
+- User might not be joining `user_${userId}` room
+- Room name mismatch between sender and recipient
+- **How to check:** Look for "joined room" logs in backend
+
+### **4. Recipient ID Mismatch**
+**Probability: LOW**
+- Sender might be using wrong recipient ID
+- User ID from JWT doesn't match database ID
+- **How to check:** Compare recipientId in logs with actual user ID
+
+---
+
+## 📊 **TESTING CHECKLIST:**
+
+After backend deploys (2-3 minutes), test the following:
+
+- [ ] **Backend deployed successfully** (check Render dashboard)
+- [ ] **PC can send messages** (check PC console for "Emitting send_message")
+- [ ] **Backend receives message** (check Render logs for "Received from user")
+- [ ] **Backend emits to recipient** (check logs for "Emitting to recipient's socket")
+- [ ] **Mobile receives message** (check mobile console for "Received new_message event")
+- [ ] **Message appears on mobile** (visual confirmation)
+- [ ] **Message persists after refresh** (database confirmation)
+
+---
+
+## 🚨 **EMERGENCY DEBUGGING:**
+
+If messages still don't work after deploy, check these in order:
+
+1. **Backend Logs (Render Dashboard):**
+   - Look for: `📨 [send_message] Received from user`
+   - Look for: `📡 [send_message] Recipient socket lookup`
+   - Look for: `✅ [send_message] Emitting to recipient's socket`
+
+2. **Mobile Console (Chrome DevTools):**
+   - Look for: `🔌 Socket connected successfully`
+   - Look for: `✅ User ${userId} joined room: user_${userId}`
+   - Look for: `📨 Received new_message event`
+
+3. **PC Console:**
+   - Look for: `📤 Emitting send_message`
+   - Look for: `✅ socketSendMessage called successfully`
+
+4. **Network Tab (Mobile):**
+   - Check if WebSocket connection is established
+   - Look for `wss://` connection to backend
+   - Check if connection stays open (not closing/reopening)
+
+---
+
+## 💡 **QUICK FIXES:**
+
+If you find specific issues:
+
+**Issue: "Recipient not online"**
+- Mobile user needs to refresh page
+- Check if mobile socket is actually connected
+
+**Issue: "Socket not connected"**
+- Mobile browser might be blocking WebSocket
+- Try different browser (Chrome, Safari, Firefox)
+- Check if mobile is on same network as PC
+
+**Issue: "Message appears encrypted"**
+- This was the `.lean()` bug - should be fixed now
+- If still happening, check if backend deployed correctly
+
+**Issue: "No logs in backend"**
+- Backend might not have deployed
+- Check Render dashboard for deployment status
+- Wait 2-3 minutes for deployment to complete
+
+---
+
+**Last Updated:** January 14, 2026
+**Status:** ✅ Critical bugs fixed, ready for testing
+
