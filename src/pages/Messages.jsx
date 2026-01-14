@@ -543,12 +543,21 @@ function Messages() {
       };
       socket.on('message:deleted', handleMessageDeleted);
 
+      // 🔥 CRITICAL: Listen for message errors
+      const handleMessageError = (error) => {
+        logger.error('❌ Message error received:', error);
+        console.error('❌ Message error:', error);
+        alert(`Message error: ${error.message || 'Unknown error'}`);
+      };
+      socket.on('message:error', handleMessageError);
+
       // Return cleanup function
       return () => {
         cleanupNewMessage?.();
         cleanupMessageSent?.();
         cleanupTyping?.();
         socket.off('message:deleted', handleMessageDeleted);
+        socket.off('message:error', handleMessageError);
       };
     };
 
