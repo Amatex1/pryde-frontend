@@ -8,6 +8,40 @@ const SOCKET_URL = API_CONFIG.SOCKET_URL;
 
 let socket = null;
 let isLoggingOut = false; // Flag to prevent reconnection during logout
+let connectionReady = false; // 🔥 NEW: Track if room join is confirmed
+let messageQueue = []; // 🔥 NEW: Queue for messages when socket not ready
+let reconnectAttempts = 0;
+const MAX_RECONNECT_ATTEMPTS = 10;
+
+// 🔥 NEW: Helper to get userId from JWT token
+const getUserIdFromToken = () => {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) return null;
+
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.userId;
+    } catch (error) {
+        logger.error('Error extracting userId from token:', error);
+        return null;
+    }
+};
+
+// 🔥 NEW: Process queued messages when connection is ready
+const processMessageQueue = () => {
+    logger.debug(`📬 Processing ${messageQueue.length} queued messages`);
+
+    while (messageQueue.length > 0) {
+        const { event, data, callback } = messageQueue.shift();
+        if (socket && socket.connected) {
+            socket.emit(event, data, callback);
+        } else {
+            logger.warn('⚠️ Socket disconnected while processing queue, re-queuing message');
+            messageQueue.unshift({ event, data, callback });
+            break;
+        }
+    }
+};
 
 // Initialize socket with userId (Blink expects this)
 // Returns socket instance or null (never undefined)
@@ -44,31 +78,30 @@ export const connectSocket = (userId) => {
         logger.debug('🔑 Token preview:', token ? token.substring(0, 20) + '...' : 'null');
 
         socket = io(SOCKET_URL, {
-            // 🔥 CRITICAL: WebSocket ONLY - no polling fallback
-            // This forces WebSocket or fails clearly (helps debug connection issues)
-            transports: ["websocket"],
+            // 🔥 ENHANCED: WebSocket primary with polling fallback for reliability
+            transports: ['websocket', 'polling'],
             // ✅ Send JWT via auth object (NOT query params)
-            // Identity comes from verified JWT, not client-provided userId
             auth: {
                 token: token
             },
-            // ❌ REMOVED: query: { userId } - Identity now from JWT only
-            // ✅ Conditional reconnection (disabled during logout)
+            // ✅ Reconnection settings
             reconnection: true,
-            reconnectionAttempts: 10, // Try 10 times then give up (was Infinity)
-            reconnectionDelay: 1000, // Start with 1 second
-            reconnectionDelayMax: 5000, // Max 5 seconds between attempts
-            timeout: 20000, // 20 second timeout for better stability
-            forceNew: true, // Force new connection to use new token
-            upgrade: false, // No upgrade needed (already WebSocket-only)
-            withCredentials: true, // Enable cookies for cross-origin
+            reconnectionAttempts: MAX_RECONNECT_ATTEMPTS,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            timeout: 20000,
+            // 🔥 CHANGED: Allow upgrade from polling to websocket
+            forceNew: false,
+            upgrade: true,
+            rememberUpgrade: true,
+            withCredentials: true,
             // ✅ Enhanced stability settings
-            autoConnect: true, // Auto-connect on initialization
-            randomizationFactor: 0.5, // Randomize reconnection delay to prevent thundering herd
-            closeOnBeforeunload: false, // Don't close on page navigation (better for SPA)
+            autoConnect: true,
+            randomizationFactor: 0.5,
+            closeOnBeforeunload: false,
             // ✅ Connection state recovery (matches server config)
-            ackTimeout: 10000, // 10 seconds - timeout for acknowledgements
-            retries: 3 // Number of retries for failed packets
+            ackTimeout: 10000,
+            retries: 3
         });
 
         // Add connection event listeners
@@ -76,14 +109,44 @@ export const connectSocket = (userId) => {
             logger.debug('✅ Socket connected successfully!');
             logger.debug('🔌 Transport:', socket.io.engine.transport.name);
             logger.debug('🆔 Socket ID:', socket.id);
+            reconnectAttempts = 0;
 
-            // 🔥 DIAGNOSTIC: Log transport type prominently
+            // 🔥 DIAGNOSTIC: Log transport type
             if (socket.io.engine.transport.name === 'polling') {
-                console.error('⚠️ WARNING: Using POLLING transport (slow)! WebSocket failed to connect.');
-                console.error('This will cause 2-3 minute delays in messages.');
+                console.warn('⚠️ Using POLLING transport - will upgrade to WebSocket if possible');
             } else {
                 console.log('✅ Using WebSocket transport (fast, real-time)');
             }
+
+            // 🔥 NEW: Re-join user room on connect
+            const tokenUserId = getUserIdFromToken();
+            if (tokenUserId) {
+                logger.debug(`🔄 Joining user room: user_${tokenUserId}`);
+                socket.emit('join', tokenUserId);
+
+                // Verify connection after 1 second
+                setTimeout(() => {
+                    if (socket && socket.connected) {
+                        socket.emit('ping', (response) => {
+                            logger.debug('🏓 Ping response:', response);
+                        });
+                    }
+                }, 1000);
+            }
+        });
+
+        // 🔥 NEW: Listen for room join confirmation
+        socket.on('room:joined', (data) => {
+            logger.debug('✅ Room joined:', data);
+            connectionReady = true;
+
+            // Process any queued messages
+            processMessageQueue();
+        });
+
+        socket.on('room:error', (error) => {
+            logger.error('❌ Room join error:', error);
+            connectionReady = false;
         });
 
         // DEV WARNING: Detect deprecated event names (Phase R)
@@ -130,6 +193,7 @@ export const connectSocket = (userId) => {
 
         socket.on('disconnect', (reason) => {
             logger.debug('🔌 Socket disconnected:', reason);
+            connectionReady = false; // 🔥 Reset connection ready state
 
             // 🔥 CRITICAL: If we're logging out, prevent reconnection
             if (isLoggingOut) {
@@ -141,17 +205,18 @@ export const connectSocket = (userId) => {
         // ✅ Enhanced stability: Handle reconnection attempts
         socket.io.on('reconnect_attempt', (attemptNumber) => {
             logger.debug(`🔄 Reconnection attempt #${attemptNumber}`);
+            reconnectAttempts = attemptNumber;
         });
 
         socket.io.on('reconnect', (attemptNumber) => {
             logger.debug(`✅ Reconnected after ${attemptNumber} attempts`);
+            reconnectAttempts = 0;
 
-            // PHASE 3a: Re-join user room on reconnect for cross-device sync
-            if (userId) {
-                logger.debug(`🔄 Re-joining user room after reconnect: user_${userId}`);
-                // The server automatically joins the user room on connection
-                // But we emit a join event to ensure state is refreshed
-                emitValidated(socket, 'join', { room: `user_${userId}` });
+            // Re-join user room on reconnect
+            const tokenUserId = getUserIdFromToken();
+            if (tokenUserId) {
+                logger.debug(`🔄 Re-joining user room after reconnect: user_${tokenUserId}`);
+                socket.emit('join', tokenUserId);
             }
         });
 
@@ -161,6 +226,7 @@ export const connectSocket = (userId) => {
 
         socket.io.on('reconnect_failed', () => {
             logger.error('❌ Reconnection failed - max attempts reached');
+            connectionReady = false;
         });
 
         // ✅ Enhanced stability: Handle transport changes
@@ -249,6 +315,8 @@ export const disconnectSocket = () => {
         socket.disconnect();
         socket = null;
     }
+    connectionReady = false;
+    messageQueue = [];
 };
 
 // 🔥 NEW: Disconnect socket for logout (prevents reconnection)
@@ -257,6 +325,8 @@ export const disconnectSocketForLogout = () => {
 
     // Set logout flag to prevent reconnection
     isLoggingOut = true;
+    connectionReady = false;
+    messageQueue = [];
 
     if (socket) {
         // Disable reconnection
@@ -271,6 +341,8 @@ export const disconnectSocketForLogout = () => {
 // 🔥 NEW: Reset logout flag (for testing or re-login)
 export const resetLogoutFlag = () => {
     isLoggingOut = false;
+    connectionReady = false;
+    messageQueue = [];
     logger.debug('🔄 Logout flag reset');
 };
 
@@ -280,17 +352,58 @@ export const getSocket = () => socket;
 // Check if socket is connected
 export const isSocketConnected = () => socket && socket.connected;
 
+// 🔥 NEW: Check if connection is fully ready (room joined)
+export const isConnectionReady = () => connectionReady;
+
+// 🔥 NEW: Get message queue length (for debugging)
+export const getMessageQueueLength = () => messageQueue.length;
+
 // -----------------------------
-// MESSAGES (Phase R: Unified event naming + Validated emits)
+// MESSAGES (Phase R: Unified event naming + Validated emits + ACK)
 // -----------------------------
-export const sendMessage = (data) => {
-    if (socket) {
-        logger.debug('🔌 Socket connected:', socket.connected);
-        logger.debug('📤 Emitting send_message:', data);
-        emitValidated(socket, "send_message", data);
-    } else {
-        logger.error('❌ Socket not initialized!');
+
+/**
+ * Send a message with ACK callback support
+ * @param {Object} data - Message data
+ * @param {Function} callback - Optional callback for ACK response
+ */
+export const sendMessage = (data, callback) => {
+    const messagePayload = {
+        ...data,
+        _tempId: data._tempId || `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    };
+
+    // If socket not ready, queue the message
+    if (!socket || !socket.connected) {
+        logger.warn('⚠️ Socket not connected, queuing message');
+        messageQueue.push({ event: 'send_message', data: messagePayload, callback });
+        return;
     }
+
+    // If connection not fully ready (room not joined), queue the message
+    if (!connectionReady) {
+        logger.warn('⚠️ Connection not ready (room not joined), queuing message');
+        messageQueue.push({ event: 'send_message', data: messagePayload, callback });
+        return;
+    }
+
+    logger.debug('📤 Emitting send_message with ACK:', messagePayload);
+
+    // Use socket.emit with callback for ACK
+    socket.emit('send_message', messagePayload, (response) => {
+        if (response) {
+            if (response.success) {
+                logger.debug('✅ Message ACK received:', response);
+            } else {
+                logger.error('❌ Message ACK error:', response);
+            }
+        }
+
+        // Call the provided callback if any
+        if (typeof callback === 'function') {
+            callback(response);
+        }
+    });
 };
 
 /**
@@ -472,6 +585,10 @@ export default {
     disconnectSocket,
     disconnectSocketForLogout,
     resetLogoutFlag,
+    getSocket,
+    isSocketConnected,
+    isConnectionReady,
+    getMessageQueueLength,
     sendMessage,
     onMessageSent,
     onNewMessage,

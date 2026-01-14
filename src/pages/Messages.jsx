@@ -25,6 +25,7 @@ import {
   emitTyping,
   onUserTyping,
   isSocketConnected,
+  isConnectionReady,
   getSocket
 } from '../utils/socket';
 import { setupSocketListeners } from '../utils/socketHelpers';
@@ -778,7 +779,19 @@ function Messages() {
               socketId: socket?.id
             });
 
-            socketSendMessage(messagePayload);
+            // 🔥 ENHANCED: Use ACK callback for immediate confirmation
+            socketSendMessage(messagePayload, (ackResponse) => {
+              if (ackResponse?.success) {
+                console.log('✅ Message ACK received:', ackResponse);
+                // Clear the rollback timeout - message confirmed!
+                clearOptimisticTimeout(tempId);
+              } else if (ackResponse?.error) {
+                console.error('❌ Message ACK error:', ackResponse);
+                // Rollback on ACK error
+                clearOptimisticTimeout(tempId);
+                setMessages((prev) => prev.filter(m => m._id !== tempId));
+              }
+            });
             console.log('✅ socketSendMessage called successfully');
           } catch (error) {
             console.error('❌ Error sending message via socket:', error);
