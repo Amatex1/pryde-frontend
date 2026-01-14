@@ -108,6 +108,76 @@ function Messages() {
   const typingTimeoutRef = useRef(null);
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
+  const optimisticTimeoutsRef = useRef(new Map()); // Track rollback timeouts for optimistic messages
+
+  // ========================================
+  // OPTIMISTIC MESSAGE LIFECYCLE HELPERS
+  // ========================================
+
+  /**
+   * Check if a message ID is a temporary optimistic ID
+   * @param {string} messageId - The message ID to check
+   * @returns {boolean} - True if this is a temp ID
+   */
+  const isTempId = (messageId) => {
+    return typeof messageId === 'string' && messageId.startsWith('temp_');
+  };
+
+  /**
+   * Rollback an optimistic message after timeout
+   * Called when server confirmation never arrives
+   * @param {string} tempId - The temp ID to rollback
+   */
+  const rollbackOptimisticMessage = useCallback((tempId) => {
+    console.warn(`⏰ Optimistic message timeout - rolling back: ${tempId}`);
+    setMessages((prev) => {
+      const hasMessage = prev.some(msg => msg._id === tempId);
+      if (hasMessage) {
+        console.warn(`🔄 Removing unconfirmed optimistic message: ${tempId}`);
+        return prev.filter(msg => msg._id !== tempId);
+      }
+      return prev;
+    });
+    // Clean up the timeout reference
+    optimisticTimeoutsRef.current.delete(tempId);
+    // Show user feedback
+    showAlert('Message failed to send. Please try again.', 'Send Failed');
+  }, [showAlert]);
+
+  /**
+   * Clear the rollback timeout for an optimistic message
+   * Called when message:sent confirmation arrives
+   * @param {string} tempId - The temp ID to clear timeout for
+   */
+  const clearOptimisticTimeout = useCallback((tempId) => {
+    const timeout = optimisticTimeoutsRef.current.get(tempId);
+    if (timeout) {
+      clearTimeout(timeout);
+      optimisticTimeoutsRef.current.delete(tempId);
+      console.log(`✅ Cleared rollback timeout for: ${tempId}`);
+    }
+  }, []);
+
+  /**
+   * Schedule a rollback for an optimistic message
+   * @param {string} tempId - The temp ID to schedule rollback for
+   * @param {number} timeoutMs - Timeout in milliseconds (default 15 seconds)
+   */
+  const scheduleOptimisticRollback = useCallback((tempId, timeoutMs = 15000) => {
+    console.log(`⏱️ Scheduling rollback for ${tempId} in ${timeoutMs}ms`);
+    const timeout = setTimeout(() => {
+      rollbackOptimisticMessage(tempId);
+    }, timeoutMs);
+    optimisticTimeoutsRef.current.set(tempId, timeout);
+  }, [rollbackOptimisticMessage]);
+
+  // Cleanup all optimistic timeouts on unmount
+  useEffect(() => {
+    return () => {
+      optimisticTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
+      optimisticTimeoutsRef.current.clear();
+    };
+  }, []);
 
   // Helper function to format date headers
   const formatDateHeader = (date) => {
@@ -490,24 +560,32 @@ function Messages() {
       const cleanupMessageSent = onMessageSent((sentMessage) => {
         logger.debug('✅ Received message:sent event:', sentMessage);
 
+        // 🔥 CRITICAL: Clear the rollback timeout - message confirmed!
+        // The server may send back the original _tempId for reconciliation
+        if (sentMessage._tempId) {
+          clearOptimisticTimeout(sentMessage._tempId);
+        }
+
         // Only process if this is the selected chat
         if (selectedChat === sentMessage.recipient._id) {
           logger.debug('✅ Sent message is for selected chat, reconciling...');
           setMessages((prev) => {
             // OPTIMISTIC UI RECONCILIATION: Replace temp message with real one
-            // Find any optimistic message (starts with temp_) and replace it
-            const hasOptimistic = prev.some(msg => msg._isOptimistic);
-            if (hasOptimistic) {
+            // Find the optimistic message that matches this confirmation
+            const optimisticIndex = prev.findIndex(msg => msg._isOptimistic);
+
+            if (optimisticIndex !== -1) {
               logger.debug('🔄 Replacing optimistic message with confirmed message');
-              // Replace the first optimistic message with the confirmed one
-              let replaced = false;
-              return prev.map(msg => {
-                if (!replaced && msg._isOptimistic) {
-                  replaced = true;
-                  return sentMessage;
-                }
-                return msg;
-              });
+              // Clear any pending timeout for this optimistic message
+              const optimisticMsg = prev[optimisticIndex];
+              if (optimisticMsg._id) {
+                clearOptimisticTimeout(optimisticMsg._id);
+              }
+
+              // Replace the optimistic message with the confirmed one
+              const updated = [...prev];
+              updated[optimisticIndex] = sentMessage;
+              return updated;
             }
 
             // No optimistic message found - check for duplicates and add
@@ -516,6 +594,17 @@ function Messages() {
               return prev;
             }
             return [...prev, sentMessage];
+          });
+        } else {
+          // 🔥 FIX: Even if user switched chats, still clear the optimistic message
+          // from wherever it is (prevents orphaned temp messages)
+          setMessages((prev) => {
+            const hasOptimistic = prev.some(msg => msg._isOptimistic);
+            if (hasOptimistic) {
+              logger.debug('🔄 Clearing optimistic message from previous chat');
+              return prev.filter(msg => !msg._isOptimistic);
+            }
+            return prev;
           });
         }
 
@@ -653,6 +742,10 @@ function Messages() {
         // OPTIMISTIC UI: Add message immediately before server confirms
         setMessages((prev) => [...prev, optimisticMessage]);
 
+        // 🔥 CRITICAL: Schedule rollback timeout in case server confirmation never arrives
+        // This prevents orphaned optimistic messages from staying in UI forever
+        scheduleOptimisticRollback(tempId, 15000); // 15 seconds timeout
+
         if (socketConnected) {
           // ✅ PREFERRED: Send via Socket.IO for real-time delivery
           console.log('🔌 Sending via Socket.IO', {
@@ -692,7 +785,8 @@ function Messages() {
               message: error.message,
               stack: error.stack
             });
-            // ROLLBACK: Remove optimistic message on error
+            // ROLLBACK: Remove optimistic message on error (immediate)
+            clearOptimisticTimeout(tempId);
             setMessages((prev) => prev.filter(m => m._id !== tempId));
             alert('Failed to send message. Please try again.');
             return;
@@ -710,6 +804,9 @@ function Messages() {
               contentWarning: contentWarning
             });
 
+            // 🔥 SUCCESS: Clear the rollback timeout
+            clearOptimisticTimeout(tempId);
+
             // Replace optimistic message with real one
             setMessages((prev) =>
               prev.map(m => m._id === tempId ? response.data : m)
@@ -717,7 +814,8 @@ function Messages() {
             console.log('✅ Message sent via REST API');
           } catch (error) {
             console.error('❌ Error sending message via REST API:', error);
-            // ROLLBACK: Remove optimistic message on error
+            // ROLLBACK: Remove optimistic message on error (immediate)
+            clearOptimisticTimeout(tempId);
             setMessages((prev) => prev.filter(m => m._id !== tempId));
             alert('Failed to send message. Please try again.');
             return;
@@ -743,7 +841,8 @@ function Messages() {
       }
     } catch (error) {
       logger.error('❌ Error sending message:', error);
-      // ROLLBACK: Remove optimistic message on error
+      // ROLLBACK: Remove optimistic message on error (immediate)
+      clearOptimisticTimeout(tempId);
       setMessages((prev) => prev.filter(m => m._id !== tempId));
       alert('Failed to send message');
     }
@@ -885,6 +984,13 @@ function Messages() {
   const handleSaveEditMessage = async (messageId) => {
     if (!editMessageText.trim()) return;
 
+    // 🔥 CRITICAL: Block temp_* IDs from reaching REST API
+    if (isTempId(messageId)) {
+      logger.warn('⚠️ Cannot edit optimistic message - waiting for server confirmation');
+      showAlert('Please wait for the message to be sent before editing.', 'Message Pending');
+      return;
+    }
+
     try {
       const response = await api.put(`/messages/${messageId}`, {
         content: editMessageText
@@ -932,6 +1038,17 @@ function Messages() {
   const handleDeleteMessage = async (deleteForAll = false) => {
     if (!deleteMessageId) return;
 
+    // 🔥 CRITICAL: Block temp_* IDs from reaching REST API
+    if (isTempId(deleteMessageId)) {
+      logger.warn('⚠️ Cannot delete optimistic message - waiting for server confirmation');
+      // For optimistic messages, just remove from UI locally (no API call)
+      setMessages((prev) => prev.filter((msg) => msg._id !== deleteMessageId));
+      clearOptimisticTimeout(deleteMessageId);
+      setDeleteModalOpen(false);
+      setDeleteMessageId(null);
+      return;
+    }
+
     try {
       const queryParam = deleteForAll ? '?deleteForAll=true' : '';
       await api.delete(`/messages/${deleteMessageId}${queryParam}`);
@@ -959,12 +1076,26 @@ function Messages() {
   };
 
   const handleReactToMessage = (messageId) => {
+    // 🔥 CRITICAL: Block reactions on temp_* IDs
+    if (isTempId(messageId)) {
+      logger.warn('⚠️ Cannot react to optimistic message - waiting for server confirmation');
+      showAlert('Please wait for the message to be sent before reacting.', 'Message Pending');
+      return;
+    }
     setReactingToMessage(messageId);
     setShowEmojiPicker(true);
   };
 
   const handleEmojiSelect = async (emoji) => {
     if (!reactingToMessage) return;
+
+    // 🔥 CRITICAL: Double-check temp_* ID (defensive)
+    if (isTempId(reactingToMessage)) {
+      logger.warn('⚠️ Cannot react to optimistic message');
+      setShowEmojiPicker(false);
+      setReactingToMessage(null);
+      return;
+    }
 
     try {
       const response = await api.post(`/messages/${reactingToMessage}/react`, { emoji });
@@ -982,6 +1113,12 @@ function Messages() {
   };
 
   const handleRemoveReaction = async (messageId, emoji) => {
+    // 🔥 CRITICAL: Block temp_* IDs from reaching REST API
+    if (isTempId(messageId)) {
+      logger.warn('⚠️ Cannot remove reaction from optimistic message');
+      return;
+    }
+
     try {
       const response = await api.delete(`/messages/${messageId}/react`, {
         data: { emoji }
