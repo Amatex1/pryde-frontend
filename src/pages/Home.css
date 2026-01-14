@@ -4,7 +4,8 @@
    ======================================== */
 
 .home-page {
-  min-height: 100vh;
+  min-height: 100vh; /* Fallback */
+  min-height: 100dvh; /* Fixes iOS Safari bottom bar */
   background: var(--color-bg);
 }
 

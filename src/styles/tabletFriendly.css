@@ -1,0 +1,173 @@
+/**
+ * Tablet-Specific Styles
+ * Target: 769px - 1280px (iPad, Android tablets)
+ * Last Updated: 2026-01-15
+ */
+
+@media (min-width: 769px) and (max-width: 1280px) {
+
+  /* ==================== LAYOUT ==================== */
+
+  /* Two-column grid for main content */
+  .main-container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+    max-width: 100%;
+    padding: 0 24px;
+  }
+
+  /* Optimize feed width */
+  .feed-container,
+  .post-list {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  /* Posts: Medium width */
+  .post-card {
+    padding: 20px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+  }
+
+  /* Sidebar: Sticky positioning */
+  .sidebar {
+    width: 280px;
+    position: sticky;
+    top: 80px;
+    max-height: calc(100vh - 100px);
+    max-height: calc(100dvh - 100px);
+    overflow-y: auto;
+  }
+
+  /* Right sidebar: Hide on tablets */
+  .right-sidebar {
+    display: none;
+  }
+
+  /* ==================== TYPOGRAPHY ==================== */
+
+  body {
+    font-size: 17px;
+    line-height: 1.6;
+  }
+
+  h1 { font-size: 28px; }
+  h2 { font-size: 24px; }
+  h3 { font-size: 20px; }
+  h4 { font-size: 18px; }
+
+  .post-content {
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  /* ==================== NAVIGATION ==================== */
+
+  .nav-item {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nav-item-icon {
+    font-size: 22px;
+  }
+
+  .nav-item-text {
+    font-size: 16px;
+    display: inline;
+  }
+
+  /* Bottom nav: Hide (use sidebar) */
+  .bottom-navigation,
+  .mobile-nav-bar {
+    display: none !important;
+  }
+
+  /* ==================== MODALS ==================== */
+
+  .modal {
+    width: 600px;
+    max-width: 90vw;
+    max-height: 85vh;
+    max-height: 85dvh;
+    border-radius: 16px;
+  }
+
+  /* ==================== FORMS ==================== */
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  textarea {
+    font-size: 16px;
+    padding: 12px 16px;
+    min-height: 48px;
+  }
+
+  /* ==================== MESSAGES ==================== */
+
+  .messages-container {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    height: calc(100vh - 80px);
+    height: calc(100dvh - 80px);
+  }
+
+  .conversation-list {
+    border-right: 1px solid var(--border-color);
+    overflow-y: auto;
+  }
+
+  /* ==================== IMAGES ==================== */
+
+  .post-image {
+    border-radius: 12px;
+    max-height: 500px;
+    object-fit: cover;
+  }
+
+  /* ==================== GROUPS ==================== */
+
+  .group-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+/* ==================== TABLET LANDSCAPE ==================== */
+@media (min-width: 769px) and (max-width: 1280px) and (orientation: landscape) {
+
+  .main-container {
+    grid-template-columns: 240px 1fr;
+  }
+
+  .sidebar {
+    width: 240px;
+  }
+
+  .header {
+    height: 60px;
+  }
+
+  .post-card {
+    padding: 16px;
+  }
+}
+
+/* ==================== TABLET PORTRAIT ==================== */
+@media (min-width: 769px) and (max-width: 1280px) and (orientation: portrait) {
+
+  .feed-container {
+    padding-bottom: 40px;
+  }
+
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+}

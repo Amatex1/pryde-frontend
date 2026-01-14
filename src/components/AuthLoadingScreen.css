@@ -7,7 +7,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 100vh; /* Fallback */
+  min-height: 100dvh; /* FIXED: Dynamic viewport height for iOS Safari */
   background: var(--background-color, #f7f7f7);
   color: var(--text-color, #2b2b2b);
 }

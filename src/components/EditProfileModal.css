@@ -624,7 +624,8 @@
 @media (max-width: 768px) {
   .edit-profile-modal {
     width: 100%;
-    max-height: 100vh;
+    max-height: 100vh; /* Fallback */
+    max-height: 100dvh; /* Fixes iOS Safari bottom bar */
     border-radius: 0;
   }
 

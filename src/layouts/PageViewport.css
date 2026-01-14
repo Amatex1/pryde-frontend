@@ -39,7 +39,8 @@
 }
 
 /* Desktop: No mobile nav, minimal bottom padding */
-@media (min-width: 1025px) {
+/* FIXED: Changed from 1025px to 1281px for tablet/desktop consistency */
+@media (min-width: 1281px) {
   .page-viewport {
     padding-bottom: env(safe-area-inset-bottom, 0);
   }

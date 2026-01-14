@@ -3,7 +3,8 @@
  */
 
 .search-page {
-  min-height: 100vh;
+  min-height: 100vh; /* Fallback */
+  min-height: 100dvh; /* Fixes iOS Safari bottom bar */
   background: var(--bg-main);
   padding-bottom: calc(70px + env(safe-area-inset-bottom, 0)); /* Space for bottom nav */
 }

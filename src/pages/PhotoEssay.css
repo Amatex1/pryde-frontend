@@ -1,5 +1,6 @@
 .photo-essay-page {
-  min-height: 100vh;
+  min-height: 100vh; /* Fallback */
+  min-height: 100dvh; /* Fixes iOS Safari bottom bar */
   background: var(--background-light);
   /* Removed padding-top: 80px - Navbar is sticky and handles its own positioning */
 }

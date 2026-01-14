@@ -1,48 +1,57 @@
-/* ====================================================
-   ⚠️ DEPRECATED - DO NOT ADD NEW CODE HERE
-   ====================================================
-
-   This file is scheduled for removal in a future hardening phase.
-   New layout code should use:
-   - CSS variables in PageLayout.css, PageViewport.css
-   - Feature-specific responsive styles in src/features/{feature}/*.css
-
-   The CSS custom properties defined here may still be referenced
-   by legacy components. Safe-area-insets remain useful.
-
-   Migration Status: Pending (Phase 2-4 feature migrations complete)
-   Target Removal: After all legacy pages use PageLayout system
-   ==================================================== */
+/**
+ * ====================================================
+ * Breakpoints & Responsive Variables
+ * Status: ACTIVE - Core responsive system
+ * Last Updated: 2026-01-15
+ *
+ * This file defines core breakpoint variables and safe area insets
+ * used throughout the application for responsive design.
+ * ==================================================== */
 
 /* ====================================================
    RESPONSIVE BREAKPOINT SYSTEM
    ==================================================== */
 
 :root {
-  /* Breakpoint values */
+  /* Updated breakpoints - no gaps between ranges */
+  /* Mobile: <= 768px */
+  /* Tablet: 769px - 1280px (includes iPad Pro 12.9" at 1024px) */
+  /* Desktop: >= 1281px */
   --bp-mobile: 480px;
   --bp-tablet: 768px;
+  --bp-tablet-max: 1280px;  /* Tablet upper bound */
   --bp-laptop: 1024px;
-  --bp-desktop: 1280px;
-  
-  /* Safe area insets for PWA (iOS notch, Android navigation) */
-  --safe-area-top: env(safe-area-inset-top, 0px);
-  --safe-area-right: env(safe-area-inset-right, 0px);
-  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-area-left: env(safe-area-inset-left, 0px);
-  
+  --bp-desktop: 1281px;     /* Changed from 1280px to 1281px */
+
+  /* Touch target sizes per device */
+  --touch-mobile: 44px;     /* Apple HIG */
+  --touch-tablet: 48px;     /* Microsoft/Android */
+  --touch-desktop: 36px;    /* Mouse precision */
+
+  /* Safe area insets (iOS notch/Dynamic Island) - short names */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
+  /* Legacy aliases for backwards compatibility */
+  --safe-area-top: var(--safe-top);
+  --safe-area-right: var(--safe-right);
+  --safe-area-bottom: var(--safe-bottom);
+  --safe-area-left: var(--safe-left);
+
   /* PWA-aware spacing */
   --header-height: 60px;
-  --header-height-mobile: calc(50px + var(--safe-area-top));
+  --header-height-mobile: calc(50px + var(--safe-top));
   --footer-height: 50px;
-  --footer-height-mobile: calc(50px + var(--safe-area-bottom));
-  
+  --footer-height-mobile: calc(50px + var(--safe-bottom));
+
   /* Container widths */
   --container-mobile: 100%;
   --container-tablet: 720px;
   --container-laptop: 960px;
   --container-desktop: 1200px;
-  
+
   /* Spacing scale */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
@@ -66,7 +75,7 @@
   display: none;
 }
 
-/* Hide on desktop (> 1024px) */
+/* Hide on desktop (> 1280px) - FIXED */
 .hide-desktop {
   display: none;
 }
@@ -85,8 +94,8 @@
   }
 }
 
-/* Show on desktop (> 1024px) */
-@media (min-width: 1025px) {
+/* Show on desktop (> 1280px) - FIXED from 1025px */
+@media (min-width: 1281px) {
   .hide-desktop {
     display: initial;
   }
@@ -108,7 +117,7 @@
   display: none;
 }
 
-@media (min-width: 481px) and (max-width: 1024px) {
+@media (min-width: 481px) and (max-width: 1280px) {
   .show-tablet-only {
     display: initial;
   }
@@ -119,7 +128,7 @@
   display: none;
 }
 
-@media (min-width: 1025px) {
+@media (min-width: 1281px) {
   .show-desktop-only {
     display: initial;
   }
@@ -154,9 +163,11 @@
 }
 
 /* Full viewport height accounting for PWA chrome */
+/* FIXED: Use 100dvh (dynamic viewport height) for iOS Safari bottom bar */
 .pwa-full-height {
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
+  min-height: 100vh; /* Fallback for older browsers */
+  min-height: 100dvh; /* Modern browsers - accounts for iOS Safari dynamic UI */
+  min-height: -webkit-fill-available; /* Safari fallback */
 }
 
 /* Container with responsive max-width */
@@ -181,7 +192,7 @@
   }
 }
 
-@media (min-width: 1025px) {
+@media (min-width: 1281px) {
   .responsive-container {
     max-width: var(--container-desktop);
   }
@@ -215,7 +226,7 @@
   }
 }
 
-@media (min-width: 1025px) {
+@media (min-width: 1281px) {
   .spacing-desktop {
     padding: var(--spacing-xl);
   }
@@ -243,7 +254,7 @@
   }
 }
 
-@media (min-width: 1025px) {
+@media (min-width: 1281px) {
   .grid-responsive {
     grid-template-columns: repeat(4, 1fr);
   }
@@ -353,4 +364,80 @@
   }
 }
 
+/* ============================================
+   GLOBAL RESPONSIVE UTILITIES
+   ============================================ */
 
+/* Prevent horizontal scroll on all devices */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  position: relative;
+}
+
+/* Fix iOS 100vh bug - use dynamic viewport */
+.full-height,
+.h-screen,
+.min-h-screen {
+  height: 100vh; /* Fallback */
+  height: 100dvh; /* Modern browsers */
+  min-height: 100vh; /* Fallback */
+  min-height: 100dvh; /* Modern browsers */
+}
+
+/* Safe area padding for iOS notch/Dynamic Island */
+.safe-area-top {
+  padding-top: max(12px, var(--safe-top));
+}
+
+.safe-area-bottom {
+  padding-bottom: max(12px, var(--safe-bottom));
+}
+
+.safe-area-all {
+  padding-top: var(--safe-top);
+  padding-right: var(--safe-right);
+  padding-bottom: var(--safe-bottom);
+  padding-left: var(--safe-left);
+}
+
+/* Responsive images/media */
+img, video, iframe, svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Touch target minimum sizes */
+@media (max-width: 768px) {
+  button,
+  a,
+  [role="button"],
+  .clickable,
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: var(--touch-mobile);
+    min-width: var(--touch-mobile);
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1280px) {
+  button,
+  a,
+  [role="button"],
+  .clickable,
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: var(--touch-tablet);
+    min-width: var(--touch-tablet);
+  }
+}
+
+@media (min-width: 1281px) {
+  button,
+  a,
+  [role="button"],
+  .clickable {
+    min-height: var(--touch-desktop);
+    min-width: var(--touch-desktop);
+  }
+}

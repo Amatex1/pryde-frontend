@@ -1,0 +1,75 @@
+/**
+ * PWA App Shell - iOS Safe Area Support
+ * Last Updated: 2026-01-15
+ */
+
+/* ============================================
+   iOS SAFE AREA SUPPORT
+   ============================================ */
+
+/* Main app container with safe areas */
+.app-container,
+#root {
+  padding-top: env(safe-area-inset-top);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+}
+
+/* Header: Account for notch/Dynamic Island */
+.header,
+.top-nav,
+.app-header {
+  padding-top: max(12px, env(safe-area-inset-top));
+  background: var(--header-bg);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Bottom navigation: Account for home indicator */
+.bottom-navigation,
+.bottom-nav,
+.mobile-nav-bar {
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+/* Modals: Keep content within safe areas */
+.modal,
+.modal-overlay {
+  padding-top: max(20px, env(safe-area-inset-top));
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+}
+
+/* Full-screen overlays */
+.fullscreen-overlay,
+.image-viewer {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* PWA-specific safe area handling */
+@media (display-mode: standalone) {
+  body {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  /* Fix input fields covered by iOS keyboard */
+  input:focus,
+  textarea:focus {
+    transform: translateY(-50px);
+    transition: transform 0.3s ease;
+  }
+}
+
+/* iPhone landscape safe areas */
+@media (orientation: landscape) and (max-width: 896px) {
+  .header {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+}
+

@@ -1,0 +1,156 @@
+/**
+ * PWA Native Feel Styles
+ * Makes the app feel like a native app when installed
+ * Last Updated: 2026-01-15
+ */
+
+/* ============================================
+   PWA-SPECIFIC UI HIDING
+   ============================================ */
+
+/* Hide browser-specific UI in PWA mode */
+@media (display-mode: standalone) {
+  .install-banner,
+  .browser-prompt,
+  .install-app-button,
+  .pwa-install-card {
+    display: none !important;
+  }
+  
+  /* Remove browser chrome behaviors */
+  body {
+    -webkit-touch-callout: none; /* Disable iOS callout menu */
+    -webkit-user-select: none;   /* Disable text selection */
+    user-select: none;
+  }
+  
+  /* Allow text selection in content areas */
+  .post-content,
+  .message-content,
+  .comment-text,
+  p, span, 
+  div[contenteditable],
+  input,
+  textarea {
+    -webkit-user-select: text;
+    user-select: text;
+    -webkit-touch-callout: default;
+  }
+  
+  /* Native app feel */
+  body {
+    overscroll-behavior: none; /* Prevent pull-to-refresh */
+  }
+}
+
+/* ============================================
+   SHOW/HIDE BASED ON MODE
+   ============================================ */
+
+/* Show PWA-specific UI only in standalone mode */
+.pwa-only {
+  display: none;
+}
+
+@media (display-mode: standalone) {
+  .pwa-only {
+    display: block;
+  }
+}
+
+/* Hide in PWA, show in browser */
+.browser-only {
+  display: block;
+}
+
+@media (display-mode: standalone) {
+  .browser-only {
+    display: none;
+  }
+}
+
+/* ============================================
+   CLASS-BASED PWA DETECTION (JS fallback)
+   ============================================ */
+
+/* When body has .pwa-mode class (from JS detection) */
+body.pwa-mode .install-banner,
+body.pwa-mode .browser-prompt,
+body.pwa-mode .install-app-button {
+  display: none !important;
+}
+
+body.browser-mode .pwa-only-feature {
+  display: none !important;
+}
+
+/* ============================================
+   PWA STATUS INDICATORS (Debug only)
+   ============================================ */
+
+/* Show PWA status badge for debugging */
+.pwa-status-badge {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background: rgba(124, 58, 237, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 999;
+  pointer-events: none;
+  display: none; /* Hidden by default */
+}
+
+/* Show in dev mode only */
+body[data-env="development"] .pwa-status-badge {
+  display: block;
+}
+
+@media (display-mode: standalone) {
+  .pwa-status-badge::before {
+    content: "📱 PWA Mode";
+  }
+}
+
+@media (display-mode: browser) {
+  .pwa-status-badge::before {
+    content: "🌐 Browser Mode";
+  }
+}
+
+/* ============================================
+   NATIVE-LIKE TOUCH FEEDBACK
+   ============================================ */
+
+@media (display-mode: standalone) {
+  /* Faster, snappier touch feedback */
+  button,
+  a,
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  /* Subtle press effect */
+  button:active,
+  a:active,
+  [role="button"]:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+  
+  /* Disable text selection on UI elements */
+  nav,
+  header,
+  footer,
+  .nav-item,
+  .menu-item,
+  .button {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+

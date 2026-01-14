@@ -115,15 +115,15 @@
    Hidden on desktop, shown on mobile
    ======================================== */
 
-/* Show mobile nav on mobile/tablet */
-@media (max-width: 1024px) {
+/* Show mobile nav on mobile/tablet - FIXED: Extended tablet range to 1280px */
+@media (max-width: 1280px) {
   .mobile-nav {
     display: grid;
   }
 }
 
-/* Hide mobile nav on desktop */
-@media (min-width: 1025px) {
+/* Hide mobile nav on desktop - FIXED: Changed from 1025px to 1281px */
+@media (min-width: 1281px) {
   .mobile-nav {
     display: none !important;
   }

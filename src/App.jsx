@@ -15,6 +15,8 @@ import { disablePWAAndReload, forceReloadWithCacheClear } from './utils/emergenc
 import { initOfflineManager } from './utils/offlineManager';
 import { checkDomOrder } from './utils/domOrderCheck';
 import { setupDevConsole } from './utils/devConsole';
+import { isPWA } from './utils/pwa';
+import { initThemeListener, getThemePreference, setThemeMode } from './utils/themeManager';
 import DebugOverlay from './components/DebugOverlay';
 import OfflineBanner from './components/OfflineBanner';
 import OnboardingTour from './components/onboarding/OnboardingTour';
@@ -496,6 +498,53 @@ function AppContent() {
  * AuthProvider is the outermost provider for auth state
  */
 function App() {
+  // 🎨 SYSTEM THEME LISTENER - Listens for OS dark/light mode changes
+  useEffect(() => {
+    const cleanup = initThemeListener();
+
+    // Load user's theme preference if exists
+    const preference = getThemePreference();
+    if (preference !== 'auto') {
+      setThemeMode(preference);
+    }
+
+    logger.info('[App] Theme listener initialized, preference:', preference);
+    return cleanup;
+  }, []);
+
+  // 📱 PWA MODE DETECTION
+  useEffect(() => {
+    const checkPWA = () => {
+      const pwaMode = isPWA();
+
+      // Add class to body for CSS targeting
+      if (pwaMode) {
+        document.body.classList.add('pwa-mode');
+        document.body.classList.remove('browser-mode');
+      } else {
+        document.body.classList.add('browser-mode');
+        document.body.classList.remove('pwa-mode');
+      }
+
+      logger.info('[App] Running in PWA mode:', pwaMode);
+    };
+
+    checkPWA();
+
+    // Listen for display mode changes
+    const mediaQuery = window.matchMedia('(display-mode: standalone)');
+    const handleChange = () => checkPWA();
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    } else {
+      // Legacy browsers
+      mediaQuery.addListener(handleChange);
+      return () => mediaQuery.removeListener(handleChange);
+    }
+  }, []);
+
   // 🛡️ PWA SAFETY CHECKS (runs once on mount)
   useEffect(() => {
     const runPWASafetyChecks = async () => {

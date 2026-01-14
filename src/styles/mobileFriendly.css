@@ -1,18 +1,13 @@
-/* ========================================
-   ⚠️ DEPRECATED - DO NOT ADD NEW CODE HERE
-   ========================================
-
-   This file is scheduled for removal in a future hardening phase.
-   New layout code should use:
-   - PageViewport, PageContainer, PageLayout from src/layouts/
-   - Feature-specific CSS in src/features/{feature}/*.css
-
-   These styles may still provide minor utility for legacy components
-   that haven't been migrated to the new layout system.
-
-   Migration Status: Pending (Phase 2-4 feature migrations complete)
-   Target Removal: After all legacy pages use PageLayout system
-   ======================================== */
+/**
+ * ========================================
+ * Mobile-Friendly Styles
+ * Target: Mobile devices ≤768px
+ * Status: ACTIVE - Core mobile styles
+ * Last Updated: 2026-01-15
+ *
+ * This file provides mobile-specific layout fixes,
+ * touch optimizations, and PWA enhancements.
+ * ======================================== */
 
 /* ========================================
    MOBILE-FRIENDLY LAYOUT FIXES
@@ -1189,4 +1184,190 @@
 /* Prevent clicks passing through closed menu */
 .mobile-menu:not(.mobile-menu-visible) {
   pointer-events: none;
+}
+
+/* ============================================
+   ORIENTATION-SPECIFIC STYLES
+   ============================================ */
+
+/* Phone Landscape: Keep mobile layout but optimize width */
+@media (max-width: 896px) and (orientation: landscape) {
+
+  /* Hide sidebars completely in landscape */
+  .sidebar,
+  .right-sidebar {
+    display: none !important;
+  }
+
+  /* Full-width content */
+  .main-container {
+    grid-template-columns: 1fr;
+    padding: 0 16px;
+  }
+
+  /* Reduce header height to save vertical space */
+  .header {
+    height: 50px;
+    min-height: 50px;
+  }
+
+  .header-title {
+    font-size: 16px;
+  }
+
+  /* Reduce post padding */
+  .post-card {
+    padding: 12px 16px;
+    margin-bottom: 12px;
+  }
+
+  /* Compact navigation */
+  .bottom-navigation {
+    height: 50px;
+    padding: 4px 0;
+  }
+
+  .nav-item {
+    font-size: 20px;
+  }
+
+  .nav-item-text {
+    display: none; /* Hide labels in landscape */
+  }
+
+  /* Optimize modals for landscape */
+  .modal {
+    width: 80vw;
+    max-height: 80vh;
+    max-height: 80dvh;
+  }
+
+  /* Messages: Side-by-side if space allows */
+  .messages-container {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+  }
+
+  .conversation-list {
+    display: block !important;
+  }
+
+  /* Reduce spacing overall */
+  .feed-container {
+    padding-top: 8px;
+  }
+}
+
+/* Phone Portrait: Default mobile styles */
+@media (max-width: 768px) and (orientation: portrait) {
+
+  /* Ensure single column */
+  .main-container {
+    grid-template-columns: 1fr;
+  }
+
+  /* Stack navigation */
+  .bottom-navigation {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  /* Full-height modals */
+  .modal {
+    height: 100%;
+    max-height: 100vh;
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+
+  /* Messages: Stack vertically */
+  .messages-container {
+    display: block;
+  }
+
+  /* Hide conversation list when chat is open */
+  .chat-active .conversation-list {
+    display: none;
+  }
+}
+
+/* Tablet Landscape: Wide layout */
+@media (min-width: 769px) and (max-width: 1280px) and (orientation: landscape) {
+
+  /* Utilize horizontal space - three columns */
+  .main-container {
+    grid-template-columns: 220px 1fr 280px;
+  }
+
+  /* Show right sidebar in landscape */
+  .right-sidebar {
+    display: block !important;
+  }
+
+  /* Compact header */
+  .header {
+    height: 60px;
+  }
+
+  /* Reduce vertical padding */
+  .post-card {
+    padding: 14px 18px;
+  }
+
+  /* Wider modals */
+  .modal {
+    width: 700px;
+  }
+}
+
+/* Tablet Portrait: Vertical optimization */
+@media (min-width: 769px) and (max-width: 1280px) and (orientation: portrait) {
+
+  /* Hide right sidebar to save space */
+  .right-sidebar {
+    display: none;
+  }
+
+  /* Two-column layout */
+  .main-container {
+    grid-template-columns: 280px 1fr;
+  }
+
+  /* Sticky header for more scrolling room */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  /* Taller content area */
+  .main-container {
+    min-height: calc(100vh - 80px);
+    min-height: calc(100dvh - 80px);
+  }
+
+  /* Increase post spacing for vertical scroll */
+  .post-card {
+    margin-bottom: 20px;
+  }
+}
+
+/* Smooth transitions on rotation */
+@media (orientation: landscape) {
+  .main-container,
+  .sidebar,
+  .post-card,
+  .header {
+    transition: all 0.3s ease;
+  }
+}
+
+@media (orientation: portrait) {
+  .main-container,
+  .sidebar,
+  .post-card,
+  .header {
+    transition: all 0.3s ease;
+  }
 }

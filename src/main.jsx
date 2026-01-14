@@ -3,14 +3,19 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css' // Includes layout.css as LAST import (authority for .page-container)
 import './styles/breakpoints.css' // Responsive breakpoint system + PWA utilities (MUST be loaded early)
+import './styles/pwa-app-shell.css' // iOS safe area support for PWA
 import './styles/darkMode.css'
 import './styles/quiet-mode.css' // MUST be loaded AFTER darkMode.css to override properly
 import './styles/mobileFriendly.css' // Mobile-friendly layout fixes for PWA
+import './styles/tabletFriendly.css' // Tablet-specific layouts (769px-1280px)
+import './styles/typography.css' // Responsive typography system
 import './styles/mobile-brand.css' // Mobile purple brand surface (MUST be loaded AFTER mobileFriendly.css)
 import './styles/purple-identity.css' // Purple identity - eliminate grey SaaS surfaces (MUST be loaded LAST)
 import './styles/sidebar.css' // Sidebar feature discovery styles
 import './styles/navbar.css' // Desktop navbar grid layout
 import './styles/cursors.css' // Optional cursor customization styles
+import './styles/responsive-modals.css' // Responsive modal system
+import './styles/pwa-native-feel.css' // PWA native app feel
 // NOTE: Using PUSH-ONLY service worker - NO fetch, NO cache, NO navigation
 // This is safe by design and only handles push notifications
 import { setupInstallPrompt, requestPersistentStorage } from './utils/pwa'

@@ -1,12 +1,12 @@
 /**
  * PageLayout.css - Responsive CSS Grid layout
- * 
+ *
  * THE ONLY PLACE WHERE LAYOUT MEDIA QUERIES ARE ALLOWED
- * 
- * Breakpoints:
+ *
+ * Breakpoints (FIXED for iPad Pro consistency):
  * - Mobile: ≤600px (single column always)
- * - Tablet: 601-1024px (two-column max)
- * - Desktop: ≥1025px (full variant support)
+ * - Tablet: 601-1280px (two-column max, includes iPad Pro 12.9")
+ * - Desktop: ≥1281px (full variant support)
  */
 
 /* ========================================
@@ -44,30 +44,30 @@
 }
 
 /* ========================================
-   TABLET LAYOUT (601px - 1024px)
+   TABLET LAYOUT (601px - 1280px) - FIXED from 1024px
    ======================================== */
 
-@media (min-width: 601px) and (max-width: 1024px) {
+@media (min-width: 601px) and (max-width: 1280px) {
   /* Two-column: primary (65%) + secondary (35%) */
   .page-layout--two-column {
     grid-template-columns: 1.8fr 1fr;
     grid-template-areas: "primary secondary";
   }
-  
+
   .page-layout--two-column .page-layout__secondary {
     display: block;
   }
-  
+
   /* Three-column collapses to two-column on tablet */
   .page-layout--three-column {
     grid-template-columns: 1.8fr 1fr;
     grid-template-areas: "primary secondary";
   }
-  
+
   .page-layout--three-column .page-layout__secondary {
     display: block;
   }
-  
+
   /* Tertiary stays hidden on tablet */
   .page-layout--three-column .page-layout__tertiary {
     display: none;
@@ -75,10 +75,10 @@
 }
 
 /* ========================================
-   DESKTOP LAYOUT (≥1025px)
+   DESKTOP LAYOUT (≥1281px) - FIXED from 1025px
    ======================================== */
 
-@media (min-width: 1025px) {
+@media (min-width: 1281px) {
   /* Two-column: primary (70%) + secondary (30%) */
   .page-layout--two-column {
     grid-template-columns: 2fr 1fr;

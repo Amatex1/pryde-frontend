@@ -1,0 +1,127 @@
+/**
+ * Responsive Typography System
+ * Optimized font sizes per device
+ * Last Updated: 2026-01-15
+ */
+
+/* Mobile: Optimized for readability */
+@media (max-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+  
+  body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  h1 { 
+    font-size: 24px; 
+    line-height: 1.3;
+    margin-bottom: 16px;
+  }
+  
+  h2 { 
+    font-size: 20px;
+    line-height: 1.4;
+    margin-bottom: 12px;
+  }
+  
+  h3 { 
+    font-size: 18px;
+    line-height: 1.4;
+    margin-bottom: 10px;
+  }
+  
+  p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+  
+  .post-content {
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  
+  .small-text {
+    font-size: 14px;
+  }
+}
+
+/* Tablet: Medium sizing */
+@media (min-width: 769px) and (max-width: 1280px) {
+  html {
+    font-size: 17px;
+  }
+  
+  body {
+    font-size: 17px;
+    line-height: 1.6;
+  }
+  
+  h1 { 
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+  
+  h2 { 
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+  
+  h3 { 
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+  
+  p {
+    font-size: 17px;
+    line-height: 1.65;
+    margin-bottom: 14px;
+  }
+  
+  .post-content {
+    font-size: 16px;
+    line-height: 1.7;
+  }
+}
+
+/* Desktop: Full size */
+@media (min-width: 1281px) {
+  html {
+    font-size: 18px;
+  }
+  
+  body {
+    font-size: 18px;
+    line-height: 1.7;
+  }
+  
+  h1 { 
+    font-size: 32px;
+    margin-bottom: 24px;
+  }
+  
+  h2 { 
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+  
+  h3 { 
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+  
+  p {
+    font-size: 18px;
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  
+  .post-content {
+    font-size: 17px;
+    line-height: 1.75;
+  }
+}
+
