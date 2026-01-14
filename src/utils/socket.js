@@ -232,6 +232,12 @@ export const connectSocket = (userId) => {
         // Use 'pagehide' instead of 'beforeunload' for better bfcache support
         window.addEventListener('pagehide', handlePageHide, { capture: true });
         window.addEventListener('pageshow', handlePageShow, { capture: true });
+
+        // 🔧 DEBUG: Expose socket to window for debugging
+        if (typeof window !== 'undefined') {
+            window.socket = socket;
+            logger.debug('✅ Socket exposed to window.socket for debugging');
+        }
     }
     return socket;
 };

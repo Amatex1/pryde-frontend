@@ -137,6 +137,21 @@ function Lounge() {
 
     // Use functional update for better performance
     setMessages(prev => {
+      // ⚡ OPTIMISTIC UI: Replace optimistic message with real one
+      const hasOptimistic = prev.some(m => m._isOptimistic);
+      if (hasOptimistic) {
+        console.log('🔄 Lounge: Replacing optimistic message with confirmed message');
+        // Replace the first optimistic message with the confirmed one
+        let replaced = false;
+        return prev.map(m => {
+          if (!replaced && m._isOptimistic) {
+            replaced = true;
+            return message;
+          }
+          return m;
+        });
+      }
+
       // Check for duplicates (in case of double-emit)
       if (prev.some(m => m._id === message._id)) {
         console.warn('⚠️ Duplicate message received, skipping');
@@ -387,6 +402,28 @@ function Lounge() {
         setTimeout(() => setError(''), 5000);
         return;
       }
+
+      // ⚡ OPTIMISTIC UI: Create temporary message and add to UI immediately
+      const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const optimisticMessage = {
+        _id: tempId,
+        text: newMessage.trim() || '',
+        gifUrl: selectedGif || null,
+        contentWarning: contentWarning.trim() || null,
+        sender: {
+          id: currentUser._id,
+          _id: currentUser._id,
+          username: currentUser.username,
+          displayName: currentUser.displayName,
+          avatar: currentUser.profilePhoto
+        },
+        createdAt: new Date().toISOString(),
+        _isOptimistic: true // Flag for styling (show as pending)
+      };
+
+      // Add optimistic message to UI immediately
+      setMessages(prev => [...prev, optimisticMessage]);
+      console.log('⚡ Lounge: Added optimistic message to UI');
 
       const messageData = {
         text: newMessage.trim() || '',
@@ -639,7 +676,7 @@ function Lounge() {
               {messages.map((msg) => (
                 <div
                   key={msg._id}
-                  className={`lounge-message ${msg.isDeleted ? 'deleted' : ''} ${msg.sender?.id === currentUser?._id ? 'own-message' : ''}`}
+                  className={`lounge-message ${msg.isDeleted ? 'deleted' : ''} ${msg._isOptimistic ? 'optimistic' : ''} ${msg.sender?.id === currentUser?._id ? 'own-message' : ''}`}
                 >
                   {msg.isDeleted ? (
                     <div className="lounge-message-deleted">

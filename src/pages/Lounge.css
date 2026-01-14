@@ -150,6 +150,17 @@
   opacity: 0.6;
 }
 
+/* ⚡ OPTIMISTIC UI: Show pending messages with reduced opacity */
+.lounge-message.optimistic {
+  opacity: 0.6;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.8; }
+}
+
 .lounge-message-avatar {
   width: 40px;
   height: 40px;
