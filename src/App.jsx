@@ -1,4 +1,4 @@
-// Testing webhook fix - should only trigger ONE deployment
+// Final test - verified commits disabled, should deploy successfully!
 import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { getCurrentUser } from './utils/auth';
