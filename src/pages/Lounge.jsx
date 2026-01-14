@@ -62,8 +62,13 @@ function Lounge() {
   }, [showGifPicker]);
 
   // Scroll to bottom
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToBottom = (instant = false) => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({
+        behavior: instant ? 'instant' : 'smooth',
+        block: 'end'
+      });
+    }
   };
 
   // Check if user is near bottom of messages
@@ -106,8 +111,8 @@ function Lounge() {
           setOnlineCount(onlineCountResponse.data.count);
         }
 
-        // Scroll to bottom after loading (reduced timeout)
-        setTimeout(scrollToBottom, 50);
+        // 🔥 FIX: Scroll to bottom instantly on initial load, with longer timeout for rendering
+        setTimeout(() => scrollToBottom(true), 200);
       } catch (error) {
         console.error('Error fetching messages:', error);
         setError('Failed to load messages');

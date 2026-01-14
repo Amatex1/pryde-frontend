@@ -418,7 +418,17 @@ function Messages() {
 
   // Scroll to bottom when messages change
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messages.length > 0 && messagesEndRef.current) {
+      // 🔥 FIX: Use instant scroll on initial load, smooth on updates
+      const isInitialLoad = messages.length <= 50; // Assume initial load if <= 50 messages
+
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({
+          behavior: isInitialLoad ? 'instant' : 'smooth',
+          block: 'end'
+        });
+      }, isInitialLoad ? 200 : 50); // Longer timeout for initial load
+    }
   }, [messages]);
 
   // Note: Online user presence is now managed by useOnlineUsers hook
