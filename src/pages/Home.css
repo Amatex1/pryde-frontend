@@ -364,9 +364,27 @@
    REMOVE ALL ANIMATIONS
    ======================================== */
 
-@keyframes fadeInDown,
-@keyframes float,
-@keyframes pulse,
+@keyframes fadeInDown {
+  from, to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes float {
+  from, to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pulse {
+  from, to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @keyframes slideIn {
   from, to {
     opacity: 1;
