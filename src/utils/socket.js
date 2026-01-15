@@ -110,6 +110,7 @@ export const connectSocket = (userId) => {
             logger.debug('🔌 Transport:', socket.io.engine.transport.name);
             logger.debug('🆔 Socket ID:', socket.id);
             reconnectAttempts = 0;
+            lastPongTime = Date.now(); // Reset pong timer
 
             // 🔥 DIAGNOSTIC: Log transport type
             if (socket.io.engine.transport.name === 'polling') {
@@ -129,10 +130,14 @@ export const connectSocket = (userId) => {
                     if (socket && socket.connected) {
                         socket.emit('ping', (response) => {
                             logger.debug('🏓 Ping response:', response);
+                            lastPongTime = Date.now();
                         });
                     }
                 }, 1000);
             }
+
+            // 🏥 Start health monitoring
+            startHealthMonitoring();
         });
 
         // 🔥 NEW: Listen for room join confirmation
@@ -147,6 +152,26 @@ export const connectSocket = (userId) => {
         socket.on('room:error', (error) => {
             logger.error('❌ Room join error:', error);
             connectionReady = false;
+        });
+
+        // 🔥 FIX: Fallback timer to process queue even if room:joined is missed
+        // This prevents messages from getting stuck in queue forever
+        let queueProcessTimeout = null;
+        socket.on('connect', () => {
+            // Clear any existing timeout
+            if (queueProcessTimeout) {
+                clearTimeout(queueProcessTimeout);
+            }
+
+            // Set fallback timer - if room not joined in 3 seconds, force process queue
+            queueProcessTimeout = setTimeout(() => {
+                if (!connectionReady && messageQueue.length > 0) {
+                    logger.warn('⚠️ Room join confirmation not received, force processing queue');
+                    // Mark as ready anyway to prevent infinite waiting
+                    connectionReady = true;
+                    processMessageQueue();
+                }
+            }, 3000);
         });
 
         // DEV WARNING: Detect deprecated event names (Phase R)
@@ -194,6 +219,9 @@ export const connectSocket = (userId) => {
         socket.on('disconnect', (reason) => {
             logger.debug('🔌 Socket disconnected:', reason);
             connectionReady = false; // 🔥 Reset connection ready state
+
+            // 🏥 Stop health monitoring when disconnected
+            stopHealthMonitoring();
 
             // 🔥 CRITICAL: If we're logging out, prevent reconnection
             if (isLoggingOut) {
@@ -359,15 +387,93 @@ export const isConnectionReady = () => connectionReady;
 export const getMessageQueueLength = () => messageQueue.length;
 
 // -----------------------------
+// CONNECTION HEALTH MONITORING
+// -----------------------------
+
+let healthCheckInterval = null;
+let lastPongTime = Date.now();
+const PING_INTERVAL = 15000; // 15 seconds
+const PONG_TIMEOUT = 30000; // 30 seconds - if no pong received, consider connection dead
+
+/**
+ * Start health monitoring - sends periodic pings to verify connection
+ */
+export const startHealthMonitoring = () => {
+    if (healthCheckInterval) {
+        logger.debug('⚠️ Health monitoring already running');
+        return;
+    }
+
+    logger.debug('🏥 Starting connection health monitoring');
+
+    healthCheckInterval = setInterval(() => {
+        if (!socket || !socket.connected) {
+            logger.debug('⚠️ Health check: socket not connected');
+            return;
+        }
+
+        // Check if last pong was too long ago
+        const timeSinceLastPong = Date.now() - lastPongTime;
+        if (timeSinceLastPong > PONG_TIMEOUT) {
+            logger.warn('❌ Connection unhealthy: no pong received in 30s, reconnecting...');
+            // Force reconnection
+            socket.disconnect();
+            socket.connect();
+            return;
+        }
+
+        // Send ping
+        socket.emit('ping', (response) => {
+            if (response && response.status === 'ok') {
+                lastPongTime = Date.now();
+                logger.debug('🏓 Pong received, connection healthy');
+            } else {
+                logger.warn('⚠️ Unexpected ping response:', response);
+            }
+        });
+    }, PING_INTERVAL);
+};
+
+/**
+ * Stop health monitoring
+ */
+export const stopHealthMonitoring = () => {
+    if (healthCheckInterval) {
+        logger.debug('🏥 Stopping connection health monitoring');
+        clearInterval(healthCheckInterval);
+        healthCheckInterval = null;
+    }
+};
+
+/**
+ * Get connection health status
+ */
+export const getConnectionHealth = () => {
+    const timeSinceLastPong = Date.now() - lastPongTime;
+    return {
+        isHealthy: socket && socket.connected && timeSinceLastPong < PONG_TIMEOUT,
+        lastPongTime,
+        timeSinceLastPong,
+        isConnected: socket && socket.connected,
+        isReady: connectionReady,
+        queueLength: messageQueue.length
+    };
+};
+
+// -----------------------------
 // MESSAGES (Phase R: Unified event naming + Validated emits + ACK)
 // -----------------------------
 
 /**
- * Send a message with ACK callback support
+ * Send a message with ACK callback support, automatic retries, and error handling
  * @param {Object} data - Message data
  * @param {Function} callback - Optional callback for ACK response
+ * @param {Number} retryCount - Internal retry counter (do not set manually)
  */
-export const sendMessage = (data, callback) => {
+export const sendMessage = (data, callback, retryCount = 0) => {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 1000; // 1 second
+
     const messagePayload = {
         ...data,
         _tempId: data._tempId || `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
@@ -377,6 +483,15 @@ export const sendMessage = (data, callback) => {
     if (!socket || !socket.connected) {
         logger.warn('⚠️ Socket not connected, queuing message');
         messageQueue.push({ event: 'send_message', data: messagePayload, callback });
+
+        // Notify callback of queued status
+        if (typeof callback === 'function') {
+            callback({
+                success: false,
+                queued: true,
+                message: 'Message queued - socket not connected'
+            });
+        }
         return;
     }
 
@@ -384,24 +499,73 @@ export const sendMessage = (data, callback) => {
     if (!connectionReady) {
         logger.warn('⚠️ Connection not ready (room not joined), queuing message');
         messageQueue.push({ event: 'send_message', data: messagePayload, callback });
+
+        // Notify callback of queued status
+        if (typeof callback === 'function') {
+            callback({
+                success: false,
+                queued: true,
+                message: 'Message queued - room not joined'
+            });
+        }
         return;
     }
 
-    logger.debug('📤 Emitting send_message with ACK:', messagePayload);
+    logger.debug('📤 Emitting send_message with ACK (attempt ' + (retryCount + 1) + '):', messagePayload);
+
+    // Set timeout for ACK response
+    const ackTimeout = setTimeout(() => {
+        logger.error('❌ Message ACK timeout - no response from server');
+
+        // Retry if under max retries
+        if (retryCount < MAX_RETRIES) {
+            logger.warn(`🔄 Retrying message send (${retryCount + 1}/${MAX_RETRIES})...`);
+            setTimeout(() => {
+                sendMessage(data, callback, retryCount + 1);
+            }, RETRY_DELAY * (retryCount + 1)); // Exponential backoff
+        } else {
+            // Max retries reached, call callback with error
+            if (typeof callback === 'function') {
+                callback({
+                    success: false,
+                    error: 'ACK_TIMEOUT',
+                    message: 'Failed to send message after ' + MAX_RETRIES + ' retries',
+                    _tempId: messagePayload._tempId
+                });
+            }
+        }
+    }, 10000); // 10 second timeout
 
     // Use socket.emit with callback for ACK
     socket.emit('send_message', messagePayload, (response) => {
+        // Clear timeout since we got a response
+        clearTimeout(ackTimeout);
+
         if (response) {
             if (response.success) {
                 logger.debug('✅ Message ACK received:', response);
-            } else {
+            } else if (response.error) {
                 logger.error('❌ Message ACK error:', response);
+
+                // Retry on certain error types
+                const retryableErrors = ['VALIDATION_ERROR', 'SEND_MESSAGE_ERROR'];
+                if (retryableErrors.includes(response.code) && retryCount < MAX_RETRIES) {
+                    logger.warn(`🔄 Retrying message send due to ${response.code} (${retryCount + 1}/${MAX_RETRIES})...`);
+                    setTimeout(() => {
+                        sendMessage(data, callback, retryCount + 1);
+                    }, RETRY_DELAY * (retryCount + 1));
+                    return; // Don't call callback yet, we're retrying
+                }
             }
         }
 
-        // Call the provided callback if any
+        // Call the provided callback
         if (typeof callback === 'function') {
-            callback(response);
+            callback(response || {
+                success: false,
+                error: 'NO_RESPONSE',
+                message: 'No response from server'
+            });
         }
     });
 };
@@ -589,6 +753,9 @@ export default {
     isSocketConnected,
     isConnectionReady,
     getMessageQueueLength,
+    startHealthMonitoring,
+    stopHealthMonitoring,
+    getConnectionHealth,
     sendMessage,
     onMessageSent,
     onNewMessage,
