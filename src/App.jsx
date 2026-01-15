@@ -32,6 +32,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import UpdateBanner from './components/UpdateBanner';
 import AuthLoadingScreen from './components/AuthLoadingScreen'; // 🔥 NEW: Global auth loading screen
 import AuthGate from './components/AuthGate'; // 🔥 NEW: Auth gate wrapper
+import SpeedInsights from './components/SpeedInsights'; // Vercel Speed Insights
 import { AppReadyProvider } from './state/appReady';
 import LoadingGate from './components/LoadingGate';
 import RoleRoute from './components/RoleRoute'; // Role-based route protection for admin
@@ -600,6 +601,7 @@ function App() {
         <LoadingGate>
           <AuthProvider>
             <SocketProvider>
+              <SpeedInsights />
               <AppContent />
             </SocketProvider>
           </AuthProvider>
