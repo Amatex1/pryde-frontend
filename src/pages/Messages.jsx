@@ -493,12 +493,28 @@ function Messages() {
       // 🔥 FIX: Use instant scroll on initial load, smooth on updates
       const isInitialLoad = messages.length <= 50; // Assume initial load if <= 50 messages
 
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({
-          behavior: isInitialLoad ? 'instant' : 'smooth',
-          block: 'end'
+      // Use requestAnimationFrame to ensure DOM is painted before scrolling
+      const scrollToBottom = () => {
+        requestAnimationFrame(() => {
+          messagesEndRef.current?.scrollIntoView({
+            behavior: isInitialLoad ? 'instant' : 'smooth',
+            block: 'end'
+          });
         });
-      }, isInitialLoad ? 200 : 50); // Longer timeout for initial load
+      };
+
+      // Double RAF + timeout ensures rendering is complete
+      if (isInitialLoad) {
+        // For initial load, wait longer and use double RAF
+        setTimeout(() => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(scrollToBottom);
+          });
+        }, 100);
+      } else {
+        // For updates, just use a short timeout
+        setTimeout(scrollToBottom, 50);
+      }
     }
   }, [messages]);
 

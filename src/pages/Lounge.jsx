@@ -61,15 +61,20 @@ function Lounge() {
     }
   }, [showGifPicker]);
 
-  // Scroll to bottom
-  const scrollToBottom = (instant = false) => {
+  // Scroll to bottom - improved with RAF for reliability
+  const scrollToBottom = useCallback((instant = false) => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({
-        behavior: instant ? 'instant' : 'smooth',
-        block: 'end'
+      // Use requestAnimationFrame to ensure DOM is painted before scrolling
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          messagesEndRef.current?.scrollIntoView({
+            behavior: instant ? 'instant' : 'smooth',
+            block: 'end'
+          });
+        });
       });
     }
-  };
+  }, []);
 
   // Check if user is near bottom of messages
   const isNearBottom = () => {
