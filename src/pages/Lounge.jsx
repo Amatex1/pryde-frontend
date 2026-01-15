@@ -61,17 +61,19 @@ function Lounge() {
     }
   }, [showGifPicker]);
 
-  // Scroll to bottom - improved with RAF for reliability
+  // Scroll to bottom - 🔥 FIX: Use scrollTop directly on container for reliability
   const scrollToBottom = useCallback((instant = false) => {
-    if (messagesEndRef.current) {
-      // Use requestAnimationFrame to ensure DOM is painted before scrolling
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          messagesEndRef.current?.scrollIntoView({
-            behavior: instant ? 'instant' : 'smooth',
-            block: 'end'
-          });
-        });
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    if (instant) {
+      // Instant scroll - set scrollTop directly
+      container.scrollTop = container.scrollHeight;
+    } else {
+      // Smooth scroll
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth'
       });
     }
   }, []);
@@ -116,8 +118,13 @@ function Lounge() {
           setOnlineCount(onlineCountResponse.data.count);
         }
 
-        // 🔥 FIX: Scroll to bottom instantly on initial load, with longer timeout for rendering
-        setTimeout(() => scrollToBottom(true), 200);
+        // 🔥 FIX: Scroll to bottom instantly on initial load - multiple attempts for reliability
+        scrollToBottom(true); // Immediate
+        requestAnimationFrame(() => {
+          scrollToBottom(true); // After frame
+          requestAnimationFrame(() => scrollToBottom(true)); // After paint
+        });
+        setTimeout(() => scrollToBottom(true), 200); // Fallback for lazy-loaded content
       } catch (error) {
         console.error('Error fetching messages:', error);
         setError('Failed to load messages');

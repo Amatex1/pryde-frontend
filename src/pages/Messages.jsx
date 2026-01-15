@@ -106,6 +106,7 @@ function Messages() {
   const [recipientUnavailableReason, setRecipientUnavailableReason] = useState('');
   const [openMessageMenu, setOpenMessageMenu] = useState(null); // Track which message's action menu is open
   const messagesEndRef = useRef(null);
+  const chatContainerRef = useRef(null); // 🔥 FIX: Ref to chat-messages container for reliable scrolling
   const typingTimeoutRef = useRef(null);
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
@@ -489,31 +490,46 @@ function Messages() {
 
   // Scroll to bottom when messages change
   useEffect(() => {
-    if (messages.length > 0 && messagesEndRef.current) {
-      // 🔥 FIX: Use instant scroll on initial load, smooth on updates
-      const isInitialLoad = messages.length <= 50; // Assume initial load if <= 50 messages
+    if (messages.length > 0 && chatContainerRef.current) {
+      // 🔥 FIX: Use scrollTop directly on container - more reliable than scrollIntoView
+      const container = chatContainerRef.current;
 
-      // Use requestAnimationFrame to ensure DOM is painted before scrolling
-      const scrollToBottom = () => {
-        requestAnimationFrame(() => {
-          messagesEndRef.current?.scrollIntoView({
-            behavior: isInitialLoad ? 'instant' : 'smooth',
-            block: 'end'
+      const scrollToBottom = (instant = false) => {
+        if (instant) {
+          // Instant scroll - set scrollTop directly
+          container.scrollTop = container.scrollHeight;
+        } else {
+          // Smooth scroll
+          container.scrollTo({
+            top: container.scrollHeight,
+            behavior: 'smooth'
           });
-        });
+        }
       };
 
-      // Double RAF + timeout ensures rendering is complete
+      // For initial load or when switching chats, use instant scroll after DOM update
+      const isInitialLoad = messages.length <= 50;
+
       if (isInitialLoad) {
-        // For initial load, wait longer and use double RAF
-        setTimeout(() => {
+        // Use multiple attempts to ensure scroll happens after render
+        // Immediate attempt
+        scrollToBottom(true);
+
+        // After next frame
+        requestAnimationFrame(() => {
+          scrollToBottom(true);
+
+          // After paint
           requestAnimationFrame(() => {
-            requestAnimationFrame(scrollToBottom);
+            scrollToBottom(true);
           });
-        }, 100);
+        });
+
+        // Fallback after short delay (catches lazy-loaded images)
+        setTimeout(() => scrollToBottom(true), 150);
       } else {
-        // For updates, just use a short timeout
-        setTimeout(scrollToBottom, 50);
+        // For new messages, smooth scroll
+        setTimeout(() => scrollToBottom(false), 50);
       }
     }
   }, [messages]);
@@ -1784,7 +1800,7 @@ function Messages() {
                   </button>
                 </div>
 
-                <div className="chat-messages">
+                <div className="chat-messages" ref={chatContainerRef}>
                   {!currentUser ? (
                     <div className="loading-messages">Loading messages...</div>
                   ) : loadingMessages ? (
