@@ -9,8 +9,13 @@ const GifPicker = ({ onGifSelect, onClose }) => {
   const [selectedCategory, setSelectedCategory] = useState('trending');
   const pickerRef = useRef(null);
 
-  // Giphy API key
-  const GIPHY_API_KEY = import.meta.env.VITE_GIPHY_API_KEY || 'mERDJnQ0WOvMcsf5YaYmSPwkkf1scKhZ';
+  // Giphy API key - MUST be set in environment variables
+  const GIPHY_API_KEY = import.meta.env.VITE_GIPHY_API_KEY;
+
+  // 🔒 SECURITY: Warn if API key is not configured
+  if (!GIPHY_API_KEY && process.env.NODE_ENV === 'development') {
+    console.warn('⚠️ VITE_GIPHY_API_KEY is not configured. GIF picker will not work.');
+  }
 
   const categories = [
     { id: 'trending', label: '🔥 Trending', search: '' },
@@ -38,6 +43,13 @@ const GifPicker = ({ onGifSelect, onClose }) => {
   }, [onClose]);
 
   const fetchTrendingGifs = useCallback(async () => {
+    // 🔒 SECURITY: Don't make requests without API key
+    if (!GIPHY_API_KEY) {
+      setError('GIF service not configured. Please contact support.');
+      setGifs([]);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
@@ -61,6 +73,13 @@ const GifPicker = ({ onGifSelect, onClose }) => {
   const searchGifs = useCallback(async (query) => {
     if (!query.trim()) {
       fetchTrendingGifs();
+      return;
+    }
+
+    // 🔒 SECURITY: Don't make requests without API key
+    if (!GIPHY_API_KEY) {
+      setError('GIF service not configured. Please contact support.');
+      setGifs([]);
       return;
     }
 

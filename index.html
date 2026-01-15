@@ -7,6 +7,9 @@
     <link rel="dns-prefetch" href="https://pryde-backend.onrender.com" />
     <link rel="preconnect" href="https://pryde-backend.onrender.com" crossorigin />
 
+    <!-- Performance: Preload LCP image (logo) for faster initial paint -->
+    <link rel="preload" href="/pryde-logo.png" as="image" type="image/png" fetchpriority="high" />
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json?v=3" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pryde-backend.onrender.com https://hcaptcha.com https://*.hcaptcha.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob: https://media.giphy.com https://*.giphy.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' http://localhost:9000 ws://localhost:9000 https://pryde-backend.onrender.com wss://pryde-backend.onrender.com https://hcaptcha.com https://*.hcaptcha.com https://tenor.googleapis.com https://api.giphy.com https://media.giphy.com https://*.giphy.com https://ipapi.co https://ip-api.com https://ipwhois.app; frame-src https://hcaptcha.com https://*.hcaptcha.com; media-src 'self' blob: https://media.giphy.com https://*.giphy.com; object-src 'none'; base-uri 'self'; form-action 'self';" />
