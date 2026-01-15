@@ -107,6 +107,7 @@ function Messages() {
   const [openMessageMenu, setOpenMessageMenu] = useState(null); // Track which message's action menu is open
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null); // 🔥 FIX: Ref to chat-messages container for reliable scrolling
+  const lastScrolledChatRef = useRef(null); // 🔥 FIX: Track which chat we've scrolled for
   const typingTimeoutRef = useRef(null);
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
@@ -488,13 +489,14 @@ function Messages() {
     }
   }, [selectedChat, selectedChatType]);
 
-  // Scroll to bottom when messages change
+  // Scroll to bottom when messages change or loading completes
   useEffect(() => {
-    if (messages.length > 0 && chatContainerRef.current) {
-      // 🔥 FIX: Use scrollTop directly on container - more reliable than scrollIntoView
+    // 🔥 FIX: Only scroll after loading is complete and messages exist
+    if (messages.length > 0 && !loadingMessages && chatContainerRef.current) {
       const container = chatContainerRef.current;
 
       const scrollToBottom = (instant = false) => {
+        if (!container) return;
         if (instant) {
           // Instant scroll - set scrollTop directly
           container.scrollTop = container.scrollHeight;
@@ -525,14 +527,50 @@ function Messages() {
           });
         });
 
-        // Fallback after short delay (catches lazy-loaded images)
-        setTimeout(() => scrollToBottom(true), 150);
+        // Fallback after longer delay (catches lazy-loaded images and profile photos)
+        setTimeout(() => scrollToBottom(true), 200);
+        setTimeout(() => scrollToBottom(true), 400);
       } else {
         // For new messages, smooth scroll
         setTimeout(() => scrollToBottom(false), 50);
       }
     }
-  }, [messages]);
+  }, [messages, loadingMessages]);
+
+  // Additional scroll trigger when initial load completes for a chat
+  useEffect(() => {
+    // Only scroll once per chat, when loading completes and we have messages
+    if (selectedChat &&
+        messages.length > 0 &&
+        !loadingMessages &&
+        chatContainerRef.current &&
+        lastScrolledChatRef.current !== selectedChat) {
+
+      // Mark this chat as scrolled
+      lastScrolledChatRef.current = selectedChat;
+
+      const container = chatContainerRef.current;
+
+      // Wait for DOM to fully render, then scroll
+      const scrollAfterRender = () => {
+        if (container) {
+          container.scrollTop = container.scrollHeight;
+        }
+      };
+
+      // Multiple delayed attempts to catch all render cycles (images, avatars, etc.)
+      const timeouts = [50, 150, 300, 500].map(delay =>
+        setTimeout(scrollAfterRender, delay)
+      );
+
+      return () => timeouts.forEach(clearTimeout);
+    }
+
+    // Reset scroll tracking when chat changes
+    if (!selectedChat) {
+      lastScrolledChatRef.current = null;
+    }
+  }, [selectedChat, messages.length, loadingMessages]);
 
   // Note: Online user presence is now managed by useOnlineUsers hook
 
