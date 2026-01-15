@@ -4,12 +4,14 @@ import { getCurrentUser } from './utils/auth';
 import { setupAuthLifecycle, cleanupAuthLifecycle } from './utils/authLifecycle';
 import { resetLogoutFlag, onNewMessage, disconnectSocketForLogout } from './utils/socket';
 import { playNotificationSound } from './utils/notifications';
+import './utils/socketDiagnostics'; // Load diagnostics tool
 import { initializeQuietMode } from './utils/quietMode';
 import { preloadCriticalResources, preloadFeedData } from './utils/resourcePreloader';
 import { checkForUpdate } from './utils/versionCheck';
 import { API_BASE_URL } from './config/api';
 import logger from './utils/logger';
 import { AuthProvider, useAuth, AUTH_STATES } from './context/AuthContext';
+import { SocketProvider } from './context/SocketContext';
 import { executePWASafetyChecks } from './utils/pwaSafety';
 import { disablePWAAndReload, forceReloadWithCacheClear } from './utils/emergencyRecovery';
 import { initOfflineManager } from './utils/offlineManager';
@@ -597,7 +599,9 @@ function App() {
       <AppReadyProvider>
         <LoadingGate>
           <AuthProvider>
-            <AppContent />
+            <SocketProvider>
+              <AppContent />
+            </SocketProvider>
           </AuthProvider>
         </LoadingGate>
       </AppReadyProvider>
