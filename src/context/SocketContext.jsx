@@ -140,7 +140,9 @@ export function SocketProvider({ children }) {
     return () => {
       clearTimeout(reconnectTimeoutRef.current);
     };
-  }, [isAuthenticated, userId, initSocket]);
+  // 🔥 FIX: Removed initSocket from dependency array (redundant - already memoized with same deps)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, userId]);
 
   /**
    * Cleanup on unmount
