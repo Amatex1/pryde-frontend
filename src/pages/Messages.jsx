@@ -785,6 +785,10 @@ function Messages() {
                 console.log('✅ Message ACK received:', ackResponse);
                 // Clear the rollback timeout - message confirmed!
                 clearOptimisticTimeout(tempId);
+              } else if (ackResponse?.queued) {
+                // Message queued - don't rollback, wait for actual send
+                console.log('📬 Message queued, waiting for send:', ackResponse);
+                // Keep the optimistic message and rollback timeout active
               } else if (ackResponse?.error) {
                 console.error('❌ Message ACK error:', ackResponse);
                 // Rollback on ACK error
