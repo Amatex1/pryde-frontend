@@ -39,7 +39,25 @@
   
   /* Native app feel */
   body {
-    overscroll-behavior: none; /* Prevent pull-to-refresh */
+    overscroll-behavior-y: contain; /* Prevent pull-to-refresh but allow scroll */
+    overflow-y: auto !important; /* CRITICAL: Ensure vertical scrolling works */
+    -webkit-overflow-scrolling: touch !important; /* Smooth scrolling on iOS */
+  }
+
+  /* Ensure html doesn't block scrolling */
+  html {
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    height: auto !important;
+    min-height: 100%;
+  }
+
+  /* Root container must allow scroll */
+  #root {
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    min-height: 100dvh;
+    -webkit-overflow-scrolling: touch !important;
   }
 }
 

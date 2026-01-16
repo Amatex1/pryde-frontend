@@ -15,6 +15,49 @@
    ======================================== */
 
 /* ========================================
+   CRITICAL: MOBILE SCROLL FIX
+   Ensures scrolling works on all mobile browsers and PWA
+   ======================================== */
+@media (max-width: 1024px) {
+  html {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100% !important;
+    touch-action: pan-y pinch-zoom !important;
+  }
+
+  body {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100dvh !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y pinch-zoom !important;
+  }
+
+  #root {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    min-height: 100dvh !important;
+    height: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Ensure page containers allow scrolling */
+  .page-container,
+  .page-viewport,
+  .feed-page,
+  .profile-page,
+  .messages-page,
+  .settings-page {
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
+    min-height: auto !important;
+  }
+}
+
+/* ========================================
    TABLET/NARROW SCREENS - POST HEADER STACKED
    Applies to screens up to 900px for post headers
    ======================================== */
