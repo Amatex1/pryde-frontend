@@ -42,8 +42,8 @@
    ======================================== */
 
 @media (max-width: 768px) {
-  /* Prevent horizontal scroll - use % not vw */
-  body, html {
+  /* Prevent horizontal scroll - only on body, not html (html blocks iOS scroll) */
+  body {
     overflow-x: hidden;
     max-width: 100%;
     width: 100%;
