@@ -2404,3 +2404,466 @@
     font-size: 13px;
   }
 }
+
+/* ========================================
+   CALM REDESIGN - "Quiet Room" Experience
+   Design Philosophy: Centered, grounded, rhythmic
+
+   Key changes:
+   1. Centered conversation column (max 720px)
+   2. Subtle conversation container
+   3. Message grouping with rhythm
+   4. Anchored input area
+   5. Balanced sidebar
+   ======================================== */
+
+/* Design tokens for calm redesign */
+:root {
+  --conversation-max-width: 720px;
+  --conversation-container-bg: rgba(108, 92, 231, 0.02);
+  --conversation-container-radius: 20px;
+  --message-group-spacing: 20px;
+  --message-within-group-spacing: 3px;
+}
+
+[data-theme="dark"] {
+  --conversation-container-bg: rgba(255, 255, 255, 0.02);
+}
+
+/* ========================================
+   LAYOUT: Balanced Grid
+   ======================================== */
+
+/* Reduce sidebar dominance on desktop */
+@media (min-width: 1024px) {
+  .messages-layout {
+    grid-template-columns: 300px 1fr; /* Reduced from 350px */
+  }
+}
+
+@media (min-width: 1280px) {
+  .messages-layout {
+    grid-template-columns: 320px 1fr;
+  }
+}
+
+/* ========================================
+   SIDEBAR: Softer Visual Weight
+   ======================================== */
+
+.conversations-sidebar {
+  border-right: 1px solid var(--border-subtle);
+}
+
+.sidebar-header {
+  padding: var(--space-3) var(--space-4);
+}
+
+.sidebar-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Smaller conversation avatars */
+.conv-avatar {
+  width: 44px;
+  height: 44px;
+}
+
+.conversation-item {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .conversation-item {
+  border-bottom-color: rgba(255, 255, 255, 0.04);
+}
+
+/* ========================================
+   CHAT HEADER: Compact & Calm
+   ======================================== */
+
+.chat-header {
+  padding: 12px 20px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.chat-avatar {
+  width: 38px;
+  height: 38px;
+}
+
+.chat-user-name {
+  font-size: 15px;
+}
+
+.chat-user-name .username {
+  font-size: 13px;
+}
+
+.chat-user-status {
+  font-size: 12px;
+}
+
+/* ========================================
+   CONVERSATION CONTAINER: The "Quiet Room"
+   Centered column with subtle visual boundary
+   ======================================== */
+
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px;
+  background: var(--bg-page, #F5F6FA);
+}
+
+[data-theme="dark"] .chat-messages {
+  background: var(--bg-page, #0F1021);
+}
+
+/* Inner conversation container - centered with max-width */
+.conversation-wrapper {
+  width: 100%;
+  max-width: var(--conversation-max-width);
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* Subtle container styling - the "room" */
+.conversation-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--message-group-spacing);
+  background: var(--conversation-container-bg);
+  border-radius: var(--conversation-container-radius);
+  padding: 20px;
+  /* Very subtle shadow for depth */
+  box-shadow: inset 0 0 0 1px rgba(108, 92, 231, 0.04);
+}
+
+[data-theme="dark"] .conversation-inner {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+/* ========================================
+   MESSAGE GROUPING: Rhythm & Flow
+   Consecutive messages from same sender grouped
+   ======================================== */
+
+/* Message group container */
+.message-group-cluster {
+  display: flex;
+  flex-direction: column;
+  gap: var(--message-within-group-spacing);
+}
+
+.message-group-cluster.received {
+  align-items: flex-start;
+  max-width: 75%;
+}
+
+.message-group-cluster.sent {
+  align-items: flex-end;
+  max-width: 75%;
+  align-self: flex-end;
+}
+
+/* Group header - avatar + name, only on first message */
+.message-group-cluster-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.message-group-cluster.sent .message-group-cluster-header {
+  flex-direction: row-reverse;
+}
+
+.cluster-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.cluster-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cluster-sender-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* Individual message within group - no avatar/name */
+.message-group-cluster .message-group {
+  margin-bottom: 0;
+}
+
+.message-group-cluster .message-group .message-header {
+  display: none; /* Hide individual message headers within cluster */
+}
+
+/* Show header only for first message in cluster */
+.message-group-cluster > .message-group:first-of-type .message-header {
+  display: flex;
+}
+
+/* Bubble shape variations for grouping */
+.message-group-cluster .message-bubble {
+  transition: border-radius 0.1s ease;
+}
+
+/* First bubble in cluster */
+.message-group-cluster.received .message-group:first-of-type .message-bubble {
+  border-radius: 18px 18px 18px 6px;
+}
+
+.message-group-cluster.sent .message-group:first-of-type .message-bubble {
+  border-radius: 18px 18px 6px 18px;
+}
+
+/* Middle bubbles in cluster */
+.message-group-cluster.received .message-group:not(:first-of-type):not(:last-of-type) .message-bubble {
+  border-radius: 6px 18px 18px 6px;
+}
+
+.message-group-cluster.sent .message-group:not(:first-of-type):not(:last-of-type) .message-bubble {
+  border-radius: 18px 6px 6px 18px;
+}
+
+/* Last bubble in cluster */
+.message-group-cluster.received .message-group:last-of-type:not(:first-of-type) .message-bubble {
+  border-radius: 6px 18px 18px 18px;
+}
+
+.message-group-cluster.sent .message-group:last-of-type:not(:first-of-type) .message-bubble {
+  border-radius: 18px 6px 18px 18px;
+}
+
+/* Single message (not grouped) */
+.message-group-cluster:has(.message-group:only-of-type).received .message-bubble {
+  border-radius: 18px 18px 18px 6px;
+}
+
+.message-group-cluster:has(.message-group:only-of-type).sent .message-bubble {
+  border-radius: 18px 18px 6px 18px;
+}
+
+/* ========================================
+   MESSAGE BUBBLES: Calm Styling
+   ======================================== */
+
+.message-bubble {
+  padding: 10px 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* Sent bubbles */
+.message-bubble.sent,
+.message-group.sent .message-bubble {
+  background: var(--pryde-purple, #6C5CE7);
+  color: #FFFFFF;
+}
+
+/* Received bubbles */
+.message-bubble.received,
+.message-group.received .message-bubble {
+  background: var(--bg-card, #FFFFFF);
+  color: var(--text-primary, #1E1E26);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .message-bubble.received,
+[data-theme="dark"] .message-group.received .message-bubble {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Timestamp styling */
+.message-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+/* ========================================
+   INPUT AREA: Anchored to Conversation
+   ======================================== */
+
+.chat-input-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 16px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0));
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* Constrain input to conversation width */
+.message-composer {
+  width: 100%;
+  max-width: var(--conversation-max-width);
+}
+
+/* Subtle input styling */
+.message-input {
+  background: var(--bg-secondary, #F5F6FA);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+}
+
+.message-input:focus {
+  background: var(--bg-card);
+  border-color: var(--pryde-purple);
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.08);
+}
+
+[data-theme="dark"] .message-input {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .message-input:focus {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Subtle action buttons */
+.icon-btn {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.icon-btn:hover:not(:disabled) {
+  background: var(--bg-secondary);
+  color: var(--pryde-purple);
+}
+
+/* Send button */
+.send-btn {
+  background: var(--pryde-purple);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+}
+
+.send-btn:hover:not(:disabled) {
+  background: var(--pryde-purple-dark, #5B4BD5);
+  transform: scale(1.05);
+}
+
+/* ========================================
+   EMPTY STATE: Centered & Calm
+   ======================================== */
+
+.empty-chat-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.empty-chat-icon {
+  font-size: 48px;
+  opacity: 0.3;
+  margin-bottom: 16px;
+}
+
+.empty-chat-state p {
+  font-size: 15px;
+  color: var(--text-muted);
+  margin: 4px 0;
+}
+
+.empty-chat-hint {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+/* No chat selected state */
+.no-chat-selected {
+  background: var(--bg-page);
+}
+
+.no-chat-selected h3 {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ========================================
+   DATE HEADERS: Subtle Dividers
+   ======================================== */
+
+.message-date-header {
+  margin: 20px 0 16px;
+}
+
+.message-date-header span {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  padding: 6px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+}
+
+/* ========================================
+   MOBILE RESPONSIVE: Calm on Small Screens
+   ======================================== */
+
+@media (max-width: 768px) {
+  .chat-messages {
+    padding: 16px 12px;
+  }
+
+  .conversation-inner {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .message-group-cluster {
+    max-width: 85%;
+  }
+
+  .chat-input-area {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0) + var(--mobile-nav-height, 56px));
+  }
+}
+
+@media (max-width: 480px) {
+  .conversation-inner {
+    padding: 12px;
+    border-radius: 12px;
+    background: transparent; /* Remove container on very small screens */
+    box-shadow: none;
+  }
+
+  .message-group-cluster {
+    max-width: 90%;
+  }
+}

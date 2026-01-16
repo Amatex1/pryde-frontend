@@ -220,6 +220,58 @@ function Messages() {
     return currentDate.toDateString() !== previousDate.toDateString();
   };
 
+  /**
+   * Group consecutive messages by sender for calm UI rhythm
+   * Messages are grouped if:
+   * - Same sender
+   * - Within 4 minutes of each other
+   * - Same date
+   * Returns: Array of { senderId, senderInfo, messages: [...], isCurrentUser }
+   */
+  const groupMessagesBySender = useMemo(() => {
+    if (!messages.length || !currentUser) return [];
+
+    const groups = [];
+    let currentGroup = null;
+
+    messages.forEach((msg, index) => {
+      const senderId = msg.sender._id;
+      const isSent = senderId === currentUser._id;
+      const previousMsg = index > 0 ? messages[index - 1] : null;
+
+      // Check if this message should start a new group
+      const shouldStartNewGroup = () => {
+        if (!currentGroup) return true;
+        if (currentGroup.senderId !== senderId) return true;
+        if (shouldShowDateHeader(msg, previousMsg)) return true;
+
+        // Check time gap (4 minutes = 240000ms)
+        const timeDiff = new Date(msg.createdAt) - new Date(currentGroup.messages[currentGroup.messages.length - 1].createdAt);
+        if (timeDiff > 240000) return true;
+
+        return false;
+      };
+
+      if (shouldStartNewGroup()) {
+        // Start a new group
+        currentGroup = {
+          senderId,
+          senderInfo: msg.sender,
+          messages: [msg],
+          isCurrentUser: isSent,
+          showDateHeader: shouldShowDateHeader(msg, previousMsg),
+          dateHeader: formatDateHeader(msg.createdAt)
+        };
+        groups.push(currentGroup);
+      } else {
+        // Add to existing group
+        currentGroup.messages.push(msg);
+      }
+    });
+
+    return groups;
+  }, [messages, currentUser]);
+
   // ⚡ PERFORMANCE: Debounce conversation filter to reduce re-renders during typing
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -1838,199 +1890,223 @@ function Messages() {
                   </button>
                 </div>
 
+                {/* Chat Messages Area - Centered Conversation Container */}
                 <div className="chat-messages" ref={chatContainerRef}>
-                  {!currentUser ? (
-                    <div className="loading-messages">Loading messages...</div>
-                  ) : loadingMessages ? (
-                    <div className="loading-messages">Loading messages...</div>
-                  ) : messages.length === 0 ? (
-                    <div className="empty-chat-state">
-                      <div className="empty-chat-icon">💬</div>
-                      <p>No messages yet</p>
-                      <p className="empty-chat-hint">Start the conversation!</p>
-                    </div>
-                  ) : (
-                    messages.map((msg, index) => {
-                      const isSent = msg.sender._id === currentUser._id;
-                    const isEditing = editingMessageId === msg._id;
-                    const previousMsg = index > 0 ? messages[index - 1] : null;
-                    const showDateHeader = shouldShowDateHeader(msg, previousMsg);
-
-                    return (
-                      <React.Fragment key={msg._id}>
-                        {/* Date Header */}
-                        {showDateHeader && (
-                          <div className="message-date-header">
-                            <span>{formatDateHeader(msg.createdAt)}</span>
-                          </div>
-                        )}
-
-                        <div className={`message-group ${isSent ? 'sent' : 'received'}`}>
-                        <div className="message-content">
-                          {/* Show sender name and avatar above message bubble */}
-                          <div className="message-header">
-                            <div className="message-avatar-small">
-                              {msg.sender.profilePhoto ? (
-                                <img src={getImageUrl(msg.sender.profilePhoto)} alt={getDisplayName(msg.sender)} />
-                              ) : (
-                                <span>{getDisplayNameInitial(msg.sender)}</span>
-                              )}
-                            </div>
-                            <div className="message-sender-name">{getDisplayName(msg.sender)}</div>
-                          </div>
-
-                          {/* Show deleted message placeholder */}
-                          {msg.isDeleted ? (
-                            <div className="message-bubble message-deleted">
-                              <span className="deleted-icon">🗑️</span>
-                              <span className="deleted-text">This message was deleted</span>
-                            </div>
-                          ) : isEditing ? (
-                            <div className="message-edit-box">
-                              <input
-                                type="text"
-                                value={editMessageText}
-                                onChange={(e) => setEditMessageText(e.target.value)}
-                                className="message-edit-input"
-                                autoFocus
-                              />
-                              <div className="message-edit-actions">
-                                <button onClick={() => handleSaveEditMessage(msg._id)} className="btn-save-edit">
-                                  ✓
-                                </button>
-                                <button onClick={handleCancelEdit} className="btn-cancel-edit">
-                                  ✕
-                                </button>
-                              </div>
-                            </div>
-                          ) : (
-                            <>
-                              <div
-                                className="message-bubble"
-                                style={
-                                  isSent
-                                    ? {
-                                        background: getSentMessageColor(currentTheme).background,
-                                        color: getSentMessageColor(currentTheme).text
-                                      }
-                                    : {
-                                        background: getUserChatColor(msg.sender._id, currentTheme).background,
-                                        color: getUserChatColor(msg.sender._id, currentTheme).text
-                                      }
-                                }
-                              >
-                                {sanitizeMessage(msg.content)}
-
-                                {/* Voice Note Player - Lazy Loaded */}
-                                {msg.voiceNote?.url && (
-                                  <Suspense fallback={<div className="loading-spinner">Loading...</div>}>
-                                    <AudioPlayer
-                                      url={getImageUrl(msg.voiceNote.url)}
-                                      duration={msg.voiceNote.duration}
-                                    />
-                                  </Suspense>
-                                )}
-
-                                {/* Display reactions */}
-                                {msg.reactions && msg.reactions.length > 0 && (
-                                  <div className="message-reactions">
-                                    {Object.entries(
-                                      msg.reactions.reduce((acc, reaction) => {
-                                        acc[reaction.emoji] = (acc[reaction.emoji] || 0) + 1;
-                                        return acc;
-                                      }, {})
-                                    ).map(([emoji, count]) => {
-                                      const userReacted = msg.reactions.some(
-                                        r => r.emoji === emoji && r.user._id === currentUser?._id
-                                      );
-                                      return (
-                                        <button
-                                          key={emoji}
-                                          className={`reaction-badge ${userReacted ? 'user-reacted' : ''}`}
-                                          onClick={() => userReacted ? handleRemoveReaction(msg._id, emoji) : null}
-                                          title={userReacted ? 'Click to remove' : ''}
-                                        >
-                                          {emoji} {count}
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
-                                )}
-                              </div>
-
-                              <div className="message-meta">
-                                <div className="message-time">
-                                  {new Date(msg.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
-                                </div>
-                                {msg.edited && <div className="message-edited-indicator">(edited)</div>}
-                              </div>
-
-                              {/* 3-dot menu for message actions */}
-                              <div className="message-actions-menu">
-                                <button
-                                  className="btn-message-menu"
-                                  onClick={() => setOpenMessageMenu(openMessageMenu === msg._id ? null : msg._id)}
-                                  title="More actions"
-                                >
-                                  ⋮
-                                </button>
-                                {openMessageMenu === msg._id && (
-                                  <div className="message-menu-dropdown">
-                                    <button
-                                      onClick={() => { setReplyingTo(msg); setOpenMessageMenu(null); }}
-                                      className="menu-item"
-                                    >
-                                      ↩️ Reply
-                                    </button>
-                                    <button
-                                      onClick={() => { handleReactToMessage(msg._id); setOpenMessageMenu(null); }}
-                                      className="menu-item"
-                                    >
-                                      😊 React
-                                    </button>
-                                    {isSent && (
-                                      <>
-                                        <button
-                                          onClick={() => { handleEditMessage(msg._id, msg.content); setOpenMessageMenu(null); }}
-                                          className="menu-item"
-                                        >
-                                          ✏️ Edit
-                                        </button>
-                                        <button
-                                          onClick={() => { openDeleteModal(msg._id, true); setOpenMessageMenu(null); }}
-                                          className="menu-item menu-item-danger"
-                                        >
-                                          🗑️ Delete
-                                        </button>
-                                      </>
-                                    )}
-                                    {!isSent && (
-                                      <button
-                                        onClick={() => { openDeleteModal(msg._id, false); setOpenMessageMenu(null); }}
-                                        className="menu-item menu-item-danger"
-                                      >
-                                        🗑️ Delete for me
-                                      </button>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            </>
-                          )}
+                  {/* Conversation wrapper - centers content with max-width */}
+                  <div className="conversation-wrapper">
+                    {/* Inner container - the "quiet room" for messages */}
+                    <div className="conversation-inner">
+                      {!currentUser ? (
+                        <div className="loading-messages">Loading messages...</div>
+                      ) : loadingMessages ? (
+                        <div className="loading-messages">Loading messages...</div>
+                      ) : messages.length === 0 ? (
+                        <div className="empty-chat-state">
+                          <div className="empty-chat-icon">💬</div>
+                          <p>No messages yet</p>
+                          <p className="empty-chat-hint">Start a calm conversation</p>
                         </div>
-                      </div>
-                      </React.Fragment>
-                    );
-                  })
-                  )}
-                  {isTyping && (
-                    <div className="typing-indicator">
-                      <span></span>
-                      <span></span>
-                      <span></span>
+                      ) : (
+                        /* Render grouped messages for rhythm and flow */
+                        groupMessagesBySender.map((group, groupIndex) => (
+                          <React.Fragment key={`group-${groupIndex}-${group.senderId}`}>
+                            {/* Date Header - only shown when date changes */}
+                            {group.showDateHeader && (
+                              <div className="message-date-header">
+                                <span>{group.dateHeader}</span>
+                              </div>
+                            )}
+
+                            {/* Message Group Cluster - consecutive messages from same sender */}
+                            <div className={`message-group-cluster ${group.isCurrentUser ? 'sent' : 'received'}`}>
+                              {/* Group header - avatar + name (only shown once per cluster) */}
+                              <div className="message-group-cluster-header">
+                                <div className="cluster-avatar">
+                                  {group.senderInfo.profilePhoto ? (
+                                    <img src={getImageUrl(group.senderInfo.profilePhoto)} alt={getDisplayName(group.senderInfo)} />
+                                  ) : (
+                                    <span>{getDisplayNameInitial(group.senderInfo)}</span>
+                                  )}
+                                </div>
+                                <span className="cluster-sender-name">{getDisplayName(group.senderInfo)}</span>
+                              </div>
+
+                              {/* Individual messages within the cluster */}
+                              {group.messages.map((msg, msgIndex) => {
+                                const isEditing = editingMessageId === msg._id;
+                                const isFirst = msgIndex === 0;
+                                const isLast = msgIndex === group.messages.length - 1;
+                                const isSingle = group.messages.length === 1;
+                                const bubblePosition = isSingle ? 'single' : isFirst ? 'first' : isLast ? 'last' : 'middle';
+
+                                return (
+                                  <div
+                                    key={msg._id}
+                                    className={`message-group ${group.isCurrentUser ? 'sent' : 'received'}`}
+                                    data-position={bubblePosition}
+                                  >
+                                    <div className="message-content">
+                                      {/* Show deleted message placeholder */}
+                                      {msg.isDeleted ? (
+                                        <div className="message-bubble message-deleted">
+                                          <span className="deleted-icon">🗑️</span>
+                                          <span className="deleted-text">This message was deleted</span>
+                                        </div>
+                                      ) : isEditing ? (
+                                        <div className="message-edit-box">
+                                          <input
+                                            type="text"
+                                            value={editMessageText}
+                                            onChange={(e) => setEditMessageText(e.target.value)}
+                                            className="message-edit-input"
+                                            autoFocus
+                                          />
+                                          <div className="message-edit-actions">
+                                            <button onClick={() => handleSaveEditMessage(msg._id)} className="btn-save-edit">
+                                              ✓
+                                            </button>
+                                            <button onClick={handleCancelEdit} className="btn-cancel-edit">
+                                              ✕
+                                            </button>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <>
+                                          <div
+                                            className={`message-bubble ${bubblePosition}`}
+                                            style={
+                                              group.isCurrentUser
+                                                ? {
+                                                    background: getSentMessageColor(currentTheme).background,
+                                                    color: getSentMessageColor(currentTheme).text
+                                                  }
+                                                : {
+                                                    background: getUserChatColor(msg.sender._id, currentTheme).background,
+                                                    color: getUserChatColor(msg.sender._id, currentTheme).text
+                                                  }
+                                            }
+                                          >
+                                            {sanitizeMessage(msg.content)}
+
+                                            {/* Voice Note Player - Lazy Loaded */}
+                                            {msg.voiceNote?.url && (
+                                              <Suspense fallback={<div className="loading-spinner">Loading...</div>}>
+                                                <AudioPlayer
+                                                  url={getImageUrl(msg.voiceNote.url)}
+                                                  duration={msg.voiceNote.duration}
+                                                />
+                                              </Suspense>
+                                            )}
+
+                                            {/* Display reactions */}
+                                            {msg.reactions && msg.reactions.length > 0 && (
+                                              <div className="message-reactions">
+                                                {Object.entries(
+                                                  msg.reactions.reduce((acc, reaction) => {
+                                                    acc[reaction.emoji] = (acc[reaction.emoji] || 0) + 1;
+                                                    return acc;
+                                                  }, {})
+                                                ).map(([emoji, count]) => {
+                                                  const userReacted = msg.reactions.some(
+                                                    r => r.emoji === emoji && r.user._id === currentUser?._id
+                                                  );
+                                                  return (
+                                                    <button
+                                                      key={emoji}
+                                                      className={`reaction-badge ${userReacted ? 'user-reacted' : ''}`}
+                                                      onClick={() => userReacted ? handleRemoveReaction(msg._id, emoji) : null}
+                                                      title={userReacted ? 'Click to remove' : ''}
+                                                    >
+                                                      {emoji} {count}
+                                                    </button>
+                                                  );
+                                                })}
+                                              </div>
+                                            )}
+                                          </div>
+
+                                          {/* Show timestamp only on last message in cluster */}
+                                          {isLast && (
+                                            <div className="message-meta">
+                                              <div className="message-time">
+                                                {new Date(msg.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                                              </div>
+                                              {msg.edited && <div className="message-edited-indicator">(edited)</div>}
+                                            </div>
+                                          )}
+
+                                          {/* 3-dot menu for message actions */}
+                                          <div className="message-actions-menu">
+                                            <button
+                                              className="btn-message-menu"
+                                              onClick={() => setOpenMessageMenu(openMessageMenu === msg._id ? null : msg._id)}
+                                              title="More actions"
+                                            >
+                                              ⋮
+                                            </button>
+                                            {openMessageMenu === msg._id && (
+                                              <div className="message-menu-dropdown">
+                                                <button
+                                                  onClick={() => { setReplyingTo(msg); setOpenMessageMenu(null); }}
+                                                  className="menu-item"
+                                                >
+                                                  ↩️ Reply
+                                                </button>
+                                                <button
+                                                  onClick={() => { handleReactToMessage(msg._id); setOpenMessageMenu(null); }}
+                                                  className="menu-item"
+                                                >
+                                                  😊 React
+                                                </button>
+                                                {group.isCurrentUser && (
+                                                  <>
+                                                    <button
+                                                      onClick={() => { handleEditMessage(msg._id, msg.content); setOpenMessageMenu(null); }}
+                                                      className="menu-item"
+                                                    >
+                                                      ✏️ Edit
+                                                    </button>
+                                                    <button
+                                                      onClick={() => { openDeleteModal(msg._id, true); setOpenMessageMenu(null); }}
+                                                      className="menu-item menu-item-danger"
+                                                    >
+                                                      🗑️ Delete
+                                                    </button>
+                                                  </>
+                                                )}
+                                                {!group.isCurrentUser && (
+                                                  <button
+                                                    onClick={() => { openDeleteModal(msg._id, false); setOpenMessageMenu(null); }}
+                                                    className="menu-item menu-item-danger"
+                                                  >
+                                                    🗑️ Delete for me
+                                                  </button>
+                                                )}
+                                              </div>
+                                            )}
+                                          </div>
+                                        </>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </React.Fragment>
+                        ))
+                      )}
+
+                      {/* Typing indicator */}
+                      {isTyping && (
+                        <div className="typing-indicator">
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                        </div>
+                      )}
+                      <div ref={messagesEndRef} />
                     </div>
-                  )}
-                  <div ref={messagesEndRef} />
+                  </div>
                 </div>
 
                 <form onSubmit={handleSendMessage} className="chat-input-area">
