@@ -76,8 +76,9 @@ export const sentMessageColors = {
  * @returns {object} - Color object with background and text colors
  */
 export const getUserChatColor = (userId, theme = 'light') => {
-  // Check if Quiet Mode is enabled
-  const isQuietMode = document.documentElement.getAttribute('data-quiet-mode') === 'true';
+  // Check if Quiet Mode is enabled (check both attribute names for compatibility)
+  const isQuietMode = document.documentElement.getAttribute('data-quiet') === 'true' ||
+                      document.documentElement.getAttribute('data-quiet-mode') === 'true';
 
   if (isQuietMode) {
     // Use better contrast colors for Quiet Mode
@@ -130,8 +131,9 @@ export const getUserChatColor = (userId, theme = 'light') => {
  * @returns {object} - Color object with background and text colors
  */
 export const getSentMessageColor = (theme = 'light') => {
-  // Check if Quiet Mode is enabled
-  const isQuietMode = document.documentElement.getAttribute('data-quiet-mode') === 'true';
+  // Check if Quiet Mode is enabled (check both attribute names for compatibility)
+  const isQuietMode = document.documentElement.getAttribute('data-quiet') === 'true' ||
+                      document.documentElement.getAttribute('data-quiet-mode') === 'true';
 
   if (isQuietMode) {
     // Use better contrast colors for sent messages in Quiet Mode
