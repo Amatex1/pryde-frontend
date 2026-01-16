@@ -4,6 +4,9 @@ import { convertEmojiShortcuts } from '../utils/textFormatting';
 import { sanitizeContent } from '../utils/sanitize';
 import './FormattedText.css';
 
+// Regex to match special tokens (hashtags, mentions, URLs) while preserving surrounding text
+const SPECIAL_TOKEN_REGEX = /(#[\w]+|@[\w]+|https?:\/\/[^\s]+)/g;
+
 const FormattedText = memo(function FormattedText({ text, className = '' }) {
   const navigate = useNavigate();
 
@@ -15,73 +18,93 @@ const FormattedText = memo(function FormattedText({ text, className = '' }) {
   // Convert emoji shortcuts
   const textWithEmojis = convertEmojiShortcuts(sanitizedText);
 
-  // Split text into parts (words and spaces)
-  const parts = textWithEmojis.split(/(\s+)/);
-
-  const handleMentionClick = async (username) => {
-    try {
-      // Navigate directly to the user's profile using their username
-      navigate(`/profile/${username}`);
-    } catch (error) {
-      console.error('Error handling mention click:', error);
-    }
+  const handleMentionClick = (username) => {
+    navigate(`/profile/${username}`);
   };
 
-  return (
-    <span className={className}>
-      {parts.map((part, index) => {
-        // Check for hashtags
-        if (part.match(/^#[\w]+$/)) {
-          const tag = part.substring(1);
-          return (
-            <a
-              key={index}
-              href={`/hashtag/${tag}`}
-              className="hashtag-link"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate(`/hashtag/${tag}`);
-              }}
-            >
-              {part}
-            </a>
-          );
-        }
+  // Split by special tokens, keeping the delimiters
+  const parts = textWithEmojis.split(SPECIAL_TOKEN_REGEX);
 
-        // Check for mentions
-        if (part.match(/^@[\w]+$/)) {
-          const username = part.substring(1);
-          return (
-            <span
-              key={index}
-              className="mention-link"
-              onClick={() => handleMentionClick(username)}
-            >
-              {part}
-            </span>
-          );
-        }
+  // Build output with minimal DOM nodes
+  const elements = [];
+  let plainTextBuffer = '';
 
-        // Check for URLs
-        if (part.match(/^https?:\/\/.+/)) {
-          return (
-            <a
-              key={index}
-              href={part}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="url-link"
-            >
-              {part}
-            </a>
-          );
-        }
+  parts.forEach((part, index) => {
+    if (!part) return;
 
-        // Regular text
-        return <span key={index}>{part}</span>;
-      })}
-    </span>
-  );
+    // Check for hashtags
+    if (part.match(/^#[\w]+$/)) {
+      // Flush plain text buffer first
+      if (plainTextBuffer) {
+        elements.push(plainTextBuffer);
+        plainTextBuffer = '';
+      }
+      const tag = part.substring(1);
+      elements.push(
+        <a
+          key={`h-${index}`}
+          href={`/hashtag/${tag}`}
+          className="hashtag-link"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(`/hashtag/${tag}`);
+          }}
+        >
+          {part}
+        </a>
+      );
+      return;
+    }
+
+    // Check for mentions
+    if (part.match(/^@[\w]+$/)) {
+      if (plainTextBuffer) {
+        elements.push(plainTextBuffer);
+        plainTextBuffer = '';
+      }
+      const username = part.substring(1);
+      elements.push(
+        <span
+          key={`m-${index}`}
+          className="mention-link"
+          onClick={() => handleMentionClick(username)}
+        >
+          {part}
+        </span>
+      );
+      return;
+    }
+
+    // Check for URLs
+    if (part.match(/^https?:\/\//)) {
+      if (plainTextBuffer) {
+        elements.push(plainTextBuffer);
+        plainTextBuffer = '';
+      }
+      elements.push(
+        <a
+          key={`u-${index}`}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="url-link"
+        >
+          {part}
+        </a>
+      );
+      return;
+    }
+
+    // Regular text - accumulate into buffer (no span wrapper)
+    plainTextBuffer += part;
+  });
+
+  // Flush any remaining plain text
+  if (plainTextBuffer) {
+    elements.push(plainTextBuffer);
+  }
+
+  return <span className={className}>{elements}</span>;
 });
 
 export default FormattedText;
