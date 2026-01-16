@@ -31,14 +31,40 @@
 }
 
 /* Navbar text and icons: White on purple */
-.navbar *,
-.navbar a,
-.navbar button,
+/* EXCLUDES dropdown menus which have their own surface background */
+.navbar *:not(.profile-dropdown):not(.profile-dropdown *):not(.dropdown-menu):not(.dropdown-menu *):not(.notification-dropdown):not(.notification-dropdown *):not(.messages-dropdown):not(.messages-dropdown *):not(.search-results-dropdown):not(.search-results-dropdown *),
+.navbar a:not(.dropdown-item),
+.navbar button:not(.dropdown-item),
 .navbar-item,
 .nav-link,
 .navbar-link,
 .navbar-btn {
   color: white !important;
+}
+
+/* Dropdown menus inside navbar: Use proper text colors */
+.navbar .profile-dropdown,
+.navbar .dropdown-menu,
+.navbar .notification-dropdown,
+.navbar .messages-dropdown,
+.navbar .search-results-dropdown {
+  color: var(--color-text) !important;
+}
+
+.navbar .profile-dropdown *,
+.navbar .dropdown-menu *,
+.navbar .notification-dropdown *,
+.navbar .messages-dropdown *,
+.navbar .search-results-dropdown * {
+  color: inherit;
+}
+
+.navbar .dropdown-item {
+  color: var(--color-text) !important;
+}
+
+.navbar .dropdown-item:hover {
+  color: var(--color-brand) !important;
 }
 
 /* Navbar search: Transparent with white border */
