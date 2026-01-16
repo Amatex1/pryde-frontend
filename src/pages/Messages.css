@@ -2867,3 +2867,216 @@
     max-width: 90%;
   }
 }
+
+/* ========================================
+   THEME MATRIX: All 4 Mode Combinations
+   Ensuring text readability across all modes
+
+   1. Light Mode (default)
+   2. Dark Mode
+   3. Light Mode + Quiet Mode
+   4. Dark Mode + Quiet Mode
+   ======================================== */
+
+/* -----------------------------------------
+   1. LIGHT MODE (Default) - Already covered
+   ----------------------------------------- */
+
+/* Conversation container light mode */
+.conversation-inner {
+  background: rgba(108, 92, 231, 0.02);
+}
+
+.cluster-sender-name {
+  color: var(--text-muted, #6B6E80);
+}
+
+.message-time {
+  color: var(--text-muted, #6B6E80);
+}
+
+/* -----------------------------------------
+   2. DARK MODE
+   ----------------------------------------- */
+
+[data-theme="dark"] .conversation-inner {
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .cluster-sender-name {
+  color: var(--text-muted, #A5A7C7);
+}
+
+[data-theme="dark"] .message-time {
+  color: var(--text-muted, #A5A7C7);
+}
+
+[data-theme="dark"] .message-date-header span {
+  background: var(--bg-card, #15162A);
+  color: var(--text-muted, #A5A7C7);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .empty-chat-state p,
+[data-theme="dark"] .empty-chat-hint {
+  color: var(--text-muted, #A5A7C7);
+}
+
+[data-theme="dark"] .message-group.sent .message-bubble {
+  background: var(--pryde-purple, #6C5CE7);
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .message-group.received .message-bubble {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary, #FFFFFF);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* -----------------------------------------
+   3. LIGHT MODE + QUIET MODE
+   ----------------------------------------- */
+
+[data-theme="light"][data-quiet="true"] .conversation-inner,
+[data-quiet-mode="true"]:not([data-theme="dark"]) .conversation-inner {
+  background: rgba(108, 92, 231, 0.015);
+  box-shadow: inset 0 0 0 1px rgba(108, 92, 231, 0.03);
+}
+
+[data-theme="light"][data-quiet="true"] .cluster-sender-name,
+[data-quiet-mode="true"]:not([data-theme="dark"]) .cluster-sender-name {
+  color: var(--text-muted, #9CA3AF);
+}
+
+[data-theme="light"][data-quiet="true"] .message-time,
+[data-quiet-mode="true"]:not([data-theme="dark"]) .message-time {
+  color: var(--text-muted, #9CA3AF);
+}
+
+[data-theme="light"][data-quiet="true"] .message-date-header span,
+[data-quiet-mode="true"]:not([data-theme="dark"]) .message-date-header span {
+  background: var(--bg-card, #FBFCFF);
+  color: var(--text-muted, #9CA3AF);
+  border-color: var(--border-soft, #E7EAF4);
+}
+
+/* Light quiet mode - sent bubbles (muted purple) */
+[data-theme="light"][data-quiet="true"] .message-group.sent .message-bubble,
+[data-quiet-mode="true"]:not([data-theme="dark"]) .message-group.sent .message-bubble {
+  background: rgba(108, 92, 231, 0.12);
+  color: var(--text-primary, #2A2F44);
+}
+
+/* Light quiet mode - received bubbles */
+[data-theme="light"][data-quiet="true"] .message-group.received .message-bubble,
+[data-quiet-mode="true"]:not([data-theme="dark"]) .message-group.received .message-bubble {
+  background: var(--bg-card, #FFFFFF);
+  color: var(--text-primary, #2A2F44);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"][data-quiet="true"] .empty-chat-state p,
+[data-theme="light"][data-quiet="true"] .empty-chat-hint,
+[data-quiet-mode="true"]:not([data-theme="dark"]) .empty-chat-state p {
+  color: var(--text-muted, #9CA3AF);
+}
+
+/* Light quiet mode - input styling */
+[data-theme="light"][data-quiet="true"] .message-input,
+[data-quiet-mode="true"]:not([data-theme="dark"]) .message-input {
+  background: rgba(108, 92, 231, 0.03);
+  border-color: var(--border-soft, #E7EAF4);
+  color: var(--text-primary, #2A2F44);
+}
+
+[data-theme="light"][data-quiet="true"] .message-input::placeholder,
+[data-quiet-mode="true"]:not([data-theme="dark"]) .message-input::placeholder {
+  color: var(--text-muted, #9CA3AF);
+}
+
+/* -----------------------------------------
+   4. DARK MODE + QUIET MODE
+   ----------------------------------------- */
+
+[data-theme="dark"][data-quiet="true"] .conversation-inner,
+[data-theme="dark"][data-quiet-mode="true"] .conversation-inner {
+  background: rgba(255, 255, 255, 0.015);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="dark"][data-quiet="true"] .cluster-sender-name,
+[data-theme="dark"][data-quiet-mode="true"] .cluster-sender-name {
+  color: var(--text-muted, #7E859C);
+}
+
+[data-theme="dark"][data-quiet="true"] .message-time,
+[data-theme="dark"][data-quiet-mode="true"] .message-time {
+  color: var(--text-muted, #7E859C);
+}
+
+[data-theme="dark"][data-quiet="true"] .message-date-header span,
+[data-theme="dark"][data-quiet-mode="true"] .message-date-header span {
+  background: var(--bg-card, #161E36);
+  color: var(--text-muted, #7E859C);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Dark quiet mode - sent bubbles (softer purple) */
+[data-theme="dark"][data-quiet="true"] .message-group.sent .message-bubble,
+[data-theme="dark"][data-quiet-mode="true"] .message-group.sent .message-bubble {
+  background: rgba(122, 110, 214, 0.25);
+  color: var(--text-primary, #E7EAF3);
+}
+
+/* Dark quiet mode - received bubbles */
+[data-theme="dark"][data-quiet="true"] .message-group.received .message-bubble,
+[data-theme="dark"][data-quiet-mode="true"] .message-group.received .message-bubble {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary, #E7EAF3);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"][data-quiet="true"] .empty-chat-state p,
+[data-theme="dark"][data-quiet="true"] .empty-chat-hint,
+[data-theme="dark"][data-quiet-mode="true"] .empty-chat-state p {
+  color: var(--text-muted, #7E859C);
+}
+
+/* Dark quiet mode - input styling */
+[data-theme="dark"][data-quiet="true"] .message-input,
+[data-theme="dark"][data-quiet-mode="true"] .message-input {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary, #E7EAF3);
+}
+
+[data-theme="dark"][data-quiet="true"] .message-input::placeholder,
+[data-theme="dark"][data-quiet-mode="true"] .message-input::placeholder {
+  color: var(--text-muted, #7E859C);
+}
+
+[data-theme="dark"][data-quiet="true"] .message-input:focus,
+[data-theme="dark"][data-quiet-mode="true"] .message-input:focus {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--accent-primary, #7A6ED6);
+}
+
+/* -----------------------------------------
+   ACCESSIBILITY: Ensure minimum contrast
+   ----------------------------------------- */
+
+/* Ensure cluster header text is readable */
+.cluster-sender-name {
+  font-weight: 500; /* Slightly bolder for better readability */
+}
+
+/* Ensure timestamps have sufficient contrast */
+.message-time {
+  opacity: 0.85; /* Slightly more visible */
+}
+
+/* Ensure date headers are readable */
+.message-date-header span {
+  font-weight: 500;
+}
