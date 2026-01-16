@@ -299,7 +299,9 @@ function AppContent() {
     // Preload resources for authenticated users
     Promise.all([
       preloadCriticalResources(),
-      preloadFeedData()
+      preloadFeedData(),
+      // 🚀 LCP OPTIMIZATION: Prefetch Feed chunk so it's ready immediately
+      import('./pages/Feed').catch(() => {/* ignore prefetch errors */})
     ]).catch(err => {
       logger.debug('Resource preload failed (non-critical):', err);
     });

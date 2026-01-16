@@ -251,6 +251,11 @@
   min-width: 0;
   word-wrap: break-word;
   margin-bottom: var(--space-5);  /* 24px - posts breathe vertically */
+
+  /* 🚀 LCP OPTIMIZATION: content-visibility for off-screen posts */
+  /* This allows the browser to skip rendering of off-screen content */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 300px; /* Estimated post height for layout stability */
 }
 
 /* Dark mode - slightly stronger shadow for depth */

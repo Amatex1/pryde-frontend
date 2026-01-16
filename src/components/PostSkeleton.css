@@ -4,6 +4,10 @@
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  /* 🚀 LCP OPTIMIZATION: Prevent layout recalculations */
+  contain: layout style paint;
+  /* Approximate height to reduce layout shifts */
+  min-height: 160px;
 }
 
 .skeleton-header {

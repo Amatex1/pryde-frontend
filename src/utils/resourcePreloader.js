@@ -78,16 +78,17 @@ export async function preloadFeedData() {
   try {
     logger.debug('🚀 Preloading feed data...');
 
-    // Preload posts only (trending tags removed 2025-12-26)
-    const postsResponse = await api.get('/feed?page=1&limit=10').catch(err => {
+    // 🚀 LCP OPTIMIZATION: Preload first page of posts using same endpoint as Feed.jsx
+    // Use /posts endpoint with filter=followers to match Feed.jsx default state
+    const postsResponse = await api.get('/posts?filter=followers&page=1&limit=20').catch(err => {
       logger.debug('Posts preload failed (non-critical):', err);
       return null;
     });
 
-    // Cache successful response
-    if (postsResponse) {
+    // Cache successful response (preserves the full response structure)
+    if (postsResponse?.data) {
       cache.posts = postsResponse.data;
-      logger.debug('✅ Posts preloaded');
+      logger.debug(`✅ Posts preloaded (${postsResponse.data.posts?.length || 0} posts)`);
     }
 
     cache.timestamp = Date.now();

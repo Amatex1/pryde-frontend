@@ -41,6 +41,7 @@ import { withOptimisticUpdate } from '../utils/consistencyGuard';
 import { quietCopy } from '../config/uiCopy';
 import { getQuietMode } from '../utils/themeManager';
 import PageTitle from '../components/PageTitle';
+import { getCachedPosts } from '../utils/resourcePreloader';
 import CommunityResources from '../components/Sidebar/CommunityResources';
 import SuggestedConnections from '../components/Sidebar/SuggestedConnections';
 import './Feed.css';
@@ -58,10 +59,15 @@ function Feed() {
   const outletContext = useOutletContext() || {};
   const { onMenuOpen } = outletContext;
   const isMobile = useMediaQuery('(max-width: 768px)');
-  const [posts, setPosts] = useState([]);
+
+  // 🚀 LCP OPTIMIZATION: Use preloaded cached posts for instant first paint
+  const cachedPosts = getCachedPosts();
+  const initialPosts = cachedPosts?.posts || [];
+  const [posts, setPosts] = useState(initialPosts);
   const [newPost, setNewPost] = useState('');
   const [loading, setLoading] = useState(false);
-  const [fetchingPosts, setFetchingPosts] = useState(true);
+  // If we have cached posts, skip skeleton and show content immediately
+  const [fetchingPosts, setFetchingPosts] = useState(initialPosts.length === 0);
   const [selectedMedia, setSelectedMedia] = useState([]);
   const [uploadingMedia, setUploadingMedia] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -393,31 +399,58 @@ function Feed() {
 
     logger.debug('[Feed] Auth ready - fetching initial data');
 
-    // Fetch all data in parallel for faster initial load
-    // Use Promise.allSettled to continue even if some requests fail
-    // REMOVED 2025-12-26: fetchTrending removed (Phase 5)
-    Promise.allSettled([
-      fetchPosts(),
-      fetchBlockedUsers(),
-      fetchFriends(),
-      fetchBookmarkedPosts(),
-      fetchPrivacySettings()
-    ]).then(results => {
-      // Log any failures but don't block the app
-      results.forEach((result, index) => {
-        if (result.status === 'rejected') {
-          const names = ['posts', 'blocked users', 'friends', 'bookmarks', 'privacy settings'];
-          logger.warn(`Failed to load ${names[index]}:`, result.reason);
-        }
-      });
+    // 🚀 LCP OPTIMIZATION: Prioritize posts fetch for faster LCP
+    // Only fetch posts if we don't have cached data
+    const cachedData = getCachedPosts();
+    const hasCachedPosts = cachedData?.posts?.length > 0;
 
-      // Mark initialization as complete
+    // Start posts fetch immediately (critical for LCP)
+    const postsFetch = hasCachedPosts
+      ? Promise.resolve() // Skip if we already have cached posts displayed
+      : fetchPosts();
+
+    // Defer secondary data fetching with requestIdleCallback
+    // This reduces main thread blocking during initial render
+    const fetchSecondaryData = () => {
+      Promise.allSettled([
+        fetchBlockedUsers(),
+        fetchFriends(),
+        fetchBookmarkedPosts(),
+        fetchPrivacySettings()
+      ]).then(results => {
+        results.forEach((result, index) => {
+          if (result.status === 'rejected') {
+            const names = ['blocked users', 'friends', 'bookmarks', 'privacy settings'];
+            logger.warn(`Failed to load ${names[index]}:`, result.reason);
+          }
+        });
+      });
+    };
+
+    // Fetch posts first, then secondary data
+    postsFetch.then(() => {
       setInitializing(false);
+
+      // Use requestIdleCallback for non-critical data (or setTimeout fallback)
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(fetchSecondaryData, { timeout: 2000 });
+      } else {
+        setTimeout(fetchSecondaryData, 100);
+      }
     }).catch(error => {
-      logger.error('Error loading initial data:', error);
-      // Don't throw - let the app continue with partial data
+      logger.error('Error loading posts:', error);
       setInitializing(false);
+      // Still try to load secondary data
+      fetchSecondaryData();
     });
+
+    // If we have cached posts, refresh in background after a short delay
+    if (hasCachedPosts) {
+      setInitializing(false);
+      setTimeout(() => {
+        fetchPosts(); // Refresh cached data in background
+      }, 1000);
+    }
   }, [authReady, isAuthenticated]); // ✅ Run when auth state changes
 
   // Restore localStorage draft on mount (fallback if backend draft fails)
