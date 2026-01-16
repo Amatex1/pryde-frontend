@@ -96,6 +96,27 @@
 }
 
 /* ========================================
+   EXPLICIT LIGHT MODE TOKENS
+   Ensures light mode has proper text colors
+   ======================================== */
+[data-theme="light"] {
+  --color-bg: #F5F6FA;
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #F4F5FA;
+  --color-surface-elevated: #FFFFFF;
+
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-subtle: #E2E4EC;
+  --color-border-strong: #B8BAC9;
+
+  /* CRITICAL: Ensure dark text on light backgrounds */
+  --color-text: #1E1E26;
+  --color-text-secondary: #6B6E80;
+  --color-meta: #9CA0B3;
+  --color-text-inverse: #FFFFFF;
+}
+
+/* ========================================
    DARK MODE TOKENS
    ======================================== */
 [data-theme="dark"] {
@@ -118,6 +139,50 @@
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* ========================================
+   LIGHT MODE + QUIET MODE TOKENS
+   ======================================== */
+:root[data-quiet="true"]:not([data-theme="dark"]),
+:root[data-quiet-mode="true"]:not([data-theme="dark"]),
+:root[data-theme="light"][data-quiet="true"],
+:root[data-theme="light"][data-quiet-mode="true"] {
+  --color-bg: #F8F9FA;
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #F5F6F7;
+  --color-surface-elevated: #FFFFFF;
+
+  --color-border: rgba(0, 0, 0, 0.06);
+  --color-border-subtle: #E5E7EB;
+  --color-border-strong: #D1D5DB;
+
+  /* CRITICAL: Text colors for light+quiet mode */
+  --color-text: #374151;
+  --color-text-secondary: #6B7280;
+  --color-meta: #9CA3AF;
+  --color-text-inverse: #FFFFFF;
+}
+
+/* ========================================
+   DARK MODE + QUIET MODE TOKENS
+   ======================================== */
+:root[data-theme="dark"][data-quiet="true"],
+:root[data-theme="dark"][data-quiet-mode="true"] {
+  --color-bg: #0F1629;
+  --color-surface: #161E36;
+  --color-surface-muted: #1A2340;
+  --color-surface-elevated: #1E2A4A;
+
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-subtle: rgba(255, 255, 255, 0.05);
+  --color-border-strong: rgba(255, 255, 255, 0.10);
+
+  /* CRITICAL: Text colors for dark+quiet mode */
+  --color-text: #E7EAF3;
+  --color-text-secondary: #A2AAC2;
+  --color-meta: #7E859C;
+  --color-text-inverse: #0F1629;
 }
 
 /* ========================================
