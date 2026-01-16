@@ -127,6 +127,7 @@ function Navbar({ onMenuClick }) {
             width="36"
             height="36"
             loading="eager"
+            fetchPriority="high"
           />
           <span className="brand-text">Pryde Social</span>
         </Link>
