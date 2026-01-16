@@ -3080,3 +3080,75 @@
 .message-date-header span {
   font-weight: 500;
 }
+
+/* ========================================
+   LIGHT MODE MESSAGE BUBBLE FIX
+   Ensure text is visible in light mode
+   ======================================== */
+
+/* Light mode (non-quiet): Sent bubbles - white text on purple gradient */
+[data-theme="light"]:not([data-quiet="true"]) .message-group.sent .message-bubble,
+.messages-page:not([data-theme="dark"]):not([data-quiet-mode="true"]) .message-group.sent .message-bubble {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #FFFFFF !important;
+}
+
+/* Light mode (non-quiet): Received bubbles - dark text on light background */
+[data-theme="light"]:not([data-quiet="true"]) .message-group.received .message-bubble,
+.messages-page:not([data-theme="dark"]):not([data-quiet-mode="true"]) .message-group.received .message-bubble {
+  background: #FFFFFF !important;
+  color: #1E1E26 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Light + Quiet mode: Sent bubbles - dark text on soft purple */
+[data-theme="light"][data-quiet="true"] .message-group.sent .message-bubble,
+.messages-page[data-theme="light"][data-quiet-mode="true"] .message-group.sent .message-bubble {
+  background: rgba(108, 92, 231, 0.15) !important;
+  color: #2A2F44 !important;
+}
+
+/* Light + Quiet mode: Received bubbles - dark text on white */
+[data-theme="light"][data-quiet="true"] .message-group.received .message-bubble,
+.messages-page[data-theme="light"][data-quiet-mode="true"] .message-group.received .message-bubble {
+  background: #FFFFFF !important;
+  color: #2A2F44 !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+/* ========================================
+   LIGHT MODE COMPOSER FIX
+   ======================================== */
+
+/* Light mode: Message input */
+[data-theme="light"] .message-input,
+.messages-page:not([data-theme="dark"]) .message-input {
+  background: #FFFFFF !important;
+  color: #1E1E26 !important;
+  border: 1px solid #E2E4EC !important;
+}
+
+[data-theme="light"] .message-input::placeholder,
+.messages-page:not([data-theme="dark"]) .message-input::placeholder {
+  color: #9CA0B3 !important;
+}
+
+/* Light mode: Send button */
+[data-theme="light"] .btn-send,
+.messages-page:not([data-theme="dark"]) .btn-send {
+  background: #6C5CE7 !important;
+  color: #FFFFFF !important;
+}
+
+/* Light + Quiet mode composer */
+[data-theme="light"][data-quiet="true"] .message-input,
+.messages-page[data-theme="light"][data-quiet-mode="true"] .message-input {
+  background: #FFFFFF !important;
+  color: #374151 !important;
+  border: 1px solid #E5E7EB !important;
+}
+
+[data-theme="light"][data-quiet="true"] .message-input::placeholder,
+.messages-page[data-theme="light"][data-quiet-mode="true"] .message-input::placeholder {
+  color: #9CA3AF !important;
+}
