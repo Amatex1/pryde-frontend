@@ -906,6 +906,54 @@
 }
 
 /* ========================================
+   DARK + QUIET MODE COMBINATION
+   ======================================== */
+
+[data-theme="dark"][data-quiet="true"] .user-profile-trigger,
+[data-theme="dark"][data-quiet-mode="true"] .user-profile-trigger {
+  background: transparent;
+  border-color: var(--border-soft, rgba(255, 255, 255, 0.06));
+  color: var(--text-primary, #E7EAF3);
+}
+
+[data-theme="dark"][data-quiet="true"] .user-profile-trigger .user-name,
+[data-theme="dark"][data-quiet-mode="true"] .user-profile-trigger .user-name {
+  color: var(--text-primary, #E7EAF3);
+}
+
+[data-theme="dark"][data-quiet="true"] .nav-link,
+[data-theme="dark"][data-quiet-mode="true"] .nav-link {
+  color: var(--text-primary, #E7EAF3);
+}
+
+[data-theme="dark"][data-quiet="true"] .dropdown-item,
+[data-theme="dark"][data-quiet-mode="true"] .dropdown-item {
+  color: var(--text-primary, #E7EAF3);
+}
+
+[data-theme="dark"][data-quiet="true"] .dropdown-item:hover,
+[data-theme="dark"][data-quiet-mode="true"] .dropdown-item:hover {
+  background: var(--bg-hover, rgba(108, 92, 231, 0.08));
+  color: var(--accent-primary, #7A6ED6);
+}
+
+/* Light + Quiet mode text */
+[data-theme="light"][data-quiet="true"] .user-profile-trigger .user-name,
+[data-theme="light"][data-quiet-mode="true"] .user-profile-trigger .user-name {
+  color: var(--text-primary, #2A2F44);
+}
+
+[data-theme="light"][data-quiet="true"] .nav-link,
+[data-theme="light"][data-quiet-mode="true"] .nav-link {
+  color: var(--text-primary, #2A2F44);
+}
+
+[data-theme="light"][data-quiet="true"] .dropdown-item,
+[data-theme="light"][data-quiet-mode="true"] .dropdown-item {
+  color: var(--text-primary, #2A2F44);
+}
+
+/* ========================================
    THEME SUPPORT
    All theming handled by CSS variables in variables.css
    ======================================== */

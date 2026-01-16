@@ -196,9 +196,16 @@
   width: 22px;
   left: 4px;
   bottom: 4px;
-  background-color: white;
+  background-color: #FFFFFF;
   transition: 0.3s;
   border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Dark mode toggle slider - ensure visibility */
+[data-theme="dark"] .toggle-slider:before {
+  background-color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 .toggle-switch input:checked + .toggle-slider {
@@ -1002,4 +1009,63 @@
 [data-quiet="true"] .cursor-style-option.selected {
   background: rgba(138, 97, 255, 0.08);
   filter: saturate(0.8);
+}
+
+/* ========================================
+   THEME READABILITY FIXES
+   Ensuring text is readable in all modes
+   ======================================== */
+
+/* Dark mode text colors with fallbacks */
+[data-theme="dark"] .setting-item,
+[data-theme="dark"] .settings-section {
+  color: var(--text-primary, #FFFFFF);
+}
+
+[data-theme="dark"] .char-count,
+[data-theme="dark"] .setting-description,
+[data-theme="dark"] .form-hint {
+  color: var(--text-muted, #A8B0C2);
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background: var(--bg-card, #12192F);
+  color: var(--text-primary, #FFFFFF);
+  border-color: var(--border-soft, rgba(255, 255, 255, 0.08));
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--text-muted, #7B7D9E);
+}
+
+/* Light + Quiet mode */
+[data-theme="light"][data-quiet="true"] .setting-item,
+[data-theme="light"][data-quiet="true"] .settings-section {
+  color: var(--text-primary, #2A2F44);
+}
+
+[data-theme="light"][data-quiet="true"] .char-count,
+[data-theme="light"][data-quiet="true"] .setting-description {
+  color: var(--text-muted, #9CA3AF);
+}
+
+/* Dark + Quiet mode */
+[data-theme="dark"][data-quiet="true"] .setting-item,
+[data-theme="dark"][data-quiet="true"] .settings-section {
+  color: var(--text-primary, #E7EAF3);
+}
+
+[data-theme="dark"][data-quiet="true"] .char-count,
+[data-theme="dark"][data-quiet="true"] .setting-description {
+  color: var(--text-muted, #7E859C);
+}
+
+[data-theme="dark"][data-quiet="true"] input,
+[data-theme="dark"][data-quiet="true"] textarea,
+[data-theme="dark"][data-quiet="true"] select {
+  background: var(--bg-card, #161E36);
+  color: var(--text-primary, #E7EAF3);
 }

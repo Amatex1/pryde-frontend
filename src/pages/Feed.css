@@ -385,9 +385,9 @@
 }
 
 [data-theme="dark"] .btn-dropdown {
-  background: #2a2a2a;
-  border-color: #444;
-  color: var(--text-main);
+  background: var(--bg-card, #12192F);
+  border-color: var(--border-soft, rgba(255, 255, 255, 0.08));
+  color: var(--text-primary, #FFFFFF);
 }
 
 [data-theme="dark"] .btn-dropdown:hover {
@@ -411,8 +411,8 @@
 }
 
 [data-theme="dark"] .dropdown-menu {
-  background: #2a2a2a;
-  border-color: #444;
+  background: var(--bg-card, #12192F);
+  border-color: var(--border-soft, rgba(255, 255, 255, 0.08));
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
@@ -421,7 +421,7 @@
   padding: 0.75rem 1rem;
   border: none;
   background: transparent;
-  color: var(--text-main);
+  color: var(--text-primary, #1E2338);
   text-align: left;
   cursor: pointer;
   font-size: 0.95rem;
@@ -436,8 +436,13 @@
   color: var(--pryde-purple);
 }
 
+[data-theme="dark"] .dropdown-item {
+  color: var(--text-primary, #FFFFFF);
+}
+
 [data-theme="dark"] .dropdown-item:hover {
-  background: #3a3a3a;
+  background: var(--bg-hover, rgba(108, 92, 231, 0.08));
+  color: var(--accent-primary, #6D6AF8);
 }
 
 .dropdown-item.delete {
@@ -3121,11 +3126,11 @@ html:not([data-theme]) .post-actions {
 
 /* Dark Mode - Friends Sidebar */
 [data-theme="dark"] .friend-sidebar-item {
-  background: #2a2a2a;
+  background: var(--bg-card, #12192F);
 }
 
 [data-theme="dark"] .friend-sidebar-item:hover {
-  background: rgba(108, 92, 231, 0.15);
+  background: var(--bg-hover, rgba(108, 92, 231, 0.15));
 }
 
 [data-theme="dark"] .btn-friend-action {
@@ -3137,12 +3142,17 @@ html:not([data-theme]) .post-actions {
 }
 
 [data-theme="dark"] .friends-section-header {
-  color: #a1a1aa;
+  color: var(--text-muted, #A8B0C2);
 }
 
 [data-theme="dark"] .friends-search-input {
-  background: #2a2a2a;
-  border-color: #3a3a3a;
+  background: var(--bg-card, #12192F);
+  border-color: var(--border-soft, rgba(255, 255, 255, 0.08));
+  color: var(--text-primary, #FFFFFF);
+}
+
+[data-theme="dark"] .friends-search-input::placeholder {
+  color: var(--text-muted, #7B7D9E);
 }
 
 [data-theme="dark"] .friends-search-input:focus {
@@ -3150,11 +3160,11 @@ html:not([data-theme]) .post-actions {
 }
 
 [data-theme="dark"] .friends-tabs {
-  border-bottom-color: #3a3a3a;
+  border-bottom-color: var(--border-soft, rgba(255, 255, 255, 0.08));
 }
 
 [data-theme="dark"] .friends-tab {
-  color: #a1a1aa;
+  color: var(--text-muted, #A8B0C2);
 }
 
 [data-theme="dark"] .friends-tab:hover {
