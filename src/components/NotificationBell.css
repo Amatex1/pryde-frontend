@@ -7,15 +7,15 @@
   width: 2.8125rem;
   height: 2.8125rem;
   border-radius: 50%;
-  border: 2px solid var(--border-light);
-  background: var(--card-surface);
+  border: 1px solid var(--border-light);
+  background: #5a4bd8;
   font-size: 1.5rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
-  box-shadow: 0 0.125rem 0.5rem rgba(108, 92, 231, 0.1);
+  box-shadow: 0 0.125rem 0.5rem #6c5ce71a;
 }
 
 .bell-button:hover {
