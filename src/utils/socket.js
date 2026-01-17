@@ -177,7 +177,9 @@ export const connectSocket = (userId) => {
 
             // Set fallback timer - if room not joined in 3 seconds, force mark as ready
             queueProcessTimeout = setTimeout(() => {
-                if (!connectionReady) {
+                // 🔥 BUG FIX: Only set connectionReady if socket is STILL connected
+                // Previously, if socket disconnected before timer fired, we'd set ready=true incorrectly
+                if (!connectionReady && socket && socket.connected) {
                     console.warn('⚠️ [Socket] Room join not received after 3s, forcing connectionReady = true');
                     // Mark as ready anyway to prevent infinite waiting
                     connectionReady = true;
@@ -186,6 +188,8 @@ export const connectSocket = (userId) => {
                         console.warn(`📬 [Socket] Processing ${messageQueue.length} queued messages after fallback`);
                         processMessageQueue();
                     }
+                } else if (!connectionReady && (!socket || !socket.connected)) {
+                    console.warn('⚠️ [Socket] Fallback timer fired but socket disconnected - not setting ready');
                 }
             }, 3000);
         });
@@ -233,7 +237,8 @@ export const connectSocket = (userId) => {
         });
 
         socket.on('disconnect', (reason) => {
-            logger.debug('🔌 Socket disconnected:', reason);
+            // 🔥 PROD DEBUG: Use console.warn to show in production
+            console.warn('🔌 [Socket] Disconnected! Reason:', reason);
             connectionReady = false; // 🔥 Reset connection ready state
 
             // 🏥 Stop health monitoring when disconnected
@@ -241,7 +246,7 @@ export const connectSocket = (userId) => {
 
             // 🔥 CRITICAL: If we're logging out, prevent reconnection
             if (isLoggingOut) {
-                logger.debug('🚫 Preventing reconnection - logout in progress');
+                console.warn('🚫 [Socket] Preventing reconnection - logout in progress');
                 socket.io.opts.reconnection = false;
             }
         });
