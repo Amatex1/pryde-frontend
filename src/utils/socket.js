@@ -402,11 +402,14 @@ export const getMessageQueueLength = () => messageQueue.length;
 
 let healthCheckInterval = null;
 let lastPongTime = Date.now();
-const PING_INTERVAL = 15000; // 15 seconds
-const PONG_TIMEOUT = 30000; // 30 seconds - if no pong received, consider connection dead
+let missedPongs = 0;
+const PING_INTERVAL = 30000; // 🔥 CHANGED: 30 seconds (was 15s) - less aggressive
+const PONG_TIMEOUT = 60000; // 🔥 CHANGED: 60 seconds (was 30s) - more tolerant
+const MAX_MISSED_PONGS = 2; // 🔥 NEW: Only force reconnect after 2 consecutive misses
 
 /**
  * Start health monitoring - sends periodic pings to verify connection
+ * 🔥 FIX: Made less aggressive to prevent unnecessary disconnects
  */
 export const startHealthMonitoring = () => {
     if (healthCheckInterval) {
@@ -414,7 +417,9 @@ export const startHealthMonitoring = () => {
         return;
     }
 
-    logger.debug('🏥 Starting connection health monitoring');
+    logger.debug('🏥 Starting connection health monitoring (30s interval)');
+    lastPongTime = Date.now(); // Reset on start
+    missedPongs = 0;
 
     healthCheckInterval = setInterval(() => {
         if (!socket || !socket.connected) {
@@ -425,19 +430,27 @@ export const startHealthMonitoring = () => {
         // Check if last pong was too long ago
         const timeSinceLastPong = Date.now() - lastPongTime;
         if (timeSinceLastPong > PONG_TIMEOUT) {
-            logger.warn('❌ Connection unhealthy: no pong received in 30s, reconnecting...');
-            // Force reconnection
-            socket.disconnect();
-            socket.connect();
-            return;
+            missedPongs++;
+            console.warn(`⚠️ Health check: missed pong #${missedPongs}, time since last: ${timeSinceLastPong}ms`);
+
+            if (missedPongs >= MAX_MISSED_PONGS) {
+                logger.warn('❌ Connection unhealthy: multiple missed pongs, reconnecting...');
+                console.warn('❌ Connection unhealthy: forcing reconnect');
+                missedPongs = 0;
+                // Force reconnection via Socket.IO's reconnect mechanism (not disconnect/connect)
+                socket.io.engine.close();
+                return;
+            }
         }
 
         // Send ping
         socket.emit('ping', (response) => {
             if (response && response.status === 'ok') {
                 lastPongTime = Date.now();
+                missedPongs = 0; // Reset on success
                 logger.debug('🏓 Pong received, connection healthy');
             } else {
+                missedPongs++;
                 logger.warn('⚠️ Unexpected ping response:', response);
             }
         });
@@ -511,15 +524,16 @@ export const sendMessage = (data, callback, retryCount = 0) => {
         connectionReady
     });
 
-    // If socket not connected, queue and try to reconnect
+    // If socket not connected, queue and let Socket.IO handle reconnection
     if (!socket || !socket.connected) {
         logger.warn('⚠️ [sendMessage] Socket not connected, queuing message');
         console.warn('⚠️ [sendMessage] Socket not connected, queuing message');
 
-        if (socket && !socket.connected) {
-            // Only force disconnect/reconnect if socket exists but isn't connected
-            socket.disconnect();
-            setTimeout(() => socket.connect(), 100);
+        // 🔥 FIX: Don't force disconnect/reconnect - let Socket.IO's reconnection mechanism handle it
+        // Forcing disconnect() then connect() was causing connection cycling issues
+        if (socket && !socket.connected && !socket.io.reconnecting) {
+            console.log('🔄 [sendMessage] Triggering reconnect via Socket.IO');
+            socket.connect(); // Just connect, don't disconnect first
         }
 
         messageQueue.push({ event: 'send_message', data: messagePayload, callback });
