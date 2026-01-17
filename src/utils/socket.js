@@ -556,9 +556,25 @@ export const sendMessage = (data, callback, retryCount = 0) => {
     const MAX_RETRIES = 3;
     const RETRY_DELAY = 1000;
 
+    // 🔒 Force JSON-serialisable payload to prevent Socket.IO serialization failures
+    let safeData;
+    try {
+        safeData = JSON.parse(JSON.stringify(data));
+    } catch (err) {
+        console.error('❌ [sendMessage] Payload is not serializable', data, err);
+        if (typeof callback === 'function') {
+            callback({
+                success: false,
+                error: 'INVALID_MESSAGE_PAYLOAD',
+                message: 'Message data contains non-serializable values'
+            });
+        }
+        return;
+    }
+
     const messagePayload = {
-        ...data,
-        _tempId: data._tempId || `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        ...safeData,
+        _tempId: safeData._tempId || `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     };
 
     // Check transport state (no blocking alerts!)
