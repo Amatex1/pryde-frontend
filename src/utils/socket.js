@@ -493,13 +493,31 @@ export const sendMessage = (data, callback, retryCount = 0) => {
     const transport = socket?.io?.engine?.transport;
     const transportName = transport?.name || 'unknown';
     const wsReadyState = transport?.ws?.readyState;
-    const isTransportOpen = transportName === 'polling' || wsReadyState === 1;
 
-    // If socket not connected OR transport is dead, force reconnect
-    if (!socket || !socket.connected || !isTransportOpen) {
-        logger.warn('⚠️ [sendMessage] Transport dead, forcing reconnect');
+    // 🔥 FIX: WebSocket readyState 1 = OPEN, but also accept if socket.connected is true
+    // The socket.connected property is the most reliable indicator
+    // Transport check is a secondary validation
+    const isTransportOpen =
+        socket?.connected || // Primary check - Socket.IO's own connected state
+        transportName === 'polling' || // Polling transport is always "open"
+        (transportName === 'websocket' && wsReadyState === 1); // WebSocket open
 
-        if (socket) {
+    console.log('🔍 [sendMessage] Transport check:', {
+        socketExists: !!socket,
+        socketConnected: socket?.connected,
+        transportName,
+        wsReadyState,
+        isTransportOpen,
+        connectionReady
+    });
+
+    // If socket not connected, queue and try to reconnect
+    if (!socket || !socket.connected) {
+        logger.warn('⚠️ [sendMessage] Socket not connected, queuing message');
+        console.warn('⚠️ [sendMessage] Socket not connected, queuing message');
+
+        if (socket && !socket.connected) {
+            // Only force disconnect/reconnect if socket exists but isn't connected
             socket.disconnect();
             setTimeout(() => socket.connect(), 100);
         }
