@@ -90,10 +90,16 @@
 }
 
 .footer-notice p {
-  color: var(--text-muted);
+  /* Use white/light text for visibility on purple gradient background */
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.9rem;
   margin: 0;
   font-weight: 500;
+}
+
+/* Light mode - ensure good contrast on purple gradient */
+[data-theme="light"] .footer-notice p {
+  color: rgba(255, 255, 255, 0.95);
 }
 
 /* ========================================

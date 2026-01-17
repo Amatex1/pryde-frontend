@@ -39,31 +39,39 @@
   
   /* Native app feel - CRITICAL: Enable single-finger scrolling */
   html {
-    overflow-y: auto !important;
+    overflow-y: scroll !important; /* scroll not auto - ensures scrollbar space */
     overflow-x: hidden !important;
-    height: auto !important;
+    height: 100% !important;
     min-height: 100% !important;
-    touch-action: pan-x pan-y !important; /* Allow scrolling in both directions */
+    touch-action: pan-y !important; /* pan-y is more reliable for vertical scrolling */
   }
 
   body {
     overscroll-behavior-y: contain; /* Prevent pull-to-refresh but allow scroll */
-    overflow-y: auto !important; /* CRITICAL: Ensure vertical scrolling works */
+    overflow-y: scroll !important; /* CRITICAL: Ensure vertical scrolling works */
     overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch !important; /* Smooth scrolling on iOS */
-    touch-action: pan-x pan-y !important; /* Allow single-finger scrolling */
-    height: auto !important;
+    touch-action: pan-y !important; /* pan-y allows single-finger vertical scroll */
+    height: 100% !important;
     min-height: 100dvh !important;
   }
 
   /* Root container must allow scroll */
   #root {
-    overflow-y: auto !important;
+    overflow-y: visible !important; /* Let body handle the scroll */
     overflow-x: hidden !important;
     min-height: 100dvh !important;
     height: auto !important;
     -webkit-overflow-scrolling: touch !important;
-    touch-action: pan-x pan-y !important;
+    touch-action: pan-y !important;
+  }
+
+  /* App container - remove any height restrictions */
+  .app-container {
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 100dvh !important;
+    touch-action: pan-y !important;
   }
 
   /* Ensure all scrollable containers allow touch scrolling */
@@ -71,13 +79,19 @@
   .page-viewport,
   .feed-container,
   .feed-main,
+  .feed-page,
   .profile-container,
+  .profile-page,
   .messages-container,
+  .messages-page,
   .settings-container,
+  .settings-page,
+  .home-page,
   main,
   [role="main"] {
-    touch-action: pan-x pan-y !important;
+    touch-action: pan-y !important;
     -webkit-overflow-scrolling: touch !important;
+    overflow-y: visible !important; /* Let content flow naturally */
   }
 }
 

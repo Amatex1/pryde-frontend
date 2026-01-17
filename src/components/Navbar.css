@@ -937,15 +937,45 @@
   color: var(--accent-primary, #7A6ED6);
 }
 
+/* ========================================
+   LIGHT MODE TEXT FIXES
+   Ensure text is visible on light backgrounds
+   ======================================== */
+
+/* Plain light mode (no quiet) */
+[data-theme="light"] .user-profile-trigger .user-name {
+  color: var(--text-primary, #1E1E26) !important;
+}
+
+[data-theme="light"] .nav-link {
+  color: var(--text-secondary, #6B6E80) !important;
+}
+
+[data-theme="light"] .nav-link:hover {
+  color: var(--color-primary, #6C5CE7) !important;
+}
+
+[data-theme="light"] .nav-button {
+  color: var(--text-secondary, #6B6E80) !important;
+}
+
+[data-theme="light"] .nav-button:hover {
+  color: var(--color-primary, #6C5CE7) !important;
+}
+
+[data-theme="light"] .dropdown-item {
+  color: var(--text-primary, #1E1E26);
+}
+
 /* Light + Quiet mode text */
 [data-theme="light"][data-quiet="true"] .user-profile-trigger .user-name,
 [data-theme="light"][data-quiet-mode="true"] .user-profile-trigger .user-name {
-  color: var(--text-primary, #2A2F44);
+  color: var(--text-primary, #2A2F44) !important;
 }
 
 [data-theme="light"][data-quiet="true"] .nav-link,
 [data-theme="light"][data-quiet-mode="true"] .nav-link {
-  color: var(--text-primary, #2A2F44);
+  color: var(--text-primary, #2A2F44) !important;
 }
 
 [data-theme="light"][data-quiet="true"] .dropdown-item,
