@@ -70,11 +70,6 @@ export function filterSocialNotifications(notifications) {
   return notifications.filter(n => {
     if (isMessageNotificationType(n.type)) {
       // 🚫 Messages do NOT belong in the bell - forward to message system
-      console.warn(
-        "[Notification] MESSAGE type routed away from Bell",
-        { notificationId: n._id, type: n.type }
-      );
-
       // Forward to message system instead
       if (typeof window !== 'undefined') {
         window.dispatchEvent(
