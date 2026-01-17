@@ -10,6 +10,12 @@ const SOCKET_URL = API_CONFIG.SOCKET_URL;
 console.log('📦 [socket.js] Module loaded. SOCKET_URL:', SOCKET_URL);
 
 let socket = null;
+
+// 🔒 CANONICAL LIVE SOCKET REFERENCE (prevents stale emits)
+// This ref object always points to the current active socket
+// Even if 'socket' variable gets out of sync, socketRef.current is authoritative
+const socketRef = { current: null };
+
 let isLoggingOut = false; // Flag to prevent reconnection during logout
 let connectionReady = false; // 🔥 NEW: Track if room join is confirmed
 let messageQueue = []; // 🔥 NEW: Queue for messages when socket not ready
@@ -109,8 +115,15 @@ export const connectSocket = (userId) => {
             retries: 3
         });
 
+        // 🔒 CRITICAL: Update socketRef to point to the new socket
+        socketRef.current = socket;
+        console.warn('🔒 [Socket] socketRef.current updated to:', socket.id || 'pending');
+
         // Add connection event listeners
         socket.on('connect', () => {
+            // 🔒 CRITICAL: Update socketRef on every connect (including reconnects)
+            socketRef.current = socket;
+            console.warn('🔒 [Socket] socketRef.current confirmed:', socket.id);
             // 🔥 PROD DEBUG: Use console.warn to show in production
             console.warn('🔌 [Socket] Connected! ID:', socket.id);
             console.warn('🔌 [Socket] Transport:', socket.io.engine.transport.name);
@@ -374,6 +387,8 @@ export const disconnectSocket = () => {
         socket.disconnect();
         socket = null;
     }
+    // 🔒 CRITICAL: Clear socketRef on disconnect
+    socketRef.current = null;
     connectionReady = false;
     messageQueue = [];
 };
@@ -395,6 +410,8 @@ export const disconnectSocketForLogout = () => {
         socket.disconnect();
         socket = null;
     }
+    // 🔒 CRITICAL: Clear socketRef on logout
+    socketRef.current = null;
 };
 
 // 🔥 NEW: Reset logout flag (for testing or re-login)
@@ -405,11 +422,14 @@ export const resetLogoutFlag = () => {
     logger.debug('🔄 Logout flag reset');
 };
 
-// Get socket instance
-export const getSocket = () => socket;
+// Get socket instance - 🔒 ALWAYS return socketRef.current (canonical reference)
+export const getSocket = () => socketRef.current || socket;
 
-// Check if socket is connected
-export const isSocketConnected = () => socket && socket.connected;
+// Check if socket is connected - 🔒 Use socketRef.current
+export const isSocketConnected = () => {
+    const activeSocket = socketRef.current || socket;
+    return activeSocket && activeSocket.connected;
+};
 
 // 🔥 NEW: Check if connection is fully ready (room joined)
 export const isConnectionReady = () => connectionReady;
@@ -625,17 +645,20 @@ export const sendMessage = (data, callback, retryCount = 0) => {
     // Emit with ACK callback
     const emitTime = Date.now();
 
-    // 🔥 DEBUG: Verify we're using the correct socket instance
-    const currentSocket = socket;
+    // 🔒 CANONICAL: Use socketRef.current as the authoritative socket reference
+    const refSocket = socketRef.current;
+    const moduleSocket = socket;
     const windowSocket = typeof window !== 'undefined' ? window.socket : null;
 
     console.warn('📤 [sendMessage] Emitting send_message event at', new Date().toISOString());
     console.warn('📤 [sendMessage] Socket verification:', {
-        moduleSocketId: currentSocket?.id,
+        refSocketId: refSocket?.id,
+        moduleSocketId: moduleSocket?.id,
         windowSocketId: windowSocket?.id,
-        sameSocket: currentSocket === windowSocket,
-        moduleConnected: currentSocket?.connected,
+        refConnected: refSocket?.connected,
+        moduleConnected: moduleSocket?.connected,
         windowConnected: windowSocket?.connected,
+        allSame: refSocket === moduleSocket && moduleSocket === windowSocket,
         payload: {
             recipientId: messagePayload.recipientId,
             hasContent: !!messagePayload.content,
@@ -643,8 +666,10 @@ export const sendMessage = (data, callback, retryCount = 0) => {
         }
     });
 
-    // 🔥 FIX: Use window.socket if available and connected, as it's guaranteed to be current
-    const socketToUse = (windowSocket?.connected) ? windowSocket : currentSocket;
+    // 🔒 PRIORITY: socketRef.current > window.socket > module socket
+    const socketToUse = (refSocket?.connected) ? refSocket
+                      : (windowSocket?.connected) ? windowSocket
+                      : moduleSocket;
 
     if (!socketToUse || !socketToUse.connected) {
         console.error('❌ [sendMessage] No valid socket available! Queuing message.');
@@ -656,7 +681,7 @@ export const sendMessage = (data, callback, retryCount = 0) => {
         return;
     }
 
-    console.warn('📤 [sendMessage] Using socket:', socketToUse.id);
+    console.warn('📤 [sendMessage] Using socket:', socketToUse.id, '(transport:', socketToUse.io?.engine?.transport?.name, ')');
 
     socketToUse.emit('send_message', messagePayload, (response) => {
         const ackTime = Date.now() - emitTime;
