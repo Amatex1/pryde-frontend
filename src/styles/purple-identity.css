@@ -16,76 +16,139 @@
 
 /* ════════════════════════════════════════
    PHASE A: FORCE HEADER TO PURPLE
-   All breakpoints - desktop and mobile
+   DARK MODE ONLY - Light mode uses light navbar
    ════════════════════════════════════════ */
 
-/* Navbar: Purple background on all screens */
-.navbar,
-.app-header,
-.top-nav,
-.mobile-header {
+/* Navbar: Purple background in DARK MODE only */
+[data-theme="dark"] .navbar,
+[data-theme="dark"] .app-header,
+[data-theme="dark"] .top-nav,
+[data-theme="dark"] .mobile-header {
   background: var(--color-brand-bg) !important;
   border: none !important;
   box-shadow: none !important;
   color: white !important;
 }
 
-/* Navbar text and icons: White on purple */
+/* Navbar text and icons: White on purple - DARK MODE ONLY */
 /* EXCLUDES dropdown menus which have their own surface background */
-.navbar *:not(.profile-dropdown):not(.profile-dropdown *):not(.dropdown-menu):not(.dropdown-menu *):not(.notification-dropdown):not(.notification-dropdown *):not(.messages-dropdown):not(.messages-dropdown *):not(.search-results-dropdown):not(.search-results-dropdown *),
-.navbar a:not(.dropdown-item),
-.navbar button:not(.dropdown-item),
-.navbar-item,
-.nav-link,
-.navbar-link,
-.navbar-btn {
+[data-theme="dark"] .navbar *:not(.profile-dropdown):not(.profile-dropdown *):not(.dropdown-menu):not(.dropdown-menu *):not(.notification-dropdown):not(.notification-dropdown *):not(.messages-dropdown):not(.messages-dropdown *):not(.search-results-dropdown):not(.search-results-dropdown *),
+[data-theme="dark"] .navbar a:not(.dropdown-item),
+[data-theme="dark"] .navbar button:not(.dropdown-item),
+[data-theme="dark"] .navbar-item,
+[data-theme="dark"] .nav-link,
+[data-theme="dark"] .navbar-link,
+[data-theme="dark"] .navbar-btn {
   color: white !important;
 }
 
 /* Dropdown menus inside navbar: Use proper text colors */
-.navbar .profile-dropdown,
-.navbar .dropdown-menu,
-.navbar .notification-dropdown,
-.navbar .messages-dropdown,
-.navbar .search-results-dropdown {
+[data-theme="dark"] .navbar .profile-dropdown,
+[data-theme="dark"] .navbar .dropdown-menu,
+[data-theme="dark"] .navbar .notification-dropdown,
+[data-theme="dark"] .navbar .messages-dropdown,
+[data-theme="dark"] .navbar .search-results-dropdown {
   color: var(--color-text) !important;
 }
 
-.navbar .profile-dropdown *,
-.navbar .dropdown-menu *,
-.navbar .notification-dropdown *,
-.navbar .messages-dropdown *,
-.navbar .search-results-dropdown * {
+[data-theme="dark"] .navbar .profile-dropdown *,
+[data-theme="dark"] .navbar .dropdown-menu *,
+[data-theme="dark"] .navbar .notification-dropdown *,
+[data-theme="dark"] .navbar .messages-dropdown *,
+[data-theme="dark"] .navbar .search-results-dropdown * {
   color: inherit;
 }
 
-.navbar .dropdown-item {
+[data-theme="dark"] .navbar .dropdown-item {
   color: var(--color-text) !important;
 }
 
-.navbar .dropdown-item:hover {
+[data-theme="dark"] .navbar .dropdown-item:hover {
   color: var(--color-brand) !important;
 }
 
-/* Navbar search: Transparent with white border */
-.navbar-search,
-.search-bar {
+/* Navbar search: Transparent with white border - DARK MODE ONLY */
+[data-theme="dark"] .navbar-search,
+[data-theme="dark"] .search-bar {
   background: rgba(255, 255, 255, 0.1) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   color: white !important;
 }
 
-.navbar-search::placeholder,
-.search-bar::placeholder {
+[data-theme="dark"] .navbar-search::placeholder,
+[data-theme="dark"] .search-bar::placeholder {
   color: rgba(255, 255, 255, 0.6) !important;
 }
 
-/* Active nav items: White background */
-.navbar-item.active,
-.nav-link.active,
-.navbar-link.active {
+/* Active nav items: White background - DARK MODE ONLY */
+[data-theme="dark"] .navbar-item.active,
+[data-theme="dark"] .nav-link.active,
+[data-theme="dark"] .navbar-link.active {
   background: rgba(255, 255, 255, 0.2) !important;
   color: white !important;
+}
+
+/* ════════════════════════════════════════
+   LIGHT MODE NAVBAR - Clean, readable text
+   ════════════════════════════════════════ */
+
+[data-theme="light"] .navbar,
+[data-theme="light"] .app-header,
+[data-theme="light"] .top-nav {
+  background: var(--color-surface, #FFFFFF) !important;
+  border-bottom: 1px solid var(--color-border, #E5E7EB) !important;
+  color: var(--color-text, #1E1E26) !important;
+}
+
+/* Light mode navbar text: Dark colors for readability */
+[data-theme="light"] .navbar .user-name,
+[data-theme="light"] .navbar .nav-label,
+[data-theme="light"] .navbar .nav-text,
+[data-theme="light"] .user-profile-trigger .user-name {
+  color: #1E1E26 !important;
+}
+
+[data-theme="light"] .navbar .dropdown-arrow,
+[data-theme="light"] .user-profile-trigger .dropdown-arrow {
+  color: #6B6E80 !important;
+}
+
+[data-theme="light"] .navbar .nav-link,
+[data-theme="light"] .navbar .nav-button,
+[data-theme="light"] .nav-link,
+[data-theme="light"] .navbar-link,
+[data-theme="light"] .navbar-btn,
+[data-theme="light"] .navbar-item {
+  color: #6B6E80 !important;
+}
+
+[data-theme="light"] .navbar .nav-link:hover,
+[data-theme="light"] .navbar .nav-button:hover,
+[data-theme="light"] .nav-link:hover,
+[data-theme="light"] .navbar-link:hover,
+[data-theme="light"] .navbar-item:hover {
+  color: var(--color-brand, #6C5CE7) !important;
+  background: var(--bg-hover, rgba(108, 92, 231, 0.08)) !important;
+}
+
+[data-theme="light"] .nav-link.active,
+[data-theme="light"] .navbar-link.active,
+[data-theme="light"] .navbar-item.active {
+  background: var(--accent-muted, rgba(108, 92, 231, 0.15)) !important;
+  color: var(--color-brand, #6C5CE7) !important;
+}
+
+/* Light mode search bar */
+[data-theme="light"] .navbar-search,
+[data-theme="light"] .search-bar {
+  background: var(--color-surface-muted, #F5F5F5) !important;
+  border: 1px solid var(--color-border, #E5E7EB) !important;
+  color: var(--color-text, #1E1E26) !important;
+}
+
+[data-theme="light"] .navbar-search::placeholder,
+[data-theme="light"] .search-bar::placeholder {
+  color: var(--text-muted, #9CA0B3) !important;
 }
 
 /* ════════════════════════════════════════
@@ -103,10 +166,10 @@
   background: var(--color-surface) !important;
 }
 
-/* Kill grey hover states */
-.navbar-item:hover,
-.nav-link:hover,
-.navbar-link:hover {
+/* Kill grey hover states - DARK MODE ONLY */
+[data-theme="dark"] .navbar-item:hover,
+[data-theme="dark"] .nav-link:hover,
+[data-theme="dark"] .navbar-link:hover {
   background: rgba(255, 255, 255, 0.15) !important;
 }
 
