@@ -37,26 +37,46 @@
     -webkit-touch-callout: default;
   }
   
-  /* Native app feel */
+  /* Native app feel - CRITICAL: Enable single-finger scrolling */
+  html {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100% !important;
+    touch-action: pan-x pan-y !important; /* Allow scrolling in both directions */
+  }
+
   body {
     overscroll-behavior-y: contain; /* Prevent pull-to-refresh but allow scroll */
     overflow-y: auto !important; /* CRITICAL: Ensure vertical scrolling works */
+    overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch !important; /* Smooth scrolling on iOS */
-  }
-
-  /* Ensure html doesn't block scrolling */
-  html {
-    overflow-y: auto !important;
-    overflow-x: hidden;
+    touch-action: pan-x pan-y !important; /* Allow single-finger scrolling */
     height: auto !important;
-    min-height: 100%;
+    min-height: 100dvh !important;
   }
 
   /* Root container must allow scroll */
   #root {
     overflow-y: auto !important;
-    overflow-x: hidden;
-    min-height: 100dvh;
+    overflow-x: hidden !important;
+    min-height: 100dvh !important;
+    height: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x pan-y !important;
+  }
+
+  /* Ensure all scrollable containers allow touch scrolling */
+  .page-container,
+  .page-viewport,
+  .feed-container,
+  .feed-main,
+  .profile-container,
+  .messages-container,
+  .settings-container,
+  main,
+  [role="main"] {
+    touch-action: pan-x pan-y !important;
     -webkit-overflow-scrolling: touch !important;
   }
 }
