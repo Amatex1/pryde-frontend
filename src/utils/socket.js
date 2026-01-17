@@ -481,13 +481,8 @@ export const getConnectionHealth = () => {
  * @param {Number} retryCount - Internal retry counter (do not set manually)
  */
 export const sendMessage = (data, callback, retryCount = 0) => {
-    // 🔥 PROD DEBUG: Always log sendMessage calls
-    console.log('📤 [sendMessage] Called with:', { recipientId: data.recipientId, hasContent: !!data.content });
-    console.log('📤 [sendMessage] Socket state:', {
-        connected: socket?.connected,
-        connectionReady,
-        queueLength: messageQueue.length
-    });
+    // 🔥 CRITICAL DEBUG - Alert-based debugging since console.log is stripped
+    alert(`[sendMessage ENTRY]\nSocket: ${socket?.id}\nConnected: ${socket?.connected}\nReady: ${connectionReady}`);
 
     const MAX_RETRIES = 3;
     const RETRY_DELAY = 1000; // 1 second
@@ -499,7 +494,7 @@ export const sendMessage = (data, callback, retryCount = 0) => {
 
     // If socket not ready, queue the message
     if (!socket || !socket.connected) {
-        console.warn('⚠️ [sendMessage] Socket not connected, queuing message');
+        alert('[sendMessage] QUEUED - socket not connected');
         messageQueue.push({ event: 'send_message', data: messagePayload, callback });
 
         // Notify callback of queued status
@@ -515,7 +510,7 @@ export const sendMessage = (data, callback, retryCount = 0) => {
 
     // If connection not fully ready (room not joined), queue the message
     if (!connectionReady) {
-        console.warn('⚠️ [sendMessage] Connection not ready (room not joined), queuing message');
+        alert('[sendMessage] QUEUED - room not joined');
         messageQueue.push({ event: 'send_message', data: messagePayload, callback });
 
         // Notify callback of queued status
@@ -529,7 +524,8 @@ export const sendMessage = (data, callback, retryCount = 0) => {
         return;
     }
 
-    console.log('📤 [sendMessage] Emitting send_message (attempt ' + (retryCount + 1) + '):', messagePayload);
+    // 🔥 CRITICAL: We're about to emit!
+    alert(`[sendMessage] EMITTING NOW!\nRecipient: ${messagePayload.recipientId}\nContent: ${messagePayload.content?.substring(0, 20) || 'N/A'}`);
 
     // Set timeout for ACK response
     const ackTimeout = setTimeout(() => {
