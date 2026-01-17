@@ -651,8 +651,9 @@ function Messages() {
         // 🔥 CRITICAL FIX: Only process messages where WE are the RECIPIENT
         // The sender gets their own message via 'message:sent', not 'message:new'
         // This prevents duplicate messages on the sender's side
-        const isRecipient = currentUser?._id === newMessage.recipient._id;
-        const isSenderInSelectedChat = selectedChat === newMessage.sender._id;
+        // 🔥 FIX: Use String() to handle ObjectId vs string comparison
+        const isRecipient = String(currentUser?._id) === String(newMessage.recipient?._id);
+        const isSenderInSelectedChat = String(selectedChat) === String(newMessage.sender?._id);
 
         // Only add message if we're the recipient AND the sender is the selected chat
         if (isRecipient && isSenderInSelectedChat) {
@@ -677,16 +678,18 @@ function Messages() {
         }
 
         // Update conversations list - show the conversation with the OTHER person
-        const otherPersonId = currentUser?._id === newMessage.sender._id
-          ? newMessage.recipient._id
-          : newMessage.sender._id;
+        // 🔥 FIX: Use String() to handle ObjectId vs string comparison
+        const isSender = String(currentUser?._id) === String(newMessage.sender?._id);
+        const otherPersonId = isSender
+          ? newMessage.recipient?._id
+          : newMessage.sender?._id;
 
-        const otherPerson = currentUser?._id === newMessage.sender._id
+        const otherPerson = isSender
           ? newMessage.recipient
           : newMessage.sender;
 
         setConversations((prev) => {
-          const updated = prev.filter(c => c._id !== otherPersonId);
+          const updated = prev.filter(c => String(c._id) !== String(otherPersonId));
           return [{ _id: otherPersonId, lastMessage: newMessage, ...otherPerson }, ...updated];
         });
       });
@@ -704,7 +707,8 @@ function Messages() {
         }
 
         // Only process if this is the selected chat
-        if (selectedChat === sentMessage.recipient._id) {
+        // 🔥 FIX: Use String() to handle ObjectId vs string comparison
+        if (String(selectedChat) === String(sentMessage.recipient?._id)) {
           logger.debug('✅ Sent message is for selected chat, reconciling...');
           setMessages((prev) => {
             // OPTIMISTIC UI RECONCILIATION: Replace temp message with real one
