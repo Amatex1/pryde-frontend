@@ -37,6 +37,9 @@ import { debounce } from '../utils/debounce';
 import { quietCopy } from '../config/uiCopy';
 import './Messages.css';
 import '../styles/themes/messages.css';
+import '../styles/messages-unified.css';
+import MessageBubble from '../components/MessageBubble';
+import MessageInput from '../components/MessageInput';
 
 function Messages() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -1541,10 +1544,10 @@ function Messages() {
       <Navbar onMenuClick={onMenuOpen} />
 
       <div className="messages-container">
-        <div className="messages-layout glossy fade-in">
-          <div className={`conversations-sidebar ${selectedChat ? 'chat-active' : ''}`}>
-            <div className="sidebar-header">
-              <h2 className="sidebar-title">💬 Messages</h2>
+        <div className={`messages-layout messages-root glossy fade-in ${selectedChat ? 'in-conversation' : ''}`}>
+          <div className={`conversations-sidebar dm-list ${selectedChat ? 'chat-active' : ''}`}>
+            <div className="sidebar-header dm-list-header">
+              <h2 className="sidebar-title dm-list-title">Messages</h2>
               <div className="header-buttons">
                 <button className="btn-new-chat" onClick={handleOpenNewChatModal} title="New Chat">💬</button>
                 {/* Group chat hidden for Plan A - keeping backend for future */}
@@ -1801,20 +1804,20 @@ function Messages() {
             </div>
           </div>
 
-          <div className={`chat-area ${selectedChat ? 'active' : ''}`}>
+          <div className={`chat-area conversation-shell ${selectedChat ? 'active' : ''}`}>
             {selectedChat ? (
               <>
-                <div className="chat-header" key={`${selectedChat}-${selectedChatType}`}>
-                  {/* Mobile Back Button */}
+                <header className="chat-header conversation-header" key={`${selectedChat}-${selectedChatType}`}>
+                  {/* Mobile Back Button - Chevron */}
                   <button
-                    className="mobile-back-btn"
+                    className="mobile-back-btn back-btn"
                     onClick={() => {
                       setSelectedChat(null);
                       setSelectedChatType(null);
                     }}
                     aria-label="Back to conversations"
                   >
-                    ← Back
+                    ←
                   </button>
                   <div className="chat-user">
                     {/* Self-DM detection for visual adjustments */}
@@ -1888,23 +1891,23 @@ function Messages() {
                   >
                     {mutedConversations.includes(selectedChat) ? '🔔' : '🔕'}
                   </button>
-                </div>
+                </header>
 
                 {/* Chat Messages Area - Centered Conversation Container */}
-                <div className="chat-messages" ref={chatContainerRef}>
+                <div id="message-scroll" className="chat-messages message-scroll" ref={chatContainerRef}>
                   {/* Conversation wrapper - centers content with max-width */}
                   <div className="conversation-wrapper">
                     {/* Inner container - the "quiet room" for messages */}
                     <div className="conversation-inner">
                       {!currentUser ? (
-                        <div className="loading-messages">Loading messages...</div>
+                        <div className="loading-messages empty-conversation">Loading messages...</div>
                       ) : loadingMessages ? (
-                        <div className="loading-messages">Loading messages...</div>
+                        <div className="loading-messages empty-conversation">Loading messages...</div>
                       ) : messages.length === 0 ? (
-                        <div className="empty-chat-state">
-                          <div className="empty-chat-icon">💬</div>
-                          <p>No messages yet</p>
-                          <p className="empty-chat-hint">Start a calm conversation</p>
+                        <div className="empty-chat-state empty-conversation">
+                          <div className="empty-chat-icon empty-icon">💬</div>
+                          <p className="empty-title">No messages yet</p>
+                          <p className="empty-chat-hint empty-hint">Start a calm conversation</p>
                         </div>
                       ) : (
                         /* Render grouped messages for rhythm and flow */
@@ -2181,7 +2184,8 @@ function Messages() {
                       </button>
                     </div>
                   )}
-                  <div className="message-composer">
+                  {/* Calm Composer - Single row with inline actions */}
+                  <div className="message-composer calm-composer">
                     <input
                       type="file"
                       ref={fileInputRef}
@@ -2189,69 +2193,69 @@ function Messages() {
                       accept="image/*,video/*"
                       style={{ display: 'none' }}
                     />
-                    {/* Attachment buttons - left side */}
-                    <div className="composer-actions-left">
+
+                    {/* Input container with inline actions */}
+                    <div className="composer-input-row">
+                      {/* Attachment button - leading */}
                       <button
                         type="button"
-                        className="icon-btn"
+                        className="composer-action-btn"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={uploadingFile || selectedGif || isRecipientUnavailable}
-                        title={uploadingFile ? `Uploading... ${uploadProgress}%` : "Attach file"}
+                        title={uploadingFile ? `Uploading... ${uploadProgress}%` : "Attach"}
                       >
-                        {uploadingFile ? `${uploadProgress}%` : '📎'}
+                        {uploadingFile ? `${uploadProgress}%` : '+'}
                       </button>
-                      <button
-                        type="button"
-                        className="icon-btn"
-                        onClick={() => setShowGifPicker(!showGifPicker)}
-                        disabled={selectedFile || isRecipientUnavailable}
-                        title="Add GIF"
-                      >
-                        GIF
-                      </button>
-                      <button
-                        type="button"
-                        className="icon-btn"
-                        onClick={() => setShowVoiceRecorder(!showVoiceRecorder)}
-                        disabled={selectedFile || selectedGif || isRecipientUnavailable}
-                        title="Record voice note"
-                      >
-                        🎤
-                      </button>
-                      <button
-                        type="button"
-                        className={`icon-btn ${showContentWarning ? 'active' : ''}`}
-                        onClick={() => setShowContentWarning(!showContentWarning)}
+
+                      {/* Text input - grows to fill */}
+                      <textarea
+                        ref={textareaRef}
+                        rows="1"
+                        value={message}
+                        onChange={handleTyping}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSendMessage(e);
+                          }
+                        }}
+                        placeholder={isRecipientUnavailable ? recipientUnavailableReason : (replyingTo ? "Reply..." : (selectedGif || selectedFile ? "Caption..." : "Message..."))}
+                        className="message-input"
                         disabled={isRecipientUnavailable}
-                        title="Add content warning"
+                      />
+
+                      {/* Trailing actions group */}
+                      <div className="composer-trailing-actions">
+                        <button
+                          type="button"
+                          className="composer-action-btn"
+                          onClick={() => setShowVoiceRecorder(!showVoiceRecorder)}
+                          disabled={selectedFile || selectedGif || isRecipientUnavailable}
+                          title="Voice note"
+                        >
+                          🎤
+                        </button>
+                        <button
+                          type="button"
+                          className={`composer-action-btn ${showContentWarning ? 'active' : ''}`}
+                          onClick={() => setShowContentWarning(!showContentWarning)}
+                          disabled={isRecipientUnavailable}
+                          title="Content warning"
+                        >
+                          ⚠️
+                        </button>
+                      </div>
+
+                      {/* Send button */}
+                      <button
+                        type="submit"
+                        className="send-btn"
+                        disabled={uploadingFile || isRecipientUnavailable || (!message.trim() && !selectedFile && !selectedGif)}
+                        aria-label="Send"
                       >
-                        ⚠️
+                        ↑
                       </button>
                     </div>
-                    {/* Auto-growing textarea */}
-                    <textarea
-                      ref={textareaRef}
-                      rows="1"
-                      value={message}
-                      onChange={handleTyping}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          handleSendMessage(e);
-                        }
-                      }}
-                      placeholder={isRecipientUnavailable ? recipientUnavailableReason : (replyingTo ? "Type your reply..." : (selectedGif || selectedFile ? "Add a caption (optional)..." : "Type a message..."))}
-                      className="message-input"
-                      disabled={isRecipientUnavailable}
-                    />
-                    {/* Send button - right side */}
-                    <button
-                      type="submit"
-                      className="send-btn"
-                      disabled={uploadingFile || isRecipientUnavailable || (!message.trim() && !selectedFile && !selectedGif)}
-                    >
-                      Send
-                    </button>
                   </div>
                   {/* DEPRECATED: GifPicker removed 2025-12-26 */}
                   {showVoiceRecorder && (
@@ -2288,7 +2292,7 @@ function Messages() {
                 </form>
               </>
             ) : (
-              <div className="no-chat-selected">
+              <div className="no-chat-selected no-conversation-selected">
                 <h3>Select a conversation</h3>
                 <p>Choose a conversation from the sidebar to start messaging</p>
               </div>
