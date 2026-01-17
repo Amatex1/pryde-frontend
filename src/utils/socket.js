@@ -104,9 +104,9 @@ export const connectSocket = (userId) => {
 
         // Add connection event listeners
         socket.on('connect', () => {
-            logger.debug('✅ Socket connected successfully!');
-            logger.debug('🔌 Transport:', socket.io.engine.transport.name);
-            logger.debug('🆔 Socket ID:', socket.id);
+            // 🔥 PROD DEBUG: Always log these for troubleshooting
+            console.log('🔌 [Socket] Connected! ID:', socket.id);
+            console.log('🔌 [Socket] Transport:', socket.io.engine.transport.name);
             reconnectAttempts = 0;
             lastPongTime = Date.now(); // Reset pong timer
 
@@ -119,19 +119,22 @@ export const connectSocket = (userId) => {
 
             // 🔥 NEW: Re-join user room on connect
             const tokenUserId = getUserIdFromToken();
+            console.log('🔌 [Socket] User ID from token:', tokenUserId);
             if (tokenUserId) {
-                logger.debug(`🔄 Joining user room: user_${tokenUserId}`);
+                console.log(`🔌 [Socket] Emitting 'join' for user room: user_${tokenUserId}`);
                 socket.emit('join', tokenUserId);
 
                 // Verify connection after 1 second
                 setTimeout(() => {
                     if (socket && socket.connected) {
                         socket.emit('ping', (response) => {
-                            logger.debug('🏓 Ping response:', response);
+                            console.log('🏓 [Socket] Ping response:', response);
                             lastPongTime = Date.now();
                         });
                     }
                 }, 1000);
+            } else {
+                console.error('❌ [Socket] No userId from token! Messages will fail.');
             }
 
             // 🏥 Start health monitoring
@@ -140,7 +143,7 @@ export const connectSocket = (userId) => {
 
         // 🔥 NEW: Listen for room join confirmation
         socket.on('room:joined', (data) => {
-            logger.debug('✅ Room joined:', data);
+            console.log('✅ [Socket] Room joined:', data);
             connectionReady = true;
 
             // Process any queued messages
@@ -148,7 +151,7 @@ export const connectSocket = (userId) => {
         });
 
         socket.on('room:error', (error) => {
-            logger.error('❌ Room join error:', error);
+            console.error('❌ [Socket] Room join error:', error);
             connectionReady = false;
         });
 
@@ -473,6 +476,14 @@ export const getConnectionHealth = () => {
  * @param {Number} retryCount - Internal retry counter (do not set manually)
  */
 export const sendMessage = (data, callback, retryCount = 0) => {
+    // 🔥 PROD DEBUG: Always log sendMessage calls
+    console.log('📤 [sendMessage] Called with:', { recipientId: data.recipientId, hasContent: !!data.content });
+    console.log('📤 [sendMessage] Socket state:', {
+        connected: socket?.connected,
+        connectionReady,
+        queueLength: messageQueue.length
+    });
+
     const MAX_RETRIES = 3;
     const RETRY_DELAY = 1000; // 1 second
 
@@ -483,7 +494,7 @@ export const sendMessage = (data, callback, retryCount = 0) => {
 
     // If socket not ready, queue the message
     if (!socket || !socket.connected) {
-        logger.warn('⚠️ Socket not connected, queuing message');
+        console.warn('⚠️ [sendMessage] Socket not connected, queuing message');
         messageQueue.push({ event: 'send_message', data: messagePayload, callback });
 
         // Notify callback of queued status
@@ -499,7 +510,7 @@ export const sendMessage = (data, callback, retryCount = 0) => {
 
     // If connection not fully ready (room not joined), queue the message
     if (!connectionReady) {
-        logger.warn('⚠️ Connection not ready (room not joined), queuing message');
+        console.warn('⚠️ [sendMessage] Connection not ready (room not joined), queuing message');
         messageQueue.push({ event: 'send_message', data: messagePayload, callback });
 
         // Notify callback of queued status
@@ -513,7 +524,7 @@ export const sendMessage = (data, callback, retryCount = 0) => {
         return;
     }
 
-    logger.debug('📤 Emitting send_message with ACK (attempt ' + (retryCount + 1) + '):', messagePayload);
+    console.log('📤 [sendMessage] Emitting send_message (attempt ' + (retryCount + 1) + '):', messagePayload);
 
     // Set timeout for ACK response
     const ackTimeout = setTimeout(() => {
