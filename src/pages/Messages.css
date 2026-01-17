@@ -3464,3 +3464,48 @@
 [data-theme="dark"] .chat-header .btn-chat-settings:hover {
   background: rgba(255, 255, 255, 0.08);
 }
+
+/* ========================================
+   DESKTOP: Full-width Messages Layout
+   Remove outer scroll, stretch to full viewport
+   ======================================== */
+@media (min-width: 1024px) {
+  /* Full viewport width - no max-width constraint */
+  .messages-container {
+    max-width: 100%;
+    width: 100%;
+    padding: 0;
+    height: calc(100vh - 70px); /* Account for navbar */
+    overflow: hidden; /* Prevent outer scroll */
+  }
+
+  /* Remove boxed appearance */
+  .messages-layout {
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* Sidebar border only */
+  .conversations-sidebar {
+    border-right: 1px solid var(--border-subtle);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Chat area takes remaining space */
+  .chat-area {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* Only the messages list should scroll */
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+  }
+}
