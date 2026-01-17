@@ -244,6 +244,16 @@ export const connectSocket = (userId) => {
         socket.io.on('reconnect_attempt', (attemptNumber) => {
             logger.debug(`🔄 Reconnection attempt #${attemptNumber}`);
             reconnectAttempts = attemptNumber;
+
+            // 🔥 CRITICAL: Update auth token on each reconnect attempt
+            // This ensures we use the latest token if it was refreshed
+            const freshToken = localStorage.getItem('token');
+            if (freshToken && socket.auth) {
+                socket.auth.token = freshToken;
+                logger.debug('🔑 Updated socket auth token for reconnect');
+            } else if (!freshToken) {
+                logger.warn('⚠️ No token available for reconnect - connection will likely fail');
+            }
         });
 
         socket.io.on('reconnect', (attemptNumber) => {
