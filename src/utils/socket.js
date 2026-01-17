@@ -464,15 +464,33 @@ export const startHealthMonitoring = () => {
             }
         }
 
-        // Send ping
+        // Send ping with timeout protection
+        let pingAcked = false;
+        const pingTimeout = setTimeout(() => {
+            if (!pingAcked) {
+                console.warn('⚠️ Ping timeout - no response after 10s');
+                // Don't increment missedPongs on first timeout - connection might still be okay
+            }
+        }, 10000);
+
         socket.emit('ping', (response) => {
+            pingAcked = true;
+            clearTimeout(pingTimeout);
+
+            // 🔥 FIX: Accept null response if socket is still connected
+            // Some edge cases return null but connection is actually fine
             if (response && response.status === 'ok') {
                 lastPongTime = Date.now();
                 missedPongs = 0; // Reset on success
                 logger.debug('🏓 Pong received, connection healthy');
+            } else if (response === null && socket && socket.connected) {
+                // Null response but socket is connected - reset pong time anyway
+                console.warn('⚠️ Ping returned null but socket connected - treating as healthy');
+                lastPongTime = Date.now();
+                missedPongs = 0;
             } else {
                 missedPongs++;
-                logger.warn('⚠️ Unexpected ping response:', response);
+                console.warn('⚠️ Unexpected ping response:', response, 'missedPongs:', missedPongs);
             }
         });
     }, PING_INTERVAL);
