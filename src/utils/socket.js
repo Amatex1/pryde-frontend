@@ -489,38 +489,24 @@ export const sendMessage = (data, callback, retryCount = 0) => {
         _tempId: data._tempId || `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     };
 
-    // 🔥 CRITICAL FIX: Check ACTUAL transport state, not just socket.connected
+    // Check transport state (no blocking alerts!)
     const transport = socket?.io?.engine?.transport;
     const transportName = transport?.name || 'unknown';
     const wsReadyState = transport?.ws?.readyState;
-    // WebSocket.OPEN = 1, or if using polling transport it should be fine
     const isTransportOpen = transportName === 'polling' || wsReadyState === 1;
-
-    // Debug: Show actual connection state on first attempt
-    if (retryCount === 0) {
-        alert(`[sendMessage] Transport Check\nsocket.connected: ${socket?.connected}\nTransport: ${transportName}\nWS readyState: ${wsReadyState} (1=OPEN)\nisTransportOpen: ${isTransportOpen}`);
-    }
 
     // If socket not connected OR transport is dead, force reconnect
     if (!socket || !socket.connected || !isTransportOpen) {
-        alert(`[sendMessage] TRANSPORT DEAD!\nForcing full reconnect...`);
+        logger.warn('⚠️ [sendMessage] Transport dead, forcing reconnect');
 
-        // Force full reconnect
         if (socket) {
             socket.disconnect();
-            setTimeout(() => {
-                socket.connect();
-            }, 100);
+            setTimeout(() => socket.connect(), 100);
         }
 
-        // Queue the message for after reconnection
         messageQueue.push({ event: 'send_message', data: messagePayload, callback });
         if (typeof callback === 'function') {
-            callback({
-                success: false,
-                queued: true,
-                message: 'Message queued - forcing reconnect'
-            });
+            callback({ success: false, queued: true, message: 'Message queued - reconnecting' });
         }
         return;
     }
@@ -529,22 +515,16 @@ export const sendMessage = (data, callback, retryCount = 0) => {
     if (!connectionReady) {
         messageQueue.push({ event: 'send_message', data: messagePayload, callback });
         if (typeof callback === 'function') {
-            callback({
-                success: false,
-                queued: true,
-                message: 'Message queued - room not joined'
-            });
+            callback({ success: false, queued: true, message: 'Message queued - room not joined' });
         }
         return;
     }
 
-    // All checks passed - emit the message
-    if (retryCount === 0) {
-        alert(`[sendMessage] EMITTING\nRecipient: ${messagePayload.recipientId}\nContent: ${messagePayload.content?.substring(0, 20)}`);
-    }
+    logger.debug('📤 [sendMessage] Emitting (attempt ' + (retryCount + 1) + ')');
 
     // Set up ACK timeout
     const ackTimeout = setTimeout(() => {
+        logger.error('❌ Message ACK timeout');
         if (retryCount < MAX_RETRIES) {
             setTimeout(() => sendMessage(data, callback, retryCount + 1), RETRY_DELAY * (retryCount + 1));
         } else {
@@ -562,7 +542,7 @@ export const sendMessage = (data, callback, retryCount = 0) => {
     // Emit with ACK callback
     socket.emit('send_message', messagePayload, (response) => {
         clearTimeout(ackTimeout);
-        alert(`[ACK] Response: ${JSON.stringify(response || 'null')}`);
+        logger.debug('✅ [sendMessage] ACK received:', response);
         if (typeof callback === 'function') {
             callback(response || { success: false, error: 'NO_RESPONSE' });
         }
