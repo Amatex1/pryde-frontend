@@ -153,8 +153,11 @@
 
     <!-- Service Worker Registration (Production Only) -->
     <script>
-      // Only register in production (not localhost)
-      if (window.location.hostname === 'prydeapp.com') {
+      // Register in production (not localhost or dev)
+      var isProduction = window.location.hostname !== 'localhost' &&
+                         window.location.hostname !== '127.0.0.1' &&
+                         !window.location.hostname.includes('.local');
+      if (isProduction) {
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', () => {
             navigator.serviceWorker.register('/sw.js', {
@@ -163,11 +166,14 @@
             }).then(reg => {
               console.log('[PWA] ✅ Service worker registered from index.html');
               console.log('[PWA] 📍 Scope:', reg.scope);
+              console.log('[PWA] 🌐 Hostname:', window.location.hostname);
             }).catch(err => {
               console.error('[PWA] Service worker registration failed:', err);
             });
           });
         }
+      } else {
+        console.log('[PWA] ⏭️ Skipping SW registration (development)');
       }
     </script>
 
