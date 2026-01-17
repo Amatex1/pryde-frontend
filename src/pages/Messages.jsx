@@ -40,6 +40,7 @@ import '../styles/themes/messages.css';
 import '../styles/messages-unified.css';
 import MessageBubble from '../components/MessageBubble';
 import MessageInput from '../components/MessageInput';
+import TypingIndicator from '../components/TypingIndicator';
 
 function Messages() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -182,6 +183,14 @@ function Messages() {
     return () => {
       optimisticTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
       optimisticTimeoutsRef.current.clear();
+    };
+  }, []);
+
+  // Add/remove body class for iOS overscroll suppression
+  useEffect(() => {
+    document.body.classList.add('messages-open');
+    return () => {
+      document.body.classList.remove('messages-open');
     };
   }, []);
 
@@ -2099,14 +2108,11 @@ function Messages() {
                         ))
                       )}
 
-                      {/* Typing indicator */}
-                      {isTyping && (
-                        <div className="typing-indicator">
-                          <span></span>
-                          <span></span>
-                          <span></span>
-                        </div>
-                      )}
+                      {/* Typing indicator - Calm fade, no bouncing */}
+                      <TypingIndicator
+                        isTyping={isTyping}
+                        userName={selectedUser ? getDisplayName(selectedUser) : null}
+                      />
                       <div ref={messagesEndRef} />
                     </div>
                   </div>

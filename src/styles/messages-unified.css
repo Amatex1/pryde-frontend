@@ -1049,36 +1049,23 @@
 }
 
 /* ========================================
-   TYPING INDICATOR
+   TYPING INDICATOR - Calm fade only
+   No bouncing dots, no noise
    ======================================== */
 
 .typing-indicator {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 12px 16px;
+  font-size: 0.8rem;
+  opacity: 0;
+  transition: opacity 200ms ease;
+  color: var(--text-muted);
+  padding: 8px 16px;
+  padding-left: 48px; /* Align with message bubbles */
   align-self: flex-start;
+  pointer-events: none;
 }
 
-.typing-indicator span {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--text-muted);
-  animation: typing-bounce 1.4s infinite;
-}
-
-.typing-indicator span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.typing-indicator span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes typing-bounce {
-  0%, 60%, 100% { transform: translateY(0); }
-  30% { transform: translateY(-6px); }
+.typing-indicator.active {
+  opacity: 0.6;
 }
 
 /* ========================================
@@ -1105,4 +1092,141 @@
 [data-theme="dark"][data-quiet-mode="true"] .bubble.outgoing {
   background: rgba(122, 110, 214, 0.25);
   color: var(--text-primary);
+}
+
+/* ========================================
+   UX POLISH LAYER
+   ======================================== */
+
+/* ----------------------------------------
+   iOS Overscroll / Glow Suppression
+   No white flash, no rubber-band glow
+   PWA feels native
+   ---------------------------------------- */
+
+.messages-root,
+.message-scroll {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent background scroll bleed when messages open */
+body.messages-open {
+  overflow: hidden;
+}
+
+/* ----------------------------------------
+   Date Dividers - Grounded, not floating
+   Divider lives INSIDE message flow
+   Visually quiet
+   ---------------------------------------- */
+
+.date-divider {
+  margin: 20px 0;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.date-divider::before,
+.date-divider::after {
+  content: "";
+  display: inline-block;
+  width: 20%;
+  max-width: 60px;
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.date-divider span {
+  padding: 0;
+  background: transparent;
+  border: none;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* ----------------------------------------
+   Quiet Mode - Full bubble desaturation
+   Calm but not disabled (opacity >= 0.9)
+   No grayscale filter
+   ---------------------------------------- */
+
+[data-quiet="true"] .bubble-group,
+[data-quiet-mode="true"] .bubble-group {
+  opacity: 0.92;
+}
+
+[data-quiet="true"] .bubble,
+[data-quiet-mode="true"] .bubble {
+  background: var(--surface-quiet, rgba(108, 92, 231, 0.08));
+  color: var(--text-soft, var(--text-primary));
+}
+
+[data-quiet="true"] .bubble.outgoing,
+[data-quiet-mode="true"] .bubble.outgoing {
+  background: var(--accent-quiet, rgba(108, 92, 231, 0.15));
+}
+
+[data-theme="dark"][data-quiet="true"] .bubble,
+[data-theme="dark"][data-quiet-mode="true"] .bubble {
+  background: var(--surface-quiet, rgba(255, 255, 255, 0.05));
+}
+
+[data-theme="dark"][data-quiet="true"] .bubble.outgoing,
+[data-theme="dark"][data-quiet-mode="true"] .bubble.outgoing {
+  background: var(--accent-quiet, rgba(122, 110, 214, 0.2));
+}
+
+/* Quiet mode typing indicator - even more subtle */
+[data-quiet="true"] .typing-indicator.active,
+[data-quiet-mode="true"] .typing-indicator.active {
+  opacity: 0.45;
+}
+
+/* Quiet mode date dividers - softer */
+[data-quiet="true"] .date-divider,
+[data-quiet-mode="true"] .date-divider {
+  opacity: 0.5;
+}
+
+/* ----------------------------------------
+   Final UX Locks
+   - No motion except fades
+   - No bounce animations
+   - Everything feels optional, gentle
+   ---------------------------------------- */
+
+/* Disable all non-fade animations in messages */
+.messages-root *,
+.messages-root *::before,
+.messages-root *::after {
+  animation-timing-function: ease !important;
+}
+
+/* Ensure no transform animations on bubbles */
+.bubble,
+.bubble-group {
+  transform: none !important;
+}
+
+/* Smooth scrolling for calm feel */
+.message-scroll {
+  scroll-behavior: smooth;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .typing-indicator {
+    transition: none;
+  }
+
+  .message-scroll {
+    scroll-behavior: auto;
+  }
 }
