@@ -302,3 +302,58 @@
     transition: none !important;
   }
 }
+
+/* ========================================
+   LIGHT MODE TEXT VISIBILITY FIXES
+   Ensure all navbar text is readable on light backgrounds
+   This file is loaded AFTER component CSS, so these override
+   ======================================== */
+
+/* Light mode - Force dark text colors for visibility */
+[data-theme="light"] .navbar .user-name,
+[data-theme="light"] .navbar .nav-label,
+[data-theme="light"] .navbar .nav-text,
+[data-theme="light"] .user-profile-trigger .user-name {
+  color: #1E1E26 !important;
+}
+
+[data-theme="light"] .navbar .dropdown-arrow,
+[data-theme="light"] .user-profile-trigger .dropdown-arrow {
+  color: #6B6E80 !important;
+}
+
+[data-theme="light"] .navbar .nav-link,
+[data-theme="light"] .navbar .nav-button {
+  color: #6B6E80 !important;
+}
+
+[data-theme="light"] .navbar .nav-link:hover,
+[data-theme="light"] .navbar .nav-button:hover {
+  color: #6C5CE7 !important;
+}
+
+/* Light + Quiet mode - slightly softer dark text */
+[data-theme="light"][data-quiet="true"] .navbar .user-name,
+[data-theme="light"][data-quiet-mode="true"] .navbar .user-name,
+[data-theme="light"][data-quiet="true"] .navbar .nav-label,
+[data-theme="light"][data-quiet-mode="true"] .navbar .nav-label,
+[data-theme="light"][data-quiet="true"] .navbar .nav-text,
+[data-theme="light"][data-quiet-mode="true"] .navbar .nav-text,
+[data-theme="light"][data-quiet="true"] .user-profile-trigger .user-name,
+[data-theme="light"][data-quiet-mode="true"] .user-profile-trigger .user-name {
+  color: #2A2F44 !important;
+}
+
+[data-theme="light"][data-quiet="true"] .navbar .dropdown-arrow,
+[data-theme="light"][data-quiet-mode="true"] .navbar .dropdown-arrow,
+[data-theme="light"][data-quiet="true"] .user-profile-trigger .dropdown-arrow,
+[data-theme="light"][data-quiet-mode="true"] .user-profile-trigger .dropdown-arrow {
+  color: #6B7280 !important;
+}
+
+[data-theme="light"][data-quiet="true"] .navbar .nav-link,
+[data-theme="light"][data-quiet-mode="true"] .navbar .nav-link,
+[data-theme="light"][data-quiet="true"] .navbar .nav-button,
+[data-theme="light"][data-quiet-mode="true"] .navbar .nav-button {
+  color: #2A2F44 !important;
+}
