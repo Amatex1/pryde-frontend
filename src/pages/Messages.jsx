@@ -708,11 +708,28 @@ function Messages() {
           logger.debug('✅ Sent message is for selected chat, reconciling...');
           setMessages((prev) => {
             // OPTIMISTIC UI RECONCILIATION: Replace temp message with real one
-            // Find the optimistic message that matches this confirmation
-            const optimisticIndex = prev.findIndex(msg => msg._isOptimistic);
+            // 🔥 FIX: Use _tempId for precise matching, not just _isOptimistic flag
+            // This handles the case where multiple messages are sent quickly
+            let optimisticIndex = -1;
+
+            // First, try to find by _tempId (most accurate)
+            if (sentMessage._tempId) {
+              optimisticIndex = prev.findIndex(msg => msg._id === sentMessage._tempId);
+            }
+
+            // Fallback: find any optimistic message (legacy behavior)
+            if (optimisticIndex === -1) {
+              optimisticIndex = prev.findIndex(msg => msg._isOptimistic);
+            }
 
             if (optimisticIndex !== -1) {
               logger.debug('🔄 Replacing optimistic message with confirmed message');
+              console.log('🔄 Replacing optimistic message:', {
+                tempId: sentMessage._tempId,
+                optimisticId: prev[optimisticIndex]._id,
+                newMessageId: sentMessage._id
+              });
+
               // Clear any pending timeout for this optimistic message
               const optimisticMsg = prev[optimisticIndex];
               if (optimisticMsg._id) {
@@ -728,6 +745,7 @@ function Messages() {
             // No optimistic message found - check for duplicates and add
             if (prev.some(msg => msg._id === sentMessage._id)) {
               logger.debug('⚠️ Message already exists, skipping');
+              console.log('⚠️ Duplicate message detected, skipping:', sentMessage._id);
               return prev;
             }
             return [...prev, sentMessage];
@@ -735,7 +753,16 @@ function Messages() {
         } else {
           // 🔥 FIX: Even if user switched chats, still clear the optimistic message
           // from wherever it is (prevents orphaned temp messages)
+          // Use _tempId for precise matching
           setMessages((prev) => {
+            if (sentMessage._tempId) {
+              const hasMatch = prev.some(msg => msg._id === sentMessage._tempId);
+              if (hasMatch) {
+                logger.debug('🔄 Clearing optimistic message from previous chat by _tempId');
+                return prev.filter(msg => msg._id !== sentMessage._tempId);
+              }
+            }
+            // Fallback: clear any optimistic message
             const hasOptimistic = prev.some(msg => msg._isOptimistic);
             if (hasOptimistic) {
               logger.debug('🔄 Clearing optimistic message from previous chat');
