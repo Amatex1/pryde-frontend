@@ -812,19 +812,10 @@ function Messages() {
   }, [selectedChat, currentUser]);
 
   const handleSendMessage = async (e, voiceNote = null) => {
-    // 🔥 CRITICAL DEBUG: This MUST appear in console
-    alert('DEBUG: handleSendMessage triggered!');
-    console.log('🚀🚀🚀 handleSendMessage ENTRY POINT 🚀🚀🚀');
-
-    // 🔍 TEMP DEBUG - remove after fixing message issue
-    console.log('🚀 handleSendMessage called', {
-      hasMessage: !!message.trim(),
-      hasFile: !!selectedFile,
-      hasGif: !!selectedGif,
-      hasVoiceNote: !!voiceNote,
-      selectedChat,
-      selectedChatType
-    });
+    // 🔥 CRITICAL DEBUG: Show socket state
+    const socket = getSocket();
+    const socketConnected = socket?.connected;
+    alert(`Socket connected: ${socketConnected}\nSocket ID: ${socket?.id || 'none'}\nselectedChat: ${selectedChat}\nchatType: ${selectedChatType}`);
 
     if (e) e.preventDefault();
     if ((!message.trim() && !selectedFile && !selectedGif && !voiceNote) || !selectedChat) {
