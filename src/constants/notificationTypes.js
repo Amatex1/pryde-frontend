@@ -62,18 +62,26 @@ export function isMessageNotificationType(type) {
 
 /**
  * Filter notifications to only include SOCIAL types (for Bell)
- * Logs warning if MESSAGE type is incorrectly routed to Bell
+ * Forwards MESSAGE types to the message system via custom event
  * @param {Array} notifications - Array of notification objects
- * @returns {Array} Filtered notifications
+ * @returns {Array} Filtered notifications (SOCIAL types only)
  */
 export function filterSocialNotifications(notifications) {
   return notifications.filter(n => {
     if (isMessageNotificationType(n.type)) {
-      // Validation warning per spec
+      // 🚫 Messages do NOT belong in the bell - forward to message system
       console.warn(
-        `[Notification] MESSAGE type '${n.type}' incorrectly routed to Bell.`,
-        { notificationId: n._id }
+        "[Notification] MESSAGE type routed away from Bell",
+        { notificationId: n._id, type: n.type }
       );
+
+      // Forward to message system instead
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('dm:incoming', { detail: n })
+        );
+      }
+
       return false;
     }
     return isSocialNotificationType(n.type);
