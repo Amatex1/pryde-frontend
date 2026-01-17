@@ -62,15 +62,13 @@ export const connectSocket = (userId) => {
     if (!socket) {
         // Get JWT token from localStorage
         const token = localStorage.getItem('token');
-        const tokenSetTime = localStorage.getItem('tokenSetTime');
 
-        // Check if token is expired (older than 15 minutes)
-        if (tokenSetTime) {
-            const ageMinutes = (Date.now() - parseInt(tokenSetTime)) / 1000 / 60;
-            if (ageMinutes > 15) {
-                logger.warn('⚠️ Token expired, not connecting socket. Token will be refreshed on next API call.');
-                return null;
-            }
+        // 🔥 FIX: Removed 15-minute token age check - it was blocking socket connections
+        // The actual JWT expiry is handled by the server. If the token is invalid,
+        // the server will reject the connection and we'll get a connect_error.
+        if (!token) {
+            logger.warn('⚠️ No token found, cannot connect socket');
+            return null;
         }
 
         logger.debug('🔌 Connecting socket (userId from JWT)');
