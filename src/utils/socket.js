@@ -540,8 +540,10 @@ export const sendMessage = (data, callback, retryCount = 0) => {
     }, 10000);
 
     // Emit with ACK callback
+    console.log('📤 [sendMessage] Emitting send_message event:', messagePayload);
     socket.emit('send_message', messagePayload, (response) => {
         clearTimeout(ackTimeout);
+        console.log('✅ [sendMessage] ACK received from server:', response);
         logger.debug('✅ [sendMessage] ACK received:', response);
         if (typeof callback === 'function') {
             callback(response || { success: false, error: 'NO_RESPONSE' });
@@ -554,23 +556,40 @@ export const sendMessage = (data, callback, retryCount = 0) => {
  * Phase R: Unified to 'message:sent' event
  */
 export const onMessageSent = (callback) => {
+    // 🔥 DIAGNOSTIC: Always log to console for debugging
+    console.log('🎧 [onMessageSent] Attaching listener...', {
+        socketExists: !!socket,
+        socketConnected: socket?.connected,
+        socketId: socket?.id
+    });
+
     if (socket && typeof socket.on === 'function') {
         // UNIFIED: Listen to 'message:sent' (Phase R)
-        socket.on("message:sent", callback);
+        // 🔥 DIAGNOSTIC: Wrap callback to log when event is received
+        const wrappedCallback = (data) => {
+            console.log('📨 [onMessageSent] EVENT RECEIVED! message:sent:', data);
+            callback(data);
+        };
+        socket.on("message:sent", wrappedCallback);
         logger.debug('✅ [onMessageSent] Listener attached for message:sent');
+        console.log('✅ [onMessageSent] Listener attached for message:sent');
+
+        // Return cleanup function
+        return () => {
+            console.log('🧹 [onMessageSent] Cleaning up listener');
+            if (socket && typeof socket.off === 'function') {
+                socket.off("message:sent", wrappedCallback);
+            }
+        };
     } else {
         // 🔥 CRITICAL: Log when listener fails to attach
         console.error('❌ [onMessageSent] FAILED to attach listener - socket is null or invalid!', {
             socketExists: !!socket,
             hasOnMethod: socket && typeof socket.on === 'function'
         });
+        // Return no-op cleanup
+        return () => {};
     }
-    // Return cleanup function
-    return () => {
-        if (socket && typeof socket.off === 'function') {
-            socket.off("message:sent", callback);
-        }
-    };
 };
 
 /**
