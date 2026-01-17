@@ -624,8 +624,41 @@ export const sendMessage = (data, callback, retryCount = 0) => {
 
     // Emit with ACK callback
     const emitTime = Date.now();
+
+    // 🔥 DEBUG: Verify we're using the correct socket instance
+    const currentSocket = socket;
+    const windowSocket = typeof window !== 'undefined' ? window.socket : null;
+
     console.warn('📤 [sendMessage] Emitting send_message event at', new Date().toISOString());
-    socket.emit('send_message', messagePayload, (response) => {
+    console.warn('📤 [sendMessage] Socket verification:', {
+        moduleSocketId: currentSocket?.id,
+        windowSocketId: windowSocket?.id,
+        sameSocket: currentSocket === windowSocket,
+        moduleConnected: currentSocket?.connected,
+        windowConnected: windowSocket?.connected,
+        payload: {
+            recipientId: messagePayload.recipientId,
+            hasContent: !!messagePayload.content,
+            tempId: messagePayload._tempId
+        }
+    });
+
+    // 🔥 FIX: Use window.socket if available and connected, as it's guaranteed to be current
+    const socketToUse = (windowSocket?.connected) ? windowSocket : currentSocket;
+
+    if (!socketToUse || !socketToUse.connected) {
+        console.error('❌ [sendMessage] No valid socket available! Queuing message.');
+        clearTimeout(ackTimeout);
+        messageQueue.push({ event: 'send_message', data: messagePayload, callback });
+        if (typeof callback === 'function') {
+            callback({ success: false, queued: true, message: 'Message queued - socket unavailable' });
+        }
+        return;
+    }
+
+    console.warn('📤 [sendMessage] Using socket:', socketToUse.id);
+
+    socketToUse.emit('send_message', messagePayload, (response) => {
         const ackTime = Date.now() - emitTime;
         clearTimeout(ackTimeout);
         console.warn('✅ [sendMessage] ACK received in', ackTime, 'ms:', response);
