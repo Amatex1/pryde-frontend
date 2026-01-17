@@ -505,8 +505,25 @@ export const startHealthMonitoring = () => {
         let pingAcked = false;
         const pingTimeout = setTimeout(() => {
             if (!pingAcked) {
-                console.warn('⚠️ Ping timeout - no response after 10s');
-                // Don't increment missedPongs on first timeout - connection might still be okay
+                missedPongs++;
+                console.warn('⚠️ Ping timeout - no response after 10s. missedPongs:', missedPongs);
+
+                // 🔥 CRITICAL FIX: Force reconnect after 2 missed pings
+                // This catches "zombie" connections where socket.connected === true but no data flows
+                if (missedPongs >= 2 && socket) {
+                    console.error('🔄 [ZOMBIE CONNECTION DETECTED] Forcing reconnect after', missedPongs, 'missed pings');
+                    console.error('🔄 Socket thinks connected:', socket.connected, 'but pings are failing!');
+
+                    // Force close the engine to trigger a full reconnect
+                    try {
+                        socket.io.engine.close();
+                    } catch (e) {
+                        console.error('❌ Failed to close engine:', e);
+                        // Fallback: disconnect and reconnect
+                        socket.disconnect();
+                        setTimeout(() => socket.connect(), 1000);
+                    }
+                }
             }
         }, 10000);
 
@@ -716,15 +733,27 @@ export const sendMessage = (data, callback, retryCount = 0) => {
 
     console.warn('📤 [sendMessage] Using socket:', socketToUse.id, '(transport:', socketToUse.io?.engine?.transport?.name, ')');
 
-    // 🔥 DIAGNOSTIC: Test if emit works at all by sending a ping
-    try {
-        console.warn('🧪 [sendMessage] Testing socket.emit with ping...');
-        socketToUse.emit('ping', {}, (pong) => {
-            console.warn('🏓 [sendMessage] Ping test SUCCESS! Pong received:', pong);
-        });
-    } catch (e) {
-        console.error('❌ [sendMessage] Ping test FAILED:', e);
-    }
+    // 🔥 CRITICAL: Pre-flight ping test to detect zombie connections
+    // If ping fails, force reconnect BEFORE trying to send message
+    let pingSucceeded = false;
+    const pingTestTimeout = setTimeout(() => {
+        if (!pingSucceeded) {
+            console.error('🔄 [sendMessage] ZOMBIE CONNECTION! Ping failed - forcing reconnect');
+            // Force reconnect
+            try {
+                socketToUse.io.engine.close();
+            } catch (e) {
+                socketToUse.disconnect();
+                setTimeout(() => socketToUse.connect(), 500);
+            }
+        }
+    }, 5000); // 5 second ping test timeout
+
+    socketToUse.emit('ping', {}, (pong) => {
+        pingSucceeded = true;
+        clearTimeout(pingTestTimeout);
+        console.warn('🏓 [sendMessage] Ping test SUCCESS! Pong received:', pong);
+    });
 
     // 🔥 DIAGNOSTIC: Log the actual emit call
     console.warn('🚀 [sendMessage] CALLING socket.emit("send_message", ...) NOW');
