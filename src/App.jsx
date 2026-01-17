@@ -245,8 +245,8 @@ function HashtagToGroupRedirect() {
 function AppContent() {
   const { authStatus, isAuthenticated, user, login, updateUser } = useAuth();
 
-  // Update banner state
-  const [updateAvailable, setUpdateAvailable] = useState(false);
+  // Update banner state - use the hook that polls for new versions
+  const updateAvailable = useAppVersion();
   const [showUpdateBanner, setShowUpdateBanner] = useState(true);
 
   // Onboarding tour state
