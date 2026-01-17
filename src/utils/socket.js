@@ -525,8 +525,43 @@ export const sendMessage = (data, callback, retryCount = 0) => {
     }
 
     // 🔥 CRITICAL: We're about to emit!
-    alert(`[sendMessage] EMITTING NOW!\nRecipient: ${messagePayload.recipientId}\nContent: ${messagePayload.content?.substring(0, 20) || 'N/A'}`);
+    // 🔥 CRITICAL DEBUG: Only show alert on first attempt to reduce noise
+    if (retryCount === 0) {
+        alert(`[sendMessage] EMITTING NOW!\nRecipient: ${messagePayload.recipientId}\nContent: ${messagePayload.content?.substring(0, 20) || 'N/A'}`);
+    }
 
+    // Set timeout for ACK response - DISABLED FOR DEBUG (we want to see what happens)
+    // const ackTimeout = setTimeout(() => { ... }, 10000);
+
+    // 🔥 CRITICAL DEBUG: Try/catch around emit to see if it throws
+    try {
+        // Test: Try emitting a simple event first to see if socket works
+        socket.emit('ping_test', { timestamp: Date.now() });
+
+        // Now emit the actual message
+        socket.emit('send_message', messagePayload, (response) => {
+            // 🔥 DEBUG: Alert when we get ACK (or not)
+            alert(`[ACK RECEIVED]\nResponse: ${JSON.stringify(response || 'NO RESPONSE')}`);
+
+            // Call the provided callback
+            if (typeof callback === 'function') {
+                callback(response || { success: false, error: 'NO_RESPONSE' });
+            }
+        });
+
+        alert('[sendMessage] socket.emit() called successfully - waiting for ACK');
+    } catch (emitError) {
+        alert(`[sendMessage] EMIT ERROR!\n${emitError.message}`);
+        if (typeof callback === 'function') {
+            callback({ success: false, error: 'EMIT_ERROR', message: emitError.message });
+        }
+        return;
+    }
+
+    // 🔥 DEBUG: Skip retry logic for now - just return after emit
+    return;
+
+    /* DISABLED FOR DEBUG
     // Set timeout for ACK response
     const ackTimeout = setTimeout(() => {
         logger.error('❌ Message ACK timeout - no response from server');
@@ -549,39 +584,9 @@ export const sendMessage = (data, callback, retryCount = 0) => {
             }
         }
     }, 10000); // 10 second timeout
+    */
 
-    // Use socket.emit with callback for ACK
-    socket.emit('send_message', messagePayload, (response) => {
-        // Clear timeout since we got a response
-        clearTimeout(ackTimeout);
-
-        if (response) {
-            if (response.success) {
-                logger.debug('✅ Message ACK received:', response);
-            } else if (response.error) {
-                logger.error('❌ Message ACK error:', response);
-
-                // Retry on certain error types
-                const retryableErrors = ['VALIDATION_ERROR', 'SEND_MESSAGE_ERROR'];
-                if (retryableErrors.includes(response.code) && retryCount < MAX_RETRIES) {
-                    logger.warn(`🔄 Retrying message send due to ${response.code} (${retryCount + 1}/${MAX_RETRIES})...`);
-                    setTimeout(() => {
-                        sendMessage(data, callback, retryCount + 1);
-                    }, RETRY_DELAY * (retryCount + 1));
-                    return; // Don't call callback yet, we're retrying
-                }
-            }
-        }
-
-        // Call the provided callback
-        if (typeof callback === 'function') {
-            callback(response || {
-                success: false,
-                error: 'NO_RESPONSE',
-                message: 'No response from server'
-            });
-        }
-    });
+    // DISABLED - moved into try/catch above
 };
 
 /**
