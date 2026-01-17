@@ -812,10 +812,12 @@ function Messages() {
   }, [selectedChat, currentUser]);
 
   const handleSendMessage = async (e, voiceNote = null) => {
-    // 🔥 CRITICAL DEBUG: Show socket state
+    // 🔥 CRITICAL DEBUG: Show socket state - importing isConnectionReady
     const socket = getSocket();
     const socketConnected = socket?.connected;
-    alert(`Socket connected: ${socketConnected}\nSocket ID: ${socket?.id || 'none'}\nselectedChat: ${selectedChat}\nchatType: ${selectedChatType}`);
+    const connReady = window.__PRYDE_SOCKET__?.isReady?.() || 'unknown';
+    const queueLen = window.__PRYDE_SOCKET__?.queueLength?.() || 0;
+    alert(`Socket connected: ${socketConnected}\nSocket ID: ${socket?.id || 'none'}\nconnectionReady: ${connReady}\nqueueLength: ${queueLen}\nselectedChat: ${selectedChat}`);
 
     if (e) e.preventDefault();
     if ((!message.trim() && !selectedFile && !selectedGif && !voiceNote) || !selectedChat) {
