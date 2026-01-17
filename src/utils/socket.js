@@ -6,6 +6,9 @@ import { emitValidated } from './emitValidated';
 
 const SOCKET_URL = API_CONFIG.SOCKET_URL;
 
+// 🔥 PROD DEBUG: Log when this module is loaded
+console.log('📦 [socket.js] Module loaded. SOCKET_URL:', SOCKET_URL);
+
 let socket = null;
 let isLoggingOut = false; // Flag to prevent reconnection during logout
 let connectionReady = false; // 🔥 NEW: Track if room join is confirmed
@@ -53,27 +56,29 @@ export const initializeSocket = (userId) => {
 
 // Connect socket
 export const connectSocket = (userId) => {
+    // 🔥 PROD DEBUG: Always log this
+    console.log('🔌 [connectSocket] Called with userId:', userId);
+
     // 🔥 CRITICAL: Don't reconnect if we're logging out
     if (isLoggingOut) {
-        logger.debug('🚫 Skipping socket connection - logout in progress');
+        console.log('🚫 [connectSocket] Skipping - logout in progress');
         return null;
     }
 
     if (!socket) {
         // Get JWT token from localStorage
         const token = localStorage.getItem('token');
+        console.log('🔑 [connectSocket] Token exists:', !!token);
 
         // 🔥 FIX: Removed 15-minute token age check - it was blocking socket connections
         // The actual JWT expiry is handled by the server. If the token is invalid,
         // the server will reject the connection and we'll get a connect_error.
         if (!token) {
-            logger.warn('⚠️ No token found, cannot connect socket');
+            console.error('❌ [connectSocket] No token found, cannot connect');
             return null;
         }
 
-        logger.debug('🔌 Connecting socket (userId from JWT)');
-        logger.debug('🔑 Token exists:', !!token);
-        logger.debug('🔑 Token preview:', token ? token.substring(0, 20) + '...' : 'null');
+        console.log('🔌 [connectSocket] Creating new socket connection to:', SOCKET_URL);
 
         socket = io(SOCKET_URL, {
             // 🔥 ENHANCED: WebSocket primary with polling fallback for reliability

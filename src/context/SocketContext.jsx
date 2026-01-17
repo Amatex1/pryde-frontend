@@ -43,21 +43,25 @@ export function SocketProvider({ children }) {
    * Initialize socket connection
    */
   const initSocket = useCallback(() => {
+    // 🔥 PROD DEBUG: Always log
+    console.log('🔌 [SocketContext] initSocket called. userId:', userId, 'isAuthenticated:', isAuthenticated);
+
     if (!userId || !isAuthenticated) {
-      logger.debug('[SocketContext] No user or not authenticated, skipping socket init');
+      console.log('⚠️ [SocketContext] Skipping - no user or not authenticated');
       return;
     }
 
     if (initializationRef.current) {
-      logger.debug('[SocketContext] Socket already initializing, skipping');
+      console.log('⚠️ [SocketContext] Skipping - already initializing');
       return;
     }
 
     initializationRef.current = true;
-    logger.debug('[SocketContext] Initializing socket for user:', userId);
+    console.log('🔌 [SocketContext] Calling initializeSocket for user:', userId);
 
     try {
       const sock = initializeSocket(userId);
+      console.log('🔌 [SocketContext] initializeSocket returned:', sock ? 'socket object' : 'null');
 
       if (sock) {
         setSocket(sock);
