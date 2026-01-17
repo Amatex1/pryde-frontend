@@ -481,28 +481,45 @@ export const getConnectionHealth = () => {
  * @param {Number} retryCount - Internal retry counter (do not set manually)
  */
 export const sendMessage = (data, callback, retryCount = 0) => {
-    // 🔥 CRITICAL DEBUG - Alert-based debugging since console.log is stripped
-    alert(`[sendMessage ENTRY]\nSocket: ${socket?.id}\nConnected: ${socket?.connected}\nReady: ${connectionReady}`);
-
     const MAX_RETRIES = 3;
-    const RETRY_DELAY = 1000; // 1 second
+    const RETRY_DELAY = 1000;
 
     const messagePayload = {
         ...data,
         _tempId: data._tempId || `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     };
 
-    // If socket not ready, queue the message
-    if (!socket || !socket.connected) {
-        alert('[sendMessage] QUEUED - socket not connected');
-        messageQueue.push({ event: 'send_message', data: messagePayload, callback });
+    // 🔥 CRITICAL FIX: Check ACTUAL transport state, not just socket.connected
+    const transport = socket?.io?.engine?.transport;
+    const transportName = transport?.name || 'unknown';
+    const wsReadyState = transport?.ws?.readyState;
+    // WebSocket.OPEN = 1, or if using polling transport it should be fine
+    const isTransportOpen = transportName === 'polling' || wsReadyState === 1;
 
-        // Notify callback of queued status
+    // Debug: Show actual connection state on first attempt
+    if (retryCount === 0) {
+        alert(`[sendMessage] Transport Check\nsocket.connected: ${socket?.connected}\nTransport: ${transportName}\nWS readyState: ${wsReadyState} (1=OPEN)\nisTransportOpen: ${isTransportOpen}`);
+    }
+
+    // If socket not connected OR transport is dead, force reconnect
+    if (!socket || !socket.connected || !isTransportOpen) {
+        alert(`[sendMessage] TRANSPORT DEAD!\nForcing full reconnect...`);
+
+        // Force full reconnect
+        if (socket) {
+            socket.disconnect();
+            setTimeout(() => {
+                socket.connect();
+            }, 100);
+        }
+
+        // Queue the message for after reconnection
+        messageQueue.push({ event: 'send_message', data: messagePayload, callback });
         if (typeof callback === 'function') {
             callback({
                 success: false,
                 queued: true,
-                message: 'Message queued - socket not connected'
+                message: 'Message queued - forcing reconnect'
             });
         }
         return;
@@ -510,10 +527,7 @@ export const sendMessage = (data, callback, retryCount = 0) => {
 
     // If connection not fully ready (room not joined), queue the message
     if (!connectionReady) {
-        alert('[sendMessage] QUEUED - room not joined');
         messageQueue.push({ event: 'send_message', data: messagePayload, callback });
-
-        // Notify callback of queued status
         if (typeof callback === 'function') {
             callback({
                 success: false,
@@ -524,69 +538,35 @@ export const sendMessage = (data, callback, retryCount = 0) => {
         return;
     }
 
-    // 🔥 CRITICAL: We're about to emit!
-    // 🔥 CRITICAL DEBUG: Only show alert on first attempt to reduce noise
+    // All checks passed - emit the message
     if (retryCount === 0) {
-        alert(`[sendMessage] EMITTING NOW!\nRecipient: ${messagePayload.recipientId}\nContent: ${messagePayload.content?.substring(0, 20) || 'N/A'}`);
+        alert(`[sendMessage] EMITTING\nRecipient: ${messagePayload.recipientId}\nContent: ${messagePayload.content?.substring(0, 20)}`);
     }
 
-    // Set timeout for ACK response - DISABLED FOR DEBUG (we want to see what happens)
-    // const ackTimeout = setTimeout(() => { ... }, 10000);
-
-    // 🔥 CRITICAL DEBUG: Try/catch around emit to see if it throws
-    try {
-        // Test: Try emitting a simple event first to see if socket works
-        socket.emit('ping_test', { timestamp: Date.now() });
-
-        // Now emit the actual message
-        socket.emit('send_message', messagePayload, (response) => {
-            // 🔥 DEBUG: Alert when we get ACK (or not)
-            alert(`[ACK RECEIVED]\nResponse: ${JSON.stringify(response || 'NO RESPONSE')}`);
-
-            // Call the provided callback
-            if (typeof callback === 'function') {
-                callback(response || { success: false, error: 'NO_RESPONSE' });
-            }
-        });
-
-        alert('[sendMessage] socket.emit() called successfully - waiting for ACK');
-    } catch (emitError) {
-        alert(`[sendMessage] EMIT ERROR!\n${emitError.message}`);
-        if (typeof callback === 'function') {
-            callback({ success: false, error: 'EMIT_ERROR', message: emitError.message });
-        }
-        return;
-    }
-
-    // 🔥 DEBUG: Skip retry logic for now - just return after emit
-    return;
-
-    /* DISABLED FOR DEBUG
-    // Set timeout for ACK response
+    // Set up ACK timeout
     const ackTimeout = setTimeout(() => {
-        logger.error('❌ Message ACK timeout - no response from server');
-
-        // Retry if under max retries
         if (retryCount < MAX_RETRIES) {
-            logger.warn(`🔄 Retrying message send (${retryCount + 1}/${MAX_RETRIES})...`);
-            setTimeout(() => {
-                sendMessage(data, callback, retryCount + 1);
-            }, RETRY_DELAY * (retryCount + 1)); // Exponential backoff
+            setTimeout(() => sendMessage(data, callback, retryCount + 1), RETRY_DELAY * (retryCount + 1));
         } else {
-            // Max retries reached, call callback with error
             if (typeof callback === 'function') {
                 callback({
                     success: false,
                     error: 'ACK_TIMEOUT',
-                    message: 'Failed to send message after ' + MAX_RETRIES + ' retries',
+                    message: 'Failed to send message after retries',
                     _tempId: messagePayload._tempId
                 });
             }
         }
-    }, 10000); // 10 second timeout
-    */
+    }, 10000);
 
-    // DISABLED - moved into try/catch above
+    // Emit with ACK callback
+    socket.emit('send_message', messagePayload, (response) => {
+        clearTimeout(ackTimeout);
+        alert(`[ACK] Response: ${JSON.stringify(response || 'null')}`);
+        if (typeof callback === 'function') {
+            callback(response || { success: false, error: 'NO_RESPONSE' });
+        }
+    });
 };
 
 /**
