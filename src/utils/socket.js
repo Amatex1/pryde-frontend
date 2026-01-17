@@ -176,6 +176,23 @@ export const connectSocket = (userId) => {
             connectionReady = false;
         });
 
+        // 🔥 GLOBAL DEBUG: Listen for ALL message events to diagnose delivery
+        socket.on('message:new', (msg) => {
+            console.warn('📨 [Socket GLOBAL] message:new received!', {
+                messageId: msg?._id,
+                senderId: msg?.sender?._id,
+                recipientId: msg?.recipient?._id,
+                contentPreview: msg?.content?.substring(0, 50)
+            });
+        });
+
+        socket.on('message:sent', (msg) => {
+            console.warn('📨 [Socket GLOBAL] message:sent received!', {
+                messageId: msg?._id,
+                _tempId: msg?._tempId
+            });
+        });
+
         // 🔥 FIX: Fallback timer to set connectionReady even if room:joined is missed
         // This prevents messages from being rejected due to connectionReady being false
         let queueProcessTimeout = null;
