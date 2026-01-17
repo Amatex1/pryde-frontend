@@ -788,3 +788,25 @@ export default {
     onUserOffline,
     onOnlineUsers
 };
+
+// 🔥 GLOBAL DEBUG: Expose socket for console debugging
+if (typeof window !== 'undefined') {
+    window.__PRYDE_SOCKET__ = {
+        getSocket: () => socket,
+        isConnected: () => socket?.connected,
+        isReady: () => connectionReady,
+        queueLength: () => messageQueue.length,
+        debug: () => {
+            console.log('=== PRYDE SOCKET DEBUG ===');
+            console.log('Socket exists:', !!socket);
+            console.log('Socket connected:', socket?.connected);
+            console.log('Socket ID:', socket?.id);
+            console.log('Connection ready:', connectionReady);
+            console.log('Queue length:', messageQueue.length);
+            console.log('Transport:', socket?.io?.engine?.transport?.name);
+            console.log('==========================');
+            return { socket: !!socket, connected: socket?.connected, id: socket?.id, ready: connectionReady };
+        }
+    };
+    console.log('🔧 Debug: window.__PRYDE_SOCKET__.debug() available');
+}
