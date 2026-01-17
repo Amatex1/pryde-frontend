@@ -547,14 +547,17 @@ export const sendMessage = (data, callback, retryCount = 0) => {
 
     // If socket not connected, queue and let Socket.IO handle reconnection
     if (!socket || !socket.connected) {
-        logger.warn('⚠️ [sendMessage] Socket not connected, queuing message');
-        console.warn('⚠️ [sendMessage] Socket not connected, queuing message');
+        console.warn('⚠️ [sendMessage] Socket not connected! socket:', !!socket, 'connected:', socket?.connected);
 
-        // 🔥 FIX: Don't force disconnect/reconnect - let Socket.IO's reconnection mechanism handle it
-        // Forcing disconnect() then connect() was causing connection cycling issues
-        if (socket && !socket.connected && !socket.io.reconnecting) {
-            console.log('🔄 [sendMessage] Triggering reconnect via Socket.IO');
-            socket.connect(); // Just connect, don't disconnect first
+        // 🔥 FIX: Force reconnection attempt when socket is disconnected
+        if (socket && !socket.connected) {
+            console.warn('🔄 [sendMessage] Triggering reconnect...');
+            // Check if Socket.IO is already reconnecting
+            if (!socket.io.reconnecting) {
+                socket.connect(); // Attempt to connect
+            } else {
+                console.warn('🔄 [sendMessage] Socket.IO already reconnecting, waiting...');
+            }
         }
 
         messageQueue.push({ event: 'send_message', data: messagePayload, callback });
@@ -575,8 +578,8 @@ export const sendMessage = (data, callback, retryCount = 0) => {
         return;
     }
 
-    logger.debug('📤 [sendMessage] Emitting (attempt ' + (retryCount + 1) + ')');
-    console.log('📤 [sendMessage] Emitting attempt', retryCount + 1, 'of', MAX_RETRIES + 1);
+    // 🔥 PROD DEBUG: Use console.warn for all send logging
+    console.warn('📤 [sendMessage] Emitting attempt', retryCount + 1, 'of', MAX_RETRIES + 1);
 
     // 🔥 FIX: Increased ACK timeout to 30 seconds (was 10s)
     // Database operations + network latency can take time
@@ -585,9 +588,8 @@ export const sendMessage = (data, callback, retryCount = 0) => {
     // Set up ACK timeout
     const ackTimeout = setTimeout(() => {
         console.error('❌ [sendMessage] ACK timeout after', ACK_TIMEOUT_MS, 'ms');
-        logger.error('❌ Message ACK timeout');
         if (retryCount < MAX_RETRIES) {
-            console.log('🔄 [sendMessage] Retrying...', retryCount + 1, 'of', MAX_RETRIES);
+            console.warn('🔄 [sendMessage] Retrying...', retryCount + 1, 'of', MAX_RETRIES);
             setTimeout(() => sendMessage(data, callback, retryCount + 1), RETRY_DELAY * (retryCount + 1));
         } else {
             console.error('❌ [sendMessage] All retries exhausted');
@@ -604,12 +606,11 @@ export const sendMessage = (data, callback, retryCount = 0) => {
 
     // Emit with ACK callback
     const emitTime = Date.now();
-    console.log('📤 [sendMessage] Emitting send_message event at', new Date().toISOString(), messagePayload);
+    console.warn('📤 [sendMessage] Emitting send_message event at', new Date().toISOString());
     socket.emit('send_message', messagePayload, (response) => {
         const ackTime = Date.now() - emitTime;
         clearTimeout(ackTimeout);
-        console.log('✅ [sendMessage] ACK received in', ackTime, 'ms:', response);
-        logger.debug('✅ [sendMessage] ACK received:', response);
+        console.warn('✅ [sendMessage] ACK received in', ackTime, 'ms:', response);
         if (typeof callback === 'function') {
             callback(response || { success: false, error: 'NO_RESPONSE' });
         }
