@@ -812,6 +812,10 @@ function Messages() {
   }, [selectedChat, currentUser]);
 
   const handleSendMessage = async (e, voiceNote = null) => {
+    // 🔥 CRITICAL DEBUG: This MUST appear in console
+    alert('DEBUG: handleSendMessage triggered!');
+    console.log('🚀🚀🚀 handleSendMessage ENTRY POINT 🚀🚀🚀');
+
     // 🔍 TEMP DEBUG - remove after fixing message issue
     console.log('🚀 handleSendMessage called', {
       hasMessage: !!message.trim(),
