@@ -904,20 +904,23 @@ function Messages() {
             });
 
             // 🔥 ENHANCED: Use ACK callback for immediate confirmation
+            // Note: ACK is optional - message:sent event is the primary confirmation
             socketSendMessage(messagePayload, (ackResponse) => {
+              console.log('📨 [ACK] Response received:', ackResponse);
               if (ackResponse?.success) {
-                console.log('✅ Message ACK received:', ackResponse);
+                console.log('✅ Message ACK success:', ackResponse);
                 // Clear the rollback timeout - message confirmed!
                 clearOptimisticTimeout(tempId);
               } else if (ackResponse?.queued) {
                 // Message queued - don't rollback, wait for actual send
                 console.log('📬 Message queued, waiting for send:', ackResponse);
                 // Keep the optimistic message and rollback timeout active
-              } else if (ackResponse?.error) {
-                console.error('❌ Message ACK error:', ackResponse);
-                // Rollback on ACK error
-                clearOptimisticTimeout(tempId);
-                setMessages((prev) => prev.filter(m => m._id !== tempId));
+              } else {
+                // 🔥 CRITICAL FIX: Do NOT immediately rollback on ACK error/null
+                // The message:sent event will arrive and handle confirmation
+                // Only log the issue for debugging
+                console.warn('⚠️ ACK not successful, waiting for message:sent event:', ackResponse);
+                // Let the 15-second rollback timeout handle true failures
               }
             });
             console.log('✅ socketSendMessage called successfully');
