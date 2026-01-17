@@ -1889,7 +1889,7 @@ function Messages() {
                               </span>
                               {/* Show @username inline next to display name */}
                               {selectedChatType !== 'group' && !isSelfChat && !selectedUser?.isDeleted && getUsername(selectedUser) && (
-                                <span className="username">@{getUsername(selectedUser)}</span>
+                                <span className="username">{getUsername(selectedUser)}</span>
                               )}
                               {mutedConversations.includes(selectedChat) && <span className="muted-indicator">🔕</span>}
                             </div>
