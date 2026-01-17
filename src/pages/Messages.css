@@ -3181,7 +3181,7 @@
   flex-direction: column;
   gap: 8px;
   width: 100%;
-  max-width: var(--conversation-max-width, 720px);
+  /* Full width - matches chat area */
 }
 
 /* Main input row - all inline */
