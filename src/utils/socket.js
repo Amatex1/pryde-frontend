@@ -716,6 +716,20 @@ export const sendMessage = (data, callback, retryCount = 0) => {
 
     console.warn('📤 [sendMessage] Using socket:', socketToUse.id, '(transport:', socketToUse.io?.engine?.transport?.name, ')');
 
+    // 🔥 DIAGNOSTIC: Test if emit works at all by sending a ping
+    try {
+        console.warn('🧪 [sendMessage] Testing socket.emit with ping...');
+        socketToUse.emit('ping', {}, (pong) => {
+            console.warn('🏓 [sendMessage] Ping test SUCCESS! Pong received:', pong);
+        });
+    } catch (e) {
+        console.error('❌ [sendMessage] Ping test FAILED:', e);
+    }
+
+    // 🔥 DIAGNOSTIC: Log the actual emit call
+    console.warn('🚀 [sendMessage] CALLING socket.emit("send_message", ...) NOW');
+    console.warn('🚀 [sendMessage] Payload being sent:', JSON.stringify(messagePayload).substring(0, 500));
+
     socketToUse.emit('send_message', messagePayload, (response) => {
         const ackTime = Date.now() - emitTime;
         clearTimeout(ackTimeout);
