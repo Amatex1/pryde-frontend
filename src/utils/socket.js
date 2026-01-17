@@ -152,8 +152,8 @@ export const connectSocket = (userId) => {
             connectionReady = false;
         });
 
-        // 🔥 FIX: Fallback timer to process queue even if room:joined is missed
-        // This prevents messages from getting stuck in queue forever
+        // 🔥 FIX: Fallback timer to set connectionReady even if room:joined is missed
+        // This prevents messages from being rejected due to connectionReady being false
         let queueProcessTimeout = null;
         socket.on('connect', () => {
             // Clear any existing timeout
@@ -161,13 +161,17 @@ export const connectSocket = (userId) => {
                 clearTimeout(queueProcessTimeout);
             }
 
-            // Set fallback timer - if room not joined in 3 seconds, force process queue
+            // Set fallback timer - if room not joined in 3 seconds, force mark as ready
             queueProcessTimeout = setTimeout(() => {
-                if (!connectionReady && messageQueue.length > 0) {
-                    logger.warn('⚠️ Room join confirmation not received, force processing queue');
+                if (!connectionReady) {
+                    logger.warn('⚠️ Room join confirmation not received after 3s, forcing connectionReady = true');
                     // Mark as ready anyway to prevent infinite waiting
                     connectionReady = true;
-                    processMessageQueue();
+                    // Process any queued messages if they exist
+                    if (messageQueue.length > 0) {
+                        logger.debug(`📬 Processing ${messageQueue.length} queued messages after fallback`);
+                        processMessageQueue();
+                    }
                 }
             }, 3000);
         });
