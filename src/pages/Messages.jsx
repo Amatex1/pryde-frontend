@@ -898,7 +898,8 @@ function Messages() {
 
         // 🔥 CRITICAL: Schedule rollback timeout in case server confirmation never arrives
         // This prevents orphaned optimistic messages from staying in UI forever
-        scheduleOptimisticRollback(tempId, 15000); // 15 seconds timeout
+        // 🔥 FIX: Increased from 15s to 45s to match socket ACK timeout + retries
+        scheduleOptimisticRollback(tempId, 45000); // 45 seconds timeout
 
         if (socketConnected) {
           // ✅ PREFERRED: Send via Socket.IO for real-time delivery

@@ -539,13 +539,21 @@ export const sendMessage = (data, callback, retryCount = 0) => {
     }
 
     logger.debug('📤 [sendMessage] Emitting (attempt ' + (retryCount + 1) + ')');
+    console.log('📤 [sendMessage] Emitting attempt', retryCount + 1, 'of', MAX_RETRIES + 1);
+
+    // 🔥 FIX: Increased ACK timeout to 30 seconds (was 10s)
+    // Database operations + network latency can take time
+    const ACK_TIMEOUT_MS = 30000;
 
     // Set up ACK timeout
     const ackTimeout = setTimeout(() => {
+        console.error('❌ [sendMessage] ACK timeout after', ACK_TIMEOUT_MS, 'ms');
         logger.error('❌ Message ACK timeout');
         if (retryCount < MAX_RETRIES) {
+            console.log('🔄 [sendMessage] Retrying...', retryCount + 1, 'of', MAX_RETRIES);
             setTimeout(() => sendMessage(data, callback, retryCount + 1), RETRY_DELAY * (retryCount + 1));
         } else {
+            console.error('❌ [sendMessage] All retries exhausted');
             if (typeof callback === 'function') {
                 callback({
                     success: false,
@@ -555,13 +563,15 @@ export const sendMessage = (data, callback, retryCount = 0) => {
                 });
             }
         }
-    }, 10000);
+    }, ACK_TIMEOUT_MS);
 
     // Emit with ACK callback
-    console.log('📤 [sendMessage] Emitting send_message event:', messagePayload);
+    const emitTime = Date.now();
+    console.log('📤 [sendMessage] Emitting send_message event at', new Date().toISOString(), messagePayload);
     socket.emit('send_message', messagePayload, (response) => {
+        const ackTime = Date.now() - emitTime;
         clearTimeout(ackTimeout);
-        console.log('✅ [sendMessage] ACK received from server:', response);
+        console.log('✅ [sendMessage] ACK received in', ackTime, 'ms:', response);
         logger.debug('✅ [sendMessage] ACK received:', response);
         if (typeof callback === 'function') {
             callback(response || { success: false, error: 'NO_RESPONSE' });
