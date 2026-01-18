@@ -79,3 +79,20 @@ export async function clearAllCaches() {
 export function isEmergencyRecoveryNeeded() {
   return false;
 }
+/**
+ * ⚠️ LEGACY COMPAT EXPORT
+ *
+ * This export exists ONLY to satisfy older imports (App.jsx, apiClient.js).
+ * It is intentionally SAFE and NON-DESTRUCTIVE.
+ *
+ * ❌ No cache clearing
+ * ❌ No service worker unregister
+ * ❌ No reload loops
+ */
+
+export async function forceReloadWithCacheClear(message = 'Refreshing…') {
+  console.warn('[EmergencyRecovery] forceReloadWithCacheClear (safe stub):', message)
+
+  // User-visible, one-time refresh only
+  window.location.reload()
+}
