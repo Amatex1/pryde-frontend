@@ -52,7 +52,6 @@ import { API_BASE_URL } from '../config/api.js';
 import { getAuthToken, getRefreshToken, setAuthToken, setRefreshToken, getIsLoggingOut } from './auth';
 import logger from './logger';
 import { FRONTEND_VERSION } from './pwaSafety';
-import { forceReloadWithCacheClear } from './emergencyRecovery';
 import {
   shouldBlockRequest,
   recordAuthFailure,

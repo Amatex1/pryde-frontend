@@ -1,155 +1,82 @@
-import { useState, useEffect, useRef } from 'react';
-import api from '../utils/api';
+import { useState, useEffect } from 'react'
+import api from '../utils/api'
 
-const CHECK_INTERVAL = 60_000; // 60 seconds
+/**
+ * SAFE VERSION CHECK
+ *
+ * - Runs once per session
+ * - Never auto-reloads
+ * - Never polls
+ * - Never unregisters service workers
+ * - User-triggered refresh ONLY
+ */
 
-// Store initial versions on app load
-let initialBackendVersion = null;
-let initialFrontendVersion = null;
+const SESSION_KEY = 'pryde_version_checked'
 
 const useVersionCheck = () => {
-  const [updateAvailable, setUpdateAvailable] = useState(false);
-  const [updateType, setUpdateType] = useState(null); // 'backend' | 'frontend' | 'both'
-  const [dismissed, setDismissed] = useState(false);
-  const intervalRef = useRef(null);
-  const hasDetectedUpdate = useRef(false);
+  const [updateAvailable, setUpdateAvailable] = useState(false)
+  const [updateType, setUpdateType] = useState(null)
+  const [dismissed, setDismissed] = useState(false)
 
-  // Initialize versions on mount
   useEffect(() => {
-    const initializeVersions = async () => {
+    // Prevent repeated checks in same session
+    if (sessionStorage.getItem(SESSION_KEY)) return
+    sessionStorage.setItem(SESSION_KEY, 'true')
+
+    const checkOnce = async () => {
       try {
-        // Get backend version
-        const backendResponse = await api.get('/version');
-        initialBackendVersion = backendResponse.data.version;
+        const backendRes = await api.get('/version')
+        const backendVersion = backendRes?.data?.version
 
-        // Get frontend version from env or window
-        initialFrontendVersion = import.meta.env.VITE_APP_VERSION || window.__PRYDE_VERSION__?.version || '1.0.0';
+        const frontendVersion =
+          import.meta.env.VITE_APP_VERSION ||
+          window.__PRYDE_VERSION__?.version ||
+          'unknown'
 
-        console.log('📦 Initial versions:', {
-          backend: initialBackendVersion,
-          frontend: initialFrontendVersion
-        });
-      } catch (error) {
-        console.error('Failed to initialize versions:', error);
-        // Silently fail - don't block the app
-      }
-    };
+        const storedBackend = sessionStorage.getItem('backend_version')
+        const storedFrontend = sessionStorage.getItem('frontend_version')
 
-    initializeVersions();
-  }, []);
+        // First run — store versions, do nothing
+        if (!storedBackend || !storedFrontend) {
+          sessionStorage.setItem('backend_version', backendVersion)
+          sessionStorage.setItem('frontend_version', frontendVersion)
+          return
+        }
 
-  // Start polling for version changes
-  useEffect(() => {
-    // Don't start polling until we have initial versions
-    if (!initialBackendVersion || !initialFrontendVersion) {
-      return;
-    }
-
-    // Don't poll if update already detected
-    if (hasDetectedUpdate.current) {
-      return;
-    }
-
-    const checkForUpdates = async () => {
-      try {
-        // Fetch current backend version
-        const backendResponse = await api.get('/version');
-        const currentBackendVersion = backendResponse.data.version;
-
-        // Get current frontend version
-        const currentFrontendVersion = import.meta.env.VITE_APP_VERSION || window.__PRYDE_VERSION__?.version || '1.0.0';
-
-        // Check for version mismatches
-        const backendChanged = currentBackendVersion !== initialBackendVersion;
-        const frontendChanged = currentFrontendVersion !== initialFrontendVersion;
+        const backendChanged = backendVersion !== storedBackend
+        const frontendChanged = frontendVersion !== storedFrontend
 
         if (backendChanged || frontendChanged) {
-          console.log('🔄 Update detected:', {
-            backend: { old: initialBackendVersion, new: currentBackendVersion },
-            frontend: { old: initialFrontendVersion, new: currentFrontendVersion }
-          });
+          setUpdateAvailable(true)
 
-          // Determine update type
-          let type = null;
-          if (backendChanged && frontendChanged) {
-            type = 'both';
-          } else if (backendChanged) {
-            type = 'backend';
-          } else {
-            type = 'frontend';
-          }
-
-          setUpdateType(type);
-          setUpdateAvailable(true);
-          hasDetectedUpdate.current = true;
-
-          // Stop polling once update is detected
-          if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = null;
-          }
+          if (backendChanged && frontendChanged) setUpdateType('both')
+          else if (backendChanged) setUpdateType('backend')
+          else setUpdateType('frontend')
         }
-      } catch (error) {
-        console.error('Version check failed:', error);
-        // Silently retry next interval - never block the app
+      } catch (err) {
+        // Silent failure — NEVER reload
+        console.warn('[VersionCheck] Failed safely:', err)
       }
-    };
+    }
 
-    // Start polling
-    intervalRef.current = setInterval(checkForUpdates, CHECK_INTERVAL);
-
-    // Cleanup on unmount
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, []);
+    checkOnce()
+  }, [])
 
   const dismissUpdate = () => {
-    setDismissed(true);
-    // Persist dismissal for session only (not localStorage)
-    sessionStorage.setItem('updateDismissed', 'true');
-  };
+    setDismissed(true)
+  }
 
   const refreshApp = () => {
-    // Unregister service worker if present
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then((registrations) => {
-        registrations.forEach((registration) => {
-          registration.unregister();
-        });
-      });
-    }
-
-    // Clear service worker cache
-    if ('caches' in window) {
-      caches.keys().then((names) => {
-        names.forEach((name) => {
-          caches.delete(name);
-        });
-      });
-    }
-
-    // Force hard reload
-    window.location.reload(true);
-  };
-
-  // Check if update was dismissed this session
-  useEffect(() => {
-    const wasDismissed = sessionStorage.getItem('updateDismissed') === 'true';
-    if (wasDismissed) {
-      setDismissed(true);
-    }
-  }, []);
+    // User-initiated refresh only
+    window.location.reload()
+  }
 
   return {
     updateAvailable: updateAvailable && !dismissed,
     updateType,
     dismissUpdate,
     refreshApp
-  };
-};
+  }
+}
 
-export default useVersionCheck;
-
+export default useVersionCheck
