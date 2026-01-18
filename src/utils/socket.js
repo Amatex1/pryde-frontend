@@ -734,38 +734,50 @@ export const sendMessage = (data, callback, retryCount = 0) => {
     console.warn('📤 [sendMessage] Using socket:', socketToUse.id, '(transport:', socketToUse.io?.engine?.transport?.name, ')');
 
     // 🔥 CRITICAL: Pre-flight ping test to detect zombie connections
-    // If ping fails, force reconnect BEFORE trying to send message
-    let pingSucceeded = false;
-    const pingTestTimeout = setTimeout(() => {
-        if (!pingSucceeded) {
-            console.error('🔄 [sendMessage] ZOMBIE CONNECTION! Ping failed - forcing reconnect');
-            // Force reconnect
-            try {
-                socketToUse.io.engine.close();
-            } catch (e) {
-                socketToUse.disconnect();
-                setTimeout(() => socketToUse.connect(), 500);
-            }
-        }
-    }, 5000); // 5 second ping test timeout
+    // If ping fails, force reconnect and queue message - DON'T send on dead connection
+    const PING_TIMEOUT_MS = 3000; // 3 seconds for ping test
 
+    const pingTestTimeout = setTimeout(() => {
+        console.error('🔄 [sendMessage] ZOMBIE CONNECTION DETECTED! Ping timed out after', PING_TIMEOUT_MS, 'ms');
+        clearTimeout(ackTimeout);
+
+        // Queue the message for retry after reconnect
+        messageQueue.push({ event: 'send_message', data: messagePayload, callback });
+        console.warn('📬 [sendMessage] Message queued for retry after reconnect');
+
+        // Force reconnect
+        try {
+            console.warn('🔌 [sendMessage] Forcing socket reconnection...');
+            socketToUse.io.engine.close();
+        } catch (e) {
+            console.warn('🔌 [sendMessage] Engine close failed, trying disconnect/connect...');
+            socketToUse.disconnect();
+            setTimeout(() => socketToUse.connect(), 500);
+        }
+
+        // Notify caller that message is queued
+        if (typeof callback === 'function') {
+            callback({ success: false, queued: true, message: 'Connection lost - message queued for retry' });
+        }
+    }, PING_TIMEOUT_MS);
+
+    // 🔥 BLOCKING: Only send message AFTER ping succeeds
     socketToUse.emit('ping', {}, (pong) => {
-        pingSucceeded = true;
         clearTimeout(pingTestTimeout);
         console.warn('🏓 [sendMessage] Ping test SUCCESS! Pong received:', pong);
-    });
 
-    // 🔥 DIAGNOSTIC: Log the actual emit call
-    console.warn('🚀 [sendMessage] CALLING socket.emit("send_message", ...) NOW');
-    console.warn('🚀 [sendMessage] Payload being sent:', JSON.stringify(messagePayload).substring(0, 500));
+        // 🔥 NOW safe to send the actual message
+        console.warn('🚀 [sendMessage] CALLING socket.emit("send_message", ...) NOW');
+        console.warn('🚀 [sendMessage] Payload being sent:', JSON.stringify(messagePayload).substring(0, 500));
 
-    socketToUse.emit('send_message', messagePayload, (response) => {
-        const ackTime = Date.now() - emitTime;
-        clearTimeout(ackTimeout);
-        console.warn('✅ [sendMessage] ACK received in', ackTime, 'ms:', response);
-        if (typeof callback === 'function') {
-            callback(response || { success: false, error: 'NO_RESPONSE' });
-        }
+        socketToUse.emit('send_message', messagePayload, (response) => {
+            const ackTime = Date.now() - emitTime;
+            clearTimeout(ackTimeout);
+            console.warn('✅ [sendMessage] ACK received in', ackTime, 'ms:', response);
+            if (typeof callback === 'function') {
+                callback(response || { success: false, error: 'NO_RESPONSE' });
+            }
+        });
     });
 };
 
