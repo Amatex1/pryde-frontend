@@ -1,7 +1,14 @@
 # Pryde Social - API & Feature Contract
 
-> **Generated**: 2026-01-19  
+> **Generated**: 2026-01-19
 > **Audit Mode**: This document is based ONLY on implemented code, not planned features.
+
+## Repository Roots
+
+| Label | Path |
+|-------|------|
+| **Backend** | `F:\Desktop\pryde-backend\` |
+| **Frontend** | `F:\Desktop\pryde-frontend\` |
 
 ---
 
@@ -36,6 +43,37 @@ JWT-based authentication with httpOnly refresh token cookies. Supports email/pas
 
 ### Backend Implementation
 
+**Route Definition Files (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\routes\auth.js` | Main auth routes |
+| `F:\Desktop\pryde-backend\server\routes\twoFactor.js` | 2FA routes |
+| `F:\Desktop\pryde-backend\server\routes\passkey.js` | WebAuthn passkey routes |
+| `F:\Desktop\pryde-backend\server\routes\sessions.js` | Session management |
+| `F:\Desktop\pryde-backend\server\routes\refresh.js` | Token refresh |
+
+**Models (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\models\User.js` | User schema with auth fields |
+| `F:\Desktop\pryde-backend\server\models\SecurityLog.js` | Security event logging |
+
+**Middleware (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\middleware\auth.js` | JWT verification |
+| `F:\Desktop\pryde-backend\server\middleware\csrf.js` | CSRF protection |
+| `F:\Desktop\pryde-backend\server\middleware\rateLimiter.js` | Rate limiting |
+
+**Utils (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\utils\tokenUtils.js` | Token generation/validation |
+| `F:\Desktop\pryde-backend\server\utils\cookieUtils.js` | Cookie handling |
+| `F:\Desktop\pryde-backend\server\utils\passkeyUtils.js` | WebAuthn utilities |
+| `F:\Desktop\pryde-backend\server\utils\emailService.js` | Email sending |
+
+**Routes**:
 | Route | Method | Auth | Description |
 |-------|--------|------|-------------|
 | `/api/auth/register` | POST | Public | Create new account |
@@ -78,18 +116,26 @@ JWT-based authentication with httpOnly refresh token cookies. Supports email/pas
 
 ### Frontend Integration
 
+**Frontend Caller Files**:
 | File | Usage |
 |------|-------|
-| `src/context/AuthContext.jsx` | Central auth state, token refresh, cross-tab sync |
-| `src/utils/api.js` | Axios client with CSRF, 401 refresh logic |
-| `src/utils/apiClient.js` | Fetch-based client with deduplication |
-| `src/utils/auth.js` | Token storage helpers |
-| `src/pages/Login.jsx` | Login form |
-| `src/pages/Register.jsx` | Registration form |
-| `src/pages/ForgotPassword.jsx` | Password reset request |
-| `src/pages/ResetPassword.jsx` | Password reset form |
-| `src/pages/VerifyEmail.jsx` | Email verification |
-| `src/pages/SecuritySettings.jsx` | 2FA and passkey management |
+| `F:\Desktop\pryde-frontend\src\context\AuthContext.jsx` | Central auth state, token refresh, cross-tab sync |
+| `F:\Desktop\pryde-frontend\src\utils\api.js` | Axios client with CSRF, 401 refresh logic |
+| `F:\Desktop\pryde-frontend\src\utils\apiClient.js` | Fetch-based client with deduplication |
+| `F:\Desktop\pryde-frontend\src\utils\auth.js` | Token storage helpers |
+| `F:\Desktop\pryde-frontend\src\utils\authBootstrap.js` | Auth initialization |
+| `F:\Desktop\pryde-frontend\src\utils\authLifecycle.js` | Auth state lifecycle |
+| `F:\Desktop\pryde-frontend\src\pages\Login.jsx` | Login form |
+| `F:\Desktop\pryde-frontend\src\pages\Register.jsx` | Registration form |
+| `F:\Desktop\pryde-frontend\src\pages\ForgotPassword.jsx` | Password reset request |
+| `F:\Desktop\pryde-frontend\src\pages\ResetPassword.jsx` | Password reset form |
+| `F:\Desktop\pryde-frontend\src\pages\VerifyEmail.jsx` | Email verification |
+| `F:\Desktop\pryde-frontend\src\pages\SecuritySettings.jsx` | 2FA and passkey management |
+| `F:\Desktop\pryde-frontend\src\components\PasskeyLogin.jsx` | Passkey login UI |
+| `F:\Desktop\pryde-frontend\src\components\PasskeyManager.jsx` | Passkey management UI |
+| `F:\Desktop\pryde-frontend\src\components\PasskeySetup.jsx` | Passkey setup UI |
+| `F:\Desktop\pryde-frontend\src\components\security\TwoFactorSetup.jsx` | 2FA setup UI |
+| `F:\Desktop\pryde-frontend\src\components\security\SessionManagement.jsx` | Session management UI |
 
 ### Data Contract
 
@@ -119,12 +165,15 @@ JWT-based authentication with httpOnly refresh token cookies. Supports email/pas
 
 ### Cross-Layer Mapping
 
-| Frontend | Backend |
-|----------|---------|
-| `AuthContext.login()` | `POST /api/auth/login` |
-| `AuthContext.logout()` | `POST /api/auth/logout` |
-| `AuthContext.checkAuth()` | `GET /api/auth/status` |
-| `api.post('/refresh')` | `POST /api/refresh` |
+| Frontend File | Backend File | API Route |
+|---------------|--------------|-----------|
+| `F:\Desktop\pryde-frontend\src\context\AuthContext.jsx` | `F:\Desktop\pryde-backend\server\routes\auth.js` | `POST /api/auth/login` |
+| `F:\Desktop\pryde-frontend\src\context\AuthContext.jsx` | `F:\Desktop\pryde-backend\server\routes\auth.js` | `POST /api/auth/logout` |
+| `F:\Desktop\pryde-frontend\src\context\AuthContext.jsx` | `F:\Desktop\pryde-backend\server\routes\auth.js` | `GET /api/auth/status` |
+| `F:\Desktop\pryde-frontend\src\utils\api.js` | `F:\Desktop\pryde-backend\server\routes\refresh.js` | `POST /api/refresh` |
+| `F:\Desktop\pryde-frontend\src\components\security\TwoFactorSetup.jsx` | `F:\Desktop\pryde-backend\server\routes\twoFactor.js` | `/api/2fa/*` |
+| `F:\Desktop\pryde-frontend\src\components\PasskeyManager.jsx` | `F:\Desktop\pryde-backend\server\routes\passkey.js` | `/api/passkey/*` |
+| `F:\Desktop\pryde-frontend\src\components\security\SessionManagement.jsx` | `F:\Desktop\pryde-backend\server\routes\sessions.js` | `/api/sessions/*` |
 
 ---
 
@@ -135,6 +184,18 @@ User profiles with display names, pronouns, bio, photos, social links, and priva
 
 ### Backend Implementation
 
+**Route Definition Files (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\routes\users.js` | User profile routes |
+| `F:\Desktop\pryde-backend\server\routes\profileSlug.js` | Custom profile URL slugs |
+
+**Models (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\models\User.js` | User schema |
+
+**Routes**:
 | Route | Method | Auth | Description |
 |-------|--------|------|-------------|
 | `/api/users/me` | GET | Required | Get current user profile |
@@ -146,14 +207,16 @@ User profiles with display names, pronouns, bio, photos, social links, and priva
 
 ### Frontend Integration
 
+**Frontend Caller Files**:
 | File | Usage |
 |------|-------|
-| `src/pages/Profile.jsx` | Profile page |
-| `src/features/profile/ProfileController.jsx` | Profile orchestration |
-| `src/features/profile/ProfileHeader.jsx` | Profile header display |
-| `src/components/EditProfileModal.jsx` | Profile editing |
-| `src/pages/Followers.jsx` | Followers list |
-| `src/pages/Following.jsx` | Following list |
+| `F:\Desktop\pryde-frontend\src\pages\Profile.jsx` | Profile page |
+| `F:\Desktop\pryde-frontend\src\features\profile\ProfileController.jsx` | Profile orchestration |
+| `F:\Desktop\pryde-frontend\src\features\profile\ProfileHeader.jsx` | Profile header display |
+| `F:\Desktop\pryde-frontend\src\components\EditProfileModal.jsx` | Profile editing |
+| `F:\Desktop\pryde-frontend\src\components\ProfileUrlSetting.jsx` | Custom URL setting |
+| `F:\Desktop\pryde-frontend\src\pages\Followers.jsx` | Followers list |
+| `F:\Desktop\pryde-frontend\src\pages\Following.jsx` | Following list |
 
 ### Data Contract
 
@@ -179,6 +242,15 @@ User profiles with display names, pronouns, bio, photos, social links, and priva
 }
 ```
 
+### Cross-Layer Mapping
+
+| Frontend File | Backend File | API Route |
+|---------------|--------------|-----------|
+| `F:\Desktop\pryde-frontend\src\pages\Profile.jsx` | `F:\Desktop\pryde-backend\server\routes\users.js` | `GET /api/users/:id` |
+| `F:\Desktop\pryde-frontend\src\components\EditProfileModal.jsx` | `F:\Desktop\pryde-backend\server\routes\users.js` | `PUT /api/users/me` |
+| `F:\Desktop\pryde-frontend\src\pages\Followers.jsx` | `F:\Desktop\pryde-backend\server\routes\users.js` | `GET /api/users/:id/followers` |
+| `F:\Desktop\pryde-frontend\src\pages\Following.jsx` | `F:\Desktop\pryde-backend\server\routes\users.js` | `GET /api/users/:id/following` |
+
 ---
 
 ## 3. Posts & Feed
@@ -187,6 +259,17 @@ User profiles with display names, pronouns, bio, photos, social links, and priva
 Posts with text, media (images/videos/GIFs), polls, content warnings, and visibility controls. Separate global feed and following feed.
 
 ### Backend Implementation
+
+**Route Definition Files (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\routes\posts.js` | Post CRUD operations |
+| `F:\Desktop\pryde-backend\server\routes\feed.js` | Feed endpoints |
+
+**Models (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\models\Post.js` | Post schema |
 
 **Posts Routes** (`/api/posts`):
 | Route | Method | Auth | Description |
@@ -208,14 +291,17 @@ Posts with text, media (images/videos/GIFs), polls, content warnings, and visibi
 
 ### Frontend Integration
 
+**Frontend Caller Files**:
 | File | Usage |
 |------|-------|
-| `src/pages/Feed.jsx` | Main feed page |
-| `src/features/feed/FeedController.jsx` | Feed orchestration |
-| `src/features/feed/FeedStream.jsx` | Post stream display |
-| `src/pages/FollowingFeed.jsx` | Following-only feed |
-| `src/components/PostHeader.jsx` | Post header with author info |
-| `src/components/Poll.jsx` | Poll display/voting |
+| `F:\Desktop\pryde-frontend\src\pages\Feed.jsx` | Main feed page |
+| `F:\Desktop\pryde-frontend\src\features\feed\FeedController.jsx` | Feed orchestration |
+| `F:\Desktop\pryde-frontend\src\features\feed\FeedStream.jsx` | Post stream display |
+| `F:\Desktop\pryde-frontend\src\pages\FollowingFeed.jsx` | Following-only feed |
+| `F:\Desktop\pryde-frontend\src\components\PostHeader.jsx` | Post header with author info |
+| `F:\Desktop\pryde-frontend\src\components\Poll.jsx` | Poll display/voting |
+| `F:\Desktop\pryde-frontend\src\components\PollCreator.jsx` | Poll creation |
+| `F:\Desktop\pryde-frontend\src\components\PinnedPostBadge.jsx` | Pinned post indicator |
 
 ### Data Contract
 
@@ -234,6 +320,15 @@ Posts with text, media (images/videos/GIFs), polls, content warnings, and visibi
 }
 ```
 
+### Cross-Layer Mapping
+
+| Frontend File | Backend File | API Route |
+|---------------|--------------|-----------|
+| `F:\Desktop\pryde-frontend\src\pages\Feed.jsx` | `F:\Desktop\pryde-backend\server\routes\feed.js` | `GET /api/feed/global` |
+| `F:\Desktop\pryde-frontend\src\pages\FollowingFeed.jsx` | `F:\Desktop\pryde-backend\server\routes\feed.js` | `GET /api/feed/following` |
+| `F:\Desktop\pryde-frontend\src\pages\Feed.jsx` | `F:\Desktop\pryde-backend\server\routes\posts.js` | `POST /api/posts` |
+| `F:\Desktop\pryde-frontend\src\pages\Profile.jsx` | `F:\Desktop\pryde-backend\server\routes\posts.js` | `GET /api/posts/user/:userId` |
+
 ---
 
 ## 4. Comments
@@ -243,6 +338,17 @@ Threaded comments on posts with nested replies and reactions.
 
 ### Backend Implementation
 
+**Route Definition Files (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\routes\comments.js` | Comment routes |
+
+**Models (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\models\Comment.js` | Comment schema |
+
+**Routes**:
 | Route | Method | Auth | Description |
 |-------|--------|------|-------------|
 | `/api/posts/:postId/comments` | GET | Required | Get comments for post |
@@ -253,9 +359,17 @@ Threaded comments on posts with nested replies and reactions.
 
 ### Frontend Integration
 
+**Frontend Caller Files**:
 | File | Usage |
 |------|-------|
-| `src/components/CommentThread.jsx` | Comment display with threading |
+| `F:\Desktop\pryde-frontend\src\components\CommentThread.jsx` | Comment display with threading |
+
+### Cross-Layer Mapping
+
+| Frontend File | Backend File | API Route |
+|---------------|--------------|-----------|
+| `F:\Desktop\pryde-frontend\src\components\CommentThread.jsx` | `F:\Desktop\pryde-backend\server\routes\comments.js` | `GET /api/posts/:postId/comments` |
+| `F:\Desktop\pryde-frontend\src\components\CommentThread.jsx` | `F:\Desktop\pryde-backend\server\routes\comments.js` | `POST /api/posts/:postId/comments` |
 
 ---
 
@@ -266,6 +380,23 @@ Universal emoji reaction system for posts and comments.
 
 ### Backend Implementation
 
+**Route Definition Files (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\routes\reactions.js` | Reaction routes |
+
+**Models (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\models\Reaction.js` | Reaction schema |
+
+**Utils (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\utils\reactionCache.js` | Reaction caching |
+| `F:\Desktop\pryde-backend\server\utils\reactionAnalytics.js` | Reaction analytics |
+
+**Routes**:
 | Route | Method | Auth | Description |
 |-------|--------|------|-------------|
 | `/api/reactions` | POST | Required | Add/update/remove reaction |
@@ -275,10 +406,18 @@ Universal emoji reaction system for posts and comments.
 
 ### Frontend Integration
 
+**Frontend Caller Files**:
 | File | Usage |
 |------|-------|
-| `src/components/ReactionButton.jsx` | Reaction picker/display |
-| `src/components/ReactionDetailsModal.jsx` | Who reacted modal |
+| `F:\Desktop\pryde-frontend\src\components\ReactionButton.jsx` | Reaction picker/display |
+| `F:\Desktop\pryde-frontend\src\components\ReactionDetailsModal.jsx` | Who reacted modal |
+
+### Cross-Layer Mapping
+
+| Frontend File | Backend File | API Route |
+|---------------|--------------|-----------|
+| `F:\Desktop\pryde-frontend\src\components\ReactionButton.jsx` | `F:\Desktop\pryde-backend\server\routes\reactions.js` | `POST /api/reactions` |
+| `F:\Desktop\pryde-frontend\src\components\ReactionDetailsModal.jsx` | `F:\Desktop\pryde-backend\server\routes\reactions.js` | `GET /api/reactions/:targetType/:targetId` |
 
 ---
 
@@ -289,6 +428,25 @@ Real-time direct messaging with encryption at rest, typing indicators, and read 
 
 ### Backend Implementation
 
+**Route Definition Files (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\routes\messages.js` | Message REST routes |
+| `F:\Desktop\pryde-backend\server\server.js` (lines 650-950) | Socket handlers |
+
+**Models (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\models\Message.js` | Message schema with encryption |
+| `F:\Desktop\pryde-backend\server\models\Conversation.js` | Conversation schema |
+
+**Utils (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\utils\encryption.js` | Message encryption/decryption |
+| `F:\Desktop\pryde-backend\server\utils\messageDeduplication.js` | Message deduplication |
+
+**Routes**:
 | Route | Method | Auth | Description |
 |-------|--------|------|-------------|
 | `/api/messages/list` | GET | Required | Get conversation list |
@@ -300,14 +458,30 @@ Real-time direct messaging with encryption at rest, typing indicators, and read 
 
 ### Frontend Integration
 
+**Frontend Caller Files**:
 | File | Usage |
 |------|-------|
-| `src/pages/Messages.jsx` | Messages page |
-| `src/features/messages/MessagesController.jsx` | Message orchestration |
-| `src/features/messages/ConversationList.jsx` | Conversation sidebar |
-| `src/features/messages/MessageThread.jsx` | Message display |
-| `src/hooks/useUnreadMessages.js` | Unread count singleton |
-| `src/utils/socket.js` | Socket.IO client |
+| `F:\Desktop\pryde-frontend\src\pages\Messages.jsx` | Messages page |
+| `F:\Desktop\pryde-frontend\src\features\messages\MessagesController.jsx` | Message orchestration |
+| `F:\Desktop\pryde-frontend\src\features\messages\ConversationList.jsx` | Conversation sidebar |
+| `F:\Desktop\pryde-frontend\src\features\messages\MessageThread.jsx` | Message display |
+| `F:\Desktop\pryde-frontend\src\components\MessageBubble.jsx` | Message bubble component |
+| `F:\Desktop\pryde-frontend\src\components\MessageInput.jsx` | Message input component |
+| `F:\Desktop\pryde-frontend\src\components\MessageSearch.jsx` | Message search |
+| `F:\Desktop\pryde-frontend\src\components\TypingIndicator.jsx` | Typing indicator |
+| `F:\Desktop\pryde-frontend\src\components\VoiceRecorder.jsx` | Voice note recording |
+| `F:\Desktop\pryde-frontend\src\hooks\useUnreadMessages.js` | Unread count singleton |
+| `F:\Desktop\pryde-frontend\src\utils\socket.js` | Socket.IO client |
+| `F:\Desktop\pryde-frontend\src\layouts\MessagesLayout.jsx` | Messages layout |
+
+### Cross-Layer Mapping
+
+| Frontend File | Backend File | API Route / Event |
+|---------------|--------------|-------------------|
+| `F:\Desktop\pryde-frontend\src\features\messages\ConversationList.jsx` | `F:\Desktop\pryde-backend\server\routes\messages.js` | `GET /api/messages/list` |
+| `F:\Desktop\pryde-frontend\src\features\messages\MessageThread.jsx` | `F:\Desktop\pryde-backend\server\routes\messages.js` | `GET /api/messages/conversation/:userId` |
+| `F:\Desktop\pryde-frontend\src\utils\socket.js` | `F:\Desktop\pryde-backend\server\server.js` | Socket: `send_message` |
+| `F:\Desktop\pryde-frontend\src\hooks\useUnreadMessages.js` | `F:\Desktop\pryde-backend\server\routes\messages.js` | `GET /api/messages/unread/counts` |
 
 ---
 
@@ -318,6 +492,24 @@ Real-time notifications for social interactions. Separated into SOCIAL (bell ico
 
 ### Backend Implementation
 
+**Route Definition Files (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\routes\notifications.js` | Notification routes |
+
+**Models (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\models\Notification.js` | Notification schema |
+
+**Utils (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\utils\notificationEmitter.js` | Notification creation/emission |
+| `F:\Desktop\pryde-backend\server\utils\notificationBatching.js` | Notification batching |
+| `F:\Desktop\pryde-backend\server\utils\notificationDeduplication.js` | Notification deduplication |
+
+**Routes**:
 | Route | Method | Auth | Description |
 |-------|--------|------|-------------|
 | `/api/notifications` | GET | Required | Get notifications (supports `category` filter) |
@@ -329,11 +521,20 @@ Real-time notifications for social interactions. Separated into SOCIAL (bell ico
 
 ### Frontend Integration
 
+**Frontend Caller Files**:
 | File | Usage |
 |------|-------|
-| `src/pages/Notifications.jsx` | Notifications page |
-| `src/components/Navbar.jsx` | Bell icon with unread count |
-| `src/constants/notificationTypes.js` | Type definitions |
+| `F:\Desktop\pryde-frontend\src\pages\Notifications.jsx` | Notifications page |
+| `F:\Desktop\pryde-frontend\src\components\Navbar.jsx` | Bell icon with unread count |
+| `F:\Desktop\pryde-frontend\src\components\NotificationBell.jsx` | Notification bell component |
+| `F:\Desktop\pryde-frontend\src\constants\notificationTypes.js` | Type definitions |
+
+### Cross-Layer Mapping
+
+| Frontend File | Backend File | API Route |
+|---------------|--------------|-----------|
+| `F:\Desktop\pryde-frontend\src\pages\Notifications.jsx` | `F:\Desktop\pryde-backend\server\routes\notifications.js` | `GET /api/notifications` |
+| `F:\Desktop\pryde-frontend\src\components\Navbar.jsx` | `F:\Desktop\pryde-backend\server\routes\notifications.js` | `GET /api/notifications/unread-count` |
 
 ---
 
@@ -344,6 +545,18 @@ Follow/unfollow users with support for private accounts (follow requests).
 
 ### Backend Implementation
 
+**Route Definition Files (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\routes\follow.js` | Follow routes |
+
+**Models (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\models\FollowRequest.js` | Follow request schema |
+| `F:\Desktop\pryde-backend\server\models\User.js` | User schema (followers/following arrays) |
+
+**Routes**:
 | Route | Method | Auth | Description |
 |-------|--------|------|-------------|
 | `/api/follow/:userId` | POST | Required | Follow user (or send request if private) |
@@ -354,11 +567,19 @@ Follow/unfollow users with support for private accounts (follow requests).
 
 ### Frontend Integration
 
+**Frontend Caller Files**:
 | File | Usage |
 |------|-------|
-| `src/pages/Profile.jsx` | Follow button on profiles |
-| `src/pages/Followers.jsx` | Followers list |
-| `src/pages/Following.jsx` | Following list |
+| `F:\Desktop\pryde-frontend\src\pages\Profile.jsx` | Follow button on profiles |
+| `F:\Desktop\pryde-frontend\src\pages\Followers.jsx` | Followers list |
+| `F:\Desktop\pryde-frontend\src\pages\Following.jsx` | Following list |
+
+### Cross-Layer Mapping
+
+| Frontend File | Backend File | API Route |
+|---------------|--------------|-----------|
+| `F:\Desktop\pryde-frontend\src\pages\Profile.jsx` | `F:\Desktop\pryde-backend\server\routes\follow.js` | `POST /api/follow/:userId` |
+| `F:\Desktop\pryde-frontend\src\pages\Profile.jsx` | `F:\Desktop\pryde-backend\server\routes\follow.js` | `DELETE /api/follow/:userId` |
 
 ---
 
@@ -369,6 +590,23 @@ Community groups with posts, membership, moderation, and notification settings.
 
 ### Backend Implementation
 
+**Route Definition Files (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\routes\groups.js` | Group routes |
+
+**Models (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\models\Group.js` | Group schema |
+| `F:\Desktop\pryde-backend\server\models\GroupModerationLog.js` | Group moderation log |
+
+**Utils (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\utils\groupPermissions.js` | Group permission helpers |
+
+**Routes**:
 | Route | Method | Auth | Description |
 |-------|--------|------|-------------|
 | `/api/groups` | GET | Required | List groups |
@@ -385,13 +623,22 @@ Community groups with posts, membership, moderation, and notification settings.
 
 ### Frontend Integration
 
+**Frontend Caller Files**:
 | File | Usage |
 |------|-------|
-| `src/pages/Groups.jsx` | Group detail page |
-| `src/pages/GroupsList.jsx` | Groups listing |
-| `src/features/groups/GroupDetailController.jsx` | Group orchestration |
-| `src/features/groups/GroupFeed.jsx` | Group post feed |
-| `src/features/groups/GroupHeader.jsx` | Group header |
+| `F:\Desktop\pryde-frontend\src\pages\Groups.jsx` | Group detail page |
+| `F:\Desktop\pryde-frontend\src\pages\GroupsList.jsx` | Groups listing |
+| `F:\Desktop\pryde-frontend\src\features\groups\GroupDetailController.jsx` | Group orchestration |
+| `F:\Desktop\pryde-frontend\src\features\groups\GroupFeed.jsx` | Group post feed |
+| `F:\Desktop\pryde-frontend\src\features\groups\GroupHeader.jsx` | Group header |
+
+### Cross-Layer Mapping
+
+| Frontend File | Backend File | API Route |
+|---------------|--------------|-----------|
+| `F:\Desktop\pryde-frontend\src\pages\GroupsList.jsx` | `F:\Desktop\pryde-backend\server\routes\groups.js` | `GET /api/groups` |
+| `F:\Desktop\pryde-frontend\src\pages\Groups.jsx` | `F:\Desktop\pryde-backend\server\routes\groups.js` | `GET /api/groups/:id` |
+| `F:\Desktop\pryde-frontend\src\features\groups\GroupFeed.jsx` | `F:\Desktop\pryde-backend\server\routes\groups.js` | `GET /api/groups/:id/posts` |
 
 ---
 
@@ -402,6 +649,17 @@ Calendar events with RSVP functionality.
 
 ### Backend Implementation
 
+**Route Definition Files (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\routes\events.js` | Event routes |
+
+**Models (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\models\Event.js` | Event schema |
+
+**Routes**:
 | Route | Method | Auth | Description |
 |-------|--------|------|-------------|
 | `/api/events` | GET | Required | List events (supports filters) |
@@ -413,9 +671,19 @@ Calendar events with RSVP functionality.
 
 ### Frontend Integration
 
+**Frontend Caller Files**:
 | File | Usage |
 |------|-------|
-| `src/pages/Events.jsx` | Events calendar page |
+| `F:\Desktop\pryde-frontend\src\pages\Events.jsx` | Events calendar page |
+| `F:\Desktop\pryde-frontend\src\components\EventRSVP.jsx` | RSVP component |
+| `F:\Desktop\pryde-frontend\src\components\EventAttendees.jsx` | Attendees display |
+
+### Cross-Layer Mapping
+
+| Frontend File | Backend File | API Route |
+|---------------|--------------|-----------|
+| `F:\Desktop\pryde-frontend\src\pages\Events.jsx` | `F:\Desktop\pryde-backend\server\routes\events.js` | `GET /api/events` |
+| `F:\Desktop\pryde-frontend\src\components\EventRSVP.jsx` | `F:\Desktop\pryde-backend\server\routes\events.js` | `POST /api/events/:id/rsvp` |
 
 ---
 
@@ -426,6 +694,12 @@ Save posts for later viewing.
 
 ### Backend Implementation
 
+**Route Definition Files (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\routes\bookmarks.js` | Bookmark routes |
+
+**Routes**:
 | Route | Method | Auth | Description |
 |-------|--------|------|-------------|
 | `/api/bookmarks` | GET | Required | Get bookmarked posts |
@@ -434,9 +708,16 @@ Save posts for later viewing.
 
 ### Frontend Integration
 
+**Frontend Caller Files**:
 | File | Usage |
 |------|-------|
-| `src/pages/Bookmarks.jsx` | Bookmarks page |
+| `F:\Desktop\pryde-frontend\src\pages\Bookmarks.jsx` | Bookmarks page |
+
+### Cross-Layer Mapping
+
+| Frontend File | Backend File | API Route |
+|---------------|--------------|-----------|
+| `F:\Desktop\pryde-frontend\src\pages\Bookmarks.jsx` | `F:\Desktop\pryde-backend\server\routes\bookmarks.js` | `GET /api/bookmarks` |
 
 ---
 
@@ -447,6 +728,12 @@ Global search for users and posts. Message search within DMs.
 
 ### Backend Implementation
 
+**Route Definition Files (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\routes\search.js` | Search routes |
+
+**Routes**:
 | Route | Method | Auth | Description |
 |-------|--------|------|-------------|
 | `/api/search` | GET | Required | Search users and posts |
@@ -457,10 +744,21 @@ Global search for users and posts. Message search within DMs.
 
 ### Frontend Integration
 
+**Frontend Caller Files**:
 | File | Usage |
 |------|-------|
-| `src/pages/Search.jsx` | Search page |
-| `src/components/ProfilePostSearch.jsx` | Profile post search |
+| `F:\Desktop\pryde-frontend\src\pages\Search.jsx` | Search page |
+| `F:\Desktop\pryde-frontend\src\components\GlobalSearch.jsx` | Global search component |
+| `F:\Desktop\pryde-frontend\src\components\ProfilePostSearch.jsx` | Profile post search |
+| `F:\Desktop\pryde-frontend\src\components\MessageSearch.jsx` | Message search |
+
+### Cross-Layer Mapping
+
+| Frontend File | Backend File | API Route |
+|---------------|--------------|-----------|
+| `F:\Desktop\pryde-frontend\src\pages\Search.jsx` | `F:\Desktop\pryde-backend\server\routes\search.js` | `GET /api/search` |
+| `F:\Desktop\pryde-frontend\src\components\MessageSearch.jsx` | `F:\Desktop\pryde-backend\server\routes\search.js` | `GET /api/search/messages` |
+| `F:\Desktop\pryde-frontend\src\components\ProfilePostSearch.jsx` | `F:\Desktop\pryde-backend\server\routes\search.js` | `GET /api/search/my-posts` |
 
 ---
 
@@ -471,6 +769,23 @@ User badges (automatic and manual) displayed on profiles.
 
 ### Backend Implementation
 
+**Route Definition Files (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\routes\badges.js` | Badge routes |
+
+**Models (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\models\Badge.js` | Badge schema |
+| `F:\Desktop\pryde-backend\server\models\BadgeAssignmentLog.js` | Badge assignment log |
+
+**Utils (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\utils\populateBadges.js` | Badge resolution helper |
+
+**Routes**:
 | Route | Method | Auth | Description |
 |-------|--------|------|-------------|
 | `/api/badges` | GET | Required | List all badge definitions |
@@ -481,10 +796,22 @@ User badges (automatic and manual) displayed on profiles.
 
 ### Frontend Integration
 
+**Frontend Caller Files**:
 | File | Usage |
 |------|-------|
-| `src/hooks/useBadges.js` | Badge fetching/caching |
-| `src/components/TieredBadgeDisplay.jsx` | Badge display component |
+| `F:\Desktop\pryde-frontend\src\hooks\useBadges.js` | Badge fetching/caching |
+| `F:\Desktop\pryde-frontend\src\components\TieredBadgeDisplay.jsx` | Badge display component |
+| `F:\Desktop\pryde-frontend\src\components\BadgeContainer.jsx` | Badge container |
+| `F:\Desktop\pryde-frontend\src\components\BadgeSettings.jsx` | Badge settings |
+| `F:\Desktop\pryde-frontend\src\components\UserBadge.jsx` | User badge display |
+| `F:\Desktop\pryde-frontend\src\utils\badgeTiers.js` | Badge tier utilities |
+
+### Cross-Layer Mapping
+
+| Frontend File | Backend File | API Route |
+|---------------|--------------|-----------|
+| `F:\Desktop\pryde-frontend\src\hooks\useBadges.js` | `F:\Desktop\pryde-backend\server\routes\badges.js` | `GET /api/badges` |
+| `F:\Desktop\pryde-frontend\src\components\TieredBadgeDisplay.jsx` | `F:\Desktop\pryde-backend\server\routes\badges.js` | `GET /api/badges/user/:userId` |
 
 ---
 
@@ -494,6 +821,27 @@ User badges (automatic and manual) displayed on profiles.
 Privacy settings and user blocking.
 
 ### Backend Implementation
+
+**Route Definition Files (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\routes\privacy.js` | Privacy routes |
+| `F:\Desktop\pryde-backend\server\routes\blocks.js` | Block routes |
+
+**Models (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\models\Block.js` | Block schema |
+
+**Utils (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\utils\blockHelper.js` | Block checking helpers |
+
+**Middleware (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\middleware\privacy.js` | Privacy enforcement |
 
 **Privacy Routes** (`/api/privacy`):
 | Route | Method | Auth | Description |
@@ -514,9 +862,17 @@ Privacy settings and user blocking.
 
 ### Frontend Integration
 
+**Frontend Caller Files**:
 | File | Usage |
 |------|-------|
-| `src/pages/PrivacySettings.jsx` | Privacy settings page |
+| `F:\Desktop\pryde-frontend\src\pages\PrivacySettings.jsx` | Privacy settings page |
+
+### Cross-Layer Mapping
+
+| Frontend File | Backend File | API Route |
+|---------------|--------------|-----------|
+| `F:\Desktop\pryde-frontend\src\pages\PrivacySettings.jsx` | `F:\Desktop\pryde-backend\server\routes\privacy.js` | `GET /api/privacy/settings` |
+| `F:\Desktop\pryde-frontend\src\pages\PrivacySettings.jsx` | `F:\Desktop\pryde-backend\server\routes\privacy.js` | `PATCH /api/privacy/settings` |
 
 ### Data Contract
 
@@ -540,6 +896,19 @@ Report users, posts, comments, or messages for moderation.
 
 ### Backend Implementation
 
+**Route Definition Files (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\routes\reports.js` | Report routes |
+| `F:\Desktop\pryde-backend\server\routes\bugReports.js` | Bug report routes |
+
+**Models (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\models\Report.js` | Report schema |
+| `F:\Desktop\pryde-backend\server\models\BugReport.js` | Bug report schema |
+
+**Routes**:
 | Route | Method | Auth | Description |
 |-------|--------|------|-------------|
 | `/api/reports` | POST | Required | Submit a report |
@@ -548,9 +917,16 @@ Report users, posts, comments, or messages for moderation.
 
 ### Frontend Integration
 
+**Frontend Caller Files**:
 | File | Usage |
 |------|-------|
-| `src/components/ReportModal.jsx` | Report submission modal |
+| `F:\Desktop\pryde-frontend\src\components\ReportModal.jsx` | Report submission modal |
+
+### Cross-Layer Mapping
+
+| Frontend File | Backend File | API Route |
+|---------------|--------------|-----------|
+| `F:\Desktop\pryde-frontend\src\components\ReportModal.jsx` | `F:\Desktop\pryde-backend\server\routes\reports.js` | `POST /api/reports` |
 
 ---
 
@@ -561,6 +937,22 @@ File uploads for images, videos, and audio. Uses GridFS for storage.
 
 ### Backend Implementation
 
+**Route Definition Files (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\routes\upload.js` | Upload routes |
+
+**Models (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\models\TempMedia.js` | Temporary media schema |
+
+**Middleware (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\middleware\imageProcessing.js` | Image processing/EXIF stripping |
+
+**Routes**:
 | Route | Method | Auth | Description |
 |-------|--------|------|-------------|
 | `/api/upload` | POST | Required | Upload single file |
@@ -572,10 +964,20 @@ File uploads for images, videos, and audio. Uses GridFS for storage.
 
 ### Frontend Integration
 
+**Frontend Caller Files**:
 | File | Usage |
 |------|-------|
-| `src/utils/uploadWithProgress.js` | Upload with progress tracking |
-| `src/utils/compressImage.js` | Client-side image compression |
+| `F:\Desktop\pryde-frontend\src\utils\uploadWithProgress.js` | Upload with progress tracking |
+| `F:\Desktop\pryde-frontend\src\utils\compressImage.js` | Client-side image compression |
+| `F:\Desktop\pryde-frontend\src\components\VoiceRecorder.jsx` | Voice note recording |
+| `F:\Desktop\pryde-frontend\src\components\GifPicker.jsx` | GIF picker |
+
+### Cross-Layer Mapping
+
+| Frontend File | Backend File | API Route |
+|---------------|--------------|-----------|
+| `F:\Desktop\pryde-frontend\src\utils\uploadWithProgress.js` | `F:\Desktop\pryde-backend\server\routes\upload.js` | `POST /api/upload` |
+| `F:\Desktop\pryde-frontend\src\components\VoiceRecorder.jsx` | `F:\Desktop\pryde-backend\server\routes\upload.js` | `POST /api/upload/voice` |
 
 ---
 
@@ -586,6 +988,34 @@ Admin dashboard for platform management, user moderation, and analytics.
 
 ### Backend Implementation
 
+**Route Definition Files (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\routes\admin.js` | Main admin routes |
+| `F:\Desktop\pryde-backend\server\routes\adminDebug.js` | Admin debug routes |
+| `F:\Desktop\pryde-backend\server\routes\adminHealth.js` | Admin health routes |
+| `F:\Desktop\pryde-backend\server\routes\adminPosts.js` | Admin post management |
+| `F:\Desktop\pryde-backend\server\routes\adminEscalation.js` | Admin escalation |
+
+**Models (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\models\AdminActionLog.js` | Admin action log |
+| `F:\Desktop\pryde-backend\server\models\AdminEscalationToken.js` | Escalation tokens |
+| `F:\Desktop\pryde-backend\server\models\ModerationSettings.js` | Moderation settings |
+
+**Middleware (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\middleware\adminAuth.js` | Admin authentication |
+| `F:\Desktop\pryde-backend\server\middleware\requireAdminEscalation.js` | Escalation requirement |
+
+**Utils (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\utils\securityLogger.js` | Security logging |
+
+**Routes**:
 | Route | Method | Auth | Description |
 |-------|--------|------|-------------|
 | `/api/admin/stats` | GET | Admin | Platform statistics |
@@ -600,9 +1030,19 @@ Admin dashboard for platform management, user moderation, and analytics.
 
 ### Frontend Integration
 
+**Frontend Caller Files**:
 | File | Usage |
 |------|-------|
-| `src/pages/Admin.jsx` | Admin dashboard |
+| `F:\Desktop\pryde-frontend\src\pages\Admin.jsx` | Admin dashboard |
+| `F:\Desktop\pryde-frontend\src\utils\roleHelpers.js` | Role checking utilities |
+| `F:\Desktop\pryde-frontend\src\components\RoleRoute.jsx` | Role-based routing |
+
+### Cross-Layer Mapping
+
+| Frontend File | Backend File | API Route |
+|---------------|--------------|-----------|
+| `F:\Desktop\pryde-frontend\src\pages\Admin.jsx` | `F:\Desktop\pryde-backend\server\routes\admin.js` | `GET /api/admin/stats` |
+| `F:\Desktop\pryde-frontend\src\pages\Admin.jsx` | `F:\Desktop\pryde-backend\server\routes\admin.js` | `GET /api/admin/users` |
 
 ---
 
@@ -610,6 +1050,31 @@ Admin dashboard for platform management, user moderation, and analytics.
 
 ### Feature Overview
 Real-time communication via Socket.IO for messages, notifications, presence, and typing indicators.
+
+### Backend Implementation
+
+**Server File (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\server.js` (lines 650-950) | Socket.IO handlers |
+
+**Utils (Backend)**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-backend\server\utils\emitValidated.js` | Validated socket emission |
+
+### Frontend Implementation
+
+**Frontend Files**:
+| File | Description |
+|------|-------------|
+| `F:\Desktop\pryde-frontend\src\utils\socket.js` | Socket.IO client with zombie detection |
+| `F:\Desktop\pryde-frontend\src\utils\socketHelpers.js` | Socket helper utilities |
+| `F:\Desktop\pryde-frontend\src\utils\socketDiagnostics.js` | Socket diagnostics |
+| `F:\Desktop\pryde-frontend\src\utils\emitValidated.js` | Validated socket emission |
+| `F:\Desktop\pryde-frontend\src\context\SocketContext.jsx` | Socket React context |
+| `F:\Desktop\pryde-frontend\src\constants\socketEvents.js` | Socket event constants |
+| `F:\Desktop\pryde-frontend\src\config\api.js` | Socket URL configuration |
 
 ### Connection
 
@@ -646,9 +1111,21 @@ Real-time communication via Socket.IO for messages, notifications, presence, and
 | `reaction_added` | `{ targetType, targetId, reactions, userId }` | Reaction added |
 | `reaction_removed` | `{ targetType, targetId, reactions, userId }` | Reaction removed |
 
-### Frontend Socket Client
+### Cross-Layer Mapping
 
-**File**: `src/utils/socket.js`
+| Frontend File | Backend File | Socket Event |
+|---------------|--------------|--------------|
+| `F:\Desktop\pryde-frontend\src\utils\socket.js` | `F:\Desktop\pryde-backend\server\server.js` | `send_message` |
+| `F:\Desktop\pryde-frontend\src\utils\socket.js` | `F:\Desktop\pryde-backend\server\server.js` | `typing` |
+| `F:\Desktop\pryde-frontend\src\utils\socket.js` | `F:\Desktop\pryde-backend\server\server.js` | `join` |
+| `F:\Desktop\pryde-frontend\src\utils\socket.js` | `F:\Desktop\pryde-backend\server\server.js` | `ping` |
+| `F:\Desktop\pryde-frontend\src\context\SocketContext.jsx` | `F:\Desktop\pryde-backend\server\server.js` | `message:new` |
+| `F:\Desktop\pryde-frontend\src\context\SocketContext.jsx` | `F:\Desktop\pryde-backend\server\server.js` | `notification:new` |
+| `F:\Desktop\pryde-frontend\src\hooks\useOnlineUsers.js` | `F:\Desktop\pryde-backend\server\server.js` | `online_users` |
+
+### Frontend Socket Client Features
+
+**File**: `F:\Desktop\pryde-frontend\src\utils\socket.js`
 
 **Features**:
 - Zombie connection detection (auto-reconnect after 2 missed pings)
@@ -662,27 +1139,33 @@ Real-time communication via Socket.IO for messages, notifications, presence, and
 
 ### Backend Routes Without Clear Frontend Usage
 
-| Route | Notes |
-|-------|-------|
-| `/api/journals/*` | Journal feature exists but may have limited UI |
-| `/api/longform/*` | Longform posts feature exists but may have limited UI |
-| `/api/photo-essays/*` | Photo essays feature exists but may have limited UI |
-| `/api/circles/*` | Small Circles feature (Life-Signal) |
-| `/api/resonance/*` | Resonance Signals feature (Life-Signal) |
-| `/api/prompts/*` | Reflection Prompts feature (Life-Signal) |
-| `/api/collections/*` | Personal Collections feature (Life-Signal) |
-| `/api/presence/*` | Soft Presence States feature (Life-Signal) |
-| `/api/global-chat/*` | Global chat (Lounge) feature |
-| `/api/groupchats/*` | Group chat feature |
-| `/api/friends/*` | Legacy friends system (kept for backward compatibility) |
+| Backend Route File | Route Prefix | Notes |
+|--------------------|--------------|-------|
+| `F:\Desktop\pryde-backend\server\routes\journals.js` | `/api/journals/*` | Journal feature exists but may have limited UI |
+| `F:\Desktop\pryde-backend\server\routes\longform.js` | `/api/longform/*` | Longform posts feature exists but may have limited UI |
+| `F:\Desktop\pryde-backend\server\routes\photoEssays.js` | `/api/photo-essays/*` | Photo essays feature exists but may have limited UI |
+| `F:\Desktop\pryde-backend\server\routes\circles.js` | `/api/circles/*` | Small Circles feature (Life-Signal) |
+| `F:\Desktop\pryde-backend\server\routes\resonance.js` | `/api/resonance/*` | Resonance Signals feature (Life-Signal) |
+| `F:\Desktop\pryde-backend\server\routes\prompts.js` | `/api/prompts/*` | Reflection Prompts feature (Life-Signal) |
+| `F:\Desktop\pryde-backend\server\routes\collections.js` | `/api/collections/*` | Personal Collections feature (Life-Signal) |
+| `F:\Desktop\pryde-backend\server\routes\presence.js` | `/api/presence/*` | Soft Presence States feature (Life-Signal) |
+| `F:\Desktop\pryde-backend\server\routes\globalChat.js` | `/api/global-chat/*` | Global chat (Lounge) feature |
+| `F:\Desktop\pryde-backend\server\routes\groupChats.js` | `/api/groupchats/*` | Group chat feature |
+| `F:\Desktop\pryde-backend\server\routes\friends.js` | `/api/friends/*` | Legacy friends system (kept for backward compatibility) |
+| `F:\Desktop\pryde-backend\server\routes\drafts.js` | `/api/drafts/*` | Draft management |
+| `F:\Desktop\pryde-backend\server\routes\invites.js` | `/api/invites/*` | Invite system |
+| `F:\Desktop\pryde-backend\server\routes\recoveryContacts.js` | `/api/recovery-contacts/*` | Account recovery |
+| `F:\Desktop\pryde-backend\server\routes\safeMode.js` | `/api/safe-mode/*` | Safe mode feature |
+| `F:\Desktop\pryde-backend\server\routes\stabilityControls.js` | `/api/stability/*` | Stability controls |
+| `F:\Desktop\pryde-backend\server\routes\loginApproval.js` | `/api/login-approval/*` | Login approval |
 
 ### Deprecated Endpoints (Return 410 Gone)
 
-| Route | Removed Date | Notes |
-|-------|--------------|-------|
-| `/api/search/hashtag/:tag` | 2025-12-26 | Hashtag search removed |
-| `/api/search/trending` | 2025-12-26 | Trending hashtags removed |
-| `/api/tags/*` | Phase 2B | Tags deprecated, replaced by Groups |
+| Backend Route File | Route | Removed Date | Notes |
+|--------------------|-------|--------------|-------|
+| `F:\Desktop\pryde-backend\server\routes\search.js` | `/api/search/hashtag/:tag` | 2025-12-26 | Hashtag search removed |
+| `F:\Desktop\pryde-backend\server\routes\search.js` | `/api/search/trending` | 2025-12-26 | Trending hashtags removed |
+| `F:\Desktop\pryde-backend\server\routes\tags.js` | `/api/tags/*` | Phase 2B | Tags deprecated, replaced by Groups |
 
 ### Field Naming Consistency
 
@@ -693,17 +1176,20 @@ Real-time communication via Socket.IO for messages, notifications, presence, and
 | Reactions | `reactions` (object) | `reactions` (object) | ✅ Consistent |
 | Timestamps | `createdAt`, `updatedAt` | Same | ✅ Consistent |
 
-### Auth/Permission Notes
+### Auth/Permission Middleware (Backend)
 
-| Middleware | Description |
-|------------|-------------|
-| `auth` | Requires valid JWT token |
-| `requireActiveUser` | Requires `isActive: true` |
-| `requireEmailVerification` | Requires verified email |
-| `adminAuth` | Requires admin role |
-| `checkPermission(perm)` | Requires specific admin permission |
+| Middleware File | Middleware | Description |
+|-----------------|------------|-------------|
+| `F:\Desktop\pryde-backend\server\middleware\auth.js` | `auth` | Requires valid JWT token |
+| `F:\Desktop\pryde-backend\server\middleware\requireActiveUser.js` | `requireActiveUser` | Requires `isActive: true` |
+| `F:\Desktop\pryde-backend\server\middleware\requireEmailVerification.js` | `requireEmailVerification` | Requires verified email |
+| `F:\Desktop\pryde-backend\server\middleware\adminAuth.js` | `adminAuth` | Requires admin role |
+| `F:\Desktop\pryde-backend\server\middleware\requireAdminEscalation.js` | `requireAdminEscalation` | Requires escalated privileges |
+| `F:\Desktop\pryde-backend\server\middleware\systemAccountGuard.js` | `systemAccountGuard` | Protects system accounts |
 
-### Rate Limiters
+### Rate Limiters (Backend)
+
+**File**: `F:\Desktop\pryde-backend\server\middleware\rateLimiter.js`
 
 | Limiter | Applied To |
 |---------|------------|
@@ -728,52 +1214,117 @@ Real-time communication via Socket.IO for messages, notifications, presence, and
 
 ---
 
-## Appendix: Route Mounting Summary
+## Appendix A: Route Mounting Summary
+
+**File**: `F:\Desktop\pryde-backend\server\server.js` (lines 423-485)
 
 ```javascript
-// server/server.js route mounting (lines 423-485)
-app.use('/api/auth', authRoutes);
-app.use('/api/refresh', refreshRoutes);
-app.use('/api/users', usersRoutes);
-app.use('/api/friends', friendsRoutes);  // Legacy
-app.use('/api/follow', followRoutes);
-app.use('/api/posts', postsRoutes);
-app.use('/api/feed', feedRoutes);
-app.use('/api/journals', journalsRoutes);
-app.use('/api/longform', longformRoutes);
-app.use('/api/tags', tagsRoutes);  // Deprecated
-app.use('/api/groups', groupsRoutes);
-app.use('/api/photo-essays', photoEssaysRoutes);
-app.use('/api/upload', uploadRoutes);
-app.use('/api/notifications', notificationsRoutes);
-app.use('/api/messages', messagesRoutes);
-app.use('/api/groupchats', groupChatsRoutes);
-app.use('/api/global-chat', globalChatRoutes);
-app.use('/api/push', pushNotificationsRouter);
-app.use('/api/reports', reportsRoutes);
-app.use('/api/blocks', blocksRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/search', searchRoutes);
-app.use('/api/2fa', twoFactorRoutes);
-app.use('/api/sessions', sessionsRoutes);
-app.use('/api/privacy', privacyRoutes);
-app.use('/api/bookmarks', bookmarksRoutes);
-app.use('/api/events', eventsRoutes);
-app.use('/api/drafts', draftsRoutes);
-app.use('/api', commentsRoutes);  // Handles /posts/:postId/comments
-app.use('/api/reactions', reactionsRoutes);
-app.use('/api/passkey', passkeyRoutes);
-app.use('/api/badges', badgesRoutes);
-// Life-Signal Features
-app.use('/api/prompts', promptsRoutes);
-app.use('/api/collections', collectionsRoutes);
-app.use('/api/resonance', resonanceRoutes);
-app.use('/api/circles', circlesRoutes);
-app.use('/api/presence', presenceRoutes);
-```
-## Domain: User / Authentication
+// Core routes
+app.use('/api/auth', authRoutes);          // F:\Desktop\pryde-backend\server\routes\auth.js
+app.use('/api/refresh', refreshRoutes);    // F:\Desktop\pryde-backend\server\routes\refresh.js
+app.use('/api/users', usersRoutes);        // F:\Desktop\pryde-backend\server\routes\users.js
+app.use('/api/friends', friendsRoutes);    // F:\Desktop\pryde-backend\server\routes\friends.js (Legacy)
+app.use('/api/follow', followRoutes);      // F:\Desktop\pryde-backend\server\routes\follow.js
+app.use('/api/posts', postsRoutes);        // F:\Desktop\pryde-backend\server\routes\posts.js
+app.use('/api/feed', feedRoutes);          // F:\Desktop\pryde-backend\server\routes\feed.js
+app.use('/api/journals', journalsRoutes);  // F:\Desktop\pryde-backend\server\routes\journals.js
+app.use('/api/longform', longformRoutes);  // F:\Desktop\pryde-backend\server\routes\longform.js
+app.use('/api/tags', tagsRoutes);          // F:\Desktop\pryde-backend\server\routes\tags.js (Deprecated)
+app.use('/api/groups', groupsRoutes);      // F:\Desktop\pryde-backend\server\routes\groups.js
+app.use('/api/photo-essays', photoEssaysRoutes);  // F:\Desktop\pryde-backend\server\routes\photoEssays.js
+app.use('/api/upload', uploadRoutes);      // F:\Desktop\pryde-backend\server\routes\upload.js
+app.use('/api/notifications', notificationsRoutes);  // F:\Desktop\pryde-backend\server\routes\notifications.js
+app.use('/api/messages', messagesRoutes);  // F:\Desktop\pryde-backend\server\routes\messages.js
+app.use('/api/groupchats', groupChatsRoutes);  // F:\Desktop\pryde-backend\server\routes\groupChats.js
+app.use('/api/global-chat', globalChatRoutes);  // F:\Desktop\pryde-backend\server\routes\globalChat.js
+app.use('/api/push', pushNotificationsRouter);  // F:\Desktop\pryde-backend\server\routes\pushNotifications.js
+app.use('/api/reports', reportsRoutes);    // F:\Desktop\pryde-backend\server\routes\reports.js
+app.use('/api/blocks', blocksRoutes);      // F:\Desktop\pryde-backend\server\routes\blocks.js
+app.use('/api/admin', adminRoutes);        // F:\Desktop\pryde-backend\server\routes\admin.js
+app.use('/api/search', searchRoutes);      // F:\Desktop\pryde-backend\server\routes\search.js
+app.use('/api/2fa', twoFactorRoutes);      // F:\Desktop\pryde-backend\server\routes\twoFactor.js
+app.use('/api/sessions', sessionsRoutes);  // F:\Desktop\pryde-backend\server\routes\sessions.js
+app.use('/api/privacy', privacyRoutes);    // F:\Desktop\pryde-backend\server\routes\privacy.js
+app.use('/api/bookmarks', bookmarksRoutes);  // F:\Desktop\pryde-backend\server\routes\bookmarks.js
+app.use('/api/events', eventsRoutes);      // F:\Desktop\pryde-backend\server\routes\events.js
+app.use('/api/drafts', draftsRoutes);      // F:\Desktop\pryde-backend\server\routes\drafts.js
+app.use('/api', commentsRoutes);           // F:\Desktop\pryde-backend\server\routes\comments.js
+app.use('/api/reactions', reactionsRoutes);  // F:\Desktop\pryde-backend\server\routes\reactions.js
+app.use('/api/passkey', passkeyRoutes);    // F:\Desktop\pryde-backend\server\routes\passkey.js
+app.use('/api/badges', badgesRoutes);      // F:\Desktop\pryde-backend\server\routes\badges.js
 
-### Guarantees
+// Life-Signal Features
+app.use('/api/prompts', promptsRoutes);    // F:\Desktop\pryde-backend\server\routes\prompts.js
+app.use('/api/collections', collectionsRoutes);  // F:\Desktop\pryde-backend\server\routes\collections.js
+app.use('/api/resonance', resonanceRoutes);  // F:\Desktop\pryde-backend\server\routes\resonance.js
+app.use('/api/circles', circlesRoutes);    // F:\Desktop\pryde-backend\server\routes\circles.js
+app.use('/api/presence', presenceRoutes);  // F:\Desktop\pryde-backend\server\routes\presence.js
+```
+
+---
+
+## Appendix B: Model Files Summary
+
+**Directory**: `F:\Desktop\pryde-backend\server\models\`
+
+| Model File | Description |
+|------------|-------------|
+| `User.js` | User schema with auth, profile, badges |
+| `Post.js` | Post schema with groupId isolation |
+| `Comment.js` | Comment schema with threading |
+| `Message.js` | Message schema with encryption |
+| `Conversation.js` | Conversation schema |
+| `Notification.js` | Notification schema |
+| `Group.js` | Group schema |
+| `Event.js` | Event schema |
+| `Badge.js` | Badge definition schema |
+| `Block.js` | Block relationship schema |
+| `Report.js` | Report schema |
+| `Reaction.js` | Reaction schema |
+| `FollowRequest.js` | Follow request schema |
+| `Journal.js` | Journal entry schema |
+| `Longform.js` | Longform post schema |
+| `PhotoEssay.js` | Photo essay schema |
+| `Draft.js` | Draft schema |
+| `Circle.js` | Small Circle schema |
+| `Collection.js` | Personal Collection schema |
+| `Resonance.js` | Resonance Signal schema |
+| `ReflectionPrompt.js` | Reflection Prompt schema |
+| `GlobalMessage.js` | Global chat message schema |
+| `GroupChat.js` | Group chat schema |
+| `Invite.js` | Invite schema |
+| `SecurityLog.js` | Security event log |
+| `AdminActionLog.js` | Admin action log |
+
+---
+
+## Appendix C: Frontend Directory Structure Summary
+
+**Directory**: `F:\Desktop\pryde-frontend\src\`
+
+| Directory | Description |
+|-----------|-------------|
+| `context/` | React contexts (AuthContext, SocketContext) |
+| `pages/` | Page components |
+| `components/` | Reusable UI components |
+| `features/` | Feature modules (feed, messages, groups, profile) |
+| `hooks/` | Custom React hooks |
+| `utils/` | Utility functions (api, socket, auth) |
+| `config/` | Configuration (api.js, platformFlags.js) |
+| `constants/` | Constants (notificationTypes, socketEvents) |
+| `layouts/` | Layout components |
+| `styles/` | CSS stylesheets |
+| `state/` | State management |
+
+---
+
+## Appendix D: Domain Guarantees
+
+### User / Authentication Domain
+
+**Backend File**: `F:\Desktop\pryde-backend\server\models\User.js`
+
+**Guarantees**:
 - Passwords are always bcrypt-hashed before persistence
 - comparePassword() provides authoritative credential checking
 - Login attempts are counted and lockoutUntil is set when thresholds are hit
@@ -781,7 +1332,7 @@ app.use('/api/presence', presenceRoutes);
 - Schema defaults ensure declared fields exist after persistence
 - The exported User model always includes instance methods
 
-### Non-Guarantees / Unsafe Assumptions
+**Non-Guarantees / Unsafe Assumptions**:
 - Login attempt tracking is NOT race-free
 - Lockout enforcement is NOT atomic under concurrency
 - bcrypt rounds are hard-coded and not environment-aware
