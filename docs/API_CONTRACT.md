@@ -771,6 +771,24 @@ app.use('/api/resonance', resonanceRoutes);
 app.use('/api/circles', circlesRoutes);
 app.use('/api/presence', presenceRoutes);
 ```
+## Domain: User / Authentication
+
+### Guarantees
+- Passwords are always bcrypt-hashed before persistence
+- comparePassword() provides authoritative credential checking
+- Login attempts are counted and lockoutUntil is set when thresholds are hit
+- toJSON() removes sensitive fields before public use
+- Schema defaults ensure declared fields exist after persistence
+- The exported User model always includes instance methods
+
+### Non-Guarantees / Unsafe Assumptions
+- Login attempt tracking is NOT race-free
+- Lockout enforcement is NOT atomic under concurrency
+- bcrypt rounds are hard-coded and not environment-aware
+- No format or strength validation is enforced at schema level
+- Usernames are NOT guaranteed unique
+- pre-save hooks are NOT guarded against bcrypt failures
+- Raw Mongoose documents may still expose sensitive fields
 
 ---
 
