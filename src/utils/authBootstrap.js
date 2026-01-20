@@ -34,6 +34,8 @@
 
 import { apiFetch } from './apiClient';
 import logger from './logger';
+import { refreshSession } from './authLifecycle';
+import { isManualLogout } from './auth';
 
 // Bootstrap state (singleton)
 let bootstrapState = {
@@ -82,20 +84,50 @@ export async function executeAuthBootstrap() {
 
   try {
     // STEP 1: Load token from storage
-    const token = localStorage.getItem('token');
-    
-    // STEP 2: No token = logged out (deterministic)
+    let token = localStorage.getItem('token');
+
+    // STEP 2: No token - attempt silent refresh before declaring logged out
+    // 🔥 FIX: Access token may have expired but httpOnly refresh cookie might be valid
     if (!token) {
-      logger.info('[Bootstrap] ❌ No token found - user logged out');
-      bootstrapState.user = null;
-      bootstrapState.error = null;
-      bootstrapState.isComplete = true;
-      bootstrapState.isBootstrapping = false;
-      
-      // Set authReady flag for dev warnings
-      sessionStorage.setItem('authReady', 'true');
-      
-      return { user: null, error: null };
+      // Skip silent refresh if user just manually logged out
+      const wasManualLogout = isManualLogout();
+      const isOnLoginPage = window.location.pathname === '/login' || window.location.pathname === '/register';
+
+      if (wasManualLogout || isOnLoginPage) {
+        logger.info('[Bootstrap] ❌ No token found (manual logout or login page) - user logged out');
+        bootstrapState.user = null;
+        bootstrapState.error = null;
+        bootstrapState.isComplete = true;
+        bootstrapState.isBootstrapping = false;
+        sessionStorage.setItem('authReady', 'true');
+        return { user: null, error: null };
+      }
+
+      // 🔥 Attempt silent refresh using httpOnly cookie
+      logger.info('[Bootstrap] 🔄 No access token - attempting silent refresh via httpOnly cookie...');
+      try {
+        const newToken = await refreshSession();
+        if (newToken) {
+          token = newToken;
+          logger.info('[Bootstrap] ✅ Silent refresh succeeded - session restored');
+        } else {
+          logger.info('[Bootstrap] ❌ Silent refresh failed - user logged out');
+          bootstrapState.user = null;
+          bootstrapState.error = null;
+          bootstrapState.isComplete = true;
+          bootstrapState.isBootstrapping = false;
+          sessionStorage.setItem('authReady', 'true');
+          return { user: null, error: null };
+        }
+      } catch (refreshError) {
+        logger.info('[Bootstrap] ❌ Silent refresh error - user logged out:', refreshError.message);
+        bootstrapState.user = null;
+        bootstrapState.error = null;
+        bootstrapState.isComplete = true;
+        bootstrapState.isBootstrapping = false;
+        sessionStorage.setItem('authReady', 'true');
+        return { user: null, error: null };
+      }
     }
 
     // STEP 3: Token exists - verify with /auth/me (ONCE, NO RETRIES)
