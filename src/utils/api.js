@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "../config/api.js"; // include .js extension
+import { API_BASE_URL, API_AUTH_URL } from "../config/api.js"; // include .js extension
 import axios from "axios";
 // NOTE FOR MAINTAINERS:
 // - api.js is the canonical Axios-based client used for auth-critical flows
@@ -11,13 +11,18 @@ import axios from "axios";
 //   auth bootstrap.
 // - Use apiClient.js (apiFetch) for background/fan-out requests that should
 //   respect the authCircuitBreaker and front-end version pinning.
+//
+// 🔥 IMPORTANT: This client uses API_AUTH_URL (direct backend URL) because:
+// - Vercel rewrites don't forward cookies properly for cross-origin backends
+// - Auth endpoints (login, logout, refresh) NEED cookies to work
+// - sameSite='none' + secure + credentials='include' enables cross-origin cookies
 import { getAuthToken, logout, isManualLogout, setAuthToken, getCurrentUser, getIsLoggingOut } from "./auth";
 import logger from './logger';
 import { disconnectSocket, initializeSocket } from './socket';
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
-  withCredentials: true, // Enable cookies for refresh token
+  baseURL: API_AUTH_URL, // Direct to backend - Vercel proxy doesn't forward cookies
+  withCredentials: true, // Enable cookies for refresh token (cross-origin)
   timeout: 10000 // 10 second timeout for better UX
 });
 
@@ -237,10 +242,14 @@ api.interceptors.response.use(
           // 🔐 SECURITY: httpOnly cookie is the SINGLE SOURCE OF TRUTH
           // No refresh token in request body - cookie only
           logger.debug('🔄 Token expired, attempting refresh via httpOnly cookie...');
+          logger.debug('🔄 Refresh URL:', `${API_AUTH_URL}/refresh`);
 
           // 🔐 SECURITY: Call /refresh with NO body - httpOnly cookie is sole source
-          const response = await axios.post(`${API_BASE_URL}/refresh`, {}, {
-            withCredentials: true // CRITICAL: Sends httpOnly cookie automatically
+          // Use axios directly to avoid interceptor loops
+          // Use API_AUTH_URL (direct to backend) because Vercel proxy doesn't forward cookies properly
+          const response = await axios.post(`${API_AUTH_URL}/refresh`, {}, {
+            withCredentials: true, // CRITICAL: Sends httpOnly cookie automatically (cross-origin with sameSite=none)
+            timeout: 15000 // 15 second timeout for cold starts
           });
 
           const { accessToken } = response.data;
@@ -276,7 +285,17 @@ api.interceptors.response.use(
 
           throw new Error('No access token in refresh response');
         } catch (refreshError) {
+          // Enhanced error logging for debugging
           logger.error('❌ Token refresh failed:', refreshError.message);
+          if (refreshError.response) {
+            logger.error('   Response status:', refreshError.response.status);
+            logger.error('   Response data:', refreshError.response.data);
+          } else if (refreshError.request) {
+            logger.error('   No response received - network error or CORS');
+            logger.error('   Request URL:', refreshError.config?.url);
+          } else {
+            logger.error('   Request setup error:', refreshError.message);
+          }
 
           processQueue(refreshError, null);
           isRefreshing = false;

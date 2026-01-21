@@ -8,7 +8,7 @@ import './utils/socketDiagnostics'; // Load diagnostics tool
 import { initializeQuietMode } from './utils/quietMode';
 import { preloadCriticalResources, preloadFeedData } from './utils/resourcePreloader';
 import { checkForUpdate } from './utils/versionCheck';
-import { API_BASE_URL } from './config/api';
+import { API_AUTH_URL } from './config/api';
 import logger from './utils/logger';
 import { AuthProvider, useAuth, AUTH_STATES } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
@@ -583,8 +583,8 @@ function App() {
     // Initialize offline manager
     initOfflineManager();
 
-    // Pre-warm backend (non-blocking)
-    fetch(API_BASE_URL.replace('/api', '') + '/api/health', {
+    // Pre-warm backend (non-blocking) - use direct backend URL
+    fetch(API_AUTH_URL.replace('/api', '') + '/api/health', {
       credentials: 'include',
       signal: AbortSignal.timeout(5000)
     }).then(() => {

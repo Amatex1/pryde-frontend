@@ -48,7 +48,7 @@ export function isApiError(response) {
   return response && typeof response === 'object' && response.error === true;
 }
 
-import { API_BASE_URL } from '../config/api.js';
+import { API_BASE_URL, API_AUTH_URL } from '../config/api.js';
 import { getAuthToken, setAuthToken, getIsLoggingOut } from './auth';
 import logger from './logger';
 import { FRONTEND_VERSION } from './pwaSafety';
@@ -100,10 +100,11 @@ async function refreshAccessToken() {
 
       // 🔐 SECURITY: httpOnly cookie is the SINGLE SOURCE OF TRUTH
       // No refresh token in request body - cookie only
-      const response = await fetch(`${API_BASE_URL}/refresh`, {
+      // Use API_AUTH_URL (direct to backend) because Vercel proxy doesn't forward cookies
+      const response = await fetch(`${API_AUTH_URL}/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // CRITICAL: Sends httpOnly cookie automatically
+        credentials: 'include', // CRITICAL: Sends httpOnly cookie automatically (cross-origin with sameSite=none)
         body: JSON.stringify({})
       });
 

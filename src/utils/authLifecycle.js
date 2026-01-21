@@ -18,7 +18,7 @@
  */
 
 import { getAuthToken, setAuthToken, getIsLoggingOut } from './auth';
-import { API_BASE_URL } from '../config/api';
+import { API_AUTH_URL } from '../config/api';
 import logger from './logger';
 
 // Track if lifecycle is already set up (prevent duplicates)
@@ -65,10 +65,11 @@ export async function refreshSession(coordinateWithSocket = false) {
 
     // 🔐 SECURITY: httpOnly cookie is the SINGLE SOURCE OF TRUTH
     // No refresh token in request body - cookie only
-    const response = await fetch(`${API_BASE_URL}/refresh`, {
+    // Use API_AUTH_URL (direct to backend) because Vercel proxy doesn't forward cookies properly
+    const response = await fetch(`${API_AUTH_URL}/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include', // CRITICAL: Sends httpOnly cookie automatically
+      credentials: 'include', // CRITICAL: Sends httpOnly cookie automatically (cross-origin with sameSite=none)
       body: JSON.stringify({})
     });
 
