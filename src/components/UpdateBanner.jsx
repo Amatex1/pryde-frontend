@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { refreshAccessToken } from '../utils/auth';
+import { refreshBeforeUpdate } from '../utils/auth';
 import './UpdateBanner.css';
 
 /**
@@ -31,7 +31,7 @@ export default function UpdateBanner({ onClose }) {
     try {
       // 1. Refresh auth token so user stays logged in after reload
       console.log('🔑 Refreshing auth token...');
-      await refreshAccessToken().catch(err => {
+      await refreshBeforeUpdate().catch(err => {
         console.warn('⚠️ Token refresh failed (will continue anyway):', err);
       });
 

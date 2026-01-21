@@ -39,6 +39,7 @@ import {
   logout as authLogout,
   isManualLogout
 } from '../utils/auth';
+import { refreshAccessToken } from '../utils/tokenRefresh'; // 🔐 Global single-flight refresh
 import { listenForAuthEvents, closeAuthSync, broadcastLogin, broadcastLogout } from '../utils/authSync';
 import { clearCachePattern } from '../utils/apiClient';
 import logger from '../utils/logger';
@@ -74,38 +75,22 @@ export function AuthProvider({ children }) {
   const role = useMemo(() => user?.role || null, [user]);
 
   /**
-   * Attempt silent token refresh using httpOnly cookie (primary) or localStorage (fallback)
+   * Attempt silent token refresh using httpOnly cookie
    *
-   * 🔥 CRITICAL: httpOnly cookie is the SINGLE SOURCE OF TRUTH
-   * - Always attempt refresh call, even if localStorage is empty
-   * - The httpOnly cookie will be sent automatically via credentials: 'include'
-   * - This restores sessions after browser restart, even if localStorage was cleared
+   * 🔐 CRITICAL: Uses global single-flight refresh from tokenRefresh.js
+   * This prevents race conditions when multiple triggers fire simultaneously.
    *
    * @returns {boolean} true if refresh succeeded
    */
   const attemptSilentRefresh = useCallback(async () => {
     try {
-      logger.debug('[AuthContext] 🔄 Attempting silent token refresh via httpOnly cookie...');
+      logger.debug('[AuthContext] 🔄 Attempting silent token refresh via global single-flight...');
 
-      // 🔐 SECURITY: httpOnly cookie is the SINGLE SOURCE OF TRUTH
-      // No refresh token in request body - cookie only
-      const response = await api.post('/refresh', {}, {
-        withCredentials: true, // CRITICAL: Sends httpOnly cookie automatically
-      });
-
-      const { accessToken, user: userData } = response.data;
+      // 🔐 CRITICAL: Use global single-flight refresh to prevent race conditions
+      const accessToken = await refreshAccessToken();
 
       if (accessToken) {
-        logger.debug('[AuthContext] ✅ Silent refresh succeeded via httpOnly cookie');
-        setAuthToken(accessToken);
-
-        // Note: refreshToken no longer returned in body - cookie is updated by backend
-
-        // If user data was returned, use it directly
-        if (userData) {
-          setCurrentUser(userData);
-        }
-
+        logger.debug('[AuthContext] ✅ Silent refresh succeeded');
         return true;
       }
 
@@ -310,28 +295,22 @@ export function AuthProvider({ children }) {
    * Manually refresh the access token
    * Note: The api.js interceptor handles this automatically on 401
    *
-   * 🔥 httpOnly cookie is the SINGLE SOURCE OF TRUTH
+   * 🔐 CRITICAL: Uses global single-flight refresh from tokenRefresh.js
    */
   const refreshToken = useCallback(async () => {
     try {
-      logger.debug('[AuthContext] 🔄 Manually refreshing token via httpOnly cookie...');
+      logger.debug('[AuthContext] 🔄 Manually refreshing token via global single-flight...');
 
-      // 🔐 SECURITY: httpOnly cookie is the SINGLE SOURCE OF TRUTH
-      // No refresh token in request body - cookie only
-      const response = await api.post('/refresh', {}, {
-        withCredentials: true
-      });
-
-      const { accessToken } = response.data;
+      // 🔐 CRITICAL: Use global single-flight refresh to prevent race conditions
+      const accessToken = await refreshAccessToken();
 
       if (accessToken) {
-        setAuthToken(accessToken);
         logger.debug('[AuthContext] ✅ Token refreshed');
+        return { success: true };
       }
 
-      // Note: refreshToken no longer returned in body - cookie is updated by backend
-
-      return { success: true };
+      // No token returned - refresh failed
+      throw new Error('No access token from refresh');
     } catch (err) {
       logger.error('[AuthContext] Token refresh failed:', err);
 

@@ -15,10 +15,13 @@
  * - Browser tab suspension
  * - Computer sleep/hibernate
  * - Browser throttling background intervals
+ *
+ * 🔐 CRITICAL: Uses global single-flight refresh from tokenRefresh.js
+ * This prevents race conditions when multiple triggers fire simultaneously.
  */
 
-import { getAuthToken, setAuthToken, getIsLoggingOut } from './auth';
-import { API_AUTH_URL } from '../config/api';
+import { getAuthToken } from './auth';
+import { refreshAccessToken } from './tokenRefresh';
 import logger from './logger';
 
 // Track if lifecycle is already set up (prevent duplicates)
@@ -38,22 +41,15 @@ function dispatchRefreshEvent(eventName, detail = {}) {
 }
 
 /**
- * Attempt to refresh the session using httpOnly cookie (primary) or localStorage (fallback)
+ * Attempt to refresh the session using httpOnly cookie
  *
- * 🔥 CRITICAL: httpOnly cookie is the SINGLE SOURCE OF TRUTH
- * - Always attempt refresh call, even if localStorage is empty
- * - The httpOnly cookie will be sent automatically via credentials: 'include'
+ * 🔐 CRITICAL: Uses global single-flight refresh from tokenRefresh.js
+ * This prevents race conditions when multiple triggers fire simultaneously.
  *
  * @param {boolean} coordinateWithSocket - If true, dispatch events for socket coordination
  * @returns {Promise<string|null>} New access token or null on failure
  */
 export async function refreshSession(coordinateWithSocket = false) {
-  // Don't refresh during logout
-  if (getIsLoggingOut()) {
-    logger.debug('[AuthLifecycle] Skipping refresh - logout in progress');
-    return null;
-  }
-
   // 🔥 SOCKET COORDINATION: Notify socket to pause reconnection
   if (coordinateWithSocket) {
     console.log('🔄 [AuthLifecycle] Starting coordinated refresh - notifying socket');
@@ -61,44 +57,22 @@ export async function refreshSession(coordinateWithSocket = false) {
   }
 
   try {
-    logger.debug('[AuthLifecycle] Proactive token refresh via httpOnly cookie...');
+    logger.debug('[AuthLifecycle] Proactive token refresh via global single-flight...');
 
-    // 🔐 SECURITY: httpOnly cookie is the SINGLE SOURCE OF TRUTH
-    // No refresh token in request body - cookie only
-    // Use API_AUTH_URL (direct to backend) because Vercel proxy doesn't forward cookies properly
-    const response = await fetch(`${API_AUTH_URL}/refresh`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include', // CRITICAL: Sends httpOnly cookie automatically (cross-origin with sameSite=none)
-      body: JSON.stringify({})
-    });
+    // 🔐 CRITICAL: Use global single-flight refresh to prevent race conditions
+    const accessToken = await refreshAccessToken();
 
-    if (!response.ok) {
-      logger.warn('[AuthLifecycle] Refresh failed:', response.status);
-      // 🔥 SOCKET COORDINATION: Notify socket refresh failed
-      if (coordinateWithSocket) {
-        dispatchRefreshEvent('pryde:token-refresh-complete', { success: false });
-      }
-      return null;
-    }
-
-    const data = await response.json();
-
-    if (data.accessToken) {
+    if (accessToken) {
       logger.debug('[AuthLifecycle] ✅ Token refreshed successfully');
-      setAuthToken(data.accessToken);
-      // Note: refreshToken no longer returned in body - cookie is updated by backend
-
       // 🔥 SOCKET COORDINATION: Notify socket refresh succeeded
       if (coordinateWithSocket) {
         console.log('🔄 [AuthLifecycle] Refresh complete - notifying socket to reconnect');
         dispatchRefreshEvent('pryde:token-refresh-complete', { success: true });
       }
-
-      return data.accessToken;
+      return accessToken;
     }
 
-    // 🔥 SOCKET COORDINATION: Notify socket refresh failed (no token in response)
+    // 🔥 SOCKET COORDINATION: Notify socket refresh failed
     if (coordinateWithSocket) {
       dispatchRefreshEvent('pryde:token-refresh-complete', { success: false });
     }

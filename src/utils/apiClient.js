@@ -48,8 +48,9 @@ export function isApiError(response) {
   return response && typeof response === 'object' && response.error === true;
 }
 
-import { API_BASE_URL, API_AUTH_URL } from '../config/api.js';
-import { getAuthToken, setAuthToken, getIsLoggingOut } from './auth';
+import { API_BASE_URL } from '../config/api.js';
+import { getAuthToken, getIsLoggingOut } from './auth';
+import { refreshAccessToken } from './tokenRefresh'; // 🔐 Global single-flight refresh
 import logger from './logger';
 import { FRONTEND_VERSION } from './pwaSafety';
 import {
@@ -71,69 +72,6 @@ let backoffDelay = 1000; // Start with 1 second
 
 // AbortController for canceling in-flight requests
 const abortControllers = new Map();
-
-// Token refresh state (single-flight pattern to prevent race conditions)
-let isRefreshing = false;
-let refreshPromise = null;
-
-/**
- * Attempt to refresh the access token
- * Uses single-flight pattern to prevent multiple simultaneous refreshes
- *
- * 🔥 CRITICAL: httpOnly cookie is the SINGLE SOURCE OF TRUTH
- * - Always attempt refresh call, even if localStorage is empty
- * - The httpOnly cookie will be sent automatically via credentials: 'include'
- *
- * @returns {Promise<string|null>} New access token or null if refresh failed
- */
-async function refreshAccessToken() {
-  // If already refreshing, wait for existing promise
-  if (isRefreshing && refreshPromise) {
-    logger.debug('[API] 🔄 Token refresh already in progress, awaiting...');
-    return refreshPromise;
-  }
-
-  isRefreshing = true;
-  refreshPromise = (async () => {
-    try {
-      logger.debug('[API] 🔄 Attempting token refresh via httpOnly cookie...');
-
-      // 🔐 SECURITY: httpOnly cookie is the SINGLE SOURCE OF TRUTH
-      // No refresh token in request body - cookie only
-      // Use API_AUTH_URL (direct to backend) because Vercel proxy doesn't forward cookies
-      const response = await fetch(`${API_AUTH_URL}/refresh`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // CRITICAL: Sends httpOnly cookie automatically (cross-origin with sameSite=none)
-        body: JSON.stringify({})
-      });
-
-      if (!response.ok) {
-        logger.warn(`[API] ❌ Token refresh failed: ${response.status}`);
-        return null;
-      }
-
-      const data = await response.json();
-
-      if (data.accessToken) {
-        logger.debug('[API] ✅ Token refreshed successfully');
-        setAuthToken(data.accessToken);
-        // Note: refreshToken no longer returned in body - cookie is updated by backend
-        return data.accessToken;
-      }
-
-      return null;
-    } catch (error) {
-      logger.error('[API] ❌ Token refresh error:', error.message);
-      return null;
-    } finally {
-      isRefreshing = false;
-      refreshPromise = null;
-    }
-  })();
-
-  return refreshPromise;
-}
 
 /**
  * Global fetch coordinator with deduplication and caching

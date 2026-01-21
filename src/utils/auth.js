@@ -265,26 +265,22 @@ export const isAuthenticated = () => {
  * Refresh the access token before an update reload
  * This ensures the user stays logged in after the app reloads
  *
- * 🔐 SECURITY: httpOnly cookie is the SINGLE SOURCE OF TRUTH
- * No refresh token is sent in request body - cookie only
+ * 🔐 CRITICAL: Uses global single-flight refresh from tokenRefresh.js
+ * This prevents race conditions when multiple triggers fire simultaneously.
  */
-export async function refreshAccessToken() {
+export async function refreshBeforeUpdate() {
   try {
-    // Import api dynamically to avoid circular dependency
-    const { default: api } = await import('./api');
+    // Import global single-flight refresh to avoid circular dependency
+    const { refreshAccessToken } = await import('./tokenRefresh');
 
-    // 🔐 SECURITY: Call /refresh with NO body - httpOnly cookie is sole source
-    const response = await api.post('/refresh', {}, {
-      withCredentials: true // CRITICAL: Sends httpOnly cookie automatically
-    });
+    // 🔐 CRITICAL: Use global single-flight refresh to prevent race conditions
+    const accessToken = await refreshAccessToken();
 
-    // Store new access token (returned in JSON body)
-    if (response.data?.accessToken || response.data?.token) {
-      setAuthToken(response.data.accessToken || response.data.token);
+    if (accessToken) {
+      console.log('✅ Token refreshed before update via global single-flight');
+    } else {
+      console.warn('⚠️ Token refresh returned null before update');
     }
-    // Note: refreshToken no longer returned in body - cookie is updated by backend
-
-    console.log('✅ Token refreshed before update via httpOnly cookie');
   } catch (err) {
     console.warn('⚠️ Token refresh failed during update:', err.message);
     // Don't throw - we still want to reload even if refresh fails
