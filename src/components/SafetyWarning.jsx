@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import logger from '../utils/logger';
 import './SafetyWarning.css';
 import {
-  detectUserCountry,
   getRiskLevel,
   getSafetyRecommendations,
-  storeCountryPreference,
   getStoredCountry
 } from '../utils/geolocation';
+
+// NOTE: detectUserCountry removed - country is now provided by backend during login
+// This avoids CORS issues with external geolocation APIs (ipapi.co, ip-api.com, etc.)
 
 function SafetyWarning() {
   const [show, setShow] = useState(false);
@@ -28,16 +29,9 @@ function SafetyWarning() {
         return;
       }
 
-      // Try to get stored country first
-      let countryCode = getStoredCountry();
-
-      // If no stored country, detect it
-      if (!countryCode) {
-        countryCode = await detectUserCountry();
-        if (countryCode) {
-          storeCountryPreference(countryCode);
-        }
-      }
+      // Get stored country (set by backend during login)
+      // NOTE: No longer calling external APIs - backend provides countryCode during login
+      const countryCode = getStoredCountry();
 
       if (countryCode) {
         const level = getRiskLevel(countryCode);
@@ -49,6 +43,8 @@ function SafetyWarning() {
           setShow(true);
         }
       }
+      // If no countryCode stored, user either hasn't logged in yet or backend didn't provide it
+      // This is fine - we just won't show a warning
     } catch (error) {
       logger.error('Failed to check location:', error);
     }

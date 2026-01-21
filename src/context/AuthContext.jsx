@@ -253,10 +253,10 @@ export function AuthProvider({ children }) {
 
   /**
    * Login function - to be called after successful login API call
-   * @param {Object} authData - { token, user } (refreshToken now stored only in httpOnly cookie)
+   * @param {Object} authData - { token, user, countryCode } (refreshToken now stored only in httpOnly cookie)
    */
   const login = useCallback(async (authData) => {
-    const { token, accessToken, user: userData } = authData;
+    const { token, accessToken, user: userData, countryCode } = authData;
 
     // 🔍 AUTH VERIFICATION DIAGNOSTIC - Log login start
     if (process.env.NODE_ENV === 'development') {
@@ -265,6 +265,7 @@ export function AuthProvider({ children }) {
         isAuthReady, // Now uses explicit state
         hasToken: !!(token || accessToken),
         hasUser: !!userData,
+        countryCode,
         time: new Date().toISOString()
       });
     }
@@ -275,6 +276,16 @@ export function AuthProvider({ children }) {
     const tokenToStore = token || accessToken;
     if (tokenToStore) {
       setAuthToken(tokenToStore);
+    }
+
+    // 🌍 Store countryCode for SafetyWarning (from backend geolocation, avoids CORS issues)
+    if (countryCode) {
+      try {
+        localStorage.setItem('pryde_user_country', countryCode);
+        logger.debug('[AuthContext] 🌍 Stored countryCode:', countryCode);
+      } catch (e) {
+        logger.warn('[AuthContext] Failed to store countryCode:', e);
+      }
     }
 
     // 🔐 SECURITY: refreshToken no longer stored in localStorage
