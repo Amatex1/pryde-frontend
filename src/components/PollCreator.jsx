@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './PollCreator.css';
 
-const PollCreator = ({ onPollChange, initialPoll = null }) => {
+const PollCreator = ({ onPollChange, onCancel, initialPoll = null }) => {
   const [poll, setPoll] = useState(initialPoll || {
     options: ['', ''],
     endsAt: null,
@@ -46,7 +46,19 @@ const PollCreator = ({ onPollChange, initialPoll = null }) => {
   return (
     <div className="poll-creator">
       <div className="poll-header">
-        <h4>📊 Create a Poll</h4>
+        <div className="poll-header-title">
+          <h4>📊 Create a Poll</h4>
+          {onCancel && (
+            <button
+              type="button"
+              className="poll-cancel-btn"
+              onClick={onCancel}
+              title="Cancel poll"
+            >
+              ✕
+            </button>
+          )}
+        </div>
         <p className="poll-hint">Your question will be the post text above</p>
       </div>
 

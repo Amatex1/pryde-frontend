@@ -2146,6 +2146,10 @@ function Feed() {
               {showPollCreator && (
                 <PollCreator
                   onPollChange={setPoll}
+                  onCancel={() => {
+                    setShowPollCreator(false);
+                    setPoll(null);
+                  }}
                   initialPoll={poll}
                 />
               )}
@@ -3012,6 +3016,10 @@ function Feed() {
                   {showPollCreator && (
                     <PollCreator
                       onPollChange={setPoll}
+                      onCancel={() => {
+                        setShowPollCreator(false);
+                        setPoll(null);
+                      }}
                       initialPoll={poll}
                     />
                   )}
