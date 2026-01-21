@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link, useSearchParams, useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import PasskeyBanner from '../components/PasskeyBanner';
@@ -165,6 +165,7 @@ function Feed() {
   const commentRefs = useRef({});
   const listenersSetUpRef = useRef(false);
   const autoSaveTimerRef = useRef(null); // Auto-save timer
+  const scrollHandledRef = useRef(false); // Track if we've already scrolled to a post from URL params
 
   // Handler to block Enter key submission when GIF picker is open
   const handleKeyDown = useCallback((e) => {
@@ -276,52 +277,75 @@ function Feed() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Merged: Handle scrolling to specific post/comment from query parameters and auto-fetch comments
+  // Auto-fetch comments for posts that have comments
+  // This is separate from scroll handling to prevent scroll jumps on infinite scroll
   useEffect(() => {
-    // Auto-fetch comments for posts that have comments
     posts.forEach(post => {
       if (post.commentCount > 0 && !postComments[post._id]) {
         logger.debug(`📥 Auto-fetching ${post.commentCount} comments for post ${post._id}`);
         fetchCommentsForPost(post._id);
       }
     });
+  }, [posts, postComments]);
 
-    // Handle scrolling to specific post/comment from notifications
-    const postId = searchParams.get('post');
-    const commentId = searchParams.get('comment');
+  // Memoize the URL params to prevent unnecessary effect runs
+  const targetPostId = useMemo(() => searchParams.get('post'), [searchParams]);
+  const targetCommentId = useMemo(() => searchParams.get('comment'), [searchParams]);
 
-    if (postId && posts.length > 0 && !fetchingPosts) {
-      // Wait for DOM to update
-      setTimeout(() => {
-        const postElement = postRefs.current[postId];
-        if (postElement) {
-          postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          postElement.classList.add('highlighted-post');
-
-          // Remove highlight after 3 seconds
-          setTimeout(() => {
-            postElement.classList.remove('highlighted-post');
-          }, 3000);
-
-          // If there's a specific comment, scroll to it
-          if (commentId) {
-            setTimeout(() => {
-              const commentElement = commentRefs.current[commentId];
-              if (commentElement) {
-                commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                commentElement.classList.add('highlighted-comment');
-
-                // Remove highlight after 3 seconds
-                setTimeout(() => {
-                  commentElement.classList.remove('highlighted-comment');
-                }, 3000);
-              }
-            }, 500);
-          }
-        }
-      }, 500);
+  // Reset scroll handled flag when URL params change
+  useEffect(() => {
+    if (targetPostId) {
+      scrollHandledRef.current = false;
     }
-  }, [posts, searchParams, fetchingPosts, postComments]);
+  }, [targetPostId, targetCommentId]);
+
+  // Handle scrolling to specific post/comment from query parameters (e.g., from notifications)
+  // Only scroll ONCE when posts load and URL params are present
+  useEffect(() => {
+    // Skip if no target post, already handled, or still fetching
+    if (!targetPostId || scrollHandledRef.current || fetchingPosts || posts.length === 0) {
+      return;
+    }
+
+    // Check if the target post exists in our loaded posts
+    const targetPostExists = posts.some(p => p._id === targetPostId);
+    if (!targetPostExists) {
+      return; // Wait for the post to be loaded
+    }
+
+    // Mark as handled BEFORE scrolling to prevent duplicate scrolls
+    scrollHandledRef.current = true;
+
+    // Wait for DOM to update
+    setTimeout(() => {
+      const postElement = postRefs.current[targetPostId];
+      if (postElement) {
+        postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        postElement.classList.add('highlighted-post');
+
+        // Remove highlight after 3 seconds
+        setTimeout(() => {
+          postElement.classList.remove('highlighted-post');
+        }, 3000);
+
+        // If there's a specific comment, scroll to it after the post scroll settles
+        if (targetCommentId) {
+          setTimeout(() => {
+            const commentElement = commentRefs.current[targetCommentId];
+            if (commentElement) {
+              commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              commentElement.classList.add('highlighted-comment');
+
+              // Remove highlight after 3 seconds
+              setTimeout(() => {
+                commentElement.classList.remove('highlighted-comment');
+              }, 3000);
+            }
+          }, 500);
+        }
+      }
+    }, 500);
+  }, [targetPostId, targetCommentId, fetchingPosts, posts]);
 
   // Handle scroll detection for scroll-to-top button and infinite scroll
   // QUIET MODE: Disable auto-fetch on scroll - require explicit "Load more" click

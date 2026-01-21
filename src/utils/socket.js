@@ -96,18 +96,19 @@ const getUserIdFromToken = () => {
     }
 };
 
-// 🔥 NEW: Process queued messages when connection is ready
+// Process queued messages when connection is ready
 const processMessageQueue = () => {
-    // 🔥 PROD DEBUG: Use console.warn to show in production
-    console.warn(`📬 [Queue] Processing ${messageQueue.length} queued messages`);
+    if (messageQueue.length === 0) return; // Skip logging if nothing to process
+
+    logger.debug(`📬 [Queue] Processing ${messageQueue.length} queued messages`);
 
     while (messageQueue.length > 0) {
         const { event, data, callback } = messageQueue.shift();
         if (socket && socket.connected) {
-            console.warn(`📬 [Queue] Sending queued message:`, event, data?._tempId);
+            logger.debug(`📬 [Queue] Sending queued message:`, event, data?._tempId);
             socket.emit(event, data, callback);
         } else {
-            console.warn('⚠️ [Queue] Socket disconnected while processing, re-queuing');
+            logger.debug('⚠️ [Queue] Socket disconnected while processing, re-queuing');
             messageQueue.unshift({ event, data, callback });
             break;
         }
@@ -179,54 +180,66 @@ export const connectSocket = (userId) => {
         socketRef.current = socket;
         console.warn('🔒 [Socket] socketRef.current updated to:', socket.id || 'pending');
 
-        // Add connection event listeners
+        // 🔥 FIX: Fallback timer to set connectionReady even if room:joined is missed
+        // This prevents messages from being rejected due to connectionReady being false
+        let queueProcessTimeout = null;
+
+        // Add connection event listeners (SINGLE handler to prevent duplicate events)
         socket.on('connect', () => {
             // 🔒 CRITICAL: Update socketRef on every connect (including reconnects)
             socketRef.current = socket;
-            console.warn('🔒 [Socket] socketRef.current confirmed:', socket.id);
-            // 🔥 PROD DEBUG: Use console.warn to show in production
-            console.warn('🔌 [Socket] Connected! ID:', socket.id);
-            console.warn('🔌 [Socket] Transport:', socket.io.engine.transport.name);
+            console.log('🔒 [Socket] socketRef.current confirmed:', socket.id);
+            console.log('🔌 [Socket] Connected! ID:', socket.id);
+            console.log('🔌 [Socket] Transport:', socket.io.engine.transport.name);
             reconnectAttempts = 0;
 
-            // 🔥 DIAGNOSTIC: Log transport type
+            // 🔥 DIAGNOSTIC: Log transport type (reduced verbosity)
             if (socket.io.engine.transport.name === 'polling') {
-                console.warn('⚠️ Using POLLING transport - will upgrade to WebSocket if possible');
+                console.log('⚠️ Using POLLING transport - will upgrade to WebSocket if possible');
             } else {
-                console.warn('✅ Using WebSocket transport (fast, real-time)');
+                console.log('✅ Using WebSocket transport (fast, real-time)');
             }
 
-            // 🔥 NEW: Re-join user room on connect
+            // 🔥 FIX: Backend now auto-joins user room on connect (see server.js line 752)
+            // No need to emit 'join' - this was causing duplicate room:joined events
             const tokenUserId = getUserIdFromToken();
-            console.warn('🔌 [Socket] User ID from token:', tokenUserId);
-            if (tokenUserId) {
-                console.warn(`🔌 [Socket] Emitting 'join' for user room: user_${tokenUserId}`);
-                socket.emit('join', tokenUserId);
-
-                // Verify connection after 1 second
-                setTimeout(() => {
-                    if (socket && socket.connected) {
-                        socket.emit('ping', (response) => {
-                            console.warn('🏓 [Socket] Ping response:', response);
-                        });
-                    }
-                }, 1000);
-            } else {
+            console.log('🔌 [Socket] User ID from token:', tokenUserId);
+            if (!tokenUserId) {
                 console.error('❌ [Socket] No userId from token! Messages will fail.');
             }
 
             // 🏥 Health monitoring is now handled by Socket.IO's built-in ping/pong
             startHealthMonitoring(); // No-op, kept for API compatibility
+
+            // Clear any existing fallback timeout
+            if (queueProcessTimeout) {
+                clearTimeout(queueProcessTimeout);
+            }
+
+            // Set fallback timer - if room not joined in 3 seconds, force mark as ready
+            queueProcessTimeout = setTimeout(() => {
+                // Only set connectionReady if socket is STILL connected
+                if (!connectionReady && socket && socket.connected) {
+                    console.log('⚠️ [Socket] Room join not received after 3s, forcing connectionReady = true');
+                    connectionReady = true;
+                    // Process any queued messages if they exist
+                    if (messageQueue.length > 0) {
+                        console.log(`📬 [Socket] Processing ${messageQueue.length} queued messages after fallback`);
+                        processMessageQueue();
+                    }
+                }
+            }, 3000);
         });
 
-        // 🔥 NEW: Listen for room join confirmation
+        // 🔥 Listen for room join confirmation
         socket.on('room:joined', (data) => {
-            // 🔥 PROD DEBUG: Use console.warn to show in production
-            console.warn('✅ [Socket] Room joined:', data);
+            console.log('✅ [Socket] Room joined:', data);
             connectionReady = true;
 
-            // Process any queued messages
-            processMessageQueue();
+            // Process any queued messages (only if there are any to reduce log noise)
+            if (messageQueue.length > 0) {
+                processMessageQueue();
+            }
         });
 
         socket.on('room:error', (error) => {
@@ -234,52 +247,20 @@ export const connectSocket = (userId) => {
             connectionReady = false;
         });
 
-        // 🔥 GLOBAL DEBUG: Listen for ALL message events to diagnose delivery
+        // Listen for message events (reduced verbosity in production)
         socket.on('message:new', (msg) => {
-            console.warn('📨 [Socket GLOBAL] message:new received!', {
+            logger.debug('📨 [Socket] message:new received!', {
                 messageId: msg?._id,
                 senderId: msg?.sender?._id,
-                recipientId: msg?.recipient?._id,
-                contentPreview: msg?.content?.substring(0, 50)
+                recipientId: msg?.recipient?._id
             });
         });
 
         socket.on('message:sent', (msg) => {
-            console.warn('📨 [Socket GLOBAL] message:sent received!', {
+            logger.debug('📨 [Socket] message:sent received!', {
                 messageId: msg?._id,
                 _tempId: msg?._tempId
             });
-        });
-
-        // 🔥 FIX: Fallback timer to set connectionReady even if room:joined is missed
-        // This prevents messages from being rejected due to connectionReady being false
-        let queueProcessTimeout = null;
-        socket.on('connect', () => {
-            // 🔥 PROD DEBUG: Use console.warn to show in production
-            console.warn('🔌 [Socket] Connected event fired! socketId:', socket?.id);
-
-            // Clear any existing timeout
-            if (queueProcessTimeout) {
-                clearTimeout(queueProcessTimeout);
-            }
-
-            // Set fallback timer - if room not joined in 3 seconds, force mark as ready
-            queueProcessTimeout = setTimeout(() => {
-                // 🔥 BUG FIX: Only set connectionReady if socket is STILL connected
-                // Previously, if socket disconnected before timer fired, we'd set ready=true incorrectly
-                if (!connectionReady && socket && socket.connected) {
-                    console.warn('⚠️ [Socket] Room join not received after 3s, forcing connectionReady = true');
-                    // Mark as ready anyway to prevent infinite waiting
-                    connectionReady = true;
-                    // Process any queued messages if they exist
-                    if (messageQueue.length > 0) {
-                        console.warn(`📬 [Socket] Processing ${messageQueue.length} queued messages after fallback`);
-                        processMessageQueue();
-                    }
-                } else if (!connectionReady && (!socket || !socket.connected)) {
-                    console.warn('⚠️ [Socket] Fallback timer fired but socket disconnected - not setting ready');
-                }
-            }, 3000);
         });
 
         // DEV WARNING: Detect deprecated event names (Phase R)

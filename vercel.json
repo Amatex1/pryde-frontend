@@ -1,7 +1,15 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/api/:path*",
+      "destination": "https://pryde-backend.onrender.com/api/:path*"
+    },
+    {
+      "source": "/socket.io/:path*",
+      "destination": "https://pryde-backend.onrender.com/socket.io/:path*"
+    },
+    {
+      "source": "/((?!api|socket\\.io).*)",
       "destination": "/index.html"
     }
   ],

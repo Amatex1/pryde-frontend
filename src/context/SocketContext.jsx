@@ -39,71 +39,75 @@ export function SocketProvider({ children }) {
   // Get user ID from user object
   const userId = user?.id || user?._id;
 
+  // Ref to track which socket we've attached listeners to
+  const attachedSocketRef = useRef(null);
+
   /**
    * Initialize socket connection
    */
   const initSocket = useCallback(() => {
-    // 🔥 PROD DEBUG: Always log
-    console.log('🔌 [SocketContext] initSocket called. userId:', userId, 'isAuthenticated:', isAuthenticated);
+    logger.debug('[SocketContext] initSocket called. userId:', userId, 'isAuthenticated:', isAuthenticated);
 
     if (!userId || !isAuthenticated) {
-      console.log('⚠️ [SocketContext] Skipping - no user or not authenticated');
+      logger.debug('[SocketContext] Skipping - no user or not authenticated');
       return;
     }
 
     if (initializationRef.current) {
-      console.log('⚠️ [SocketContext] Skipping - already initializing');
+      logger.debug('[SocketContext] Skipping - already initializing');
       return;
     }
 
     initializationRef.current = true;
-    console.log('🔌 [SocketContext] Calling initializeSocket for user:', userId);
+    logger.debug('[SocketContext] Calling initializeSocket for user:', userId);
 
     try {
       const sock = initializeSocket(userId);
-      console.log('🔌 [SocketContext] initializeSocket returned:', sock ? 'socket object' : 'null');
+      logger.debug('[SocketContext] initializeSocket returned:', sock ? 'socket object' : 'null');
 
       if (sock) {
         setSocket(sock);
         setIsConnected(sock.connected);
 
-        // Listen for connection events
-        sock.on('connect', () => {
-          logger.debug('[SocketContext] Socket connected');
-          setIsConnected(true);
-          clearTimeout(reconnectTimeoutRef.current);
-        });
+        // 🔥 FIX: Only attach listeners ONCE per socket instance
+        // This prevents duplicate handlers when React re-renders
+        if (attachedSocketRef.current !== sock) {
+          attachedSocketRef.current = sock;
 
-        sock.on('disconnect', () => {
-          logger.debug('[SocketContext] Socket disconnected');
-          setIsConnected(false);
-          setIsReady(false);
-        });
-
-        // Listen for room join confirmation
-        sock.on('room:joined', (data) => {
-          logger.debug('[SocketContext] Room joined:', data);
-          setIsReady(true);
-        });
-
-        // Listen for online users updates
-        sock.on('online_users', (users) => {
-          logger.debug('[SocketContext] Online users updated:', users?.length);
-          setOnlineUsers(users || []);
-        });
-
-        // Listen for presence updates
-        sock.on('presence:update', ({ userId: onlineUserId, online }) => {
-          setOnlineUsers(prev => {
-            if (online) {
-              return prev.includes(onlineUserId) ? prev : [...prev, onlineUserId];
-            } else {
-              return prev.filter(id => id !== onlineUserId);
-            }
+          // Listen for connection events
+          sock.on('connect', () => {
+            setIsConnected(true);
+            clearTimeout(reconnectTimeoutRef.current);
           });
-        });
 
-        logger.debug('[SocketContext] Socket initialized successfully');
+          sock.on('disconnect', () => {
+            setIsConnected(false);
+            setIsReady(false);
+          });
+
+          // Listen for room join confirmation
+          sock.on('room:joined', () => {
+            setIsReady(true);
+          });
+
+          // Listen for online users updates
+          sock.on('online_users', (users) => {
+            setOnlineUsers(users || []);
+          });
+
+          // Listen for presence updates
+          sock.on('presence:update', ({ userId: onlineUserId, online }) => {
+            setOnlineUsers(prev => {
+              if (online) {
+                return prev.includes(onlineUserId) ? prev : [...prev, onlineUserId];
+              } else {
+                return prev.filter(id => id !== onlineUserId);
+              }
+            });
+          });
+
+          logger.debug('[SocketContext] Socket listeners attached');
+        }
       } else {
         logger.warn('[SocketContext] Socket initialization returned null');
         initializationRef.current = false;
