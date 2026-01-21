@@ -22,6 +22,64 @@ let messageQueue = []; // 🔥 NEW: Queue for messages when socket not ready
 let reconnectAttempts = 0;
 const MAX_RECONNECT_ATTEMPTS = 10;
 
+// 🔥 TOKEN REFRESH COORDINATION (prevents 401 on tab switch)
+// When true, socket will NOT attempt to reconnect - it waits for fresh token
+let isRefreshingToken = false;
+let pendingReconnect = false; // Track if we need to reconnect after refresh completes
+let refreshCoordinationInitialized = false;
+
+/**
+ * Initialize token refresh coordination listeners
+ * Called once when socket module is first used
+ */
+const initRefreshCoordination = () => {
+    if (refreshCoordinationInitialized) return;
+    refreshCoordinationInitialized = true;
+
+    // Listen for token refresh start - block reconnection
+    window.addEventListener('pryde:token-refresh-start', () => {
+        console.log('🔄 [Socket] Token refresh starting - blocking reconnection');
+        isRefreshingToken = true;
+        // Stop health monitoring during refresh to prevent zombie detection
+        stopHealthMonitoring();
+    });
+
+    // Listen for token refresh complete - allow reconnection with fresh token
+    window.addEventListener('pryde:token-refresh-complete', (event) => {
+        const { success } = event.detail || {};
+        console.log('🔄 [Socket] Token refresh complete. Success:', success);
+        isRefreshingToken = false;
+
+        // If we had a pending reconnect, do it now with fresh token
+        if (pendingReconnect) {
+            pendingReconnect = false;
+            console.log('🔌 [Socket] Processing pending reconnect with fresh token');
+
+            if (socket && !socket.connected && !isLoggingOut) {
+                // Get fresh token from localStorage
+                const freshToken = localStorage.getItem('token');
+                if (freshToken && socket.auth) {
+                    socket.auth.token = freshToken;
+                    console.log('🔑 [Socket] Updated auth token for reconnect');
+                }
+                socket.connect();
+            }
+        }
+
+        // Restart health monitoring after reconnect
+        if (socket && socket.connected) {
+            startHealthMonitoring();
+        }
+    });
+
+    console.log('✅ [Socket] Token refresh coordination initialized');
+};
+
+// Initialize coordination on module load
+if (typeof window !== 'undefined') {
+    initRefreshCoordination();
+}
+
 // 🔥 NEW: Helper to get userId from JWT token
 const getUserIdFromToken = () => {
     try {
@@ -286,6 +344,16 @@ export const connectSocket = (userId) => {
             logger.debug(`🔄 Reconnection attempt #${attemptNumber}`);
             reconnectAttempts = attemptNumber;
 
+            // 🔥 CRITICAL: If token refresh is in progress, abort this attempt
+            // The refresh-complete handler will trigger reconnect with fresh token
+            if (isRefreshingToken) {
+                console.log('🔄 [Socket] Reconnect attempt blocked - waiting for token refresh');
+                pendingReconnect = true;
+                // Abort this reconnect attempt by temporarily disabling reconnection
+                // It will be re-enabled when refresh completes
+                return;
+            }
+
             // 🔥 CRITICAL: Update auth token on each reconnect attempt
             // This ensures we use the latest token if it was refreshed
             const freshToken = localStorage.getItem('token');
@@ -376,9 +444,20 @@ export const connectSocket = (userId) => {
 
         const handlePageShow = (event) => {
             if (event.persisted) {
-                // Page restored from cache, reconnect socket
-                logger.debug('📦 Page restored from cache, reconnecting socket');
-                if (socket && !socket.connected) {
+                // Page restored from cache
+                logger.debug('📦 Page restored from cache');
+
+                // 🔥 CRITICAL: Don't reconnect immediately - wait for token refresh
+                // authLifecycle.js will trigger refresh on visibility change
+                // We'll reconnect after refresh completes via pendingReconnect
+                if (isRefreshingToken) {
+                    console.log('🔄 [Socket] Waiting for token refresh before reconnecting');
+                    pendingReconnect = true;
+                    return;
+                }
+
+                if (socket && !socket.connected && !isLoggingOut) {
+                    console.log('🔌 [Socket] Reconnecting after page restore');
                     socket.connect();
                 }
             }
@@ -480,6 +559,13 @@ export const startHealthMonitoring = () => {
     missedPongs = 0;
 
     healthCheckInterval = setInterval(() => {
+        // 🔥 CRITICAL: Skip health check during token refresh
+        // This prevents false zombie detection when tab becomes visible
+        if (isRefreshingToken) {
+            logger.debug('⏸️ Health check paused - token refresh in progress');
+            return;
+        }
+
         if (!socket || !socket.connected) {
             logger.debug('⚠️ Health check: socket not connected');
             return;
@@ -511,6 +597,13 @@ export const startHealthMonitoring = () => {
                 // 🔥 CRITICAL FIX: Force reconnect after 2 missed pings
                 // This catches "zombie" connections where socket.connected === true but no data flows
                 if (missedPongs >= 2 && socket) {
+                    // 🔥 Don't force reconnect if token refresh is in progress
+                    if (isRefreshingToken) {
+                        console.log('🔄 [Socket] Zombie detected but waiting for token refresh');
+                        pendingReconnect = true;
+                        return;
+                    }
+
                     console.error('🔄 [ZOMBIE CONNECTION DETECTED] Forcing reconnect after', missedPongs, 'missed pings');
                     console.error('🔄 Socket thinks connected:', socket.connected, 'but pings are failing!');
 

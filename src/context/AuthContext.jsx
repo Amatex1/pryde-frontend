@@ -440,6 +440,7 @@ export function AuthProvider({ children }) {
 
   // 🔥 PROACTIVE TOKEN REFRESH - Refresh token every 10 minutes while authenticated
   // This prevents session expiration during long idle periods (e.g., overnight)
+  // NOTE: Visibility change refresh is handled by authLifecycle.js with socket coordination
   useEffect(() => {
     if (authStatus !== AUTH_STATES.AUTHENTICATED) return;
 
@@ -461,19 +462,12 @@ export function AuthProvider({ children }) {
     // Start the refresh timer
     refreshTimer = setInterval(proactiveRefresh, REFRESH_INTERVAL);
 
-    // Also refresh when the page becomes visible after being hidden
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        logger.debug('[AuthContext] 👀 Page became visible - checking token...');
-        proactiveRefresh();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    // 🔥 REMOVED: Visibility change handler
+    // Now handled by authLifecycle.js with proper socket coordination
+    // to prevent 401 errors on tab switch (socket waits for token refresh)
 
     return () => {
       if (refreshTimer) clearInterval(refreshTimer);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [authStatus, attemptSilentRefresh]);
 

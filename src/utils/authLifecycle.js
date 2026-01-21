@@ -27,15 +27,27 @@ let refreshInterval = null;
 let lastRefreshCheck = Date.now(); // 🔥 Track when we last checked for refresh
 
 /**
+ * Dispatch custom event to coordinate with socket.js
+ * @param {string} eventName - Event name to dispatch
+ * @param {object} detail - Event detail payload
+ */
+function dispatchRefreshEvent(eventName, detail = {}) {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(eventName, { detail }));
+  }
+}
+
+/**
  * Attempt to refresh the session using httpOnly cookie (primary) or localStorage (fallback)
  *
  * 🔥 CRITICAL: httpOnly cookie is the SINGLE SOURCE OF TRUTH
  * - Always attempt refresh call, even if localStorage is empty
  * - The httpOnly cookie will be sent automatically via credentials: 'include'
  *
+ * @param {boolean} coordinateWithSocket - If true, dispatch events for socket coordination
  * @returns {Promise<string|null>} New access token or null on failure
  */
-export async function refreshSession() {
+export async function refreshSession(coordinateWithSocket = false) {
   // Don't refresh during logout
   if (getIsLoggingOut()) {
     logger.debug('[AuthLifecycle] Skipping refresh - logout in progress');
@@ -44,6 +56,12 @@ export async function refreshSession() {
 
   // Get localStorage token as OPTIONAL fallback (httpOnly cookie is primary)
   const localRefreshToken = getRefreshToken();
+
+  // 🔥 SOCKET COORDINATION: Notify socket to pause reconnection
+  if (coordinateWithSocket) {
+    console.log('🔄 [AuthLifecycle] Starting coordinated refresh - notifying socket');
+    dispatchRefreshEvent('pryde:token-refresh-start');
+  }
 
   try {
     logger.debug('[AuthLifecycle] Proactive token refresh via httpOnly cookie...');
@@ -58,6 +76,10 @@ export async function refreshSession() {
 
     if (!response.ok) {
       logger.warn('[AuthLifecycle] Refresh failed:', response.status);
+      // 🔥 SOCKET COORDINATION: Notify socket refresh failed
+      if (coordinateWithSocket) {
+        dispatchRefreshEvent('pryde:token-refresh-complete', { success: false });
+      }
       return null;
     }
 
@@ -71,12 +93,26 @@ export async function refreshSession() {
         setRefreshToken(data.refreshToken);
       }
 
+      // 🔥 SOCKET COORDINATION: Notify socket refresh succeeded
+      if (coordinateWithSocket) {
+        console.log('🔄 [AuthLifecycle] Refresh complete - notifying socket to reconnect');
+        dispatchRefreshEvent('pryde:token-refresh-complete', { success: true });
+      }
+
       return data.accessToken;
     }
 
+    // 🔥 SOCKET COORDINATION: Notify socket refresh failed (no token in response)
+    if (coordinateWithSocket) {
+      dispatchRefreshEvent('pryde:token-refresh-complete', { success: false });
+    }
     return null;
   } catch (error) {
     logger.warn('[AuthLifecycle] Refresh error:', error.message);
+    // 🔥 SOCKET COORDINATION: Notify socket refresh failed
+    if (coordinateWithSocket) {
+      dispatchRefreshEvent('pryde:token-refresh-complete', { success: false });
+    }
     return null;
   }
 }
@@ -104,6 +140,7 @@ export function setupAuthLifecycle() {
 
   // 2. Refresh on tab focus (user returning from another tab/app)
   // 🔥 PC FIX: Also detect if we've been suspended (gap > 5 minutes)
+  // 🔥 SOCKET COORDINATION: Use coordinated refresh to prevent 401 on tab switch
   const handleVisibilityChange = () => {
     if (document.visibilityState === 'visible') {
       // Only refresh if user is logged in
@@ -121,7 +158,9 @@ export function setupAuthLifecycle() {
         }
 
         lastRefreshCheck = now;
-        refreshSession().catch((err) => {
+        // 🔥 CRITICAL: Pass true to coordinate with socket
+        // This prevents socket from reconnecting with stale token
+        refreshSession(true).catch((err) => {
           logger.warn('[AuthLifecycle] Visibility change refresh failed:', err);
         });
       }
@@ -153,11 +192,12 @@ export function setupAuthLifecycle() {
   }, 10 * 60 * 1000); // 10 minutes
 
   // 4. Refresh on window focus (backup for visibility change)
+  // 🔥 SOCKET COORDINATION: Use coordinated refresh
   const handleWindowFocus = () => {
     if (getAuthToken() || getRefreshToken()) {
       lastRefreshCheck = Date.now();
       logger.debug('[AuthLifecycle] Window focused - refreshing session');
-      refreshSession().catch((err) => {
+      refreshSession(true).catch((err) => {
         logger.warn('[AuthLifecycle] Window focus refresh failed:', err);
       });
     }
@@ -166,11 +206,12 @@ export function setupAuthLifecycle() {
   window.addEventListener('focus', handleWindowFocus);
 
   // 🔥 PC FIX: Listen for online event (user's network came back)
+  // 🔥 SOCKET COORDINATION: Use coordinated refresh
   const handleOnline = () => {
     if (getAuthToken() || getRefreshToken()) {
       logger.info('[AuthLifecycle] 🌐 Network restored - refreshing session');
       lastRefreshCheck = Date.now();
-      refreshSession().catch((err) => {
+      refreshSession(true).catch((err) => {
         logger.warn('[AuthLifecycle] Online refresh failed:', err);
       });
     }
