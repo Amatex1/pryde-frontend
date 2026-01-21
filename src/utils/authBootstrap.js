@@ -35,7 +35,7 @@
 import { apiFetch } from './apiClient';
 import logger from './logger';
 import { refreshSession } from './authLifecycle';
-import { isManualLogout } from './auth';
+import { isManualLogout, getAuthToken } from './auth';
 
 // Bootstrap state (singleton)
 let bootstrapState = {
@@ -83,8 +83,9 @@ export async function executeAuthBootstrap() {
   logger.info('[Bootstrap] 🚀 Starting PWA-safe auth bootstrap...');
 
   try {
-    // STEP 1: Load token from storage
-    let token = localStorage.getItem('token');
+    // STEP 1: Load token from in-memory storage
+    // 🔐 SECURITY: getAuthToken() handles migration from legacy localStorage
+    let token = getAuthToken();
 
     // STEP 2: No token - attempt silent refresh before declaring logged out
     // 🔥 FIX: Access token may have expired but httpOnly refresh cookie might be valid

@@ -1,12 +1,28 @@
-// 🔐 SECURITY HARDENING: Access token in localStorage for API interceptor
+// ═══════════════════════════════════════════════════════════════════════════
+// 🔐 SECURITY HARDENING: In-Memory Token Storage
+// ═══════════════════════════════════════════════════════════════════════════
+// Access tokens now stored ONLY in memory - NOT localStorage
+// This protects against XSS attacks that could steal tokens from localStorage
 // On page reload, silent refresh via httpOnly cookie restores the session
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Module-level in-memory store (not accessible to XSS)
+let inMemoryAccessToken = null;
+let tokenSetTime = null;
+
 export const setAuthToken = (token) => {
   if (token) {
-    console.log('🔑 Setting access token');
-    localStorage.setItem('token', token);
-    localStorage.setItem('tokenSetTime', Date.now().toString());
+    console.log('🔑 Setting access token (in-memory only)');
+    inMemoryAccessToken = token;
+    tokenSetTime = Date.now();
+    // Also clear any legacy localStorage token
+    localStorage.removeItem('token');
+    localStorage.removeItem('tokenSetTime');
   } else {
-    console.log('🗑️ Removing access token');
+    console.log('🗑️ Clearing access token from memory');
+    inMemoryAccessToken = null;
+    tokenSetTime = null;
+    // Also clear any legacy localStorage token
     localStorage.removeItem('token');
     localStorage.removeItem('tokenSetTime');
   }
@@ -29,19 +45,41 @@ export const getRefreshToken = () => {
 };
 
 export const getAuthToken = () => {
-  const token = localStorage.getItem('token');
-  const tokenSetTime = localStorage.getItem('tokenSetTime');
-
-  if (token && tokenSetTime) {
-    const ageMinutes = (Date.now() - parseInt(tokenSetTime)) / 1000 / 60;
-
-    // Only log if token is expired (> 15 minutes) to reduce console noise
-    if (ageMinutes > 15) {
-      console.warn(`⚠️ Access token expired (${ageMinutes.toFixed(1)} minutes old) - will refresh on next API call`);
+  // First check in-memory token
+  if (inMemoryAccessToken) {
+    if (tokenSetTime) {
+      const ageMinutes = (Date.now() - tokenSetTime) / 1000 / 60;
+      // Only log if token is expired (> 15 minutes) to reduce console noise
+      if (ageMinutes > 15) {
+        console.warn(`⚠️ Access token expired (${ageMinutes.toFixed(1)} minutes old) - will refresh on next API call`);
+      }
     }
+    return inMemoryAccessToken;
   }
 
-  return token;
+  // Fallback: Check for legacy localStorage token (migration path)
+  // This handles the case where user had token in localStorage before upgrade
+  const legacyToken = localStorage.getItem('token');
+  if (legacyToken) {
+    console.log('📦 Migrating legacy token from localStorage to memory');
+    inMemoryAccessToken = legacyToken;
+    tokenSetTime = parseInt(localStorage.getItem('tokenSetTime') || Date.now().toString());
+    // Clear localStorage after migration
+    localStorage.removeItem('token');
+    localStorage.removeItem('tokenSetTime');
+    return inMemoryAccessToken;
+  }
+
+  return null;
+};
+
+// Clear all tokens (used during logout)
+export const clearAllTokens = () => {
+  inMemoryAccessToken = null;
+  tokenSetTime = null;
+  localStorage.removeItem('token');
+  localStorage.removeItem('tokenSetTime');
+  localStorage.removeItem('refreshToken');
 };
 
 export const setCurrentUser = (user) => {
@@ -149,9 +187,7 @@ export const logout = async () => {
   }
 
   // 🔥 STEP 6: Clear all local auth state BEFORE backend call
-  localStorage.removeItem('token');
-  localStorage.removeItem('tokenSetTime');
-  localStorage.removeItem('refreshToken');
+  clearAllTokens(); // Clears in-memory and localStorage tokens
   localStorage.removeItem('user');
   console.log('✅ Local auth state cleared');
 

@@ -1,15 +1,17 @@
 /**
  * Session Diff Comparison
- * 
+ *
  * For clustered errors:
  * - Capture session snapshots (auth, cache, SW, online/offline, mutation queue)
  * - Diff failing sessions against healthy sessions
  * - Highlight what changed, what broke first, what correlates with failure
- * 
+ *
  * Outcome:
  * - Root causes emerge visually
  * - No guesswork debugging
  */
+
+import { getAuthToken } from './auth';
 
 // Session snapshots storage
 const sessionSnapshots = new Map();
@@ -24,9 +26,9 @@ export function captureSessionSnapshot(sessionId, status = 'healthy') {
     status, // 'healthy' or 'failed'
     timestamp: Date.now(),
     
-    // Auth state
+    // Auth state (using in-memory token storage)
     auth: {
-      isAuthenticated: !!localStorage.getItem('token'),
+      isAuthenticated: !!getAuthToken(),
       authReady: window.__authReady || false,
       authLoading: window.__authLoading || false,
       userId: localStorage.getItem('userId') || null

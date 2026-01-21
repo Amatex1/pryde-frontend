@@ -17,6 +17,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { FRONTEND_VERSION } from '../utils/pwaSafety';
+import { getAuthToken } from '../utils/auth';
 import logger from '../utils/logger';
 import '../styles/DebugOverlay.css';
 
@@ -99,8 +100,9 @@ export default function DebugOverlay() {
     if (!visible) return;
 
     const checkToken = () => {
-      const token = localStorage.getItem('token');
-      
+      // 🔐 SECURITY: Get token from in-memory storage
+      const token = getAuthToken();
+
       if (!token) {
         setTokenInfo({ present: false });
         return;

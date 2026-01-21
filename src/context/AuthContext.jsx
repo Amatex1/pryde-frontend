@@ -33,6 +33,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import api from '../utils/api';
 import {
+  getAuthToken,
   setAuthToken,
   setCurrentUser,
   logout as authLogout,
@@ -126,12 +127,13 @@ export function AuthProvider({ children }) {
       logger.debug('[AuthContext] 🔐 Starting auth verification...');
 
       // Check if we have a token before making the request
-      let token = localStorage.getItem('token');
+      // 🔐 SECURITY: Uses in-memory token storage (not localStorage)
+      let token = getAuthToken();
 
       // 🔥 Validate token format - clear if empty/malformed
       if (token && (token === 'undefined' || token === 'null' || token.trim() === '')) {
         logger.debug('[AuthContext] Invalid token format detected - clearing');
-        localStorage.removeItem('token');
+        setAuthToken(null);
         token = null;
       }
 
@@ -157,8 +159,8 @@ export function AuthProvider({ children }) {
         const refreshed = await attemptSilentRefresh();
 
         if (refreshed) {
-          // Silent refresh succeeded - we now have a token
-          token = localStorage.getItem('token');
+          // Silent refresh succeeded - we now have a token in memory
+          token = getAuthToken();
           logger.debug('[AuthContext] ✅ Session restored via silent refresh');
         } else {
           // No valid refresh token - user is truly unauthenticated

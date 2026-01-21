@@ -186,7 +186,8 @@ export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = fal
     }
 
     // Check if we have a token for authenticated requests
-    const token = localStorage.getItem('token');
+    // 🔐 SECURITY: Uses in-memory token storage (not localStorage)
+    const token = getAuthToken();
     if (!token) {
       logger.debug(`[API] Skipping authenticated request without token: ${url}`);
       return null;

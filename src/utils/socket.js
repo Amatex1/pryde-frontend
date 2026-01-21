@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 import API_CONFIG from "../config/api";
 import logger from './logger';
 import { emitValidated } from './emitValidated';
+import { getAuthToken, clearAllTokens } from './auth';
 
 const SOCKET_URL = API_CONFIG.SOCKET_URL;
 
@@ -56,8 +57,8 @@ const initRefreshCoordination = () => {
             console.log('🔌 [Socket] Processing pending reconnect with fresh token');
 
             if (socket && !socket.connected && !isLoggingOut) {
-                // Get fresh token from localStorage
-                const freshToken = localStorage.getItem('token');
+                // 🔐 SECURITY: Get fresh token from in-memory storage
+                const freshToken = getAuthToken();
                 if (freshToken && socket.auth) {
                     socket.auth.token = freshToken;
                     console.log('🔑 [Socket] Updated auth token for reconnect');
@@ -83,7 +84,8 @@ if (typeof window !== 'undefined') {
 // 🔥 NEW: Helper to get userId from JWT token
 const getUserIdFromToken = () => {
     try {
-        const token = localStorage.getItem('token');
+        // 🔐 SECURITY: Get token from in-memory storage
+        const token = getAuthToken();
         if (!token) return null;
 
         const payload = JSON.parse(atob(token.split('.')[1]));
@@ -132,8 +134,8 @@ export const connectSocket = (userId) => {
     }
 
     if (!socket) {
-        // Get JWT token from localStorage
-        const token = localStorage.getItem('token');
+        // 🔐 SECURITY: Get JWT token from in-memory storage
+        const token = getAuthToken();
         console.log('🔑 [connectSocket] Token exists:', !!token);
 
         // 🔥 FIX: Removed 15-minute token age check - it was blocking socket connections
@@ -354,7 +356,8 @@ export const connectSocket = (userId) => {
 
             // 🔥 CRITICAL: Update auth token on each reconnect attempt
             // This ensures we use the latest token if it was refreshed
-            const freshToken = localStorage.getItem('token');
+            // 🔐 SECURITY: Get token from in-memory storage
+            const freshToken = getAuthToken();
             if (freshToken && socket.auth) {
                 socket.auth.token = freshToken;
                 logger.debug('🔑 Updated socket auth token for reconnect');
@@ -408,9 +411,8 @@ export const connectSocket = (userId) => {
             }
 
             // Clear all auth state
-            localStorage.removeItem('token');
-            localStorage.removeItem('tokenSetTime');
-            localStorage.removeItem('refreshToken');
+            // 🔐 SECURITY: Use clearAllTokens for in-memory + localStorage cleanup
+            clearAllTokens();
             localStorage.removeItem('user');
             sessionStorage.clear();
 

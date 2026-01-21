@@ -6,7 +6,7 @@ import InviteManagement from '../components/InviteManagement'; // Phase 7B
 import ProfileUrlSetting from '../components/ProfileUrlSetting'; // Custom profile URLs
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
-import { logout } from '../utils/auth';
+import { logout, getAuthToken } from '../utils/auth';
 import { setQuietMode, setQuietSubToggle, getQuietSubToggle, setCursorStyle, getCursorStyle, getCursorStyleOptions } from '../utils/themeManager';
 import { useAuth } from '../context/AuthContext';
 import logger from '../utils/logger';
@@ -336,8 +336,8 @@ function Settings() {
       setMessage('Preparing your data...');
       logger.debug('📥 Requesting data download...');
 
-      // Debug: Check if token exists
-      const token = localStorage.getItem('token');
+      // Debug: Check if token exists (from in-memory storage)
+      const token = getAuthToken();
       logger.debug('🔑 Token exists:', !!token);
       logger.debug('🔑 Token preview:', token ? token.substring(0, 20) + '...' : 'NO TOKEN');
 
