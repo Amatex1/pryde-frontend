@@ -2300,7 +2300,8 @@ function Feed() {
           )}
 
           <div className="posts-list">
-            {fetchingPosts ? (
+            {/* Only show skeletons on initial load (no posts yet), not during infinite scroll */}
+            {fetchingPosts && posts.length === 0 ? (
               <>
                 <PostSkeleton />
                 <PostSkeleton />
@@ -2872,7 +2873,14 @@ function Feed() {
             )}
           </div>
 
-          {/* Load More Button */}
+          {/* Loading indicator for infinite scroll */}
+          {fetchingPosts && posts.length > 0 && (
+            <div className="load-more-container">
+              <div className="loading-indicator">Loading more posts...</div>
+            </div>
+          )}
+
+          {/* Load More Button - only show when not currently fetching */}
           {!fetchingPosts && hasMore && posts.length > 0 && (
             <div className="load-more-container">
               <button
@@ -2880,7 +2888,7 @@ function Feed() {
                 onClick={loadMorePosts}
                 disabled={fetchingPosts}
               >
-                {fetchingPosts ? 'Loading…' : 'Load more'}
+                Load more
               </button>
             </div>
           )}
