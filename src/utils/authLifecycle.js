@@ -114,6 +114,16 @@ export function setupAuthLifecycle() {
   // 🔥 SOCKET COORDINATION: Use coordinated refresh to prevent 401 on tab switch
   const handleVisibilityChange = () => {
     if (document.visibilityState === 'visible') {
+      // 🔍 AUTH VERIFICATION DIAGNOSTIC (PART 2) - Log visibility refresh trigger
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[AUTH VERIFY] authLifecycle refresh trigger (visibilitychange)', {
+          authStatus: typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.authStatus : 'N/A',
+          isAuthReady: typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.isAuthReady : 'N/A',
+          hasToken: !!getAuthToken(),
+          time: new Date().toISOString()
+        });
+      }
+
       // Only refresh if user is logged in (has access token)
       if (getAuthToken()) {
         const now = Date.now();
@@ -144,6 +154,16 @@ export function setupAuthLifecycle() {
   // Access tokens expire in 15 minutes, so refreshing at 10 minutes gives buffer
   // 🔥 PC FIX: Also check for gaps caused by tab throttling/suspension
   refreshInterval = setInterval(() => {
+    // 🔍 AUTH VERIFICATION DIAGNOSTIC (PART 2) - Log interval refresh trigger
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[AUTH VERIFY] authLifecycle refresh trigger (interval)', {
+        authStatus: typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.authStatus : 'N/A',
+        isAuthReady: typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.isAuthReady : 'N/A',
+        hasToken: !!getAuthToken(),
+        time: new Date().toISOString()
+      });
+    }
+
     if (getAuthToken()) {
       const now = Date.now();
       const timeSinceLastCheck = now - lastRefreshCheck;
@@ -165,6 +185,16 @@ export function setupAuthLifecycle() {
   // 4. Refresh on window focus (backup for visibility change)
   // 🔥 SOCKET COORDINATION: Use coordinated refresh
   const handleWindowFocus = () => {
+    // 🔍 AUTH VERIFICATION DIAGNOSTIC (PART 2) - Log focus refresh trigger
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[AUTH VERIFY] authLifecycle refresh trigger (focus)', {
+        authStatus: typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.authStatus : 'N/A',
+        isAuthReady: typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.isAuthReady : 'N/A',
+        hasToken: !!getAuthToken(),
+        time: new Date().toISOString()
+      });
+    }
+
     if (getAuthToken()) {
       lastRefreshCheck = Date.now();
       logger.debug('[AuthLifecycle] Window focused - refreshing session');
@@ -179,6 +209,16 @@ export function setupAuthLifecycle() {
   // 🔥 PC FIX: Listen for online event (user's network came back)
   // 🔥 SOCKET COORDINATION: Use coordinated refresh
   const handleOnline = () => {
+    // 🔍 AUTH VERIFICATION DIAGNOSTIC (PART 2) - Log online refresh trigger
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[AUTH VERIFY] authLifecycle refresh trigger (online)', {
+        authStatus: typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.authStatus : 'N/A',
+        isAuthReady: typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.isAuthReady : 'N/A',
+        hasToken: !!getAuthToken(),
+        time: new Date().toISOString()
+      });
+    }
+
     if (getAuthToken()) {
       logger.info('[AuthLifecycle] 🌐 Network restored - refreshing session');
       lastRefreshCheck = Date.now();

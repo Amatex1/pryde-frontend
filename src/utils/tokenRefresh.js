@@ -36,6 +36,20 @@ let refreshPromise = null;
  * @returns {Promise<string|null>} New access token or null if refresh failed
  */
 export async function refreshAccessToken({ force = false } = {}) {
+  // ======================================================
+  // 🔍 AUTH VERIFICATION DIAGNOSTIC (PART 3)
+  // Log refresh entry with auth state snapshot
+  // ======================================================
+  if (process.env.NODE_ENV === 'development') {
+    console.groupCollapsed('[AUTH VERIFY] Refresh called');
+    console.log('Auth snapshot:', typeof window !== 'undefined' ? window.__PRYDE_AUTH__ : 'N/A');
+    console.log('Force:', force);
+    console.log('isRefreshing:', isRefreshing);
+    console.log('Time:', new Date().toISOString());
+    console.trace('Call stack');
+    console.groupEnd();
+  }
+
   // 🔥 CRITICAL: Skip if logout is in progress
   if (getIsLoggingOut()) {
     logger.debug('[TokenRefresh] ⏸️ Skipping - logout in progress');

@@ -118,6 +118,20 @@ const processMessageQueue = () => {
 // Initialize socket with userId (Blink expects this)
 // Returns socket instance or null (never undefined)
 export const initializeSocket = (userId) => {
+    // ======================================================
+    // 🔍 AUTH VERIFICATION DIAGNOSTIC (PART 4)
+    // Log socket init with auth state snapshot
+    // ======================================================
+    if (process.env.NODE_ENV === 'development') {
+        console.log('[SOCKET VERIFY] Init requested', {
+            authStatus: typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.authStatus : 'N/A',
+            isAuthReady: typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.isAuthReady : 'N/A',
+            userId,
+            hasToken: !!getAuthToken(),
+            time: new Date().toISOString()
+        });
+    }
+
     const result = connectSocket(userId);
     // Ensure we never return undefined - always return null or socket
     return result !== undefined ? result : null;

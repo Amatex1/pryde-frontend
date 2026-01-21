@@ -71,6 +71,19 @@ export function AuthProvider({ children }) {
   const authReady = authStatus !== AUTH_STATES.LOADING;
   const isAuthenticated = authStatus === AUTH_STATES.AUTHENTICATED;
 
+  // ======================================================
+  // 🔍 AUTH VERIFICATION DIAGNOSTIC (PART 1)
+  // Attach auth state to window for debugging - DEV ONLY
+  // ======================================================
+  if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+    window.__PRYDE_AUTH__ = {
+      authStatus,
+      isAuthReady: authReady,
+      hasAccessToken: !!getAuthToken(),
+      timestamp: new Date().toISOString()
+    };
+  }
+
   // Derive role from user object
   const role = useMemo(() => user?.role || null, [user]);
 
@@ -90,6 +103,15 @@ export function AuthProvider({ children }) {
       const accessToken = await refreshAccessToken();
 
       if (accessToken) {
+        // 🔍 AUTH VERIFICATION DIAGNOSTIC - Log silent refresh complete
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[AUTH VERIFY] ✅ Silent refresh complete:', {
+            authStatus,
+            isAuthReady: authReady,
+            hasNewToken: !!accessToken,
+            time: new Date().toISOString()
+          });
+        }
         logger.debug('[AuthContext] ✅ Silent refresh succeeded');
         return true;
       }
@@ -100,7 +122,7 @@ export function AuthProvider({ children }) {
       logger.debug('[AuthContext] Silent refresh failed (expected if not logged in):', err.message);
       return false;
     }
-  }, []);
+  }, [authStatus, authReady]);
 
   /**
    * Verify auth state with backend
@@ -217,6 +239,17 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (authData) => {
     const { token, accessToken, user: userData } = authData;
 
+    // 🔍 AUTH VERIFICATION DIAGNOSTIC - Log login start
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[AUTH VERIFY] 🔑 Login starting:', {
+        authStatus,
+        isAuthReady: authReady,
+        hasToken: !!(token || accessToken),
+        hasUser: !!userData,
+        time: new Date().toISOString()
+      });
+    }
+
     logger.debug('[AuthContext] 🔑 Processing login...');
 
     // Store access token (from JSON body)
@@ -260,6 +293,16 @@ export function AuthProvider({ children }) {
 
     // Broadcast login to other tabs
     broadcastLogin();
+
+    // 🔍 AUTH VERIFICATION DIAGNOSTIC - Log login complete
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[AUTH VERIFY] ✅ Login complete:', {
+        authStatus: AUTH_STATES.AUTHENTICATED,
+        isAuthReady: true,
+        username: userData?.username,
+        time: new Date().toISOString()
+      });
+    }
 
     logger.debug('[AuthContext] ✅ Login complete:', userData?.username);
   }, []);
@@ -371,6 +414,32 @@ export function AuthProvider({ children }) {
       active = false;
     };
   }, [verifyAuth]);
+
+  // ======================================================
+  // 🔍 AUTH VERIFICATION DIAGNOSTIC (PART 1 - continued)
+  // Log auth status transitions - DEV ONLY
+  // ======================================================
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[AUTH VERIFY] 🔄 authStatus changed:', {
+        authStatus,
+        isAuthReady: authReady,
+        hasAccessToken: !!getAuthToken(),
+        hasUser: !!user,
+        time: new Date().toISOString()
+      });
+
+      // Update window snapshot on every change
+      if (typeof window !== 'undefined') {
+        window.__PRYDE_AUTH__ = {
+          authStatus,
+          isAuthReady: authReady,
+          hasAccessToken: !!getAuthToken(),
+          timestamp: new Date().toISOString()
+        };
+      }
+    }
+  }, [authStatus, authReady, user]);
 
   // 🔥 CROSS-TAB AUTH SYNC
   useEffect(() => {
