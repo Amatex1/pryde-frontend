@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import api from '../utils/api';
-import { setAuthToken, setRefreshToken, setCurrentUser } from '../utils/auth';
+import { setAuthToken, setCurrentUser } from '../utils/auth';
 import PasskeySetup from '../components/PasskeySetup';
 import './Auth.css';
 
@@ -259,9 +259,8 @@ function Register({ setIsAuth }) {
       
       console.log('Registration successful:', response.data);
 
-      // Backend now returns accessToken instead of token (refresh token rotation)
+      // 🔐 SECURITY: refreshToken now stored ONLY in httpOnly cookie by backend
       setAuthToken(response.data.accessToken || response.data.token);
-      setRefreshToken(response.data.refreshToken); // Store refresh token
       setCurrentUser(response.data.user);
       setIsAuth(true);
 

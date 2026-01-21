@@ -49,7 +49,7 @@ export function isApiError(response) {
 }
 
 import { API_BASE_URL } from '../config/api.js';
-import { getAuthToken, getRefreshToken, setAuthToken, setRefreshToken, getIsLoggingOut } from './auth';
+import { getAuthToken, setAuthToken, getIsLoggingOut } from './auth';
 import logger from './logger';
 import { FRONTEND_VERSION } from './pwaSafety';
 import {
@@ -93,21 +93,18 @@ async function refreshAccessToken() {
     return refreshPromise;
   }
 
-  // Get localStorage token as OPTIONAL fallback (httpOnly cookie is primary)
-  const localRefreshToken = getRefreshToken();
-
   isRefreshing = true;
   refreshPromise = (async () => {
     try {
       logger.debug('[API] 🔄 Attempting token refresh via httpOnly cookie...');
 
-      // 🔥 ALWAYS call /refresh - let the httpOnly cookie authenticate
-      // Send localStorage token only as optional backup for cross-domain setups
+      // 🔐 SECURITY: httpOnly cookie is the SINGLE SOURCE OF TRUTH
+      // No refresh token in request body - cookie only
       const response = await fetch(`${API_BASE_URL}/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // 🔥 CRITICAL: Sends httpOnly cookie automatically
-        body: JSON.stringify(localRefreshToken ? { refreshToken: localRefreshToken } : {})
+        credentials: 'include', // CRITICAL: Sends httpOnly cookie automatically
+        body: JSON.stringify({})
       });
 
       if (!response.ok) {
@@ -120,11 +117,7 @@ async function refreshAccessToken() {
       if (data.accessToken) {
         logger.debug('[API] ✅ Token refreshed successfully');
         setAuthToken(data.accessToken);
-
-        if (data.refreshToken) {
-          setRefreshToken(data.refreshToken);
-        }
-
+        // Note: refreshToken no longer returned in body - cookie is updated by backend
         return data.accessToken;
       }
 

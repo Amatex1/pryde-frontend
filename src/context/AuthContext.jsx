@@ -34,9 +34,7 @@ import { createContext, useContext, useEffect, useState, useCallback, useMemo } 
 import api from '../utils/api';
 import {
   setAuthToken,
-  setRefreshToken,
   setCurrentUser,
-  getRefreshToken,
   logout as authLogout,
   isManualLogout
 } from '../utils/auth';
@@ -88,30 +86,19 @@ export function AuthProvider({ children }) {
     try {
       logger.debug('[AuthContext] 🔄 Attempting silent token refresh via httpOnly cookie...');
 
-      // Get refresh token from localStorage as OPTIONAL fallback for cross-domain setups
-      // (Some browsers block cross-site cookies even with SameSite=None)
-      const localRefreshToken = getRefreshToken();
-
-      // 🔥 ALWAYS call /refresh - let the httpOnly cookie authenticate
-      // The backend checks: req.cookies?.refreshToken || req.body.refreshToken
-      // So the httpOnly cookie takes priority, localStorage is just a backup
-      const response = await api.post('/refresh', {
-        // Send localStorage token only if available (optional backup)
-        ...(localRefreshToken && { refreshToken: localRefreshToken })
-      }, {
-        withCredentials: true, // 🔥 CRITICAL: Sends httpOnly cookie automatically
+      // 🔐 SECURITY: httpOnly cookie is the SINGLE SOURCE OF TRUTH
+      // No refresh token in request body - cookie only
+      const response = await api.post('/refresh', {}, {
+        withCredentials: true, // CRITICAL: Sends httpOnly cookie automatically
       });
 
-      const { accessToken, refreshToken: newRefreshToken, user: userData } = response.data;
+      const { accessToken, user: userData } = response.data;
 
       if (accessToken) {
         logger.debug('[AuthContext] ✅ Silent refresh succeeded via httpOnly cookie');
         setAuthToken(accessToken);
 
-        // Store new refresh token in localStorage as backup for cross-domain setups
-        if (newRefreshToken) {
-          setRefreshToken(newRefreshToken);
-        }
+        // Note: refreshToken no longer returned in body - cookie is updated by backend
 
         // If user data was returned, use it directly
         if (userData) {
@@ -238,20 +225,21 @@ export function AuthProvider({ children }) {
 
   /**
    * Login function - to be called after successful login API call
-   * @param {Object} authData - { token, refreshToken, user }
+   * @param {Object} authData - { token, user } (refreshToken now stored only in httpOnly cookie)
    */
   const login = useCallback(async (authData) => {
-    const { token, refreshToken, user: userData } = authData;
+    const { token, accessToken, user: userData } = authData;
 
     logger.debug('[AuthContext] 🔑 Processing login...');
 
-    // Store tokens
-    if (token) {
-      setAuthToken(token);
+    // Store access token (from JSON body)
+    const tokenToStore = token || accessToken;
+    if (tokenToStore) {
+      setAuthToken(tokenToStore);
     }
-    if (refreshToken) {
-      setRefreshToken(refreshToken);
-    }
+
+    // 🔐 SECURITY: refreshToken no longer stored in localStorage
+    // It's stored in httpOnly cookie by the backend
 
     // Set user state
     if (userData) {
@@ -265,11 +253,10 @@ export function AuthProvider({ children }) {
     sessionStorage.setItem('authReady', 'true');
     setError(null);
 
-    // 🔥 CRITICAL: Fetch CSRF token after login
-    // This ensures the in-memory csrfToken is set before any POST requests
+    // Fetch CSRF token after login
     try {
       logger.debug('[AuthContext] 🛡️ Fetching CSRF token after login...');
-      await api.get('/auth/me'); // Any GET request will set the CSRF token via response header
+      await api.get('/auth/me');
       logger.debug('[AuthContext] ✅ CSRF token obtained');
     } catch (csrfErr) {
       logger.warn('[AuthContext] ⚠️ CSRF token fetch failed (non-blocking):', csrfErr.message);
@@ -327,27 +314,20 @@ export function AuthProvider({ children }) {
     try {
       logger.debug('[AuthContext] 🔄 Manually refreshing token via httpOnly cookie...');
 
-      // Get localStorage token as OPTIONAL fallback
-      const currentRefreshToken = getRefreshToken();
-
-      // 🔥 ALWAYS call /refresh - let the httpOnly cookie authenticate
-      const response = await api.post('/refresh', {
-        // Send localStorage token only if available (optional backup)
-        ...(currentRefreshToken && { refreshToken: currentRefreshToken })
-      }, {
+      // 🔐 SECURITY: httpOnly cookie is the SINGLE SOURCE OF TRUTH
+      // No refresh token in request body - cookie only
+      const response = await api.post('/refresh', {}, {
         withCredentials: true
       });
 
-      const { accessToken, refreshToken: newRefreshToken } = response.data;
+      const { accessToken } = response.data;
 
       if (accessToken) {
         setAuthToken(accessToken);
         logger.debug('[AuthContext] ✅ Token refreshed');
       }
 
-      if (newRefreshToken) {
-        setRefreshToken(newRefreshToken);
-      }
+      // Note: refreshToken no longer returned in body - cookie is updated by backend
 
       return { success: true };
     } catch (err) {

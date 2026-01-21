@@ -1,7 +1,8 @@
+// 🔐 SECURITY HARDENING: Access token in localStorage for API interceptor
+// On page reload, silent refresh via httpOnly cookie restores the session
 export const setAuthToken = (token) => {
   if (token) {
-    console.log('🔑 Setting access token (redacted)');
-    console.log('⏰ Token set at:', new Date().toISOString());
+    console.log('🔑 Setting access token');
     localStorage.setItem('token', token);
     localStorage.setItem('tokenSetTime', Date.now().toString());
   } else {
@@ -11,18 +12,20 @@ export const setAuthToken = (token) => {
   }
 };
 
+// 🔐 SECURITY: Refresh tokens are stored ONLY in httpOnly cookies
+// These functions are DEPRECATED - kept for backward compatibility but do nothing
 export const setRefreshToken = (token) => {
+  // NO-OP: Refresh tokens no longer stored in localStorage
+  // They are stored in httpOnly cookies by the backend
   if (token) {
-    console.log('🔄 Setting refresh token (redacted)');
-    localStorage.setItem('refreshToken', token);
-  } else {
-    console.log('🗑️ Removing refresh token');
-    localStorage.removeItem('refreshToken');
+    console.debug('⚠️ setRefreshToken called but localStorage storage disabled (httpOnly cookie is sole source)');
   }
 };
 
 export const getRefreshToken = () => {
-  return localStorage.getItem('refreshToken');
+  // Always return null - refresh tokens come from httpOnly cookie only
+  // The cookie is sent automatically via credentials: 'include'
+  return null;
 };
 
 export const getAuthToken = () => {
@@ -226,31 +229,24 @@ export const isAuthenticated = () => {
  * Refresh the access token before an update reload
  * This ensures the user stays logged in after the app reloads
  *
- * 🔥 httpOnly cookie is the SINGLE SOURCE OF TRUTH
+ * 🔐 SECURITY: httpOnly cookie is the SINGLE SOURCE OF TRUTH
+ * No refresh token is sent in request body - cookie only
  */
 export async function refreshAccessToken() {
   try {
     // Import api dynamically to avoid circular dependency
     const { default: api } = await import('./api');
 
-    // Get localStorage token as OPTIONAL fallback (httpOnly cookie is primary)
-    const localRefreshToken = getRefreshToken();
-
-    // 🔥 ALWAYS call /refresh - let the httpOnly cookie authenticate
-    const response = await api.post('/refresh', {
-      // Send localStorage token only if available (optional backup)
-      ...(localRefreshToken && { refreshToken: localRefreshToken })
-    }, {
-      withCredentials: true // 🔥 CRITICAL: Sends httpOnly cookie automatically
+    // 🔐 SECURITY: Call /refresh with NO body - httpOnly cookie is sole source
+    const response = await api.post('/refresh', {}, {
+      withCredentials: true // CRITICAL: Sends httpOnly cookie automatically
     });
 
-    // If new tokens are returned, store them
+    // Store new access token (returned in JSON body)
     if (response.data?.accessToken || response.data?.token) {
       setAuthToken(response.data.accessToken || response.data.token);
     }
-    if (response.data?.refreshToken) {
-      setRefreshToken(response.data.refreshToken);
-    }
+    // Note: refreshToken no longer returned in body - cookie is updated by backend
 
     console.log('✅ Token refreshed before update via httpOnly cookie');
   } catch (err) {

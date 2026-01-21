@@ -11,7 +11,7 @@ import axios from "axios";
 //   auth bootstrap.
 // - Use apiClient.js (apiFetch) for background/fan-out requests that should
 //   respect the authCircuitBreaker and front-end version pinning.
-import { getAuthToken, logout, isManualLogout, setAuthToken, getRefreshToken, setRefreshToken, getCurrentUser, getIsLoggingOut } from "./auth";
+import { getAuthToken, logout, isManualLogout, setAuthToken, getCurrentUser, getIsLoggingOut } from "./auth";
 import logger from './logger';
 import { disconnectSocket, initializeSocket } from './socket';
 
@@ -234,33 +234,22 @@ api.interceptors.response.use(
       // 🔥 Create single-flight refresh promise
       refreshPromise = (async () => {
         try {
-          // 🔥 httpOnly cookie is the SINGLE SOURCE OF TRUTH
-          // Always attempt refresh - the cookie will be sent automatically
+          // 🔐 SECURITY: httpOnly cookie is the SINGLE SOURCE OF TRUTH
+          // No refresh token in request body - cookie only
           logger.debug('🔄 Token expired, attempting refresh via httpOnly cookie...');
 
-          // Get refresh token from localStorage as OPTIONAL fallback for cross-domain setups
-          // (Some browsers block cross-site cookies even with SameSite=None)
-          const localRefreshToken = getRefreshToken();
-
-          // 🔥 ALWAYS call /refresh - let the httpOnly cookie authenticate
-          // Don't skip based on localStorage - the cookie may still be valid
-          const response = await axios.post(`${API_BASE_URL}/refresh`, {
-            // Send localStorage token only if available (optional backup)
-            ...(localRefreshToken && { refreshToken: localRefreshToken })
-          }, {
-            withCredentials: true // 🔥 CRITICAL: Sends httpOnly cookie automatically
+          // 🔐 SECURITY: Call /refresh with NO body - httpOnly cookie is sole source
+          const response = await axios.post(`${API_BASE_URL}/refresh`, {}, {
+            withCredentials: true // CRITICAL: Sends httpOnly cookie automatically
           });
 
-          const { accessToken, refreshToken: newRefreshToken } = response.data;
+          const { accessToken } = response.data;
 
           if (accessToken) {
             logger.debug('✅ Token refreshed successfully via httpOnly cookie');
             setAuthToken(accessToken);
 
-            // Store new refresh token if provided (keeps localStorage in sync as backup)
-            if (newRefreshToken) {
-              setRefreshToken(newRefreshToken);
-            }
+            // Note: refreshToken no longer returned in body - cookie is updated by backend
 
             // Reconnect socket with new token
             try {

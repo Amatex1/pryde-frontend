@@ -17,7 +17,7 @@
  * - Browser throttling background intervals
  */
 
-import { getAuthToken, getRefreshToken, setAuthToken, setRefreshToken, getIsLoggingOut } from './auth';
+import { getAuthToken, setAuthToken, getIsLoggingOut } from './auth';
 import { API_BASE_URL } from '../config/api';
 import logger from './logger';
 
@@ -54,9 +54,6 @@ export async function refreshSession(coordinateWithSocket = false) {
     return null;
   }
 
-  // Get localStorage token as OPTIONAL fallback (httpOnly cookie is primary)
-  const localRefreshToken = getRefreshToken();
-
   // 🔥 SOCKET COORDINATION: Notify socket to pause reconnection
   if (coordinateWithSocket) {
     console.log('🔄 [AuthLifecycle] Starting coordinated refresh - notifying socket');
@@ -66,12 +63,13 @@ export async function refreshSession(coordinateWithSocket = false) {
   try {
     logger.debug('[AuthLifecycle] Proactive token refresh via httpOnly cookie...');
 
-    // 🔥 ALWAYS call /refresh - let the httpOnly cookie authenticate
+    // 🔐 SECURITY: httpOnly cookie is the SINGLE SOURCE OF TRUTH
+    // No refresh token in request body - cookie only
     const response = await fetch(`${API_BASE_URL}/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include', // 🔥 CRITICAL: Sends httpOnly cookie automatically
-      body: JSON.stringify(localRefreshToken ? { refreshToken: localRefreshToken } : {})
+      credentials: 'include', // CRITICAL: Sends httpOnly cookie automatically
+      body: JSON.stringify({})
     });
 
     if (!response.ok) {
@@ -88,10 +86,7 @@ export async function refreshSession(coordinateWithSocket = false) {
     if (data.accessToken) {
       logger.debug('[AuthLifecycle] ✅ Token refreshed successfully');
       setAuthToken(data.accessToken);
-
-      if (data.refreshToken) {
-        setRefreshToken(data.refreshToken);
-      }
+      // Note: refreshToken no longer returned in body - cookie is updated by backend
 
       // 🔥 SOCKET COORDINATION: Notify socket refresh succeeded
       if (coordinateWithSocket) {
@@ -131,8 +126,9 @@ export function setupAuthLifecycle() {
   lifecycleInitialized = true;
   logger.debug('[AuthLifecycle] Setting up auth lifecycle...');
 
-  // 1. Refresh on app load (if user has tokens)
-  if (getAuthToken() || getRefreshToken()) {
+  // 1. Refresh on app load (if user has access token)
+  // Note: If user only has httpOnly cookie, AuthContext.verifyAuth() handles that
+  if (getAuthToken()) {
     refreshSession().catch((err) => {
       logger.warn('[AuthLifecycle] App load refresh failed:', err);
     });
@@ -143,8 +139,8 @@ export function setupAuthLifecycle() {
   // 🔥 SOCKET COORDINATION: Use coordinated refresh to prevent 401 on tab switch
   const handleVisibilityChange = () => {
     if (document.visibilityState === 'visible') {
-      // Only refresh if user is logged in
-      if (getAuthToken() || getRefreshToken()) {
+      // Only refresh if user is logged in (has access token)
+      if (getAuthToken()) {
         const now = Date.now();
         const timeSinceLastCheck = now - lastRefreshCheck;
         const minutesSinceLastCheck = timeSinceLastCheck / 1000 / 60;
@@ -173,7 +169,7 @@ export function setupAuthLifecycle() {
   // Access tokens expire in 15 minutes, so refreshing at 10 minutes gives buffer
   // 🔥 PC FIX: Also check for gaps caused by tab throttling/suspension
   refreshInterval = setInterval(() => {
-    if (getAuthToken() || getRefreshToken()) {
+    if (getAuthToken()) {
       const now = Date.now();
       const timeSinceLastCheck = now - lastRefreshCheck;
       const minutesSinceLastCheck = timeSinceLastCheck / 1000 / 60;
@@ -194,7 +190,7 @@ export function setupAuthLifecycle() {
   // 4. Refresh on window focus (backup for visibility change)
   // 🔥 SOCKET COORDINATION: Use coordinated refresh
   const handleWindowFocus = () => {
-    if (getAuthToken() || getRefreshToken()) {
+    if (getAuthToken()) {
       lastRefreshCheck = Date.now();
       logger.debug('[AuthLifecycle] Window focused - refreshing session');
       refreshSession(true).catch((err) => {
@@ -208,7 +204,7 @@ export function setupAuthLifecycle() {
   // 🔥 PC FIX: Listen for online event (user's network came back)
   // 🔥 SOCKET COORDINATION: Use coordinated refresh
   const handleOnline = () => {
-    if (getAuthToken() || getRefreshToken()) {
+    if (getAuthToken()) {
       logger.info('[AuthLifecycle] 🌐 Network restored - refreshing session');
       lastRefreshCheck = Date.now();
       refreshSession(true).catch((err) => {

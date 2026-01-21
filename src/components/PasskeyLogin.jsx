@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { startAuthentication } from '@simplewebauthn/browser';
 import api from '../utils/api';
-import { setAuthToken, setRefreshToken, setCurrentUser } from '../utils/auth';
+import { setAuthToken, setCurrentUser } from '../utils/auth';
 import { disconnectSocket, initializeSocket } from '../utils/socket';
 import './PasskeyLogin.css';
 
@@ -48,9 +48,8 @@ function PasskeyLogin({ onSuccess, email }) {
       });
 
       // Save auth token and user data
-      // Backend now returns accessToken instead of token (refresh token rotation)
+      // 🔐 SECURITY: refreshToken now stored ONLY in httpOnly cookie by backend
       setAuthToken(data.accessToken || data.token);
-      setRefreshToken(data.refreshToken); // Store refresh token (if provided)
       setCurrentUser(data.user);
 
       // Disconnect old socket and reconnect with new token
