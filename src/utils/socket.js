@@ -536,133 +536,44 @@ export const getMessageQueueLength = () => messageQueue.length;
 // -----------------------------
 // CONNECTION HEALTH MONITORING
 // -----------------------------
-
-let healthCheckInterval = null;
-let lastPongTime = Date.now();
-let missedPongs = 0;
-const PING_INTERVAL = 30000; // 🔥 CHANGED: 30 seconds (was 15s) - less aggressive
-const PONG_TIMEOUT = 60000; // 🔥 CHANGED: 60 seconds (was 30s) - more tolerant
-const MAX_MISSED_PONGS = 2; // 🔥 NEW: Only force reconnect after 2 consecutive misses
+// 🔥 SIMPLIFIED: Removed aggressive custom ping/pong monitoring
+// Socket.IO has built-in ping/pong at the transport level (pingInterval/pingTimeout in server config)
+// which is more reliable than application-level pings.
+//
+// Previous custom monitoring was causing false "zombie connection" detection because:
+// 1. Application-level pings can be delayed by server load
+// 2. Socket.IO's built-in ping works at transport level (more reliable)
+// 3. Aggressive reconnects were interrupting valid connections
+//
+// The preflight ping in sendMessage() is kept for message delivery verification.
 
 /**
- * Start health monitoring - sends periodic pings to verify connection
- * 🔥 FIX: Made less aggressive to prevent unnecessary disconnects
+ * Start health monitoring - NO-OP
+ * Socket.IO's built-in ping/pong handles connection health at the transport level.
+ * Keeping this function for API compatibility.
  */
 export const startHealthMonitoring = () => {
-    if (healthCheckInterval) {
-        logger.debug('⚠️ Health monitoring already running');
-        return;
-    }
-
-    logger.debug('🏥 Starting connection health monitoring (30s interval)');
-    lastPongTime = Date.now(); // Reset on start
-    missedPongs = 0;
-
-    healthCheckInterval = setInterval(() => {
-        // 🔥 CRITICAL: Skip health check during token refresh
-        // This prevents false zombie detection when tab becomes visible
-        if (isRefreshingToken) {
-            logger.debug('⏸️ Health check paused - token refresh in progress');
-            return;
-        }
-
-        if (!socket || !socket.connected) {
-            logger.debug('⚠️ Health check: socket not connected');
-            return;
-        }
-
-        // Check if last pong was too long ago
-        const timeSinceLastPong = Date.now() - lastPongTime;
-        if (timeSinceLastPong > PONG_TIMEOUT) {
-            missedPongs++;
-            console.warn(`⚠️ Health check: missed pong #${missedPongs}, time since last: ${timeSinceLastPong}ms`);
-
-            if (missedPongs >= MAX_MISSED_PONGS) {
-                logger.warn('❌ Connection unhealthy: multiple missed pongs, reconnecting...');
-                console.warn('❌ Connection unhealthy: forcing reconnect');
-                missedPongs = 0;
-                // Force reconnection via Socket.IO's reconnect mechanism (not disconnect/connect)
-                socket.io.engine.close();
-                return;
-            }
-        }
-
-        // Send ping with timeout protection
-        let pingAcked = false;
-        const pingTimeout = setTimeout(() => {
-            if (!pingAcked) {
-                missedPongs++;
-                console.warn('⚠️ Ping timeout - no response after 10s. missedPongs:', missedPongs);
-
-                // 🔥 CRITICAL FIX: Force reconnect after 2 missed pings
-                // This catches "zombie" connections where socket.connected === true but no data flows
-                if (missedPongs >= 2 && socket) {
-                    // 🔥 Don't force reconnect if token refresh is in progress
-                    if (isRefreshingToken) {
-                        console.log('🔄 [Socket] Zombie detected but waiting for token refresh');
-                        pendingReconnect = true;
-                        return;
-                    }
-
-                    console.error('🔄 [ZOMBIE CONNECTION DETECTED] Forcing reconnect after', missedPongs, 'missed pings');
-                    console.error('🔄 Socket thinks connected:', socket.connected, 'but pings are failing!');
-
-                    // Force close the engine to trigger a full reconnect
-                    try {
-                        socket.io.engine.close();
-                    } catch (e) {
-                        console.error('❌ Failed to close engine:', e);
-                        // Fallback: disconnect and reconnect
-                        socket.disconnect();
-                        setTimeout(() => socket.connect(), 1000);
-                    }
-                }
-            }
-        }, 10000);
-
-        socket.emit('ping', (response) => {
-            pingAcked = true;
-            clearTimeout(pingTimeout);
-
-            // 🔥 FIX: Accept null response if socket is still connected
-            // Some edge cases return null but connection is actually fine
-            if (response && response.status === 'ok') {
-                lastPongTime = Date.now();
-                missedPongs = 0; // Reset on success
-                logger.debug('🏓 Pong received, connection healthy');
-            } else if (response === null && socket && socket.connected) {
-                // Null response but socket is connected - reset pong time anyway
-                console.warn('⚠️ Ping returned null but socket connected - treating as healthy');
-                lastPongTime = Date.now();
-                missedPongs = 0;
-            } else {
-                missedPongs++;
-                console.warn('⚠️ Unexpected ping response:', response, 'missedPongs:', missedPongs);
-            }
-        });
-    }, PING_INTERVAL);
+    // 🔥 NO-OP: Rely on Socket.IO's built-in ping/pong (configured in server.js)
+    // Server config: pingInterval: 25000, pingTimeout: 30000
+    logger.debug('🏥 Health monitoring delegated to Socket.IO built-in ping/pong');
 };
 
 /**
- * Stop health monitoring
+ * Stop health monitoring - NO-OP
+ * Keeping this function for API compatibility.
  */
 export const stopHealthMonitoring = () => {
-    if (healthCheckInterval) {
-        logger.debug('🏥 Stopping connection health monitoring');
-        clearInterval(healthCheckInterval);
-        healthCheckInterval = null;
-    }
+    // 🔥 NO-OP: No custom interval to stop
+    logger.debug('🏥 Health monitoring stop (no-op - using Socket.IO built-in)');
 };
 
 /**
  * Get connection health status
+ * Simplified to rely on Socket.IO's connection state
  */
 export const getConnectionHealth = () => {
-    const timeSinceLastPong = Date.now() - lastPongTime;
     return {
-        isHealthy: socket && socket.connected && timeSinceLastPong < PONG_TIMEOUT,
-        lastPongTime,
-        timeSinceLastPong,
+        isHealthy: socket && socket.connected,
         isConnected: socket && socket.connected,
         isReady: connectionReady,
         queueLength: messageQueue.length
