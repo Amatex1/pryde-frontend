@@ -142,6 +142,26 @@ export const connectSocket = (userId) => {
     // 🔥 PROD DEBUG: Always log this
     console.log('🔌 [connectSocket] Called with userId:', userId);
 
+    // 🔐 RACE CONDITION FIX: Check auth readiness before connecting
+    const authReady = typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.isAuthReady : false;
+    const authStatus = typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.authStatus : null;
+
+    // 🔍 AUTH VERIFICATION DIAGNOSTIC - Log socket connection attempt
+    if (process.env.NODE_ENV === 'development') {
+        console.log('[SOCKET VERIFY] connectSocket auth check:', {
+            isAuthReady: authReady,
+            authStatus,
+            userId,
+            time: new Date().toISOString()
+        });
+    }
+
+    // 🔐 RACE CONDITION FIX: DEFER - Do NOT connect if auth not ready
+    if (!authReady || authStatus !== 'authenticated') {
+        console.log('🚫 [connectSocket] Skipping - auth not ready', { authReady, authStatus });
+        return null;
+    }
+
     // 🔥 CRITICAL: Don't reconnect if we're logging out
     if (isLoggingOut) {
         console.log('🚫 [connectSocket] Skipping - logout in progress');

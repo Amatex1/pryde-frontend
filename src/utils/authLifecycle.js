@@ -22,12 +22,43 @@
 
 import { getAuthToken } from './auth';
 import { refreshAccessToken } from './tokenRefresh';
+import { isAuthConfirmed, AUTH_STATUS } from '../state/authStatus';
 import logger from './logger';
 
 // Track if lifecycle is already set up (prevent duplicates)
 let lifecycleInitialized = false;
 let refreshInterval = null;
 let lastRefreshCheck = Date.now(); // 🔥 Track when we last checked for refresh
+
+/**
+ * 🔐 RACE CONDITION FIX: Check if auth is ready from window snapshot
+ * Returns true ONLY when AuthContext has set isAuthReady=true
+ */
+function isAuthReadyFromContext() {
+  if (typeof window === 'undefined') return false;
+  return window.__PRYDE_AUTH__?.isAuthReady === true;
+}
+
+/**
+ * 🔐 RACE CONDITION FIX: Check if refresh should proceed
+ * BOTH conditions must be true:
+ * 1. isAuthReady (auth resolution complete)
+ * 2. authStatus === 'authenticated' (user is logged in)
+ */
+function shouldAllowRefresh() {
+  const authReady = isAuthReadyFromContext();
+  const authConfirmed = isAuthConfirmed();
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[AUTH GATE] authLifecycle check:', {
+      isAuthReady: authReady,
+      isAuthConfirmed: authConfirmed,
+      allowed: authReady && authConfirmed
+    });
+  }
+
+  return authReady && authConfirmed;
+}
 
 /**
  * Dispatch custom event to coordinate with socket.js
@@ -103,11 +134,9 @@ export function setupAuthLifecycle() {
 
   // 1. Refresh on app load (if user has access token)
   // Note: If user only has httpOnly cookie, AuthContext.verifyAuth() handles that
-  if (getAuthToken()) {
-    refreshSession().catch((err) => {
-      logger.warn('[AuthLifecycle] App load refresh failed:', err);
-    });
-  }
+  // 🔐 RACE CONDITION FIX: Do NOT refresh on app load - AuthContext handles bootstrap
+  // This was causing refresh to fire before auth was resolved
+  // The refresh will happen naturally after isAuthReady=true via interval/focus triggers
 
   // 2. Refresh on tab focus (user returning from another tab/app)
   // 🔥 PC FIX: Also detect if we've been suspended (gap > 5 minutes)
@@ -122,6 +151,12 @@ export function setupAuthLifecycle() {
           hasToken: !!getAuthToken(),
           time: new Date().toISOString()
         });
+      }
+
+      // 🔐 RACE CONDITION FIX: HARD GATE - Do NOT refresh if auth not ready
+      if (!shouldAllowRefresh()) {
+        logger.debug('[AuthLifecycle] ⏸️ Skipping visibility refresh (auth not ready)');
+        return;
       }
 
       // Only refresh if user is logged in (has access token)
@@ -164,6 +199,12 @@ export function setupAuthLifecycle() {
       });
     }
 
+    // 🔐 RACE CONDITION FIX: HARD GATE - Do NOT refresh if auth not ready
+    if (!shouldAllowRefresh()) {
+      logger.debug('[AuthLifecycle] ⏸️ Skipping interval refresh (auth not ready)');
+      return;
+    }
+
     if (getAuthToken()) {
       const now = Date.now();
       const timeSinceLastCheck = now - lastRefreshCheck;
@@ -195,6 +236,12 @@ export function setupAuthLifecycle() {
       });
     }
 
+    // 🔐 RACE CONDITION FIX: HARD GATE - Do NOT refresh if auth not ready
+    if (!shouldAllowRefresh()) {
+      logger.debug('[AuthLifecycle] ⏸️ Skipping focus refresh (auth not ready)');
+      return;
+    }
+
     if (getAuthToken()) {
       lastRefreshCheck = Date.now();
       logger.debug('[AuthLifecycle] Window focused - refreshing session');
@@ -217,6 +264,12 @@ export function setupAuthLifecycle() {
         hasToken: !!getAuthToken(),
         time: new Date().toISOString()
       });
+    }
+
+    // 🔐 RACE CONDITION FIX: HARD GATE - Do NOT refresh if auth not ready
+    if (!shouldAllowRefresh()) {
+      logger.debug('[AuthLifecycle] ⏸️ Skipping online refresh (auth not ready)');
+      return;
     }
 
     if (getAuthToken()) {

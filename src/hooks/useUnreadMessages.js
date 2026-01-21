@@ -37,13 +37,21 @@ let authUnsubscribe = null;
 let socketListenersSetup = false;
 
 /**
+ * 🔐 RACE CONDITION FIX: Check if auth is ready from window snapshot
+ */
+function isAuthReadyFromContext() {
+  if (typeof window === 'undefined') return false;
+  return window.__PRYDE_AUTH__?.isAuthReady === true;
+}
+
+/**
  * Fetch unread count (singleton - only one fetch at a time)
  */
 async function fetchUnread() {
-  // 🔥 CRITICAL: Do NOT fetch if user is not authenticated
-  // This prevents 401 errors from setInterval polling
-  if (!isAuthConfirmed()) {
-    logger.debug('[useUnreadMessages] Skipping fetch (not authenticated)');
+  // 🔐 RACE CONDITION FIX: BOOT GUARD - Do NOT fetch if auth not ready
+  const authReady = isAuthReadyFromContext();
+  if (!authReady || !isAuthConfirmed()) {
+    logger.debug('[useUnreadMessages] Skipping fetch (auth not ready)', { authReady, authConfirmed: isAuthConfirmed() });
     return;
   }
 

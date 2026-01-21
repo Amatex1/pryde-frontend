@@ -65,10 +65,23 @@ export function AuthProvider({ children }) {
   const [authStatus, setAuthStatus] = useState(AUTH_STATES.LOADING);
   const [error, setError] = useState(null);
 
+  // ======================================================
+  // 🔐 AUTHORITATIVE READY SIGNAL (RACE CONDITION FIX)
+  // isAuthReady = true ONLY when:
+  // - login() completes successfully
+  // - OR initial silent refresh attempt completes (success OR failure)
+  //
+  // CRITICAL: This gates ALL protected behavior:
+  // - Token refresh (authLifecycle.js)
+  // - Protected API calls (useUnreadMessages, preloaders)
+  // - Socket connection
+  // ======================================================
+  const [isAuthReady, setIsAuthReady] = useState(false);
+
   // Derived state for backward compatibility
   const loading = authStatus === AUTH_STATES.LOADING;
   const authLoading = authStatus === AUTH_STATES.LOADING;
-  const authReady = authStatus !== AUTH_STATES.LOADING;
+  const authReady = authStatus !== AUTH_STATES.LOADING; // Keep for backward compat
   const isAuthenticated = authStatus === AUTH_STATES.AUTHENTICATED;
 
   // ======================================================
@@ -78,7 +91,7 @@ export function AuthProvider({ children }) {
   if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
     window.__PRYDE_AUTH__ = {
       authStatus,
-      isAuthReady: authReady,
+      isAuthReady, // Now uses explicit state, not derived
       hasAccessToken: !!getAuthToken(),
       timestamp: new Date().toISOString()
     };
@@ -107,7 +120,7 @@ export function AuthProvider({ children }) {
         if (process.env.NODE_ENV === 'development') {
           console.log('[AUTH VERIFY] ✅ Silent refresh complete:', {
             authStatus,
-            isAuthReady: authReady,
+            isAuthReady, // Now uses explicit state
             hasNewToken: !!accessToken,
             time: new Date().toISOString()
           });
@@ -122,7 +135,7 @@ export function AuthProvider({ children }) {
       logger.debug('[AuthContext] Silent refresh failed (expected if not logged in):', err.message);
       return false;
     }
-  }, [authStatus, authReady]);
+  }, [authStatus, isAuthReady]);
 
   /**
    * Verify auth state with backend
@@ -159,6 +172,7 @@ export function AuthProvider({ children }) {
           markAuthStatusUnauthenticated();
           markAuthReady();
           sessionStorage.setItem('authReady', 'true');
+          setIsAuthReady(true); // 🔐 Auth resolution complete
           return { authenticated: false };
         }
 
@@ -177,6 +191,7 @@ export function AuthProvider({ children }) {
           markAuthStatusUnauthenticated();
           markAuthReady();
           sessionStorage.setItem('authReady', 'true');
+          setIsAuthReady(true); // 🔐 Auth resolution complete
           return { authenticated: false };
         }
       }
@@ -189,6 +204,7 @@ export function AuthProvider({ children }) {
         markAuthStatusUnauthenticated();
         markAuthReady();
         sessionStorage.setItem('authReady', 'true');
+        setIsAuthReady(true); // 🔐 Auth resolution complete
         return { authenticated: false };
       }
 
@@ -203,10 +219,12 @@ export function AuthProvider({ children }) {
         markAuthStatusAuthenticated();
         markAuthReady();
         sessionStorage.setItem('authReady', 'true');
+        setIsAuthReady(true); // 🔐 Auth resolution complete - GATES ALL PROTECTED BEHAVIOR
         setError(null);
         logger.debug('[AuthContext] ✅ User authenticated:', userData.username);
 
         // Initialize socket for authenticated user
+        // 🔐 Socket now knows isAuthReady=true, so it will connect
         try {
           initializeSocket(userData._id);
         } catch (socketErr) {
@@ -227,6 +245,7 @@ export function AuthProvider({ children }) {
       markAuthStatusUnauthenticated();
       markAuthReady();
       sessionStorage.setItem('authReady', 'true');
+      setIsAuthReady(true); // 🔐 Auth resolution complete (even on failure)
 
       return { authenticated: false, error: err };
     }
@@ -243,7 +262,7 @@ export function AuthProvider({ children }) {
     if (process.env.NODE_ENV === 'development') {
       console.log('[AUTH VERIFY] 🔑 Login starting:', {
         authStatus,
-        isAuthReady: authReady,
+        isAuthReady, // Now uses explicit state
         hasToken: !!(token || accessToken),
         hasUser: !!userData,
         time: new Date().toISOString()
@@ -282,7 +301,11 @@ export function AuthProvider({ children }) {
       logger.warn('[AuthContext] ⚠️ CSRF token fetch failed (non-blocking):', csrfErr.message);
     }
 
-    // Initialize socket
+    // 🔐 CRITICAL: Set isAuthReady AFTER CSRF token fetch (before socket init)
+    // This gates all protected behavior including socket connection
+    setIsAuthReady(true);
+
+    // Initialize socket (now isAuthReady=true)
     if (userData?._id) {
       try {
         initializeSocket(userData._id);
@@ -326,6 +349,9 @@ export function AuthProvider({ children }) {
     markAuthStatusUnauthenticated();
     resetAuthReady();
     sessionStorage.removeItem('authReady');
+    // 🔐 NOTE: Do NOT reset isAuthReady on logout
+    // isAuthReady means "auth resolution has completed" not "user is authenticated"
+    // After logout, we know auth state (unauthenticated) so isAuthReady stays true
     clearCachePattern('/auth/me');
 
     // Use the auth utility logout (handles backend call and localStorage cleanup)
@@ -423,7 +449,7 @@ export function AuthProvider({ children }) {
     if (process.env.NODE_ENV === 'development') {
       console.log('[AUTH VERIFY] 🔄 authStatus changed:', {
         authStatus,
-        isAuthReady: authReady,
+        isAuthReady, // Now uses explicit state
         hasAccessToken: !!getAuthToken(),
         hasUser: !!user,
         time: new Date().toISOString()
@@ -433,13 +459,13 @@ export function AuthProvider({ children }) {
       if (typeof window !== 'undefined') {
         window.__PRYDE_AUTH__ = {
           authStatus,
-          isAuthReady: authReady,
+          isAuthReady, // Now uses explicit state
           hasAccessToken: !!getAuthToken(),
           timestamp: new Date().toISOString()
         };
       }
     }
-  }, [authStatus, authReady, user]);
+  }, [authStatus, isAuthReady, user]);
 
   // 🔥 CROSS-TAB AUTH SYNC
   useEffect(() => {
@@ -508,10 +534,15 @@ export function AuthProvider({ children }) {
     authStatus,
     error,
 
+    // 🔐 AUTHORITATIVE READY SIGNAL (RACE CONDITION FIX)
+    // isAuthReady = true ONLY when auth resolution is complete
+    // Use this to gate ALL protected behavior
+    isAuthReady,
+
     // Derived state (backward compatibility)
     loading,
     authLoading,
-    authReady,
+    authReady, // DEPRECATED: Use isAuthReady instead
     isAuthenticated,
 
     // Actions

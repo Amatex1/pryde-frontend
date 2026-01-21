@@ -38,10 +38,32 @@ function isCacheValid() {
 }
 
 /**
+ * 🔐 RACE CONDITION FIX: Check if auth is ready from window snapshot
+ */
+function isAuthReadyFromContext() {
+  if (typeof window === 'undefined') return false;
+  return window.__PRYDE_AUTH__?.isAuthReady === true;
+}
+
+/**
+ * 🔐 RACE CONDITION FIX: Check if user is authenticated
+ */
+function isAuthenticatedFromContext() {
+  if (typeof window === 'undefined') return false;
+  return window.__PRYDE_AUTH__?.authStatus === 'authenticated';
+}
+
+/**
  * Preload critical resources in parallel
  * Call this on app load (after auth bootstrap)
  */
 export async function preloadCriticalResources() {
+  // 🔐 RACE CONDITION FIX: BOOT GUARD - Do NOT preload if auth not ready
+  if (!isAuthReadyFromContext() || !isAuthenticatedFromContext()) {
+    logger.debug('🚫 Skipping preloadCriticalResources (auth not ready)');
+    return;
+  }
+
   try {
     logger.debug('🚀 Preloading critical resources...');
 
@@ -75,6 +97,12 @@ export async function preloadCriticalResources() {
  * Call this before navigating to feed
  */
 export async function preloadFeedData() {
+  // 🔐 RACE CONDITION FIX: BOOT GUARD - Do NOT preload if auth not ready
+  if (!isAuthReadyFromContext() || !isAuthenticatedFromContext()) {
+    logger.debug('🚫 Skipping preloadFeedData (auth not ready)');
+    return;
+  }
+
   try {
     logger.debug('🚀 Preloading feed data...');
 

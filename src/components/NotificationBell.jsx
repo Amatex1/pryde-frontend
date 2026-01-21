@@ -49,6 +49,13 @@ const NotificationBell = memo(() => {
       return;
     }
 
+    // 🔐 RACE CONDITION FIX: BOOT GUARD - Do NOT fetch if auth not ready
+    const authReady = typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.isAuthReady : false;
+    if (!authReady) {
+      logger.debug('⏳ NotificationBell waiting for auth ready');
+      return;
+    }
+
     // ✅ Fetch once on mount (NO POLLING!)
     fetchNotifications();
 

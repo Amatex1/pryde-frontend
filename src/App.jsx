@@ -243,7 +243,7 @@ function HashtagToGroupRedirect() {
  * Uses AuthContext for all auth state
  */
 function AppContent() {
-  const { authStatus, isAuthenticated, user, login, updateUser } = useAuth();
+  const { authStatus, isAuthenticated, isAuthReady, user, login, updateUser } = useAuth();
 
   // Update banner state - use the hook that polls for new versions
   const updateAvailable = useAppVersion();
@@ -279,9 +279,11 @@ function AppContent() {
   }, []);
 
   // 🔥 AUTHENTICATED USER EFFECTS
-  // These only run when user is authenticated
+  // These only run when user is authenticated AND auth is ready
+  // 🔐 RACE CONDITION FIX: Added isAuthReady dependency to prevent premature execution
   useEffect(() => {
-    if (!isAuthenticated || !user) return;
+    // 🔐 BOOT GUARD: Wait for auth to be fully ready before executing protected behavior
+    if (!isAuthReady || !isAuthenticated || !user) return;
 
     // Initialize quiet mode with user settings
     initializeQuietMode(user);
@@ -297,6 +299,7 @@ function AppContent() {
     });
 
     // Preload resources for authenticated users
+    // Note: Preloader functions have their own guards, but this effect gate is the primary defense
     Promise.all([
       preloadCriticalResources(),
       preloadFeedData(),
@@ -309,7 +312,7 @@ function AppContent() {
     return () => {
       cleanupNewMessage?.();
     };
-  }, [isAuthenticated, user]);
+  }, [isAuthReady, isAuthenticated, user]);
 
   // 🔥 UNAUTHENTICATED EFFECTS
   useEffect(() => {
