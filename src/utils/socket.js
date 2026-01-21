@@ -186,7 +186,6 @@ export const connectSocket = (userId) => {
             console.warn('🔌 [Socket] Connected! ID:', socket.id);
             console.warn('🔌 [Socket] Transport:', socket.io.engine.transport.name);
             reconnectAttempts = 0;
-            lastPongTime = Date.now(); // Reset pong timer
 
             // 🔥 DIAGNOSTIC: Log transport type
             if (socket.io.engine.transport.name === 'polling') {
@@ -207,7 +206,6 @@ export const connectSocket = (userId) => {
                     if (socket && socket.connected) {
                         socket.emit('ping', (response) => {
                             console.warn('🏓 [Socket] Ping response:', response);
-                            lastPongTime = Date.now();
                         });
                     }
                 }, 1000);
@@ -215,8 +213,8 @@ export const connectSocket = (userId) => {
                 console.error('❌ [Socket] No userId from token! Messages will fail.');
             }
 
-            // 🏥 Start health monitoring
-            startHealthMonitoring();
+            // 🏥 Health monitoring is now handled by Socket.IO's built-in ping/pong
+            startHealthMonitoring(); // No-op, kept for API compatibility
         });
 
         // 🔥 NEW: Listen for room join confirmation
