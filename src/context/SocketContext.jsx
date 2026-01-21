@@ -27,7 +27,8 @@ import logger from '../utils/logger';
 const SocketContext = createContext(null);
 
 export function SocketProvider({ children }) {
-  const { user, isAuthenticated } = useAuth();
+  // 🔐 RACE CONDITION FIX: Get isAuthReady to prevent premature socket init
+  const { user, isAuthenticated, isAuthReady } = useAuth();
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
@@ -35,6 +36,8 @@ export function SocketProvider({ children }) {
   const [connectionHealth, setConnectionHealth] = useState(null);
   const initializationRef = useRef(false);
   const reconnectTimeoutRef = useRef(null);
+  const retryCountRef = useRef(0);
+  const MAX_RETRIES = 5;
 
   // Get user ID from user object
   const userId = user?.id || user?._id;
@@ -46,7 +49,11 @@ export function SocketProvider({ children }) {
    * Initialize socket connection
    */
   const initSocket = useCallback(() => {
-    logger.debug('[SocketContext] initSocket called. userId:', userId, 'isAuthenticated:', isAuthenticated);
+    // 🔐 RACE CONDITION FIX: Check isAuthReady before attempting socket init
+    if (!isAuthReady) {
+      logger.debug('[SocketContext] Skipping - auth not ready yet');
+      return;
+    }
 
     if (!userId || !isAuthenticated) {
       logger.debug('[SocketContext] Skipping - no user or not authenticated');
@@ -68,6 +75,7 @@ export function SocketProvider({ children }) {
       if (sock) {
         setSocket(sock);
         setIsConnected(sock.connected);
+        retryCountRef.current = 0; // Reset retry count on success
 
         // 🔥 FIX: Only attach listeners ONCE per socket instance
         // This prevents duplicate handlers when React re-renders
@@ -109,20 +117,27 @@ export function SocketProvider({ children }) {
           logger.debug('[SocketContext] Socket listeners attached');
         }
       } else {
-        logger.warn('[SocketContext] Socket initialization returned null');
+        // 🔐 RACE CONDITION FIX: Only retry if auth is confirmed ready
+        // If socket returns null but auth says ready+authenticated, it's a transient issue
+        // If auth is not ready, don't retry - wait for auth to become ready
         initializationRef.current = false;
 
-        // Retry after 2 seconds
-        reconnectTimeoutRef.current = setTimeout(() => {
-          initializationRef.current = false;
-          initSocket();
-        }, 2000);
+        if (isAuthReady && isAuthenticated && retryCountRef.current < MAX_RETRIES) {
+          retryCountRef.current++;
+          logger.debug(`[SocketContext] Socket null, retrying (${retryCountRef.current}/${MAX_RETRIES})`);
+          reconnectTimeoutRef.current = setTimeout(() => {
+            initSocket();
+          }, 2000);
+        } else if (retryCountRef.current >= MAX_RETRIES) {
+          logger.warn('[SocketContext] Max retries reached, stopping retry loop');
+        }
+        // If !isAuthReady or !isAuthenticated, don't log warning - this is expected
       }
     } catch (error) {
       logger.error('[SocketContext] Error initializing socket:', error);
       initializationRef.current = false;
     }
-  }, [userId, isAuthenticated]);
+  }, [userId, isAuthenticated, isAuthReady]);
 
   /**
    * Initialize socket when user logs in

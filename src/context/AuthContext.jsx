@@ -442,28 +442,31 @@ export function AuthProvider({ children }) {
   }, [verifyAuth]);
 
   // ======================================================
-  // 🔍 AUTH VERIFICATION DIAGNOSTIC (PART 1 - continued)
-  // Log auth status transitions - DEV ONLY
+  // 🔐 AUTH STATE SNAPSHOT (REQUIRED FOR AUTH GATES)
+  // This MUST be set in ALL environments - socket.js, authLifecycle.js,
+  // resourcePreloader.js, etc. depend on this for auth readiness checks
   // ======================================================
   useEffect(() => {
+    // 🔐 CRITICAL: Update window snapshot in ALL environments (not just dev)
+    // This is required for auth gates in socket.js, authLifecycle.js, etc.
+    if (typeof window !== 'undefined') {
+      window.__PRYDE_AUTH__ = {
+        authStatus,
+        isAuthReady,
+        hasAccessToken: !!getAuthToken(),
+        timestamp: new Date().toISOString()
+      };
+    }
+
+    // Diagnostic logging (dev only)
     if (process.env.NODE_ENV === 'development') {
       console.log('[AUTH VERIFY] 🔄 authStatus changed:', {
         authStatus,
-        isAuthReady, // Now uses explicit state
+        isAuthReady,
         hasAccessToken: !!getAuthToken(),
         hasUser: !!user,
         time: new Date().toISOString()
       });
-
-      // Update window snapshot on every change
-      if (typeof window !== 'undefined') {
-        window.__PRYDE_AUTH__ = {
-          authStatus,
-          isAuthReady, // Now uses explicit state
-          hasAccessToken: !!getAuthToken(),
-          timestamp: new Date().toISOString()
-        };
-      }
     }
   }, [authStatus, isAuthReady, user]);
 
