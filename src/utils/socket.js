@@ -809,39 +809,40 @@ export const sendMessage = (data, callback, retryCount = 0) => {
 /**
  * Listen for message sent confirmation (message:sent)
  * Phase R: Unified to 'message:sent' event
+ * 🔒 FIX: Use getSocket() to get canonical socket reference (socketRef.current)
  */
 export const onMessageSent = (callback) => {
+    const sock = getSocket(); // 🔒 Use canonical reference, not module-level variable
+
     // 🔥 DIAGNOSTIC: Always log to console for debugging
     console.log('🎧 [onMessageSent] Attaching listener...', {
-        socketExists: !!socket,
-        socketConnected: socket?.connected,
-        socketId: socket?.id
+        socketExists: !!sock,
+        socketConnected: sock?.connected,
+        socketId: sock?.id
     });
 
-    if (socket && typeof socket.on === 'function') {
+    if (sock && typeof sock.on === 'function') {
         // UNIFIED: Listen to 'message:sent' (Phase R)
         // 🔥 DIAGNOSTIC: Wrap callback to log when event is received
         const wrappedCallback = (data) => {
             console.log('📨 [onMessageSent] EVENT RECEIVED! message:sent:', data);
             callback(data);
         };
-        socket.on("message:sent", wrappedCallback);
+        sock.on("message:sent", wrappedCallback);
         logger.debug('✅ [onMessageSent] Listener attached for message:sent');
         console.log('✅ [onMessageSent] Listener attached for message:sent');
 
-        // Return cleanup function
+        // Return cleanup function that uses getSocket() for proper reference
         return () => {
             console.log('🧹 [onMessageSent] Cleaning up listener');
-            if (socket && typeof socket.off === 'function') {
-                socket.off("message:sent", wrappedCallback);
+            const cleanupSock = getSocket();
+            if (cleanupSock && typeof cleanupSock.off === 'function') {
+                cleanupSock.off("message:sent", wrappedCallback);
             }
         };
     } else {
-        // 🔥 CRITICAL: Log when listener fails to attach
-        console.error('❌ [onMessageSent] FAILED to attach listener - socket is null or invalid!', {
-            socketExists: !!socket,
-            hasOnMethod: socket && typeof socket.on === 'function'
-        });
+        // Socket not ready yet - this is expected during initialization
+        logger.debug('[onMessageSent] Socket not ready, listener will be attached when socket connects');
         // Return no-op cleanup
         return () => {};
     }
@@ -850,64 +851,72 @@ export const onMessageSent = (callback) => {
 /**
  * Listen for new messages (message:new)
  * Phase R: Unified to 'message:new' event
+ * 🔒 FIX: Use getSocket() to get canonical socket reference (socketRef.current)
  */
 export const onNewMessage = (callback) => {
-    if (socket && typeof socket.on === 'function') {
+    const sock = getSocket(); // 🔒 Use canonical reference, not module-level variable
+    if (sock && typeof sock.on === 'function') {
         // UNIFIED: Listen to 'message:new' (Phase R)
-        socket.on("message:new", callback);
+        sock.on("message:new", callback);
         logger.debug('✅ [onNewMessage] Listener attached for message:new');
     } else {
-        // 🔥 CRITICAL: Log when listener fails to attach
-        console.error('❌ [onNewMessage] FAILED to attach listener - socket is null or invalid!', {
-            socketExists: !!socket,
-            hasOnMethod: socket && typeof socket.on === 'function'
-        });
+        // Socket not ready yet - this is expected during initialization
+        // Don't spam console.error - just debug log it
+        logger.debug('[onNewMessage] Socket not ready, listener will be attached when socket connects');
     }
-    // Return cleanup function
+    // Return cleanup function that uses getSocket() for proper reference
     return () => {
-        if (socket && typeof socket.off === 'function') {
-            socket.off("message:new", callback);
+        const cleanupSock = getSocket();
+        if (cleanupSock && typeof cleanupSock.off === 'function') {
+            cleanupSock.off("message:new", callback);
         }
     };
 };
 
 // -----------------------------
 // TYPING INDICATOR
+// 🔒 FIX: All listener functions use getSocket() for canonical socket reference
 // -----------------------------
 export const emitTyping = (conversationId, userId) => {
-    if (socket) emitValidated(socket, "typing", { recipientId: conversationId, isTyping: true, userId });
+    const sock = getSocket();
+    if (sock) emitValidated(sock, "typing", { recipientId: conversationId, isTyping: true, userId });
 };
 
 export const onUserTyping = (callback) => {
-    if (socket && typeof socket.on === 'function') {
-        // Don't remove previous listeners - allow multiple components to listen
-        socket.on("typing", callback);
+    const sock = getSocket();
+    if (sock && typeof sock.on === 'function') {
+        sock.on("typing", callback);
     }
-    // Return cleanup function
     return () => {
-        if (socket && typeof socket.off === 'function') {
-            socket.off("typing", callback);
+        const cleanupSock = getSocket();
+        if (cleanupSock && typeof cleanupSock.off === 'function') {
+            cleanupSock.off("typing", callback);
         }
     };
 };
 
 // -----------------------------
 // FRIEND REQUESTS
+// 🔒 FIX: All listener functions use getSocket() for canonical socket reference
 // -----------------------------
 export const emitFriendRequestSent = (data) => {
-    if (socket) emitValidated(socket, "friend_request_sent", data);
+    const sock = getSocket();
+    if (sock) emitValidated(sock, "friend_request_sent", data);
 };
 
 export const emitFriendRequestAccepted = (data) => {
-    if (socket) emitValidated(socket, "friend_request_accepted", data);
+    const sock = getSocket();
+    if (sock) emitValidated(sock, "friend_request_accepted", data);
 };
 
 export const onFriendRequestReceived = (callback) => {
-    if (socket && typeof socket.on === 'function') {
-        socket.on("friendRequestReceived", callback);
+    const sock = getSocket();
+    if (sock && typeof sock.on === 'function') {
+        sock.on("friendRequestReceived", callback);
         return () => {
-            if (socket && typeof socket.off === 'function') {
-                socket.off("friendRequestReceived", callback);
+            const cleanupSock = getSocket();
+            if (cleanupSock && typeof cleanupSock.off === 'function') {
+                cleanupSock.off("friendRequestReceived", callback);
             }
         };
     }
@@ -915,11 +924,13 @@ export const onFriendRequestReceived = (callback) => {
 };
 
 export const onFriendRequestAccepted = (callback) => {
-    if (socket && typeof socket.on === 'function') {
-        socket.on("friendRequestAccepted", callback);
+    const sock = getSocket();
+    if (sock && typeof sock.on === 'function') {
+        sock.on("friendRequestAccepted", callback);
         return () => {
-            if (socket && typeof socket.off === 'function') {
-                socket.off("friendRequestAccepted", callback);
+            const cleanupSock = getSocket();
+            if (cleanupSock && typeof cleanupSock.off === 'function') {
+                cleanupSock.off("friendRequestAccepted", callback);
             }
         };
     }
@@ -928,72 +939,70 @@ export const onFriendRequestAccepted = (callback) => {
 
 // -----------------------------
 // ONLINE STATUS
+// 🔒 FIX: All listener functions use getSocket() for canonical socket reference
 // -----------------------------
-// Request online users list from server
 export const requestOnlineUsers = () => {
-    if (socket && socket.connected) {
+    const sock = getSocket();
+    if (sock && sock.connected) {
         logger.debug('📡 Requesting online users list from server');
-        emitValidated(socket, 'get_online_users', {});
+        emitValidated(sock, 'get_online_users', {});
     } else {
         logger.warn('⚠️ Cannot request online users - socket not connected');
     }
 };
 
 export const onUserOnline = (callback) => {
-    if (socket && typeof socket.on === 'function') {
-        // Create a named handler function so we can remove it later
+    const sock = getSocket();
+    if (sock && typeof sock.on === 'function') {
         const handler = (data) => {
             logger.debug('🔌 Socket received user_online event:', data);
             callback(data);
         };
-        socket.on("user_online", handler);
-
-        // Return cleanup function that removes THIS specific handler
+        sock.on("user_online", handler);
         return () => {
-            if (socket && typeof socket.off === 'function') {
-                socket.off("user_online", handler);
+            const cleanupSock = getSocket();
+            if (cleanupSock && typeof cleanupSock.off === 'function') {
+                cleanupSock.off("user_online", handler);
             }
         };
     }
-    return () => {}; // Return empty cleanup if no socket
+    return () => {};
 };
 
 export const onUserOffline = (callback) => {
-    if (socket && typeof socket.on === 'function') {
-        // Create a named handler function so we can remove it later
+    const sock = getSocket();
+    if (sock && typeof sock.on === 'function') {
         const handler = (data) => {
             logger.debug('🔌 Socket received user_offline event:', data);
             callback(data);
         };
-        socket.on("user_offline", handler);
-
-        // Return cleanup function that removes THIS specific handler
+        sock.on("user_offline", handler);
         return () => {
-            if (socket && typeof socket.off === 'function') {
-                socket.off("user_offline", handler);
+            const cleanupSock = getSocket();
+            if (cleanupSock && typeof cleanupSock.off === 'function') {
+                cleanupSock.off("user_offline", handler);
             }
         };
     }
-    return () => {}; // Return empty cleanup if no socket
+    return () => {};
 };
 
 export const onOnlineUsers = (callback) => {
-    if (socket && typeof socket.on === 'function') {
-        // Create a named handler function so we can remove it later
+    const sock = getSocket();
+    if (sock && typeof sock.on === 'function') {
         const handler = (users) => {
             logger.debug('🔌 Socket received online_users event:', users);
             callback(users);
         };
-        socket.on("online_users", handler);
-
-        // Return cleanup function that removes THIS specific handler
+        sock.on("online_users", handler);
         return () => {
-            if (socket && typeof socket.off === 'function') {
-                socket.off("online_users", handler);
+            const cleanupSock = getSocket();
+            if (cleanupSock && typeof cleanupSock.off === 'function') {
+                cleanupSock.off("online_users", handler);
             }
         };
     }
-    return () => {}; // Return empty cleanup if no socket
+    return () => {};
 };
 
 export default {
