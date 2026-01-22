@@ -47,11 +47,11 @@
   }
 
   body {
-    overscroll-behavior-y: contain; /* Prevent pull-to-refresh but allow scroll */
+    overscroll-behavior-y: none; /* Prevent pull-to-refresh and rubber-banding */
     overflow-y: scroll !important; /* CRITICAL: Ensure vertical scrolling works */
     overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch !important; /* Smooth scrolling on iOS */
-    touch-action: pan-y !important; /* pan-y allows single-finger vertical scroll */
+    touch-action: pan-y pan-x pinch-zoom !important; /* Allow scrolling and pinch zoom */
     height: 100% !important;
     min-height: 100dvh !important;
   }

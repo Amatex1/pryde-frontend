@@ -56,13 +56,20 @@
   body {
     padding-top: env(safe-area-inset-top);
   }
-  
-  /* Fix input fields covered by iOS keyboard */
-  input:focus,
-  textarea:focus {
-    transform: translateY(-50px);
-    transition: transform 0.3s ease;
-  }
+
+  /*
+   * NOTE: Removed transform: translateY(-50px) on input/textarea focus.
+   * This was problematic because:
+   * 1. Hardcoded offset doesn't account for actual keyboard height
+   * 2. Applied to ALL inputs including those that don't need it
+   * 3. Conflicts with position: sticky on message composers
+   * 4. iOS Safari already scrolls focused inputs into view automatically
+   *
+   * Keyboard handling is now done via:
+   * - position: sticky on composer elements
+   * - JavaScript scrollIntoView() in MessageInput.jsx
+   * - Visual Viewport API (where available)
+   */
 }
 
 /* iPhone landscape safe areas */

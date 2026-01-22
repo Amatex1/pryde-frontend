@@ -1424,11 +1424,11 @@
   border: none;
   resize: none;
   outline: none;
-  font-size: 15px;
+  font-size: 16px; /* Consistent with mobile - prevents iOS zoom */
   line-height: 1.4;
   font-family: inherit;
-  background: #1e293b;
-  color: #ffffff;
+  background: var(--bg-elevated, #1e293b);
+  color: var(--text-primary, #ffffff);
   overflow-y: auto;
 }
 
@@ -3374,7 +3374,8 @@
 
 @media (display-mode: standalone) {
   .chat-input-area {
-    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0) + var(--mobile-nav-height, 0px));
+    /* PWA mode: Account for home indicator + any visible nav */
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 20px));
   }
 }
 

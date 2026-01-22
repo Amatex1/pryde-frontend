@@ -377,7 +377,8 @@
     border-radius: 12px !important;
   }
 
-  textarea {
+  /* Multi-line textareas (NOT message/chat inputs) */
+  textarea:not(.message-input):not(.composer-input):not(.chat-input):not(.reply-input) {
     min-height: 100px !important;
     resize: vertical !important;
   }
