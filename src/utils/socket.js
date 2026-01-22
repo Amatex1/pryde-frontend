@@ -210,10 +210,10 @@ export const connectSocket = (userId, authState = null) => {
             // ✅ Enhanced stability settings
             autoConnect: true,
             randomizationFactor: 0.5,
-            closeOnBeforeunload: false,
-            // ✅ Connection state recovery (matches server config)
-            ackTimeout: 10000,
-            retries: 3
+            closeOnBeforeunload: false
+            // 🔥 FIX: REMOVED ackTimeout and retries - these are for promise-based emit
+            // Using callback-based emit with manual retry logic in sendMessage()
+            // Having both causes duplicate sends and null callbacks
         });
 
         // 🔒 CRITICAL: Update socketRef to point to the new socket
@@ -287,8 +287,15 @@ export const connectSocket = (userId, authState = null) => {
             connectionReady = false;
         });
 
-        // Listen for message events (reduced verbosity in production)
+        // Listen for message events - 🔥 PROD DEBUG: Always log for troubleshooting
         socket.on('message:new', (msg) => {
+            console.warn('📨 [Socket.js] message:new RECEIVED!', {
+                messageId: msg?._id,
+                senderId: msg?.sender?._id,
+                recipientId: msg?.recipient?._id,
+                socketId: socket?.id,
+                connected: socket?.connected
+            });
             logger.debug('📨 [Socket] message:new received!', {
                 messageId: msg?._id,
                 senderId: msg?.sender?._id,

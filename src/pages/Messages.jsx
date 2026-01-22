@@ -646,6 +646,14 @@ function Messages() {
 
       // Listen for new messages
       const cleanupNewMessage = onNewMessage((newMessage) => {
+        // 🔥 PROD DEBUG: Always log message:new events
+        console.warn('📨 [Messages.jsx] Received message:new event:', {
+          messageId: newMessage?._id,
+          senderId: newMessage?.sender?._id,
+          recipientId: newMessage?.recipient?._id,
+          selectedChat,
+          currentUserId: currentUser?._id
+        });
         logger.debug('📨 Received message:new event:', newMessage);
 
         // 🔥 CRITICAL FIX: Only process messages where WE are the RECIPIENT
@@ -657,16 +665,26 @@ function Messages() {
 
         // Only add message if we're the recipient AND the sender is the selected chat
         if (isRecipient && isSenderInSelectedChat) {
+          console.warn('✅ [Messages.jsx] Message is for selected chat, adding to messages');
           logger.debug('✅ Message is for selected chat (we are recipient), adding to messages');
           setMessages((prev) => {
             // Prevent duplicates - check if message already exists
             if (prev.some(msg => msg._id === newMessage._id)) {
+              console.warn('⚠️ [Messages.jsx] Message already exists, skipping');
               logger.debug('⚠️ Message already exists, skipping');
               return prev;
             }
             return [...prev, newMessage];
           });
         } else {
+          console.warn('⏭️ [Messages.jsx] Skipping message:new (not recipient or wrong chat)', {
+            isRecipient,
+            isSenderInSelectedChat,
+            currentUserId: currentUser?._id,
+            recipientId: newMessage.recipient?._id,
+            senderId: newMessage.sender?._id,
+            selectedChat
+          });
           logger.debug('⏭️ Skipping message:new (not recipient or wrong chat)', {
             isRecipient,
             isSenderInSelectedChat,
