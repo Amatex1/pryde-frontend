@@ -63,6 +63,10 @@ export const runSocketDiagnostics = () => {
   // 5. Check rooms
   console.log('\n5️⃣ Requesting Room Info...');
   socket.emit('debug:rooms', (rooms) => {
+    if (!rooms) {
+      console.log('   ⚠️ No room info received (server may not support debug:rooms)');
+      return;
+    }
     console.log('   Rooms joined:', rooms.rooms);
     console.log('   User ID:', rooms.userId);
     console.log('   Socket ID:', rooms.socketId);
