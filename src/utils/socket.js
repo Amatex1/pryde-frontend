@@ -117,48 +117,54 @@ const processMessageQueue = () => {
 
 // Initialize socket with userId (Blink expects this)
 // Returns socket instance or null (never undefined)
-export const initializeSocket = (userId) => {
+// authState is optional - if provided, uses it directly; otherwise falls back to window.__PRYDE_AUTH__
+export const initializeSocket = (userId, authState = null) => {
     // ======================================================
     // 🔍 AUTH VERIFICATION DIAGNOSTIC (PART 4)
     // Log socket init with auth state snapshot
     // ======================================================
     if (process.env.NODE_ENV === 'development') {
         console.log('[SOCKET VERIFY] Init requested', {
-            authStatus: typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.authStatus : 'N/A',
-            isAuthReady: typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.isAuthReady : 'N/A',
+            authStatus: authState?.authStatus ?? (typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.authStatus : 'N/A'),
+            isAuthReady: authState?.isAuthReady ?? (typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.isAuthReady : 'N/A'),
             userId,
             hasToken: !!getAuthToken(),
+            authStateProvided: !!authState,
             time: new Date().toISOString()
         });
     }
 
-    const result = connectSocket(userId);
+    const result = connectSocket(userId, authState);
     // Ensure we never return undefined - always return null or socket
     return result !== undefined ? result : null;
 };
 
 // Connect socket
-export const connectSocket = (userId) => {
+// authState is optional - if provided, uses it directly; otherwise falls back to window.__PRYDE_AUTH__
+// This fixes timing issues where React state updates before the useEffect that sets window.__PRYDE_AUTH__
+export const connectSocket = (userId, authState = null) => {
     // 🔥 PROD DEBUG: Always log this
-    console.log('🔌 [connectSocket] Called with userId:', userId);
+    console.log('🔌 [connectSocket] Called with userId:', userId, 'authStateProvided:', !!authState);
 
-    // 🔐 RACE CONDITION FIX: Check auth readiness before connecting
-    const authReady = typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.isAuthReady : false;
-    const authStatus = typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.authStatus : null;
+    // 🔐 RACE CONDITION FIX: Use provided authState, or fall back to window snapshot
+    // Priority: authState param > window.__PRYDE_AUTH__ (fixes timing mismatch)
+    const authReady = authState?.isAuthReady ?? (typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.isAuthReady : false);
+    const authStatusValue = authState?.authStatus ?? (typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.authStatus : null);
 
     // 🔍 AUTH VERIFICATION DIAGNOSTIC - Log socket connection attempt
     if (process.env.NODE_ENV === 'development') {
         console.log('[SOCKET VERIFY] connectSocket auth check:', {
             isAuthReady: authReady,
-            authStatus,
+            authStatus: authStatusValue,
             userId,
+            authStateProvided: !!authState,
             time: new Date().toISOString()
         });
     }
 
     // 🔐 RACE CONDITION FIX: DEFER - Do NOT connect if auth not ready
-    if (!authReady || authStatus !== 'authenticated') {
-        console.log('🚫 [connectSocket] Skipping - auth not ready', { authReady, authStatus });
+    if (!authReady || authStatusValue !== 'authenticated') {
+        console.log('🚫 [connectSocket] Skipping - auth not ready', { authReady, authStatus: authStatusValue });
         return null;
     }
 

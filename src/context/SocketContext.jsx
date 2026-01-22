@@ -69,7 +69,10 @@ export function SocketProvider({ children }) {
     logger.debug('[SocketContext] Calling initializeSocket for user:', userId);
 
     try {
-      const sock = initializeSocket(userId);
+      // 🔐 TIMING FIX: Pass auth state directly to avoid window.__PRYDE_AUTH__ timing issues
+      // React state updates before useEffect sets window.__PRYDE_AUTH__
+      const authState = { isAuthReady, authStatus: isAuthenticated ? 'authenticated' : 'unauthenticated' };
+      const sock = initializeSocket(userId, authState);
       logger.debug('[SocketContext] initializeSocket returned:', sock ? 'socket object' : 'null');
 
       if (sock) {
