@@ -1,6 +1,6 @@
 {
-  "version": "2026-01-22-001",
-  "buildTime": "2026-01-22T23:00:00.000Z",
-  "notes": "Service worker MIME fix, UpdateBanner improvements"
+  "version": "2026.01.22-002",
+  "buildTime": "2026-01-22T23:30:00.000Z",
+  "notes": "Fixed real-time messaging Socket.IO conflict, UpdateBanner version source"
 }
 
