@@ -11,13 +11,13 @@
   padding-top: var(--space-4); /* Add top padding to prevent navbar overlap */
 }
 
-/* MOBILE: Full-bleed container */
+/* MOBILE: Full-bleed container - true full screen */
 @media (max-width: 600px) {
   .messages-container {
     max-width: 100%;
-    padding: 0;  /* No horizontal padding - full edge-to-edge */
-    padding-top: var(--space-2); /* Keep top padding to prevent navbar overlap */
-    height: calc(100dvh - var(--navbar-height, 60px) - var(--mobile-nav-height, 56px));
+    padding: 0;  /* No padding - full edge-to-edge */
+    /* FULL SCREEN: Only subtract top navbar, mobile nav handled by input area padding */
+    height: calc(100dvh - var(--navbar-height, 60px));
   }
 }
 
@@ -1800,13 +1800,17 @@
 @media (max-width: 768px) {
   .messages-container {
     padding: 0;
-    height: calc(100vh - 70px); /* Fallback */
-    height: calc(100dvh - 70px);
+    /* FULL SCREEN on mobile: Only subtract top navbar height
+       The mobile nav is handled by padding-bottom in chat-input-area */
+    height: calc(100vh - var(--navbar-height, 60px)); /* Fallback */
+    height: calc(100dvh - var(--navbar-height, 60px));
   }
 
   .messages-layout {
     grid-template-columns: 1fr;
     border-radius: 0;
+    border: none;
+    box-shadow: none;
     height: 100%;
     position: relative;
   }
@@ -2093,8 +2097,9 @@
 @media (max-width: 480px) {
   .messages-container {
     padding: 0;  /* Full-bleed on mobile */
-    height: calc(100vh - 160px); /* Fallback */
-    height: calc(100dvh - 160px);
+    /* FULL SCREEN: Only subtract top navbar, mobile nav handled by input area padding */
+    height: calc(100vh - var(--navbar-height, 60px)); /* Fallback */
+    height: calc(100dvh - var(--navbar-height, 60px));
   }
 
   .chat-window {
@@ -3392,6 +3397,18 @@
    ======================================== */
 
 @media (display-mode: standalone) {
+  /* PWA FULL SCREEN: Use entire viewport minus top safe area */
+  .messages-container {
+    height: calc(100dvh - var(--navbar-height, 60px) - env(safe-area-inset-top, 0px));
+    padding: 0;
+  }
+
+  .messages-layout {
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+
   .chat-input-area {
     /* PWA mode on mobile/tablet: Account for home indicator + mobile nav */
     padding-bottom: calc(16px + env(safe-area-inset-bottom, 20px) + var(--mobile-nav-height, 56px));
