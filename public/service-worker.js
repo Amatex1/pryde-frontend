@@ -14,8 +14,8 @@
  */
 
 // 🔥 CACHE VERSION - Increment this to force cache invalidation
-const CACHE_VERSION = 'pryde-cache-v8-static-caching';
-const STATIC_CACHE = 'pryde-static-v8';
+const CACHE_VERSION = 'pryde-cache-v9-mime-fix';
+const STATIC_CACHE = 'pryde-static-v9';
 const isDev = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
 
 // Static asset extensions to cache
@@ -121,22 +121,46 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       caches.open(STATIC_CACHE).then(cache => {
         return cache.match(event.request).then(cachedResponse => {
+          // Validate cached response has correct content-type
+          // Avoid serving HTML as CSS/JS (MIME type mismatch)
           if (cachedResponse) {
-            // Return cached, but update cache in background
-            if (isDev) console.log('[SW] 📦 Cache hit:', url.pathname);
-            // Stale-while-revalidate: update cache in background
-            fetch(event.request).then(networkResponse => {
-              if (networkResponse.ok) {
-                cache.put(event.request, networkResponse.clone());
-              }
-            }).catch(() => {}); // Ignore network errors during background update
-            return cachedResponse;
+            const contentType = cachedResponse.headers.get('content-type') || '';
+            const pathname = url.pathname.toLowerCase();
+            const isValidCache = (
+              (pathname.endsWith('.css') && contentType.includes('text/css')) ||
+              (pathname.endsWith('.js') && (contentType.includes('javascript') || contentType.includes('application/javascript'))) ||
+              (!pathname.endsWith('.css') && !pathname.endsWith('.js')) // Other assets: trust cache
+            );
+
+            if (isValidCache) {
+              if (isDev) console.log('[SW] 📦 Cache hit:', url.pathname);
+              // Stale-while-revalidate: update cache in background
+              fetch(event.request).then(networkResponse => {
+                if (networkResponse.ok) {
+                  cache.put(event.request, networkResponse.clone());
+                }
+              }).catch(() => {});
+              return cachedResponse;
+            } else {
+              // Invalid cached response - delete and fetch fresh
+              if (isDev) console.warn('[SW] ⚠️ Invalid cache (MIME mismatch), refetching:', url.pathname);
+              cache.delete(event.request);
+            }
           }
-          // Not in cache - fetch from network and cache
+          // Not in cache or invalid - fetch from network and cache
           return fetch(event.request).then(networkResponse => {
             if (networkResponse.ok) {
-              if (isDev) console.log('[SW] 📥 Caching:', url.pathname);
-              cache.put(event.request, networkResponse.clone());
+              // Only cache if content-type is valid
+              const contentType = networkResponse.headers.get('content-type') || '';
+              const pathname = url.pathname.toLowerCase();
+              const shouldCache = !(
+                (pathname.endsWith('.css') && !contentType.includes('text/css')) ||
+                (pathname.endsWith('.js') && !contentType.includes('javascript'))
+              );
+              if (shouldCache) {
+                if (isDev) console.log('[SW] 📥 Caching:', url.pathname);
+                cache.put(event.request, networkResponse.clone());
+              }
             }
             return networkResponse;
           });
