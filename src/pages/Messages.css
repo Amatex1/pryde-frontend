@@ -1165,7 +1165,9 @@
   /* Phase 8: Keyboard-aware anchoring */
   position: sticky;
   bottom: 0;
-  z-index: 10;
+  /* FIXED: z-index must be higher than mobile nav (z-index: 200)
+     to ensure input is visible and clickable in PWA mode */
+  z-index: var(--z-sticky, 200);
 }
 
 /* Desktop: No mobile nav padding needed */
@@ -3372,12 +3374,25 @@
 
 /* ========================================
    PWA / MOBILE NAV SAFE AREA
+
+   CRITICAL: In PWA standalone mode on mobile, the mobile nav bar
+   is still visible (it's controlled by viewport width, not PWA mode).
+   The input area must account for both:
+   - Safe area inset (home indicator)
+   - Mobile nav height (56px)
    ======================================== */
 
 @media (display-mode: standalone) {
   .chat-input-area {
-    /* PWA mode: Account for home indicator + any visible nav */
-    padding-bottom: calc(16px + env(safe-area-inset-bottom, 20px));
+    /* PWA mode on mobile/tablet: Account for home indicator + mobile nav */
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 20px) + var(--mobile-nav-height, 56px));
+  }
+}
+
+/* PWA on desktop (1025px+): No mobile nav, just safe area */
+@media (display-mode: standalone) and (min-width: 1025px) {
+  .chat-input-area {
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   }
 }
 
@@ -3471,8 +3486,11 @@
 /* ========================================
    DESKTOP: Full-width Messages Layout
    Remove outer scroll, stretch to full viewport
+
+   IMPORTANT: Use 1025px to match mobile nav hiding breakpoint.
+   Mobile nav is visible at <= 1024px, hidden at >= 1025px.
    ======================================== */
-@media (min-width: 1024px) {
+@media (min-width: 1025px) {
   /* Full viewport width - no max-width constraint */
   .messages-container {
     max-width: 100% !important;
@@ -3526,9 +3544,9 @@
     min-height: 0 !important;
   }
 
-  /* Input area stays at bottom - no extra mobile nav padding */
+  /* Input area stays at bottom - no extra mobile nav padding on desktop */
   .chat-input-area {
     flex-shrink: 0 !important;
-    padding-bottom: 12px !important; /* Simple padding, no mobile nav offset */
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0)) !important;
   }
 }
