@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { startAuthentication } from '@simplewebauthn/browser';
 import api from '../utils/api';
-import { setAuthToken, setCurrentUser } from '../utils/auth';
-import { disconnectSocket, initializeSocket } from '../utils/socket';
 import './PasskeyLogin.css';
 
 function PasskeyLogin({ onSuccess, email }) {
@@ -47,20 +45,18 @@ function PasskeyLogin({ onSuccess, email }) {
         challengeKey: options.challengeKey
       });
 
-      // Save auth token and user data
-      // 🔐 SECURITY: refreshToken now stored ONLY in httpOnly cookie by backend
-      setAuthToken(data.accessToken || data.token);
-      setCurrentUser(data.user);
-
-      // Disconnect old socket and reconnect with new token
-      disconnectSocket();
-      const userId = data.user.id || data.user._id;
-      initializeSocket(userId);
-
+      // 🔐 SECURITY: Pass full auth data to parent component
+      // Let parent handle AuthContext.login() for proper state management
+      // This ensures all auth state (tokens, user, socket) is updated consistently
       setLoading(false);
 
       if (onSuccess) {
-        onSuccess(data.user);
+        // Pass both user and full auth data for AuthContext.login()
+        onSuccess(data.user, {
+          accessToken: data.accessToken || data.token,
+          refreshToken: data.refreshToken,
+          user: data.user
+        });
       }
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Failed to sign in with passkey');
