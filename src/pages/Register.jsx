@@ -6,7 +6,7 @@ import { setAuthToken, setCurrentUser } from '../utils/auth';
 import PasskeySetup from '../components/PasskeySetup';
 import './Auth.css';
 
-function Register({ setIsAuth }) {
+function Register({ onLoginSuccess }) {
   const [searchParams] = useSearchParams();
   const inviteCodeFromUrl = searchParams.get('invite');
 
@@ -260,9 +260,19 @@ function Register({ setIsAuth }) {
       console.log('Registration successful:', response.data);
 
       // 🔐 SECURITY: refreshToken now stored ONLY in httpOnly cookie by backend
-      setAuthToken(response.data.accessToken || response.data.token);
-      setCurrentUser(response.data.user);
-      setIsAuth(true);
+      // Use AuthContext login function to properly update all auth state
+      // This ensures user.showTour is set correctly for the onboarding tour
+      if (onLoginSuccess) {
+        await onLoginSuccess({
+          token: response.data.accessToken || response.data.token,
+          accessToken: response.data.accessToken,
+          user: response.data.user
+        });
+      } else {
+        // Fallback to direct auth utils (shouldn't happen in normal flow)
+        setAuthToken(response.data.accessToken || response.data.token);
+        setCurrentUser(response.data.user);
+      }
 
       // Show passkey setup option
       setShowPasskeySetup(true);
