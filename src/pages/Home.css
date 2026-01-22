@@ -396,19 +396,19 @@
    MOBILE OPTIMIZATIONS
    ======================================== */
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .hero-title {
     font-size: 1.75rem;
   }
-  
+
   .hero-subtitle {
     font-size: 1rem;
   }
-  
+
   .section-title {
     font-size: 1.75rem;
   }
-  
+
   .btn-primary,
   .btn-secondary,
   .btn-tertiary {

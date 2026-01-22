@@ -8,6 +8,25 @@
   padding: 0 var(--space-4) var(--space-6);
 }
 
+/* Large monitors: increase max-width for better space utilization */
+@media (min-width: 1440px) {
+  .settings-container {
+    max-width: 900px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .settings-container {
+    max-width: 1000px;
+  }
+}
+
+@media (min-width: 2560px) {
+  .settings-container {
+    max-width: 1100px;
+  }
+}
+
 .settings-card {
   padding: var(--space-8);
   border-radius: var(--radius-card);
@@ -400,6 +419,36 @@
   border-color: var(--electric-blue);
   background: var(--pryde-purple);
   color: white;
+}
+
+/* Tablet breakpoint: 769px - 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .settings-container {
+    max-width: 700px;
+    padding: 0 var(--space-5) var(--space-6);
+  }
+
+  .settings-card {
+    padding: var(--space-6);
+  }
+
+  .photo-uploads {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+
+  .settings-title {
+    font-size: 24px;
+  }
+
+  .form-row {
+    flex-direction: row;
+    gap: var(--space-4);
+  }
+
+  .settings-section {
+    padding: var(--space-5);
+  }
 }
 
 @media (max-width: 768px) {

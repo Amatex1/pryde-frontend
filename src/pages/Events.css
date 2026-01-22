@@ -272,6 +272,31 @@
   font-size: 1.1rem;
 }
 
+/* Tablet: 2 columns */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .events-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop: 3 columns */
+@media (min-width: 1025px) and (max-width: 1600px) {
+  .events-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Large monitors: 4 columns max */
+@media (min-width: 1601px) {
+  .events-grid {
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 1800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
   .events-header {
     flex-direction: column;
@@ -287,4 +312,3 @@
     grid-template-columns: 1fr;
   }
 }
-

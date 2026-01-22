@@ -14,6 +14,25 @@
   padding: var(--space-6) var(--space-4);
 }
 
+/* Large monitors: increase max-width for better space utilization */
+@media (min-width: 1440px) {
+  .notifications-container {
+    max-width: 900px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .notifications-container {
+    max-width: 1000px;
+  }
+}
+
+@media (min-width: 2560px) {
+  .notifications-container {
+    max-width: 1100px;
+  }
+}
+
 .notifications-header {
   display: flex;
   justify-content: space-between;
@@ -160,6 +179,28 @@
 
 [data-theme="dark"] .mark-all-read-btn:hover {
   background: var(--pryde-purple);
+}
+
+/* Tablet breakpoint: 769px - 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .notifications-container {
+    max-width: 700px;
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .notifications-header h1 {
+    font-size: 22px;
+  }
+
+  .notification-card {
+    padding: var(--space-4);
+  }
+
+  .notification-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 1.35rem;
+  }
 }
 
 /* Mobile Responsive */

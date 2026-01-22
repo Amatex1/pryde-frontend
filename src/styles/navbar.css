@@ -114,7 +114,7 @@
 }
 
 /* Hide on mobile - use hamburger menu */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .navbar-actions {
     display: none;
   }
