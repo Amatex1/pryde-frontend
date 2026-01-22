@@ -1,0 +1,116 @@
+/**
+ * Hover Utilities
+ * 
+ * Touch-safe hover styles that only apply on devices with hover capability.
+ * This prevents "sticky" hover states on touch devices.
+ * 
+ * Usage:
+ * 1. Wrap hover styles in @media (hover: hover) and (pointer: fine)
+ * 2. Use .hover-safe class for JS-controlled hover states
+ */
+
+/* ========================================
+   HOVER DETECTION UTILITIES
+   ======================================== */
+
+/* Only apply hover effects on devices that support hover */
+@media (hover: hover) and (pointer: fine) {
+  /* Standard button hover */
+  .btn-hover:hover:not(:disabled),
+  .pryde-btn:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+  }
+
+  /* Card hover effects */
+  .card-hover:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+
+  /* Interactive element hover */
+  .interactive:hover {
+    background-color: var(--bg-hover, rgba(108, 92, 231, 0.08));
+  }
+
+  /* Icon button hover */
+  .icon-btn:hover:not(:disabled) {
+    background-color: var(--bg-hover, rgba(108, 92, 231, 0.08));
+    transform: scale(1.05);
+  }
+
+  /* Link hover */
+  .link-hover:hover {
+    color: var(--accent-hover, #5a4bd8);
+    text-decoration: underline;
+  }
+}
+
+/* ========================================
+   TOUCH DEVICE ALTERNATIVES
+   ======================================== */
+
+/* On touch devices, use :active instead of :hover */
+@media (hover: none) {
+  /* Active state for touch feedback */
+  .btn-hover:active:not(:disabled),
+  .pryde-btn:active:not(:disabled) {
+    filter: brightness(0.95);
+    transform: scale(0.98);
+  }
+
+  /* Card active state */
+  .card-hover:active {
+    background-color: var(--bg-hover, rgba(108, 92, 231, 0.04));
+  }
+
+  /* Interactive active state */
+  .interactive:active {
+    background-color: var(--bg-hover, rgba(108, 92, 231, 0.08));
+  }
+
+  /* Icon button active */
+  .icon-btn:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+}
+
+/* ========================================
+   MIXED HOVER PREVENTION MIXIN
+   ========================================
+   
+   Use this pattern in component CSS:
+   
+   @media (hover: hover) and (pointer: fine) {
+     .my-button:hover {
+       background: var(--bg-hover);
+     }
+   }
+   
+   @media (hover: none) {
+     .my-button:active {
+       background: var(--bg-hover);
+     }
+   }
+   
+   ======================================== */
+
+/* ========================================
+   GLOBAL TOUCH-ACTION CONSISTENCY
+   ======================================== */
+
+/* Standard touch behavior for all interactive elements */
+button,
+a,
+[role="button"],
+.clickable,
+.interactive {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Disable tap highlight on iOS */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+

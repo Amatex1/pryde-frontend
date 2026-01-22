@@ -6,6 +6,7 @@ import App from './App.jsx'
    Global Styles (Order Matters)
    ================================ */
 import './index.css'
+import './styles/z-index.css'
 import './styles/breakpoints.css'
 import './styles/pwa-app-shell.css'
 import './styles/darkMode.css'
@@ -19,6 +20,7 @@ import './styles/sidebar.css'
 import './styles/navbar.css'
 import './styles/cursors.css'
 import './styles/responsive-modals.css'
+import './styles/hover-utilities.css'
 import './styles/pwa-native-feel.css'
 
 /* ================================

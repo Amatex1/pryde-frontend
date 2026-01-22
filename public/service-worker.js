@@ -1,20 +1,25 @@
 /**
- * Fallback Service Worker
+ * Pryde PWA Service Worker
  *
- * This is a minimal service worker that:
- * - NEVER intercepts navigation requests (fixes ERR_FAILED)
- * - Passes all other requests through to network
- * - Does NOT cache anything
+ * CACHING STRATEGY:
+ * - Navigation requests: BYPASS (browser handles)
+ * - WebSocket/Socket.IO: BYPASS (realtime connections)
+ * - API requests (/api/*): NETWORK ONLY (always fresh)
+ * - Static assets (JS, CSS, images, fonts): CACHE FIRST with network fallback
  *
- * NAVIGATION BYPASS DESIGN:
- * - Navigation requests (mode === 'navigate') bypass SW completely
- * - HTML requests (accept includes 'text/html') bypass SW completely
- * - Browser handles all redirects correctly
+ * This improves:
+ * - Offline experience (cached assets still work)
+ * - Performance (cached assets load instantly)
+ * - Reliability (network failures don't break cached content)
  */
 
 // 🔥 CACHE VERSION - Increment this to force cache invalidation
-const CACHE_VERSION = 'pryde-cache-v7-websocket-fix';
+const CACHE_VERSION = 'pryde-cache-v8-static-caching';
+const STATIC_CACHE = 'pryde-static-v8';
 const isDev = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
+
+// Static asset extensions to cache
+const CACHEABLE_EXTENSIONS = ['.js', '.css', '.woff', '.woff2', '.ttf', '.otf', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.webp'];
 
 /**
  * Check if request is a navigation request
@@ -25,6 +30,27 @@ function isNavigationRequest(request) {
   if (accept && accept.includes('text/html')) return true;
   if (request.destination === 'document') return true;
   return false;
+}
+
+/**
+ * Check if request is for a static asset (cacheable)
+ */
+function isStaticAsset(url) {
+  const pathname = url.pathname.toLowerCase();
+  // Check extensions
+  if (CACHEABLE_EXTENSIONS.some(ext => pathname.endsWith(ext))) return true;
+  // Vite/bundler assets folder
+  if (pathname.startsWith('/assets/')) return true;
+  // Icons
+  if (pathname.startsWith('/icons/')) return true;
+  return false;
+}
+
+/**
+ * Check if request is an API call
+ */
+function isApiRequest(url) {
+  return url.pathname.startsWith('/api/') || url.pathname.startsWith('/auth/');
 }
 
 self.addEventListener('install', () => {
@@ -41,7 +67,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_VERSION) {
+          if (cacheName !== STATIC_CACHE && cacheName !== CACHE_VERSION) {
             console.log('[SW] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
@@ -55,42 +81,74 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch handler with navigation bypass
+// Fetch handler with caching strategies
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
   // ========================================
   // 🚫 CRITICAL: NEVER INTERCEPT REALTIME CONNECTIONS
   // ========================================
-  // WebSocket upgrade requests MUST bypass service worker
-  // Otherwise they will stall indefinitely
   if (
     url.pathname.startsWith('/socket.io') ||
     event.request.headers.get('upgrade') === 'websocket' ||
     event.request.headers.get('upgrade') === 'Websocket' ||
     event.request.headers.get('Upgrade') === 'websocket'
   ) {
-    if (isDev) {
-      console.log('[SW] 🔌 WebSocket/Socket.IO request - bypassing:', event.request.url);
-    }
+    if (isDev) console.log('[SW] 🔌 WebSocket bypass:', url.pathname);
     return; // Browser handles WebSocket upgrade
   }
 
   // ========================================
   // 🔥 CRITICAL: HARD BYPASS ALL NAVIGATION REQUESTS
   // ========================================
-  // DO NOT call event.respondWith()
-  // Let browser handle navigation completely
   if (isNavigationRequest(event.request)) {
-    if (isDev) {
-      console.warn('[SW] ⚠️ Navigation request - bypassing:', event.request.url);
-    }
+    if (isDev) console.warn('[SW] ⚠️ Navigation bypass:', url.pathname);
     return; // Browser handles it
   }
 
-  // All other requests: pass through to network (no caching)
-  event.respondWith(
-    fetch(event.request, { redirect: 'follow' })
-  );
+  // ========================================
+  // 🌐 API REQUESTS: Network only (always fresh data)
+  // ========================================
+  if (isApiRequest(url)) {
+    event.respondWith(fetch(event.request, { redirect: 'follow' }));
+    return;
+  }
+
+  // ========================================
+  // 📦 STATIC ASSETS: Cache first, network fallback
+  // ========================================
+  if (isStaticAsset(url)) {
+    event.respondWith(
+      caches.open(STATIC_CACHE).then(cache => {
+        return cache.match(event.request).then(cachedResponse => {
+          if (cachedResponse) {
+            // Return cached, but update cache in background
+            if (isDev) console.log('[SW] 📦 Cache hit:', url.pathname);
+            // Stale-while-revalidate: update cache in background
+            fetch(event.request).then(networkResponse => {
+              if (networkResponse.ok) {
+                cache.put(event.request, networkResponse.clone());
+              }
+            }).catch(() => {}); // Ignore network errors during background update
+            return cachedResponse;
+          }
+          // Not in cache - fetch from network and cache
+          return fetch(event.request).then(networkResponse => {
+            if (networkResponse.ok) {
+              if (isDev) console.log('[SW] 📥 Caching:', url.pathname);
+              cache.put(event.request, networkResponse.clone());
+            }
+            return networkResponse;
+          });
+        });
+      })
+    );
+    return;
+  }
+
+  // ========================================
+  // 🔄 ALL OTHER REQUESTS: Network only
+  // ========================================
+  event.respondWith(fetch(event.request, { redirect: 'follow' }));
 });
 

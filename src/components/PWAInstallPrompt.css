@@ -3,7 +3,7 @@
   bottom: 1rem;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 9999;
+  z-index: var(--z-pwa-install, 520);
   max-width: 500px;
   width: calc(100% - 2rem);
   animation: slideUp 0.3s ease-out;

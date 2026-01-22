@@ -38,12 +38,17 @@
   }
   
   /* Native app feel - CRITICAL: Enable single-finger scrolling */
+  /* UNIFIED touch-action strategy:
+     - Root elements (html, body, #root): pan-y pinch-zoom (vertical scroll + zoom)
+     - Scrollable containers: pan-y pinch-zoom (same)
+     - Interactive elements (buttons, links): manipulation (in components)
+  */
   html {
     overflow-y: scroll !important; /* scroll not auto - ensures scrollbar space */
     overflow-x: hidden !important;
     height: 100% !important;
     min-height: 100% !important;
-    touch-action: pan-y !important; /* pan-y is more reliable for vertical scrolling */
+    touch-action: pan-y pinch-zoom !important; /* Unified: vertical scroll + zoom */
   }
 
   body {
@@ -51,7 +56,7 @@
     overflow-y: scroll !important; /* CRITICAL: Ensure vertical scrolling works */
     overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch !important; /* Smooth scrolling on iOS */
-    touch-action: pan-y pan-x pinch-zoom !important; /* Allow scrolling and pinch zoom */
+    touch-action: pan-y pinch-zoom !important; /* Unified: vertical scroll + zoom */
     height: 100% !important;
     min-height: 100dvh !important;
   }
@@ -63,7 +68,7 @@
     min-height: 100dvh !important;
     height: auto !important;
     -webkit-overflow-scrolling: touch !important;
-    touch-action: pan-y !important;
+    touch-action: pan-y pinch-zoom !important; /* Unified: vertical scroll + zoom */
   }
 
   /* App container - remove any height restrictions */
@@ -71,7 +76,7 @@
     overflow: visible !important;
     height: auto !important;
     min-height: 100dvh !important;
-    touch-action: pan-y !important;
+    touch-action: pan-y pinch-zoom !important; /* Unified: vertical scroll + zoom */
   }
 
   /* Ensure all scrollable containers allow touch scrolling */
@@ -89,7 +94,7 @@
   .home-page,
   main,
   [role="main"] {
-    touch-action: pan-y !important;
+    touch-action: pan-y pinch-zoom !important; /* Unified: vertical scroll + zoom */
     -webkit-overflow-scrolling: touch !important;
     overflow-y: visible !important; /* Let content flow naturally */
   }

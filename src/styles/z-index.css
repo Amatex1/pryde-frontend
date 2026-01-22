@@ -1,0 +1,96 @@
+/**
+ * Z-Index Layering System
+ * 
+ * Centralized z-index values for consistent layering across the app.
+ * Use these CSS variables instead of arbitrary z-index values.
+ * 
+ * LAYER STRUCTURE (lowest to highest):
+ * 
+ * Layer 0: Base content (0-10)
+ * Layer 1: Floating UI elements (100-199) - tooltips, dropdowns
+ * Layer 2: Sticky elements (200-299) - headers, footers
+ * Layer 3: Overlays (300-399) - modals, drawers
+ * Layer 4: Notifications (400-499) - toasts, alerts
+ * Layer 5: Critical UI (500-599) - loading gates, offline banners
+ * Layer 6: Debug (600+) - development overlays
+ */
+
+:root {
+  /* ========================================
+     LAYER 0: BASE CONTENT (0-10)
+     ======================================== */
+  --z-base: 0;
+  --z-below: -1;
+  --z-above: 1;
+  --z-raised: 10;
+
+  /* ========================================
+     LAYER 1: FLOATING UI (100-199)
+     Dropdowns, tooltips, popovers
+     ======================================== */
+  --z-dropdown: 100;
+  --z-tooltip: 110;
+  --z-popover: 120;
+  --z-emoji-picker: 130;
+  --z-reaction-picker: 140;
+
+  /* ========================================
+     LAYER 2: STICKY ELEMENTS (200-299)
+     Headers, footers, navbars
+     ======================================== */
+  --z-sticky: 200;
+  --z-header: 210;
+  --z-footer: 210;
+  --z-mobile-nav: 220;
+  --z-bottom-nav: 230;
+
+  /* ========================================
+     LAYER 3: OVERLAYS (300-399)
+     Modals, drawers, sidebars
+     ======================================== */
+  --z-overlay: 300;
+  --z-drawer: 310;
+  --z-modal-backdrop: 320;
+  --z-modal: 330;
+  --z-lightbox: 340;
+  --z-media-viewer: 350;
+
+  /* ========================================
+     LAYER 4: NOTIFICATIONS (400-499)
+     Toasts, alerts, banners
+     ======================================== */
+  --z-toast: 400;
+  --z-alert: 410;
+  --z-banner: 420;
+  --z-update-banner: 430;
+  --z-cookie-banner: 440;
+
+  /* ========================================
+     LAYER 5: CRITICAL UI (500-599)
+     Loading states, offline indicators
+     ======================================== */
+  --z-loading-gate: 500;
+  --z-offline-banner: 510;
+  --z-pwa-install: 520;
+
+  /* ========================================
+     LAYER 6: DEBUG (600+)
+     Development overlays only
+     ======================================== */
+  --z-debug: 600;
+  --z-debug-overlay: 610;
+}
+
+/* ========================================
+   MIGRATION GUIDE
+   ========================================
+   
+   Replace these old values:
+   
+   z-index: 9999    → var(--z-loading-gate) or var(--z-cookie-banner)
+   z-index: 99999   → var(--z-modal) or var(--z-media-viewer)
+   z-index: 999998  → var(--z-debug-overlay)
+   z-index: 999997  → var(--z-offline-banner)
+   
+   ======================================== */
+

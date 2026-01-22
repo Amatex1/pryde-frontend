@@ -309,7 +309,8 @@ button:active,
   /* Ensure modals don't overflow */
   .modal-content {
     max-width: calc(100vw - 32px);
-    max-height: calc(100vh - 64px);
+    max-height: calc(100vh - 64px); /* Fallback */
+    max-height: calc(100dvh - 64px);
     overflow-y: auto;
   }
 }

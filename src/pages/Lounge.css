@@ -694,7 +694,8 @@
 @media (max-width: 768px) {
   .lounge-container {
     padding: 1rem 0.5rem 0;
-    height: calc(100vh - 60px);
+    height: calc(100vh - 60px); /* Fallback */
+    height: calc(100dvh - 60px);
   }
 
   .lounge-header {

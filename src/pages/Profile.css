@@ -1192,7 +1192,8 @@ div.profile-layout,
   grid-area: sidebar;
   position: sticky;
   top: 80px;
-  max-height: calc(100vh - 100px);
+  max-height: calc(100vh - 100px); /* Fallback */
+  max-height: calc(100dvh - 100px);
   overflow-y: auto;
   padding-right: 0.5rem;
   align-self: start;
@@ -1944,7 +1945,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   max-width: 90vw;
   width: max-content;
   box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.15);
-  z-index: 9999;
+  z-index: var(--z-modal, 330);
 }
 
 [data-theme="dark"] .profile-page .reaction-picker {
@@ -2229,7 +2230,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   max-width: 90vw; /* Prevent overflow on small screens */
   width: max-content;
   box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.15);
-  z-index: 9999;
+  z-index: var(--z-modal, 330);
   animation: reactionPopIn 0.2s ease-out;
   touch-action: manipulation;
 }
@@ -2242,7 +2243,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     bottom: auto;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 99999;
+    z-index: var(--z-modal, 330);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     padding: 1rem 1.25rem;
     gap: 0.875rem;

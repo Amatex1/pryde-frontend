@@ -2317,7 +2317,7 @@ html:not([data-theme]) .post-actions {
   /* Subtle shadow - not floating */
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 
-  z-index: 99999;
+  z-index: var(--z-modal, 330);
   touch-action: manipulation;
 
   /* Deliberate enter animation */
@@ -2344,7 +2344,7 @@ html:not([data-theme]) .post-actions {
     left: 0;
     right: 0;
     transform: none;
-    z-index: 99999;
+    z-index: var(--z-modal, 330);
     width: 100%;
     max-width: 100%;
     border-radius: 1.25rem 1.25rem 0 0;
@@ -3758,7 +3758,7 @@ html:not([data-theme]) .post-actions {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 9999;
+  z-index: var(--z-toast, 400);
   background: var(--card-bg);
   padding: 1rem 2rem;
   border-radius: 0 0 12px 12px;

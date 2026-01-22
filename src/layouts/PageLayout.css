@@ -104,7 +104,8 @@
   .page-layout[data-sticky-secondary="true"] .page-layout__sticky-wrapper {
     position: sticky;
     top: calc(var(--navbar-height, 60px) + var(--space-md, 16px));
-    max-height: calc(100vh - var(--navbar-height, 60px) - var(--space-lg, 24px));
+    max-height: calc(100vh - var(--navbar-height, 60px) - var(--space-lg, 24px)); /* Fallback */
+    max-height: calc(100dvh - var(--navbar-height, 60px) - var(--space-lg, 24px));
     overflow-y: auto;
   }
 }

@@ -12,7 +12,7 @@
   background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
   color: white;
   padding: 12px 20px;
-  z-index: 999997;
+  z-index: var(--z-offline-banner, 510);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   animation: slideDown 0.3s ease;
 }

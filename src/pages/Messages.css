@@ -1798,7 +1798,8 @@
 @media (max-width: 768px) {
   .messages-container {
     padding: 0;
-    height: calc(100vh - 70px);
+    height: calc(100vh - 70px); /* Fallback */
+    height: calc(100dvh - 70px);
   }
 
   .messages-layout {
@@ -2090,7 +2091,8 @@
 @media (max-width: 480px) {
   .messages-container {
     padding: 0;  /* Full-bleed on mobile */
-    height: calc(100vh - 160px);
+    height: calc(100vh - 160px); /* Fallback */
+    height: calc(100dvh - 160px);
   }
 
   .chat-window {
@@ -3476,7 +3478,8 @@
     max-width: 100% !important;
     width: 100% !important;
     padding: 0 !important;
-    height: calc(100vh - 70px) !important; /* Account for navbar */
+    height: calc(100vh - 70px) !important; /* Account for navbar - Fallback */
+    height: calc(100dvh - 70px) !important;
     overflow: hidden !important; /* Prevent outer scroll */
   }
 
