@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { refreshBeforeUpdate } from '../utils/auth';
+import { clearStoredVersions } from '../hooks/useAppVersion';
 import './UpdateBanner.css';
 
 /**
@@ -20,25 +21,27 @@ const PRESERVED_KEYS = [
 /**
  * Banner component shown when a new app version is deployed
  * Handles cache clearing and service worker reset while keeping user logged in
+ *
+ * IMPORTANT: Uses console.warn for logging because console.log is silenced in production
  */
 export default function UpdateBanner({ onClose }) {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const handleRefresh = async () => {
     setIsUpdating(true);
-    console.log('🔄 Starting update process...');
+    console.warn('[UpdateBanner] 🔄 Starting update process...');
 
     try {
       // 1. Refresh auth token so user stays logged in after reload
-      console.log('🔑 Refreshing auth token...');
+      console.warn('[UpdateBanner] 🔑 Refreshing auth token...');
       await refreshBeforeUpdate().catch(err => {
-        console.warn('⚠️ Token refresh failed (will continue anyway):', err);
+        console.warn('[UpdateBanner] ⚠️ Token refresh failed (will continue anyway):', err?.message || err);
       });
 
       // 2. Unregister ALL service workers
       if ('serviceWorker' in navigator) {
         const registrations = await navigator.serviceWorker.getRegistrations();
-        console.log(`🗑️ Unregistering ${registrations.length} service workers...`);
+        console.warn(`[UpdateBanner] 🗑️ Unregistering ${registrations.length} service workers...`);
         for (const reg of registrations) {
           await reg.unregister();
         }
@@ -47,12 +50,12 @@ export default function UpdateBanner({ onClose }) {
       // 3. Clear all Cache API caches
       if ('caches' in window) {
         const cacheNames = await caches.keys();
-        console.log(`🗑️ Clearing ${cacheNames.length} Cache API caches...`);
+        console.warn(`[UpdateBanner] 🗑️ Clearing ${cacheNames.length} Cache API caches...`);
         await Promise.all(cacheNames.map(name => caches.delete(name)));
       }
 
       // 4. Clear localStorage except auth keys
-      console.log('🗑️ Clearing localStorage (preserving auth)...');
+      console.warn('[UpdateBanner] 🗑️ Clearing localStorage (preserving auth)...');
       const preservedData = {};
       PRESERVED_KEYS.forEach(key => {
         const value = localStorage.getItem(key);
@@ -64,31 +67,34 @@ export default function UpdateBanner({ onClose }) {
       });
 
       // 5. Clear sessionStorage (stores temporary state)
-      console.log('🗑️ Clearing sessionStorage...');
+      console.warn('[UpdateBanner] 🗑️ Clearing sessionStorage...');
       sessionStorage.clear();
 
       // 6. Clear IndexedDB databases (except for auth-related)
       if ('indexedDB' in window) {
         try {
           const databases = await indexedDB.databases?.() || [];
-          console.log(`🗑️ Clearing ${databases.length} IndexedDB databases...`);
+          console.warn(`[UpdateBanner] 🗑️ Clearing ${databases.length} IndexedDB databases...`);
           for (const db of databases) {
             if (db.name && !db.name.includes('auth')) {
               indexedDB.deleteDatabase(db.name);
             }
           }
         } catch (e) {
-          console.warn('⚠️ IndexedDB clear failed (non-critical):', e);
+          console.warn('[UpdateBanner] ⚠️ IndexedDB clear failed (non-critical):', e);
         }
       }
 
-      console.log('✅ All caches cleared, reloading...');
+      // 7. Clear stored version info so future updates can be detected
+      clearStoredVersions();
 
-      // 7. Force reload from network with cache-busting timestamp
+      console.warn('[UpdateBanner] ✅ All caches cleared, reloading...');
+
+      // 8. Force reload from network with cache-busting timestamp
       const timestamp = Date.now();
       window.location.href = `${window.location.origin}${window.location.pathname}?v=${timestamp}`;
     } catch (err) {
-      console.error('❌ Update process failed:', err);
+      console.error('[UpdateBanner] ❌ Update process failed:', err);
       setIsUpdating(false);
       // Still try to reload even if something fails
       window.location.reload(true);

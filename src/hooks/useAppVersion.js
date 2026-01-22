@@ -3,20 +3,22 @@ import { APP_VERSION } from '../utils/version';
 import api from '../utils/api';
 
 const CHECK_INTERVAL = 60_000; // 60 seconds
+const STORAGE_KEY_BACKEND = 'pryde_last_backend_version';
+const STORAGE_KEY_FRONTEND = 'pryde_last_frontend_version';
+const STORAGE_KEY_CHECK_TIME = 'pryde_last_version_check';
 
 /**
  * Hook to detect when a new app version has been deployed
- * Polls both frontend (/version.json) and backend (/api/version) every 60 seconds
- * Returns true if a new version is available
  *
- * FIXED: Race condition where version checking started before initial versions were set
+ * Uses localStorage to persist version info across sessions, so users returning
+ * after an update will see the banner immediately (not just after a second check).
+ *
+ * Polls both frontend (/version.json) and backend (/api/version) every 60 seconds.
+ * Returns true if a new version is available.
  */
 export default function useAppVersion() {
   const [updateAvailable, setUpdateAvailable] = useState(false);
 
-  // Use refs to store initial versions (persists across renders without causing re-renders)
-  const initialBackendVersion = useRef(null);
-  const initialFrontendVersion = useRef(null);
   const hasInitialized = useRef(false);
   const hasDetectedUpdate = useRef(false);
   const intervalRef = useRef(null);
@@ -37,11 +39,12 @@ export default function useAppVersion() {
           return;
         }
 
-        // Check frontend version
+        // Check frontend version from version.json (bypasses cache)
         let currentFrontendVersion = APP_VERSION;
         try {
           const frontendResponse = await fetch('/version.json', {
             cache: 'no-store',
+            headers: { 'Cache-Control': 'no-cache' }
           });
           if (frontendResponse.ok) {
             const frontendData = await frontendResponse.json();
@@ -53,35 +56,46 @@ export default function useAppVersion() {
           // version.json might not exist, use APP_VERSION
         }
 
-        // First time - store initial versions
-        if (!initialBackendVersion.current || !initialFrontendVersion.current) {
-          initialBackendVersion.current = currentBackendVersion;
-          initialFrontendVersion.current = currentFrontendVersion;
-          console.log('📦 Initial versions:', {
+        // Get stored versions from localStorage (persists across sessions)
+        const storedBackend = localStorage.getItem(STORAGE_KEY_BACKEND);
+        const storedFrontend = localStorage.getItem(STORAGE_KEY_FRONTEND);
+
+        // First time ever - store versions and return (no banner on first load)
+        if (!storedBackend || !storedFrontend) {
+          localStorage.setItem(STORAGE_KEY_BACKEND, currentBackendVersion);
+          localStorage.setItem(STORAGE_KEY_FRONTEND, currentFrontendVersion);
+          localStorage.setItem(STORAGE_KEY_CHECK_TIME, Date.now().toString());
+          console.warn('[VersionCheck] 📦 First run - storing versions:', {
             backend: currentBackendVersion,
             frontend: currentFrontendVersion
           });
           return;
         }
 
-        // Check for version mismatches
-        const backendChanged = currentBackendVersion !== initialBackendVersion.current;
-        const frontendChanged = currentFrontendVersion !== initialFrontendVersion.current;
+        // Check for version changes
+        const backendChanged = currentBackendVersion !== storedBackend;
+        const frontendChanged = currentFrontendVersion !== storedFrontend;
 
         if ((backendChanged || frontendChanged) && !hasDetectedUpdate.current) {
-          console.log('🔄 Update detected:', {
-            backend: { old: initialBackendVersion.current, new: currentBackendVersion },
-            frontend: { old: initialFrontendVersion.current, new: currentFrontendVersion }
+          console.warn('[VersionCheck] 🔄 Update detected:', {
+            backend: { old: storedBackend, new: currentBackendVersion, changed: backendChanged },
+            frontend: { old: storedFrontend, new: currentFrontendVersion, changed: frontendChanged }
           });
 
           setUpdateAvailable(true);
           hasDetectedUpdate.current = true;
+
+          // DON'T update stored versions yet - wait for user to refresh
+          // This way the banner persists until they actually update
 
           // Stop polling once update is detected
           if (intervalRef.current) {
             clearInterval(intervalRef.current);
             intervalRef.current = null;
           }
+        } else {
+          // No change - update the check time
+          localStorage.setItem(STORAGE_KEY_CHECK_TIME, Date.now().toString());
         }
       } catch (error) {
         // Silently fail - never block the app
@@ -116,4 +130,15 @@ export default function useAppVersion() {
   }, []);
 
   return updateAvailable;
+
+}
+
+/**
+ * Clear stored version info - call this after a successful update
+ * to reset the detection for the next update
+ */
+export function clearStoredVersions() {
+  localStorage.removeItem(STORAGE_KEY_BACKEND);
+  localStorage.removeItem(STORAGE_KEY_FRONTEND);
+  localStorage.removeItem(STORAGE_KEY_CHECK_TIME);
 }
