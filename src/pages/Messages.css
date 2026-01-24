@@ -1,6 +1,7 @@
 /* ========================================
    MESSAGES PAGE - STABLE HEIGHT LAYOUT
    Single height authority at root, flex children with min-height: 0
+   NEUTRAL BACKGROUND - overrides app-wide purple
    ======================================== */
 
 .messages-container {
@@ -10,6 +11,12 @@
   /* SINGLE HEIGHT AUTHORITY - viewport minus navbar */
   height: calc(100dvh - var(--navbar-height, 60px));
   padding-top: var(--space-4);
+  /* NEUTRAL BACKGROUND - override app-wide purple */
+  background: var(--messages-page-bg, #F5F6FA);
+}
+
+[data-theme="dark"] .messages-container {
+  background: var(--messages-page-bg, #0F1021);
 }
 
 /* MOBILE: Full-bleed container - height inherited from root rule */
@@ -1726,13 +1733,13 @@
   gap: 1rem;
   padding: 1rem;
   border-radius: 12px;
-  background: var(--soft-lavender);
+  background: var(--bg-hover);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .user-result:hover {
-  background: var(--pryde-purple);
+  background: var(--accent-primary);
   transform: translateX(5px);
 }
 
@@ -2448,17 +2455,23 @@
    5. Balanced sidebar
    ======================================== */
 
-/* Design tokens for calm redesign */
+/* Design tokens for calm redesign - NEUTRAL SURFACES */
 :root {
   --conversation-max-width: 720px;
-  --conversation-container-bg: rgba(108, 92, 231, 0.02);
+  --conversation-container-bg: rgba(0, 0, 0, 0.015); /* NEUTRAL - no purple */
   --conversation-container-radius: 20px;
   --message-group-spacing: 20px;
   --message-within-group-spacing: 3px;
+  /* Messages page neutral backgrounds */
+  --messages-page-bg: #F5F6FA;
+  --messages-surface-bg: #FFFFFF;
 }
 
 [data-theme="dark"] {
   --conversation-container-bg: rgba(255, 255, 255, 0.02);
+  /* Messages page dark mode - NEUTRAL, not purple */
+  --messages-page-bg: #0F1021;
+  --messages-surface-bg: #15162A;
 }
 
 /* ========================================
@@ -2547,11 +2560,12 @@
   flex-direction: column;
   align-items: center;
   padding: 24px 16px;
-  background: var(--bg-page, #F5F6FA);
+  /* NEUTRAL BACKGROUND - uses Messages page token */
+  background: var(--messages-page-bg, #F5F6FA);
 }
 
 [data-theme="dark"] .chat-messages {
-  background: var(--bg-page, #0F1021);
+  background: var(--messages-page-bg, #0F1021);
 }
 
 /* Inner conversation container - centered with max-width */
