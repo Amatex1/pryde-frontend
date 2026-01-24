@@ -10,7 +10,7 @@
    - Network-first for API calls
    ===================================================== */
 
-const VERSION = '2.4.0-websocket-fix'; // Increment to force update - Fixed WebSocket bypass + notification permission
+const VERSION = '2.5.0-css-network-first'; // Increment to force update - CSS now network-first to prevent stale styles
 const STATIC_CACHE = `pryde-static-${VERSION}`;
 const IMAGE_CACHE = `pryde-images-${VERSION}`;
 const API_CACHE = `pryde-api-${VERSION}`;
@@ -103,13 +103,20 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Strategy 3: Cache-first for static assets (JS, CSS)
-  if (request.destination === 'script' || request.destination === 'style') {
+  // Strategy 3: Network-first for CSS (prevents stale styles after deploy)
+  // CSS must always be fresh to avoid layout issues on first load
+  if (request.destination === 'style' || url.pathname.endsWith('.css')) {
+    event.respondWith(networkFirst(request, STATIC_CACHE));
+    return;
+  }
+
+  // Strategy 4: Cache-first for JS (faster repeat visits, versioned by Vite hash)
+  if (request.destination === 'script') {
     event.respondWith(cacheFirst(request, STATIC_CACHE));
     return;
   }
 
-  // Strategy 4: Network-first for everything else
+  // Strategy 5: Network-first for everything else
   event.respondWith(networkFirst(request, STATIC_CACHE));
 });
 
