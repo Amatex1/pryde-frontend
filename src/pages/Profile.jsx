@@ -88,6 +88,7 @@ function Profile() {
   const defaultPostVisibilityRef = useRef('followers'); // Stores user's default from settings
   const [contentWarning, setContentWarning] = useState('');
   const [showContentWarning, setShowContentWarning] = useState(false);
+  const [expandedPosts, setExpandedPosts] = useState({}); // Track which posts have expanded text ("See more")
   const [postLoading, setPostLoading] = useState(false);
   const [selectedPostGif, setSelectedPostGif] = useState(null); // GIF for main post creation
   const [showGifPicker, setShowGifPicker] = useState(null); // Track which GIF picker is open (null, 'main-post', 'comment-{postId}', 'reply-{commentId}')
@@ -2348,7 +2349,32 @@ function Profile() {
                                   />
                                 ) : (
                                   <>
-                                    {post.content && <p><FormattedText text={post.content} /></p>}
+                                    {post.content && (
+                                      <>
+                                        <div
+                                          className={`post-text-clamp${expandedPosts[post._id] ? ' post-text-expanded' : ''}`}
+                                        >
+                                          <p>
+                                            <FormattedText text={post.content} />
+                                          </p>
+                                        </div>
+                                        {/* See more toggle - show only for long posts */}
+                                        {post.content.length > 280 && (
+                                          <button
+                                            type="button"
+                                            className="see-more-toggle"
+                                            onClick={() => setExpandedPosts(prev => ({
+                                              ...prev,
+                                              [post._id]: !prev[post._id]
+                                            }))}
+                                            aria-expanded={expandedPosts[post._id] || false}
+                                            aria-label={expandedPosts[post._id] ? 'Show less content' : 'Show more content'}
+                                          >
+                                            {expandedPosts[post._id] ? 'See less' : 'See more'}
+                                          </button>
+                                        )}
+                                      </>
+                                    )}
                                     {post.media && post.media.length > 0 && (
                                       <div className={`post-media-grid ${post.media.length === 1 ? 'single' : post.media.length === 2 ? 'double' : 'multiple'}`}>
                                         {post.media.map((mediaItem, index) => (

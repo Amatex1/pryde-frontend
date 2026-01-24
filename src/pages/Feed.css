@@ -1469,6 +1469,61 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   border-radius: 0;
 }
 
+/* =====================================================
+   POST TEXT COLLAPSE — "See more" expansion system
+   Phase 1.4: Prevent long posts from overwhelming feed
+   ===================================================== */
+
+/* Collapsed state - clamp to N lines (desktop: 7 lines) */
+.post-text-clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 7;
+  overflow: hidden;
+  /* Smooth transition for expand/collapse */
+  transition: max-height 0.2s ease-out;
+}
+
+/* Expanded state - show full content */
+.post-text-clamp.post-text-expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+/* See more / See less toggle button */
+.see-more-toggle {
+  display: inline-block;
+  margin-top: var(--space-2);
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s ease, text-decoration 0.15s ease;
+}
+
+.see-more-toggle:hover,
+.see-more-toggle:focus {
+  color: var(--accent-primary);
+  text-decoration: underline;
+}
+
+.see-more-toggle:focus {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Mobile: Clamp to 5 lines */
+@media (max-width: 768px) {
+  .post-text-clamp {
+    -webkit-line-clamp: 5;
+  }
+}
+
 /* ========================================
    POST ACTIONS / REACTION BAR (FEED POLISH)
    Creates a visual "floor" that anchors reactions to the post

@@ -97,6 +97,7 @@ function Feed() {
   const [contentWarning, setContentWarning] = useState('');
   const [showContentWarning, setShowContentWarning] = useState(false);
   const [revealedPosts, setRevealedPosts] = useState({});
+  const [expandedPosts, setExpandedPosts] = useState({}); // Track which posts have expanded text ("See more")
   const [showReplies, setShowReplies] = useState({}); // Track which comments have replies visible
   const [showReactionPicker, setShowReactionPicker] = useState(null); // Track which comment shows reaction picker
   const [postComments, setPostComments] = useState({}); // Store comments by postId { postId: [comments] }
@@ -2507,9 +2508,30 @@ function Feed() {
                                     </div>
                                   ) : (
                                     post.content && (
-                                      <p>
-                                        <FormattedText text={post.content} />
-                                      </p>
+                                      <>
+                                        <div
+                                          className={`post-text-clamp${expandedPosts[post._id] ? ' post-text-expanded' : ''}`}
+                                        >
+                                          <p>
+                                            <FormattedText text={post.content} />
+                                          </p>
+                                        </div>
+                                        {/* See more toggle - show only for long posts (CSS handles visibility via overflow) */}
+                                        {post.content.length > 280 && (
+                                          <button
+                                            type="button"
+                                            className="see-more-toggle"
+                                            onClick={() => setExpandedPosts(prev => ({
+                                              ...prev,
+                                              [post._id]: !prev[post._id]
+                                            }))}
+                                            aria-expanded={expandedPosts[post._id] || false}
+                                            aria-label={expandedPosts[post._id] ? 'Show less content' : 'Show more content'}
+                                          >
+                                            {expandedPosts[post._id] ? 'See less' : 'See more'}
+                                          </button>
+                                        )}
+                                      </>
                                     )
                                   )}
 

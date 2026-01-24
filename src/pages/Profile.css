@@ -74,6 +74,67 @@
   border-radius: var(--radius-md) !important;
 }
 
+/* =====================================================
+   POST TEXT COLLAPSE — "See more" expansion system
+   Phase 1.4: Prevent long posts from overwhelming feed
+   ===================================================== */
+
+/* Collapsed state - clamp to N lines (desktop: 7 lines) */
+.profile-page .post-text-clamp,
+.post-text-clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 7;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
+
+/* Expanded state - show full content */
+.profile-page .post-text-clamp.post-text-expanded,
+.post-text-clamp.post-text-expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+/* See more / See less toggle button */
+.profile-page .see-more-toggle,
+.see-more-toggle {
+  display: inline-block;
+  margin-top: var(--space-2, 8px);
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s ease, text-decoration 0.15s ease;
+}
+
+.profile-page .see-more-toggle:hover,
+.profile-page .see-more-toggle:focus,
+.see-more-toggle:hover,
+.see-more-toggle:focus {
+  color: var(--accent-primary);
+  text-decoration: underline;
+}
+
+.profile-page .see-more-toggle:focus,
+.see-more-toggle:focus {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Mobile: Clamp to 5 lines */
+@media (max-width: 768px) {
+  .profile-page .post-text-clamp,
+  .post-text-clamp {
+    -webkit-line-clamp: 5;
+  }
+}
+
 /* Post Media Grid - Exact copy from Feed.css */
 .profile-page .post-media-grid,
 .post-media-grid {
