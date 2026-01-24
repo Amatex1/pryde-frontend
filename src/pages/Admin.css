@@ -236,16 +236,18 @@
 .blocks-list {
   max-width: 100%;
   overflow-x: auto;
+  overflow-y: visible; /* Allow vertical content to show fully */
   -webkit-overflow-scrolling: touch;
 }
 
 .users-table,
 .blocks-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate; /* Required for border-radius on table */
+  border-spacing: 0;
   background: var(--bg-card);
   border-radius: 12px;
-  overflow: hidden;
+  /* Remove overflow: hidden - it clips table rows */
 }
 
 /* Desktop: min-width to prevent column squishing */
@@ -274,6 +276,28 @@
   font-weight: 600;
   white-space: nowrap;
   vertical-align: middle;
+}
+
+/* Border-radius on first/last header cells (since table uses border-collapse: separate) */
+.users-table thead th:first-child,
+.blocks-table thead th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.users-table thead th:last-child,
+.blocks-table thead th:last-child {
+  border-top-right-radius: 12px;
+}
+
+/* Border-radius on last row cells */
+.users-table tbody tr:last-child td:first-child,
+.blocks-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 12px;
+}
+
+.users-table tbody tr:last-child td:last-child,
+.blocks-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 12px;
 }
 
 .users-table td,
