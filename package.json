@@ -6,8 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/update-version.js",
     "build": "vite build",
-    "build:prod": "vite build --mode production",
+    "build:prod": "node scripts/update-version.js && vite build --mode production",
     "preview": "vite preview",
     "lint": "eslint . --ext .js,.jsx",
     "lint:features": "eslint src/features/ src/pages/",
