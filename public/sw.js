@@ -10,7 +10,7 @@
    - Network-first for API calls
    ===================================================== */
 
-const VERSION = '2.5.0-css-network-first'; // Increment to force update - CSS now network-first to prevent stale styles
+const VERSION = '2.6.0-all-code-network-first'; // Increment to force update - JS+CSS now network-first to prevent stale code
 const STATIC_CACHE = `pryde-static-${VERSION}`;
 const IMAGE_CACHE = `pryde-images-${VERSION}`;
 const API_CACHE = `pryde-api-${VERSION}`;
@@ -110,9 +110,10 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Strategy 4: Cache-first for JS (faster repeat visits, versioned by Vite hash)
-  if (request.destination === 'script') {
-    event.respondWith(cacheFirst(request, STATIC_CACHE));
+  // Strategy 4: Network-first for JS (prevents stale code after deploy)
+  // Even though Vite uses content hashing, network-first ensures instant updates
+  if (request.destination === 'script' || url.pathname.endsWith('.js')) {
+    event.respondWith(networkFirst(request, STATIC_CACHE));
     return;
   }
 
