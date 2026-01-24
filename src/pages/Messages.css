@@ -3727,3 +3727,46 @@
     padding: 16px 10px;
   }
 }
+
+/* =========================================================
+   FINAL UNBOXING FIX — MOVE WIDTH CONTROL TO MESSAGES
+   ========================================================= */
+
+/* Kill centering + width lock on conversation-inner */
+.messages-container .conversation-inner {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure chat surface spans available width */
+.messages-container .chat-area,
+.messages-container .chat-messages {
+  width: 100%;
+}
+
+/* Message clusters define coziness, NOT the container */
+.message-group-cluster {
+  max-width: 680px;          /* cozy desktop width */
+  width: fit-content;
+}
+
+/* Incoming alignment */
+.message-group-cluster.incoming {
+  margin-right: auto;
+}
+
+/* Outgoing alignment */
+.message-group-cluster.outgoing {
+  margin-left: auto;
+}
+
+/* Mobile tightening */
+@media (max-width: 768px) {
+  .message-group-cluster {
+    max-width: 92%;
+  }
+}
