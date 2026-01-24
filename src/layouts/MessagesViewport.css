@@ -1,0 +1,19 @@
+/**
+ * MessagesViewport.css - Full viewport control for Messages
+ */
+
+.messages-viewport {
+  height: calc(100dvh - 70px); /* account for top nav */
+  width: 100%;
+  display: flex;
+  background: var(--app-background, #121212);
+  overflow: hidden;
+}
+
+/* Mobile: account for bottom nav */
+@media (max-width: 768px) {
+  .messages-viewport {
+    height: calc(100dvh - 60px - 56px); /* top nav + bottom nav */
+  }
+}
+

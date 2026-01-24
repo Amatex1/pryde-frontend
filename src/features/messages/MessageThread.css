@@ -1,10 +1,9 @@
 /**
- * MessageThread.css - Message thread styling (layout-agnostic)
- * 
- * NO width, max-width, or layout rules
- * These are handled by PageLayout/MessagesLayout
- * 
- * Styles inherit from existing Messages.css
+ * MessageThread.css - Messenger-style thread layout
+ *
+ * PRYDE × MESSENGER ALIGNMENT
+ * - Left-anchored conversation lane
+ * - Message clusters control intimacy
  */
 
 .message-thread-content {
@@ -14,11 +13,36 @@
   overflow: hidden;
 }
 
+/* Remove page-style padding - Messenger behavior */
 .chat-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem;
+  padding: 0;
 }
 
-/* Other styles inherit from Messages.css */
+/* Messenger conversation lane */
+.conversation-inner {
+  max-width: 720px;
+  margin-left: 32px;   /* LEFT-ANCHORED */
+  margin-right: auto;
+  padding: 16px 0;
+}
+
+/* Message intimacy */
+.message-group-cluster {
+  max-width: 640px;
+}
+
+/* Mobile = full width */
+@media (max-width: 768px) {
+  .conversation-inner {
+    margin-left: 0;
+    padding: 12px;
+    max-width: 100%;
+  }
+
+  .message-group-cluster {
+    max-width: 92%;
+  }
+}
 

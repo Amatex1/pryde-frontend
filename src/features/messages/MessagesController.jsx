@@ -27,6 +27,7 @@ import api from '../../api/axios';
 import ConversationList from './ConversationList';
 import MessageThread from './MessageThread';
 import MessageComposer from './MessageComposer';
+import MessagesViewport from '../../layouts/MessagesViewport';
 import MessagesLayout from '../../layouts/MessagesLayout';
 import './MessagesController.css';
 
@@ -400,11 +401,13 @@ export default function MessagesController() {
   ) : null;
 
   return (
-    <MessagesLayout
-      conversationList={conversationListComponent}
-      messageThread={messageThreadComponent}
-      messageComposer={messageComposerComponent}
-      hasActiveChat={!!selectedChatId}
-    />
+    <MessagesViewport>
+      <MessagesLayout
+        conversationList={conversationListComponent}
+        messageThread={messageThreadComponent}
+        messageComposer={messageComposerComponent}
+        hasActiveChat={!!selectedChatId}
+      />
+    </MessagesViewport>
   );
 }
