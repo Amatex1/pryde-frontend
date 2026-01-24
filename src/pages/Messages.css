@@ -3770,3 +3770,50 @@
     max-width: 92%;
   }
 }
+
+/* =========================================================
+   COZY CONVERSATION LANE (NO BOX, NO CARD)
+   ========================================================= */
+
+/* Create a soft conversational gravity */
+.messages-container .chat-messages {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  /* Gentle horizontal framing */
+  padding-left: clamp(24px, 8vw, 160px);
+  padding-right: clamp(24px, 8vw, 160px);
+}
+
+/* Center the conversation naturally */
+.messages-container .conversation-inner {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* Messages define intimacy */
+.message-group-cluster {
+  max-width: 620px;
+}
+
+/* Incoming / outgoing alignment stays intact */
+.message-group-cluster.incoming {
+  margin-right: auto;
+}
+
+.message-group-cluster.outgoing {
+  margin-left: auto;
+}
+
+/* Mobile tightening */
+@media (max-width: 768px) {
+  .messages-container .chat-messages {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .message-group-cluster {
+    max-width: 92%;
+  }
+}
