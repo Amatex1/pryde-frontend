@@ -1,19 +1,15 @@
 /**
- * MessagesViewport.css - Full viewport control for Messages
+ * MessagesViewport.css - Feed-style layout (normal document flow)
+ *
+ * REMOVED: App-shell / viewport behavior
+ * NOW: Normal document flow like Feed page
  */
 
 .messages-viewport {
-  height: calc(100dvh - 70px); /* account for top nav */
-  width: 100%;
-  display: flex;
+  height: auto;
+  min-height: 100%;
+  overflow: visible;
+  display: block;
   background: var(--app-background, #121212);
-  overflow: hidden;
-}
-
-/* Mobile: account for bottom nav */
-@media (max-width: 768px) {
-  .messages-viewport {
-    height: calc(100dvh - 60px - 56px); /* top nav + bottom nav */
-  }
 }
 

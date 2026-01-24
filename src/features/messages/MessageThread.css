@@ -1,44 +1,51 @@
 /**
- * MessageThread.css - Messenger-style thread layout
+ * MessageThread.css - Feed-style thread layout
  *
- * PRYDE × MESSENGER ALIGNMENT
- * - Left-anchored conversation lane
- * - Message clusters control intimacy
+ * PRYDE × FEED LAYOUT
+ * - No nested scroll boxes
+ * - Message clusters control width
+ * - Normal document flow
  */
 
 .message-thread-content {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  overflow: hidden;
+  height: auto;
+  overflow: visible;
 }
 
-/* Remove page-style padding - Messenger behavior */
+/* Feed-style: NO nested scroll */
 .chat-messages {
-  flex: 1;
-  overflow-y: auto;
+  overflow: visible; /* ❗ critical - no nested scroll */
+  padding: 24px 32px;
+}
+
+/* Kill centered inner box */
+.conversation-inner {
+  max-width: none;
+  margin: 0;
   padding: 0;
 }
 
-/* Messenger conversation lane */
-.conversation-inner {
-  max-width: 720px;
-  margin-left: 32px;   /* LEFT-ANCHORED */
-  margin-right: auto;
-  padding: 16px 0;
-}
-
-/* Message intimacy */
+/* Message width control */
 .message-group-cluster {
   max-width: 640px;
 }
 
-/* Mobile = full width */
+.message-group-cluster.incoming,
+.message-group.received {
+  margin-right: auto;
+}
+
+.message-group-cluster.outgoing,
+.message-group.sent {
+  margin-left: auto;
+}
+
+/* Mobile: tighter padding */
 @media (max-width: 768px) {
-  .conversation-inner {
-    margin-left: 0;
-    padding: 12px;
-    max-width: 100%;
+  .chat-messages {
+    padding: 16px 12px;
   }
 
   .message-group-cluster {
