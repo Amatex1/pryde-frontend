@@ -3409,6 +3409,27 @@
     box-shadow: none;
   }
 
+  /* PWA: Full-width conversation - no max-width constraint */
+  .conversation-wrapper {
+    max-width: 100%;
+  }
+
+  .conversation-inner {
+    max-width: 100%;
+    border-radius: 0;
+    padding: 16px;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .message-composer {
+    max-width: 100%;
+  }
+
+  .chat-messages {
+    padding: 16px 8px;
+  }
+
   .chat-input-area {
     /* PWA mode on mobile/tablet: Account for home indicator + mobile nav */
     padding-bottom: calc(16px + env(safe-area-inset-bottom, 20px) + var(--mobile-nav-height, 56px));
