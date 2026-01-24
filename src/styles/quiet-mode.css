@@ -705,3 +705,21 @@ html {
 [data-quiet="true"] .post-actions-bar {
   gap: 0.5rem;
 }
+
+/* =========================================================
+   QUIET MODE × DMs ALIGNMENT
+   Softer bubble styling for calm messaging experience
+   ========================================================= */
+
+[data-quiet="true"] .message-group-cluster.outgoing .message-bubble {
+  background: rgba(150,120,255,0.12);
+  border-color: rgba(150,120,255,0.18);
+}
+
+[data-quiet="true"] .message-group-cluster.incoming .message-bubble {
+  background: rgba(255,255,255,0.035);
+}
+
+[data-quiet="true"] .chat-messages {
+  opacity: 0.95;
+}

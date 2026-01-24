@@ -3597,3 +3597,133 @@
     padding-bottom: calc(12px + env(safe-area-inset-bottom, 0)) !important;
   }
 }
+
+/* =========================================================
+   COZY DM REFINEMENT — FULL WIDTH + PRIVATE RHYTHM
+   Safe, additive, CSS-only
+   ========================================================= */
+
+/* ---------- 1️⃣ REMOVE "BOXED" CONVERSATION FEEL ---------- */
+
+/* Let the chat surface go full width */
+.messages-container .conversation-wrapper {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Soften / flatten inner container without breaking spacing */
+.messages-container .conversation-inner {
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Preserve cozy readability using message padding instead */
+.messages-container .chat-messages {
+  padding: 20px 16px;
+}
+
+@media (min-width: 1025px) {
+  .messages-container .chat-messages {
+    padding: 24px 32px;
+  }
+}
+
+/* ---------- 2️⃣ COZY MESSAGE GROUPING & RHYTHM ---------- */
+
+/* Message group width discipline */
+.message-group-cluster {
+  max-width: 72%;
+}
+
+/* Tight spacing within same sender */
+.message-group-cluster .message-bubble {
+  margin-bottom: 4px;
+}
+
+/* Breathing room between sender switches */
+.message-group-cluster + .message-group-cluster {
+  margin-top: 14px;
+}
+
+/* Incoming vs outgoing subtle offset */
+.message-group-cluster.incoming {
+  align-self: flex-start;
+}
+
+.message-group-cluster.outgoing {
+  align-self: flex-end;
+}
+
+/* ---------- 3️⃣ BUBBLE SOFTENING (COZY, NOT LOUD) ---------- */
+
+.message-bubble {
+  border-radius: 14px;
+  line-height: 1.45;
+}
+
+/* Incoming bubbles */
+.message-group-cluster.incoming .message-bubble {
+  background: var(--surface-soft, rgba(255,255,255,0.04));
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Outgoing bubbles (desaturated Pryde accent) */
+.message-group-cluster.outgoing .message-bubble {
+  background: var(--accent-soft, rgba(150,120,255,0.18));
+  border: 1px solid rgba(150,120,255,0.28);
+}
+
+/* ---------- 4️⃣ COMPOSER = COMFORT ZONE ---------- */
+
+.chat-input-area {
+  padding: 12px 16px;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.25),
+    rgba(0,0,0,0)
+  );
+}
+
+.message-composer {
+  min-height: 56px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Placeholder tone = human, not system */
+.message-composer::placeholder {
+  opacity: 0.6;
+}
+
+/* ---------- 5️⃣ SIDEBAR: PEOPLE > INBOX ---------- */
+
+.conversation-item {
+  padding: 10px 12px;
+}
+
+.conversation-item .last-message {
+  opacity: 0.65;
+}
+
+.conversation-item.unread {
+  font-weight: 600;
+}
+
+/* ---------- 6️⃣ PWA FULL-BLEED INTENT (NO REGRESSION) ---------- */
+
+@media (display-mode: standalone) {
+  .messages-container .conversation-wrapper,
+  .messages-container .conversation-inner,
+  .messages-container .message-composer {
+    max-width: 100%;
+  }
+
+  .messages-container .chat-messages {
+    padding: 16px 10px;
+  }
+}
