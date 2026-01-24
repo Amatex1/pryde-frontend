@@ -3772,45 +3772,58 @@
 }
 
 /* =========================================================
-   COZY CONVERSATION LANE (NO BOX, NO CARD)
+   PRYDE × MESSENGER CONVERSATION LANE
+   Desktop + Mobile Aligned
    ========================================================= */
 
-/* Create a soft conversational gravity */
+/* Chat surface behaves like Messenger */
 .messages-container .chat-messages {
   display: flex;
   flex-direction: column;
   align-items: stretch;
 
-  /* Gentle horizontal framing */
-  padding-left: clamp(24px, 8vw, 160px);
-  padding-right: clamp(24px, 8vw, 160px);
+  /* Messenger-style horizontal padding */
+  padding-left: 32px;
+  padding-right: clamp(32px, 10vw, 320px);
 }
 
-/* Center the conversation naturally */
+/* Conversation lives in a LEFT-ANCHORED lane */
 .messages-container .conversation-inner {
-  max-width: 960px;
-  margin: 0 auto;
+  max-width: 720px;     /* Messenger sweet spot */
+  margin: 0;            /* NOT centered */
 }
 
-/* Messages define intimacy */
+/* Message clusters control intimacy */
 .message-group-cluster {
-  max-width: 620px;
+  max-width: 640px;
 }
 
-/* Incoming / outgoing alignment stays intact */
+/* Incoming messages hug the left */
 .message-group-cluster.incoming {
   margin-right: auto;
 }
 
+/* Outgoing messages align right within the lane */
 .message-group-cluster.outgoing {
   margin-left: auto;
 }
 
-/* Mobile tightening */
+/* Desktop refinement */
+@media (min-width: 1280px) {
+  .messages-container .conversation-inner {
+    max-width: 760px;
+  }
+}
+
+/* Mobile = full width, Messenger behavior */
 @media (max-width: 768px) {
   .messages-container .chat-messages {
     padding-left: 12px;
     padding-right: 12px;
+  }
+
+  .messages-container .conversation-inner {
+    max-width: 100%;
   }
 
   .message-group-cluster {
