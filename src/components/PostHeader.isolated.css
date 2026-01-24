@@ -174,11 +174,11 @@
 @media (max-width: 520px) {
   .ph-name-row {
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 0.4rem;
   }
 
   .ph-system-badge {
-    font-size: 0.625rem; /* 10px - smaller */
+    font-size: 0.65rem; /* Slightly larger for softer transition */
     padding: 2px 6px;
     margin-left: 0;
   }

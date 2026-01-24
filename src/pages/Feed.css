@@ -80,7 +80,7 @@
 .section-title {
   color: var(--color-primary);
   margin-bottom: var(--space-4);
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 600;
   text-align: left;
 }
@@ -129,7 +129,7 @@
 }
 
 .feed-tab .tab-icon {
-  font-size: 18px;
+  font-size: 1.125rem;
 }
 
 .feed-tab .tab-label {
@@ -1524,16 +1524,12 @@ html:not([data-theme]) .post-actions {
   font-size: 14px;
   font-weight: 400; /* Lighter weight for softer feel */
   white-space: nowrap;
-
-  /* FEED POLISH: Actions step back visually */
-  opacity: 0.75;
-  transition: opacity 0.15s ease, background 0.2s ease, color 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .action-btn:hover {
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-main);
-  opacity: 1; /* FEED POLISH: Restore on hover */
 }
 
 /* Subtle variant - for primary actions (Respond, Reply) */
@@ -1950,8 +1946,8 @@ html:not([data-theme]) .post-actions {
 
 .comment-menu-btn,
 .post-menu-btn {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -2469,7 +2465,7 @@ html:not([data-theme]) .post-actions {
 .btn-comment-dropdown {
   background: transparent;
   border: none;
-  font-size: 18px;
+  font-size: 1.125rem;
   color: var(--text-muted);
   cursor: pointer;
   padding: var(--space-1) var(--space-2);
@@ -2497,6 +2493,7 @@ html:not([data-theme]) .post-actions {
   max-width: fit-content;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  font-size: 0.9375rem;
 }
 
 .comment-text .edited-indicator,
@@ -3585,7 +3582,7 @@ html:not([data-theme]) .post-actions {
   }
 
   .comment-text {
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     line-height: 1.4;
   }
 
@@ -3671,8 +3668,8 @@ html:not([data-theme]) .post-actions {
   /* Larger touch target for 3-dot menu on mobile */
   .comment-menu-btn,
   .post-menu-btn {
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
   }
 
   .reply-input-box,
