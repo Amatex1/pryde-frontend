@@ -110,8 +110,7 @@ function Profile() {
   const [reactionDetailsModal, setReactionDetailsModal] = useState({ isOpen: false, targetType: null, targetId: null });
   const [profileError, setProfileError] = useState(null); // Track profile loading errors
   const [searchResults, setSearchResults] = useState(null); // Search results from ProfilePostSearch
-  const [showEditHistory, setShowEditHistory] = useState(false);
-  const [editHistoryPostId, setEditHistoryPostId] = useState(null);
+  // NOTE: EditHistory state removed 2025-12-26 - backend returns 410 Gone
   const editTextareaRef = useRef(null);
   const isMountedRef = useRef(true); // Track if component is mounted to prevent race conditions
   // Phase 5B: Removed windowWidth state - use CSS media queries instead to prevent resize jitter
@@ -2232,14 +2231,12 @@ function Profile() {
                                     {post.isPinned ? '📌 Unpin' : '📍 Pin'}
                                   </button>
                                   {/* DEPRECATED: View Edit History menu item removed 2025-12-26 */}
-                                  {!post.isShared && (
-                                    <button
-                                      className="dropdown-item"
-                                      onClick={() => handleEditPost(post)}
-                                    >
-                                      ✏️ Edit
-                                    </button>
-                                  )}
+                                  <button
+                                    className="dropdown-item"
+                                    onClick={() => handleEditPost(post)}
+                                  >
+                                    ✏️ Edit
+                                  </button>
                                   <button
                                     className="dropdown-item delete"
                                     onClick={() => {
@@ -2338,78 +2335,9 @@ function Profile() {
                           </div>
                         ) : (
                           <>
-                            {/* Show "X shared X's post" if this is a shared post */}
-                            {post.isShared && post.originalPost && (
-                              <div style={{
-                                marginBottom: '1rem',
-                                padding: '0.5rem 0.75rem',
-                                background: 'var(--soft-lavender)',
-                                borderRadius: '8px',
-                                fontSize: '0.9rem',
-                                color: 'var(--text-main)'
-                              }}>
-                                <strong>{post.author?.displayName || post.author?.username}</strong> shared{' '}
-                                <strong>{post.originalPost.author?.displayName || post.originalPost.author?.username}'s</strong> post
-                              </div>
-                            )}
-
-                            {/* Show share comment if this is a shared post */}
-                            {post.isShared && post.shareComment && (
-                              <p style={{ marginBottom: '1rem', fontStyle: 'italic' }}>
-                                {post.shareComment}
-                              </p>
-                            )}
-
-                            {/* Show original post if this is a shared post */}
-                            {post.isShared && post.originalPost ? (
-                              <div className="shared-post-container" style={{
-                                border: '2px solid var(--soft-lavender)',
-                                borderRadius: '12px',
-                                padding: '1rem',
-                                marginTop: '0.5rem',
-                                background: 'var(--background-light)'
-                              }}>
-                                <div className="shared-post-header" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                                  <div className="author-avatar" style={{ width: '32px', height: '32px' }}>
-                                    {post.originalPost.author?.profilePhoto ? (
-                                      <img src={getImageUrl(post.originalPost.author.profilePhoto)} alt={post.originalPost.author.username} />
-                                    ) : (
-                                      <span>{post.originalPost.author?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                                    )}
-                                  </div>
-                                  <div>
-                                    <div style={{ fontWeight: '600', fontSize: '0.9rem' }}>
-                                      {post.originalPost.author?.displayName || post.originalPost.author?.username}
-                                    </div>
-                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                                      {new Date(post.originalPost.createdAt).toLocaleDateString()}
-                                    </div>
-                                  </div>
-                                </div>
-                                {post.originalPost.content && <p><FormattedText text={post.originalPost.content} /></p>}
-                                {post.originalPost.media && post.originalPost.media.length > 0 && (
-                                  <div className={`post-media-grid ${post.originalPost.media.length === 1 ? 'single' : post.originalPost.media.length === 2 ? 'double' : 'multiple'}`}>
-                                    {post.originalPost.media.map((media, index) => (
-                                      <div key={index} className="post-media-item">
-                                        {media.type === 'video' ? (
-                                          <video src={getImageUrl(media.url)} controls />
-                                        ) : (
-                                          <OptimizedImage
-                                            src={getImageUrl(media.url)}
-                                            alt={`Shared post media ${index + 1}`}
-                                            onClick={() => setPhotoViewerImage(getImageUrl(media.url))}
-                                            style={{ cursor: 'pointer' }}
-                                          />
-                                        )}
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                            ) : (
-                              <>
-                                {/* CRITICAL: Poll posts render poll UI, NOT text content */}
-                                {post.poll && post.poll.question ? (
+                            {/* NOTE: Share/originalPost rendering removed 2025-12-26 - backend returns 410 Gone */}
+                            {/* CRITICAL: Poll posts render poll UI, NOT text content */}
+                            {post.poll && post.poll.question ? (
                                   <Poll
                                     poll={post.poll}
                                     postId={post._id}
@@ -2442,8 +2370,6 @@ function Profile() {
                                     )}
                                   </>
                                 )}
-                              </>
-                            )}
                           </>
                         )}
                       </div>

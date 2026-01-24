@@ -125,8 +125,7 @@ function Feed() {
   const [feedFilter, setFeedFilter] = useState('followers'); // 'followers', 'public'
   const [poll, setPoll] = useState(null); // Poll data for new post
   const [showPollCreator, setShowPollCreator] = useState(false); // Show/hide poll creator
-  const [showEditHistory, setShowEditHistory] = useState(false);
-  const [editHistoryPostId, setEditHistoryPostId] = useState(null);
+  // NOTE: EditHistory state removed 2025-12-26 - backend returns 410 Gone
   const [hideMetrics, setHideMetrics] = useState(false); // Hide metrics for new post
   const [autoHideContentWarnings, setAutoHideContentWarnings] = useState(false);
   const [quietMode, setQuietMode] = useState(document.documentElement.getAttribute('data-quiet') === 'true');
@@ -2377,14 +2376,12 @@ function Feed() {
                                   📌 {post.isPinned ? 'Unpin' : 'Pin to Profile'}
                                 </button>
                                 {/* DEPRECATED: View Edit History menu item removed 2025-12-26 */}
-                                {!post.isShared && (
-                                  <button
-                                    className="dropdown-item"
-                                    onClick={() => handleEditPost(post)}
-                                  >
-                                    ✏️ Edit
-                                  </button>
-                                )}
+                                <button
+                                  className="dropdown-item"
+                                  onClick={() => handleEditPost(post)}
+                                >
+                                  ✏️ Edit
+                                </button>
                                 <button
                                   className="dropdown-item delete"
                                   onClick={() => {
@@ -2412,81 +2409,8 @@ function Feed() {
                     </PostHeader>
 
                     <div className="post-content">
-                      {/* Show "X shared X's post" if this is a shared post */}
-                      {post.isShared && post.originalPost && (
-                        <div style={{
-                          marginBottom: '1rem',
-                          padding: '0.5rem 0.75rem',
-                          background: 'var(--soft-lavender)',
-                          borderRadius: '8px',
-                          fontSize: '0.9rem',
-                          color: 'var(--text-main)'
-                        }}>
-                          <strong>{post.author?.displayName || post.author?.username}</strong> shared{' '}
-                          <strong>{post.originalPost.author?.displayName || post.originalPost.author?.username}'s</strong> post
-                        </div>
-                      )}
-
-                      {/* Show share comment if this is a shared post */}
-                      {post.isShared && post.shareComment && (
-                        <p style={{ marginBottom: '1rem', fontStyle: 'italic' }}>
-                          {post.shareComment}
-                        </p>
-                      )}
-
-                      {/* Show original post if this is a shared post */}
-                      {post.isShared && post.originalPost ? (
-                        <div className="shared-post-container" style={{
-                          border: '2px solid var(--soft-lavender)',
-                          borderRadius: '12px',
-                          padding: '1rem',
-                          marginTop: '0.5rem',
-                          background: 'var(--background-light)'
-                        }}>
-                          <div className="shared-post-header" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                            <div className="author-avatar" style={{ width: '32px', height: '32px' }}>
-                              {post.originalPost.author?.profilePhoto ? (
-                                <OptimizedImage
-                                  src={getImageUrl(post.originalPost.author.profilePhoto)}
-                                  alt={post.originalPost.author.username}
-                                  className="avatar-image"
-                                />
-                              ) : (
-                                <span>{post.originalPost.author?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                              )}
-                            </div>
-                            <div>
-                              <div style={{ fontWeight: '600', fontSize: '0.9rem' }}>
-                                {post.originalPost.author?.displayName || post.originalPost.author?.username}
-                              </div>
-                              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                                {new Date(post.originalPost.createdAt).toLocaleDateString()}
-                              </div>
-                            </div>
-                          </div>
-                          {post.originalPost.content && <p>{post.originalPost.content}</p>}
-                          {post.originalPost.media && post.originalPost.media.length > 0 && (
-                            <div className={`post-media-grid ${post.originalPost.media.length === 1 ? 'single' : post.originalPost.media.length === 2 ? 'double' : 'multiple'}`}>
-                              {post.originalPost.media.map((media, index) => (
-                                <div key={index} className="post-media-item">
-                                  {media.type === 'video' ? (
-                                    <video src={getImageUrl(media.url)} controls />
-                                  ) : (
-                                    <OptimizedImage
-                                      src={getImageUrl(media.url)}
-                                      alt={`Shared post media ${index + 1}`}
-                                      onClick={() => setPhotoViewerImage(getImageUrl(media.url))}
-                                      style={{ cursor: 'pointer' }}
-                                    />
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <>
-                          {editingPostId === post._id ? (
+                      {/* NOTE: Share/originalPost rendering removed 2025-12-26 - backend returns 410 Gone */}
+                      {editingPostId === post._id ? (
                             <div className="post-edit-box">
                               <textarea
                                 id={`edit-post-${post._id}`}
@@ -2619,8 +2543,6 @@ function Feed() {
                                   )}
                                 </>
                               )}
-                        </>
-                      )}
                     </>
                   )}
                 </div>
