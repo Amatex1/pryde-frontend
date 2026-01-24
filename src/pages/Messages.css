@@ -1,33 +1,32 @@
 /* ========================================
-   MESSAGES PAGE - FEED-STYLE LAYOUT
-   Normal document flow, no nested scroll boxes
+   MESSAGES PAGE - STABLE HEIGHT LAYOUT
+   Single height authority at root, flex children with min-height: 0
    ======================================== */
 
 .messages-container {
   max-width: var(--page-max-width, 100%);
   margin: 0 auto;
   padding: 0 var(--page-padding, 12px) var(--space-6);
-  height: auto; /* ❗ FEED-STYLE: Normal document flow */
-  min-height: calc(100dvh - 150px);
+  /* SINGLE HEIGHT AUTHORITY - viewport minus navbar */
+  height: calc(100dvh - var(--navbar-height, 60px));
   padding-top: var(--space-4);
 }
 
-/* MOBILE: Full-bleed container */
+/* MOBILE: Full-bleed container - height inherited from root rule */
 @media (max-width: 600px) {
   .messages-container {
     max-width: 100%;
     padding: 0;
-    height: auto;
-    min-height: calc(100dvh - var(--navbar-height, 60px));
+    /* Height stays as defined above - no override */
   }
 }
 
-/* FEED-STYLE: Normal document flow layout */
+/* STABLE LAYOUT: Flex container fills parent height */
 .messages-layout {
-  height: auto; /* ❗ NOT 100% - normal flow */
-  min-height: 100%;
+  height: 100%; /* Fill parent container */
+  min-height: 0; /* FLEX SAFETY: Allow shrinking */
   border-radius: var(--radius-card);
-  overflow: visible; /* ❗ NOT hidden - normal flow */
+  overflow: hidden; /* Contain scroll children */
   display: flex;
   flex-direction: column;
   background: var(--bg-card);
@@ -58,6 +57,8 @@
   display: flex;
   flex-direction: column;
   background: var(--bg-card);
+  min-height: 0; /* FLEX SAFETY: Allow shrinking */
+  overflow-y: auto; /* SCROLL OWNERSHIP: Sidebar scrolls internally */
 }
 
 .sidebar-header {
@@ -398,9 +399,9 @@
 .chat-area {
   display: flex;
   flex-direction: column;
-  height: auto; /* ❗ FEED-STYLE: Normal flow */
-  min-height: 100%;
-  overflow: visible; /* ❗ NOT hidden */
+  height: 100%; /* Fill parent */
+  min-height: 0; /* FLEX SAFETY: Allow shrinking */
+  overflow: hidden; /* Contain scroll children */
 }
 
 .chat-header {
@@ -534,11 +535,12 @@
 .chat-messages {
   flex: 1;
   padding: 2rem;
-  overflow: visible; /* ❗ FEED-STYLE: No nested scroll */
+  overflow-y: auto; /* SCROLL OWNERSHIP: Messages scroll internally */
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  min-height: 0;
+  min-height: 0; /* FLEX SAFETY: Allow shrinking */
 }
 
 /* Message Date Headers */
@@ -1801,9 +1803,7 @@
 @media (max-width: 768px) {
   .messages-container {
     padding: 0;
-    /* MOBILE: Use min-height for Feed-style, but allow full viewport */
-    height: auto;
-    min-height: calc(100dvh - var(--navbar-height, 60px));
+    /* HEIGHT INHERITED: No override - uses root height authority */
   }
 
   .messages-layout {
@@ -1811,10 +1811,8 @@
     border-radius: 0;
     border: none;
     box-shadow: none;
-    height: auto;
-    min-height: calc(100dvh - var(--navbar-height, 60px));
+    /* HEIGHT INHERITED: No override - uses parent height */
     position: relative;
-    overflow: visible;
   }
 
   /* Sidebar on mobile - full screen overlay */
@@ -1836,7 +1834,7 @@
     padding-top: 0;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    /* HEIGHT: Uses absolute positioning (top:0/bottom:0) */
   }
 
   /* Slide sidebar left when chat is active */
@@ -2100,9 +2098,7 @@
 @media (max-width: 480px) {
   .messages-container {
     padding: 0;  /* Full-bleed on mobile */
-    /* FULL SCREEN: Only subtract top navbar, mobile nav handled by input area padding */
-    height: calc(100vh - var(--navbar-height, 60px)); /* Fallback */
-    height: calc(100dvh - var(--navbar-height, 60px));
+    /* HEIGHT INHERITED: No override - uses root height authority */
   }
 
   .chat-window {
@@ -3416,10 +3412,10 @@
    ======================================== */
 
 @media (display-mode: standalone) {
-  /* PWA FULL SCREEN: Use entire viewport minus top safe area */
+  /* PWA: Only adjust padding, height from root authority */
   .messages-container {
-    height: calc(100dvh - var(--navbar-height, 60px) - env(safe-area-inset-top, 0px));
     padding: 0;
+    /* HEIGHT INHERITED: No override - uses root height authority */
   }
 
   .messages-layout {
@@ -3557,64 +3553,57 @@
    Mobile nav is visible at <= 1024px, hidden at >= 1025px.
    ======================================== */
 /* ========================================
-   DESKTOP FEED-STYLE LAYOUT (1025px+)
-   Normal document flow, sticky sidebar & composer
+   DESKTOP STABLE LAYOUT (1025px+)
+   Stable height with internal scroll
    ======================================== */
 @media (min-width: 1025px) {
-  /* Full viewport width - normal document flow */
+  /* Full viewport width - stable height */
   .messages-container {
-    max-width: 100% !important;
-    width: 100% !important;
-    padding: 0 !important;
-    height: auto !important; /* ❗ FEED-STYLE: Normal flow */
-    min-height: calc(100dvh - 70px) !important;
-    overflow: visible !important; /* ❗ NOT hidden */
+    max-width: 100%;
+    width: 100%;
+    padding: 0;
+    /* HEIGHT INHERITED: Uses root height authority */
   }
 
-  /* Remove boxed appearance - normal flow */
+  /* Remove boxed appearance - stable height */
   .messages-layout {
-    border-radius: 0 !important;
-    border: none !important;
-    box-shadow: none !important;
-    height: auto !important; /* ❗ FEED-STYLE */
-    min-height: 100% !important;
-    overflow: visible !important; /* ❗ NOT hidden */
-    position: relative !important;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    /* HEIGHT INHERITED: Uses parent height */
+    position: relative;
   }
 
-  /* Sidebar - sticky, scrolls independently */
+  /* Sidebar - scrolls independently */
   .conversations-sidebar {
-    position: sticky !important;
-    top: 70px !important; /* Below navbar */
-    height: calc(100vh - 70px) !important;
-    transform: none !important;
+    transform: none;
     border-right: 1px solid var(--border-subtle);
     overflow-y: auto;
     overflow-x: hidden;
+    /* HEIGHT INHERITED: Uses grid/flex from parent */
   }
 
-  /* Chat area - normal flow */
+  /* Chat area - stable height */
   .chat-area,
   .chat-area.active {
-    position: static !important;
-    transform: none !important;
-    display: flex !important;
-    flex-direction: column !important;
-    height: auto !important; /* ❗ FEED-STYLE */
-    min-height: 100% !important;
-    overflow: visible !important; /* ❗ NOT hidden */
+    position: static;
+    transform: none;
+    display: flex;
+    flex-direction: column;
+    /* HEIGHT INHERITED: Uses grid/flex from parent */
   }
 
   /* Header stays at top */
   .chat-header {
-    flex-shrink: 0 !important;
+    flex-shrink: 0;
   }
 
-  /* Messages - NO nested scroll */
+  /* Messages - internal scroll */
   .chat-messages {
-    flex: 1 1 auto !important;
-    overflow: visible !important; /* ❗ FEED-STYLE: No nested scroll */
-    min-height: 0 !important;
+    flex: 1 1 auto;
+    overflow-y: auto; /* SCROLL OWNERSHIP: Messages scroll internally */
+    overflow-x: hidden;
+    min-height: 0; /* FLEX SAFETY */
   }
 
   /* Composer - sticky at bottom */
