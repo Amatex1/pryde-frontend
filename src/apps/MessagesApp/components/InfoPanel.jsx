@@ -1,39 +1,45 @@
 /**
  * InfoPanel — User/Group Info Sidebar
- * 
- * Phase 1 Scaffold: Structure only, no logic.
- * 
- * Responsibility:
- * - Display selected user profile info
- * - Display group info (members, description)
- * - Quick actions (view profile, mute, block)
- * - Shared media preview
- * 
- * Extracted from: src/pages/Messages.jsx
- * - Info panel area: lines 2100-2200 (minimal in legacy)
- * 
- * Props (to be implemented in Phase 3):
- * - selectedUser: Object
- * - selectedGroup: Object
- * - isOnline: boolean
- * 
- * Notes:
- * - Hidden on tablet (<1280px)
- * - Hidden on mobile (<768px)
+ * Extracted from: src/pages/Messages.jsx lines 2362-2392
  */
 
 import React from 'react';
+import { getImageUrl } from '../../../utils/imageUrl';
+import { getDisplayName, getDisplayNameInitial } from '../../../utils/getDisplayName';
 
-export default function InfoPanel() {
+export default function InfoPanel({
+  selectedChat,
+  selectedUser,
+  selectedGroup,
+  selectedChatType,
+  onlineUsers,
+}) {
   return (
     <aside className="messages-app__info">
-      {/* InfoPanel scaffold — logic added in Phase 3 */}
-      {/* Will contain:
-          - User avatar + name
-          - Online status
-          - Quick actions
-          - Shared media grid
-      */}
+      {selectedChat && selectedUser ? (
+        <>
+          <div className="info-header">
+            <div className="info-avatar">
+              {selectedUser?.profilePhoto ? (
+                <img src={getImageUrl(selectedUser.profilePhoto)} alt={getDisplayName(selectedUser)} />
+              ) : (
+                <span>{getDisplayNameInitial(selectedUser)}</span>
+              )}
+            </div>
+            <h3 className="info-name">{getDisplayName(selectedUser)}</h3>
+            {selectedUser?.username && <p className="info-username">@{selectedUser.username}</p>}
+          </div>
+          <div className="info-status">
+            <span className={`status-dot ${onlineUsers.includes(selectedChat) ? 'online' : 'offline'}`}></span>
+            {onlineUsers.includes(selectedChat) ? 'Online' : 'Offline'}
+          </div>
+          {selectedUser?.bio && (
+            <div className="info-bio"><p>{selectedUser.bio}</p></div>
+          )}
+        </>
+      ) : (
+        <div className="info-empty-state" />
+      )}
     </aside>
   );
 }

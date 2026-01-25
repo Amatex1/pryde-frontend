@@ -1,19 +1,262 @@
 /**
- * MessagesApp — Phase 1 Scaffold
- * 
- * Intentionally empty.
- * Layout rules will be added in Phase 4.
- * 
- * This file exists to:
- * 1. Establish the import path
- * 2. Reserve namespace for MessagesApp-specific styles
- * 3. Ensure no global CSS conflicts
- * 
- * ARCHITECTURE NOTES:
- * - MessagesApp opts OUT of global page scroll rules
- * - Uses .messages-app class (not .messages-page)
- * - Will use position: fixed + height: 100dvh
- * - Will use CSS Grid for 3-column layout
- * - Will use flex + overflow for internal scroll
+ * MessagesApp — Clean-slate CSS (Phase 4)
+ * Messenger-style fixed viewport with container-owned scroll
  */
+
+/* Root container — fixed viewport, opts out of browser scroll */
+.messages-app {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-app, #fff);
+  overflow: hidden;
+}
+
+/* Layout wrapper — 3-column grid */
+.messages-app__layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 320px 1fr 360px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Column 1: Thread list */
+.messages-app__threads {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border-subtle, #e0e0e0);
+  overflow: hidden;
+  background: var(--bg-surface, #fafafa);
+}
+
+.messages-app__threads-header {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-subtle, #e0e0e0);
+}
+
+.messages-app__threads-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Column 2: Chat area */
+.messages-app__chat {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-app, #fff);
+}
+
+.messages-app__chat-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle, #e0e0e0);
+  background: var(--bg-surface, #fafafa);
+}
+
+.messages-app__chat-header .mobile-back-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.messages-app__chat-header .chat-user {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.messages-app__chat-header .chat-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--bg-tertiary, #eee);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.messages-app__chat-header .chat-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.messages-app__chat-header .chat-user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.messages-app__chat-header .chat-user-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.messages-app__chat-header .display-name {
+  font-weight: 600;
+}
+
+.messages-app__chat-header .username {
+  color: var(--text-muted, #888);
+  font-size: 0.9rem;
+}
+
+.messages-app__chat-header .chat-user-status {
+  font-size: 0.85rem;
+}
+
+.messages-app__chat-header .chat-user-status.online {
+  color: var(--color-success, #22c55e);
+}
+
+.messages-app__chat-header .chat-user-status.offline {
+  color: var(--text-muted, #888);
+}
+
+.messages-app__chat-header .btn-chat-settings {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 8px;
+}
+
+/* Message scroll area */
+.messages-app__messages-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  padding: 16px;
+}
+
+/* Composer */
+.messages-app__composer {
+  flex: 0 0 auto;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-subtle, #e0e0e0);
+  background: var(--bg-surface, #fafafa);
+}
+
+/* Column 3: Info panel */
+.messages-app__info {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border-subtle, #e0e0e0);
+  padding: 24px;
+  overflow-y: auto;
+  background: var(--bg-surface, #fafafa);
+}
+
+.messages-app__info .info-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.messages-app__info .info-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  overflow: hidden;
+  background: var(--bg-tertiary, #eee);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+
+.messages-app__info .info-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.messages-app__info .info-name {
+  margin: 0 0 4px;
+  font-size: 1.25rem;
+}
+
+.messages-app__info .info-username {
+  color: var(--text-muted, #888);
+  margin: 0;
+}
+
+.messages-app__info .info-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.messages-app__info .status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.messages-app__info .status-dot.online {
+  background: var(--color-success, #22c55e);
+}
+
+.messages-app__info .status-dot.offline {
+  background: var(--text-muted, #888);
+}
+
+.messages-app__info .info-bio {
+  text-align: center;
+  color: var(--text-secondary, #666);
+}
+
+/* Tablet: Hide info panel */
+@media (max-width: 1279px) {
+  .messages-app__layout {
+    grid-template-columns: 320px 1fr;
+  }
+  .messages-app__info {
+    display: none;
+  }
+}
+
+/* Mobile: Single column with view switching */
+@media (max-width: 768px) {
+  .messages-app__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .messages-app__chat-header .mobile-back-btn {
+    display: block;
+  }
+
+  .messages-app[data-view="threads"] .messages-app__chat {
+    display: none;
+  }
+
+  .messages-app[data-view="chat"] .messages-app__threads {
+    display: none;
+  }
+
+  .messages-app__info {
+    display: none;
+  }
+}
 

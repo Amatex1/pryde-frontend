@@ -1,43 +1,57 @@
 /**
  * useChatSelection — Selected Chat State Management
- * 
- * Phase 1 Scaffold: Stub only, no logic.
- * 
- * Responsibility:
- * - Track currently selected chat ID
- * - Track chat type (user vs group)
- * - Persist selection to localStorage (desktop only)
- * - Restore selection on mount (desktop only)
- * - Handle URL query params (?chat=xxx)
- * - Fetch selected user/group info
- * 
- * Extracted from: src/pages/Messages.jsx
- * - selectedChat state: lines 54-61
- * - selectedChatType state: lines 62-68
- * - localStorage persistence: lines 326-331
- * - URL params handling: lines 367-379
- * - Fetch user info: lines 415-480
- * 
- * Interface (to be implemented in Phase 2):
- * useChatSelection() => {
- *   selectedChat: string | null,
- *   selectedChatType: 'user' | 'group' | null,
- *   selectedUser: Object | null,
- *   selectedGroup: Object | null,
- *   setSelectedChat: (id, type) => void,
- *   clearSelection: () => void
- * }
+ *
+ * Extracted from: src/pages/Messages.jsx lines 54-68, 326-331, 367-379
  */
 
-export function useChatSelection() {
-  // Logic added in Phase 2
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+
+export function useChatSelection({ currentUser }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Don't restore selected chat on mobile - always show conversation list first
+  const [selectedChat, setSelectedChat] = useState(() => {
+    if (window.innerWidth > 768) {
+      const saved = localStorage.getItem('selectedChat');
+      return saved || null;
+    }
+    return null;
+  });
+  const [selectedChatType, setSelectedChatType] = useState(() => {
+    if (window.innerWidth > 768) {
+      const saved = localStorage.getItem('selectedChatType');
+      return saved || 'user';
+    }
+    return 'user';
+  });
+
+  // Save selected chat to localStorage whenever it changes
+  useEffect(() => {
+    if (selectedChat) {
+      localStorage.setItem('selectedChat', selectedChat);
+      localStorage.setItem('selectedChatType', selectedChatType);
+    }
+  }, [selectedChat, selectedChatType]);
+
+  // Check for chat parameter in URL and open that chat
+  useEffect(() => {
+    const chatId = searchParams.get('chat');
+    if (chatId) {
+      const actualChatId = chatId === 'self' ? currentUser?._id : chatId;
+      if (actualChatId) {
+        setSelectedChat(actualChatId);
+        setSelectedChatType('user');
+      }
+      setSearchParams({});
+    }
+  }, [searchParams, setSearchParams, currentUser]);
+
   return {
-    selectedChat: null,
-    selectedChatType: null,
-    selectedUser: null,
-    selectedGroup: null,
-    setSelectedChat: () => {},
-    clearSelection: () => {}
+    selectedChat,
+    setSelectedChat,
+    selectedChatType,
+    setSelectedChatType,
   };
 }
 
