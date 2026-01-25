@@ -12,7 +12,8 @@
   display: grid;
   grid-template-columns: 300px minmax(0, 1fr) 320px;
   grid-template-rows: auto 1fr; /* Navbar row + content row */
-  height: 100dvh;
+  height: auto; /* SCROLL FIX: No height constraint, browser scrolls */
+  min-height: 100dvh; /* Ensure at least viewport height */
   background: var(--messages-page-bg, #F5F6FA);
 }
 
@@ -43,7 +44,7 @@
 .conversations-sidebar {
   grid-column: 1;
   grid-row: 2;
-  overflow-y: auto;
+  overflow: visible; /* SCROLL FIX: No internal scroll, browser scrolls */
   border-right: 1px solid var(--border-subtle);
   background: var(--bg-card);
   display: flex;
@@ -76,7 +77,7 @@
 .messages-info {
   grid-column: 3;
   grid-row: 2;
-  overflow-y: auto;
+  overflow: visible; /* SCROLL FIX: No internal scroll, browser scrolls */
   border-left: 1px solid var(--border-subtle);
   background: var(--bg-card);
   padding: var(--space-4);
@@ -210,7 +211,7 @@
   flex-direction: column;
   background: var(--bg-card);
   min-height: 0; /* FLEX SAFETY: Allow shrinking */
-  overflow-y: auto; /* SCROLL OWNERSHIP: Sidebar scrolls internally */
+  overflow: visible; /* SCROLL FIX: No internal scroll, browser scrolls */
 }
 
 .sidebar-header {
@@ -295,14 +296,13 @@
 
 .conversations-list {
   flex: 1;
-  overflow-y: auto;
+  overflow: visible; /* SCROLL FIX: No internal scroll, browser scrolls */
 }
 
 /* ⚡ PERFORMANCE: Virtual scrolling list styling */
 .virtual-conversation-list {
   /* Override react-window default styles */
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
+  overflow: visible !important; /* SCROLL FIX: No internal scroll, browser scrolls */
 }
 
 .virtual-conversation-list::-webkit-scrollbar {
@@ -551,9 +551,9 @@
 .chat-area {
   display: flex;
   flex-direction: column;
-  height: 100%; /* Fill parent */
+  height: auto; /* SCROLL FIX: No height constraint */
   min-height: 0; /* FLEX SAFETY: Allow shrinking */
-  overflow: hidden; /* Contain scroll children */
+  overflow: visible; /* SCROLL FIX: No internal scroll, browser scrolls */
 }
 
 .chat-header {
@@ -1965,15 +1965,14 @@
     max-width: 100%;
     background: var(--card-surface);
     box-shadow: none;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: visible; /* SCROLL FIX: No internal scroll, browser scrolls */
   }
 
   /* Chat area fills grid cell on mobile */
   .chat-area {
     background: var(--card-surface);
     border-radius: 0;
-    overflow: visible;
+    overflow: visible; /* SCROLL FIX: Browser scrolls */
   }
 
   /* Mobile Back Button - Minimal chevron style */
