@@ -186,3 +186,32 @@
     --navbar-height: 72px;
   }
 }
+
+/* ========================================
+   FLEX SAFETY RULES - ONE SCROLL LAW
+
+   RULES:
+   1. PageViewport (#root) owns vertical scrolling
+   2. No page may define height: 100vh/100% unless documented
+   3. Scrollable regions MUST use flex: 1 + min-height: 0
+   ======================================== */
+
+/* Flex containers that may have scrollable children need min-height: 0 */
+.feed-layout,
+.feed-main,
+.profile-layout,
+.profile-content,
+.settings-layout,
+.settings-content,
+.discover-layout,
+.admin-layout {
+  min-height: 0; /* FLEX SAFETY: Allow children to shrink properly */
+}
+
+/* Scrollable flex children */
+.scrollable-content,
+.scroll-container {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}

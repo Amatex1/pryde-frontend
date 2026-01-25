@@ -1,39 +1,39 @@
 /**
- * MOBILE BRAND SURFACE - Pryde Purple Background
- * 
- * Restore Pryde's queer, warm, alive purple brand surface on mobile.
- * Remove grey SaaS look. Make feed feel edge-to-edge and immersive.
- * 
+ * MOBILE BRAND SURFACE - Neutral Background with Brand Accents
+ *
+ * Clean, calm mobile experience with brand accents on interactive elements.
+ * Purple reserved for navbar, buttons, active states, badges, accents ONLY.
+ *
  * PHASES:
- * A - Restore Brand Surface (Purple background)
+ * A - Neutral Surface (No purple page background)
  * B - Full-Width Mobile Feed (Edge-to-edge)
  * C - Anchor Posts to Left (No floating panels)
  * D - Post Card Rules (Only posts have borders)
  * E - Calm Mobile Chrome (Transparent bars)
- * 
- * Target: "Warm, queer, modern — not boxed, not corporate."
+ *
+ * Target: "Calm, professional, accessible — brand through accents."
  */
 
 /* ════════════════════════════════════════
-   PHASE A: RESTORE BRAND SURFACE
-   Purple background on mobile - NOT grey
+   PHASE A: NEUTRAL SURFACE
+   Neutral background on mobile - purple for accents ONLY
    ════════════════════════════════════════ */
 
 @media (max-width: 768px) {
-  /* Page background: Pryde purple */
+  /* Page background: NEUTRAL - purple is for accents only */
   body {
-    background: var(--color-brand-bg) !important;
-    background-image: none !important;
+    background: var(--bg-app, #F5F6FA);
+    background-image: none;
   }
   
-  /* Feed containers: Transparent - purple shows through */
+  /* Feed containers: Transparent - neutral background shows through */
   .feed-layout,
   .feed-container,
   .feed-wrapper,
   .page-container {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
+    background: transparent;
+    border: none;
+    box-shadow: none;
   }
   
   /* ════════════════════════════════════════

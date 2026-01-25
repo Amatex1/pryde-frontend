@@ -5,17 +5,18 @@
 
 :root {
   /* ========================================
-     BACKGROUNDS - PURPLE IDENTITY SYSTEM
-     Two surfaces only: Purple page + White content
+     BACKGROUNDS - NEUTRAL APP SYSTEM
+     Root = Neutral, Content = White, Brand = Accents only
      ======================================== */
-  --color-background: var(--color-brand-bg); /* Purple page */
+  --bg-app: #F5F6FA; /* NEUTRAL root background - no purple */
+  --color-background: #F5F6FA; /* Neutral page background */
   --color-surface: #FFFFFF; /* White content */
 
-  /* Legacy mappings - all collapse to two-surface system */
-  --bg-page: var(--color-background);
+  /* Legacy mappings - neutral system */
+  --bg-page: var(--bg-app);
   --bg-surface: var(--color-surface);
   --bg-card: var(--color-surface);
-  --bg-hover: rgba(108, 92, 231, 0.05);
+  --bg-hover: rgba(0, 0, 0, 0.04); /* NEUTRAL hover - no purple */
   --bg-subtle: var(--color-surface); /* NO GREY - use white */
 
   /* Surface system - all collapse to white */
@@ -99,16 +100,17 @@
    ======================================== */
 
 [data-theme="dark"] {
-  /* BACKGROUNDS - PURPLE IDENTITY SYSTEM (DARK MODE)
-     Two surfaces only: Purple page + Dark content */
-  --color-background: var(--color-brand-bg); /* Purple page */
+  /* BACKGROUNDS - NEUTRAL APP SYSTEM (DARK MODE)
+     Root = Neutral dark, Content = Dark surface, Brand = Accents only */
+  --bg-app: #0F1021; /* NEUTRAL dark root background - no purple */
+  --color-background: #0F1021; /* Neutral dark page background */
   --color-surface: #15162A; /* Dark content surface */
 
-  /* Legacy mappings - all collapse to two-surface system */
-  --bg-page: var(--color-background);
+  /* Legacy mappings - neutral dark system */
+  --bg-page: var(--bg-app);
   --bg-surface: var(--color-surface);
   --bg-card: var(--color-surface);
-  --bg-hover: rgba(108, 92, 231, 0.08);
+  --bg-hover: rgba(255, 255, 255, 0.06); /* NEUTRAL hover - no purple */
   --bg-subtle: var(--color-surface); /* NO GREY - use dark surface */
 
   /* Surface system - all collapse to dark surface */

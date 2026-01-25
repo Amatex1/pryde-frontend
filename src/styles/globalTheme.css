@@ -109,7 +109,7 @@
 /* ============================= */
 
 body {
-  background: var(--bg-page);
+  background: var(--bg-app);
   color: var(--text-primary);
 }
 

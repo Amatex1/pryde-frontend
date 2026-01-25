@@ -125,3 +125,37 @@
   }
 }
 
+/* ========================================
+   TEXT SAFETY GUARANTEES
+   No text container may clip content unexpectedly
+   ======================================== */
+
+/* All text containers must allow wrapping */
+.post-content,
+.comment-content,
+.message-content,
+.bio-text,
+.card-text,
+.panel-text {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* No fixed heights on text containers - use min-height if needed */
+.text-container,
+.content-body,
+.post-body,
+.comment-body {
+  min-height: auto;
+  height: auto;
+  max-height: none;
+}
+
+/* Long text with intentional truncation - must be explicit */
+.text-truncate,
+.truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -54,7 +54,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: var(--color-bg);
+  background: var(--bg-app, var(--color-bg, #F5F6FA));
   color: var(--color-text);
   line-height: var(--line-height-normal);
   overflow-x: hidden;

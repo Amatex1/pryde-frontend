@@ -33,12 +33,14 @@ button:not(.emoji-button):not(.reaction-btn) {
   transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
 }
 
-/* Menu standards - reduced shadow, softer borders */
+/* Menu standards - reduced shadow, softer borders, proper z-index */
 .dropdown-menu,
 .menu,
 .popover,
 .select-menu,
 [role="menu"] {
+  position: absolute; /* Ensure dropdowns can escape parent containers */
+  z-index: var(--z-dropdown, 100); /* Use z-index system */
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md, 12px);
