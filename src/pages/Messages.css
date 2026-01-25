@@ -63,6 +63,21 @@
   background: var(--bg-card);
 }
 
+/* 3️⃣ ALIGN COMPOSER WIDTH WITH CHAT COLUMN */
+.chat-area,
+.chat-input-area {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .chat-area,
+  .chat-input-area {
+    max-width: 100%;
+    margin: 0;
+  }
+}
+
 /* Message feed MUST NOT scroll - browser handles it */
 .chat-messages {
   flex: 1;
@@ -74,13 +89,34 @@
 }
 
 /* Column 3 — Person info */
+/* 5️⃣ RIGHT COLUMN — ALWAYS USEFUL INFO PANEL */
 .messages-info {
   grid-column: 3;
   grid-row: 2;
   overflow: visible; /* SCROLL FIX: No internal scroll, browser scrolls */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  padding: 24px 20px;
+  background: var(--bg-surface-muted, var(--bg-card));
   border-left: 1px solid var(--border-subtle);
-  background: var(--bg-card);
-  padding: var(--space-4);
+}
+
+/* Action buttons */
+.messages-info .info-actions button {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
+/* Section headings */
+.messages-info h4 {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
 }
 
 /* Info panel content styles */
@@ -175,13 +211,17 @@
    CHANGE 5: RESPONSIVE COLLAPSE
    ======================================== */
 
+/* 6️⃣ TABLET & MOBILE — HIDE INFO COLUMN CLEANLY */
+@media (max-width: 1279px) {
+  .messages-info {
+    display: none;
+  }
+}
+
 /* Tablet: 2 columns - hide info panel */
 @media (max-width: 1024px) {
   .messages-page {
     grid-template-columns: 300px 1fr;
-  }
-  .messages-info {
-    display: none;
   }
 }
 

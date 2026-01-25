@@ -1229,3 +1229,47 @@
     scroll-behavior: auto;
   }
 }
+
+/* ========================================
+   PRYDE_MESSAGES_FINAL_UX_FIX
+   Touch scroll, sticky composer, info panel
+   ======================================== */
+
+/* 1️⃣ FIX MOBILE & TABLET TOUCH SCROLLING */
+.chat-messages {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+
+  /* IMPORTANT: ensure the ENTIRE visible area captures touch */
+  padding: 16px 16px 24px;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chat-area {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 8px; /* 4️⃣ Ensure composer is always visible */
+}
+
+/* 2️⃣ MAKE COMPOSER STICKY, THINNER, AND CONNECTED */
+.chat-input-area {
+  position: sticky;
+  bottom: 0;
+
+  padding: 8px 12px;
+  background: var(--bg-surface);
+
+  border-top: 1px solid var(--border-subtle);
+}
+
+.chat-input-area input,
+.chat-input-area textarea {
+  min-height: 40px;
+  max-height: 120px;
+  padding: 8px 12px;
+
+  font-size: 0.95rem;
+  border-radius: 12px;
+}
