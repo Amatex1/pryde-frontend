@@ -108,7 +108,9 @@ const SecuritySettings = lazyWithReload(() => import('./pages/SecuritySettings')
 const PrivacySettings = lazyWithReload(() => import('./pages/PrivacySettings'));
 const Bookmarks = lazyWithReload(() => import('./pages/Bookmarks'));
 const Events = lazyWithReload(() => import('./pages/Events'));
-const Messages = lazyWithReload(() => import('./pages/Messages'));
+// Phase 1: MessagesApp scaffold — routes through feature flag in index.js
+// Set VITE_USE_NEW_MESSAGES_APP=true to use new architecture
+const Messages = lazyWithReload(() => import('./apps/MessagesApp'));
 const Lounge = lazyWithReload(() => import('./pages/Lounge'));
 const Notifications = lazyWithReload(() => import('./pages/Notifications'));
 const Admin = lazyWithReload(() => import('./pages/Admin'));

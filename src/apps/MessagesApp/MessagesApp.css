@@ -1,0 +1,19 @@
+/**
+ * MessagesApp — Phase 1 Scaffold
+ * 
+ * Intentionally empty.
+ * Layout rules will be added in Phase 4.
+ * 
+ * This file exists to:
+ * 1. Establish the import path
+ * 2. Reserve namespace for MessagesApp-specific styles
+ * 3. Ensure no global CSS conflicts
+ * 
+ * ARCHITECTURE NOTES:
+ * - MessagesApp opts OUT of global page scroll rules
+ * - Uses .messages-app class (not .messages-page)
+ * - Will use position: fixed + height: 100dvh
+ * - Will use CSS Grid for 3-column layout
+ * - Will use flex + overflow for internal scroll
+ */
+
