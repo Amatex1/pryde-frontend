@@ -14,11 +14,12 @@
    ======================================== */
 
 .messages-root {
-  height: 100dvh;
+  height: auto; /* SCROLL FIX: No height constraint */
+  min-height: 100dvh; /* Ensure at least viewport height */
   display: grid;
   grid-template-columns: 320px 1fr;
   background: var(--bg-page, #F5F6FA);
-  overflow: hidden;
+  overflow: visible; /* SCROLL FIX: Browser scrolls */
 }
 
 [data-theme="dark"] .messages-root {
@@ -49,7 +50,7 @@
   flex-direction: column;
   background: var(--bg-card, #FFFFFF);
   border-right: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.06));
-  overflow: hidden;
+  overflow: visible; /* SCROLL FIX: Browser scrolls */
 }
 
 [data-theme="dark"] .dm-list {
@@ -256,7 +257,7 @@
   flex-direction: column;
   align-items: center;
   background: var(--bg-page);
-  overflow: hidden;
+  overflow: visible; /* SCROLL FIX: Browser scrolls */
 }
 
 [data-theme="dark"] .conversation-shell {
@@ -1110,10 +1111,8 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* Prevent background scroll bleed when messages open */
-body.messages-open {
-  overflow: hidden;
-}
+/* SCROLL FIX: Removed body.messages-open overflow: hidden
+   Browser must always own scrolling */
 
 /* ----------------------------------------
    Date Dividers - Grounded, not floating

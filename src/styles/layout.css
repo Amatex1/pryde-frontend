@@ -215,3 +215,47 @@
   min-height: 0;
   overflow-y: auto;
 }
+
+/* ========================================
+   FLEX SAFETY (SCOPED — NOT GLOBAL)
+   Prevents flex overflow without breaking inputs, images, or modals
+   ======================================== */
+
+.app-layout *,
+.page-layout *,
+.page-viewport *,
+.messages-layout * {
+  min-height: 0;
+}
+
+/* ========================================
+   GLOBAL SCROLL OVERRIDE — FINAL AUTHORITY
+   This block MUST be last in layout.css
+   ======================================== */
+
+html,
+body,
+#root {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  height: auto !important;
+  min-height: 100% !important;
+}
+
+/* Layout containers must never own scroll */
+.app-layout,
+.page-layout,
+.page-viewport,
+.messages-page,
+.messages-layout {
+  overflow: visible !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+/* Only explicit content lists may scroll */
+.chat-messages,
+.conversation-list,
+.feed-list {
+  overflow-y: auto;
+}

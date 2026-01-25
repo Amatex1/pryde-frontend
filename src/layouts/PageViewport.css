@@ -10,16 +10,15 @@
  */
 
 .page-viewport {
-  /* Full viewport sizing */
-  min-height: 100dvh; /* Use dvh for mobile viewport safety */
+  /* SCROLL FIX: No height constraint, browser scrolls */
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  min-height: 0;
   width: 100%;
 
-  /* Single vertical scroll container */
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  /* Smooth touch scrolling on mobile */
-  -webkit-overflow-scrolling: touch;
+  /* SCROLL FIX: No internal scroll, browser scrolls */
+  overflow: visible;
 
   /* Background ownership */
   background: var(--bg, #f7f7f7);
