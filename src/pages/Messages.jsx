@@ -1589,7 +1589,7 @@ function Messages() {
 
   return (
     <div
-      className="page-container messages-page"
+      className={`page-container messages-page ${selectedChat ? 'in-conversation' : ''}`}
       data-theme={currentTheme}
       data-quiet-mode={quietMode ? 'true' : 'false'}
     >
@@ -2347,6 +2347,34 @@ function Messages() {
               </div>
             )}
           </div>
+
+          {/* Column 3 — Person info panel (desktop only) */}
+          {selectedChat && selectedUser && (
+            <aside className="messages-info">
+              <div className="info-header">
+                <div className="info-avatar">
+                  {selectedUser?.profilePhoto ? (
+                    <img src={getImageUrl(selectedUser.profilePhoto)} alt={getDisplayName(selectedUser)} />
+                  ) : (
+                    <span>{getDisplayNameInitial(selectedUser)}</span>
+                  )}
+                </div>
+                <h3 className="info-name">{getDisplayName(selectedUser)}</h3>
+                {selectedUser?.username && (
+                  <p className="info-username">@{selectedUser.username}</p>
+                )}
+              </div>
+              <div className="info-status">
+                <span className={`status-dot ${onlineUsers.includes(selectedChat) ? 'online' : 'offline'}`}></span>
+                {onlineUsers.includes(selectedChat) ? 'Online' : 'Offline'}
+              </div>
+              {selectedUser?.bio && (
+                <div className="info-bio">
+                  <p>{selectedUser.bio}</p>
+                </div>
+              )}
+            </aside>
+          )}
         </div>
 
         {/* New Chat Modal */}
