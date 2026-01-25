@@ -1856,10 +1856,13 @@ function Messages() {
             </div>
           </div>
 
+          {/* Column 2 — Conversation area
+              LAYOUT STABILITY: This column is ALWAYS rendered to maintain grid.
+              Header is conditional, messages show empty state, composer always mounted. */}
           <div className={`chat-area conversation-shell ${selectedChat ? 'active' : ''}`}>
-            {selectedChat ? (
-              <>
-                <header className="chat-header conversation-header" key={`${selectedChat}-${selectedChatType}`}>
+            {/* Header - only rendered when conversation is selected */}
+            {selectedChat && (
+              <header className="chat-header conversation-header" key={`${selectedChat}-${selectedChatType}`}>
                   {/* Mobile Back Button - Chevron */}
                   <button
                     className="mobile-back-btn back-btn"
@@ -1944,22 +1947,25 @@ function Messages() {
                     {mutedConversations.includes(selectedChat) ? '🔔' : '🔕'}
                   </button>
                 </header>
+            )}
 
-                {/* Chat Messages Area - Centered Conversation Container */}
-                <div id="message-scroll" className="chat-messages message-scroll" ref={chatContainerRef}>
-                  {/* Conversation wrapper - centers content with max-width */}
-                  <div className="conversation-wrapper">
-                    {/* Inner container - the "quiet room" for messages */}
-                    <div className="conversation-inner">
-                      {!currentUser ? (
-                        <div className="loading-messages empty-conversation">Loading messages...</div>
-                      ) : loadingMessages ? (
-                        <div className="loading-messages empty-conversation">Loading messages...</div>
-                      ) : messages.length === 0 ? (
-                        <div className="empty-chat-state empty-conversation">
-                          <div className="empty-chat-icon empty-icon">💬</div>
-                          <p className="empty-title">No messages yet</p>
-                          <p className="empty-chat-hint empty-hint">Start a calm conversation</p>
+            {/* Chat Messages Area - ALWAYS rendered for layout stability
+                Shows messages when chat selected, empty state otherwise */}
+            <div id="message-scroll" className="chat-messages message-scroll" ref={chatContainerRef}>
+              {selectedChat ? (
+                /* Conversation wrapper - centers content with max-width */
+                <div className="conversation-wrapper">
+                  {/* Inner container - the "quiet room" for messages */}
+                  <div className="conversation-inner">
+                    {!currentUser ? (
+                      <div className="loading-messages empty-conversation">Loading messages...</div>
+                    ) : loadingMessages ? (
+                      <div className="loading-messages empty-conversation">Loading messages...</div>
+                    ) : messages.length === 0 ? (
+                      <div className="empty-chat-state empty-conversation">
+                        <div className="empty-chat-icon empty-icon">💬</div>
+                        <p className="empty-title">No messages yet</p>
+                        <p className="empty-chat-hint empty-hint">Start a calm conversation</p>
                         </div>
                       ) : (
                         /* Render grouped messages for rhythm and flow */
@@ -2151,17 +2157,26 @@ function Messages() {
                         ))
                       )}
 
-                      {/* Typing indicator - Calm fade, no bouncing */}
-                      <TypingIndicator
-                        isTyping={isTyping}
-                        userName={selectedUser ? getDisplayName(selectedUser) : null}
-                      />
-                      <div ref={messagesEndRef} />
-                    </div>
+                    {/* Typing indicator - Calm fade, no bouncing */}
+                    <TypingIndicator
+                      isTyping={isTyping}
+                      userName={selectedUser ? getDisplayName(selectedUser) : null}
+                    />
+                    <div ref={messagesEndRef} />
                   </div>
                 </div>
+              ) : (
+                /* Empty state when no conversation selected */
+                <div className="no-chat-selected no-conversation-selected">
+                  <h3>Select a conversation</h3>
+                  <p>Choose a conversation from the sidebar to start messaging</p>
+                </div>
+              )}
+            </div>
 
-                <form onSubmit={handleSendMessage} className="chat-input-area">
+            {/* Composer - ALWAYS rendered for layout stability
+                Disabled when no conversation is selected */}
+            <form onSubmit={selectedChat ? handleSendMessage : (e) => e.preventDefault()} className="chat-input-area">
                   {showContentWarning && (
                     <div className="content-warning-input">
                       <select
@@ -2250,7 +2265,7 @@ function Messages() {
                         type="button"
                         className="composer-action-btn"
                         onClick={() => fileInputRef.current?.click()}
-                        disabled={uploadingFile || selectedGif || isRecipientUnavailable}
+                        disabled={!selectedChat || uploadingFile || selectedGif || isRecipientUnavailable}
                         title={uploadingFile ? `Uploading... ${uploadProgress}%` : "Attach"}
                       >
                         {uploadingFile ? `${uploadProgress}%` : '+'}
@@ -2265,12 +2280,12 @@ function Messages() {
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
-                            handleSendMessage(e);
+                            if (selectedChat) handleSendMessage(e);
                           }
                         }}
-                        placeholder={isRecipientUnavailable ? recipientUnavailableReason : (replyingTo ? "Reply..." : (selectedGif || selectedFile ? "Caption..." : "Message..."))}
+                        placeholder={!selectedChat ? "Select a conversation..." : (isRecipientUnavailable ? recipientUnavailableReason : (replyingTo ? "Reply..." : (selectedGif || selectedFile ? "Caption..." : "Message...")))}
                         className="message-input"
-                        disabled={isRecipientUnavailable}
+                        disabled={!selectedChat || isRecipientUnavailable}
                       />
 
                       {/* Trailing actions group */}
@@ -2279,7 +2294,7 @@ function Messages() {
                           type="button"
                           className="composer-action-btn"
                           onClick={() => setShowVoiceRecorder(!showVoiceRecorder)}
-                          disabled={selectedFile || selectedGif || isRecipientUnavailable}
+                          disabled={!selectedChat || selectedFile || selectedGif || isRecipientUnavailable}
                           title="Voice note"
                         >
                           🎤
@@ -2288,7 +2303,7 @@ function Messages() {
                           type="button"
                           className={`composer-action-btn ${showContentWarning ? 'active' : ''}`}
                           onClick={() => setShowContentWarning(!showContentWarning)}
-                          disabled={isRecipientUnavailable}
+                          disabled={!selectedChat || isRecipientUnavailable}
                           title="Content warning"
                         >
                           ⚠️
@@ -2299,7 +2314,7 @@ function Messages() {
                       <button
                         type="submit"
                         className="send-btn"
-                        disabled={uploadingFile || isRecipientUnavailable || (!message.trim() && !selectedFile && !selectedGif)}
+                        disabled={!selectedChat || uploadingFile || isRecipientUnavailable || (!message.trim() && !selectedFile && !selectedGif)}
                         aria-label="Send"
                       >
                         ↑
@@ -2338,43 +2353,43 @@ function Messages() {
                       />
                     </Suspense>
                   )}
-                </form>
-              </>
-            ) : (
-              <div className="no-chat-selected no-conversation-selected">
-                <h3>Select a conversation</h3>
-                <p>Choose a conversation from the sidebar to start messaging</p>
-              </div>
-            )}
+            </form>
           </div>
 
-          {/* Column 3 — Person info panel (desktop only) */}
-          {selectedChat && selectedUser && (
-            <aside className="messages-info">
-              <div className="info-header">
-                <div className="info-avatar">
-                  {selectedUser?.profilePhoto ? (
-                    <img src={getImageUrl(selectedUser.profilePhoto)} alt={getDisplayName(selectedUser)} />
-                  ) : (
-                    <span>{getDisplayNameInitial(selectedUser)}</span>
+          {/* Column 3 — Person info panel
+              LAYOUT STABILITY: This column is ALWAYS rendered to maintain 3-column grid.
+              Only the CONTENT inside is conditional. Column must never unmount. */}
+          <aside className="messages-info">
+            {selectedChat && selectedUser ? (
+              <>
+                <div className="info-header">
+                  <div className="info-avatar">
+                    {selectedUser?.profilePhoto ? (
+                      <img src={getImageUrl(selectedUser.profilePhoto)} alt={getDisplayName(selectedUser)} />
+                    ) : (
+                      <span>{getDisplayNameInitial(selectedUser)}</span>
+                    )}
+                  </div>
+                  <h3 className="info-name">{getDisplayName(selectedUser)}</h3>
+                  {selectedUser?.username && (
+                    <p className="info-username">@{selectedUser.username}</p>
                   )}
                 </div>
-                <h3 className="info-name">{getDisplayName(selectedUser)}</h3>
-                {selectedUser?.username && (
-                  <p className="info-username">@{selectedUser.username}</p>
-                )}
-              </div>
-              <div className="info-status">
-                <span className={`status-dot ${onlineUsers.includes(selectedChat) ? 'online' : 'offline'}`}></span>
-                {onlineUsers.includes(selectedChat) ? 'Online' : 'Offline'}
-              </div>
-              {selectedUser?.bio && (
-                <div className="info-bio">
-                  <p>{selectedUser.bio}</p>
+                <div className="info-status">
+                  <span className={`status-dot ${onlineUsers.includes(selectedChat) ? 'online' : 'offline'}`}></span>
+                  {onlineUsers.includes(selectedChat) ? 'Online' : 'Offline'}
                 </div>
-              )}
-            </aside>
-          )}
+                {selectedUser?.bio && (
+                  <div className="info-bio">
+                    <p>{selectedUser.bio}</p>
+                  </div>
+                )}
+              </>
+            ) : (
+              /* Empty state - column stays in DOM for layout stability */
+              <div className="info-empty-state" />
+            )}
+          </aside>
         </div>
 
         {/* New Chat Modal */}
