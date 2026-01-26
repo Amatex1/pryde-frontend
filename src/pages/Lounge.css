@@ -285,7 +285,9 @@
   z-index: 10;
 }
 
-.lounge-message:hover .lounge-message-actions-menu {
+/* Show menu on hover OR when menu is open */
+.lounge-message:hover .lounge-message-actions-menu,
+.lounge-message-actions-menu.menu-open {
   opacity: 1;
 }
 

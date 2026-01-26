@@ -677,6 +677,7 @@ function Lounge() {
           className="lounge-messages"
           ref={messagesContainerRef}
           onScroll={handleScroll}
+          onClick={() => openMessageMenu && setOpenMessageMenu(null)}
         >
           {loading ? (
             <div className="lounge-loading">Loading messages...</div>
@@ -757,16 +758,19 @@ function Lounge() {
                         )}
 
                         {/* 3-dot menu for message actions */}
-                        <div className="lounge-message-actions-menu">
+                        <div className={`lounge-message-actions-menu ${openMessageMenu === msg._id ? 'menu-open' : ''}`}>
                           <button
                             className="btn-lounge-menu"
-                            onClick={() => setOpenMessageMenu(openMessageMenu === msg._id ? null : msg._id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOpenMessageMenu(openMessageMenu === msg._id ? null : msg._id);
+                            }}
                             title="More actions"
                           >
                             ⋮
                           </button>
                           {openMessageMenu === msg._id && (
-                            <div className="lounge-menu-dropdown">
+                            <div className="lounge-menu-dropdown" onClick={(e) => e.stopPropagation()}>
                               {msg.sender?.id !== currentUser?._id && (
                                 <button
                                   onClick={() => { handleMessageUser(msg.sender?.id); setOpenMessageMenu(null); }}
