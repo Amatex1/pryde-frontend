@@ -1783,16 +1783,16 @@ html:not([data-theme]) .post-actions {
 }
 
 /* ========================================
-   COMMENT CONTAINER (FACEBOOK-STYLE CLEAN)
-   No cards, bubble-only, inline actions
-   FINAL COMPACT-DENSITY PASS
+   COMMENT CONTAINER (BUBBLE-ONLY FLAT UI)
+   No cards, bubble-only, actions below
    ======================================== */
 
+/* Legacy .comment class - keep for backwards compatibility */
 .comment {
   display: flex;
   align-items: flex-start;
   gap: 6px !important;
-  margin-top: 2px !important;  /* Reduced from 4px for tighter spacing */
+  margin-top: 2px !important;
   background: transparent;
   border: none;
   box-shadow: none;
@@ -1800,14 +1800,31 @@ html:not([data-theme]) .post-actions {
   position: relative;
 }
 
-/* Row-level hover (not bubble) */
+/* New .comment-row class - flat bubble UI */
+.comment-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 8px 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Row-level hover (subtle) */
+.comment-row:hover {
+  background: transparent;
+}
+
 .comment:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.02);
   border-radius: 8px;
 }
 
-[data-theme="light"] .comment:hover {
-  background: rgba(0, 0, 0, 0.03);
+[data-theme="light"] .comment:hover,
+[data-theme="light"] .comment-row:hover {
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .reply {
@@ -2019,6 +2036,10 @@ html:not([data-theme]) .post-actions {
 /* Show menu button on hover (desktop) */
 .comment:hover .comment-menu-btn,
 .comment:focus-within .comment-menu-btn,
+.comment-row:hover .comment-menu-btn,
+.comment-row:focus-within .comment-menu-btn,
+.comment-bubble-row:hover .comment-menu-btn,
+.comment-bubble-row:focus-within .comment-menu-btn,
 .post:hover .post-menu-btn,
 .post:focus-within .post-menu-btn {
   opacity: 1;
@@ -2237,22 +2258,31 @@ html:not([data-theme]) .post-actions {
   display: none !important;
 }
 
-/* Action row - Like / Reply (Facebook-style inline, COMPACT DENSITY) */
+/* Action row - Like / Reply (BUBBLE UI - always visible below bubble) */
 .comment-actions {
   display: flex;
   gap: 10px;
   margin-left: 6px !important;
-  margin-top: 1px !important;  /* Reduced from 2px */
+  margin-top: 1px !important;
   font-size: 12px;
   color: var(--text-secondary);
   align-items: center;
-  opacity: 0;  /* Show on hover (desktop) */
+  opacity: 0.85;  /* Always visible in new bubble UI */
   transition: opacity 0.12s ease;
 }
 
-/* Show actions on hover (desktop) */
+/* New bubble UI - actions always visible */
+.comment-row .comment-actions {
+  opacity: 0.85;
+  margin-left: 0;
+  padding-left: 44px; /* Align with bubble */
+}
+
+/* Show actions on hover (desktop) - legacy support */
 .comment:hover .comment-actions,
-.comment:focus-within .comment-actions {
+.comment:focus-within .comment-actions,
+.comment-row:hover .comment-actions,
+.comment-row:focus-within .comment-actions {
   opacity: 1;
 }
 

@@ -500,3 +500,162 @@ select:focus,
     grid-template-columns: 1fr;
   }
 }
+
+/* ========================================
+   COMMENT BUBBLE UI - FLAT, CHAT-LIKE
+   No card wrapper, bubble-only design
+   ======================================== */
+
+/* Comment row - no card feel */
+.comment-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 8px 0;
+}
+
+/* Avatar + Bubble horizontal container */
+.comment-bubble-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* Comment bubble only - inline block, no full-width card */
+.comment-bubble {
+  display: inline-block;
+  max-width: 90%;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: var(--comment-bg, rgba(255, 255, 255, 0.06));
+}
+
+[data-theme="light"] .comment-bubble {
+  background: var(--comment-bg, rgba(0, 0, 0, 0.04));
+}
+
+[data-quiet="true"] .comment-bubble,
+.quiet-mode .comment-bubble {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="light"][data-quiet="true"] .comment-bubble,
+[data-theme="light"] .quiet-mode .comment-bubble {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* Author inline with text (chat-like) */
+.comment-bubble .comment-author {
+  display: inline;
+  font-weight: var(--weight-medium, 500);
+  margin-right: 6px;
+  color: var(--text-main);
+}
+
+.comment-bubble .comment-author .author-name {
+  font-weight: var(--weight-semibold, 600);
+}
+
+.comment-bubble .comment-author:hover .author-name {
+  text-decoration: underline;
+}
+
+/* Comment text inline */
+.comment-bubble .comment-text {
+  display: inline;
+  line-height: var(--density-line, 1.5);
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+/* Timestamp + meta below bubble */
+.comment-meta {
+  padding-left: 44px; /* Align with bubble (avatar width + gap) */
+  font-size: var(--text-xs, 12px);
+  color: var(--text-muted);
+  opacity: 0.75;
+}
+
+/* Actions below bubble (not inside) */
+.comment-row .comment-actions {
+  display: flex;
+  gap: 12px;
+  padding-left: 44px; /* Align with bubble */
+  font-size: var(--text-xs, 12px);
+  opacity: 0.85;
+}
+
+.comment-row .comment-actions button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  opacity: 0.8;
+  color: var(--text-secondary);
+}
+
+.comment-row .comment-actions button:hover {
+  opacity: 1;
+  color: var(--color-primary);
+}
+
+/* 3-dot menu container */
+.comment-menu-container {
+  position: relative;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.comment-bubble-row:hover .comment-menu-container {
+  opacity: 1;
+}
+
+/* Reply indentation */
+.comment-row.reply {
+  margin-left: 24px;
+}
+
+/* Density-aware spacing */
+body[data-density="compact"] .comment-row {
+  margin: 6px 0;
+  gap: 3px;
+}
+
+body[data-density="compact"] .comment-bubble {
+  padding: 6px 10px;
+}
+
+body[data-density="compact"] .comment-meta,
+body[data-density="compact"] .comment-row .comment-actions {
+  padding-left: 40px;
+}
+
+body[data-density="cozy"] .comment-row {
+  margin: 10px 0;
+  gap: 5px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .comment-bubble {
+    max-width: 95%;
+    padding: 6px 10px;
+    border-radius: 12px;
+  }
+
+  .comment-meta,
+  .comment-row .comment-actions {
+    padding-left: 36px; /* Smaller avatar on mobile */
+  }
+
+  .comment-row.reply {
+    margin-left: 16px;
+  }
+
+  .comment-row .comment-actions {
+    gap: 10px;
+  }
+}
