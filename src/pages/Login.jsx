@@ -127,6 +127,10 @@ function Login() {
   return (
     <div className="auth-container">
       <div className="auth-card glossy fade-in">
+        <Link to="/" className="auth-home-link">
+          ← Back to home
+        </Link>
+
         <div className="auth-header">
           <h1 className="auth-title text-shadow">✨ Pryde Social</h1>
           <p className="auth-subtitle">

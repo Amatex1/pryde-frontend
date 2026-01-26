@@ -33,6 +33,25 @@
   }
 }
 
+/* Home link - back to landing page */
+.auth-home-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+  margin-bottom: var(--space-md);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--border-radius-sm);
+  transition: all 0.2s ease;
+}
+
+.auth-home-link:hover {
+  color: var(--pryde-purple);
+  background: var(--soft-lavender);
+}
+
 .auth-header {
   text-align: center;
   margin-bottom: var(--space-lg);
