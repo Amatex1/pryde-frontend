@@ -535,7 +535,7 @@ select:focus,
   max-width: 520px;
   padding: 6px 10px;
   border-radius: 16px;
-  background: var(--comment-bg, rgba(255,255,255,0.08));
+  background: transparent;
   white-space: normal;
   word-break: normal;
   overflow-wrap: break-word;
@@ -792,7 +792,7 @@ body[data-density="cozy"] .comment-row {
   max-width: 520px;
   padding: 6px 10px;
   border-radius: 16px;
-  background: var(--comment-bg, rgba(255, 255, 255, 0.08));
+  background: transparent !important;
 }
 
 @media (max-width: 600px) {
