@@ -242,6 +242,12 @@ export const logout = async () => {
   sessionStorage.clear();
   console.log('✅ Session storage cleared');
 
+  // 🔥 STEP 12: Set a flag to prevent auto-login on next page load
+  // This ensures that even if the httpOnly cookie wasn't cleared by the backend,
+  // the frontend will not attempt to use it
+  localStorage.setItem('forceLogout', 'true');
+  console.log('✅ Force logout flag set');
+
   console.log('🎉 Logout complete - redirecting to login');
 
   // Reset logout flag before redirect

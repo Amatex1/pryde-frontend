@@ -164,11 +164,18 @@ export function AuthProvider({ children }) {
         // 🔥 CRITICAL: Skip silent refresh if user just logged out manually
         // This prevents unnecessary 401 errors on the login page
         const wasManualLogout = isManualLogout();
+        const forceLogout = localStorage.getItem('forceLogout') === 'true';
         const isOnLoginPage = window.location.pathname === '/login' || window.location.pathname === '/register';
 
-        if (wasManualLogout || isOnLoginPage) {
-          logger.debug('[AuthContext] Skipping silent refresh (manual logout or login page)');
+        if (wasManualLogout || forceLogout || isOnLoginPage) {
+          logger.debug('[AuthContext] Skipping silent refresh (manual logout, force logout, or login page)');
+          // Clear the force logout flag after checking it
+          if (forceLogout) {
+            localStorage.removeItem('forceLogout');
+          }
           setUser(null);
+          setCurrentUser(null); // Clear localStorage user
+          clearAllTokens(); // Clear any stale tokens
           setAuthStatus(AUTH_STATES.UNAUTHENTICATED);
           markAuthStatusUnauthenticated();
           markAuthReady();
