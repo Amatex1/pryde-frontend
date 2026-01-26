@@ -36,6 +36,7 @@ import {
   getAuthToken,
   setAuthToken,
   setCurrentUser,
+  clearAllTokens,
   logout as authLogout,
   isManualLogout
 } from '../utils/auth';
@@ -188,12 +189,24 @@ export function AuthProvider({ children }) {
           logger.debug('[AuthContext] No valid session - marking unauthenticated');
           // 🔍 PROD DEBUG: Always log this for debugging cookie/logout issues
           console.warn('[AuthContext] 🚪 Silent refresh failed - setting UNAUTHENTICATED');
+
+          // 🔥 CRITICAL: Clear ALL cached user data to prevent stale state
           setUser(null);
+          setCurrentUser(null); // Clear localStorage user
+          clearAllTokens(); // Clear any stale tokens
+
           setAuthStatus(AUTH_STATES.UNAUTHENTICATED);
           markAuthStatusUnauthenticated();
           markAuthReady();
           sessionStorage.setItem('authReady', 'true');
           setIsAuthReady(true); // 🔐 Auth resolution complete
+
+          console.warn('[AuthContext] 🚪 Auth state after setting UNAUTHENTICATED:', {
+            authStatus: AUTH_STATES.UNAUTHENTICATED,
+            user: null,
+            isAuthReady: true
+          });
+
           return { authenticated: false };
         }
       }
