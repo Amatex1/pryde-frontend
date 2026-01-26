@@ -2118,20 +2118,22 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .profile-page .comment-replies {
-  margin-left: 2.5rem;
-  padding-left: 1.5rem;
-  padding-top: 0.75rem;
+  margin-left: 48px;  /* Increased for clear visual separation */
+  padding-left: 12px;
+  padding-top: 8px;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
+  gap: 4px;
+  margin-top: 8px;
   position: relative;
+  border-left: 2px solid var(--pryde-purple, #6c5ce7);  /* Purple thread line */
 }
 
 .profile-page .comment.reply {
   background: transparent;
   padding: 0.5rem 0;
   position: relative;
+  font-size: 0.9em;  /* Slightly smaller for visual hierarchy */
 }
 
 .profile-page .comment-avatar {
@@ -2732,14 +2734,14 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .comment-replies {
-    margin-left: 1rem;
-    padding-left: 0.75rem;
-    border-left: 3px solid var(--pryde-purple);
+    margin-left: 32px;  /* Reduced on tablet but still clear */
+    padding-left: 10px;
+    border-left: 2px solid var(--pryde-purple);
   }
 
   .comment.reply {
-    background: rgba(108, 92, 231, 0.1);
-    padding: 1rem;
+    background: transparent;
+    padding: 0.5rem 0;
   }
 
   .comment-content {
@@ -3044,12 +3046,13 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .comment-replies {
-    margin-left: 0.75rem;
-    padding-left: 0.5rem;
+    margin-left: 24px;  /* Reduced on mobile but still visible */
+    padding-left: 8px;
+    border-left: 2px solid var(--pryde-purple);
   }
 
   .comment.reply {
-    padding: 0.875rem;
+    padding: 0.5rem 0;
   }
 
   .comment-text {

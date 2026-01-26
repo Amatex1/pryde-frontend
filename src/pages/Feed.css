@@ -1840,29 +1840,29 @@ html:not([data-theme]) .post-actions {
 
 /* ========================================
    REPLY INDENTATION & VISUAL HIERARCHY
-   Clear nesting with subtle thread line
+   Clear nesting - replies pushed further right
    ======================================== */
 
 .comment-replies {
-  margin-left: 3rem;  /* Increased from 2.5rem for clearer nesting */
-  padding-left: 0.75rem;
-  padding-top: 0.25rem;  /* Reduced from 0.5rem */
+  margin-left: 48px;  /* Increased significantly for clear visual separation */
+  padding-left: 12px;
+  padding-top: 8px;
   display: flex;
   flex-direction: column;
-  gap: 0;
-  margin-top: 0.25rem;  /* Reduced from 0.5rem */
-  border-left: 2px solid var(--border-subtle, rgba(128, 128, 128, 0.2));
+  gap: 4px;
+  margin-top: 4px;
+  border-left: 2px solid var(--pryde-purple, #6c5ce7);  /* Purple thread line */
+  position: relative;
 }
 
-/* Reply comments - visually lighter than parents */
+/* Reply comments - visually distinct from parents */
 .comment--reply,
 .comment.reply {
   background: transparent;
   margin-left: 0 !important;  /* Parent container handles indent */
-  margin-top: 0.25rem !important;  /* Reduced from 0.5rem */
+  margin-top: 4px !important;
   position: relative;
   font-size: 0.9em;  /* Smaller text for replies */
-  opacity: 0.95;  /* Subtle visual weight reduction */
 }
 
 /* First reply tighter to parent */
@@ -1880,15 +1880,15 @@ html:not([data-theme]) .post-actions {
 /* Reply avatar smaller */
 .comment--reply .comment-avatar,
 .comment.reply .comment-avatar {
-  width: 22px;  /* Reduced from 26px */
-  height: 22px;  /* Reduced from 26px */
+  width: 24px;
+  height: 24px;
 }
 
 /* Reply bubble slightly smaller */
 .comment--reply .comment-body,
 .comment.reply .comment-body {
-  font-size: 12px !important;  /* Reduced from 13px */
-  padding: 3px 6px !important;  /* Reduced from 4px 8px */
+  font-size: 13px !important;
+  padding: 4px 8px !important;
 }
 
 /* Remove old ::before pseudo-element */

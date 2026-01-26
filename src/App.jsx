@@ -16,7 +16,6 @@ import { executePWASafetyChecks } from './utils/pwaSafety';
 import { disablePWAAndReload, forceReloadWithCacheClear } from './utils/emergencyRecovery';
 import { initOfflineManager } from './utils/offlineManager';
 import { checkDomOrder } from './utils/domOrderCheck';
-import { setupDevConsole } from './utils/devConsole';
 import { isPWA } from './utils/pwa';
 import { initThemeListener, getThemePreference, setThemeMode } from './utils/themeManager';
 import DebugOverlay from './components/DebugOverlay';
@@ -338,10 +337,7 @@ function AppContent() {
     checkDomOrder();
   }, []);
 
-  // Console signal lock (silences noise in prod, filters in dev)
-  useEffect(() => {
-    setupDevConsole();
-  }, []);
+  // Note: Console guard (setupDevConsole) is called in main.jsx before React renders
 
   return (
     <AuthGate>

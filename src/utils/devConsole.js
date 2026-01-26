@@ -1,53 +1,39 @@
 /**
- * Console Signal Lock
+ * Console Signal Lock - PRODUCTION CLEAN
  *
- * Production:
- * - console.error → always visible (critical issues)
- * - console.warn  → always visible (important warnings)
- * - console.log   → silenced (no noise in prod)
- * - console.info  → silenced
+ * ALL ENVIRONMENTS:
+ * - console.error → always visible (critical issues for Render/Vercel logs)
+ * - console.warn  → always visible (important warnings for Render/Vercel logs)
+ * - console.log   → SILENCED (no noise in browser DevTools)
+ * - console.info  → SILENCED
+ * - console.debug → SILENCED
  *
- * Development:
- * - console.error → always visible
- * - console.warn  → always visible
- * - console.log   → ONLY if prefixed with "[Pryde]"
- * - console.info  → silenced
+ * Debugging should be done via:
+ * - Render logs (backend)
+ * - Vercel logs (frontend build/deploy)
+ * - console.error/warn for critical issues only
  */
 
+let isInitialized = false;
+
 export function setupDevConsole() {
-  const isProd = import.meta.env.PROD || process.env.NODE_ENV === "production";
-  const isDev = import.meta.env.DEV || process.env.NODE_ENV === "development";
+  // Prevent double initialization
+  if (isInitialized) return;
+  isInitialized = true;
 
-  const originalLog = console.log.bind(console);
-  const originalInfo = console.info.bind(console);
+  // Silence console.log, console.info, console.debug in ALL environments
+  // Only console.error and console.warn remain for critical issues
+  console.log = () => {
+    /* silenced - use Render/Vercel logs for debugging */
+  };
+  console.info = () => {
+    /* silenced - use Render/Vercel logs for debugging */
+  };
+  console.debug = () => {
+    /* silenced - use Render/Vercel logs for debugging */
+  };
 
-  if (isProd) {
-    // Production: silence all non-critical console output
-    console.log = () => {
-      /* silenced in production */
-    };
-    console.info = () => {
-      /* silenced in production */
-    };
-    // console.warn and console.error remain active
-    return;
-  }
-
-  if (isDev) {
-    // Development: only show [Pryde] prefixed logs
-    console.log = (...args) => {
-      if (
-        typeof args[0] === "string" &&
-        args[0].startsWith("[Pryde]")
-      ) {
-        originalLog(...args);
-      }
-    };
-
-    console.info = () => {
-      /* silenced intentionally */
-    };
-  }
+  // console.warn and console.error remain active for critical issues
 }
 
 /**

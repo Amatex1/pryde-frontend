@@ -1,3 +1,11 @@
+/* ================================
+   CONSOLE GUARD - MUST BE FIRST
+   Silences console.log/info/debug
+   Only errors/warnings visible
+   ================================ */
+import { setupDevConsole } from './utils/devConsole'
+setupDevConsole()
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
@@ -33,6 +41,7 @@ import { initWebVitals } from './utils/webVitals'
 
 /* ================================
    Global Error Logging (PASSIVE)
+   Only errors - visible in Render/Vercel
    ================================ */
 window.addEventListener(
   'error',
@@ -48,7 +57,7 @@ window.addEventListener('unhandledrejection', (event) => {
 })
 
 /* ================================
-   Build Info (Debug Only)
+   Build Info (Exposed on window)
    ================================ */
 const buildVersionMeta = document.querySelector('meta[name="build-version"]')
 const buildTimeMeta = document.querySelector('meta[name="build-time"]')
@@ -56,10 +65,6 @@ const buildTimeMeta = document.querySelector('meta[name="build-time"]')
 // Expose version globally for debugging (window.__VERSION__)
 window.__VERSION__ = buildVersionMeta?.content || 'unknown'
 window.__BUILD_TIME__ = buildTimeMeta?.content || 'unknown'
-
-console.info('🚀 Pryde Frontend Build:', window.__VERSION__)
-console.info('🕐 Build Time:', window.__BUILD_TIME__)
-console.info('🌐 Environment:', import.meta.env.MODE)
 
 /* ================================
    EARLY SAFE INIT
