@@ -1783,73 +1783,38 @@ html:not([data-theme]) .post-actions {
 }
 
 /* ========================================
-   COMMENT CONTAINER (FACEBOOK-LIKE LAYOUT)
-   Row: Avatar + Main column (bubble + actions)
+   📐 COMMENT CONTRACT IMPLEMENTATION
+   Facebook-like, Pryde-calm, containerless
    ======================================== */
 
 /* Legacy .comment class - keep for backwards compatibility */
 .comment {
   display: flex;
   align-items: flex-start;
-  gap: 6px !important;
-  margin-top: 2px !important;
-  background: transparent;
+  gap: 8px;
+  background: none;
   border: none;
-  box-shadow: none;
-  padding: 0 !important;
+  padding: 0;
   position: relative;
 }
 
-/* Facebook-like .comment-row - normalized flow */
+/* Contract: comment-row MUST NOT have background/border/padding */
 .comment-row {
-  padding: 0;
-  background: none;
-  border: none;
-  box-shadow: none;
-  margin: 8px 0;
-}
-
-/* Post-card comment alignment */
-.post-card .comment-row {
-  margin-left: 0;
-  margin-right: 0;
-}
-
-/* Bubble row = Avatar + Bubble only */
-.comment-bubble-row {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-}
-
-/* Row-level hover (subtle) */
-.comment-row:hover {
-  background: transparent;
-}
-
-.comment:hover {
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
-}
-
-[data-theme="light"] .comment:hover,
-[data-theme="light"] .comment-row:hover {
-  background: rgba(0, 0, 0, 0.02);
-}
-
-/* Reply indentation - bubble only, not whole row */
-.reply {
-  background: transparent;
+  background: none;
   border: none;
-  box-shadow: none;
   padding: 0;
+  margin: 8px 0;
 }
 
+/* Contract: Reply indentation via comment-lane, NOT row shift */
 .comment-row.reply {
   margin-left: 0;
 }
 
-.comment-row.reply .comment-bubble-row {
+.comment-row.reply .comment-lane {
   margin-left: 24px;
 }
 
@@ -2266,7 +2231,10 @@ html:not([data-theme]) .post-actions {
 }
 
 /* ========================================
-   INLINE ACTIONS (FACEBOOK-STYLE)
+   📐 CONTRACT: COMMENT-ACTIONS (ANCHOR RULE)
+   - MUST visually align under bubble start
+   - MUST NOT align under avatar
+   - MUST NOT float independently
    ======================================== */
 
 /* Hide inline edit/delete buttons (moved to 3-dot menu) */
@@ -2275,31 +2243,21 @@ html:not([data-theme]) .post-actions {
   display: none !important;
 }
 
-/* Action row - Like / Reply (Facebook-style - anchored to bubble) */
+/* Contract: margin-left: 12px anchors under bubble */
 .comment-actions {
+  margin-left: 12px;
+  margin-top: 2px;
   display: flex;
   gap: 10px;
-  margin-left: 40px; /* aligns under bubble, not avatar */
-  margin-top: 2px;
   font-size: 12px;
-  color: var(--text-secondary);
+  opacity: 0.7;
   align-items: center;
-  opacity: 0.65;
-  transition: opacity 0.12s ease;
-}
-
-/* Facebook-like - actions anchored under bubble */
-.comment-row .comment-actions {
-  opacity: 0.65;
-  margin-left: 40px;
-  padding-left: 0;
+  color: var(--text-secondary);
 }
 
 /* Show actions on hover (desktop) */
 .comment:hover .comment-actions,
-.comment:focus-within .comment-actions,
-.comment-row:hover .comment-actions,
-.comment-row:focus-within .comment-actions {
+.comment-row:hover .comment-actions {
   opacity: 1;
 }
 
@@ -2310,14 +2268,9 @@ html:not([data-theme]) .post-actions {
   }
 }
 
-/* Replies - actions anchored under bubble with indent */
-.reply .comment-actions {
-  font-size: 12px;
-  margin-left: 64px; /* 24px indent + 40px bubble alignment */
-}
-
+/* Contract: Reply actions = 24px lane indent + 12px action anchor = 36px */
 .comment-row.reply .comment-actions {
-  margin-left: 64px;
+  margin-left: 36px;
 }
 
 .comment-action-btn,
@@ -2522,26 +2475,26 @@ html:not([data-theme]) .post-actions {
   transform: scale(1.1);
 }
 
+/* Contract: comment-avatar (32px main, 28px reply) */
 .comment-avatar {
-  flex-shrink: 0;
-  width: 28px;  /* Reduced from 30px for more compact look */
-  height: 28px;  /* Reduced from 30px for more compact look */
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: var(--bg-secondary);
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 500;
-  color: var(--text-main);
-  font-size: 11px;  /* Reduced from 12px */
+  background: var(--color-primary-soft, rgba(108, 92, 231, 0.15));
+  color: var(--color-primary);
+  font-weight: var(--weight-semibold, 600);
+  font-size: 14px;
   overflow: hidden;
-  transition: opacity 0.2s;
-  align-self: flex-start;
 }
 
-.reply .comment-avatar {
-  width: 22px;  /* Reduced from 26px for clearer hierarchy */
-  height: 22px;  /* Reduced from 26px for clearer hierarchy */
+.comment-row.reply .comment-avatar {
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
 }
 
 .comment-avatar:hover {

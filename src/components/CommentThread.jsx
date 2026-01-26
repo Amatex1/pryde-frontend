@@ -118,8 +118,8 @@ const CommentThread = ({
               )}
             </Link>
 
-            {/* Main content column */}
-            <div className="comment-main">
+            {/* Lane: bubble + actions (contract spec) */}
+            <div className="comment-lane">
               <div className="comment-bubble">
                 <Link
                   to={`/profile/${comment.authorId?.username}`}
@@ -289,8 +289,8 @@ const CommentThread = ({
                       )}
                     </Link>
 
-                    {/* Main content column */}
-                    <div className="comment-main">
+                    {/* Lane: bubble + actions (contract spec) */}
+                    <div className="comment-lane">
                       <div className="comment-bubble">
                         <Link
                           to={`/profile/${reply.authorId?.username}`}
