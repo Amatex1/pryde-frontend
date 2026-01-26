@@ -245,12 +245,16 @@ body,
 /* Layout containers must never own scroll */
 .app-layout,
 .page-layout,
-.page-viewport,
 .messages-page,
 .messages-layout {
   overflow: visible !important;
   height: auto !important;
-  min-height: 0 !important;
+}
+
+/* page-viewport needs auto min-height to prevent content overlap */
+.page-viewport {
+  overflow: visible !important;
+  height: auto !important;
 }
 
 /* Only explicit content lists may scroll */
