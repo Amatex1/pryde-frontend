@@ -28,6 +28,8 @@ export default function InfoPanel({
     }
   };
 
+  const isOnline = onlineUsers.includes(selectedChat);
+
   return (
     <aside className="messages-app__info">
       {selectedChat && selectedUser ? (
@@ -39,13 +41,11 @@ export default function InfoPanel({
               ) : (
                 <span>{getDisplayNameInitial(selectedUser)}</span>
               )}
+              {/* Status dot on avatar */}
+              <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>
             </div>
             <h3 className="info-name">{getDisplayName(selectedUser)}</h3>
             {selectedUser?.username && <p className="info-username">@{selectedUser.username}</p>}
-          </div>
-          <div className="info-status">
-            <span className={`status-dot ${onlineUsers.includes(selectedChat) ? 'online' : 'offline'}`}></span>
-            {onlineUsers.includes(selectedChat) ? 'Online' : 'Offline'}
           </div>
           {selectedUser?.bio && (
             <div className="info-bio"><p>{selectedUser.bio}</p></div>

@@ -179,6 +179,108 @@
   overflow-y: auto;
 }
 
+/* Info panel header */
+.messages-app__info .info-header {
+  text-align: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 16px;
+}
+
+/* Info panel avatar with status dot */
+.messages-app__info .info-avatar {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  overflow: visible;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: white;
+}
+
+.messages-app__info .info-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.messages-app__info .info-avatar .status-dot {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid var(--bg-surface);
+  background: var(--text-muted);
+}
+
+.messages-app__info .info-avatar .status-dot.online {
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+}
+
+.messages-app__info .info-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+
+.messages-app__info .info-username {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.messages-app__info .info-bio {
+  padding: 12px;
+  background: var(--bg-hover);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.messages-app__info .info-bio p {
+  margin: 0;
+}
+
+/* Info panel action buttons */
+.messages-app__info .info-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.messages-app__info .info-action-btn {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  transition: background 150ms ease;
+}
+
+.messages-app__info .info-action-btn:hover {
+  background: var(--bg-hover);
+}
+
+.messages-app__info .info-action-btn--danger {
+  color: var(--error);
+}
+
 .messages-app__info-actions {
   display: flex;
   flex-direction: column;
