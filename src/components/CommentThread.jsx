@@ -289,19 +289,21 @@ const CommentThread = ({
                       )}
                     </Link>
 
-                    {/* Lane: bubble + actions (contract spec) */}
+                    {/* Author name - inline with avatar */}
+                    <Link
+                      to={`/profile/${reply.authorId?.username}`}
+                      className="comment-author-inline"
+                      style={{ textDecoration: 'none' }}
+                    >
+                      <span className="author-name">{reply.authorId?.displayName || reply.authorId?.username}</span>
+                      {reply.authorId?.badges?.length > 0 && (
+                        <TieredBadgeDisplay badges={reply.authorId.badges} context="card" />
+                      )}
+                    </Link>
+
+                    {/* Lane: bubble + actions */}
                     <div className="comment-lane">
                       <div className="comment-bubble">
-                        <Link
-                          to={`/profile/${reply.authorId?.username}`}
-                          className="comment-author"
-                          style={{ textDecoration: 'none' }}
-                        >
-                          <span className="author-name">{reply.authorId?.displayName || reply.authorId?.username}</span>
-                          {reply.authorId?.badges?.length > 0 && (
-                            <TieredBadgeDisplay badges={reply.authorId.badges} context="card" />
-                          )}
-                        </Link>
                         {isEditingReply ? (
                           <div className="comment-edit-box">
                             <textarea

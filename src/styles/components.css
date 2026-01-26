@@ -663,10 +663,35 @@ select:focus,
 }
 
 /* ----------------------------------------
-   Replies MUST shift right as a unit
+   Replies: avatar + name on left, bubble below
    ---------------------------------------- */
 .comment-row.reply {
   padding-left: 40px !important;
+  flex-wrap: wrap; /* Allow bubble to wrap to next line */
+}
+
+/* Inline author name (next to avatar) */
+.comment-author-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-main);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.comment-author-inline:hover .author-name {
+  text-decoration: underline;
+  color: var(--color-primary);
+}
+
+/* Reply lane takes full width on new line */
+.comment-row.reply .comment-lane {
+  flex-basis: 100%;
+  margin-left: 36px; /* Align with text after avatar */
+  margin-top: 4px;
 }
 
 /* Prevent parent containers from double-indenting */
