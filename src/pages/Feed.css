@@ -1844,7 +1844,6 @@ html:not([data-theme]) .post-actions {
    ======================================== */
 
 .comment-replies {
-  margin-left: 48px;  /* Increased significantly for clear visual separation */
   padding-left: 12px;
   padding-top: 8px;
   display: flex;
@@ -3646,7 +3645,6 @@ html:not([data-theme]) .post-actions {
 
   /* Better reply styling on mobile */
   .comment-replies {
-    margin-left: 1.5rem;
     padding-left: 1rem;
     border-left: 2px solid var(--border-light);
   }
@@ -3721,7 +3719,6 @@ html:not([data-theme]) .post-actions {
   }
 
   .comment-replies {
-    margin-left: 1rem !important;  /* Tighter on mobile */
     padding-left: 0.75rem !important;
     border-left: 2px solid var(--border-subtle, rgba(128, 128, 128, 0.15));
   }

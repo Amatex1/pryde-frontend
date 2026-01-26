@@ -967,9 +967,8 @@
   }
 
   .comment-replies {
-    margin-left: 24px !important; /* Clear indent on mobile for reply distinction */
     padding-left: 10px !important;
-    max-width: calc(100% - 24px) !important;
+    max-width: 100% !important;
     overflow: hidden !important;
     padding-right: 0 !important;
     border-left: 2px solid var(--pryde-purple, #6c5ce7) !important;

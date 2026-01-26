@@ -2118,7 +2118,6 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .profile-page .comment-replies {
-  margin-left: 48px;  /* Increased for clear visual separation */
   padding-left: 12px;
   padding-top: 8px;
   display: flex;
@@ -2734,7 +2733,6 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .comment-replies {
-    margin-left: 32px;  /* Reduced on tablet but still clear */
     padding-left: 10px;
     border-left: 2px solid var(--pryde-purple);
   }
@@ -3046,7 +3044,6 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .comment-replies {
-    margin-left: 24px;  /* Reduced on mobile but still visible */
     padding-left: 8px;
     border-left: 2px solid var(--pryde-purple);
   }
