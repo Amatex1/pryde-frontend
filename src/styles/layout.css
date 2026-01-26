@@ -218,15 +218,10 @@
 
 /* ========================================
    FLEX SAFETY (SCOPED — NOT GLOBAL)
-   Prevents flex overflow without breaking inputs, images, or modals
+   Removed wildcard min-height: 0 rule - was breaking avatar border-radius
+   and causing layout issues. Apply min-height: 0 only to specific flex
+   containers that need it, not globally to all children.
    ======================================== */
-
-.app-layout *,
-.page-layout *,
-.page-viewport *,
-.messages-layout * {
-  min-height: 0;
-}
 
 /* ========================================
    GLOBAL SCROLL OVERRIDE — FINAL AUTHORITY

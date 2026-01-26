@@ -1778,7 +1778,7 @@ html:not([data-theme]) .post-actions {
 .comment-thread {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: 0.25rem;  /* Reduced from var(--space-2) for tighter spacing */
 }
 
 /* ========================================
@@ -1790,12 +1790,12 @@ html:not([data-theme]) .post-actions {
 .comment {
   display: flex;
   align-items: flex-start;
-  gap: 6px !important;  /* Reduced from 8px */
-  margin-top: 4px !important;  /* Reduced from 8px */
+  gap: 6px !important;
+  margin-top: 2px !important;  /* Reduced from 4px for tighter spacing */
   background: transparent;
   border: none;
   box-shadow: none;
-  padding: 0 !important;  /* Removed 2px 0 */
+  padding: 0 !important;
   position: relative;
 }
 
@@ -1843,13 +1843,13 @@ html:not([data-theme]) .post-actions {
    ======================================== */
 
 .comment-replies {
-  margin-left: 2.5rem;  /* 40px - clear indentation */
-  padding-left: 1rem;
-  padding-top: 0.5rem;
+  margin-left: 3rem;  /* Increased from 2.5rem for clearer nesting */
+  padding-left: 0.75rem;
+  padding-top: 0.25rem;  /* Reduced from 0.5rem */
   display: flex;
   flex-direction: column;
   gap: 0;
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;  /* Reduced from 0.5rem */
   border-left: 2px solid var(--border-subtle, rgba(128, 128, 128, 0.2));
 }
 
@@ -1858,9 +1858,9 @@ html:not([data-theme]) .post-actions {
 .comment.reply {
   background: transparent;
   margin-left: 0 !important;  /* Parent container handles indent */
-  margin-top: 0.5rem !important;
+  margin-top: 0.25rem !important;  /* Reduced from 0.5rem */
   position: relative;
-  font-size: 0.95em;  /* Slightly smaller text */
+  font-size: 0.9em;  /* Smaller text for replies */
   opacity: 0.95;  /* Subtle visual weight reduction */
 }
 
@@ -1879,15 +1879,15 @@ html:not([data-theme]) .post-actions {
 /* Reply avatar smaller */
 .comment--reply .comment-avatar,
 .comment.reply .comment-avatar {
-  width: 26px;
-  height: 26px;
+  width: 22px;  /* Reduced from 26px */
+  height: 22px;  /* Reduced from 26px */
 }
 
 /* Reply bubble slightly smaller */
 .comment--reply .comment-body,
 .comment.reply .comment-body {
-  font-size: 13px !important;
-  padding: 4px 8px !important;
+  font-size: 12px !important;  /* Reduced from 13px */
+  padding: 3px 6px !important;  /* Reduced from 4px 8px */
 }
 
 /* Remove old ::before pseudo-element */
@@ -2472,8 +2472,8 @@ html:not([data-theme]) .post-actions {
 
 .comment-avatar {
   flex-shrink: 0;
-  width: 30px;  /* Reduced from 32px */
-  height: 30px;  /* Reduced from 32px */
+  width: 28px;  /* Reduced from 30px for more compact look */
+  height: 28px;  /* Reduced from 30px for more compact look */
   border-radius: 50%;
   background: var(--bg-secondary);
   display: flex;
@@ -2481,15 +2481,15 @@ html:not([data-theme]) .post-actions {
   justify-content: center;
   font-weight: 500;
   color: var(--text-main);
-  font-size: 12px;
+  font-size: 11px;  /* Reduced from 12px */
   overflow: hidden;
   transition: opacity 0.2s;
   align-self: flex-start;
 }
 
 .reply .comment-avatar {
-  width: 26px;  /* Reduced from 28px */
-  height: 26px;  /* Reduced from 28px */
+  width: 22px;  /* Reduced from 26px for clearer hierarchy */
+  height: 22px;  /* Reduced from 26px for clearer hierarchy */
 }
 
 .comment-avatar:hover {
