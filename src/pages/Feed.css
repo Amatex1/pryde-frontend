@@ -4006,12 +4006,14 @@ html:not([data-theme]) .post-actions {
 
 .post-actions-bar {
   display: flex;
-  justify-content: flex-start; /* Align buttons to start */
+  flex-direction: row;
+  flex-wrap: wrap; /* Allow wrapping to multiple rows */
+  justify-content: flex-end; /* Align buttons to the right */
   align-items: center;
+  align-content: stretch;
   gap: 8px; /* Tight spacing between buttons */
   margin-top: 1rem;
-  flex-wrap: nowrap; /* Keep all buttons on one line */
-  overflow-x: auto; /* Allow horizontal scroll if needed */
+  overflow-x: auto;
   opacity: 0.85; /* Soften tool row - available, not featured */
 }
 
@@ -4314,10 +4316,11 @@ label.btn-media-upload:disabled {
 
 @media (max-width: 768px) {
   .post-actions-bar {
-    flex-wrap: nowrap; /* Keep on one line */
+    flex-wrap: wrap; /* Allow wrapping on mobile too */
+    justify-content: flex-end; /* Align to right */
     gap: 6px;
-    overflow-x: auto; /* Allow scroll if needed */
-    padding-bottom: 4px; /* Space for scrollbar */
+    overflow-x: auto;
+    padding-bottom: 4px;
   }
 
   /* All buttons same height on mobile */

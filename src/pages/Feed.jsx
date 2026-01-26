@@ -2225,9 +2225,6 @@ function Feed() {
                 )}
 
                 {/* PHASE 1 REFACTOR: Simplified privacy options - always visible */}
-                <label htmlFor="post-privacy-selector" style={{ display: 'none' }}>
-                  Post Privacy
-                </label>
                 <select
                   id="post-privacy-selector"
                   name="postPrivacy"
