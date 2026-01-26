@@ -124,3 +124,25 @@
   display: none;
 }
 
+/* ===============================
+   MOBILE FEED LAYOUT OVERRIDE
+   =============================== */
+
+@media (max-width: 600px) {
+  .page-container,
+  .page-layout,
+  .page-viewport {
+    max-width: 100%;
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /* Feed-specific safety */
+  .feed-page {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
