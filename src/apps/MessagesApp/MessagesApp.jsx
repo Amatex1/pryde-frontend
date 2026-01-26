@@ -74,6 +74,8 @@ export default function MessagesApp() {
     mutedConversations,
     setMutedConversations,
     fetchConversations,
+    lastReadMessageIds,
+    updateLastReadMessageId,
   } = useConversations({ authReady, currentUser });
 
   // Messages
@@ -426,6 +428,17 @@ export default function MessagesApp() {
     }
   };
 
+  // Update last read message ID (for unread divider)
+  const handleUpdateLastRead = async (messageId) => {
+    if (!selectedChat || !messageId) return;
+    try {
+      await api.put(`/messages/conversations/${selectedChat}/last-read`, { messageId });
+      updateLastReadMessageId(selectedChat, messageId);
+    } catch (error) {
+      logger.error('Error updating last read message:', error);
+    }
+  };
+
   // Message actions
   const handleEditMessage = (messageId, content) => {
     setEditingMessageId(messageId);
@@ -620,6 +633,8 @@ export default function MessagesApp() {
           onBack={handleBackToThreads}
           onMute={handleMuteConversation}
           onUnmute={handleUnmuteConversation}
+          lastReadMessageId={selectedChat ? lastReadMessageIds[selectedChat] : null}
+          onUpdateLastRead={handleUpdateLastRead}
           // Composer props
           message={message}
           onMessageChange={handleTyping}

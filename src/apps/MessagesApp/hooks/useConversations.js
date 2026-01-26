@@ -17,6 +17,8 @@ export function useConversations({ authReady, currentUser }) {
   const [activeTab, setActiveTab] = useState('all');
   const [archivedConversations, setArchivedConversations] = useState([]);
   const [mutedConversations, setMutedConversations] = useState([]);
+  // Track last read message ID per conversation (for unread divider)
+  const [lastReadMessageIds, setLastReadMessageIds] = useState({});
 
   // Debounce conversation filter
   useEffect(() => {
@@ -39,6 +41,16 @@ export function useConversations({ authReady, currentUser }) {
       });
       setConversations(sortedConversations);
       setGroupChats(groupsRes.data);
+
+      // Extract lastReadMessageId per conversation
+      const lastReadMap = {};
+      sortedConversations.forEach(conv => {
+        if (conv._id && conv.lastReadMessageId) {
+          lastReadMap[conv._id] = conv.lastReadMessageId;
+        }
+      });
+      setLastReadMessageIds(lastReadMap);
+
       setLoading(false);
     } catch (error) {
       logger.error('Error fetching conversations:', error);
@@ -76,6 +88,14 @@ export function useConversations({ authReady, currentUser }) {
     });
   }, [conversations, archivedConversations, activeTab, debouncedFilter, currentUser]);
 
+  // Update lastReadMessageId for a specific conversation
+  const updateLastReadMessageId = (conversationId, messageId) => {
+    setLastReadMessageIds(prev => ({
+      ...prev,
+      [conversationId]: messageId
+    }));
+  };
+
   return {
     conversations,
     setConversations,
@@ -92,6 +112,8 @@ export function useConversations({ authReady, currentUser }) {
     mutedConversations,
     setMutedConversations,
     fetchConversations,
+    lastReadMessageIds,
+    updateLastReadMessageId,
   };
 }
 

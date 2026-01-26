@@ -7,6 +7,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../../../utils/imageUrl';
 import { getDisplayName, getDisplayNameInitial } from '../../../utils/getDisplayName';
+import SharedMedia from './SharedMedia';
 
 export default function InfoPanel({
   selectedChat,
@@ -76,6 +77,9 @@ export default function InfoPanel({
               </button>
             </div>
           )}
+
+          {/* Shared Media Section */}
+          <SharedMedia userId={selectedChat} />
         </>
       ) : (
         <div className="info-empty-state" />

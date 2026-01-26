@@ -31,6 +31,8 @@ export default function ChatColumn({
   onBack,
   onMute,
   onUnmute,
+  lastReadMessageId,
+  onUpdateLastRead,
   message,
   onMessageChange,
   onSendMessage,
@@ -130,6 +132,8 @@ export default function ChatColumn({
         onScroll={onScroll}
         showNewMessageIndicator={showNewMessageIndicator}
         onDismissIndicator={onDismissIndicator}
+        lastReadMessageId={lastReadMessageId}
+        onUpdateLastRead={onUpdateLastRead}
         editingMessageId={editingMessageId}
         editMessageText={editMessageText}
         onEditMessageTextChange={onEditMessageTextChange}

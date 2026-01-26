@@ -23,6 +23,8 @@ export default function MessageList({
   onScroll,
   showNewMessageIndicator,
   onDismissIndicator,
+  lastReadMessageId,
+  onUpdateLastRead,
   editingMessageId,
   editMessageText,
   onEditMessageTextChange,
@@ -36,6 +38,14 @@ export default function MessageList({
   onEdit,
   onDelete,
 }) {
+  // Find the index of the last read message (for unread divider positioning)
+  const lastReadIndex = React.useMemo(() => {
+    if (!lastReadMessageId || !messages.length) return -1;
+    return messages.findIndex(msg => msg._id === lastReadMessageId);
+  }, [lastReadMessageId, messages]);
+
+  // Check if we should show the unread divider (only if there are unread messages)
+  const showUnreadDivider = lastReadIndex >= 0 && lastReadIndex < messages.length - 1;
   return (
     <div className="messages-app__messages-scroll" ref={chatContainerRef} onScroll={onScroll}>
       {selectedChat ? (
@@ -70,9 +80,12 @@ export default function MessageList({
                       const isLast = msgIndex === group.messages.length - 1;
                       const isSingle = group.messages.length === 1;
                       const bubblePosition = isSingle ? 'single' : isFirst ? 'first' : isLast ? 'last' : 'middle';
+                      // Show unread divider after the last-read message
+                      const showDividerAfter = showUnreadDivider && msg._id === lastReadMessageId;
                       return (
-                        <div key={msg._id} className={`message-group ${group.isCurrentUser ? 'sent' : 'received'}`} data-position={bubblePosition}>
-                          <div className="message-content">
+                        <React.Fragment key={msg._id}>
+                          <div className={`message-group ${group.isCurrentUser ? 'sent' : 'received'}`} data-position={bubblePosition}>
+                            <div className="message-content">
                             {msg.isDeleted ? (
                               <div className="message-bubble message-deleted">
                                 <span className="deleted-icon">🗑️</span>
@@ -134,8 +147,17 @@ export default function MessageList({
                                 </div>
                               </>
                             )}
+                            </div>
                           </div>
-                        </div>
+                          {/* Unread Divider */}
+                          {showDividerAfter && (
+                            <div className="unread-divider">
+                              <span className="unread-divider__line" />
+                              <span className="unread-divider__label">Unread messages</span>
+                              <span className="unread-divider__line" />
+                            </div>
+                          )}
+                        </React.Fragment>
                       );
                     })}
                   </div>
