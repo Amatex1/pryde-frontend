@@ -186,6 +186,8 @@ export function AuthProvider({ children }) {
         } else {
           // No valid refresh token - user is truly unauthenticated
           logger.debug('[AuthContext] No valid session - marking unauthenticated');
+          // 🔍 PROD DEBUG: Always log this for debugging cookie/logout issues
+          console.warn('[AuthContext] 🚪 Silent refresh failed - setting UNAUTHENTICATED');
           setUser(null);
           setAuthStatus(AUTH_STATES.UNAUTHENTICATED);
           markAuthStatusUnauthenticated();

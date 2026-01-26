@@ -208,6 +208,9 @@ const PageLoader = () => {
 function PrivateRoute({ children }) {
   const { authStatus } = useAuth();
 
+  // 🔍 PROD DEBUG: Always log auth status for debugging
+  console.log('[PrivateRoute] authStatus:', authStatus);
+
   // Show loading while auth is being verified
   if (authStatus === AUTH_STATES.LOADING) {
     return <PageLoader />;
@@ -215,6 +218,7 @@ function PrivateRoute({ children }) {
 
   // Redirect to login if not authenticated
   if (authStatus === AUTH_STATES.UNAUTHENTICATED) {
+    console.warn('[PrivateRoute] 🚪 Redirecting to /login - authStatus is UNAUTHENTICATED');
     return <Navigate to="/login" />;
   }
 
