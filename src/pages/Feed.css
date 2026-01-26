@@ -3815,7 +3815,7 @@ html:not([data-theme]) .post-actions {
   .post-card {
     padding: var(--space-3); /* 12px on mobile - tighter than desktop 16px */
     margin-bottom: var(--space-4); /* 16px on mobile */
-    border-radius: var(--radius-md, 12px); /* Slightly smaller radius on mobile */
+    /* border-radius handled by edge-to-edge rules in mobile-brand.css */
   }
 }
 

@@ -108,12 +108,13 @@
   }
 
   /* Mobile-friendly cards - compact, stackable design */
+  /* NOTE: .post-card border-radius overridden at ≤600px in mobile-brand.css (edge-to-edge) */
   .post-card,
   .create-post,
   .profile-card,
   .notification-card,
   .event-card {
-    border-radius: 10px !important; /* Soft corners */
+    border-radius: 10px; /* Soft corners - post-card uses !important override at 600px */
     padding: 10px 12px !important; /* More compact for mobile */
     margin-bottom: 8px !important; /* Tighter spacing */
   }

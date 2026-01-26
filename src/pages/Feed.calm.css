@@ -1060,7 +1060,7 @@ textarea[name="newPost"]:focus {
 
   .post-card {
     padding: 1rem 1.25rem !important; /* 16px vertical, 20px horizontal */
-    border-radius: 12px !important; /* Rounded corners on mobile */
+    border-radius: 12px; /* Rounded corners on mobile - overridden at 600px by edge-to-edge */
     background: var(--color-surface) !important; /* Solid background */
     border: var(--border-post) !important; /* THE ONE TRUE BORDER */
     box-shadow: none !important; /* No shadow */
@@ -1271,3 +1271,14 @@ textarea[name="newPost"]:focus,
   color: var(--text-primary);
 }
 
+/* ════════════════════════════════════════
+   EDGE-TO-EDGE (≤600px)
+   Post cards flush to screen edges
+   ════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .post-card {
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+  }
+}
