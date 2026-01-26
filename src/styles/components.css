@@ -713,9 +713,57 @@ body[data-density="cozy"] .comment-row {
   }
 }
 
-/* Mobile-safe indent */
-@media (max-width: 480px) {
+/* ===============================
+   MOBILE FEED EDGE-TO-EDGE FIX
+   =============================== */
+
+@media (max-width: 600px) {
+  /* 1️⃣ Post cards go edge-to-edge */
+  .post-card {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  .feed,
+  .feed-content,
+  .post-list {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Optional: keep subtle inner spacing */
+  .post-content {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  /* ===============================
+     COMMENT / REPLY TEXT FIX
+     =============================== */
+
+  .comment-bubble {
+    max-width: 100% !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    hyphens: none !important;
+  }
+
+  .comment-text {
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+  }
+
+  /* 2️⃣ Replies still indented, but not crushed */
   .comment-row.reply {
-    padding-left: 24px !important;
+    padding-left: 20px !important;
+  }
+
+  /* 3️⃣ Prevent ultra-narrow lanes */
+  .comment-lane {
+    min-width: 0;
+    max-width: 100%;
   }
 }
