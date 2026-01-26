@@ -204,3 +204,100 @@
     );
   }
 }
+/* =====================================
+   COLUMN SLIDE TRANSITIONS (MOBILE)
+===================================== */
+
+@media (max-width: 768px) {
+  .messages-app__threads,
+  .messages-app__chat {
+    transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+                opacity 180ms ease;
+    will-change: transform;
+  }
+
+  /* Threads visible */
+  .messages-app[data-view="threads"] .messages-app__threads {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .messages-app[data-view="threads"] .messages-app__chat {
+    transform: translateX(100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Chat visible */
+  .messages-app[data-view="chat"] .messages-app__threads {
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .messages-app[data-view="chat"] .messages-app__chat {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+/* =====================================
+   STICKY DATE SEPARATORS
+===================================== */
+
+.message-date-group {
+  position: relative;
+}
+
+.message-date-sticky {
+  position: sticky;
+  top: 8px;
+  z-index: 3;
+
+  margin: 16px auto 24px;
+  padding: 6px 12px;
+
+  width: fit-content;
+  max-width: 90%;
+
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+  border-radius: 999px;
+
+  opacity: 0.85;
+  backdrop-filter: blur(6px);
+}
+/* =====================================
+   MESSAGE DENSITY MODES
+===================================== */
+
+/* DEFAULT (COZY) */
+.messages-app {
+  --msg-gap: 12px;
+  --msg-padding: 10px 14px;
+  --msg-font-size: 0.95rem;
+}
+
+/* COMPACT */
+.messages-app[data-density="compact"] {
+  --msg-gap: 6px;
+  --msg-padding: 6px 10px;
+  --msg-font-size: 0.875rem;
+}
+
+/* Apply to bubbles */
+.message-bubble {
+  margin-bottom: var(--msg-gap);
+  padding: var(--msg-padding);
+  font-size: var(--msg-font-size);
+  line-height: 1.35;
+}
+
+/* Avatar tightening */
+.messages-app[data-density="compact"] .message-avatar {
+  width: 28px;
+  height: 28px;
+}
