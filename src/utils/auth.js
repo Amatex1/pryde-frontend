@@ -127,7 +127,9 @@ export const logout = async () => {
   console.log('🚪 Starting logout process...');
 
   // Set flag to indicate manual logout (not session expiration)
-  sessionStorage.setItem('manualLogout', 'true');
+  // 🔧 FIX: Use localStorage instead of sessionStorage so it persists across page loads
+  // sessionStorage.clear() was wiping this flag before the redirect completed
+  localStorage.setItem('manualLogout', 'true');
 
   // 🔥 STEP 0: Broadcast logout to other tabs
   try {
@@ -186,22 +188,26 @@ export const logout = async () => {
     console.debug('Auth lifecycle cleanup skipped');
   }
 
-  // 🔥 STEP 6: Clear all local auth state BEFORE backend call
+  // 🔧 FIX: Call backend logout BEFORE clearing local tokens
+  // The backend needs the auth token to identify the session to invalidate
+  // and to clear the httpOnly refresh token cookie
+  // 🔥 STEP 6: Call backend logout endpoint (MUST happen before clearing tokens)
+  try {
+    const { default: api } = await import('./api');
+    await api.post('/auth/logout').catch((err) => {
+      // Log the error but continue - we'll still clear local state
+      console.warn('Backend logout request failed:', err.message);
+    });
+    console.log('✅ Backend logout called (cookie should be cleared)');
+  } catch (error) {
+    // Silently fail - we'll still clear local state
+    console.debug('Backend logout skipped');
+  }
+
+  // 🔥 STEP 7: Clear all local auth state AFTER backend call
   clearAllTokens(); // Clears in-memory and localStorage tokens
   localStorage.removeItem('user');
   console.log('✅ Local auth state cleared');
-
-  // 🔥 STEP 7: Call backend logout endpoint (best effort)
-  try {
-    const { default: api } = await import('./api');
-    await api.post('/auth/logout').catch(() => {
-      // Silently fail - we've already cleared local state
-    });
-    console.log('✅ Backend logout called');
-  } catch (error) {
-    // Silently fail - we've already cleared local state
-    console.debug('Backend logout skipped');
-  }
 
   // 🔥 STEP 8: Clear all caches
   try {
@@ -246,11 +252,13 @@ export const logout = async () => {
 };
 
 export const isManualLogout = () => {
-  return sessionStorage.getItem('manualLogout') === 'true';
+  // 🔧 FIX: Use localStorage to persist across page loads
+  return localStorage.getItem('manualLogout') === 'true';
 };
 
 export const clearManualLogoutFlag = () => {
-  sessionStorage.removeItem('manualLogout');
+  // 🔧 FIX: Use localStorage to match setItem
+  localStorage.removeItem('manualLogout');
 };
 
 export const getIsLoggingOut = () => {
