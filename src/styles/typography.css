@@ -9,8 +9,9 @@
    ======================================== */
 
 :root {
-  /* Font family */
+  /* Font families */
   --font-ui: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-brand: "IBM Plex Sans", "Inter", system-ui, sans-serif;
 
   /* Font sizes */
   --text-xs: 0.75rem;   /* 12px */
@@ -34,6 +35,11 @@
   --lh-tight: 1.25;
   --lh-normal: 1.5;
   --lh-relaxed: 1.65;
+
+  /* Text density (user-selectable) */
+  --density-body: var(--text-base);
+  --density-line: var(--lh-relaxed);
+  --density-meta: var(--text-sm);
 }
 
 /* ========================================
@@ -64,6 +70,18 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0;
 }
 
+/* Brand headers (h1, h2) use IBM Plex Sans */
+h1,
+h2 {
+  font-family: var(--font-brand);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.015em;
+  transition:
+    font-weight 180ms ease,
+    letter-spacing 180ms ease,
+    transform 180ms ease;
+}
+
 h1 { font-size: var(--text-3xl); font-weight: var(--weight-bold); }
 h2 { font-size: var(--text-2xl); }
 h3 { font-size: var(--text-xl); }
@@ -71,23 +89,33 @@ h4 { font-size: var(--text-lg); }
 h5 { font-size: var(--text-base); }
 h6 { font-size: var(--text-sm); }
 
+/* Subtle hover animation (non-intrusive) */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  h1:hover,
+  h2:hover {
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.02em;
+  }
+}
+
 /* ========================================
    UI & FEED TEXT NORMALISATION
+   Uses density tokens for user-selectable text size
    ======================================== */
 
 p,
 .post-content,
 .comment-content,
 .message-text {
-  font-size: var(--text-base);
-  line-height: var(--lh-relaxed);
+  font-size: var(--density-body);
+  line-height: var(--density-line);
 }
 
 .secondary-text,
 .meta-text,
 .timestamp,
 .post-meta {
-  font-size: var(--text-sm);
+  font-size: var(--density-meta);
   font-weight: var(--weight-regular);
   opacity: 0.8;
 }
@@ -125,6 +153,37 @@ select {
 .quiet-mode h2,
 .quiet-mode h3 {
   font-weight: var(--weight-medium);
+}
+
+/* Disable hover polish in quiet mode */
+.quiet-mode h1,
+.quiet-mode h2 {
+  transition: none;
+}
+
+/* ========================================
+   TEXT DENSITY MODES (USER-SELECTABLE)
+   ======================================== */
+
+/* Compact mode - tighter spacing */
+body[data-density="compact"] {
+  --density-body: 0.9375rem;   /* 15px */
+  --density-line: 1.45;
+  --density-meta: 0.8125rem;  /* 13px */
+}
+
+/* Cozy mode - default comfortable spacing */
+body[data-density="cozy"] {
+  --density-body: var(--text-base);
+  --density-line: var(--lh-relaxed);
+  --density-meta: var(--text-sm);
+}
+
+/* Safe default (if attribute not set) */
+body:not([data-density]) {
+  --density-body: var(--text-base);
+  --density-line: var(--lh-relaxed);
+  --density-meta: var(--text-sm);
 }
 
 /* ========================================

@@ -3,8 +3,9 @@
    Import order: Tokens �+' Layout �+' Components �+' Pages
    ======================================== */
 
-/* GLOBAL FONT: Inter */
+/* GLOBAL FONTS: Inter (UI) + IBM Plex Sans (Brand Headers) */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
 /* FOUNDATION: Design tokens (colors, spacing, typography) */
 @import './styles/tokens.css';              /* NEW: Platform-grade design tokens */
