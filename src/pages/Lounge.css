@@ -189,6 +189,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  /* Position relative for absolute positioning of 3-dot menu */
+  position: relative;
 }
 
 .lounge-message-header {
@@ -273,12 +275,14 @@
    LOUNGE 3-DOT MENU
    ======================================== */
 
+/* Position 3-dot menu at top-right of message content */
 .lounge-message-actions-menu {
-  position: relative;
-  display: inline-block;
-  margin-top: 0.5rem;
+  position: absolute;
+  top: 0;
+  right: 0;
   opacity: 0;
   transition: opacity 0.2s;
+  z-index: 10;
 }
 
 .lounge-message:hover .lounge-message-actions-menu {
@@ -289,8 +293,8 @@
   background: var(--bg-tertiary, rgba(255, 255, 255, 0.1));
   border: none;
   cursor: pointer;
-  font-size: 1.25rem;
-  padding: 0.25rem 0.5rem;
+  font-size: 1.1rem;
+  padding: 0.25rem 0.4rem;
   border-radius: 6px;
   color: var(--text-secondary, #94A3B8);
   transition: all 0.2s ease;
@@ -304,8 +308,8 @@
 
 .lounge-menu-dropdown {
   position: absolute;
-  bottom: 100%;
-  left: 0;
+  top: 100%;
+  right: 0;
   background: var(--bg-card, #1E293B);
   border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
   border-radius: 8px;
@@ -313,6 +317,7 @@
   min-width: 160px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   z-index: 100;
+  margin-top: 4px;
 }
 
 .lounge-menu-dropdown .menu-item {
@@ -342,11 +347,7 @@
   background: rgba(239, 68, 68, 0.1);
 }
 
-/* Own messages - align menu to right */
-.lounge-message.own-message .lounge-menu-dropdown {
-  left: auto;
-  right: 0;
-}
+/* Own messages dropdown already aligned right via default styles */
 
 /* ========================================
    DELETE MODAL (Lounge)
