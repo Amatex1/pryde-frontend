@@ -21,6 +21,7 @@ import PostHeader from '../components/PostHeader';
 import Poll from '../components/Poll';
 import GifPicker from '../components/GifPicker';
 import PollCreator from '../components/PollCreator';
+import DraftManager from '../components/DraftManager';
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
@@ -94,6 +95,9 @@ function Profile() {
   const [showGifPicker, setShowGifPicker] = useState(null); // Track which GIF picker is open (null, 'main-post', 'comment-{postId}', 'reply-{commentId}')
   const [poll, setPoll] = useState(null); // Poll data for new post
   const [showPollCreator, setShowPollCreator] = useState(false); // Show/hide poll creator
+  const [hideMetrics, setHideMetrics] = useState(false); // Hide metrics for new post
+  const [showDraftManager, setShowDraftManager] = useState(false); // Show/hide draft manager
+  const [draftSaveStatus, setDraftSaveStatus] = useState(''); // 'saving', 'saved', or ''
   const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
   const { toasts, showToast, removeToast } = useToast();
   const actionsMenuRef = useRef(null);
@@ -822,7 +826,8 @@ function Profile() {
         visibility: postVisibility,
         contentWarning: contentWarning,
         poll: poll, // Include poll data if present
-        gifUrl: selectedPostGif // Include GIF if selected
+        gifUrl: selectedPostGif, // Include GIF if selected
+        hideMetrics: hideMetrics // Include hideMetrics setting
       };
 
       const response = await api.post('/posts', postData);
@@ -836,6 +841,7 @@ function Profile() {
       setSelectedPostGif(null); // Clear GIF
       setPoll(null); // Clear poll
       setShowPollCreator(false); // Hide poll creator
+      setHideMetrics(false); // Reset hide metrics
       setPostVisibility(defaultPostVisibilityRef.current); // Reset to user's default
       setContentWarning('');
       setShowContentWarning(false);
@@ -2103,6 +2109,17 @@ function Profile() {
                       ⚠️ CW
                     </button>
 
+                    <label className="hide-metrics-checkbox" title="Hide likes, comments, and shares count">
+                      <input
+                        id="profile-hide-metrics-checkbox"
+                        name="hideMetrics"
+                        type="checkbox"
+                        checked={hideMetrics}
+                        onChange={(e) => setHideMetrics(e.target.checked)}
+                      />
+                      <span>🔇 Hide Metrics</span>
+                    </label>
+
                     {/* PHASE 1 REFACTOR: Simplified privacy options */}
                     <select
                       id="profile-post-privacy"
@@ -2110,11 +2127,28 @@ function Profile() {
                       value={postVisibility}
                       onChange={(e) => setPostVisibility(e.target.value)}
                       className="privacy-selector glossy"
+                      aria-label="Select post privacy"
                     >
                       <option value="public">🌍 Public</option>
                       <option value="followers">👥 Connections</option>
                       <option value="private">🔒 Private</option>
                     </select>
+
+                    {/* Draft save status indicator */}
+                    {draftSaveStatus && (
+                      <span className="draft-save-status">
+                        {draftSaveStatus === 'saving' ? '💾 Saving draft...' : '✅ Draft saved'}
+                      </span>
+                    )}
+
+                    <button
+                      type="button"
+                      className="btn-drafts"
+                      onClick={() => setShowDraftManager(true)}
+                      title="View saved drafts"
+                    >
+                      📝 Drafts
+                    </button>
 
                     <button type="submit" disabled={postLoading || uploadingMedia} className="btn-post glossy-gold">
                       {postLoading ? 'Publishing...' : 'Publish ✨'}
@@ -2154,6 +2188,30 @@ function Profile() {
                     />
                   )}
                 </form>
+
+                {/* Draft Manager Modal */}
+                {showDraftManager && (
+                  <div className="modal-overlay" onClick={() => setShowDraftManager(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                      <DraftManager
+                        draftType="post"
+                        onRestoreDraft={(draft) => {
+                          setNewPost(draft.content || '');
+                          setSelectedMedia(draft.media || []);
+                          setPostVisibility(draft.visibility || 'followers');
+                          setContentWarning(draft.contentWarning || '');
+                          setShowContentWarning(!!draft.contentWarning);
+                          setHideMetrics(draft.hideMetrics || false);
+                          setPoll(draft.poll || null);
+                          setShowPollCreator(!!draft.poll);
+                          setSelectedPostGif(draft.gifUrl || null);
+                          setShowDraftManager(false);
+                        }}
+                        onClose={() => setShowDraftManager(false)}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
