@@ -101,6 +101,33 @@ export const initializeTheme = () => {
 };
 
 /**
+ * Initialize text density from localStorage
+ * Called early on app startup to prevent flash of wrong density
+ */
+export const initTextDensity = () => {
+  const savedDensity = localStorage.getItem('textDensity') || 'cozy';
+  document.body.setAttribute('data-density', savedDensity);
+  return savedDensity;
+};
+
+/**
+ * Set text density (compact or cozy)
+ * @param {string} density - 'compact' or 'cozy'
+ */
+export const setTextDensity = (density) => {
+  document.body.setAttribute('data-density', density);
+  localStorage.setItem('textDensity', density);
+};
+
+/**
+ * Get current text density
+ * @returns {string} - Current density value
+ */
+export const getTextDensity = () => {
+  return document.body.getAttribute('data-density') || 'cozy';
+};
+
+/**
  * Set theme (light or dark)
  * @param {string} theme - 'light' or 'dark'
  */

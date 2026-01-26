@@ -7,7 +7,7 @@ import ProfileUrlSetting from '../components/ProfileUrlSetting'; // Custom profi
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
 import { logout, getAuthToken } from '../utils/auth';
-import { setQuietMode, setQuietSubToggle, getQuietSubToggle, setCursorStyle, getCursorStyle, getCursorStyleOptions } from '../utils/themeManager';
+import { setQuietMode, setQuietSubToggle, getQuietSubToggle, setCursorStyle, getCursorStyle, getCursorStyleOptions, setTextDensity, getTextDensity } from '../utils/themeManager';
 import { useAuth } from '../context/AuthContext';
 import logger from '../utils/logger';
 import {
@@ -47,6 +47,8 @@ function Settings() {
   const [hideBadges, setHideBadges] = useState(false);
   // CURSOR CUSTOMIZATION: Optional cursor styles
   const [cursorStyle, setCursorStyleState] = useState('system');
+  // TEXT DENSITY: Compact or Cozy text sizing
+  const [textDensity, setTextDensityState] = useState(() => getTextDensity());
   // IDENTITY: LGBTQ+ or Ally (can be updated after registration)
   const [identity, setIdentity] = useState(null);
   const [identitySaving, setIdentitySaving] = useState(false);
@@ -272,6 +274,26 @@ function Settings() {
       // Revert on error
       setCursorStyleState(previousStyle);
       setCursorStyle(previousStyle);
+    }
+  };
+
+  // TEXT DENSITY: Handle density change
+  const handleDensityChange = async (density) => {
+    const previousDensity = textDensity;
+    try {
+      // Update local state and apply to DOM immediately
+      setTextDensityState(density);
+      setTextDensity(density);
+
+      // Sync with backend
+      await api.patch('/users/me/settings', { textDensity: density });
+      setMessage(density === 'cozy' ? 'Text density: Cozy' : 'Text density: Compact');
+    } catch (error) {
+      logger.error('Failed to update text density:', error);
+      setMessage('Failed to update text density');
+      // Revert on error
+      setTextDensityState(previousDensity);
+      setTextDensity(previousDensity);
     }
   };
 
@@ -771,6 +793,31 @@ function Settings() {
                   </div>
                 </label>
               ))}
+            </div>
+          </div>
+
+          {/* TEXT DENSITY: Compact or Cozy text sizing */}
+          <div className="settings-section">
+            <h2 className="section-title">📝 Text Density</h2>
+            <p className="section-description">
+              Adjust how dense text appears across posts, comments, and messages.
+            </p>
+
+            <div className="density-toggle">
+              <button
+                className={textDensity === 'cozy' ? 'active' : ''}
+                onClick={() => handleDensityChange('cozy')}
+                aria-pressed={textDensity === 'cozy'}
+              >
+                Cozy
+              </button>
+              <button
+                className={textDensity === 'compact' ? 'active' : ''}
+                onClick={() => handleDensityChange('compact')}
+                aria-pressed={textDensity === 'compact'}
+              >
+                Compact
+              </button>
             </div>
           </div>
 

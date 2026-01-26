@@ -28,7 +28,7 @@ import './styles/pwa-native-feel.css'
    No reloads. No recovery logic.
    No service worker control.
    ================================ */
-import { initializeTheme } from './utils/themeManager'
+import { initializeTheme, initTextDensity } from './utils/themeManager'
 import { initWebVitals } from './utils/webVitals'
 
 /* ================================
@@ -65,6 +65,7 @@ console.info('🌐 Environment:', import.meta.env.MODE)
    EARLY SAFE INIT
    ================================ */
 initializeTheme()
+initTextDensity()
 
 /* ================================
    APP BOOT (NO SIDE EFFECTS)

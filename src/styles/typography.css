@@ -233,3 +233,38 @@ body:not([data-density]) {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ========================================
+   TEXT DENSITY TOGGLE UI
+   ======================================== */
+
+.density-toggle {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.density-toggle button {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: var(--text-sm);
+  background: transparent;
+  border: 1px solid currentColor;
+  opacity: 0.7;
+  cursor: pointer;
+  transition: opacity 180ms ease, font-weight 180ms ease;
+}
+
+.density-toggle button.active {
+  opacity: 1;
+  font-weight: var(--weight-medium);
+}
+
+.density-toggle button:hover {
+  opacity: 1;
+}
+
+/* Quiet mode: disable transitions */
+.quiet-mode .density-toggle button {
+  transition: none;
+}
