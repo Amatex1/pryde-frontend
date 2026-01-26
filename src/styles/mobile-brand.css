@@ -145,12 +145,40 @@
   }
 }
 
-/* ════════════════════════════════════════
-   EDGE-TO-EDGE MOBILE (≤600px)
-   Post cards flush to screen edges
-   ════════════════════════════════════════ */
+/* ===============================
+   MOBILE FEED HARD OVERRIDE
+   =============================== */
+
 @media (max-width: 600px) {
+  /* 1️⃣ Kill all width constraints above posts */
+  .feed,
+  .feed-container,
+  .feed-content,
+  .page,
+  .main,
+  .content,
+  .content-wrapper {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* 2️⃣ Ensure post list itself spans screen */
+  .post-list,
+  .posts,
+  .posts-list,
+  .feed-list {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* 3️⃣ Post cards truly edge-to-edge */
   .post-card {
+    width: 100% !important;
+    max-width: 100% !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
     border-radius: 0 !important;
@@ -158,19 +186,9 @@
     border-right: none !important;
   }
 
-  .feed,
-  .feed-main,
-  .feed-content,
-  .post-list,
-  .posts-list {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-
-  /* Keep subtle inner spacing for content */
+  /* 4️⃣ Keep subtle inner spacing for content */
   .post-content {
     padding-left: 12px;
     padding-right: 12px;
   }
 }
-
