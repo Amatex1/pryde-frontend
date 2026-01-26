@@ -111,21 +111,21 @@ export function AuthProvider({ children }) {
    */
   const attemptSilentRefresh = useCallback(async () => {
     try {
-      console.warn('[AuthContext] 🔄 Attempting silent token refresh via global single-flight...');
+      logger.debug('[AuthContext] 🔄 Attempting silent token refresh via global single-flight...');
 
       // 🔐 CRITICAL: Use global single-flight refresh to prevent race conditions
       const accessToken = await refreshAccessToken();
 
       if (accessToken) {
-        console.warn('[AuthContext] ✅ Silent refresh succeeded - got new token');
+        logger.debug('[AuthContext] ✅ Silent refresh succeeded');
         return true;
       }
 
-      console.warn('[AuthContext] ❌ Silent refresh returned null - no valid session');
+      logger.debug('[AuthContext] ❌ Silent refresh returned null - no valid session');
       return false;
     } catch (err) {
       // Expected to fail if no valid session exists (no cookie, user logged out, etc.)
-      console.warn('[AuthContext] ❌ Silent refresh threw error:', err.message);
+      logger.debug('[AuthContext] ❌ Silent refresh threw error:', err.message);
       return false;
     }
   }, []);
@@ -176,43 +176,27 @@ export function AuthProvider({ children }) {
           return { authenticated: false };
         }
 
-        console.warn('[AuthContext] 🔄 No access token - attempting silent refresh...');
+        logger.debug('[AuthContext] No access token - attempting silent refresh...');
         const refreshed = await attemptSilentRefresh();
 
         if (refreshed) {
           // Silent refresh succeeded - we now have a token in memory
           token = getAuthToken();
-          console.warn('[AuthContext] ✅ Session restored via silent refresh');
+          logger.debug('[AuthContext] ✅ Session restored via silent refresh');
         } else {
           // No valid refresh token - user is truly unauthenticated
-          console.warn('[AuthContext] 🚪 Silent refresh failed - setting UNAUTHENTICATED');
+          logger.debug('[AuthContext] 🚪 Silent refresh failed - setting UNAUTHENTICATED');
 
           // 🔥 CRITICAL: Clear ALL cached user data to prevent stale state
           setUser(null);
           setCurrentUser(null); // Clear localStorage user
           clearAllTokens(); // Clear any stale tokens
 
-          // 🔥 EXTRA: Clear any other auth-related localStorage
-          localStorage.removeItem('user');
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          localStorage.removeItem('pryde_auth_token');
-          localStorage.removeItem('pryde_refresh_token');
-          localStorage.removeItem('pryde_user');
-
           setAuthStatus(AUTH_STATES.UNAUTHENTICATED);
           markAuthStatusUnauthenticated();
           markAuthReady();
           sessionStorage.setItem('authReady', 'true');
           setIsAuthReady(true); // 🔐 Auth resolution complete
-
-          console.warn('[AuthContext] 🚪 Auth state after setting UNAUTHENTICATED:', {
-            authStatus: AUTH_STATES.UNAUTHENTICATED,
-            user: null,
-            isAuthReady: true,
-            localStorage_user: localStorage.getItem('user'),
-            localStorage_token: localStorage.getItem('token')
-          });
 
           return { authenticated: false };
         }

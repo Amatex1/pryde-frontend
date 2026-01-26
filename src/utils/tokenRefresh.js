@@ -68,7 +68,6 @@ export async function refreshAccessToken({ force = false } = {}) {
       logger.debug('[TokenRefresh] 🔄 Starting token refresh via httpOnly cookie...');
 
       // 🔐 SECURITY: Call /refresh with NO body - httpOnly cookie is sole source
-      console.warn('[TokenRefresh] 🔄 Calling /refresh endpoint...');
       const response = await fetch(`${API_AUTH_URL}/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -76,23 +75,21 @@ export async function refreshAccessToken({ force = false } = {}) {
         body: JSON.stringify({})
       });
 
-      console.warn('[TokenRefresh] 📥 Response status:', response.status);
-
       if (!response.ok) {
         const errorText = await response.text().catch(() => 'Unknown error');
-        console.warn(`[TokenRefresh] ❌ Failed: ${response.status} - ${errorText}`);
+        logger.warn(`[TokenRefresh] ❌ Failed: ${response.status} - ${errorText}`);
         return null;
       }
 
       const data = await response.json();
 
       if (data.accessToken) {
-        console.warn('[TokenRefresh] ✅ Token refreshed successfully');
+        logger.debug('[TokenRefresh] ✅ Token refreshed successfully');
         setAuthToken(data.accessToken);
         return data.accessToken;
       }
 
-      console.warn('[TokenRefresh] ⚠️ No accessToken in response');
+      logger.warn('[TokenRefresh] ⚠️ No accessToken in response');
       return null;
     } catch (error) {
       logger.error('[TokenRefresh] ❌ Error:', error.message);
