@@ -100,25 +100,26 @@ const CommentThread = ({
           </div>
         ) : (
           <>
-            {/* Avatar + Bubble container */}
-            <div className="comment-bubble-row">
-              <Link
-                to={`/profile/${comment.authorId?.username}`}
-                className="comment-avatar"
-                style={{ textDecoration: 'none' }}
-                aria-label={`View ${comment.authorId?.displayName || comment.authorId?.username}'s profile`}
-              >
-                {comment.authorId?.profilePhoto ? (
-                  <OptimizedImage
-                    src={getImageUrl(comment.authorId.profilePhoto)}
-                    alt={comment.authorId.username}
-                    className="avatar-image"
-                  />
-                ) : (
-                  <span>{comment.authorId?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                )}
-              </Link>
+            {/* Avatar */}
+            <Link
+              to={`/profile/${comment.authorId?.username}`}
+              className="comment-avatar"
+              style={{ textDecoration: 'none' }}
+              aria-label={`View ${comment.authorId?.displayName || comment.authorId?.username}'s profile`}
+            >
+              {comment.authorId?.profilePhoto ? (
+                <OptimizedImage
+                  src={getImageUrl(comment.authorId.profilePhoto)}
+                  alt={comment.authorId.username}
+                  className="avatar-image"
+                />
+              ) : (
+                <span>{comment.authorId?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
+              )}
+            </Link>
 
+            {/* Main content column */}
+            <div className="comment-main">
               <div className="comment-bubble">
                 <Link
                   to={`/profile/${comment.authorId?.username}`}
@@ -165,89 +166,85 @@ const CommentThread = ({
                 )}
               </div>
 
-              {/* 3-dot menu outside bubble */}
-              <div className="comment-menu-container" ref={menuRef}>
+              {/* Inline actions (Facebook-style) */}
+              <div className="comment-actions">
+                <ReactionButton
+                  targetType="comment"
+                  targetId={comment._id}
+                  currentUserId={currentUser?.id}
+                  onCountClick={() => setReactionDetailsModal({
+                    isOpen: true,
+                    targetType: 'comment',
+                    targetId: comment._id
+                  })}
+                />
                 <button
-                  className="comment-menu-btn"
-                  onClick={() => setOpenMenuId(openMenuId === comment._id ? null : comment._id)}
-                  aria-label="Comment options"
+                  className="comment-action-btn"
+                  onClick={() => handleReplyToComment(postId, comment._id)}
                 >
-                  <svg viewBox="0 0 16 16" fill="currentColor">
-                    <circle cx="8" cy="3" r="1.5" />
-                    <circle cx="8" cy="8" r="1.5" />
-                    <circle cx="8" cy="13" r="1.5" />
-                  </svg>
+                  Reply
                 </button>
-                {openMenuId === comment._id && (
-                  <div className="comment-menu">
-                    {isOwnComment ? (
-                      <>
-                        <button
-                          onClick={() => {
-                            handleEditComment(comment._id, comment.content);
-                            setOpenMenuId(null);
-                          }}
-                        >
-                          ✏️ Edit
-                        </button>
-                        <button
-                          className="delete"
-                          onClick={() => {
-                            handleDeleteComment(postId, comment._id, false);
-                            setOpenMenuId(null);
-                          }}
-                        >
-                          🗑️ Delete
-                        </button>
-                      </>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          setReportModal({ isOpen: true, type: 'comment', contentId: comment._id, userId: comment.authorId?._id });
-                          setOpenMenuId(null);
-                        }}
-                      >
-                        🚩 Report
-                      </button>
-                    )}
-                  </div>
+                <span className="comment-time">
+                  {new Date(comment.createdAt).toLocaleString()}
+                  {comment.isEdited && <span className="edited-indicator"> (edited)</span>}
+                </span>
+                {comment.replyCount > 0 && (
+                  <button
+                    className="comment-action-btn view-replies-btn"
+                    onClick={() => toggleReplies(comment._id)}
+                  >
+                    {showReplies[comment._id] ? '▲' : '▼'} {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}
+                  </button>
                 )}
               </div>
             </div>
 
-            {/* Timestamp below bubble */}
-            <div className="comment-meta">
-              <span className="comment-timestamp">
-                {new Date(comment.createdAt).toLocaleString()}
-                {comment.isEdited && <span className="edited-indicator"> (edited)</span>}
-              </span>
-            </div>
-
-            {/* Actions below bubble (not inside) */}
-            <div className="comment-actions">
-              <ReactionButton
-                targetType="comment"
-                targetId={comment._id}
-                currentUserId={currentUser?.id}
-                onCountClick={() => setReactionDetailsModal({
-                  isOpen: true,
-                  targetType: 'comment',
-                  targetId: comment._id
-                })}
-              />
+            {/* 3-dot menu */}
+            <div className="comment-menu-container" ref={menuRef}>
               <button
-                className="comment-action-btn"
-                onClick={() => handleReplyToComment(postId, comment._id)}
+                className="comment-menu-btn"
+                onClick={() => setOpenMenuId(openMenuId === comment._id ? null : comment._id)}
+                aria-label="Comment options"
               >
-                💬 Reply
+                <svg viewBox="0 0 16 16" fill="currentColor">
+                  <circle cx="8" cy="3" r="1.5" />
+                  <circle cx="8" cy="8" r="1.5" />
+                  <circle cx="8" cy="13" r="1.5" />
+                </svg>
               </button>
-              {comment.replyCount > 0 && (
-                <button
-                  className="comment-action-btn view-replies-btn"
-                  onClick={() => toggleReplies(comment._id)}
-                >
-                  {showReplies[comment._id] ? '▲' : '▼'} View {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}
-                </button>
+              {openMenuId === comment._id && (
+                <div className="comment-menu">
+                  {isOwnComment ? (
+                    <>
+                      <button
+                        onClick={() => {
+                          handleEditComment(comment._id, comment.content);
+                          setOpenMenuId(null);
+                        }}
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button
+                        className="delete"
+                        onClick={() => {
+                          handleDeleteComment(postId, comment._id, false);
+                          setOpenMenuId(null);
+                        }}
+                      >
+                        🗑️ Delete
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setReportModal({ isOpen: true, type: 'comment', contentId: comment._id, userId: comment.authorId?._id });
+                        setOpenMenuId(null);
+                      }}
+                    >
+                      🚩 Report
+                    </button>
+                  )}
+                </div>
               )}
             </div>
           </>
@@ -274,25 +271,26 @@ const CommentThread = ({
                   </div>
                 ) : (
                   <>
-                    {/* Avatar + Bubble container */}
-                    <div className="comment-bubble-row">
-                      <Link
-                        to={`/profile/${reply.authorId?.username}`}
-                        className="comment-avatar"
-                        style={{ textDecoration: 'none' }}
-                        aria-label={`View ${reply.authorId?.displayName || reply.authorId?.username}'s profile`}
-                      >
-                        {reply.authorId?.profilePhoto ? (
-                          <OptimizedImage
-                            src={getImageUrl(reply.authorId.profilePhoto)}
-                            alt={reply.authorId.username}
-                            className="avatar-image"
-                          />
-                        ) : (
-                          <span>{reply.authorId?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                        )}
-                      </Link>
+                    {/* Avatar */}
+                    <Link
+                      to={`/profile/${reply.authorId?.username}`}
+                      className="comment-avatar"
+                      style={{ textDecoration: 'none' }}
+                      aria-label={`View ${reply.authorId?.displayName || reply.authorId?.username}'s profile`}
+                    >
+                      {reply.authorId?.profilePhoto ? (
+                        <OptimizedImage
+                          src={getImageUrl(reply.authorId.profilePhoto)}
+                          alt={reply.authorId.username}
+                          className="avatar-image"
+                        />
+                      ) : (
+                        <span>{reply.authorId?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
+                      )}
+                    </Link>
 
+                    {/* Main content column */}
+                    <div className="comment-main">
                       <div className="comment-bubble">
                         <Link
                           to={`/profile/${reply.authorId?.username}`}
@@ -339,82 +337,78 @@ const CommentThread = ({
                         )}
                       </div>
 
-                      {/* 3-dot menu outside bubble */}
-                      <div className="comment-menu-container" ref={menuRef}>
+                      {/* Inline actions (Facebook-style) */}
+                      <div className="comment-actions">
+                        <ReactionButton
+                          targetType="comment"
+                          targetId={reply._id}
+                          currentUserId={currentUser?.id}
+                          onCountClick={() => setReactionDetailsModal({
+                            isOpen: true,
+                            targetType: 'comment',
+                            targetId: reply._id
+                          })}
+                        />
                         <button
-                          className="comment-menu-btn"
-                          onClick={() => setOpenMenuId(openMenuId === reply._id ? null : reply._id)}
-                          aria-label="Reply options"
+                          className="comment-action-btn reply-btn"
+                          onClick={() => handleReplyToComment(postId, comment._id)}
                         >
-                          <svg viewBox="0 0 16 16" fill="currentColor">
-                            <circle cx="8" cy="3" r="1.5" />
-                            <circle cx="8" cy="8" r="1.5" />
-                            <circle cx="8" cy="13" r="1.5" />
-                          </svg>
+                          Reply
                         </button>
-                        {openMenuId === reply._id && (
-                          <div className="comment-menu">
-                            {isOwnReply ? (
-                              <>
-                                <button
-                                  onClick={() => {
-                                    handleEditComment(reply._id, reply.content);
-                                    setOpenMenuId(null);
-                                  }}
-                                >
-                                  ✏️ Edit
-                                </button>
-                                <button
-                                  className="delete"
-                                  onClick={() => {
-                                    handleDeleteComment(postId, reply._id, true);
-                                    setOpenMenuId(null);
-                                  }}
-                                >
-                                  🗑️ Delete
-                                </button>
-                              </>
-                            ) : (
-                              <button
-                                onClick={() => {
-                                  setReportModal({ isOpen: true, type: 'comment', contentId: reply._id, userId: reply.authorId?._id });
-                                  setOpenMenuId(null);
-                                }}
-                              >
-                                🚩 Report
-                              </button>
-                            )}
-                          </div>
-                        )}
+                        <span className="comment-time">
+                          {new Date(reply.createdAt).toLocaleString()}
+                          {reply.isEdited && <span className="edited-indicator"> (edited)</span>}
+                        </span>
                       </div>
                     </div>
 
-                    {/* Timestamp below bubble */}
-                    <div className="comment-meta">
-                      <span className="comment-timestamp">
-                        {new Date(reply.createdAt).toLocaleString()}
-                        {reply.isEdited && <span className="edited-indicator"> (edited)</span>}
-                      </span>
-                    </div>
-
-                    {/* Actions below bubble (not inside) */}
-                    <div className="comment-actions">
-                      <ReactionButton
-                        targetType="comment"
-                        targetId={reply._id}
-                        currentUserId={currentUser?.id}
-                        onCountClick={() => setReactionDetailsModal({
-                          isOpen: true,
-                          targetType: 'comment',
-                          targetId: reply._id
-                        })}
-                      />
+                    {/* 3-dot menu */}
+                    <div className="comment-menu-container" ref={menuRef}>
                       <button
-                        className="comment-action-btn reply-btn"
-                        onClick={() => handleReplyToComment(postId, comment._id)}
+                        className="comment-menu-btn"
+                        onClick={() => setOpenMenuId(openMenuId === reply._id ? null : reply._id)}
+                        aria-label="Reply options"
                       >
-                        💬 Reply
+                        <svg viewBox="0 0 16 16" fill="currentColor">
+                          <circle cx="8" cy="3" r="1.5" />
+                          <circle cx="8" cy="8" r="1.5" />
+                          <circle cx="8" cy="13" r="1.5" />
+                        </svg>
                       </button>
+                      {openMenuId === reply._id && (
+                        <div className="comment-menu">
+                          {isOwnReply ? (
+                            <>
+                              <button
+                                onClick={() => {
+                                  handleEditComment(reply._id, reply.content);
+                                  setOpenMenuId(null);
+                                }}
+                              >
+                                ✏️ Edit
+                              </button>
+                              <button
+                                className="delete"
+                                onClick={() => {
+                                  handleDeleteComment(postId, reply._id, true);
+                                  setOpenMenuId(null);
+                                }}
+                              >
+                                🗑️ Delete
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setReportModal({ isOpen: true, type: 'comment', contentId: reply._id, userId: reply.authorId?._id });
+                                setOpenMenuId(null);
+                              }}
+                            >
+                              🚩 Report
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </>
                 )}
