@@ -510,17 +510,47 @@ select:focus,
    🔑 HARD REPLY INDENT FIX — DO NOT REMOVE
    ---------------------------------------- */
 
-/* Ensure rows can actually shift */
+/* ===============================
+   FACEBOOK-LIKE COMMENT LAYOUT
+   =============================== */
+
 .comment-row {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  background: none;
-  border: none;
-  padding: 0;
-  margin: 8px 0;
-  width: 100%;
-  box-sizing: border-box;
+  margin: 6px 0;
+}
+
+.comment-lane {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: auto;
+  max-width: 100%;
+}
+
+.comment-bubble {
+  display: inline-block;
+  width: auto;
+  max-width: 520px;
+  padding: 6px 10px;
+  border-radius: 16px;
+  background: var(--comment-bg, rgba(255,255,255,0.08));
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 600px) {
+  .comment-bubble {
+    max-width: calc(100vw - 96px);
+  }
+}
+
+.comment-author,
+.comment-text {
+  display: inline;
+  line-height: 1.35;
 }
 
 /* ----------------------------------------
@@ -551,38 +581,6 @@ select:focus,
 .comment-row.reply .comment-avatar {
   width: 28px;
   height: 28px;
-  font-size: 12px;
-}
-
-/* ----------------------------------------
-   COMMENT-LANE (keep alignment identical)
-   ---------------------------------------- */
-.comment-lane {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  flex: 1;
-  min-width: 0;
-}
-
-/* ----------------------------------------
-   COMMENT-BUBBLE (inline name + text)
-   ---------------------------------------- */
-.comment-bubble {
-  display: block;
-  max-width: calc(100% - 40px);
-  padding: 8px 12px;
-  border-radius: 18px;
-  word-wrap: break-word;
-}
-
-/* Name and text flow inline (Facebook-style) */
-.comment-bubble .comment-author {
-  display: inline;
-}
-
-.comment-bubble .comment-text {
-  display: inline;
 }
 
 /* ----------------------------------------
@@ -605,22 +603,19 @@ select:focus,
 
 .comment-text {
   display: inline;
-  line-height: var(--density-line, 1.5);
+  line-height: 1.35;
 }
 
 /* ----------------------------------------
-   COMMENT-ACTIONS (ANCHOR RULE - CRITICAL)
-   - MUST visually align under bubble start
-   - MUST NOT align under avatar
-   - MUST NOT float independently
+   COMMENT-ACTIONS (Facebook-style)
    ---------------------------------------- */
 .comment-actions {
-  margin-left: 12px;
+  margin-left: 8px;
   margin-top: 2px;
   display: flex;
-  gap: 10px;
+  gap: 8px;
   font-size: 12px;
-  opacity: 0.7;
+  opacity: 0.65;
   align-items: center;
 }
 
@@ -663,11 +658,16 @@ select:focus,
 }
 
 /* ----------------------------------------
-   Replies: avatar + name on left, bubble below
+   Replies: indented left
    ---------------------------------------- */
 .comment-row.reply {
-  padding-left: 40px !important;
-  flex-wrap: wrap; /* Allow bubble to wrap to next line */
+  margin-left: 32px;
+}
+
+@media (max-width: 600px) {
+  .comment-row.reply {
+    margin-left: 20px;
+  }
 }
 
 /* Inline author name (next to avatar) */
@@ -685,13 +685,6 @@ select:focus,
 .comment-author-inline:hover .author-name {
   text-decoration: underline;
   color: var(--color-primary);
-}
-
-/* Reply lane takes full width on new line */
-.comment-row.reply .comment-lane {
-  flex-basis: 100%;
-  margin-left: 36px; /* Align with text after avatar */
-  margin-top: 4px;
 }
 
 /* Prevent parent containers from double-indenting */
@@ -719,40 +712,12 @@ body[data-density="cozy"] .comment-row {
   margin: 10px 0;
 }
 
-/* ----------------------------------------
-   MOBILE ADJUSTMENTS
-   ---------------------------------------- */
-@media (max-width: 600px) {
-  .comment-avatar {
-    width: 28px;
-    height: 28px;
-    font-size: 12px;
-  }
-
-  .comment-row.reply .comment-avatar {
-    width: 24px;
-    height: 24px;
-    font-size: 11px;
-  }
-
-  .comment-bubble {
-    max-width: calc(100% - 32px);
-    padding: 6px 10px;
-    border-radius: 14px;
-  }
-
-  .comment-actions {
-    margin-left: 10px;
-    gap: 8px;
-  }
-}
-
 /* ===============================
    MOBILE FEED EDGE-TO-EDGE FIX
    =============================== */
 
 @media (max-width: 600px) {
-  /* 1️⃣ Post cards go edge-to-edge */
+  /* Post cards go edge-to-edge */
   .post-card {
     margin-left: 0 !important;
     margin-right: 0 !important;
@@ -766,38 +731,9 @@ body[data-density="cozy"] .comment-row {
     padding-right: 0 !important;
   }
 
-  /* Optional: keep subtle inner spacing */
+  /* Keep subtle inner spacing */
   .post-content {
     padding-left: 12px;
     padding-right: 12px;
-  }
-
-  /* ===============================
-     COMMENT / REPLY TEXT FIX
-     =============================== */
-
-  .comment-bubble {
-    max-width: 100% !important;
-    word-break: normal !important;
-    overflow-wrap: break-word !important;
-    white-space: normal !important;
-    hyphens: none !important;
-  }
-
-  .comment-text {
-    word-break: normal !important;
-    overflow-wrap: break-word !important;
-    white-space: normal !important;
-  }
-
-  /* 2️⃣ Replies still indented, but not crushed */
-  .comment-row.reply {
-    padding-left: 20px !important;
-  }
-
-  /* 3️⃣ Prevent ultra-narrow lanes */
-  .comment-lane {
-    min-width: 0;
-    max-width: 100%;
   }
 }
