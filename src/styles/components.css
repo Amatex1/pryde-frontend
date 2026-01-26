@@ -839,3 +839,31 @@ body[data-density="cozy"] .comment-row {
   width: 28px;
   height: 28px;
 }
+
+/* ==================================================
+   FIX A — REMOVE INLINE TEXT HIGHLIGHTING
+   Prevents word-level purple backgrounds inside bubbles
+   ================================================== */
+
+.comment-text *,
+.comment-author * {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+
+/* ==================================================
+   FIX B — AUTHOR VISUAL SEPARATION (FACEBOOK-LIKE)
+   Makes username read as identity, not message content
+   ================================================== */
+
+.comment-author {
+  font-weight: 600;
+  margin-right: 6px;
+  color: var(--text-strong);
+}
+
+.comment-author::after {
+  content: "";
+  margin-right: 2px;
+}
