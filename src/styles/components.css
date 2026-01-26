@@ -535,7 +535,7 @@ select:focus,
   max-width: 520px;
   padding: 6px 10px;
   border-radius: 16px;
-  background: transparent;
+  background: var(--comment-bg, rgba(255,255,255,0.08));
   white-space: normal;
   word-break: normal;
   overflow-wrap: break-word;
@@ -792,7 +792,7 @@ body[data-density="cozy"] .comment-row {
   max-width: 520px;
   padding: 6px 10px;
   border-radius: 16px;
-  background: transparent !important;
+  background: var(--comment-bg, rgba(255, 255, 255, 0.08));
 }
 
 @media (max-width: 600px) {
@@ -845,10 +845,21 @@ body[data-density="cozy"] .comment-row {
    Prevents word-level purple backgrounds inside bubbles
    ================================================== */
 
+.comment-text,
 .comment-text *,
+.comment-text span,
+.comment-author,
 .comment-author * {
   background: transparent !important;
+  background-color: transparent !important;
   box-shadow: none !important;
+}
+
+/* Also target the FormattedText wrapper */
+.comment-bubble span,
+.comment-bubble .formatted-text {
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
 
