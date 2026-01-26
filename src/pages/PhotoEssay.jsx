@@ -234,7 +234,10 @@ function PhotoEssay() {
         }
       }
 
-      navigate('/profile');
+      // Navigate to user's own profile
+      const currentUser = getCurrentUser();
+      const profilePath = currentUser?.username ? `/profile/${currentUser.username}` : '/feed';
+      navigate(profilePath);
     } catch (error) {
       console.error('Failed to save photo essay:', error);
       showAlert('Failed to save photo essay. Please try again.', 'Save Failed');

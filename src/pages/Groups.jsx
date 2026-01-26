@@ -28,14 +28,17 @@
  * Tags are legacy entry points only.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import OptimizedImage from '../components/OptimizedImage';
 import PostHeader from '../components/PostHeader';
 import Toast from '../components/Toast';
 import FormattedText from '../components/FormattedText';
+import CommentThread from '../components/CommentThread';
+import GifPicker from '../components/GifPicker';
 import { useToast } from '../hooks/useToast';
+import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
@@ -95,6 +98,23 @@ function Groups() {
   // Cover photo state
   const coverInputRef = useRef(null);
   const [uploadingCover, setUploadingCover] = useState(false);
+
+  // Comment system state
+  const { modalState, closeModal, showAlert, showConfirm } = useModal();
+  const [showCommentBox, setShowCommentBox] = useState({});
+  const [commentText, setCommentText] = useState({});
+  const [commentGif, setCommentGif] = useState({});
+  const [showGifPicker, setShowGifPicker] = useState(null);
+  const [postComments, setPostComments] = useState({});
+  const [commentReplies, setCommentReplies] = useState({});
+  const [showReplies, setShowReplies] = useState({});
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editCommentText, setEditCommentText] = useState('');
+  const [replyingToComment, setReplyingToComment] = useState(null);
+  const [replyText, setReplyText] = useState('');
+  const [replyGif, setReplyGif] = useState(null);
+  const [showReactionPicker, setShowReactionPicker] = useState(null);
+  const commentRefs = useRef({});
 
   // Phase 5B: AbortController to prevent double-fetch in StrictMode
   useEffect(() => {
@@ -428,6 +448,301 @@ function Groups() {
       console.error('Failed to unlock post:', err);
       showToast(err.response?.data?.message || 'Failed to unlock post', 'error');
     }
+  };
+
+  // ============================================
+  // COMMENT SYSTEM FUNCTIONS
+  // ============================================
+
+  // Fetch comments for a post
+  const fetchCommentsForPost = useCallback(async (postId) => {
+    try {
+      const response = await api.get(`/posts/${postId}/comments`);
+      const comments = response.data || [];
+      setPostComments(prev => ({
+        ...prev,
+        [postId]: comments
+      }));
+
+      // Auto-fetch replies for comments that have them
+      const commentsWithReplies = comments.filter(c => c.replyCount > 0);
+      if (commentsWithReplies.length > 0) {
+        const replyPromises = commentsWithReplies.map(async (comment) => {
+          try {
+            const replyResponse = await api.get(`/comments/${comment._id}/replies`);
+            return { commentId: comment._id, replies: replyResponse.data || [] };
+          } catch (err) {
+            console.error(`Failed to fetch replies for comment ${comment._id}:`, err);
+            return { commentId: comment._id, replies: [] };
+          }
+        });
+
+        const replyResults = await Promise.all(replyPromises);
+        setCommentReplies(prev => {
+          const updated = { ...prev };
+          replyResults.forEach(({ commentId, replies }) => {
+            updated[commentId] = replies;
+          });
+          return updated;
+        });
+
+        setShowReplies(prev => {
+          const updated = { ...prev };
+          commentsWithReplies.forEach(comment => {
+            updated[comment._id] = true;
+          });
+          return updated;
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch comments:', error);
+    }
+  }, []);
+
+  // Toggle comment box visibility
+  const toggleCommentBox = async (postId) => {
+    const isCurrentlyShown = showCommentBox[postId];
+    setShowCommentBox(prev => ({
+      ...prev,
+      [postId]: !isCurrentlyShown
+    }));
+
+    if (!isCurrentlyShown && !postComments[postId]) {
+      await fetchCommentsForPost(postId);
+    }
+  };
+
+  // Handle comment submission
+  const handleCommentSubmit = async (postId, e) => {
+    e.preventDefault();
+    const content = commentText[postId];
+    const gifUrl = commentGif[postId];
+
+    if ((!content || !content.trim()) && !gifUrl) return;
+
+    try {
+      const response = await api.post(`/posts/${postId}/comments`, {
+        content: content || '',
+        gifUrl: gifUrl || null,
+        parentCommentId: null
+      });
+
+      // Add new comment to state
+      setPostComments(prev => ({
+        ...prev,
+        [postId]: [...(prev[postId] || []), response.data]
+      }));
+
+      // Update post comment count
+      setPosts(prev => prev.map(p =>
+        p._id === postId
+          ? { ...p, commentCount: (p.commentCount || 0) + 1 }
+          : p
+      ));
+
+      setCommentText(prev => ({ ...prev, [postId]: '' }));
+      setCommentGif(prev => ({ ...prev, [postId]: null }));
+    } catch (error) {
+      console.error('Failed to create comment:', error);
+      showToast('Failed to post comment', 'error');
+    }
+  };
+
+  // Toggle replies visibility
+  const toggleReplies = async (commentId) => {
+    const isCurrentlyShown = showReplies[commentId];
+    setShowReplies(prev => ({
+      ...prev,
+      [commentId]: !isCurrentlyShown
+    }));
+
+    if (!isCurrentlyShown && !commentReplies[commentId]) {
+      try {
+        const response = await api.get(`/comments/${commentId}/replies`);
+        setCommentReplies(prev => ({
+          ...prev,
+          [commentId]: response.data
+        }));
+      } catch (error) {
+        console.error('Failed to fetch replies:', error);
+      }
+    }
+  };
+
+  // Handle comment editing
+  const handleEditComment = (commentId, content) => {
+    setEditingCommentId(commentId);
+    setEditCommentText(content);
+  };
+
+  const handleSaveEditComment = async (commentId) => {
+    if (!editCommentText.trim()) return;
+
+    try {
+      const response = await api.put(`/comments/${commentId}`, {
+        content: editCommentText
+      });
+
+      const updatedComment = response.data;
+
+      setPostComments(prev => {
+        const updated = { ...prev };
+        Object.keys(updated).forEach(postId => {
+          updated[postId] = updated[postId].map(c =>
+            c._id === commentId ? updatedComment : c
+          );
+        });
+        return updated;
+      });
+
+      setCommentReplies(prev => {
+        const updated = { ...prev };
+        Object.keys(updated).forEach(parentId => {
+          updated[parentId] = updated[parentId].map(c =>
+            c._id === commentId ? updatedComment : c
+          );
+        });
+        return updated;
+      });
+
+      setEditingCommentId(null);
+      setEditCommentText('');
+    } catch (error) {
+      console.error('Failed to edit comment:', error);
+      showToast('Failed to save comment', 'error');
+    }
+  };
+
+  const handleCancelEditComment = () => {
+    setEditingCommentId(null);
+    setEditCommentText('');
+  };
+
+  // Handle comment deletion
+  const handleDeleteComment = async (postId, commentId, isReply = false) => {
+    const confirmed = await showConfirm('Are you sure you want to delete this comment?', 'Delete Comment', 'Delete', 'Cancel');
+    if (!confirmed) return;
+
+    try {
+      await api.delete(`/comments/${commentId}`);
+
+      if (isReply) {
+        setCommentReplies(prev => {
+          const updated = { ...prev };
+          Object.keys(updated).forEach(parentId => {
+            updated[parentId] = updated[parentId].filter(c => c._id !== commentId);
+          });
+          return updated;
+        });
+      } else {
+        setPostComments(prev => ({
+          ...prev,
+          [postId]: (prev[postId] || []).filter(c => c._id !== commentId)
+        }));
+        setCommentReplies(prev => {
+          const updated = { ...prev };
+          delete updated[commentId];
+          return updated;
+        });
+      }
+
+      setPosts(prev => prev.map(p =>
+        p._id === postId
+          ? { ...p, commentCount: Math.max(0, (p.commentCount || 0) - 1) }
+          : p
+      ));
+    } catch (error) {
+      console.error('Failed to delete comment:', error);
+      showToast('Failed to delete comment', 'error');
+    }
+  };
+
+  // Handle comment reactions
+  const handleCommentReaction = async (commentId, emoji) => {
+    try {
+      const response = await api.post(`/comments/${commentId}/react`, { emoji });
+      const serverComment = response.data;
+
+      setPostComments(prev => {
+        const updated = { ...prev };
+        Object.keys(updated).forEach(postId => {
+          updated[postId] = updated[postId].map(c =>
+            c._id === commentId ? serverComment : c
+          );
+        });
+        return updated;
+      });
+
+      setCommentReplies(prev => {
+        const updated = { ...prev };
+        Object.keys(updated).forEach(parentId => {
+          updated[parentId] = updated[parentId].map(c =>
+            c._id === commentId ? serverComment : c
+          );
+        });
+        return updated;
+      });
+
+      setShowReactionPicker(null);
+    } catch (error) {
+      console.error('Failed to react to comment:', error);
+      showToast('Failed to add reaction', 'error');
+    }
+  };
+
+  // Handle reply to comment
+  const handleReplyToComment = (postId, commentId) => {
+    setReplyingToComment({ postId, commentId });
+    setReplyText('');
+    setReplyGif(null);
+  };
+
+  const handleSubmitReply = async (e) => {
+    e.preventDefault();
+    if ((!replyText || !replyText.trim()) && !replyGif) return;
+    if (!replyingToComment) return;
+
+    try {
+      const { postId, commentId } = replyingToComment;
+      const response = await api.post(`/posts/${postId}/comments`, {
+        content: replyText || '',
+        gifUrl: replyGif || null,
+        parentCommentId: commentId
+      });
+
+      setCommentReplies(prev => ({
+        ...prev,
+        [commentId]: [...(prev[commentId] || []), response.data]
+      }));
+
+      setReplyingToComment(null);
+      setReplyText('');
+      setReplyGif(null);
+      setShowReplies(prev => ({
+        ...prev,
+        [commentId]: true
+      }));
+    } catch (error) {
+      console.error('Failed to reply to comment:', error);
+      showToast('Failed to post reply', 'error');
+    }
+  };
+
+  const handleCancelReply = () => {
+    setReplyingToComment(null);
+    setReplyText('');
+    setReplyGif(null);
+  };
+
+  // Get user's current reaction emoji for a comment
+  const getUserReactionEmoji = (reactions) => {
+    if (!reactions || !currentUser) return null;
+    for (const [emoji, userIds] of Object.entries(reactions)) {
+      if (userIds.some(id => id?.toString() === currentUser.id?.toString())) {
+        return emoji;
+      }
+    }
+    return null;
   };
 
   // Phase 4A: Fetch member list for moderation
@@ -1008,6 +1323,122 @@ function Groups() {
                           </div>
                         )}
                       </div>
+
+                      {/* Comment/Reply Section */}
+                      {!post.isLocked && (
+                        <div className="post-actions-bar">
+                          <button
+                            className="action-btn subtle"
+                            onClick={() => toggleCommentBox(post._id)}
+                            title="Reply to this post"
+                          >
+                            <span>💬</span>
+                            <span className="action-text">
+                              Reply {post.commentCount > 0 && `(${post.commentCount})`}
+                            </span>
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Comments Section */}
+                      {postComments[post._id] && postComments[post._id].length > 0 && (
+                        <div className="post-comments">
+                          {postComments[post._id]
+                            .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)
+                            .map((comment) => (
+                              <CommentThread
+                                key={comment._id}
+                                comment={comment}
+                                replies={commentReplies[comment._id] || []}
+                                currentUser={currentUser}
+                                postId={post._id}
+                                showReplies={showReplies}
+                                editingCommentId={editingCommentId}
+                                editCommentText={editCommentText}
+                                showReactionPicker={showReactionPicker}
+                                commentRefs={commentRefs}
+                                getUserReactionEmoji={getUserReactionEmoji}
+                                handleEditComment={handleEditComment}
+                                handleSaveEditComment={handleSaveEditComment}
+                                handleCancelEditComment={handleCancelEditComment}
+                                handleDeleteComment={handleDeleteComment}
+                                handleCommentReaction={handleCommentReaction}
+                                toggleReplies={toggleReplies}
+                                handleReplyToComment={handleReplyToComment}
+                                setShowReactionPicker={setShowReactionPicker}
+                              />
+                            ))}
+                        </div>
+                      )}
+
+                      {/* Reply Input Box */}
+                      {replyingToComment?.postId === post._id && (
+                        <form onSubmit={handleSubmitReply} className="reply-input-box">
+                          <div className="reply-input-wrapper">
+                            <input
+                              type="text"
+                              value={replyText}
+                              onChange={(e) => setReplyText(e.target.value)}
+                              placeholder="Write a reply..."
+                              className="reply-input"
+                              autoFocus
+                            />
+                            <button type="button" onClick={handleCancelReply} className="btn-cancel-reply">
+                              ✕
+                            </button>
+                            <button type="submit" className="reply-submit-btn" disabled={!replyText?.trim() && !replyGif}>
+                              ➤
+                            </button>
+                          </div>
+                        </form>
+                      )}
+
+                      {/* Comment Input Box */}
+                      {showCommentBox[post._id] && (
+                        <form onSubmit={(e) => handleCommentSubmit(post._id, e)} className="comment-input-box">
+                          <div className="comment-input-wrapper">
+                            <input
+                              type="text"
+                              value={commentText[post._id] || ''}
+                              onChange={(e) => setCommentText(prev => ({ ...prev, [post._id]: e.target.value }))}
+                              placeholder="Write a comment..."
+                              className="comment-input"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowGifPicker(showGifPicker === `comment-${post._id}` ? null : `comment-${post._id}`)}
+                              className="btn-gif"
+                              title="Add GIF"
+                            >
+                              GIF
+                            </button>
+                            <button type="submit" className="comment-submit-btn" disabled={!commentText[post._id]?.trim() && !commentGif[post._id]}>
+                              ➤
+                            </button>
+                          </div>
+                          {commentGif[post._id] && (
+                            <div className="comment-gif-preview">
+                              <img src={commentGif[post._id]} alt="Selected GIF" />
+                              <button
+                                type="button"
+                                className="btn-remove-gif"
+                                onClick={() => setCommentGif(prev => ({ ...prev, [post._id]: null }))}
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          )}
+                          {showGifPicker === `comment-${post._id}` && (
+                            <GifPicker
+                              onGifSelect={(gifUrl) => {
+                                setCommentGif(prev => ({ ...prev, [post._id]: gifUrl }));
+                                setShowGifPicker(null);
+                              }}
+                              onClose={() => setShowGifPicker(null)}
+                            />
+                          )}
+                        </form>
+                      )}
                     </div>
                   );
                 })

@@ -67,7 +67,7 @@
 }
 
 .longform-create-form {
-  background: white;
+  background: var(--card-surface, white);
   padding: 2rem;
   border-radius: 12px;
   margin-bottom: 2rem;
@@ -82,6 +82,8 @@
   font-size: 1rem;
   margin-bottom: 1rem;
   font-family: inherit;
+  background: var(--bg-input, var(--card-surface, white));
+  color: var(--text-main, inherit);
 }
 
 .longform-title-input {
@@ -96,6 +98,11 @@
   font-size: 1.05rem;
 }
 
+.longform-title-input::placeholder,
+.longform-body-input::placeholder {
+  color: var(--text-muted, #999);
+}
+
 .longform-form-footer {
   display: flex;
   gap: 1rem;
@@ -108,6 +115,8 @@
   border: 1px solid var(--border-light);
   border-radius: 8px;
   font-size: 0.9rem;
+  background: var(--bg-input, var(--card-surface, white));
+  color: var(--text-main, inherit);
 }
 
 .btn-submit-longform {
@@ -125,7 +134,7 @@
 }
 
 .longform-card {
-  background: white;
+  background: var(--card-surface, white);
   padding: 2rem;
   border-radius: 12px;
   transition: transform 0.3s ease;
