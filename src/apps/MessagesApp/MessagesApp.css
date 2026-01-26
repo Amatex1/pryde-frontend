@@ -1,43 +1,52 @@
-/* =========================================================
-   MessagesApp — Final Clean Architecture (Messenger-style)
-   ========================================================= */
+/**
+ * MessagesApp — FINAL Messenger-accurate layout
+ * Container-owned scroll, width-constrained chat column
+ */
 
-/* Root app surface — fixed viewport, NOT page-scrolling */
+/* ================================
+   ROOT APP CONTAINER
+================================ */
 .messages-app {
   position: fixed;
   inset: 0;
   display: flex;
   flex-direction: column;
-  background: var(--bg-app);
+  background: var(--bg-app, #0b0f1a);
   overflow: hidden;
 }
 
-/* =======================
-   3-Column Layout
-   ======================= */
+/* ================================
+   MAIN 3-COLUMN LAYOUT
+================================ */
 .messages-app__layout {
   flex: 1;
   display: grid;
-  grid-template-columns: 320px 1fr 360px;
+
+  /* KEY FIX:
+     - Left: fixed
+     - Middle: CENTERED + MAX WIDTH
+     - Right: fixed
+  */
+  grid-template-columns:
+    320px
+    minmax(0, 840px)
+    360px;
+
+  justify-content: center;
+
   min-height: 0;
   overflow: hidden;
 }
 
-/* =======================
+/* ================================
    COLUMN 1 — THREAD LIST
-   ======================= */
+================================ */
 .messages-app__threads {
   display: flex;
   flex-direction: column;
-  min-height: 0;
   border-right: 1px solid var(--border-subtle);
   background: var(--bg-surface);
-}
-
-.messages-app__threads-header {
-  flex: 0 0 auto;
-  padding: 16px;
-  border-bottom: 1px solid var(--border-subtle);
+  overflow: hidden;
 }
 
 .messages-app__threads-scroll {
@@ -47,13 +56,14 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* =======================
+/* ================================
    COLUMN 2 — CHAT
-   ======================= */
+================================ */
 .messages-app__chat {
   display: flex;
   flex-direction: column;
-  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
   background: var(--bg-app);
 }
 
@@ -68,75 +78,75 @@
   background: var(--bg-surface);
 }
 
-.mobile-back-btn {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 1.25rem;
-}
-
-/* =======================
-   MESSAGE SCROLL REGION
-   ======================= */
+/* ================================
+   MESSAGE SCROLL AREA (CRITICAL)
+================================ */
 .messages-app__messages-scroll {
   flex: 1;
   min-height: 0;
+
+  /* FIXES:
+     - block layout
+     - full-width scroll capture
+  */
+  display: block;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
-  padding: 16px 0;
+
+  padding: 24px 0;
 }
 
-/* Constrain message width like Messenger */
-.messages-app__messages-inner {
+/* Conversation width lock */
+.messages-app .conversation-wrapper,
+.messages-app .conversation-inner {
+  width: 100%;
   max-width: 760px;
   margin: 0 auto;
-  padding: 0 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
 }
 
-/* =======================
-   COMPOSER (Always Visible)
-   ======================= */
+/* Prevent flex collapse */
+.messages-app .conversation-inner {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================================
+   COMPOSER (CONNECTED TO CHAT)
+================================ */
 .messages-app__composer {
   flex: 0 0 auto;
   border-top: 1px solid var(--border-subtle);
   background: var(--bg-surface);
-  padding: 10px 16px;
+  padding: 12px 16px;
 }
 
-/* Match chat width exactly */
-.messages-app__composer-inner {
+.messages-app__composer .message-composer,
+.messages-app__composer .calm-composer,
+.messages-app__composer .composer-input-row {
+  width: 100%;
   max-width: 760px;
   margin: 0 auto;
-  width: 100%;
 }
 
-/* =======================
+/* ================================
    COLUMN 3 — INFO PANEL
-   ======================= */
+================================ */
 .messages-app__info {
   display: flex;
   flex-direction: column;
-  min-height: 0;
   border-left: 1px solid var(--border-subtle);
   background: var(--bg-surface);
-  overflow-y: auto;
   padding: 24px;
+  overflow-y: auto;
 }
 
-.messages-app__info-header {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
+/* Actions */
 .messages-app__info-actions {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 24px;
+  gap: 8px;
+  margin-top: 16px;
 }
 
 .messages-app__info-actions button {
@@ -145,15 +155,16 @@
   background: var(--bg-tertiary);
   border: none;
   cursor: pointer;
-  text-align: left;
 }
 
-/* =======================
-   TABLET — hide info panel
-   ======================= */
+/* ================================
+   TABLET
+================================ */
 @media (max-width: 1279px) {
   .messages-app__layout {
-    grid-template-columns: 320px 1fr;
+    grid-template-columns:
+      320px
+      minmax(0, 1fr);
   }
 
   .messages-app__info {
@@ -161,25 +172,12 @@
   }
 }
 
-/* =======================
-   MOBILE NAV OFFSET
-   ======================= */
-@media (max-width: 1023px) {
-  .messages-app {
-    bottom: calc(var(--mobile-nav-height, 64px) + env(safe-area-inset-bottom));
-  }
-}
-
-/* =======================
-   MOBILE — single column
-   ======================= */
+/* ================================
+   MOBILE
+================================ */
 @media (max-width: 768px) {
   .messages-app__layout {
     grid-template-columns: 1fr;
-  }
-
-  .mobile-back-btn {
-    display: inline-flex;
   }
 
   .messages-app[data-view="threads"] .messages-app__chat {
@@ -192,5 +190,17 @@
 
   .messages-app__info {
     display: none;
+  }
+}
+
+/* ================================
+   MOBILE SAFE AREA
+================================ */
+@media (max-width: 1023px) {
+  .messages-app {
+    bottom: calc(
+      var(--mobile-nav-height, 64px)
+      + env(safe-area-inset-bottom, 0px)
+    );
   }
 }
