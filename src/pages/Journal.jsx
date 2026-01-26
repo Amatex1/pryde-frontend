@@ -28,6 +28,7 @@ function Journal() {
   const [showDraftManager, setShowDraftManager] = useState(false);
   const [currentDraftId, setCurrentDraftId] = useState(null);
   const [isQuietMode, setIsQuietMode] = useState(document.documentElement.getAttribute('data-quiet') === 'true');
+  const [editingJournal, setEditingJournal] = useState(null);
   const autoSaveTimerRef = useRef(null);
   const currentUser = getCurrentUser();
 
@@ -195,6 +196,55 @@ function Journal() {
     }
   };
 
+  const handleEdit = (journal) => {
+    setEditingJournal(journal);
+    setFormData({
+      title: journal.title || '',
+      body: journal.body || '',
+      visibility: journal.visibility || 'private',
+      mood: journal.mood || '',
+      tags: journal.tags ? journal.tags.join(', ') : ''
+    });
+    setShowCreateForm(true);
+    // Scroll to form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+
+    if (!formData.body.trim()) {
+      alert('Journal body is required');
+      return;
+    }
+
+    try {
+      const tagsArray = formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(t => t) : [];
+
+      await api.patch(`/journals/${editingJournal._id}`, {
+        title: formData.title || null,
+        body: formData.body,
+        visibility: formData.visibility,
+        mood: formData.mood || null,
+        tags: tagsArray
+      });
+
+      setFormData({ title: '', body: '', visibility: 'private', mood: '', tags: '' });
+      setShowCreateForm(false);
+      setEditingJournal(null);
+      fetchJournals();
+    } catch (error) {
+      console.error('Failed to update journal:', error);
+      alert('Failed to update journal entry');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingJournal(null);
+    setFormData({ title: '', body: '', visibility: 'private', mood: '', tags: '' });
+    setShowCreateForm(false);
+  };
+
   return (
     <>
       <Navbar onMenuClick={onMenuOpen} />
@@ -221,7 +271,15 @@ function Journal() {
 
       {showCreateForm && (
         <div className="journal-create-form glossy">
-          <form onSubmit={handleSubmit}>
+          <div className="journal-form-header">
+            <h2>{editingJournal ? '✏️ Edit Entry' : '✍️ New Entry'}</h2>
+            {editingJournal && (
+              <button type="button" className="btn-cancel-edit" onClick={handleCancelEdit}>
+                ✕ Cancel
+              </button>
+            )}
+          </div>
+          <form onSubmit={editingJournal ? handleUpdate : handleSubmit}>
             <input
               type="text"
               placeholder="Title (optional)"
@@ -229,7 +287,7 @@ function Journal() {
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               className="journal-title-input"
             />
-            
+
             <textarea
               placeholder={isQuietMode ? quietCopy.journalPrompt : "Write your thoughts..."}
               value={formData.body}
@@ -266,7 +324,7 @@ function Journal() {
               </select>
 
               <button type="submit" className="btn-submit-journal glossy-gold">
-                Save Entry
+                {editingJournal ? 'Update Entry' : 'Save Entry'}
               </button>
             </div>
           </form>
@@ -293,7 +351,10 @@ function Journal() {
                   {journal.visibility === 'private' ? '🔒' : journal.visibility === 'followers' ? '👥' : '🌍'}
                 </span>
                 {journal.mood && <span className="journal-mood">{journal.mood}</span>}
-                <button onClick={() => handleDelete(journal._id)} className="btn-delete">Delete</button>
+                <div className="journal-actions">
+                  <button onClick={() => handleEdit(journal)} className="btn-edit">Edit</button>
+                  <button onClick={() => handleDelete(journal._id)} className="btn-delete">Delete</button>
+                </div>
               </div>
             </div>
           ))

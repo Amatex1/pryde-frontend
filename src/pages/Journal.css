@@ -124,9 +124,11 @@
 .journal-visibility-select,
 .journal-mood-select {
   padding: 0.5rem 1rem;
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
   font-size: 0.9rem;
+  background: var(--bg-card);
+  color: var(--text-main);
 }
 
 .btn-submit-journal {
@@ -145,9 +147,10 @@
 }
 
 .journal-card {
-  background: white;
+  background: var(--card-surface, white);
   padding: 1.5rem;
   border-radius: 12px;
+  border: 1px solid var(--border-subtle);
 }
 
 .journal-card-header {
@@ -187,8 +190,28 @@
   color: var(--text-muted);
 }
 
-.btn-delete {
+.journal-actions {
+  display: flex;
+  gap: 0.5rem;
   margin-left: auto;
+}
+
+.btn-edit {
+  padding: 0.5rem 1rem;
+  background: var(--pryde-purple);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+}
+
+.btn-edit:hover {
+  background: var(--pryde-purple-dark, #5a4bb5);
+}
+
+.btn-delete {
   padding: 0.5rem 1rem;
   background: #ff4444;
   color: white;
@@ -196,10 +219,41 @@
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.9rem;
+  transition: background 0.2s ease;
 }
 
 .btn-delete:hover {
   background: #cc0000;
+}
+
+.journal-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.journal-form-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text-main);
+}
+
+.btn-cancel-edit {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel-edit:hover {
+  background: var(--bg-card);
+  color: var(--text-main);
+  border-color: var(--border-light);
 }
 
 .empty-state {
@@ -212,5 +266,36 @@
   text-align: center;
   padding: 3rem;
   color: var(--text-muted);
+}
+
+/* Dark mode specific overrides */
+[data-theme="dark"] .journal-card {
+  background: var(--card-surface);
+  border-color: var(--border-subtle);
+}
+
+[data-theme="dark"] .journal-title-input,
+[data-theme="dark"] .journal-body-input {
+  background: var(--bg-input, var(--card-surface));
+  color: var(--text-main);
+  border-color: var(--border-subtle);
+}
+
+[data-theme="dark"] .journal-visibility-select,
+[data-theme="dark"] .journal-mood-select {
+  background: var(--bg-input, var(--card-surface));
+  color: var(--text-main);
+  border-color: var(--border-subtle);
+}
+
+[data-theme="dark"] .journal-visibility-select option,
+[data-theme="dark"] .journal-mood-select option {
+  background: var(--card-surface);
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .journal-create-form {
+  background: var(--card-surface);
+  border-color: var(--border-subtle);
 }
 
