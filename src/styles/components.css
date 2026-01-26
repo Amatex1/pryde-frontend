@@ -566,14 +566,23 @@ select:focus,
 }
 
 /* ----------------------------------------
-   COMMENT-BUBBLE (stays unchanged)
+   COMMENT-BUBBLE (inline name + text)
    ---------------------------------------- */
 .comment-bubble {
-  display: inline-block;
+  display: block;
   max-width: calc(100% - 40px);
   padding: 8px 12px;
   border-radius: 18px;
   word-wrap: break-word;
+}
+
+/* Name and text flow inline (Facebook-style) */
+.comment-bubble .comment-author {
+  display: inline;
+}
+
+.comment-bubble .comment-text {
+  display: inline;
 }
 
 /* ----------------------------------------
