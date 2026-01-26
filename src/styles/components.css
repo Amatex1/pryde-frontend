@@ -502,24 +502,31 @@ select:focus,
 }
 
 /* ========================================
-   FACEBOOK-LIKE COMMENT UI
-   Row layout: Avatar + Main column
+   FACEBOOK-LIKE COMMENT UI - POLISHED
+   Bubble-row structure with aligned actions
    ======================================== */
 
-/* Comment row - horizontal layout (avatar + content) */
+/* 1) NORMALISE COMMENT ROW FLOW (REMOVE CARD RHYTHM) */
 .comment-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
+  padding: 0;
+  background: none;
+  border: none;
   margin: 8px 0;
 }
 
-/* Reply indentation */
-.comment-row.reply {
-  margin-left: 32px;
+.post-card .comment-row {
+  margin-left: 0;
+  margin-right: 0;
 }
 
-/* Avatar (Facebook scale) */
+/* 2) BUBBLE ROW = AVATAR + BUBBLE ONLY */
+.comment-bubble-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* Avatar (Facebook scale - 32px) */
 .comment-row .comment-avatar {
   width: 32px;
   height: 32px;
@@ -548,7 +555,7 @@ select:focus,
   font-size: 12px;
 }
 
-/* Main content column */
+/* Main content column (for current structure compatibility) */
 .comment-main {
   display: flex;
   flex-direction: column;
@@ -557,13 +564,14 @@ select:focus,
   min-width: 0;
 }
 
-/* Comment bubble (text only) */
+/* 3) BUBBLE WIDTH + SHAPE (FACEBOOK ACCURATE) */
 .comment-bubble {
   display: inline-block;
-  max-width: 100%;
+  max-width: calc(100% - 40px);
   padding: 8px 12px;
   border-radius: 18px;
   background: var(--comment-bg, rgba(255, 255, 255, 0.08));
+  word-wrap: break-word;
 }
 
 [data-theme="light"] .comment-bubble {
@@ -605,13 +613,14 @@ select:focus,
   border-radius: 0;
 }
 
-/* Inline actions (like Facebook) */
+/* 4) ACTIONS ANCHORED TO BUBBLE (CRITICAL FIX) */
 .comment-actions {
+  margin-left: 40px; /* aligns under bubble, not avatar */
+  margin-top: 2px;
   display: flex;
   gap: 10px;
-  padding-left: 12px;
   font-size: var(--text-xs, 12px);
-  opacity: 0.7;
+  opacity: 0.65;
   align-items: center;
 }
 
@@ -630,6 +639,14 @@ select:focus,
 .comment-actions button:hover {
   opacity: 1;
   text-decoration: underline;
+}
+
+/* 5) META (TIME) INLINE WITH ACTIONS */
+.comment-meta {
+  margin-left: 40px;
+  font-size: var(--text-xs, 12px);
+  opacity: 0.55;
+  color: var(--text-muted);
 }
 
 /* Timestamp in actions row */
@@ -651,13 +668,36 @@ select:focus,
   opacity: 1;
 }
 
-/* Density-aware spacing */
+/* 6) REPLY INDENTATION – BUBBLE ONLY (NOT WHOLE ROW) */
+.comment-row.reply {
+  margin-left: 0;
+}
+
+.comment-row.reply .comment-bubble-row {
+  margin-left: 24px;
+}
+
+.comment-row.reply .comment-actions,
+.comment-row.reply .comment-meta {
+  margin-left: 64px; /* 24px indent + 40px bubble alignment */
+}
+
+/* For current comment-main structure - reply indentation */
+.comment-row.reply .comment-main {
+  margin-left: 0;
+}
+
+/* 7) DENSITY-AWARE MICRO-SPACING */
 body[data-density="compact"] .comment-row {
   margin: 6px 0;
 }
 
 body[data-density="compact"] .comment-bubble {
   padding: 6px 10px;
+}
+
+body[data-density="compact"] .comment-actions {
+  margin-top: 1px;
 }
 
 body[data-density="cozy"] .comment-row {
@@ -679,16 +719,26 @@ body[data-density="cozy"] .comment-row {
   }
 
   .comment-bubble {
+    max-width: calc(100% - 36px);
     padding: 6px 10px;
     border-radius: 14px;
   }
 
-  .comment-row.reply {
-    margin-left: 20px;
+  .comment-actions {
+    margin-left: 36px;
+    gap: 8px;
   }
 
-  .comment-actions {
-    gap: 8px;
-    padding-left: 8px;
+  .comment-meta {
+    margin-left: 36px;
+  }
+
+  .comment-row.reply .comment-bubble-row {
+    margin-left: 16px;
+  }
+
+  .comment-row.reply .comment-actions,
+  .comment-row.reply .comment-meta {
+    margin-left: 52px; /* 16px indent + 36px bubble alignment */
   }
 }

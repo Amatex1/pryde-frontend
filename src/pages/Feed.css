@@ -1800,16 +1800,26 @@ html:not([data-theme]) .post-actions {
   position: relative;
 }
 
-/* Facebook-like .comment-row - horizontal layout */
+/* Facebook-like .comment-row - normalized flow */
 .comment-row {
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+  margin: 8px 0;
+}
+
+/* Post-card comment alignment */
+.post-card .comment-row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Bubble row = Avatar + Bubble only */
+.comment-bubble-row {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  margin: 8px 0;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  padding: 0;
 }
 
 /* Row-level hover (subtle) */
@@ -1827,11 +1837,20 @@ html:not([data-theme]) .post-actions {
   background: rgba(0, 0, 0, 0.02);
 }
 
+/* Reply indentation - bubble only, not whole row */
 .reply {
   background: transparent;
   border: none;
   box-shadow: none;
   padding: 0;
+}
+
+.comment-row.reply {
+  margin-left: 0;
+}
+
+.comment-row.reply .comment-bubble-row {
+  margin-left: 24px;
 }
 
 .comment-deleted {
@@ -2256,23 +2275,24 @@ html:not([data-theme]) .post-actions {
   display: none !important;
 }
 
-/* Action row - Like / Reply (Facebook-style inline) */
+/* Action row - Like / Reply (Facebook-style - anchored to bubble) */
 .comment-actions {
   display: flex;
   gap: 10px;
-  padding-left: 12px;
+  margin-left: 40px; /* aligns under bubble, not avatar */
+  margin-top: 2px;
   font-size: 12px;
   color: var(--text-secondary);
   align-items: center;
-  opacity: 0.7;
+  opacity: 0.65;
   transition: opacity 0.12s ease;
 }
 
-/* Facebook-like - actions inside comment-main column */
+/* Facebook-like - actions anchored under bubble */
 .comment-row .comment-actions {
-  opacity: 0.7;
-  margin-left: 0;
-  padding-left: 12px;
+  opacity: 0.65;
+  margin-left: 40px;
+  padding-left: 0;
 }
 
 /* Show actions on hover (desktop) */
@@ -2290,9 +2310,14 @@ html:not([data-theme]) .post-actions {
   }
 }
 
-/* Replies same style */
+/* Replies - actions anchored under bubble with indent */
 .reply .comment-actions {
   font-size: 12px;
+  margin-left: 64px; /* 24px indent + 40px bubble alignment */
+}
+
+.comment-row.reply .comment-actions {
+  margin-left: 64px;
 }
 
 .comment-action-btn,
