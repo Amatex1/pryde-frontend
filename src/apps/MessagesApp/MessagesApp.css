@@ -1,27 +1,20 @@
-/**
- * MessagesApp — FINAL CLEAN SLATE
- * Messenger-style fixed viewport application
- * Container-owned scroll (NOT page scroll)
- */
+/* =========================================================
+   MessagesApp — Final Clean Architecture (Messenger-style)
+   ========================================================= */
 
-/* =========================================
-   ROOT APP CONTAINER
-   ========================================= */
-
+/* Root app surface — fixed viewport, NOT page-scrolling */
 .messages-app {
   position: fixed;
   inset: 0;
-  top: var(--navbar-height, 60px);
   display: flex;
   flex-direction: column;
   background: var(--bg-app);
   overflow: hidden;
 }
 
-/* =========================================
-   3-COLUMN GRID LAYOUT
-   ========================================= */
-
+/* =======================
+   3-Column Layout
+   ======================= */
 .messages-app__layout {
   flex: 1;
   display: grid;
@@ -30,16 +23,15 @@
   overflow: hidden;
 }
 
-/* =========================================
+/* =======================
    COLUMN 1 — THREAD LIST
-   ========================================= */
-
+   ======================= */
 .messages-app__threads {
   display: flex;
   flex-direction: column;
-  background: var(--bg-surface);
+  min-height: 0;
   border-right: 1px solid var(--border-subtle);
-  overflow: hidden;
+  background: var(--bg-surface);
 }
 
 .messages-app__threads-header {
@@ -55,124 +47,95 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* =========================================
-   COLUMN 2 — CHAT COLUMN
-   ========================================= */
-
+/* =======================
+   COLUMN 2 — CHAT
+   ======================= */
 .messages-app__chat {
   display: flex;
   flex-direction: column;
-  height: 100%;
   min-height: 0;
   background: var(--bg-app);
-  overflow: hidden;
 }
 
-/* ---------- Header ---------- */
-
+/* Header */
 .messages-app__chat-header {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  background: var(--bg-surface);
   border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
 }
 
-.messages-app__chat-header .mobile-back-btn {
+.mobile-back-btn {
   display: none;
   background: none;
   border: none;
-  font-size: 1.5rem;
-  padding: 4px 8px;
-  cursor: pointer;
+  font-size: 1.25rem;
 }
 
-/* ---------- Message Scroll Area ---------- */
-
+/* =======================
+   MESSAGE SCROLL REGION
+   ======================= */
 .messages-app__messages-scroll {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
-  padding: 16px;
+  padding: 16px 0;
 }
 
-/* Center conversation content */
-.messages-app__messages-scroll > .conversation-wrapper {
-  margin: 0 auto;
-}
-
-/* ---------- Conversation Content ---------- */
-
-.messages-app .conversation-wrapper {
-  width: 100%;
+/* Constrain message width like Messenger */
+.messages-app__messages-inner {
   max-width: 760px;
+  margin: 0 auto;
+  padding: 0 16px;
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  gap: 12px;
 }
 
-.messages-app .conversation-inner {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
-
-/* =========================================
-   COMPOSER (ALWAYS VISIBLE)
-   ========================================= */
-
+/* =======================
+   COMPOSER (Always Visible)
+   ======================= */
 .messages-app__composer {
   flex: 0 0 auto;
-  padding: 12px 16px;
+  border-top: 1px solid var(--border-subtle);
   background: var(--bg-surface);
-  border-top: 1px solid var(--border-subtle);
-  display: flex;
-  justify-content: center;
-  position: relative;
+  padding: 10px 16px;
 }
 
-/* Visual alignment line with messages */
-.messages-app__composer::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 760px;
-  max-width: 100%;
-  border-top: 1px solid var(--border-subtle);
-}
-
-/* Composer width alignment */
-.messages-app__composer .message-composer,
-.messages-app__composer .calm-composer,
-.messages-app__composer .composer-input-row {
-  width: 100%;
+/* Match chat width exactly */
+.messages-app__composer-inner {
   max-width: 760px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-/* =========================================
+/* =======================
    COLUMN 3 — INFO PANEL
-   ========================================= */
-
+   ======================= */
 .messages-app__info {
   display: flex;
   flex-direction: column;
-  background: var(--bg-surface);
+  min-height: 0;
   border-left: 1px solid var(--border-subtle);
-  padding: 24px;
+  background: var(--bg-surface);
   overflow-y: auto;
+  padding: 24px;
+}
+
+.messages-app__info-header {
+  text-align: center;
+  margin-bottom: 24px;
 }
 
 .messages-app__info-actions {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 24px;
 }
 
@@ -185,10 +148,9 @@
   text-align: left;
 }
 
-/* =========================================
-   TABLET BREAKPOINT
-   ========================================= */
-
+/* =======================
+   TABLET — hide info panel
+   ======================= */
 @media (max-width: 1279px) {
   .messages-app__layout {
     grid-template-columns: 320px 1fr;
@@ -199,30 +161,25 @@
   }
 }
 
-/* =========================================
+/* =======================
    MOBILE NAV OFFSET
-   ========================================= */
-
+   ======================= */
 @media (max-width: 1023px) {
   .messages-app {
-    bottom: calc(
-      var(--mobile-nav-height, 64px) +
-      env(safe-area-inset-bottom, 0px)
-    );
+    bottom: calc(var(--mobile-nav-height, 64px) + env(safe-area-inset-bottom));
   }
 }
 
-/* =========================================
-   MOBILE SINGLE-COLUMN MODE
-   ========================================= */
-
+/* =======================
+   MOBILE — single column
+   ======================= */
 @media (max-width: 768px) {
   .messages-app__layout {
     grid-template-columns: 1fr;
   }
 
-  .messages-app__chat-header .mobile-back-btn {
-    display: block;
+  .mobile-back-btn {
+    display: inline-flex;
   }
 
   .messages-app[data-view="threads"] .messages-app__chat {
