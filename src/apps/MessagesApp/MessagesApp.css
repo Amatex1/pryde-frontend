@@ -227,6 +227,23 @@
   color: var(--text-secondary, #666);
 }
 
+/* Conversation wrapper — fills scroll area */
+.messages-app .conversation-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  width: 100%;
+}
+
+/* Conversation inner — consistent sizing */
+.messages-app .conversation-inner {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  max-width: 100%;
+}
+
 /* Tablet: Hide info panel */
 @media (max-width: 1279px) {
   .messages-app__layout {
@@ -234,6 +251,14 @@
   }
   .messages-app__info {
     display: none;
+  }
+}
+
+/* Mobile/Tablet: Account for bottom mobile nav */
+@media (max-width: 1023px) {
+  .messages-app {
+    /* Adjust bottom to account for mobile nav */
+    bottom: calc(var(--mobile-nav-height, 64px) + env(safe-area-inset-bottom, 0px));
   }
 }
 
