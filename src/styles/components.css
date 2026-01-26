@@ -579,7 +579,6 @@ select:focus,
   max-width: calc(100% - 40px);
   padding: 8px 12px;
   border-radius: 18px;
-  background: var(--comment-bg, rgba(255, 255, 255, 0.08));
   word-wrap: break-word;
 }
 
