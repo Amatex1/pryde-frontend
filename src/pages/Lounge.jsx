@@ -702,14 +702,23 @@ function Lounge() {
                     </div>
                   ) : (
                     <>
-                      <img
-                        src={getImageUrl(msg.sender?.avatar) || '/default-avatar.png'}
-                        alt={msg.sender?.displayName}
-                        className="lounge-message-avatar"
+                      <div
+                        className="lounge-message-avatar-wrapper"
                         onClick={() => navigate(`/profile/${msg.sender?.username}`)}
-                        loading="lazy"
-                        decoding="async"
-                      />
+                      >
+                        {msg.sender?.avatar ? (
+                          <img
+                            src={getImageUrl(msg.sender.avatar)}
+                            alt={msg.sender?.displayName}
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        ) : (
+                          <span className="avatar-letter">
+                            {msg.sender?.displayName?.charAt(0).toUpperCase() || 'U'}
+                          </span>
+                        )}
+                      </div>
 
                       <div className="lounge-message-content">
                         <div className="lounge-message-header">

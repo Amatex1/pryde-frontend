@@ -2496,10 +2496,26 @@ html:not([data-theme]) .post-actions {
   opacity: 0.8;
 }
 
-.comment-avatar img {
+.comment-avatar img,
+.comment-avatar .avatar-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Default letter avatar fallback */
+.comment-avatar span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient-primary);
+  color: white;
+  font-weight: 600;
+  font-size: 0.75rem;
+  border-radius: 50%;
 }
 
 .comment-content {

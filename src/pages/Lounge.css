@@ -572,12 +572,17 @@
   max-width: 300px;
   border-radius: 12px;
   overflow: hidden;
+  display: block;
+  clear: both;
 }
 
 .lounge-message-gif img {
   width: 100%;
+  height: auto;
   display: block;
   border-radius: 12px;
+  max-height: 250px;
+  object-fit: contain;
 }
 
 .lounge-input {
@@ -1003,4 +1008,70 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* ========================================
+   DARK MODE - ONLINE USERS MODAL
+   ======================================== */
+
+[data-theme="dark"] .online-users-modal {
+  background: var(--bg-card, #1a1a2e);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.1));
+}
+
+[data-theme="dark"] .modal-header {
+  border-bottom-color: var(--border-subtle, rgba(255, 255, 255, 0.1));
+}
+
+[data-theme="dark"] .online-user-item {
+  background: rgba(108, 92, 231, 0.08);
+}
+
+[data-theme="dark"] .online-user-item:hover {
+  background: rgba(108, 92, 231, 0.15);
+}
+
+/* ========================================
+   LOUNGE MESSAGE AVATAR FALLBACK
+   ======================================== */
+
+.lounge-message-avatar-wrapper {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.lounge-message-avatar-wrapper img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid var(--border-light);
+  transition: transform 0.2s;
+}
+
+.lounge-message-avatar-wrapper img:hover {
+  transform: scale(1.1);
+}
+
+.lounge-message-avatar-wrapper .avatar-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient-primary);
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid var(--border-light);
+  transition: transform 0.2s;
+}
+
+.lounge-message-avatar-wrapper .avatar-letter:hover {
+  transform: scale(1.1);
 }
