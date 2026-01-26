@@ -72,7 +72,7 @@
      PHASE D: POST CARD RULES
      Posts are ONLY framed objects
      ════════════════════════════════════════ */
-  
+
   .post-card {
     background: var(--color-surface) !important;
     border: var(--border-post) !important;
@@ -80,17 +80,17 @@
     padding: 16px !important;
     box-shadow: none !important;
   }
-  
+
   /* No inner white blocks */
   .post-card > * {
     background: transparent !important;
   }
-  
+
   /* ════════════════════════════════════════
      PHASE E: CALM MOBILE CHROME
      Transparent bars, sit on purple surface
      ════════════════════════════════════════ */
-  
+
   /* Top bars: Transparent */
   .navbar,
   .mobile-header,
@@ -99,7 +99,7 @@
     border: none !important;
     box-shadow: none !important;
   }
-  
+
   /* Tab bars: Transparent */
   .feed-tabs,
   .tab-bar,
@@ -108,7 +108,7 @@
     border: none !important;
     box-shadow: none !important;
   }
-  
+
   /* Composer: Transparent container */
   .create-post,
   .composer-container {
@@ -117,7 +117,7 @@
     box-shadow: none !important;
     padding: 0 !important;
   }
-  
+
   /* Brand color ONLY for active states */
   .feed-tab.active,
   .tab.active,
@@ -126,7 +126,7 @@
     color: white !important;
     border-bottom: 2px solid white !important;
   }
-  
+
   /* Primary CTA: White on purple */
   .btn-post,
   .btn-primary,
@@ -136,12 +136,41 @@
     border: none !important;
     font-weight: 600 !important;
   }
-  
+
   /* Unread indicator: White dot */
   .unread-indicator,
   .notification-badge {
     background: white !important;
     color: var(--color-brand-bg) !important;
+  }
+}
+
+/* ════════════════════════════════════════
+   EDGE-TO-EDGE MOBILE (≤600px)
+   Post cards flush to screen edges
+   ════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .post-card {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+  }
+
+  .feed,
+  .feed-main,
+  .feed-content,
+  .post-list,
+  .posts-list {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Keep subtle inner spacing for content */
+  .post-content {
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
 
