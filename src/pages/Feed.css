@@ -1101,6 +1101,7 @@ button.btn-poll.active {
 .post-actions-bar .btn-content-warning,
 button.btn-content-warning {
   height: 36px !important;
+  min-width: 70px !important; /* Match other buttons like Poll */
   padding: 0 14px !important;
   display: inline-flex !important;
   align-items: center !important;
