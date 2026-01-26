@@ -507,12 +507,10 @@ select:focus,
    ======================================== */
 
 /* ----------------------------------------
-   COMMENT-ROW (NON-NEGOTIABLE INVARIANTS)
-   - MUST NOT have background
-   - MUST NOT have border
-   - MUST NOT have padding
-   - MUST NOT inherit post-card spacing
+   🔑 HARD REPLY INDENT FIX — DO NOT REMOVE
    ---------------------------------------- */
+
+/* Ensure rows can actually shift */
 .comment-row {
   display: flex;
   align-items: flex-start;
@@ -521,6 +519,8 @@ select:focus,
   border: none;
   padding: 0;
   margin: 8px 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* ----------------------------------------
@@ -667,16 +667,17 @@ select:focus,
 }
 
 /* ----------------------------------------
-   REPLY INDENTATION (SHIFT ROW AS GROUP)
+   Replies MUST shift right as a unit
    ---------------------------------------- */
 .comment-row.reply {
-  margin-left: 40px; /* Replies shift right as a group */
+  padding-left: 40px !important;
 }
 
-/* Reply container should NOT add extra indentation */
-.comment-replies {
-  margin-left: 0;
-  padding-left: 0;
+/* Prevent parent containers from double-indenting */
+.comment-thread,
+.comment-replies,
+.post-comments {
+  padding-left: 0 !important;
 }
 
 /* ----------------------------------------
@@ -723,8 +724,11 @@ body[data-density="cozy"] .comment-row {
     margin-left: 10px;
     gap: 8px;
   }
+}
 
+/* Mobile-safe indent */
+@media (max-width: 480px) {
   .comment-row.reply {
-    margin-left: 32px; /* Narrower indent on mobile */
+    padding-left: 24px !important;
   }
 }

@@ -185,7 +185,7 @@ const CommentThread = ({
                   Reply
                 </button>
                 <span className="comment-time">
-                  {new Date(comment.createdAt).toLocaleString()}
+                  {new Date(comment.createdAt).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, month: 'short', day: 'numeric' })}
                   {comment.isEdited && <span className="edited-indicator"> (edited)</span>}
                 </span>
                 {comment.replyCount > 0 && (
@@ -356,7 +356,7 @@ const CommentThread = ({
                           Reply
                         </button>
                         <span className="comment-time">
-                          {new Date(reply.createdAt).toLocaleString()}
+                          {new Date(reply.createdAt).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, month: 'short', day: 'numeric' })}
                           {reply.isEdited && <span className="edited-indicator"> (edited)</span>}
                         </span>
                       </div>
