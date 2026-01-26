@@ -2112,7 +2112,8 @@ html:not([data-theme]) .post-actions {
   flex-wrap: nowrap;
   font-weight: 600;
   font-size: 13px;
-  margin-bottom: 2px;
+  margin-bottom: 0; /* Removed margin to allow inline flow with text */
+  margin-right: 6px; /* Space between name and text */
 }
 
 /* Author name */
@@ -5407,5 +5408,16 @@ select.privacy-selector:focus {
     word-break: normal !important;
     overflow-wrap: break-word !important;
     white-space: normal !important;
+  }
+
+  /* 5️⃣ Name and text flow inline (Facebook-style) */
+  .comment-bubble .comment-author {
+    display: inline !important;
+    margin-bottom: 0 !important;
+    margin-right: 6px !important;
+  }
+
+  .comment-bubble .comment-text {
+    display: inline !important;
   }
 }
