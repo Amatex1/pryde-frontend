@@ -1798,24 +1798,24 @@ html:not([data-theme]) .post-actions {
   position: relative;
 }
 
-/* Contract: comment-row MUST NOT have background/border/padding */
+/* Base comment row */
 .comment-row {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  background: none;
-  border: none;
   padding: 0;
   margin: 8px 0;
 }
 
-/* Contract: Reply indentation via comment-lane, NOT row shift */
+/* Replies shift right as a group */
 .comment-row.reply {
-  margin-left: 0;
+  margin-left: 40px;
 }
 
-.comment-row.reply .comment-lane {
-  margin-left: 24px;
+/* Reply container should NOT add extra indentation */
+.comment-replies {
+  margin-left: 0;
+  padding-left: 0;
 }
 
 .comment-deleted {
@@ -2231,10 +2231,7 @@ html:not([data-theme]) .post-actions {
 }
 
 /* ========================================
-   📐 CONTRACT: COMMENT-ACTIONS (ANCHOR RULE)
-   - MUST visually align under bubble start
-   - MUST NOT align under avatar
-   - MUST NOT float independently
+   COMMENT-ACTIONS (ANCHORED UNDER BUBBLE)
    ======================================== */
 
 /* Hide inline edit/delete buttons (moved to 3-dot menu) */
@@ -2243,13 +2240,13 @@ html:not([data-theme]) .post-actions {
   display: none !important;
 }
 
-/* Contract: margin-left: 12px anchors under bubble */
+/* Actions stay anchored under bubble */
 .comment-actions {
   margin-left: 12px;
   margin-top: 2px;
   display: flex;
   gap: 10px;
-  font-size: 12px;
+  font-size: var(--text-xs);
   opacity: 0.7;
   align-items: center;
   color: var(--text-secondary);
@@ -2266,11 +2263,6 @@ html:not([data-theme]) .post-actions {
   .comment-actions {
     opacity: 1;
   }
-}
-
-/* Contract: Reply actions = 24px lane indent + 12px action anchor = 36px */
-.comment-row.reply .comment-actions {
-  margin-left: 36px;
 }
 
 .comment-action-btn,

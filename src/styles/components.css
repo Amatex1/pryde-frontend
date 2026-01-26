@@ -555,9 +555,7 @@ select:focus,
 }
 
 /* ----------------------------------------
-   COMMENT-LANE (CRITICAL)
-   - All indentation happens here
-   - Actions are children of lane
+   COMMENT-LANE (keep alignment identical)
    ---------------------------------------- */
 .comment-lane {
   display: flex;
@@ -568,17 +566,14 @@ select:focus,
 }
 
 /* ----------------------------------------
-   COMMENT-BUBBLE (ONLY VISUAL GROUP)
-   - MUST NOT stretch full width
-   - MUST NOT include actions
-   - MUST NOT include meta/time
-   - MUST NOT include avatar
+   COMMENT-BUBBLE (stays unchanged)
    ---------------------------------------- */
 .comment-bubble {
   display: inline-block;
   max-width: calc(100% - 40px);
   padding: 8px 12px;
   border-radius: 18px;
+  background: var(--comment-bg, rgba(255, 255, 255, 0.08));
   word-wrap: break-word;
 }
 
@@ -672,21 +667,16 @@ select:focus,
 }
 
 /* ----------------------------------------
-   REPLY INDENTATION CONTRACT (NO ROW SHIFT)
-   - MUST NOT indent entire comment-row
-   - MUST NOT nest replies in cards
-   - MUST NOT add connector borders
+   REPLY INDENTATION (SHIFT ROW AS GROUP)
    ---------------------------------------- */
 .comment-row.reply {
+  margin-left: 40px; /* Replies shift right as a group */
+}
+
+/* Reply container should NOT add extra indentation */
+.comment-replies {
   margin-left: 0;
-}
-
-.comment-row.reply .comment-lane {
-  margin-left: 24px;
-}
-
-.comment-row.reply .comment-actions {
-  margin-left: 36px; /* 24px lane indent + 12px action anchor */
+  padding-left: 0;
 }
 
 /* ----------------------------------------
@@ -734,11 +724,7 @@ body[data-density="cozy"] .comment-row {
     gap: 8px;
   }
 
-  .comment-row.reply .comment-lane {
-    margin-left: 16px;
-  }
-
-  .comment-row.reply .comment-actions {
-    margin-left: 26px; /* 16px lane indent + 10px action anchor */
+  .comment-row.reply {
+    margin-left: 32px; /* Narrower indent on mobile */
   }
 }
