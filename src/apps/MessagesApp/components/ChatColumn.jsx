@@ -25,6 +25,9 @@ export default function ChatColumn({
   isRecipientUnavailable,
   recipientUnavailableReason,
   chatContainerRef,
+  onScroll,
+  showNewMessageIndicator,
+  onDismissIndicator,
   onBack,
   onMute,
   onUnmute,
@@ -124,6 +127,9 @@ export default function ChatColumn({
         currentUser={currentUser}
         currentTheme={currentTheme}
         chatContainerRef={chatContainerRef}
+        onScroll={onScroll}
+        showNewMessageIndicator={showNewMessageIndicator}
+        onDismissIndicator={onDismissIndicator}
         editingMessageId={editingMessageId}
         editMessageText={editMessageText}
         onEditMessageTextChange={onEditMessageTextChange}

@@ -20,6 +20,9 @@ export default function MessageList({
   currentUser,
   currentTheme,
   chatContainerRef,
+  onScroll,
+  showNewMessageIndicator,
+  onDismissIndicator,
   editingMessageId,
   editMessageText,
   onEditMessageTextChange,
@@ -34,7 +37,7 @@ export default function MessageList({
   onDelete,
 }) {
   return (
-    <div className="messages-app__messages-scroll" ref={chatContainerRef}>
+    <div className="messages-app__messages-scroll" ref={chatContainerRef} onScroll={onScroll}>
       {selectedChat ? (
         <div className="conversation-wrapper">
           <div className="conversation-inner">
@@ -147,6 +150,16 @@ export default function MessageList({
           <h3>Select a conversation</h3>
           <p>Choose a conversation from the sidebar to start messaging</p>
         </div>
+      )}
+      {/* New Message Indicator */}
+      {showNewMessageIndicator && (
+        <button
+          className="new-message-indicator"
+          onClick={onDismissIndicator}
+          type="button"
+        >
+          ↓ New messages
+        </button>
       )}
     </div>
   );

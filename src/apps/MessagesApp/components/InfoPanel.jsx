@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../../../utils/imageUrl';
 import { getDisplayName, getDisplayNameInitial } from '../../../utils/getDisplayName';
 
@@ -13,7 +14,19 @@ export default function InfoPanel({
   selectedGroup,
   selectedChatType,
   onlineUsers,
+  currentUserId,
+  onBlockUser,
+  onReportUser,
 }) {
+  const navigate = useNavigate();
+  const isSelfChat = selectedUser?._id === currentUserId;
+
+  const handleViewProfile = () => {
+    if (selectedUser?.username) {
+      navigate(`/profile/${selectedUser.username}`);
+    }
+  };
+
   return (
     <aside className="messages-app__info">
       {selectedChat && selectedUser ? (
@@ -35,6 +48,33 @@ export default function InfoPanel({
           </div>
           {selectedUser?.bio && (
             <div className="info-bio"><p>{selectedUser.bio}</p></div>
+          )}
+
+          {/* Action Buttons */}
+          {!isSelfChat && !selectedUser?.isDeleted && (
+            <div className="info-actions">
+              <button
+                type="button"
+                className="info-action-btn"
+                onClick={handleViewProfile}
+              >
+                👤 View Profile
+              </button>
+              <button
+                type="button"
+                className="info-action-btn info-action-btn--danger"
+                onClick={() => onBlockUser?.(selectedChat)}
+              >
+                🚫 Block User
+              </button>
+              <button
+                type="button"
+                className="info-action-btn info-action-btn--danger"
+                onClick={() => onReportUser?.(selectedUser?._id)}
+              >
+                🚩 Report User
+              </button>
+            </div>
           )}
         </>
       ) : (

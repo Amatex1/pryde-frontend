@@ -3,9 +3,11 @@
  * Extracted from: src/pages/Messages.jsx lines 2179-2356
  */
 
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { getImageUrl } from '../../../utils/imageUrl';
 import { getDisplayName } from '../../../utils/getDisplayName';
+
+const GifPicker = lazy(() => import('../../../components/GifPicker'));
 
 export default function Composer({
   selectedChat,
@@ -21,6 +23,9 @@ export default function Composer({
   uploadProgress,
   selectedGif,
   onRemoveGif,
+  showGifPicker,
+  onToggleGifPicker,
+  onGifSelect,
   contentWarning,
   onContentWarningChange,
   showContentWarning,
@@ -111,11 +116,22 @@ export default function Composer({
             disabled={!selectedChat || isRecipientUnavailable}
           />
           <div className="composer-trailing-actions">
+            <button type="button" className={`composer-action-btn ${showGifPicker ? 'active' : ''}`} onClick={onToggleGifPicker} disabled={!selectedChat || selectedFile || selectedGif || isRecipientUnavailable} title="GIF">GIF</button>
             <button type="button" className="composer-action-btn" onClick={onToggleVoiceRecorder} disabled={!selectedChat || selectedFile || selectedGif || isRecipientUnavailable} title="Voice note">🎤</button>
             <button type="button" className={`composer-action-btn ${showContentWarning ? 'active' : ''}`} onClick={onToggleContentWarning} disabled={!selectedChat || isRecipientUnavailable} title="Content warning">⚠️</button>
           </div>
           <button type="submit" className="send-btn" disabled={!selectedChat || uploadingFile || isRecipientUnavailable || (!message.trim() && !selectedFile && !selectedGif)} aria-label="Send">↑</button>
         </div>
+        {showGifPicker && (
+          <div className="composer-gif-picker-container">
+            <Suspense fallback={<div className="gif-picker-loading">Loading...</div>}>
+              <GifPicker
+                onGifSelect={onGifSelect}
+                onClose={onToggleGifPicker}
+              />
+            </Suspense>
+          </div>
+        )}
       </div>
     </form>
   );

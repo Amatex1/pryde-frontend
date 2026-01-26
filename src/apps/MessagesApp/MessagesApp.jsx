@@ -10,6 +10,7 @@ import { useOutletContext } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import CustomModal from '../../components/CustomModal';
 import MessageSearch from '../../components/MessageSearch';
+import ReportModal from '../../components/ReportModal';
 import ThreadList from './components/ThreadList';
 import ChatColumn from './components/ChatColumn';
 import InfoPanel from './components/InfoPanel';
@@ -21,6 +22,7 @@ import { useChatSelection } from './hooks/useChatSelection';
 import { useConversations } from './hooks/useConversations';
 import { useMessages } from './hooks/useMessages';
 import { useMessageSocket } from './hooks/useMessageSocket';
+import { useMessageScroll } from './hooks/useMessageScroll';
 import api from '../../utils/api';
 import { getImageUrl } from '../../utils/imageUrl';
 import { getDisplayName, getDisplayNameInitial, getUsername } from '../../utils/getDisplayName';
@@ -108,6 +110,21 @@ export default function MessagesApp() {
     clearOptimisticTimeout,
   });
 
+  // Scroll behavior
+  const {
+    isAtBottom,
+    scrollToBottom,
+    onScroll,
+    handleNewMessage,
+    showNewMessageIndicator,
+    dismissIndicator,
+  } = useMessageScroll(selectedChat, chatContainerRef);
+
+  // Auto-scroll when messages change
+  useEffect(() => {
+    handleNewMessage(messages.length);
+  }, [messages.length, handleNewMessage]);
+
   // Composer state
   const [message, setMessage] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
@@ -117,6 +134,7 @@ export default function MessagesApp() {
   const [contentWarning, setContentWarning] = useState('');
   const [showContentWarning, setShowContentWarning] = useState(false);
   const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
+  const [showGifPicker, setShowGifPicker] = useState(false);
   const [replyingTo, setReplyingTo] = useState(null);
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
@@ -137,10 +155,16 @@ export default function MessagesApp() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteMessageId, setDeleteMessageId] = useState(null);
   const [deleteIsSender, setDeleteIsSender] = useState(false);
+  const [reportModal, setReportModal] = useState({ isOpen: false, type: '', contentId: null, userId: null });
 
   // Theme
   const [currentTheme, setCurrentTheme] = useState(document.documentElement.getAttribute('data-theme') || 'light');
   const [quietMode, setQuietMode] = useState(document.documentElement.getAttribute('data-quiet') === 'true');
+
+  // Message density (persisted to localStorage)
+  const [density, setDensity] = useState(() => {
+    return localStorage.getItem('messages-density') || 'cozy';
+  });
 
   // Mobile view state
   const mobileView = selectedChat ? 'chat' : 'threads';
@@ -539,7 +563,7 @@ export default function MessagesApp() {
   };
 
   return (
-    <div className="messages-app" data-view={mobileView} data-theme={currentTheme}>
+    <div className="messages-app" data-view={mobileView} data-theme={currentTheme} data-density={density}>
       <Navbar onMenuClick={onMenuOpen} />
 
       <div className="messages-app__layout">
@@ -590,6 +614,9 @@ export default function MessagesApp() {
           isRecipientUnavailable={isRecipientUnavailable}
           recipientUnavailableReason={recipientUnavailableReason}
           chatContainerRef={chatContainerRef}
+          onScroll={onScroll}
+          showNewMessageIndicator={showNewMessageIndicator}
+          onDismissIndicator={dismissIndicator}
           onBack={handleBackToThreads}
           onMute={handleMuteConversation}
           onUnmute={handleUnmuteConversation}
@@ -606,6 +633,9 @@ export default function MessagesApp() {
           uploadProgress={uploadProgress}
           selectedGif={selectedGif}
           onRemoveGif={() => setSelectedGif(null)}
+          showGifPicker={showGifPicker}
+          onToggleGifPicker={() => setShowGifPicker(!showGifPicker)}
+          onGifSelect={(gifUrl) => { setSelectedGif(gifUrl); setShowGifPicker(false); }}
           contentWarning={contentWarning}
           onContentWarningChange={setContentWarning}
           showContentWarning={showContentWarning}
@@ -635,6 +665,9 @@ export default function MessagesApp() {
           selectedGroup={selectedGroup}
           selectedChatType={selectedChatType}
           onlineUsers={onlineUsers}
+          currentUserId={currentUser?._id}
+          onBlockUser={(userId) => handleBlockUser(userId, false)}
+          onReportUser={(userId) => setReportModal({ isOpen: true, type: 'user', contentId: null, userId })}
         />
       </div>
 
@@ -778,6 +811,14 @@ export default function MessagesApp() {
         onConfirm={modalState.onConfirm}
         inputType={modalState.inputType}
         defaultValue={modalState.defaultValue}
+      />
+
+      <ReportModal
+        isOpen={reportModal.isOpen}
+        onClose={() => setReportModal({ isOpen: false, type: '', contentId: null, userId: null })}
+        reportType={reportModal.type}
+        contentId={reportModal.contentId}
+        userId={reportModal.userId}
       />
     </div>
   );
