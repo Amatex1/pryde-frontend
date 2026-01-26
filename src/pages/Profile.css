@@ -1399,96 +1399,159 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   border-color: var(--pryde-purple);
 }
 
+/* ========================================
+   PROFILE COMPOSER BUTTONS - UNIFIED SIZING
+   All buttons same height, single row
+   ======================================== */
+
 .profile-page .post-actions-bar {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
   margin-top: 1rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* Keep all buttons on one line */
+  overflow-x: auto; /* Allow horizontal scroll if needed */
 }
 
-.btn-media-upload {
-  padding: 0.75rem 1.25rem;
+/* Base button style for all composer buttons */
+.profile-page .post-actions-bar button,
+.profile-page .post-actions-bar label,
+.profile-page .post-actions-bar select {
+  height: 36px;
+  min-height: 36px;
+  max-height: 36px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.profile-page .post-actions-bar button:hover,
+.profile-page .post-actions-bar label:hover {
+  background: rgba(108, 92, 231, 0.1);
+  border-color: var(--pryde-purple);
+}
+
+/* Media upload button - slightly different style */
+.profile-page .btn-media-upload {
+  background: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+}
+
+.profile-page .btn-media-upload:hover {
+  background: rgba(108, 92, 231, 0.1);
+  border-color: var(--pryde-purple);
+  transform: none;
+  box-shadow: none;
+}
+
+.profile-page .btn-media-upload:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Poll button */
+.profile-page .btn-poll {
+  background: rgba(108, 92, 231, 0.15);
+  border-color: rgba(108, 92, 231, 0.4);
+}
+
+.profile-page .btn-poll.active {
+  background: var(--pryde-purple);
+  color: white;
+  border-color: var(--pryde-purple);
+}
+
+/* GIF button */
+.profile-page .btn-gif {
   background: var(--pryde-purple);
   color: white;
   border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  white-space: nowrap;
+  min-width: 50px;
 }
 
-.btn-media-upload:hover {
+.profile-page .btn-gif:hover {
   background: var(--electric-blue);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
 }
 
-.btn-media-upload:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.btn-content-warning {
-  padding: 0.75rem 1.25rem;
+/* Content Warning button */
+.profile-page .btn-content-warning {
   background: transparent;
-  color: var(--text-main);
-  border: 2px solid var(--border-light);
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  white-space: nowrap;
+  border: 1px solid var(--border-subtle);
 }
 
-.btn-content-warning:hover {
+.profile-page .btn-content-warning:hover {
   border-color: var(--pryde-purple);
   color: var(--pryde-purple);
 }
 
-.btn-content-warning.active {
+.profile-page .btn-content-warning.active {
   background: var(--pryde-purple);
   color: white;
   border-color: var(--pryde-purple);
 }
 
-.privacy-selector {
-  padding: 0.75rem 1rem;
-  border: 2px solid var(--border-light);
-  border-radius: 12px;
-  background: var(--background-light);
+/* Privacy selector - same height as buttons */
+.profile-page .privacy-selector {
+  height: 36px;
+  min-height: 36px;
+  max-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  background: transparent;
   color: var(--text-main);
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 500;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
-.privacy-selector:focus {
+.profile-page .privacy-selector:focus {
   outline: none;
   border-color: var(--pryde-purple);
 }
 
-.btn-post {
-  padding: 0.75rem 1.5rem;
+/* Post button - stands out but same height */
+.profile-page .btn-post {
+  height: 36px;
+  min-height: 36px;
+  max-height: 36px;
+  padding: 0 16px;
   background: linear-gradient(135deg, #FFD700, #FFA500);
   color: #1a1a1a;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
-  font-weight: 700;
-  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
   margin-left: auto;
   white-space: nowrap;
 }
 
-.btn-post:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+.profile-page .btn-post:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
 }
 
-.btn-post:disabled {
+.profile-page .btn-post:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
