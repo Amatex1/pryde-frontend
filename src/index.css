@@ -3,8 +3,12 @@
    Import order: Tokens �+' Layout �+' Components �+' Pages
    ======================================== */
 
+/* GLOBAL FONT: Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 /* FOUNDATION: Design tokens (colors, spacing, typography) */
 @import './styles/tokens.css';              /* NEW: Platform-grade design tokens */
+@import './styles/typography.css';          /* Global typography system */
 
 /* BASE STYLES */
 @import './styles/responsiveBase.css';      /* Responsive foundation */
