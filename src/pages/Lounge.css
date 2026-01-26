@@ -138,6 +138,10 @@
   padding: 1rem;
   border-radius: 16px;
   transition: background 0.2s;
+  position: relative;
+  overflow: visible;
+  /* Ensure each message is a complete block that contains all its content */
+  contain: layout;
 }
 
 .lounge-message:hover {
@@ -181,6 +185,10 @@
 .lounge-message-content {
   flex: 1;
   min-width: 0;
+  /* Ensure content flows properly and doesn't overlap */
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .lounge-message-header {
@@ -574,6 +582,9 @@
   overflow: hidden;
   display: block;
   clear: both;
+  position: relative;
+  /* Ensure GIF container takes up its full space and doesn't allow overlap */
+  flex-shrink: 0;
 }
 
 .lounge-message-gif img {
@@ -582,6 +593,8 @@
   display: block;
   border-radius: 12px;
   max-height: 250px;
+  /* Ensure image doesn't extend beyond its container */
+  position: relative;
   object-fit: contain;
 }
 
