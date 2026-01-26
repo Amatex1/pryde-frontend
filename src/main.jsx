@@ -53,8 +53,12 @@ window.addEventListener('unhandledrejection', (event) => {
 const buildVersionMeta = document.querySelector('meta[name="build-version"]')
 const buildTimeMeta = document.querySelector('meta[name="build-time"]')
 
-console.info('🚀 Pryde Frontend Build:', buildVersionMeta?.content || 'unknown')
-console.info('🕐 Build Time:', buildTimeMeta?.content || 'unknown')
+// Expose version globally for debugging (window.__VERSION__)
+window.__VERSION__ = buildVersionMeta?.content || 'unknown'
+window.__BUILD_TIME__ = buildTimeMeta?.content || 'unknown'
+
+console.info('🚀 Pryde Frontend Build:', window.__VERSION__)
+console.info('🕐 Build Time:', window.__BUILD_TIME__)
 console.info('🌐 Environment:', import.meta.env.MODE)
 
 /* ================================
