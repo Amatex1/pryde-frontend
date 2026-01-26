@@ -737,3 +737,105 @@ body[data-density="cozy"] .comment-row {
     padding-right: 12px;
   }
 }
+
+/* ==================================================
+   PATCH A — FIX ONE-WORD-PER-LINE TEXT (CRITICAL)
+   Forces FormattedText output back to inline flow
+   ================================================== */
+
+.comment-text,
+.comment-text * {
+  display: inline !important;
+  white-space: normal !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+}
+
+
+/* ==================================================
+   PATCH B — REMOVE UNWANTED COMMENT CONTAINER HALO
+   Removes purple slab behind comments/replies
+   ================================================== */
+
+.comment-row,
+.comment-lane,
+.comment-thread,
+.comment-replies {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+
+/* ==================================================
+   PATCH C — FACEBOOK-LIKE COMPACT COMMENT LAYOUT
+   Bubble wraps content, replies feel dense
+   ================================================== */
+
+.comment-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.comment-lane {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: auto;
+  max-width: 100%;
+}
+
+.comment-bubble {
+  display: inline-block;
+  width: auto;
+  max-width: 520px;
+  padding: 6px 10px;
+  border-radius: 16px;
+  background: var(--comment-bg, rgba(255, 255, 255, 0.08));
+}
+
+@media (max-width: 600px) {
+  .comment-bubble {
+    max-width: calc(100vw - 96px);
+  }
+}
+
+.comment-author,
+.comment-text {
+  display: inline;
+  line-height: 1.35;
+}
+
+.comment-actions {
+  margin-left: 8px;
+  margin-top: 2px;
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  opacity: 0.65;
+}
+
+
+/* ==================================================
+   PATCH D — REPLY INDENT + DENSITY (MOBILE SAFE)
+   ================================================== */
+
+.comment-row.reply {
+  margin-left: 32px;
+}
+
+@media (max-width: 600px) {
+  .comment-row.reply {
+    margin-left: 16px;
+  }
+
+  .comment-bubble {
+    padding: 6px 10px;
+  }
+}
+
+.comment-row.reply .comment-avatar {
+  width: 28px;
+  height: 28px;
+}
