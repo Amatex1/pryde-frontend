@@ -573,20 +573,7 @@ select:focus,
   max-width: calc(100% - 40px);
   padding: 8px 12px;
   border-radius: 18px;
-  background: var(--comment-bg, rgba(255, 255, 255, 0.08));
   word-wrap: break-word;
-}
-
-[data-theme="light"] .comment-bubble {
-  background: var(--comment-bg, #F0F2F5);
-}
-
-.quiet-mode .comment-bubble {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-[data-theme="light"] .quiet-mode .comment-bubble {
-  background: rgba(0, 0, 0, 0.04);
 }
 
 /* ----------------------------------------
