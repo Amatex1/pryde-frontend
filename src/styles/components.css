@@ -901,3 +901,26 @@ body[data-density="cozy"] .comment-row {
   content: "";
   margin-right: 2px;
 }
+
+
+/* ==================================================
+   REPLY DENSITY COMPACTNESS
+   Reduces vertical space so replies feel grouped
+   ================================================== */
+
+/* Reduce vertical spacing between replies */
+.comment-row.reply {
+  margin-top: 2px;
+  margin-bottom: 2px;
+  gap: 6px;
+}
+
+/* Slightly tighter bubble padding for replies */
+.comment-row.reply .comment-bubble {
+  padding: 5px 9px;
+}
+
+/* Pull actions closer to the reply bubble */
+.comment-row.reply .comment-actions {
+  margin-top: 1px;
+}
