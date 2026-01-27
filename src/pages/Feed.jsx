@@ -11,6 +11,7 @@ import FormattedText from '../components/FormattedText';
 import PostSkeleton from '../components/PostSkeleton';
 import OptimizedImage from '../components/OptimizedImage';
 import CommentThread from '../components/CommentThread';
+import CommentSheet from '../components/comments/CommentSheet';
 import ReactionButton from '../components/ReactionButton';
 import GifPicker from '../components/GifPicker';
 import PollCreator from '../components/PollCreator';
@@ -80,6 +81,7 @@ function Feed() {
   const [showGifPicker, setShowGifPicker] = useState(null);
   const [selectedPostGif, setSelectedPostGif] = useState(null); // GIF for main post creation
   const [commentModalOpen, setCommentModalOpen] = useState(null); // Track which post's comment modal is open
+  const [commentSheetOpen, setCommentSheetOpen] = useState(null); // Mobile-only full comment sheet (stores postId)
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editCommentText, setEditCommentText] = useState('');
   const [replyingToComment, setReplyingToComment] = useState(null);
@@ -287,6 +289,18 @@ function Feed() {
       }
     });
   }, [posts, postComments]);
+
+  // Scroll lock when mobile comment sheet is open
+  useEffect(() => {
+    if (commentSheetOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [commentSheetOpen]);
 
   // Memoize the URL params to prevent unnecessary effect runs
   const targetPostId = useMemo(() => searchParams.get('post'), [searchParams]);
@@ -1552,17 +1566,15 @@ function Feed() {
   };
 
   const toggleCommentBox = async (postId) => {
-    // Detect mobile: check width AND touch support for better Samsung Galaxy detection
-    const isMobile = window.innerWidth <= 768 ||
-                     ('ontouchstart' in window) ||
-                     (navigator.maxTouchPoints > 0);
+    // Detect mobile using 600px breakpoint (matches CommentSheet design contract)
+    const isMobileSheet = window.matchMedia("(max-width: 600px)").matches;
 
-    console.log('🔍 toggleCommentBox - isMobile:', isMobile, 'width:', window.innerWidth, 'touch:', 'ontouchstart' in window);
+    console.log('🔍 toggleCommentBox - isMobileSheet:', isMobileSheet, 'width:', window.innerWidth);
 
-    // On mobile, open modal instead of inline comment box
-    if (isMobile && window.innerWidth <= 768) {
-      console.log('🔍 Opening modal for post:', postId);
-      setCommentModalOpen(postId);
+    // On mobile, open CommentSheet for full discussion
+    if (isMobileSheet) {
+      console.log('🔍 Opening CommentSheet for post:', postId);
+      setCommentSheetOpen(postId);
       // Fetch comments if not already loaded
       if (!postComments[postId]) {
         await fetchCommentsForPost(postId);
@@ -3311,6 +3323,79 @@ function Feed() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Mobile Comment Sheet - Full Discussion */}
+      {commentSheetOpen && (
+        <CommentSheet onClose={() => setCommentSheetOpen(null)}>
+          {/* Comment Input at Top */}
+          <form
+            onSubmit={(e) => {
+              handleCommentSubmit(commentSheetOpen, e);
+            }}
+            className="comment-sheet-input-form"
+          >
+            <div className="comment-input-wrapper">
+              <div className="comment-user-avatar">
+                {currentUser?.profilePhoto ? (
+                  <OptimizedImage
+                    src={getImageUrl(currentUser.profilePhoto)}
+                    alt="You"
+                    className="avatar-image"
+                  />
+                ) : (
+                  <span>{currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
+                )}
+              </div>
+              <input
+                type="text"
+                value={commentText[commentSheetOpen] || ''}
+                onChange={(e) => handleCommentChange(commentSheetOpen, e.target.value)}
+                placeholder="Add a comment..."
+                className="comment-input"
+              />
+              <button
+                type="submit"
+                className="comment-submit-btn"
+                disabled={!commentText[commentSheetOpen]?.trim() && !commentGif[commentSheetOpen]}
+              >
+                ➤
+              </button>
+            </div>
+          </form>
+
+          {/* All Comments with Full Replies */}
+          <div className="comment-sheet-threads">
+            {postComments[commentSheetOpen] && postComments[commentSheetOpen]
+              .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)
+              .map((comment) => (
+                <CommentThread
+                  key={comment._id}
+                  comment={comment}
+                  replies={commentReplies[comment._id] || []}
+                  currentUser={currentUser}
+                  postId={commentSheetOpen}
+                  showReplies={showReplies}
+                  editingCommentId={editingCommentId}
+                  editCommentText={editCommentText}
+                  showReactionPicker={showReactionPicker}
+                  commentRefs={commentRefs}
+                  getUserReactionEmoji={getUserReactionEmoji}
+                  handleEditComment={handleEditComment}
+                  handleSaveEditComment={handleSaveEditComment}
+                  handleCancelEditComment={handleCancelEditComment}
+                  handleDeleteComment={handleDeleteComment}
+                  handleCommentReaction={handleCommentReaction}
+                  toggleReplies={toggleReplies}
+                  handleReplyToComment={handleReplyToComment}
+                  setShowReactionPicker={setShowReactionPicker}
+                  setReactionDetailsModal={setReactionDetailsModal}
+                  setReportModal={setReportModal}
+                  isFullSheet={true}
+                />
+              ))}
+          </div>
+        </CommentSheet>
       )}
 
       {/* Toast Notifications */}

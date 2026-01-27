@@ -55,10 +55,15 @@ const CommentThread = ({
   handleReplyToComment,
   setShowReactionPicker,
   setReactionDetailsModal,
-  setReportModal
+  setReportModal,
+  isFullSheet = false // When true, show all replies (used in CommentSheet)
 }) => {
   // Reaction picker timeout ref
   const reactionPickerTimeoutRef = useRef(null);
+
+  // Inline preview limit: on mobile (≤600px) and NOT in full sheet, limit to 2 replies
+  const isMobileInline = !isFullSheet && typeof window !== 'undefined' && window.matchMedia("(max-width: 600px)").matches;
+  const MAX_INLINE_REPLIES = isMobileInline ? 2 : Infinity;
 
   // Menu state for 3-dot context menu
   const [openMenuId, setOpenMenuId] = useState(null);
@@ -254,7 +259,7 @@ const CommentThread = ({
       {/* Replies Section - Only render if replies are visible */}
       {showReplies[comment._id] && replies.length > 0 && (
         <div className="comment-replies">
-          {replies.map((reply) => {
+          {replies.slice(0, MAX_INLINE_REPLIES).map((reply) => {
             const isEditingReply = editingCommentId === reply._id;
             const isOwnReply = reply.authorId?._id === currentUser?._id || reply.authorId === currentUser?._id;
 
