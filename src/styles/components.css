@@ -837,6 +837,27 @@ body[data-density="cozy"] .comment-row {
   }
 }
 
+/* Very narrow portrait screens - reduce reply indent further */
+@media (max-width: 400px) {
+  .comment-row.reply {
+    margin-left: 8px;
+  }
+
+  .comment-row.reply .comment-avatar {
+    width: 24px;
+    height: 24px;
+  }
+
+  .comment-bubble {
+    max-width: 90%;
+  }
+
+  /* Allow reply bubbles to use more available width */
+  .comment-row.reply .comment-bubble {
+    max-width: 95%;
+  }
+}
+
 .comment-row.reply .comment-avatar {
   width: 28px;
   height: 28px;
