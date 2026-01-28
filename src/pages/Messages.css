@@ -4255,3 +4255,125 @@
   height: 28px !important;
   font-size: 14px !important;
 }
+
+/* =========================================================
+   AGGRESSIVE NAVBAR + COMPOSER OVERRIDE
+   Use :has() to target parent containers when Messages page is active
+   ========================================================= */
+
+/* Override #root padding when Messages page is showing */
+#root:has(.messages-page) {
+  padding-top: 0 !important;
+}
+
+/* Override body padding in PWA mode */
+body:has(.messages-page) {
+  padding-top: 0 !important;
+}
+
+/* Messages page should be full viewport height with no gaps */
+.messages-page {
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+}
+
+/* Remove page-container max-width constraint for Messages page */
+.page-container.messages-page {
+  max-width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* NAVBAR: Completely flush at top */
+.messages-page > .navbar,
+.messages-page > nav,
+.messages-page > nav.navbar,
+.messages-page > nav.navbar.glossy,
+.messages-page .navbar {
+  position: sticky !important;
+  top: 0 !important;
+  margin: 0 !important;
+  padding: 0 16px !important;
+  border-radius: 0 !important;
+}
+
+@media (min-width: 1024px) {
+  .messages-page > nav.navbar.glossy,
+  .messages-page .navbar {
+    padding: 0 24px !important;
+    min-height: 60px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+}
+
+/* COMPOSER CONTAINER: Truly full width */
+.messages-page .chat-input-area,
+.messages-page .chat-input-wrapper,
+.messages-page .composer-container {
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 8px 12px !important;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0)) !important;
+  box-sizing: border-box !important;
+}
+
+/* COMPOSER: Full width, thinner, more elegant */
+.messages-page .message-composer,
+.messages-page .calm-composer,
+.messages-page .dm-composer {
+  max-width: none !important;
+  width: 100% !important;
+  min-height: 40px !important;
+  padding: 6px 12px !important;
+  border-radius: 20px !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* Composer input row */
+.messages-page .composer-input-row,
+.messages-page .composer-row {
+  width: 100% !important;
+  max-width: none !important;
+  flex: 1 !important;
+}
+
+/* Message input field */
+.messages-page .message-input,
+.messages-page .composer-textarea,
+.messages-page .dm-input {
+  min-height: 24px !important;
+  max-height: 120px !important;
+  padding: 4px 8px !important;
+  font-size: 14px !important;
+  resize: none !important;
+  flex: 1 !important;
+}
+
+/* Send button - compact */
+.messages-page .send-btn,
+.messages-page .btn-send,
+.messages-page .send-button {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  font-size: 14px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Action buttons - compact */
+.messages-page .composer-actions button,
+.messages-page .message-composer-actions button,
+.messages-page .composer-btn {
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
+  font-size: 13px !important;
+  padding: 0 !important;
+}
