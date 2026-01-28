@@ -766,19 +766,42 @@
     display: flex;
   }
 
-  /* Mobile: Hide sidebar when chat is active */
-  .messages-layout.has-active-chat .conversations-sidebar {
-    display: none;
+  /* ========================================
+     MOBILE SINGLE-PANE TOGGLE
+     Uses .in-conversation class on .messages-page
+     (set when selectedChat is truthy in Messages.jsx)
+     ======================================== */
+
+  /* Mobile: Hide sidebar when chat is selected */
+  .messages-page.in-conversation .conversations-sidebar,
+  .messages-layout.in-conversation .conversations-sidebar {
+    display: none !important;
   }
 
-  /* Mobile: Show thread when chat is active */
-  .messages-layout.has-active-chat .messages-main {
-    display: flex;
+  /* Mobile: Show chat area when chat is selected */
+  .messages-page.in-conversation .chat-area,
+  .messages-page.in-conversation .messages-main,
+  .messages-layout.in-conversation .messages-main {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    position: relative !important;
+    transform: none !important;
   }
 
-  /* Mobile: Hide thread when no chat is active */
-  .messages-layout:not(.has-active-chat) .messages-main {
-    display: none;
+  /* Mobile: Show sidebar when no chat is selected */
+  .messages-page:not(.in-conversation) .conversations-sidebar,
+  .messages-layout:not(.in-conversation) .conversations-sidebar {
+    display: flex !important;
+    width: 100% !important;
+  }
+
+  /* Mobile: Hide chat area when no chat is selected */
+  .messages-page:not(.in-conversation) .chat-area,
+  .messages-page:not(.in-conversation) .messages-main,
+  .messages-layout:not(.in-conversation) .messages-main {
+    display: none !important;
   }
 
   /* Mobile: Wider bubbles (85% max) for better use of space */

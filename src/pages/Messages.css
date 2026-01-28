@@ -225,23 +225,73 @@
   }
 }
 
-/* Mobile: 1 column - hide sidebar */
+/* ========================================
+   MOBILE SINGLE-PANE LAYOUT (≤768px)
+
+   On mobile, show EITHER:
+   - Conversation list (when no chat selected)
+   - Chat area (when chat selected)
+   Never both in document flow.
+
+   Desktop split-pane remains unchanged.
+   ======================================== */
 @media (max-width: 768px) {
+  /* Single column grid on mobile */
   .messages-page {
     grid-template-columns: 1fr;
+    overflow-x: hidden; /* Prevent horizontal scroll */
   }
-  .messages-sidebar,
-  .conversations-sidebar {
-    display: none;
+
+  /* Reset any transforms or positioning that might push content off-screen */
+  .messages-layout,
+  .messages-container {
+    transform: none !important;
+    left: 0 !important;
+    right: 0 !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
-  /* Show sidebar when no chat selected */
+
+  /* === STATE 1: No chat selected - Show conversation list === */
   .messages-page:not(.in-conversation) .messages-sidebar,
   .messages-page:not(.in-conversation) .conversations-sidebar {
-    display: flex;
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    position: relative !important;
+    transform: none !important;
   }
+
   .messages-page:not(.in-conversation) .chat-area,
-  .messages-page:not(.in-conversation) .messages-conversation {
-    display: none;
+  .messages-page:not(.in-conversation) .messages-conversation,
+  .messages-page:not(.in-conversation) .messages-main {
+    display: none !important;
+  }
+
+  /* === STATE 2: Chat selected - Show chat area only === */
+  .messages-page.in-conversation .messages-sidebar,
+  .messages-page.in-conversation .conversations-sidebar {
+    display: none !important;
+  }
+
+  .messages-page.in-conversation .chat-area,
+  .messages-page.in-conversation .messages-conversation,
+  .messages-page.in-conversation .messages-main {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    position: relative !important;
+    transform: none !important;
+    grid-column: 1 !important; /* Ensure it's in the single column */
+  }
+
+  /* Ensure chat-area content fills width on mobile */
+  .messages-page.in-conversation .chat-messages,
+  .messages-page.in-conversation .chat-input-area {
+    width: 100% !important;
+    max-width: 100% !important;
   }
 }
 

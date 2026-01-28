@@ -86,36 +86,60 @@
   margin: 0;
 }
 
-/* Mobile: column layout - sidebar collapses, normal flow */
+/* ========================================
+   MOBILE SINGLE-PANE LAYOUT (≤768px)
+
+   BEHAVIOR:
+   - Mobile uses single-pane layout (sidebar OR thread, never both)
+   - Controlled by .in-conversation class on parent .messages-page
+   - Main CSS rules are in Messages.css (grid-based layout)
+   - This file provides supplementary flex-based fallbacks
+
+   Desktop split-pane remains unchanged (flex: sidebar + main)
+   ======================================== */
 @media (max-width: 768px) {
   .messages-layout {
     flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden; /* Prevent horizontal scroll */
   }
 
+  /* Sidebar: Full width when visible */
   .messages-sidebar {
-    width: 100%;
-    height: auto; /* SCROLL FIX: No height constraint */
-    max-height: none; /* SCROLL FIX: Remove max-height trap */
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto;
+    max-height: none;
     position: relative;
-    top: 0;
-    overflow: visible; /* SCROLL FIX: Browser scrolls */
+    transform: none;
+    left: 0;
+    overflow: visible;
     border-right: none;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
 
+  /* Hidden state for sidebar (when chat is selected) */
   .messages-sidebar.hidden {
-    display: none;
+    display: none !important;
   }
 
+  /* Main area: Full width when visible */
   .messages-main,
   .messages-surface {
-    width: 100%;
-    display: block;
-    overflow: visible; /* SCROLL FIX: Browser scrolls */
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    position: relative;
+    transform: none;
+    left: 0;
   }
 
   .messages-thread-area {
-    overflow: visible; /* SCROLL FIX: Browser scrolls */
+    overflow: visible;
+    width: 100%;
   }
 
   /* Sticky composer at bottom on mobile */
@@ -124,6 +148,7 @@
     bottom: 0;
     left: 0;
     right: 0;
+    width: 100%;
     z-index: 10;
     padding-bottom: env(safe-area-inset-bottom, 0);
     background: var(--bg-secondary, #1a1a1a);
