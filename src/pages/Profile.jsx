@@ -177,11 +177,14 @@ function Profile() {
   // Fetch full badge objects with visibility settings applied
   const fetchUserBadges = async (userId) => {
     try {
+      console.log('[Profile] Fetching badges for userId:', userId);
       const badgesResponse = await api.get(`/badges/user/${userId}`);
+      console.log('[Profile] Badges response:', badgesResponse.data);
       if (isMountedRef.current) {
         setUserBadges(badgesResponse.data || []);
       }
     } catch (error) {
+      console.error('[Profile] Failed to fetch user badges:', error);
       logger.error('Failed to fetch user badges:', error);
       // Non-critical error, continue without badges
       if (isMountedRef.current) {

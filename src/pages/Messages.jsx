@@ -1589,7 +1589,7 @@ function Messages() {
 
   return (
     <div
-      className={`page-container messages-page ${selectedChat ? 'in-conversation' : ''}`}
+      className={`messages-page ${selectedChat ? 'in-conversation' : ''}`}
       data-theme={currentTheme}
       data-quiet-mode={quietMode ? 'true' : 'false'}
     >

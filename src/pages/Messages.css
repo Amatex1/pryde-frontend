@@ -4257,56 +4257,67 @@
 }
 
 /* =========================================================
-   AGGRESSIVE NAVBAR + COMPOSER OVERRIDE
-   Use :has() to target parent containers when Messages page is active
+   MESSAGES PAGE - FULL VIEWPORT LAYOUT
+   No page-container class - direct viewport control
    ========================================================= */
 
 /* Override #root padding when Messages page is showing */
 #root:has(.messages-page) {
-  padding-top: 0 !important;
+  padding: 0 !important;
 }
 
 /* Override body padding in PWA mode */
 body:has(.messages-page) {
-  padding-top: 0 !important;
+  padding: 0 !important;
 }
 
-/* Messages page should be full viewport height with no gaps */
+/* Messages page fills entire viewport */
 .messages-page {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
   padding: 0 !important;
   margin: 0 !important;
-  min-height: 100vh !important;
-  min-height: 100dvh !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: var(--bg-page, #1a1a2e) !important;
 }
 
-/* Remove page-container max-width constraint for Messages page */
-.page-container.messages-page {
-  max-width: 100% !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-
-/* NAVBAR: Completely flush at top */
-.messages-page > .navbar,
-.messages-page > nav,
+/* NAVBAR: First child, flush at top */
 .messages-page > nav.navbar,
-.messages-page > nav.navbar.glossy,
-.messages-page .navbar {
-  position: sticky !important;
-  top: 0 !important;
+.messages-page > nav.navbar.glossy {
+  position: relative !important;
+  flex-shrink: 0 !important;
+  width: 100% !important;
   margin: 0 !important;
   padding: 0 16px !important;
   border-radius: 0 !important;
+  z-index: 100 !important;
 }
 
 @media (min-width: 1024px) {
-  .messages-page > nav.navbar.glossy,
-  .messages-page .navbar {
+  .messages-page > nav.navbar,
+  .messages-page > nav.navbar.glossy {
     padding: 0 24px !important;
     min-height: 60px !important;
-    display: flex !important;
-    align-items: center !important;
   }
+}
+
+/* Messages container fills remaining space */
+.messages-page > .messages-container {
+  flex: 1 !important;
+  overflow: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: auto !important;
 }
 
 /* COMPOSER CONTAINER: Truly full width */
