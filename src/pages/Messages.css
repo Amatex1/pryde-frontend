@@ -4168,12 +4168,26 @@
   margin-top: 0 !important;
 }
 
+/* Override nav.navbar.glossy padding from components.css (line 325) */
 .messages-page > .navbar,
-.messages-page > nav {
+.messages-page > nav,
+.messages-page > nav.navbar,
+.messages-page > nav.navbar.glossy {
   margin: 0 !important;
+  margin-top: 0 !important;
+  padding: 0 var(--space-4) !important; /* Horizontal padding only, no vertical */
   padding-top: 0 !important;
+  padding-bottom: 0 !important;
   /* Ensure navbar is in first row of grid */
   grid-row: 1;
+}
+
+/* Desktop: Override the 12px vertical padding from components.css */
+@media (min-width: 1024px) {
+  .messages-page > nav.navbar.glossy {
+    padding: 0 !important; /* Remove all padding, let inner content handle it */
+    min-height: var(--navbar-height, 56px) !important;
+  }
 }
 
 /* 2. CHAT AREA: Full width within its grid column */
