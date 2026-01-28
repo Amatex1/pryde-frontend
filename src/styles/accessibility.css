@@ -343,27 +343,35 @@ textarea:disabled,
 
 /* Mobile screens (480px) */
 @media (max-width: 480px) {
-  /* Ensure modals scroll internally */
+  /* Ensure modals scroll internally
+     MOBILE HARDENED: Use 100dvh for iOS Safari dynamic toolbar compatibility
+     Safe area padding ensures content isn't trapped under device chrome */
   .modal-content,
   .custom-modal-content,
   .create-group-modal,
   .edit-group-modal,
   .settings-modal {
-    max-height: 85vh;
+    max-height: 100vh;  /* Fallback for older browsers */
+    max-height: 100dvh; /* iOS Safari dynamic viewport height */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    padding-bottom: env(safe-area-inset-bottom, 0);
   }
 
-  /* Ensure bottom of modals is accessible */
+  /* Ensure bottom of modals is accessible
+     MOBILE HARDENED: Use solid surface token instead of inherit
+     Prevents transparency leaks when modal content scrolls behind action bar */
   .modal-actions,
   .modal-buttons,
   .custom-modal-actions {
     position: sticky;
     bottom: 0;
-    background: inherit;
+    background: var(--surface-1, var(--bg-card, #ffffff));
     padding-top: 12px;
     margin-top: 12px;
     border-top: 1px solid var(--border-light, #e5e5e5);
+    /* Ensure actions are always reachable above safe area */
+    padding-bottom: env(safe-area-inset-bottom, 0);
   }
 }
 

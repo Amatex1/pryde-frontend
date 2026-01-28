@@ -2,8 +2,16 @@
  * ========================================
  * Mobile-Friendly Styles
  * Target: Mobile devices ≤768px
- * Status: ACTIVE - Core mobile styles
- * Last Updated: 2026-01-15
+ * Status: DEPRECATED - Scheduled for removal after PageLayout migration
+ * Last Updated: 2026-01-28
+ *
+ * ⚠️ DEPRECATION NOTICE:
+ * This file is scheduled for removal once the mobile styles are migrated
+ * to component-specific CSS files. All rules are scoped to max-width
+ * media queries to prevent leakage into tablet/desktop layouts.
+ *
+ * DO NOT ADD NEW STYLES HERE.
+ * Instead, add mobile styles directly to component CSS files.
  *
  * This file provides mobile-specific layout fixes,
  * touch optimizations, and PWA enhancements.
@@ -950,27 +958,32 @@
 
   /* ========================================
      COMMENTS/REPLIES - FIX OVERFLOW
+     MOBILE HARDENED: Use overflow-x: hidden to prevent horizontal scroll
+     while allowing overflow-y: visible for tooltips and dropdowns
      ======================================== */
 
   /* Comments section container */
   .comments-section,
   .post-comments {
     max-width: 100% !important;
-    overflow: hidden !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
     padding-right: 0 !important;
   }
 
   .comment,
   .comment.reply {
     max-width: 100% !important;
-    overflow: hidden !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
     box-sizing: border-box !important;
   }
 
   .comment-replies {
     padding-left: 10px !important;
     max-width: 100% !important;
-    overflow: hidden !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
     padding-right: 0 !important;
     border-left: 2px solid var(--pryde-purple, #6c5ce7) !important;
   }
@@ -983,7 +996,8 @@
   .comment-content-wrapper {
     max-width: 100% !important;
     min-width: 0 !important;
-    overflow: hidden !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     box-sizing: border-box !important;
@@ -1216,20 +1230,22 @@
 
 /* =====================================================
    MOBILE MENU — TOUCH SAFETY
+   MOBILE HARDENED: Wrapped in media query to prevent desktop leakage
    ===================================================== */
+@media (max-width: 768px) {
+  .mobile-menu {
+    pointer-events: auto;
+  }
 
-.mobile-menu {
-  pointer-events: auto;
-}
+  .mobile-hamburger-btn {
+    pointer-events: auto;
+    touch-action: manipulation;
+  }
 
-.mobile-hamburger-btn {
-  pointer-events: auto;
-  touch-action: manipulation;
-}
-
-/* Prevent clicks passing through closed menu */
-.mobile-menu:not(.mobile-menu-visible) {
-  pointer-events: none;
+  /* Prevent clicks passing through closed menu */
+  .mobile-menu:not(.mobile-menu-visible) {
+    pointer-events: none;
+  }
 }
 
 /* ============================================
