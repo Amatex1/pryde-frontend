@@ -238,9 +238,21 @@ function Admin() {
         const response = await api.get('/admin/reports?status=pending');
         setReports(response.data.reports);
       } else if (activeTab === 'users') {
-        const response = await api.get('/admin/users');
-        console.log('Users data:', response.data.users);
-        setUsers(response.data.users);
+        // Fetch users AND badges (needed for badge management modal)
+        const [usersResponse, badgesResponse] = await Promise.all([
+          api.get('/admin/users'),
+          api.get('/badges/admin/catalog').catch(() => api.get('/badges'))
+        ]);
+        console.log('Users data:', usersResponse.data.users);
+        setUsers(usersResponse.data.users);
+        // Flatten badges catalog if needed
+        const allBadges = badgesResponse.data?.automatic?.badges
+          ? [
+              ...(badgesResponse.data.automatic.badges || []),
+              ...(badgesResponse.data.manual.badges || [])
+            ]
+          : (badgesResponse.data || []);
+        setBadges(allBadges);
       } else if (activeTab === 'blocks') {
         const response = await api.get('/admin/blocks');
         setBlocks(response.data.blocks);
@@ -903,7 +915,12 @@ function BadgeManagementModal({ user, badges = [], onAssignBadge, onRevokeBadge,
   const [isRevoking, setIsRevoking] = useState(null);
 
   const userBadges = user.badges || [];
-  const availableBadges = badges.filter(b => !userBadges.some(ub => ub.id === b.id));
+  // Handle both string IDs and full badge objects from resolveBadges()
+  // userBadges can be: ["founder", "early_member"] OR [{id: "founder", ...}, {id: "early_member", ...}]
+  const availableBadges = badges.filter(b => !userBadges.some(ub => {
+    const userBadgeId = typeof ub === 'string' ? ub : ub.id;
+    return userBadgeId === b.id;
+  }));
 
   // Check if selected badge is manual (requires reason)
   const selectedBadgeData = badges.find(b => b.id === selectedBadge);
