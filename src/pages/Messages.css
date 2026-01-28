@@ -4032,3 +4032,126 @@
     max-width: 92%;
   }
 }
+
+/* =========================================================
+   EDGE-TO-EDGE MESSAGE SURFACE FIX
+   Remove "double chat box" - messages render on page background
+
+   OBJECTIVE:
+   - Remove inner card styling (background, border-radius, box-shadow)
+   - Messages float directly on the page background
+   - Preserve desktop split-pane structure
+   - Scrollbar attached to message column, not inner card
+   ========================================================= */
+
+/* 1. CHAT AREA: Transparent, no card styling */
+.chat-area,
+.chat-area.active,
+.conversation-shell {
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* 2. CHAT MESSAGES CONTAINER: Transparent, edge-to-edge */
+.chat-messages,
+.message-scroll {
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* 3. CONVERSATION WRAPPER: Full width, no constraints */
+.conversation-wrapper {
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  max-width: 100%;
+  width: 100%;
+  padding: 0;
+}
+
+/* 4. CONVERSATION INNER: Remove the "quiet room" card */
+.conversation-inner {
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  /* Preserve padding for message breathing room */
+  padding: var(--space-4, 16px);
+}
+
+/* 5. DARK MODE: Same transparent treatment */
+[data-theme="dark"] .chat-area,
+[data-theme="dark"] .chat-messages,
+[data-theme="dark"] .conversation-wrapper,
+[data-theme="dark"] .conversation-inner {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* 6. QUIET MODE: Same transparent treatment */
+[data-quiet-mode="true"] .chat-area,
+[data-quiet-mode="true"] .chat-messages,
+[data-quiet-mode="true"] .conversation-wrapper,
+[data-quiet-mode="true"] .conversation-inner {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* 7. COMPOSER: Subtle top border for visual separation */
+.chat-input-area {
+  border-top: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
+  background: var(--bg-card, #ffffff);
+}
+
+[data-theme="dark"] .chat-input-area {
+  border-top-color: var(--border-subtle, rgba(255, 255, 255, 0.08));
+  background: var(--bg-card, #1a1a2e);
+}
+
+/* 8. SCROLLBAR: Attached to message column, not inner card */
+.chat-messages {
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Height uses dynamic viewport for iOS Safari */
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* 9. MESSAGE PADDING: Horizontal rhythm aligned with composer */
+.chat-messages {
+  padding-inline: var(--space-4, 16px);
+  padding-block: var(--space-4, 16px);
+}
+
+@media (min-width: 768px) {
+  .chat-messages {
+    padding-inline: var(--space-6, 24px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .chat-messages {
+    padding-inline: var(--space-8, 32px);
+  }
+}
+
+/* 10. MOBILE: Full-bleed, no card artifacts */
+@media (max-width: 768px) {
+  .chat-area,
+  .chat-messages,
+  .conversation-wrapper,
+  .conversation-inner {
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .chat-messages {
+    padding-inline: var(--space-3, 12px);
+  }
+}
