@@ -46,6 +46,7 @@ function Profile() {
   const currentUser = getCurrentUser();
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const [user, setUser] = useState(null);
+  const [userBadges, setUserBadges] = useState([]); // Full badge objects with visibility applied
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingPosts, setLoadingPosts] = useState(true);
@@ -173,11 +174,32 @@ function Profile() {
     }
   };
 
+  // Fetch full badge objects with visibility settings applied
+  const fetchUserBadges = async (userId) => {
+    try {
+      const badgesResponse = await api.get(`/badges/user/${userId}`);
+      if (isMountedRef.current) {
+        setUserBadges(badgesResponse.data || []);
+      }
+    } catch (error) {
+      logger.error('Failed to fetch user badges:', error);
+      // Non-critical error, continue without badges
+      if (isMountedRef.current) {
+        setUserBadges([]);
+      }
+    }
+  };
+
   const fetchUserProfile = async () => {
     try {
       const response = await api.get(`/users/${id}`);
       setUser(response.data);
       setProfileError(null); // Clear any previous errors
+
+      // Fetch full badge objects with visibility settings applied
+      if (response.data._id) {
+        fetchUserBadges(response.data._id);
+      }
     } catch (error) {
       logger.error('Failed to fetch user profile:', error);
 
@@ -194,6 +216,7 @@ function Profile() {
       }
 
       setUser(null); // Clear user data on error
+      setUserBadges([]); // Clear badges on error
     } finally {
       setLoading(false);
     }
@@ -1649,7 +1672,7 @@ function Profile() {
                 <p className="profile-username">@{user.username}</p>
 
                 {/* 3. Founder / Creator role (single elegant pill) */}
-                <TieredBadgeDisplay badges={user.badges} context="profile" />
+                <TieredBadgeDisplay badges={userBadges} context="profile" />
 
                 {/* 4. Badges (small muted row) - handled by TieredBadgeDisplay */}
 
