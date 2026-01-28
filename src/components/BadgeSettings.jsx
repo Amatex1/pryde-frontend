@@ -52,7 +52,22 @@ export default function BadgeSettings({ onUpdate }) {
       if (onUpdate) onUpdate();
     } catch (error) {
       console.error('Failed to save badge settings:', error);
-      setMessage(error.response?.data?.message || 'Failed to save badge settings');
+
+      // HARDENED: Provide clearer error messages based on error code
+      const errorData = error.response?.data;
+      let userMessage = 'Unable to save badge visibility. Please try again.';
+
+      if (errorData?.code === 'NO_BADGES_ASSIGNED') {
+        userMessage = 'You don\'t have any badges assigned yet.';
+      } else if (errorData?.code === 'BADGE_NOT_OWNED') {
+        userMessage = 'One or more selected badges are not assigned to your account.';
+      } else if (errorData?.code === 'CORE_ROLE_PROTECTED') {
+        userMessage = 'Core role badges cannot be hidden.';
+      } else if (errorData?.message) {
+        userMessage = errorData.message;
+      }
+
+      setMessage(userMessage);
     } finally {
       setSaving(false);
     }
