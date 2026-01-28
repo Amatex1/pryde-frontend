@@ -4155,3 +4155,89 @@
     padding-inline: var(--space-3, 12px);
   }
 }
+
+/* =========================================================
+   NAVBAR + COMPOSER FIX
+   1. Navbar sits flush at top of page (no gap)
+   2. Composer spans full width of chat container
+   ========================================================= */
+
+/* 1. NAVBAR: Flush at top, no margin/padding gap */
+.messages-page {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+.messages-page > .navbar,
+.messages-page > nav {
+  margin: 0 !important;
+  padding-top: 0 !important;
+  /* Ensure navbar is in first row of grid */
+  grid-row: 1;
+}
+
+/* 2. CHAT AREA: Full width within its grid column */
+.messages-page .chat-area,
+.messages-page .conversation-shell {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+/* 3. COMPOSER: Full width, thinner, spans chat container */
+.messages-page .chat-input-area {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 8px 16px !important;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0)) !important;
+}
+
+/* Desktop: Slightly more padding */
+@media (min-width: 1025px) {
+  .messages-page .chat-input-area {
+    padding: 10px 24px !important;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0)) !important;
+  }
+}
+
+/* 4. MESSAGE COMPOSER: Thinner, full width */
+.messages-page .message-composer,
+.messages-page .calm-composer {
+  max-width: 100% !important;
+  width: 100% !important;
+  min-height: 44px !important; /* Thinner than before */
+  padding: 8px 12px !important;
+  border-radius: 22px !important;
+  background: var(--bg-elevated, rgba(255, 255, 255, 0.05)) !important;
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08)) !important;
+}
+
+/* 5. COMPOSER INPUT ROW: Full width flex */
+.messages-page .composer-input-row {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* 6. MESSAGE INPUT: Thinner */
+.messages-page .message-input {
+  min-height: 28px !important;
+  padding: 6px 8px !important;
+  font-size: 15px !important;
+}
+
+/* 7. SEND BUTTON: Smaller to match thinner composer */
+.messages-page .send-btn,
+.messages-page .btn-send {
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 16px !important;
+}
+
+/* 8. ACTION BUTTONS: Smaller */
+.messages-page .composer-actions button,
+.messages-page .message-composer-actions button {
+  width: 28px !important;
+  height: 28px !important;
+  font-size: 14px !important;
+}
