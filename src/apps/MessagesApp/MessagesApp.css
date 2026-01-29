@@ -565,26 +565,30 @@
 
   /* Composer: Position above mobile navbar */
   /* VISUAL UNIFICATION: Outer form is positioning-only, visually neutral */
+  /* COMPACT: Reduced padding for Messenger-like density */
   .messages-app__composer {
     position: fixed;
     bottom: calc(var(--mobile-nav-height, 64px) + env(safe-area-inset-bottom, 0px));
     left: 0;
     right: 0;
     z-index: 50;
-    padding: 8px 12px;
+    padding: 4px 8px;
     /* REMOVED: background and border - now handled by .composer-input-row */
     background: transparent !important;
     border-top: none !important;
     box-shadow: none !important;
+    /* COMPACT: Prevent vertical stacking */
+    align-items: center;
   }
 
   /* Adjust chat scroll area to account for fixed composer */
+  /* COMPACT: Reduced padding for smaller composer */
   .messages-app__chat {
-    padding-bottom: 70px; /* Space for fixed composer */
+    padding-bottom: 56px; /* Space for compact fixed composer */
   }
 
   .messages-app__messages-scroll {
-    padding-bottom: 80px; /* Extra padding for composer */
+    padding-bottom: 60px; /* Extra padding for compact composer */
   }
 }
 
