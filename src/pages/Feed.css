@@ -404,10 +404,11 @@
   border: 2px solid var(--border-light);
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  min-width: 150px;
+  min-width: 200px;
   z-index: 1000;
-  overflow: hidden;
+  overflow: visible;
   margin-top: 0.5rem;
+  white-space: nowrap;
 }
 
 [data-theme="dark"] .dropdown-menu {
@@ -1564,6 +1565,7 @@ html:not([data-theme]) .post-actions {
   gap: var(--space-sm);
   margin-top: var(--space-sm);
   opacity: 0.85;
+  justify-content: center;
 }
 
 .action-btn {
@@ -5433,15 +5435,14 @@ select.privacy-selector:focus {
     width: 100% !important;
   }
 
-  /* 2️⃣ Post cards truly edge-to-edge */
+  /* 2️⃣ Post cards edge-to-edge with subtle rounded corners */
   .post-card {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    border-radius: 0 !important;
-    border-left: none !important;
-    border-right: none !important;
+    width: calc(100% - 16px) !important;
+    max-width: calc(100% - 16px) !important;
+    margin-left: 8px !important;
+    margin-right: 8px !important;
+    border-radius: 12px !important;
+    border: 1px solid var(--border-subtle) !important;
   }
 
   /* 3️⃣ Keep content readable with inner padding */
