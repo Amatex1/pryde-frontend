@@ -1846,7 +1846,6 @@ function Profile() {
             </div>
           </div>
         </div>
-        </div>
 
           {/* Mobile Sidebar - Shown under cover photo on mobile only */}
           {isOwnProfile && activeTab === 'posts' && (
