@@ -18,6 +18,8 @@ export default function InfoPanel({
   currentUserId,
   onBlockUser,
   onReportUser,
+  isOpen,
+  onClose,
 }) {
   const navigate = useNavigate();
   const isSelfChat = selectedUser?._id === currentUserId;
@@ -31,9 +33,13 @@ export default function InfoPanel({
   const isOnline = onlineUsers.includes(selectedChat);
 
   return (
-    <aside className="messages-app__info">
+    <aside className={`messages-app__info ${isOpen ? 'mobile-open' : ''}`}>
       {selectedChat && selectedUser ? (
         <>
+          {/* Mobile close button */}
+          <button className="info-close-btn" onClick={onClose} aria-label="Close info panel">
+            ✕
+          </button>
           <div className="info-header">
             <div className="info-avatar">
               {selectedUser?.profilePhoto ? (

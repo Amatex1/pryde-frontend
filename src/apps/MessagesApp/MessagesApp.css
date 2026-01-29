@@ -408,6 +408,114 @@
 }
 
 /* -----------------------------
+   CHAT HEADER ACTIONS
+------------------------------ */
+
+.chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-chat-info {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.25rem;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.btn-chat-info:hover {
+  background: var(--bg-hover, rgba(128, 128, 128, 0.1));
+}
+
+/* -----------------------------
+   INFO PANEL CLOSE BUTTON
+------------------------------ */
+
+.info-close-btn {
+  display: none;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--bg-secondary, rgba(128, 128, 128, 0.1));
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  cursor: pointer;
+  z-index: 10;
+  color: var(--text-primary, inherit);
+  transition: background 0.15s ease;
+}
+
+.info-close-btn:hover {
+  background: var(--bg-tertiary, rgba(128, 128, 128, 0.2));
+}
+
+/* Mobile info panel overlay */
+@media (max-width: 1023px) {
+  .messages-app__info.mobile-open {
+    display: flex;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 85%;
+    max-width: 400px;
+    z-index: 1000;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.25);
+    animation: slideInFromRight 0.25s ease-out;
+  }
+
+  .messages-app__info.mobile-open .info-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @keyframes slideInFromRight {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  .info-panel-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+/* Hide backdrop on desktop */
+.info-panel-backdrop {
+  display: none;
+}
+
+/* -----------------------------
    GIF PICKER CONTAINER
 ------------------------------ */
 

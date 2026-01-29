@@ -31,6 +31,7 @@ export default function ChatColumn({
   onBack,
   onMute,
   onUnmute,
+  onToggleInfoPanel,
   lastReadMessageId,
   onUpdateLastRead,
   message,
@@ -114,13 +115,22 @@ export default function ChatColumn({
               )}
             </div>
           </div>
-          <button
-            className="btn-chat-settings"
-            onClick={() => mutedConversations.includes(selectedChat) ? onUnmute(selectedChat, selectedChatType === 'group') : onMute(selectedChat, selectedChatType === 'group')}
-            title={mutedConversations.includes(selectedChat) ? 'Unmute' : 'Mute'}
-          >
-            {mutedConversations.includes(selectedChat) ? '🔔' : '🔕'}
-          </button>
+          <div className="chat-header-actions">
+            <button
+              className="btn-chat-settings"
+              onClick={() => mutedConversations.includes(selectedChat) ? onUnmute(selectedChat, selectedChatType === 'group') : onMute(selectedChat, selectedChatType === 'group')}
+              title={mutedConversations.includes(selectedChat) ? 'Unmute' : 'Mute'}
+            >
+              {mutedConversations.includes(selectedChat) ? '🔔' : '🔕'}
+            </button>
+            <button
+              className="btn-chat-info"
+              onClick={onToggleInfoPanel}
+              title="View info"
+            >
+              ℹ️
+            </button>
+          </div>
         </header>
       )}
       <MessageList

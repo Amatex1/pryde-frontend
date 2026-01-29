@@ -143,6 +143,7 @@ export default function MessagesApp() {
 
   // UI state
   const [showNewChatModal, setShowNewChatModal] = useState(false);
+  const [showInfoPanel, setShowInfoPanel] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -632,6 +633,7 @@ export default function MessagesApp() {
           onBack={handleBackToThreads}
           onMute={handleMuteConversation}
           onUnmute={handleUnmuteConversation}
+          onToggleInfoPanel={() => setShowInfoPanel(!showInfoPanel)}
           lastReadMessageId={selectedChat ? lastReadMessageIds[selectedChat] : null}
           onUpdateLastRead={handleUpdateLastRead}
           // Composer props
@@ -688,6 +690,10 @@ export default function MessagesApp() {
           onDeleteMessage={openDeleteModal}
         />
 
+        {/* Mobile info panel backdrop */}
+        {showInfoPanel && (
+          <div className="info-panel-backdrop" onClick={() => setShowInfoPanel(false)} />
+        )}
         <InfoPanel
           selectedChat={selectedChat}
           selectedUser={selectedUser}
@@ -697,6 +703,8 @@ export default function MessagesApp() {
           currentUserId={currentUser?._id}
           onBlockUser={(userId) => handleBlockUser(userId, false)}
           onReportUser={(userId) => setReportModal({ isOpen: true, type: 'user', contentId: null, userId })}
+          isOpen={showInfoPanel}
+          onClose={() => setShowInfoPanel(false)}
         />
       </div>
 
