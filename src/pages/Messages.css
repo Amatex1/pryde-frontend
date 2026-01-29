@@ -4388,3 +4388,56 @@ body:has(.messages-page) {
   font-size: 13px !important;
   padding: 0 !important;
 }
+
+/* =========================================================
+   MOBILE + PWA VISUAL UNIFICATION
+   Single-layer composer: Only .composer-input-row renders surface
+   ========================================================= */
+
+@media (max-width: 768px), (display-mode: standalone) {
+  /* NEUTRALIZE legacy visual wrappers - positioning only */
+  .message-composer,
+  .calm-composer {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  /* PROMOTE .composer-input-row as the SINGLE visual surface */
+  .composer-input-row {
+    background: var(--surface-chat-input, var(--bg-secondary, #F5F6FA)) !important;
+    border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08)) !important;
+    border-radius: 24px !important;
+    box-shadow: none !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    width: 100%;
+  }
+
+  .composer-input-row:focus-within {
+    border-color: var(--pryde-purple, #6C5CE7) !important;
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1) !important;
+  }
+
+  /* Dark mode: adjust input row surface */
+  [data-theme="dark"] .composer-input-row {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  [data-theme="dark"] .composer-input-row:focus-within {
+    border-color: var(--pryde-purple, #6C5CE7) !important;
+  }
+
+  /* Ensure textarea is fully transparent */
+  .message-input,
+  .calm-composer .message-input {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+}

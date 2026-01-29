@@ -564,6 +564,7 @@
   }
 
   /* Composer: Position above mobile navbar */
+  /* VISUAL UNIFICATION: Outer form is positioning-only, visually neutral */
   .messages-app__composer {
     position: fixed;
     bottom: calc(var(--mobile-nav-height, 64px) + env(safe-area-inset-bottom, 0px));
@@ -571,8 +572,10 @@
     right: 0;
     z-index: 50;
     padding: 8px 12px;
-    background: var(--bg-surface);
-    border-top: 1px solid var(--border-subtle);
+    /* REMOVED: background and border - now handled by .composer-input-row */
+    background: transparent !important;
+    border-top: none !important;
+    box-shadow: none !important;
   }
 
   /* Adjust chat scroll area to account for fixed composer */

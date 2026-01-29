@@ -843,13 +843,14 @@
     min-height: 48px;
   }
 
-  /* Mobile: Composer - no boxes, respects safe area */
+  /* Mobile: Composer - VISUAL UNIFICATION: fully neutral wrapper */
+  /* All visual styling now handled by .composer-input-row */
   .message-composer {
-    padding: 1rem !important;
-    padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+    padding: 0 !important;
     background: transparent !important;
     border: none !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-top: none !important;
+    border-radius: 0 !important;
     box-shadow: none !important;
   }
 
