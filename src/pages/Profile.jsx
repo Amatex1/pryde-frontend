@@ -1674,10 +1674,10 @@ function Profile() {
             )}
           </div>
 
-          {/* Profile Card - Hybrid layout with identity content */}
-          <div className="profile-card profile-card--hybrid">
-            {/* Identity Stack */}
-            <div className="profile-identity">
+          {/* Identity Stack - Now direct child of profile-header for proper layout */}
+          <div className="profile-identity">
+            {/* Profile Card - Hybrid layout with identity content */}
+            <div className="profile-card profile-card--hybrid">
                 {/* 1. Display Name (largest) */}
                 <h1 className="profile-name">
                   {user.displayName || user.fullName || user.username}
@@ -1845,6 +1845,7 @@ function Profile() {
               )}
             </div>
           </div>
+        </div>
         </div>
 
           {/* Mobile Sidebar - Shown under cover photo on mobile only */}
