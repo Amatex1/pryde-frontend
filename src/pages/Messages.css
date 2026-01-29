@@ -3429,13 +3429,15 @@
 /* Main input row - all inline */
 .composer-input-row {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 6px 6px 12px;
+  gap: 4px;
+  padding: 6px 6px 39px 7px;
   background: var(--bg-secondary, #F5F6FA);
   border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
   border-radius: 24px;
   transition: all 0.15s ease;
+  align-content: stretch;
+  flex-wrap: nowrap;
+  justify-content: space-around;
 }
 
 .composer-input-row:focus-within {

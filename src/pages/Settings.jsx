@@ -15,6 +15,7 @@ import {
   unsubscribeFromPushNotifications,
   isPushNotificationSubscribed
 } from '../utils/pushNotifications';
+import { promptInstall, isPWA, isInstallPromptAvailable } from '../utils/pwa';
 import './Settings.css';
 
 function Settings() {
@@ -56,6 +57,8 @@ function Settings() {
   const [pushEnabled, setPushEnabled] = useState(false);
   const [pushPermission, setPushPermission] = useState('default'); // 'granted', 'denied', 'default'
   const [pushLoading, setPushLoading] = useState(false);
+  // PWA Install button state
+  const [canInstallPWA, setCanInstallPWA] = useState(false);
   // NOTE: Verification system removed 2025-12-26 (returns 410 Gone)
   // State and API calls removed to prevent 410 loops
 
@@ -80,6 +83,28 @@ function Settings() {
       }
     };
     checkPushStatus();
+  }, []);
+
+  // PWA: Check if app can be installed
+  useEffect(() => {
+    const checkInstallability = () => {
+      // Can install if: not already a PWA AND install prompt is available
+      setCanInstallPWA(!isPWA() && isInstallPromptAvailable());
+    };
+
+    checkInstallability();
+
+    // Listen for install availability changes
+    const handleInstallAvailable = () => checkInstallability();
+    const handleInstallCompleted = () => setCanInstallPWA(false);
+
+    window.addEventListener('pwa-install-available', handleInstallAvailable);
+    window.addEventListener('pwa-install-completed', handleInstallCompleted);
+
+    return () => {
+      window.removeEventListener('pwa-install-available', handleInstallAvailable);
+      window.removeEventListener('pwa-install-completed', handleInstallCompleted);
+    };
   }, []);
 
   // ✅ Update form data when currentUser changes
@@ -451,6 +476,20 @@ function Settings() {
   // NOTE: handleRequestVerification removed 2025-12-26
   // Verification request endpoint returns 410 Gone - feature intentionally removed
 
+  // PWA: Handle Install App button click
+  const handleInstallApp = async () => {
+    try {
+      const accepted = await promptInstall();
+      if (accepted) {
+        showAlert('Pryde Social has been installed on your device!', 'App Installed');
+        setCanInstallPWA(false);
+      }
+    } catch (error) {
+      logger.error('Install app error:', error);
+      showAlert('Could not install the app. Please try again.', 'Install Failed');
+    }
+  };
+
   // ✅ Show loading state
   if (loading) {
     return (
@@ -820,6 +859,32 @@ function Settings() {
               </button>
             </div>
           </div>
+
+          {/* PWA INSTALL: Show install button if app can be installed */}
+          {canInstallPWA && (
+            <div className="settings-section">
+              <h2 className="section-title">📱 Install App</h2>
+              <p className="section-description">
+                Install Pryde Social on your device for faster access, offline support, and a native app experience.
+              </p>
+
+              <div className="account-actions">
+                <div className="action-item">
+                  <div className="action-info">
+                    <h3>📲 Install Pryde Social</h3>
+                    <p>Add Pryde to your home screen for quick access anytime</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleInstallApp}
+                    className="btn-install-app"
+                  >
+                    Install App
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="settings-section danger-zone">
             <h2 className="section-title">Account Management</h2>

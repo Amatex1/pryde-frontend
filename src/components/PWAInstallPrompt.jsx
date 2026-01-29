@@ -2,21 +2,36 @@ import { useState, useEffect } from 'react';
 import { promptInstall, isPWA, isInstallPromptAvailable } from '../utils/pwa';
 import './PWAInstallPrompt.css';
 
+// How often to show the install prompt after dismissal (in days)
+const PROMPT_INTERVAL_DAYS = 7;
+
 function PWAInstallPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    // Don't show if already installed or dismissed
+    // Don't show if already installed or dismissed this session
     if (isPWA() || dismissed) {
       return;
     }
 
-    // Check if user has dismissed before
-    const hasDissmissed = localStorage.getItem('pwa-install-dismissed');
-    if (hasDissmissed) {
-      setDismissed(true);
-      return;
+    // Check if user has dismissed before and if enough time has passed
+    const dismissedTimestamp = localStorage.getItem('pwa-install-dismissed-at');
+    if (dismissedTimestamp) {
+      const dismissedDate = new Date(parseInt(dismissedTimestamp, 10));
+      const now = new Date();
+      const daysSinceDismissed = (now - dismissedDate) / (1000 * 60 * 60 * 24);
+
+      // If not enough time has passed, don't show
+      if (daysSinceDismissed < PROMPT_INTERVAL_DAYS) {
+        console.log(`[PWA] Install prompt dismissed ${daysSinceDismissed.toFixed(1)} days ago, waiting ${PROMPT_INTERVAL_DAYS} days`);
+        setDismissed(true);
+        return;
+      } else {
+        // Enough time has passed, clear the old dismissal
+        console.log(`[PWA] ${daysSinceDismissed.toFixed(1)} days since dismissal, showing prompt again`);
+        localStorage.removeItem('pwa-install-dismissed-at');
+      }
     }
 
     // 🔥 Check if install prompt was already captured before this component mounted
@@ -55,7 +70,8 @@ function PWAInstallPrompt() {
   const handleDismiss = () => {
     setShowPrompt(false);
     setDismissed(true);
-    localStorage.setItem('pwa-install-dismissed', 'true');
+    // Store timestamp instead of boolean so we can show again after interval
+    localStorage.setItem('pwa-install-dismissed-at', Date.now().toString());
   };
 
   if (!showPrompt) {

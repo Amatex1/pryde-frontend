@@ -534,7 +534,8 @@
   .btn-save-settings,
   .btn-download,
   .btn-deactivate,
-  .btn-delete-account {
+  .btn-delete-account,
+  .btn-install-app {
     font-size: 0.875rem;
     padding: 0.875rem 1.5rem;
   }
@@ -609,7 +610,8 @@
 
 .btn-download,
 .btn-deactivate,
-.btn-delete-account {
+.btn-delete-account,
+.btn-install-app {
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   border: none;
@@ -627,6 +629,16 @@
 .btn-download:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+}
+
+.btn-install-app {
+  background: linear-gradient(135deg, #6C5CE7, #a29bfe);
+  color: white;
+}
+
+.btn-install-app:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.4);
 }
 
 .btn-deactivate {
@@ -840,7 +852,8 @@
 
   .btn-download,
   .btn-deactivate,
-  .btn-delete-account {
+  .btn-delete-account,
+  .btn-install-app {
     width: 100%;
   }
 
