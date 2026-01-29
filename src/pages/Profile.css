@@ -3940,6 +3940,101 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 
 /* ==============================================
+   MOBILE + TABLET: Profile Identity Card Styles
+   For the new structure: .profile-identity > .profile-card--hybrid
+   ============================================== */
+
+/* Base styles for profile-identity wrapper */
+.profile-header .profile-identity {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Base styles for hybrid card inside identity wrapper */
+.profile-identity .profile-card.profile-card--hybrid {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background: transparent;
+  padding: 0;
+}
+
+/* MOBILE: ≤768px - Centered layout with avatar above content */
+@media (max-width: 768px) {
+  .profile-header .profile-identity {
+    align-items: center;
+    text-align: center;
+    padding-top: 60px; /* Space below avatar (avatar is 100px, overlaps by ~50px) */
+    margin-top: -50px; /* Pull up to overlap with avatar area */
+  }
+
+  .profile-identity .profile-card.profile-card--hybrid {
+    align-items: center;
+    padding: 0 16px;
+  }
+
+  .profile-identity .profile-card--hybrid .profile-name {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-top: 0;
+  }
+
+  .profile-identity .profile-card--hybrid .profile-username {
+    text-align: center;
+  }
+
+  .profile-identity .profile-card--hybrid .profile-identity-pills {
+    justify-content: center;
+  }
+
+  .profile-identity .profile-card--hybrid .profile-stats {
+    justify-content: center;
+  }
+
+  .profile-identity .profile-card--hybrid .profile-action-buttons {
+    justify-content: center;
+  }
+}
+
+/* TABLET: 769px - 1024px - Centered layout with more space */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .profile-header .profile-identity {
+    align-items: center;
+    text-align: center;
+    padding-top: 70px; /* Space below avatar (avatar is 110px, overlaps by ~55px) */
+    margin-top: -55px; /* Pull up to overlap with avatar area */
+  }
+
+  .profile-identity .profile-card.profile-card--hybrid {
+    align-items: center;
+    padding: 0 24px;
+    max-width: 600px;
+  }
+
+  .profile-identity .profile-card--hybrid .profile-name {
+    font-size: 1.75rem;
+    text-align: center;
+  }
+
+  .profile-identity .profile-card--hybrid .profile-username {
+    text-align: center;
+  }
+
+  .profile-identity .profile-card--hybrid .profile-identity-pills {
+    justify-content: center;
+  }
+
+  .profile-identity .profile-card--hybrid .profile-stats {
+    justify-content: center;
+  }
+
+  .profile-identity .profile-card--hybrid .profile-action-buttons {
+    justify-content: center;
+  }
+}
+
+/* ==============================================
    HYBRID A + C v2: Desktop Profile Header Redesign
    TRUE Facebook-style avatar overlap + Pryde identity card
    Only applies at viewport >= 1025px
