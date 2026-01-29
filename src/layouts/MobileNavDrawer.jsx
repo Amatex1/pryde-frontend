@@ -210,6 +210,8 @@ export default function MobileNavDrawer({ open, onClose }) {
             {isDark && <span className="mode-indicator" aria-hidden="true">✓</span>}
           </button>
 
+          <div className="mobile-nav-divider" role="separator" aria-hidden="true" />
+
           <button
             className="mobile-nav-item"
             onClick={toggleQuietMode}
