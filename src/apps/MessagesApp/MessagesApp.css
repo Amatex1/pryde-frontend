@@ -91,6 +91,32 @@
   z-index: 2;
 }
 
+/* Mobile back button - hidden on desktop */
+.mobile-back-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  cursor: pointer;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.mobile-back-btn:hover {
+  background: var(--bg-hover);
+}
+
+@media (max-width: 768px) {
+  .mobile-back-btn {
+    display: flex;
+  }
+}
+
 /* -----------------------------
    MESSAGE SCROLL AREA
 ------------------------------ */
@@ -470,6 +496,71 @@
       var(--mobile-nav-height, 64px) +
       env(safe-area-inset-bottom, 0px)
     );
+  }
+}
+
+/* -----------------------------
+   MOBILE: Single column layout
+------------------------------ */
+
+@media (max-width: 768px) {
+  .messages-app__layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* Thread list: Full width by default */
+  .messages-app__threads {
+    border-right: none;
+    width: 100%;
+  }
+
+  /* Hide chat when no conversation selected */
+  .messages-app__chat {
+    display: none;
+    position: fixed;
+    inset: 0;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-app);
+  }
+
+  /* Show chat when active */
+  .messages-app__layout.chat-active .messages-app__threads {
+    display: none;
+  }
+
+  .messages-app__layout.chat-active .messages-app__chat {
+    display: flex;
+  }
+
+  /* Back button for mobile chat */
+  .messages-app__chat-back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    cursor: pointer;
+    border-radius: 8px;
+    margin-right: 8px;
+  }
+
+  .messages-app__chat-back:hover {
+    background: var(--bg-hover);
+  }
+
+  /* Ensure thread list extends to edges */
+  .messages-app__threads-scroll {
+    padding: 0;
+  }
+
+  .conversation-item {
+    border-radius: 0;
+    margin: 0;
   }
 }
 

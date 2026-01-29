@@ -579,7 +579,7 @@ export default function MessagesApp() {
     <div className="messages-app" data-view={mobileView} data-theme={currentTheme} data-density={density}>
       <Navbar onMenuClick={onMenuOpen} />
 
-      <div className="messages-app__layout">
+      <div className={`messages-app__layout ${selectedChat ? 'chat-active' : ''}`}>
         <ThreadList
           conversations={filteredConversations}
           groupChats={groupChats}
