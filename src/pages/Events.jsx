@@ -199,16 +199,53 @@ function Events() {
               </div>
               <form className="event-form" onSubmit={handleCreateEvent}>
                 <div className="form-group">
-                  <label>Event Title</label>
-                  <input type="text" name="title" value={formData.title} onChange={handleInputChange} required />
+                  <label>Event Title *</label>
+                  <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="Enter event title" />
                 </div>
                 <div className="form-group">
-                  <label>Description</label>
-                  <textarea name="description" value={formData.description} onChange={handleInputChange} rows={3} />
+                  <label>Description *</label>
+                  <textarea name="description" value={formData.description} onChange={handleInputChange} rows={3} required placeholder="Describe your event" />
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Event Type *</label>
+                    <select name="eventType" value={formData.eventType} onChange={handleInputChange} required>
+                      <option value="in-person">In-Person</option>
+                      <option value="virtual">Virtual</option>
+                      <option value="hybrid">Hybrid</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Category</label>
+                    <select name="category" value={formData.category} onChange={handleInputChange}>
+                      <option value="social">Social</option>
+                      <option value="pride">Pride</option>
+                      <option value="support-group">Support Group</option>
+                      <option value="activism">Activism</option>
+                      <option value="education">Education</option>
+                      <option value="arts">Arts</option>
+                      <option value="sports">Sports</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Start Date & Time *</label>
+                    <input type="datetime-local" name="startDate" value={formData.startDate} onChange={handleInputChange} required />
+                  </div>
+                  <div className="form-group">
+                    <label>End Date & Time *</label>
+                    <input type="datetime-local" name="endDate" value={formData.endDate} onChange={handleInputChange} required />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label>Location (City)</label>
+                  <input type="text" name="city" value={formData.city} onChange={handleInputChange} placeholder="e.g., London, New York" />
                 </div>
                 <div className="form-actions">
                   <button type="button" className="btn-cancel" onClick={()=>setShowCreateModal(false)}>Cancel</button>
-                  <button type="submit" className="btn-submit">Create</button>
+                  <button type="submit" className="btn-submit">Create Event</button>
                 </div>
               </form>
             </div>

@@ -175,8 +175,8 @@ export default function MobileNavDrawer({ open, onClose }) {
             <span className="mobile-nav-icon" aria-hidden="true">📅</span>
             <span>Events</span>
           </Link>
-          <Link to="/discover" className="mobile-nav-item" onClick={handleLinkClick}>
-            <span className="mobile-nav-icon" aria-hidden="true">👥</span>
+          <Link to="/search" className="mobile-nav-item" onClick={handleLinkClick}>
+            <span className="mobile-nav-icon" aria-hidden="true">🔍</span>
             <span>Find Followers</span>
           </Link>
 
