@@ -4,7 +4,6 @@ import { getImageUrl } from '../utils/imageUrl';
 import { compressAvatar, compressCoverPhoto } from '../utils/compressImage';
 import { uploadWithProgress } from '../utils/uploadWithProgress';
 import './EditProfileModal.css';
-import BadgeSettings from './BadgeSettings';
 
 function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
   const [formData, setFormData] = useState({
@@ -37,6 +36,8 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [locationSuggestions, setLocationSuggestions] = useState([]);
+  // Badge visibility toggle
+  const [showBadges, setShowBadges] = useState(true);
 
   // Photo positioning and zoom state
   const [coverPos, setCoverPos] = useState({ x: 0, y: 0, scale: 1 });
@@ -90,6 +91,8 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
         y: user.profilePhotoPosition?.y || 0,
         scale: user.profilePhotoPosition?.scale || 1
       });
+      // Initialize badge visibility (hideBadges=false means showBadges=true)
+      setShowBadges(!user.privacySettings?.hideBadges);
     }
   }, [isOpen, user]);
 
@@ -875,16 +878,32 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
             {/* Badge Settings */}
             <section className="form-section">
               <h3>🏅 Badge Settings</h3>
-              <p className="section-description">Choose which badges to display on your profile (up to 3).</p>
-              <BadgeSettings onUpdate={async () => {
-                // Refresh user data after badge update
-                try {
-                  const response = await api.get(`/users/${user.username}`);
-                  onUpdate(response.data);
-                } catch (error) {
-                  console.error('Failed to refresh user data:', error);
-                }
-              }} />
+              <p className="section-description">Control whether your badges are visible on your profile.</p>
+              <div className="form-group toggle-group">
+                <label className="toggle-label">
+                  <input
+                    type="checkbox"
+                    checked={showBadges}
+                    onChange={async (e) => {
+                      const newValue = e.target.checked;
+                      setShowBadges(newValue);
+                      try {
+                        await api.patch('/users/me/settings', { hideBadges: !newValue });
+                      } catch (error) {
+                        console.error('Failed to update badge visibility:', error);
+                        setShowBadges(!newValue); // Revert on error
+                      }
+                    }}
+                  />
+                  <span className="toggle-switch-slider"></span>
+                  <span className="toggle-text">Show badges on my profile</span>
+                </label>
+                <p className="toggle-description">
+                  {showBadges
+                    ? 'All your earned badges will be displayed on your profile.'
+                    : 'Your badges are hidden from your profile.'}
+                </p>
+              </div>
             </section>
 
             {/* Accessibility & Communication */}
