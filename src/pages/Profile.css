@@ -2906,6 +2906,46 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   /* Action buttons already styled with mobile-first approach above */
 }
 
+/* Small mobile devices (e.g., Samsung Galaxy S25 Ultra at 412px) */
+@media (max-width: 420px) {
+  .profile-page .post-actions-bar {
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    overflow-x: visible;
+  }
+
+  .profile-page .post-actions-bar button,
+  .profile-page .post-actions-bar label,
+  .profile-page .post-actions-bar select {
+    height: 32px;
+    min-height: 32px;
+    max-height: 32px;
+    padding: 0 8px;
+    font-size: 0.75rem;
+  }
+
+  .btn-media-upload,
+  .btn-content-warning,
+  .privacy-selector,
+  .btn-post {
+    font-size: 0.75rem !important;
+    padding: 0.4rem 0.6rem !important;
+  }
+
+  /* Privacy selector specific - ensure it doesn't overflow */
+  .privacy-selector {
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Publish button - keep it prominent but smaller */
+  .btn-post {
+    flex-shrink: 0;
+  }
+}
+
 /* Extra small devices - ONLY for very small screens */
 @media (max-width: 375px) {
   .profile-container {
