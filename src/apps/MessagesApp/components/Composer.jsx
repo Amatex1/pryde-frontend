@@ -8,6 +8,7 @@ import { getImageUrl } from '../../../utils/imageUrl';
 import { getDisplayName } from '../../../utils/getDisplayName';
 
 const GifPicker = lazy(() => import('../../../components/GifPicker'));
+const VoiceRecorder = lazy(() => import('../../../components/VoiceRecorder'));
 
 export default function Composer({
   selectedChat,
@@ -32,6 +33,7 @@ export default function Composer({
   onToggleContentWarning,
   showVoiceRecorder,
   onToggleVoiceRecorder,
+  onRecordingComplete,
   replyingTo,
   onCancelReply,
   isRecipientUnavailable,
@@ -128,6 +130,16 @@ export default function Composer({
               <GifPicker
                 onGifSelect={onGifSelect}
                 onClose={onToggleGifPicker}
+              />
+            </Suspense>
+          </div>
+        )}
+        {showVoiceRecorder && (
+          <div className="composer-voice-recorder-container">
+            <Suspense fallback={<div className="voice-recorder-loading">Loading...</div>}>
+              <VoiceRecorder
+                onRecordingComplete={onRecordingComplete}
+                onCancel={onToggleVoiceRecorder}
               />
             </Suspense>
           </div>

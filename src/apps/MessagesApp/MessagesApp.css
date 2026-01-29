@@ -436,6 +436,29 @@
 }
 
 /* -----------------------------
+   VOICE RECORDER CONTAINER
+------------------------------ */
+
+.composer-voice-recorder-container {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  margin-bottom: 8px;
+  z-index: 100;
+  padding: 0 8px;
+}
+
+.voice-recorder-loading {
+  padding: 16px;
+  background: var(--bg-secondary, rgba(128, 128, 128, 0.1));
+  border-radius: 12px;
+  font-size: 0.875rem;
+  color: var(--text-secondary, #666);
+  text-align: center;
+}
+
+/* -----------------------------
    NEW MESSAGE INDICATOR
 ------------------------------ */
 

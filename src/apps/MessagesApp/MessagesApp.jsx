@@ -35,7 +35,6 @@ import { quietCopy } from '../../config/uiCopy';
 import './MessagesApp.css';
 
 const EmojiPicker = lazy(() => import('../../components/EmojiPicker'));
-const VoiceRecorder = lazy(() => import('../../components/VoiceRecorder'));
 
 export default function MessagesApp() {
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
@@ -657,6 +656,21 @@ export default function MessagesApp() {
           onToggleContentWarning={() => setShowContentWarning(!showContentWarning)}
           showVoiceRecorder={showVoiceRecorder}
           onToggleVoiceRecorder={() => setShowVoiceRecorder(!showVoiceRecorder)}
+          onRecordingComplete={async (audioBlob, duration) => {
+            try {
+              const formData = new FormData();
+              formData.append('audio', audioBlob, 'voice-note.webm');
+              formData.append('duration', duration);
+              const uploadResponse = await api.post('/upload/voice-note', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+              });
+              await handleSendMessage(null, { url: uploadResponse.data.url, duration });
+              setShowVoiceRecorder(false);
+            } catch (error) {
+              logger.error('Failed to send voice note:', error);
+              showAlert('Failed to send voice note', 'Voice Note Failed');
+            }
+          }}
           replyingTo={replyingTo}
           onCancelReply={() => setReplyingTo(null)}
           // Message actions
@@ -765,30 +779,6 @@ export default function MessagesApp() {
           <EmojiPicker
             onEmojiSelect={handleEmojiSelect}
             onClose={() => { setShowEmojiPicker(false); setReactingToMessage(null); }}
-          />
-        </Suspense>
-      )}
-
-      {/* Voice Recorder */}
-      {showVoiceRecorder && (
-        <Suspense fallback={<div className="loading-spinner">Loading...</div>}>
-          <VoiceRecorder
-            onRecordingComplete={async (audioBlob, duration) => {
-              try {
-                const formData = new FormData();
-                formData.append('audio', audioBlob, 'voice-note.webm');
-                formData.append('duration', duration);
-                const uploadResponse = await api.post('/upload/voice-note', formData, {
-                  headers: { 'Content-Type': 'multipart/form-data' }
-                });
-                await handleSendMessage(null, { url: uploadResponse.data.url, duration });
-                setShowVoiceRecorder(false);
-              } catch (error) {
-                logger.error('Failed to send voice note:', error);
-                showAlert('Failed to send voice note', 'Voice Note Failed');
-              }
-            }}
-            onCancel={() => setShowVoiceRecorder(false)}
           />
         </Suspense>
       )}

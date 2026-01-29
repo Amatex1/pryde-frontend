@@ -51,6 +51,10 @@ export default function ChatColumn({
   onToggleContentWarning,
   showVoiceRecorder,
   onToggleVoiceRecorder,
+  onRecordingComplete,
+  showGifPicker,
+  onToggleGifPicker,
+  onGifSelect,
   replyingTo,
   onCancelReply,
   editingMessageId,
@@ -167,6 +171,10 @@ export default function ChatColumn({
         onToggleContentWarning={onToggleContentWarning}
         showVoiceRecorder={showVoiceRecorder}
         onToggleVoiceRecorder={onToggleVoiceRecorder}
+        onRecordingComplete={onRecordingComplete}
+        showGifPicker={showGifPicker}
+        onToggleGifPicker={onToggleGifPicker}
+        onGifSelect={onGifSelect}
         replyingTo={replyingTo}
         onCancelReply={onCancelReply}
         isRecipientUnavailable={isRecipientUnavailable}
