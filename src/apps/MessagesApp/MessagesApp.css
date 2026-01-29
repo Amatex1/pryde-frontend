@@ -886,3 +886,49 @@
 .shared-media__load-more:hover {
   background: var(--bg-tertiary, rgba(128, 128, 128, 0.2));
 }
+
+/* =========================================================
+   TABLET: 769px-1024px - Fixed composer above mobile navbar
+   ========================================================= */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .messages-app__composer {
+    position: fixed;
+    bottom: calc(var(--mobile-nav-height, 64px) + env(safe-area-inset-bottom, 0px));
+    left: 0;
+    right: 0;
+    z-index: 50;
+    padding: 8px 16px;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  /* Adjust chat scroll area to account for fixed composer */
+  .messages-app__chat {
+    padding-bottom: 80px;
+  }
+
+  .messages-app__messages-scroll {
+    padding-bottom: 80px;
+  }
+}
+
+/* =========================================================
+   DESKTOP: ≥1025px - Composer in normal flow
+   ========================================================= */
+@media (min-width: 1025px) {
+  .messages-app__composer {
+    position: relative;
+    bottom: auto;
+    padding: 12px 20px;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .messages-app__chat {
+    padding-bottom: 0;
+  }
+
+  .messages-app__messages-scroll {
+    padding-bottom: 0;
+  }
+}
