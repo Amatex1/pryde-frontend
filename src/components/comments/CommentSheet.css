@@ -103,3 +103,139 @@
   gap: 8px;
 }
 
+/* GIF Button in Sheet */
+.comment-sheet-input-form .btn-gif,
+.comment-sheet-reply-form .btn-gif {
+  padding: 4px 10px;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.comment-sheet-input-form .btn-gif:hover,
+.comment-sheet-reply-form .btn-gif:hover {
+  background: var(--bg-hover);
+}
+
+/* GIF Preview in Sheet */
+.comment-sheet-input-form .comment-gif-preview,
+.comment-sheet-reply-form .comment-gif-preview {
+  position: relative;
+  margin-top: 8px;
+  max-width: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.comment-sheet-input-form .comment-gif-preview img,
+.comment-sheet-reply-form .comment-gif-preview img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.comment-sheet-input-form .btn-remove-gif,
+.comment-sheet-reply-form .btn-remove-gif {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Reply Form in Sheet */
+.comment-sheet-reply-form {
+  padding: 12px;
+  margin-bottom: 8px;
+  background: var(--bg-subtle);
+  border-radius: 8px;
+  border: 1px solid var(--accent-primary);
+}
+
+.comment-sheet-reply-form .reply-input-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.comment-sheet-reply-form .btn-cancel-reply-small {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 4px;
+}
+
+.comment-sheet-reply-form .comment-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.comment-sheet-reply-form .comment-input {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-primary);
+  font-size: 14px;
+}
+
+.comment-sheet-reply-form .comment-submit-btn {
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.comment-sheet-reply-form .comment-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* User Avatar in Sheet */
+.comment-sheet-input-form .comment-user-avatar,
+.comment-sheet-reply-form .comment-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.comment-sheet-input-form .comment-user-avatar img,
+.comment-sheet-reply-form .comment-user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+

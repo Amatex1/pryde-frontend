@@ -3349,7 +3349,7 @@ function Feed() {
 
       {/* Mobile Comment Sheet - Full Discussion */}
       {commentSheetOpen && (
-        <CommentSheet onClose={() => setCommentSheetOpen(null)}>
+        <CommentSheet onClose={() => { setCommentSheetOpen(null); setReplyingToComment(null); }}>
           {/* Comment Input at Top */}
           <form
             onSubmit={(e) => {
@@ -3377,6 +3377,14 @@ function Feed() {
                 className="comment-input"
               />
               <button
+                type="button"
+                onClick={() => setShowGifPicker(showGifPicker === `sheet-comment-${commentSheetOpen}` ? null : `sheet-comment-${commentSheetOpen}`)}
+                className="btn-gif"
+                title="Add GIF"
+              >
+                GIF
+              </button>
+              <button
                 type="submit"
                 className="comment-submit-btn"
                 disabled={!commentText[commentSheetOpen]?.trim() && !commentGif[commentSheetOpen]}
@@ -3384,7 +3392,99 @@ function Feed() {
                 ➤
               </button>
             </div>
+            {/* GIF Preview */}
+            {commentGif[commentSheetOpen] && (
+              <div className="comment-gif-preview">
+                <img src={commentGif[commentSheetOpen]} alt="Selected GIF" />
+                <button
+                  type="button"
+                  className="btn-remove-gif"
+                  onClick={() => setCommentGif(prev => ({ ...prev, [commentSheetOpen]: null }))}
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+            {/* GIF Picker */}
+            {showGifPicker === `sheet-comment-${commentSheetOpen}` && (
+              <GifPicker
+                onGifSelect={(gifUrl) => {
+                  setCommentGif(prev => ({ ...prev, [commentSheetOpen]: gifUrl }));
+                  setShowGifPicker(null);
+                }}
+                onClose={() => setShowGifPicker(null)}
+              />
+            )}
           </form>
+
+          {/* Reply Input Box - Shown when replying to a comment in the sheet */}
+          {replyingToComment?.postId === commentSheetOpen && (
+            <form onSubmit={handleSubmitReply} className="comment-sheet-reply-form">
+              <div className="reply-input-header">
+                <span>Replying to comment</span>
+                <button type="button" onClick={handleCancelReply} className="btn-cancel-reply-small">✕</button>
+              </div>
+              <div className="comment-input-wrapper">
+                <div className="comment-user-avatar">
+                  {currentUser?.profilePhoto ? (
+                    <OptimizedImage
+                      src={getImageUrl(currentUser.profilePhoto)}
+                      alt="You"
+                      className="avatar-image"
+                    />
+                  ) : (
+                    <span>{currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
+                  )}
+                </div>
+                <input
+                  type="text"
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  placeholder={replyGif ? "Caption, if you'd like" : "Write a reply..."}
+                  className="comment-input"
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowGifPicker(showGifPicker === `sheet-reply-${replyingToComment.commentId}` ? null : `sheet-reply-${replyingToComment.commentId}`)}
+                  className="btn-gif"
+                  title="Add GIF"
+                >
+                  GIF
+                </button>
+                <button
+                  type="submit"
+                  className="comment-submit-btn"
+                  disabled={!replyText?.trim() && !replyGif}
+                >
+                  ➤
+                </button>
+              </div>
+              {/* Reply GIF Preview */}
+              {replyGif && (
+                <div className="comment-gif-preview">
+                  <img src={replyGif} alt="Selected GIF" />
+                  <button
+                    type="button"
+                    className="btn-remove-gif"
+                    onClick={() => setReplyGif(null)}
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+              {/* Reply GIF Picker */}
+              {showGifPicker === `sheet-reply-${replyingToComment.commentId}` && (
+                <GifPicker
+                  onGifSelect={(gifUrl) => {
+                    setReplyGif(gifUrl);
+                    setShowGifPicker(null);
+                  }}
+                  onClose={() => setShowGifPicker(null)}
+                />
+              )}
+            </form>
+          )}
 
           {/* All Comments with Full Replies */}
           <div className="comment-sheet-threads">

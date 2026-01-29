@@ -4845,6 +4845,21 @@ button[data-action="gif"] {
   }
 }
 
+/* Mobile: Hide inline comments - use CommentSheet popup instead */
+@media (max-width: 600px) {
+  .post-comments {
+    display: none !important;
+  }
+
+  .comment-input-box {
+    display: none !important;
+  }
+
+  .reply-input-box {
+    display: none !important;
+  }
+}
+
 /* Privacy Selector - Use design system variables */
 .post-actions-bar .privacy-selector,
 select.privacy-selector {
