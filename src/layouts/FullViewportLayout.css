@@ -1,0 +1,51 @@
+/**
+ * FullViewportLayout.css - Full viewport layout without PageContainer constraints
+ *
+ * No max-width, no horizontal padding
+ * Page content fills entire viewport
+ */
+
+.full-viewport-layout {
+  /* Fill entire viewport */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  
+  /* Flex column for internal layout */
+  display: flex;
+  flex-direction: column;
+  
+  /* Background */
+  background: var(--bg, #121212);
+  
+  /* Safe area for notched devices */
+  padding-top: env(safe-area-inset-top, 0);
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+  
+  /* Allow children to manage their own overflow */
+  overflow: hidden;
+  
+  /* Stack context */
+  z-index: 1;
+}
+
+/* Child content fills remaining space */
+.full-viewport-layout > .page-error-boundary {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Ensure mobile nav stays at bottom */
+.full-viewport-layout .mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+

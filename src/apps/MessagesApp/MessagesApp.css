@@ -5,16 +5,27 @@
 
 /* -----------------------------
    ROOT: Fixed app surface
+   Navbar is a CHILD, so we start at top:0
 ------------------------------ */
 
 .messages-app {
   position: fixed;
   inset: 0;
-  top: var(--navbar-height, 60px);
+  top: 0; /* Navbar is inside, so start at very top */
   display: flex;
   flex-direction: column;
   background: var(--bg-app);
   overflow: hidden;
+  /* Safe area for notched devices */
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+/* Navbar should be first child, not overlap */
+.messages-app > nav.navbar,
+.messages-app > .navbar {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
 }
 
 /* -----------------------------
@@ -138,23 +149,14 @@
   border-top: 1px solid var(--border-subtle);
   padding: 10px 16px;
   display: flex;
-  justify-content: center;
-}
-
-.messages-app__composer::before {
-  content: "";
-  position: absolute;
-  top: -1px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(760px, 100%);
-  border-top: 1px solid var(--border-subtle);
+  justify-content: stretch; /* Full width */
+  width: 100%;
 }
 
 .messages-app__composer .message-composer,
 .messages-app__composer .calm-composer {
   width: 100%;
-  max-width: 760px;
+  max-width: none; /* Full width - no max constraint */
 }
 
 /* Thinner input */

@@ -132,8 +132,9 @@ const Helplines = lazyWithReload(() => import('./pages/legal/Helplines'));
 const TrustAndSafety = lazyWithReload(() => import('./pages/legal/TrustAndSafety')); // Phase 6B
 const PlatformGuarantees = lazyWithReload(() => import('./pages/PlatformGuarantees')); // Phase 7A
 
-// Layout component - unified for all platforms (no viewport switching)
+// Layout components
 import AppLayout from './layouts/AppLayout';
+import FullViewportLayout from './layouts/FullViewportLayout';
 
 // Loading fallback component with timeout
 const PageLoader = () => {
@@ -424,7 +425,7 @@ function AppContent() {
                   <Route path="/settings/privacy" element={<PrivateRoute><PrivacySettings /></PrivateRoute>} />
                   <Route path="/bookmarks" element={<PrivateRoute><Bookmarks /></PrivateRoute>} />
                   <Route path="/events" element={<PrivateRoute><Events /></PrivateRoute>} />
-                  <Route path="/messages" element={<PrivateRoute><Messages /></PrivateRoute>} />
+                  {/* Messages route moved to FullViewportLayout below */}
                   <Route path="/lounge" element={<PrivateRoute><Lounge /></PrivateRoute>} />
                   <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
 
@@ -462,6 +463,11 @@ function AppContent() {
 
                   {/* Custom Profile URL - catch-all for /@username style URLs */}
                   <Route path="/@:slug" element={<PrivateRoute><Profile /></PrivateRoute>} />
+                </Route>
+
+                {/* Full Viewport Layout - No PageContainer constraints */}
+                <Route element={<FullViewportLayout />}>
+                  <Route path="/messages" element={<PrivateRoute><Messages /></PrivateRoute>} />
                 </Route>
               </Routes>
             </main>
