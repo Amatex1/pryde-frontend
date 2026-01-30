@@ -3965,8 +3965,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .profile-header .profile-identity {
     align-items: center;
     text-align: center;
-    padding-top: 60px; /* Space below avatar (avatar is 100px, overlaps by ~50px) */
-    margin-top: -50px; /* Pull up to overlap with avatar area */
+    padding-top: 55px; /* Space below avatar - avatar is 100px, half overlaps cover */
+    margin-top: 0; /* No negative margin - let avatar overlap naturally */
   }
 
   .profile-identity .profile-card.profile-card--hybrid {
@@ -4002,8 +4002,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .profile-header .profile-identity {
     align-items: center;
     text-align: center;
-    padding-top: 70px; /* Space below avatar (avatar is 110px, overlaps by ~55px) */
-    margin-top: -55px; /* Pull up to overlap with avatar area */
+    padding-top: 60px; /* Space below avatar - avatar is 110px, half overlaps cover */
+    margin-top: 0; /* No negative margin - let avatar overlap naturally */
   }
 
   .profile-identity .profile-card.profile-card--hybrid {
@@ -4059,7 +4059,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .profile-avatar.profile-avatar--overlay {
     position: absolute;
     left: 28px;
-    /* No top positioning - allows natural flow and better overlap */
+    top: 178px; /* Position so avatar overlaps bottom of cover (cover is 240px, avatar is 124px, overlap ~62px) */
     width: 124px;
     height: 124px;
     border-radius: 50%;
@@ -4076,9 +4076,10 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   /* Profile Card - Hybrid glass card below cover with left padding for avatar */
-  .profile-card.profile-card--hybrid {
+  /* Higher specificity to override base styles */
+  .profile-header .profile-identity .profile-card.profile-card--hybrid {
     margin-top: 0;
-    padding-top: 42px; /* Creates landing zone for the overlap */
+    padding-top: 20px; /* Reduced - avatar is positioned absolutely */
     padding-left: 170px; /* Makes room for avatar on the left */
     padding-right: 26px;
     padding-bottom: 18px;
@@ -4088,33 +4089,35 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     -webkit-backdrop-filter: blur(10px);
   }
 
-  [data-theme="light"] .profile-card.profile-card--hybrid {
+  [data-theme="light"] .profile-header .profile-identity .profile-card.profile-card--hybrid {
     background: rgba(255, 255, 255, 0.85);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   }
 
-  /* Identity Stack - Left aligned, compact */
-  .profile-card--hybrid .profile-identity {
-    margin-left: 0;
-    margin-top: 0;
-    flex: 1;
+  /* Identity wrapper - Left aligned on desktop */
+  .profile-header .profile-identity {
     align-items: flex-start;
+    text-align: left;
+    padding-top: 0; /* No extra padding on desktop - avatar is positioned absolutely */
+    margin-top: 0;
   }
 
   /* Name - Compact spacing */
-  .profile-card--hybrid .profile-name {
+  .profile-identity .profile-card--hybrid .profile-name {
     margin: 0 0 4px 0;
     font-size: 1.75rem;
+    text-align: left;
   }
 
   /* Handle - Muted appearance */
-  .profile-card--hybrid .profile-username {
+  .profile-identity .profile-card--hybrid .profile-username {
     margin: 0 0 10px 0;
     opacity: 0.75;
+    text-align: left;
   }
 
   /* Bio - Readable, constrained width */
-  .profile-card--hybrid .profile-bio {
+  .profile-identity .profile-card--hybrid .profile-bio {
     margin-top: 10px;
     max-width: 720px;
     line-height: 1.45;
@@ -4122,7 +4125,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   /* Stats - Less blocky, secondary emphasis */
-  .profile-card--hybrid .profile-stats {
+  .profile-identity .profile-card--hybrid .profile-stats {
     margin-top: 14px;
     padding-top: 10px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -4131,14 +4134,20 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     justify-content: flex-start;
   }
 
-  [data-theme="light"] .profile-card--hybrid .profile-stats {
+  [data-theme="light"] .profile-identity .profile-card--hybrid .profile-stats {
     border-top-color: rgba(0, 0, 0, 0.08);
   }
 
   /* Action buttons - Proper spacing */
-  .profile-card--hybrid .profile-action-buttons {
+  .profile-identity .profile-card--hybrid .profile-action-buttons {
     margin-top: 16px;
     margin-left: 0;
+    justify-content: flex-start;
+  }
+
+  /* Identity pills - Left aligned */
+  .profile-identity .profile-card--hybrid .profile-identity-pills {
+    justify-content: flex-start;
   }
 
   /* Content area - Reduce vertical waste */
