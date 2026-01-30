@@ -2112,6 +2112,31 @@ function Profile() {
                   )}
 
                   <div className="post-actions-bar">
+                    {/* Privacy selector - moved to first position */}
+                    <select
+                      id="profile-post-privacy"
+                      name="postPrivacy"
+                      value={postVisibility}
+                      onChange={(e) => setPostVisibility(e.target.value)}
+                      className="privacy-selector glossy"
+                      aria-label="Select post privacy"
+                    >
+                      <option value="public">🌍 Public</option>
+                      <option value="followers">👥 Connections</option>
+                      <option value="private">🔒 Private</option>
+                    </select>
+
+                    {/* GIF button - moved to second position */}
+                    <button
+                      type="button"
+                      className="btn-gif"
+                      onClick={() => setShowGifPicker(showGifPicker === 'main-post' ? null : 'main-post')}
+                      disabled={selectedPostGif !== null}
+                      title="Add GIF"
+                    >
+                      GIF
+                    </button>
+
                     <label className="btn-media-upload">
                       <input
                         id="profile-media-upload"
@@ -2125,16 +2150,6 @@ function Profile() {
                       />
                       {uploadingMedia ? `⏳ Uploading... ${uploadProgress}%` : '📷 Add Photos/Videos'}
                     </label>
-
-                    <button
-                      type="button"
-                      className="btn-gif"
-                      onClick={() => setShowGifPicker(showGifPicker === 'main-post' ? null : 'main-post')}
-                      disabled={selectedPostGif !== null}
-                      title="Add GIF"
-                    >
-                      GIF
-                    </button>
 
                     <button
                       type="button"
@@ -2164,20 +2179,6 @@ function Profile() {
                       />
                       <span>🔇 Hide Metrics</span>
                     </label>
-
-                    {/* PHASE 1 REFACTOR: Simplified privacy options */}
-                    <select
-                      id="profile-post-privacy"
-                      name="postPrivacy"
-                      value={postVisibility}
-                      onChange={(e) => setPostVisibility(e.target.value)}
-                      className="privacy-selector glossy"
-                      aria-label="Select post privacy"
-                    >
-                      <option value="public">🌍 Public</option>
-                      <option value="followers">👥 Connections</option>
-                      <option value="private">🔒 Private</option>
-                    </select>
 
                     {/* Draft save status indicator */}
                     {draftSaveStatus && (
