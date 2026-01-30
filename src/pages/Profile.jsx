@@ -1644,6 +1644,37 @@ function Profile() {
             )}
           </div>
 
+          {/* 3-dot menu - positioned top right under cover photo (only for other users' profiles) */}
+          {!isOwnProfile && (
+            <div className="profile-actions-dropdown profile-actions-dropdown--header" ref={actionsMenuRef}>
+              <button
+                className="btn-actions-menu"
+                onClick={() => setShowActionsMenu(!showActionsMenu)}
+              >
+                ⋮
+              </button>
+              {showActionsMenu && (
+                <div className="actions-dropdown-menu">
+                  {isBlocked ? (
+                    <button className="dropdown-item" onClick={() => { handleUnblockUser(); setShowActionsMenu(false); }}>
+                      🔓 Unblock User
+                    </button>
+                  ) : (
+                    <button className="dropdown-item" onClick={() => { handleBlockUser(); setShowActionsMenu(false); }}>
+                      🚫 Block User
+                    </button>
+                  )}
+                  <button
+                    className="dropdown-item dropdown-item-danger"
+                    onClick={() => { setReportModal({ isOpen: true, type: 'user', contentId: null, userId: user?._id }); setShowActionsMenu(false); }}
+                  >
+                    🚩 Report User
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           {uploadMessage && (
             <div className="upload-message-banner">{uploadMessage}</div>
           )}
@@ -1811,34 +1842,6 @@ function Profile() {
                       >
                         🔒 Message
                       </button>
-                    )}
-                  </div>
-
-                  <div className="profile-actions-dropdown" ref={actionsMenuRef}>
-                    <button
-                      className="btn-actions-menu"
-                      onClick={() => setShowActionsMenu(!showActionsMenu)}
-                    >
-                      ⋮
-                    </button>
-                    {showActionsMenu && (
-                      <div className="actions-dropdown-menu">
-                        {isBlocked ? (
-                          <button className="dropdown-item" onClick={() => { handleUnblockUser(); setShowActionsMenu(false); }}>
-                            🔓 Unblock User
-                          </button>
-                        ) : (
-                          <button className="dropdown-item" onClick={() => { handleBlockUser(); setShowActionsMenu(false); }}>
-                            🚫 Block User
-                          </button>
-                        )}
-                        <button
-                          className="dropdown-item dropdown-item-danger"
-                          onClick={() => { setReportModal({ isOpen: true, type: 'user', contentId: null, userId: user?._id }); setShowActionsMenu(false); }}
-                        >
-                          🚩 Report User
-                        </button>
-                      </div>
                     )}
                   </div>
                 </div>
