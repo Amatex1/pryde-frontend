@@ -2879,7 +2879,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   select,
   .reply-input,
   .comment-input {
-    font-size: 16px !important;
+    font-size: var(--font-size-base) !important; /* 16px - iOS zoom prevention */
   }
 
   /* Ensure all content fits on screen */
@@ -3052,7 +3052,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .post-content,
   .comment-text,
   .bio-text {
-    font-size: 16px !important;
+    font-size: var(--font-size-base) !important; /* 16px - mobile readability */
     line-height: 1.5;
   }
 
@@ -3061,14 +3061,14 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .comment-author-name,
   .username,
   .display-name {
-    font-size: 15px !important;
+    font-size: var(--font-size-base) !important; /* 16px - mobile readability */
     white-space: normal;
     word-wrap: break-word;
   }
 
   /* Profile name needs flex-wrap on mobile for badges */
   .profile-name {
-    font-size: 1.25rem !important;
+    font-size: var(--font-size-xl) !important; /* 20px - mobile heading */
     white-space: normal;
     word-wrap: break-word;
     flex-wrap: wrap !important;
@@ -3093,13 +3093,13 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   /* Fix timestamp sizing */
   .post-timestamp,
   .comment-timestamp {
-    font-size: 13px !important;
+    font-size: var(--font-size-sm) !important; /* 14px - mobile meta */
   }
 
   /* Fix action button text */
   .action-btn,
   .comment-action-btn {
-    font-size: 14px !important;
+    font-size: var(--font-size-sm) !important; /* 14px - touch targets */
     white-space: nowrap;
   }
 

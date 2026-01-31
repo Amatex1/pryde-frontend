@@ -3606,7 +3606,7 @@ html:not([data-theme]) .post-actions {
   /* Prevent text from being too small */
   .post-content,
   .comment-text {
-    font-size: 16px !important;
+    font-size: var(--font-size-base) !important; /* 16px - iOS zoom prevention */
     line-height: 1.5;
   }
 
@@ -3615,7 +3615,7 @@ html:not([data-theme]) .post-actions {
   .comment-author-name,
   .username,
   .display-name {
-    font-size: 15px !important;
+    font-size: var(--font-size-base) !important; /* 16px - mobile readability */
     white-space: normal;
     word-wrap: break-word;
   }
@@ -3623,13 +3623,13 @@ html:not([data-theme]) .post-actions {
   /* Fix timestamp sizing */
   .post-timestamp,
   .comment-timestamp {
-    font-size: 13px !important;
+    font-size: var(--font-size-sm) !important; /* 14px - mobile readability */
   }
 
   /* Fix action button text */
   .action-btn,
   .comment-action-btn {
-    font-size: 14px !important;
+    font-size: var(--font-size-sm) !important; /* 14px - touch targets */
     white-space: nowrap;
   }
 
@@ -3707,7 +3707,7 @@ html:not([data-theme]) .post-actions {
   .comment-body {
     max-width: calc(100% - 40px) !important; /* Full width minus avatar */
     padding: 6px 10px !important;
-    font-size: 14px !important;
+    font-size: var(--font-size-sm) !important; /* 14px - mobile readability */
   }
 
   .comment-actions {
@@ -3738,7 +3738,7 @@ html:not([data-theme]) .post-actions {
   .comment.reply .comment-body,
   .reply .comment-body {
     max-width: calc(100% - 32px) !important; /* Full width minus smaller avatar */
-    font-size: 13px !important;
+    font-size: var(--font-size-sm) !important; /* 14px - mobile readability */
   }
 
   /* Larger touch target for 3-dot menu on mobile */
@@ -3782,7 +3782,7 @@ html:not([data-theme]) .post-actions {
 
   .btn-cancel-reply,
   .reply-cancel {
-    font-size: 12px !important;
+    font-size: var(--font-size-xs) !important; /* 12px - compact button */
     padding: 4px 6px !important;
     min-height: auto !important;
     flex: 0 !important;
@@ -3793,7 +3793,7 @@ html:not([data-theme]) .post-actions {
   .reply-gif-btn {
     height: 32px !important;
     min-width: 32px !important;
-    font-size: 0.75rem !important;
+    font-size: var(--font-size-xs) !important; /* 12px - compact button */
     padding: 0 10px !important;
   }
 
@@ -4154,7 +4154,7 @@ label.btn-media-upload {
   display: inline-flex !important;
   align-items: center !important;
   gap: 8px !important;
-  font-size: 0.875rem !important; /* 14px */
+  font-size: var(--font-size-sm); /* 14px */
   line-height: 1 !important;
   border-radius: 10px !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Subtle border */
@@ -4332,7 +4332,7 @@ label.btn-media-upload:disabled {
     min-height: 32px !important;
     max-height: 32px !important;
     padding: 0 10px !important;
-    font-size: 0.8rem !important;
+    font-size: var(--font-size-sm);
     flex-shrink: 0;
   }
 
