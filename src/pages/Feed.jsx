@@ -20,6 +20,7 @@ import PinnedPostBadge from '../components/PinnedPostBadge';
 import PostHeader from '../components/PostHeader';
 import PausableGif from '../components/PausableGif';
 import FeedPost from '../components/feed/FeedPost';
+import FeedComposer from '../components/feed/FeedComposer';
 import { useBadges } from '../hooks/useBadges';
 // DEPRECATED: EditHistoryModal import removed 2025-12-26
 import DraftManager from '../components/DraftManager';
@@ -858,7 +859,7 @@ function Feed() {
     return `${Math.floor(seconds / 86400)}d ago`;
   };
 
-  const handleMediaSelect = async (e) => {
+  const handleMediaSelect = useCallback(async (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
 
@@ -871,9 +872,18 @@ function Feed() {
       return;
     }
 
-    // Limit to 3 files
+    // Limit to 3 files - check current state
+    setSelectedMedia(prev => {
+      if (prev.length + files.length > 3) {
+        showAlert('You can only upload up to 3 media files per post', 'Upload Limit Reached');
+        return prev;
+      }
+      // Trigger upload in effect
+      return prev;
+    });
+
+    // Check limit before proceeding
     if (selectedMedia.length + files.length > 3) {
-      showAlert('You can only upload up to 3 media files per post', 'Upload Limit Reached');
       return;
     }
 
@@ -911,7 +921,7 @@ function Feed() {
         throw new Error('Upload succeeded but no media URLs returned');
       }
 
-      setSelectedMedia([...selectedMedia, ...response.media]);
+      setSelectedMedia(prev => [...prev, ...response.media]);
       showToast('Media uploaded successfully', 'success');
     } catch (error) {
       logger.error('Media upload failed:', error);
@@ -925,10 +935,10 @@ function Feed() {
       setUploadingMedia(false);
       setUploadProgress(0);
     }
-  };
+  }, [selectedMedia.length, showAlert, showToast]);
 
   // Handle paste events for images and image URLs
-  const handlePaste = async (e) => {
+  const handlePaste = useCallback(async (e) => {
     const items = e.clipboardData?.items;
     if (!items) return;
 
@@ -967,7 +977,7 @@ function Feed() {
           });
 
           if (response?.media?.length > 0) {
-            setSelectedMedia([...selectedMedia, ...response.media]);
+            setSelectedMedia(prev => [...prev, ...response.media]);
             showToast('Image pasted successfully', 'success');
           }
         } catch (error) {
@@ -1012,7 +1022,7 @@ function Feed() {
           });
 
           if (uploadResponse?.media?.length > 0) {
-            setSelectedMedia([...selectedMedia, ...uploadResponse.media]);
+            setSelectedMedia(prev => [...prev, ...uploadResponse.media]);
             showToast('Image URL pasted successfully', 'success');
           }
         } catch (error) {
@@ -1024,46 +1034,47 @@ function Feed() {
         }
       }
     }
-  };
+  }, [selectedMedia.length, showAlert, showToast]);
 
-  const removeMedia = async (index) => {
-    const mediaToRemove = selectedMedia[index];
+  const removeMedia = useCallback(async (index) => {
+    // Get media item at index from current state
+    setSelectedMedia(prev => {
+      const mediaToRemove = prev[index];
+      if (!mediaToRemove) return prev;
 
-    if (!mediaToRemove) return;
+      // CRITICAL: Delete from backend FIRST, then update UI
+      // This prevents ghost media that reappears after refresh
+      (async () => {
+        try {
+          // Try to delete by tempMediaId first (preferred)
+          if (mediaToRemove.tempMediaId) {
+            await api.delete(`/upload/post-media/${mediaToRemove.tempMediaId}`);
+            logger.debug('[TEMP MEDIA] Deleted by ID:', mediaToRemove.tempMediaId);
+          } else if (mediaToRemove.url) {
+            // Fallback: delete by URL for legacy uploads
+            await api.delete('/upload/post-media/by-url', { data: { url: mediaToRemove.url } });
+            logger.debug('[TEMP MEDIA] Deleted by URL:', mediaToRemove.url);
+          }
+        } catch (error) {
+          logger.error('[TEMP MEDIA] Delete failed:', error);
 
-    // CRITICAL: Delete from backend FIRST, then update UI
-    // This prevents ghost media that reappears after refresh
-    try {
-      // Try to delete by tempMediaId first (preferred)
-      if (mediaToRemove.tempMediaId) {
-        await api.delete(`/upload/post-media/${mediaToRemove.tempMediaId}`);
-        logger.debug('[TEMP MEDIA] Deleted by ID:', mediaToRemove.tempMediaId);
-      } else if (mediaToRemove.url) {
-        // Fallback: delete by URL for legacy uploads
-        await api.delete('/upload/post-media/by-url', { data: { url: mediaToRemove.url } });
-        logger.debug('[TEMP MEDIA] Deleted by URL:', mediaToRemove.url);
-      }
+          // Dev mode warning
+          if (import.meta.env.DEV) {
+            console.warn('⚠️ Temporary media removed in UI but still exists server-side');
+            console.warn('⚠️ This media will reappear after refresh');
+          }
 
-      // Only remove from UI after successful backend delete
-      setSelectedMedia(selectedMedia.filter((_, i) => i !== index));
-    } catch (error) {
-      logger.error('[TEMP MEDIA] Delete failed:', error);
+          // Don't show error to user for non-critical failures (404 means already deleted)
+          if (error.response?.status !== 404) {
+            showToast('Media removed locally. May reappear on refresh.', 'warning');
+          }
+        }
+      })();
 
-      // Dev mode warning
-      if (import.meta.env.DEV) {
-        console.warn('⚠️ Temporary media removed in UI but still exists server-side');
-        console.warn('⚠️ This media will reappear after refresh');
-      }
-
-      // Still remove from UI to not block the user, but warn
-      setSelectedMedia(selectedMedia.filter((_, i) => i !== index));
-
-      // Don't show error to user for non-critical failures (404 means already deleted)
-      if (error.response?.status !== 404) {
-        showToast('Media removed locally. May reappear on refresh.', 'warning');
-      }
-    }
-  };
+      // Remove from UI immediately for responsive UX
+      return prev.filter((_, i) => i !== index);
+    });
+  }, [showToast]);
 
 
 
@@ -1171,7 +1182,7 @@ function Feed() {
   }, [newPost, selectedMedia, postVisibility, contentWarning, hideMetrics, poll, autoSaveDraft]);
 
   // Restore draft - ONLY restore drafts that were confirmed by backend
-  const handleRestoreDraft = (draft) => {
+  const handleRestoreDraft = useCallback((draft) => {
     // CRITICAL: Only restore drafts that have a valid _id (confirmed by backend)
     if (!draft._id) {
       if (import.meta.env.DEV) {
@@ -1206,7 +1217,7 @@ function Feed() {
     setCurrentDraftId(draft._id);
     setShowContentWarning(!!draft.contentWarning);
     setShowPollCreator(!!draft.poll);
-  };
+  }, []);
 
   // Delete draft after successful post (fire-and-forget, non-blocking)
   const deleteDraft = (draftId) => {
@@ -1242,7 +1253,7 @@ function Feed() {
     }, 0);
   };
 
-  const handlePostSubmit = async (e) => {
+  const handlePostSubmit = useCallback(async (e) => {
     e.preventDefault();
     // Allow posting with just a poll, content, media, or GIF
     // Check if content is empty (only whitespace) but preserve actual spaces/newlines
@@ -1287,7 +1298,7 @@ function Feed() {
       // }
 
       const response = await api.post('/posts', postData);
-      setPosts([response.data, ...posts]);
+      setPosts(prev => [response.data, ...prev]);
 
       // CRITICAL: Clear auto-save timer FIRST to prevent race conditions
       if (autoSaveTimerRef.current) {
@@ -1352,18 +1363,43 @@ function Feed() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [newPost, selectedMedia, poll, selectedPostGif, postVisibility, contentWarning, hideMetrics, currentDraftId, showMobileComposer, showAlert]);
 
-  const handleLike = async (postId) => {
+  const handleLike = useCallback(async (postId) => {
     try {
       const response = await api.post(`/posts/${postId}/like`);
-      setPosts(posts.map(p => p._id === postId ? response.data : p));
+      setPosts(prev => prev.map(p => p._id === postId ? response.data : p));
     } catch (error) {
       logger.error('Failed to like post:', error);
     }
-  };
+  }, []);
 
-  const handlePostReaction = async (postId, emoji) => {
+  // Helper function to get user's selected emoji from reactions
+  // Handles both array format [{user, emoji}] and object format {emoji: [userIds]}
+  const getUserReactionEmoji = useCallback((reactions) => {
+    if (!reactions || !currentUser?.id) {
+      return null;
+    }
+
+    // Handle array format (Post reactions)
+    if (Array.isArray(reactions)) {
+      const userReaction = reactions.find(r => {
+        const userId = r.user?._id || r.user;
+        return userId?.toString() === currentUser.id?.toString();
+      });
+      return userReaction?.emoji || null;
+    }
+
+    // Handle object format (Comment reactions)
+    for (const [emoji, userIds] of Object.entries(reactions)) {
+      if (userIds.some(id => id?.toString() === currentUser.id?.toString())) {
+        return emoji;
+      }
+    }
+    return null;
+  }, [currentUser?.id]);
+
+  const handlePostReaction = useCallback(async (postId, emoji) => {
     try {
       const response = await api.post(`/posts/${postId}/react`, { emoji });
       console.log('🔍 Reaction response:', response.data);
@@ -1401,35 +1437,10 @@ function Feed() {
     } catch (error) {
       logger.error('Failed to react to post:', error);
     }
-  };
-
-  // Helper function to get user's selected emoji from reactions
-  // Handles both array format [{user, emoji}] and object format {emoji: [userIds]}
-  const getUserReactionEmoji = (reactions) => {
-    if (!reactions || !currentUser?.id) {
-      return null;
-    }
-
-    // Handle array format (Post reactions)
-    if (Array.isArray(reactions)) {
-      const userReaction = reactions.find(r => {
-        const userId = r.user?._id || r.user;
-        return userId?.toString() === currentUser.id?.toString();
-      });
-      return userReaction?.emoji || null;
-    }
-
-    // Handle object format (Comment reactions)
-    for (const [emoji, userIds] of Object.entries(reactions)) {
-      if (userIds.some(id => id?.toString() === currentUser.id?.toString())) {
-        return emoji;
-      }
-    }
-    return null;
-  };
+  }, [currentUser?.id, getUserReactionEmoji]);
 
   // Fetch comments for a post
-  const fetchCommentsForPost = async (postId) => {
+  const fetchCommentsForPost = useCallback(async (postId) => {
     try {
       logger.debug(`📥 Fetching comments for post: ${postId}`);
       const response = await api.get(`/posts/${postId}/comments`);
@@ -1477,10 +1488,10 @@ function Feed() {
     } catch (error) {
       logger.error('❌ Failed to fetch comments:', error);
     }
-  };
+  }, []);
 
   // Fetch replies for a comment
-  const fetchRepliesForComment = async (commentId) => {
+  const fetchRepliesForComment = useCallback(async (commentId) => {
     try {
       const response = await api.get(`/comments/${commentId}/replies`);
       setCommentReplies(prev => ({
@@ -1490,24 +1501,26 @@ function Feed() {
     } catch (error) {
       logger.error('Failed to fetch replies:', error);
     }
-  };
+  }, []);
 
   // Toggle replies visibility and fetch if needed
-  const toggleReplies = async (commentId) => {
-    const isCurrentlyShown = showReplies[commentId];
+  const toggleReplies = useCallback(async (commentId) => {
+    setShowReplies(prev => {
+      const isCurrentlyShown = prev[commentId];
+      // Fetch replies if showing and not already loaded
+      if (!isCurrentlyShown) {
+        setCommentReplies(cr => {
+          if (!cr[commentId]) {
+            fetchRepliesForComment(commentId);
+          }
+          return cr;
+        });
+      }
+      return { ...prev, [commentId]: !isCurrentlyShown };
+    });
+  }, [fetchRepliesForComment]);
 
-    setShowReplies(prev => ({
-      ...prev,
-      [commentId]: !isCurrentlyShown
-    }));
-
-    // Fetch replies if showing and not already loaded
-    if (!isCurrentlyShown && !commentReplies[commentId]) {
-      await fetchRepliesForComment(commentId);
-    }
-  };
-
-  const handleCommentReaction = async (commentId, emoji) => {
+  const handleCommentReaction = useCallback(async (commentId, emoji) => {
     // Save original state for rollback
     const originalPostComments = { ...postComments };
     const originalCommentReplies = { ...commentReplies };
@@ -1586,9 +1599,9 @@ function Feed() {
       setCommentReplies(originalCommentReplies);
       showAlert('Failed to add reaction. Please try again.', 'Reaction Failed');
     }
-  };
+  }, [postComments, commentReplies, currentUser?.id, showAlert]);
 
-  const toggleCommentBox = async (postId) => {
+  const toggleCommentBox = useCallback(async (postId) => {
     // Detect mobile using 600px breakpoint (matches CommentSheet design contract)
     const isMobileSheet = window.matchMedia("(max-width: 600px)").matches;
 
@@ -1599,27 +1612,32 @@ function Feed() {
       console.log('🔍 Opening CommentSheet for post:', postId);
       setCommentSheetOpen(postId);
       // Fetch comments if not already loaded
-      if (!postComments[postId]) {
-        await fetchCommentsForPost(postId);
-      }
+      setPostComments(prev => {
+        if (!prev[postId]) {
+          fetchCommentsForPost(postId);
+        }
+        return prev;
+      });
       return;
     }
 
     // Desktop: use inline comment box
-    const isCurrentlyShown = showCommentBox[postId];
+    setShowCommentBox(prev => {
+      const isCurrentlyShown = prev[postId];
+      // Fetch comments if opening and not already loaded
+      if (!isCurrentlyShown) {
+        setPostComments(p => {
+          if (!p[postId]) {
+            fetchCommentsForPost(postId);
+          }
+          return p;
+        });
+      }
+      return { ...prev, [postId]: !isCurrentlyShown };
+    });
+  }, [fetchCommentsForPost]);
 
-    setShowCommentBox(prev => ({
-      ...prev,
-      [postId]: !isCurrentlyShown
-    }));
-
-    // Fetch comments if opening and not already loaded
-    if (!isCurrentlyShown && !postComments[postId]) {
-      await fetchCommentsForPost(postId);
-    }
-  };
-
-  const handleCommentSubmit = async (postId, e) => {
+  const handleCommentSubmit = useCallback(async (postId, e) => {
     e.preventDefault();
 
     // Block submission if GIF picker is open
@@ -1661,9 +1679,9 @@ function Feed() {
       logger.error('Error details:', error.response?.data);
       showAlert('This didn\'t post properly. You can try again in a moment.', 'Reply issue');
     }
-  };
+  }, [showGifPicker, commentText, commentGif, showAlert]);
 
-  const handleCommentChange = (postId, value) => {
+  const handleCommentChange = useCallback((postId, value) => {
     setCommentText(prev => ({ ...prev, [postId]: value }));
 
     // Auto-save comment draft
@@ -1671,7 +1689,7 @@ function Feed() {
       const draftKey = `comment-${postId}`;
       saveDraft(draftKey, value);
     }
-  };
+  }, []);
 
   // Restore comment drafts on mount
   useEffect(() => {
@@ -1684,14 +1702,14 @@ function Feed() {
     });
   }, [posts.length]); // Only run when posts are loaded
 
-  const handleEditComment = (commentId, content) => {
+  const handleEditComment = useCallback((commentId, content) => {
     setEditingCommentId(commentId);
 
     // Try to restore draft first, otherwise use original content
     const draftKey = `edit-comment-${commentId}`;
     const localDraft = loadDraft(draftKey);
     setEditCommentText(localDraft || content);
-  };
+  }, []);
 
   // Auto-save comment edit draft
   useEffect(() => {
@@ -1701,7 +1719,7 @@ function Feed() {
     }
   }, [editCommentText, editingCommentId]);
 
-  const handleSaveEditComment = async (commentId) => {
+  const handleSaveEditComment = useCallback(async (commentId) => {
     if (!editCommentText.trim()) return;
 
     try {
@@ -1743,24 +1761,25 @@ function Feed() {
       logger.error('Failed to edit comment:', error);
       showAlert('This didn\'t save properly. You can try again in a moment.', 'Edit issue');
     }
-  };
+  }, [editCommentText, showAlert]);
 
-  const handleCancelEditComment = () => {
-    // Clear localStorage draft when canceling
-    if (editingCommentId) {
-      const draftKey = `edit-comment-${editingCommentId}`;
-      clearDraft(draftKey);
-    }
+  const handleCancelEditComment = useCallback(() => {
+    setEditingCommentId(prev => {
+      if (prev) {
+        const draftKey = `edit-comment-${prev}`;
+        clearDraft(draftKey);
+      }
+      return null;
+    });
 
-    setEditingCommentId(null);
     setEditCommentText('');
-  };
+  }, []);
 
-  const toggleDropdown = (postId) => {
-    setOpenDropdownId(openDropdownId === postId ? null : postId);
-  };
+  const toggleDropdown = useCallback((postId) => {
+    setOpenDropdownId(prev => prev === postId ? null : postId);
+  }, []);
 
-  const handleEditPost = (post) => {
+  const handleEditPost = useCallback((post) => {
     setEditingPostId(post._id);
 
     // Try to restore draft first, otherwise use original content
@@ -1786,15 +1805,15 @@ function Feed() {
     }
 
     setOpenDropdownId(null);
-  };
+  }, []);
 
   // Handle removing media during edit
-  const handleRemoveEditMedia = (mediaUrl) => {
+  const handleRemoveEditMedia = useCallback((mediaUrl) => {
     // Add to deleted list for backend cleanup
     setDeletedMedia(prev => [...prev, mediaUrl]);
     // Remove from current media list
     setEditPostMedia(prev => prev.filter(m => m.url !== mediaUrl));
-  };
+  }, []);
 
   // Auto-resize edit post textarea
   useEffect(() => {
@@ -1821,7 +1840,7 @@ function Feed() {
     }
   }, [editPostText, editPostVisibility, editHiddenFromUsers, editSharedWithUsers, editingPostId, editPostMedia, deletedMedia]);
 
-  const handleSaveEditPost = async (postId) => {
+  const handleSaveEditPost = useCallback(async (postId) => {
     // Allow saving if there's content OR media remaining
     if (!editPostText.trim() && editPostMedia.length === 0) return;
 
@@ -1852,7 +1871,7 @@ function Feed() {
       }
 
       const response = await api.put(`/posts/${postId}`, updateData);
-      setPosts(posts.map(p => p._id === postId ? response.data : p));
+      setPosts(prev => prev.map(p => p._id === postId ? response.data : p));
 
       // Clear localStorage draft
       const draftKey = `edit-post-${postId}`;
@@ -1870,26 +1889,27 @@ function Feed() {
       logger.error('Failed to edit post:', error);
       showAlert('This didn\'t save properly. You can try again in a moment.', 'Edit issue');
     }
-  };
+  }, [editPostText, editPostMedia, editPostVisibility, deletedMedia, editHiddenFromUsers, editSharedWithUsers, showAlert]);
 
-  const handleCancelEditPost = () => {
-    // Clear localStorage draft when canceling
-    if (editingPostId) {
-      const draftKey = `edit-post-${editingPostId}`;
-      clearDraft(draftKey);
-    }
+  const handleCancelEditPost = useCallback(() => {
+    setEditingPostId(prev => {
+      if (prev) {
+        const draftKey = `edit-post-${prev}`;
+        clearDraft(draftKey);
+      }
+      return null;
+    });
 
-    setEditingPostId(null);
     setEditPostText('');
     setEditPostVisibility('followers');
     setEditHiddenFromUsers([]);
     setEditSharedWithUsers([]);
     setEditPostMedia([]);
     setDeletedMedia([]);
-  };
+  }, []);
 
   // Keyboard shortcuts for edit post
-  const handleEditPostKeyDown = (e, postId) => {
+  const handleEditPostKeyDown = useCallback((e, postId) => {
     // Save: Cmd/Ctrl + Enter
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       e.preventDefault();
@@ -1901,9 +1921,9 @@ function Feed() {
       e.preventDefault();
       handleCancelEditPost();
     }
-  };
+  }, [handleSaveEditPost, handleCancelEditPost]);
 
-  const handleDeleteComment = async (postId, commentId, isReply = false) => {
+  const handleDeleteComment = useCallback(async (postId, commentId, isReply = false) => {
     const confirmed = await showConfirm('Are you sure you want to delete this comment?', 'Delete Comment', 'Delete', 'Cancel');
     if (!confirmed) return;
 
@@ -1935,7 +1955,7 @@ function Feed() {
       }
 
       // Update post comment count
-      setPosts(posts.map(p =>
+      setPosts(prev => prev.map(p =>
         p._id === postId
           ? { ...p, commentCount: Math.max(0, (p.commentCount || 0) - 1) }
           : p
@@ -1944,14 +1964,14 @@ function Feed() {
       logger.error('Failed to delete comment:', error);
       showAlert('This didn\'t delete properly. You can try again in a moment.', 'Delete issue');
     }
-  };
+  }, [showConfirm, showAlert]);
 
-  const handleReplyToComment = (postId, commentId) => {
+  const handleReplyToComment = useCallback((postId, commentId) => {
     setReplyingToComment({ postId, commentId });
     setReplyText('');
-  };
+  }, []);
 
-  const handleSubmitReply = async (e) => {
+  const handleSubmitReply = useCallback(async (e) => {
     e.preventDefault();
 
     // Block submission if GIF picker is open
@@ -1990,32 +2010,37 @@ function Feed() {
       logger.error('Failed to reply to comment:', error);
       showAlert('This didn\'t post properly. You can try again in a moment.', 'Reply issue');
     }
-  };
+  }, [showGifPicker, replyText, replyGif, replyingToComment, showAlert]);
 
-  const handleCancelReply = () => {
+  const handleCancelReply = useCallback(() => {
     setReplyingToComment(null);
     setReplyText('');
     setReplyGif(null);
-  };
+  }, []);
 
-  const handleBookmark = async (postId) => {
-    const isBookmarked = bookmarkedPosts.includes(postId);
-
-    try {
+  const handleBookmark = useCallback(async (postId) => {
+    setBookmarkedPosts(prev => {
+      const isBookmarked = prev.includes(postId);
+      // Optimistic update
       if (isBookmarked) {
-        await api.delete(`/bookmarks/${postId}`);
-        setBookmarkedPosts(bookmarkedPosts.filter(id => id !== postId));
+        api.delete(`/bookmarks/${postId}`).catch(error => {
+          logger.error('Failed to unbookmark post:', error);
+          showAlert(error.response?.data?.message || 'This didn\'t save properly. You can try again in a moment.', 'Save issue');
+          setBookmarkedPosts(p => [...p, postId]); // Rollback
+        });
+        return prev.filter(id => id !== postId);
       } else {
-        await api.post(`/bookmarks/${postId}`);
-        setBookmarkedPosts([...bookmarkedPosts, postId]);
+        api.post(`/bookmarks/${postId}`).catch(error => {
+          logger.error('Failed to bookmark post:', error);
+          showAlert(error.response?.data?.message || 'This didn\'t save properly. You can try again in a moment.', 'Save issue');
+          setBookmarkedPosts(p => p.filter(id => id !== postId)); // Rollback
+        });
+        return [...prev, postId];
       }
-    } catch (error) {
-      logger.error('Failed to bookmark post:', error);
-      showAlert(error.response?.data?.message || 'This didn\'t save properly. You can try again in a moment.', 'Save issue');
-    }
-  };
+    });
+  }, [showAlert]);
 
-  const handleDelete = async (postId) => {
+  const handleDelete = useCallback(async (postId) => {
     const confirmed = await showConfirm('Are you sure you want to delete this post?', 'Delete Post', 'Delete', 'Cancel');
     if (!confirmed) {
       return;
@@ -2023,40 +2048,39 @@ function Feed() {
 
     try {
       await api.delete(`/posts/${postId}`);
-      setPosts(posts.filter(p => p._id !== postId));
+      setPosts(prev => prev.filter(p => p._id !== postId));
     } catch (error) {
       logger.error('Failed to delete post:', error);
       showAlert('This didn\'t delete properly. You can try again in a moment.', 'Delete issue');
     }
-  };
+  }, [showConfirm, showAlert]);
 
   // ============================================
   // FeedPost Handler Wrappers
   // These wrap inline functions for FeedPost component
-  // TODO (2A.7): Wrap in useCallback for memoization
   // ============================================
 
-  const handlePinPost = async (postId, isPinned) => {
+  const handlePinPost = useCallback(async (postId, isPinned) => {
     try {
       const response = await api.post(`/posts/${postId}/pin`);
-      setPosts(posts.map(p => p._id === postId ? response.data : p));
+      setPosts(prev => prev.map(p => p._id === postId ? response.data : p));
       setOpenDropdownId(null);
     } catch (error) {
       logger.error('Failed to toggle pin:', error);
     }
-  };
+  }, []);
 
-  const handleDeletePost = async (postId) => {
+  const handleDeletePost = useCallback(async (postId) => {
     await handleDelete(postId);
     setOpenDropdownId(null);
-  };
+  }, [handleDelete]);
 
-  const handleReportPost = (postId, authorId) => {
+  const handleReportPost = useCallback((postId, authorId) => {
     setReportModal({ isOpen: true, type: 'post', contentId: postId, userId: authorId });
     setOpenDropdownId(null);
-  };
+  }, []);
 
-  const handlePostReactionChange = (postId, reactions, userReaction) => {
+  const handlePostReactionChange = useCallback((postId, reactions, userReaction) => {
     setPosts(prevPosts =>
       prevPosts.map(p =>
         p._id === postId
@@ -2064,71 +2088,71 @@ function Feed() {
           : p
       )
     );
-  };
+  }, []);
 
-  const handleReactionCountClick = (postId) => {
+  const handleReactionCountClick = useCallback((postId) => {
     setReactionDetailsModal({
       isOpen: true,
       targetType: 'post',
       targetId: postId
     });
-  };
+  }, []);
 
-  const handleEditPostTextChange = (value) => {
+  const handleEditPostTextChange = useCallback((value) => {
     setEditPostText(value);
-  };
+  }, []);
 
-  const handleEditPostVisibilityChange = (value) => {
+  const handleEditPostVisibilityChange = useCallback((value) => {
     setEditPostVisibility(value);
-  };
+  }, []);
 
-  const handleExpandPost = (postId) => {
+  const handleExpandPost = useCallback((postId) => {
     setExpandedPosts(prev => ({ ...prev, [postId]: !prev[postId] }));
-  };
+  }, []);
 
-  const handleRevealPost = (postId) => {
+  const handleRevealPost = useCallback((postId) => {
     setRevealedPosts(prev => ({ ...prev, [postId]: true }));
-  };
+  }, []);
 
-  const handlePhotoClick = (url) => {
+  const handlePhotoClick = useCallback((url) => {
     setPhotoViewerImage(url);
-  };
+  }, []);
 
-  const handlePollVote = (postId, updatedPoll) => {
+  const handlePollVote = useCallback((postId, updatedPoll) => {
     setPosts(prevPosts =>
       prevPosts.map(p =>
         p._id === postId ? { ...p, poll: updatedPoll } : p
       )
     );
-  };
+  }, []);
 
-  const handleCommentGifSelect = (postId, gifUrl) => {
+  const handleCommentGifSelect = useCallback((postId, gifUrl) => {
     setCommentGif(prev => ({ ...prev, [postId]: gifUrl }));
-  };
+  }, []);
 
-  const handleToggleGifPicker = (pickerId) => {
+  const handleToggleGifPicker = useCallback((pickerId) => {
     setShowGifPicker(pickerId);
-  };
+  }, []);
 
-  const handleSetShowReactionPicker = (value) => {
+  const handleSetShowReactionPicker = useCallback((value) => {
     setShowReactionPicker(value);
-  };
+  }, []);
 
-  const handleSetReactionDetailsModal = (value) => {
+  const handleSetReactionDetailsModal = useCallback((value) => {
     setReactionDetailsModal(value);
-  };
+  }, []);
 
-  const handleSetReportModal = (value) => {
+  const handleSetReportModal = useCallback((value) => {
     setReportModal(value);
-  };
+  }, []);
 
-  const handleReplyTextChange = (value) => {
+  const handleReplyTextChange = useCallback((value) => {
     setReplyText(value);
-  };
+  }, []);
 
-  const handleReplyGifSelect = (gifUrl) => {
+  const handleReplyGifSelect = useCallback((gifUrl) => {
     setReplyGif(gifUrl);
-  };
+  }, []);
 
   return (
     <div
@@ -2206,234 +2230,47 @@ function Feed() {
             </button>
           </div>
 
-          {/* Create Post Section - Hidden on mobile */}
-          {!isMobile && (
-          <div className="create-post glossy fade-in">
-            <h2 className="section-title">Share something</h2>
-            <form onSubmit={handlePostSubmit}>
-              <textarea
-                id="new-post-input"
-                name="newPost"
-                value={newPost}
-                onChange={(e) => {
-                  const el = e.target;
-                  el.style.height = 'auto';
-                  el.style.height = Math.max(el.scrollHeight, 120) + 'px'; // Minimum 120px
-                  setNewPost(el.value);
-                }}
-                onPaste={handlePaste}
-                onFocus={() => setIsTyping(true)}
-                onBlur={() => setIsTyping(false)}
-                placeholder={showPollCreator ? "Ask a question..." : "Share something, if you feel like it."}
-                className="post-input glossy"
-                rows="4"
-                style={{ overflow: 'hidden', resize: 'none', minHeight: '120px' }}
-              />
-
-              {selectedMedia.length > 0 && (
-                <div className="media-preview">
-                  {selectedMedia.map((media, index) => (
-                    <div key={index} className="media-preview-item">
-                      {media.type === 'video' ? (
-                        <video src={getImageUrl(media.url)} controls />
-                      ) : (
-                        <img src={getImageUrl(media.url)} alt={`Upload ${index + 1}`} />
-                      )}
-                      <button
-                        type="button"
-                        className="remove-media"
-                        onClick={() => removeMedia(index)}
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {showContentWarning && (
-                <div className="content-warning-input">
-                  <select
-                    id="content-warning-select"
-                    name="contentWarning"
-                    value={contentWarning}
-                    onChange={(e) => setContentWarning(e.target.value)}
-                    className="cw-input glossy"
-                  >
-                    <option value="">Select a content warning...</option>
-                    <option value="Mental Health">Mental Health</option>
-                    <option value="Violence">Violence</option>
-                    <option value="Sexual Content">Sexual Content</option>
-                    <option value="Substance Use">Substance Use</option>
-                    <option value="Self-Harm">Self-Harm</option>
-                    <option value="Death/Grief">Death/Grief</option>
-                    <option value="Eating Disorders">Eating Disorders</option>
-                    <option value="Abuse">Abuse</option>
-                    <option value="Discrimination">Discrimination</option>
-                    <option value="Medical Content">Medical Content</option>
-                    <option value="Flashing Lights">Flashing Lights</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-              )}
-
-              {/* Poll Creator */}
-              {showPollCreator && (
-                <PollCreator
-                  onPollChange={setPoll}
-                  onCancel={() => {
-                    setShowPollCreator(false);
-                    setPoll(null);
-                  }}
-                  initialPoll={poll}
-                />
-              )}
-
-              <div className="post-actions-bar">
-                {/* QUIET MODE: Show "More Options" button to reveal advanced options */}
-                {isQuietMode && !showAdvancedOptions && (
-                  <button
-                    type="button"
-                    className="btn-more-options"
-                    onClick={() => setShowAdvancedOptions(true)}
-                  >
-                    ➕ More posting options
-                  </button>
-                )}
-
-                {/* Advanced options - hidden by default in quiet mode */}
-                {(!isQuietMode || showAdvancedOptions) && (
-                  <>
-                    <label className="btn-media-upload">
-                      <input
-                        id="media-upload-input"
-                        name="mediaUpload"
-                        type="file"
-                        multiple
-                        accept="image/*,image/gif,video/*"
-                        onChange={handleMediaSelect}
-                        disabled={uploadingMedia || selectedMedia.length >= 3}
-                        style={{ display: 'none' }}
-                      />
-                      {uploadingMedia ? `⏳ Uploading... ${uploadProgress}%` : '📷 Add Photos/Videos'}
-                    </label>
-
-                    <button
-                      type="button"
-                      className="btn-gif"
-                      onClick={() => setShowGifPicker(showGifPicker === 'main-post' ? null : 'main-post')}
-                      disabled={selectedPostGif !== null}
-                      title="Add GIF"
-                    >
-                      GIF
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`btn-poll ${showPollCreator ? 'active' : ''}`}
-                      onClick={() => setShowPollCreator(!showPollCreator)}
-                      title="Add poll"
-                    >
-                      📊 Poll
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`btn-content-warning ${showContentWarning ? 'active' : ''}`}
-                      onClick={() => setShowContentWarning(!showContentWarning)}
-                      title="Add content warning"
-                    >
-                      ⚠️ CW
-                    </button>
-
-                    <label className="hide-metrics-checkbox" title="Hide likes, comments, and shares count">
-                      <input
-                        id="hide-metrics-checkbox"
-                        name="hideMetrics"
-                        type="checkbox"
-                        checked={hideMetrics}
-                        onChange={(e) => setHideMetrics(e.target.checked)}
-                      />
-                      <span>🔇 Hide Metrics</span>
-                    </label>
-                  </>
-                )}
-
-                {/* PHASE 1 REFACTOR: Simplified privacy options - always visible */}
-                <select
-                  id="post-privacy-selector"
-                  name="postPrivacy"
-                  value={postVisibility}
-                  onChange={(e) => setPostVisibility(e.target.value)}
-                  className="privacy-selector glossy"
-                  aria-label="Select post privacy"
-                >
-                  <option value="public">🌍 Public</option>
-                  <option value="followers">👥 Connections</option>
-                  <option value="private">🔒 Private</option>
-                </select>
-
-                {/* Draft save status indicator */}
-                {draftSaveStatus && (
-                  <span className="draft-save-status">
-                    {draftSaveStatus === 'saving' ? '💾 Saving draft...' : '✅ Draft saved'}
-                  </span>
-                )}
-
-                <button
-                  type="button"
-                  className="btn-drafts"
-                  onClick={() => setShowDraftManager(true)}
-                  title="View saved drafts"
-                >
-                  📝 Drafts
-                </button>
-
-                <button type="submit" disabled={loading || uploadingMedia} className="btn-post glossy-gold">
-                  {loading ? 'Publishing...' : 'Publish ✨'}
-                </button>
-              </div>
-
-              {/* GIF Preview */}
-              {selectedPostGif && (
-                <div className="post-gif-preview">
-                  <img src={selectedPostGif} alt="Selected GIF" />
-                  <button
-                    type="button"
-                    className="btn-remove-gif"
-                    onClick={() => setSelectedPostGif(null)}
-                  >
-                    ✕
-                  </button>
-                </div>
-              )}
-
-              {/* GIF Picker */}
-              {showGifPicker === 'main-post' && (
-                <GifPicker
-                  onGifSelect={(gifUrl) => {
-                    setSelectedPostGif(gifUrl);
-                    setShowGifPicker(null);
-                  }}
-                  onClose={() => setShowGifPicker(null)}
-                />
-              )}
-            </form>
-          </div>
-          )}
-
-          {/* Draft Manager Modal */}
-          {showDraftManager && (
-            <div className="modal-overlay" onClick={() => setShowDraftManager(false)}>
-              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <DraftManager
-                  draftType="post"
-                  onRestoreDraft={handleRestoreDraft}
-                  onClose={() => setShowDraftManager(false)}
-                />
-              </div>
-            </div>
-          )}
+          {/* FeedComposer - Desktop only (mobile has FAB + bottom sheet below) */}
+          <FeedComposer
+            isMobile={isMobile}
+            isQuietMode={isQuietMode}
+            newPost={newPost}
+            selectedMedia={selectedMedia}
+            uploadingMedia={uploadingMedia}
+            uploadProgress={uploadProgress}
+            postVisibility={postVisibility}
+            contentWarning={contentWarning}
+            showContentWarning={showContentWarning}
+            selectedPostGif={selectedPostGif}
+            showGifPicker={showGifPicker}
+            poll={poll}
+            showPollCreator={showPollCreator}
+            hideMetrics={hideMetrics}
+            showDraftManager={showDraftManager}
+            draftSaveStatus={draftSaveStatus}
+            showMobileComposer={showMobileComposer}
+            isTyping={isTyping}
+            showAdvancedOptions={showAdvancedOptions}
+            loading={loading}
+            onPostSubmit={handlePostSubmit}
+            onPostTextChange={setNewPost}
+            onMediaSelect={handleMediaSelect}
+            onRemoveMedia={removeMedia}
+            onPaste={handlePaste}
+            onSetIsTyping={setIsTyping}
+            onSetPostVisibility={setPostVisibility}
+            onSetContentWarning={setContentWarning}
+            onSetShowContentWarning={setShowContentWarning}
+            onSetSelectedPostGif={setSelectedPostGif}
+            onSetShowGifPicker={setShowGifPicker}
+            onSetPoll={setPoll}
+            onSetShowPollCreator={setShowPollCreator}
+            onSetHideMetrics={setHideMetrics}
+            onSetShowDraftManager={setShowDraftManager}
+            onRestoreDraft={handleRestoreDraft}
+            onSetShowMobileComposer={setShowMobileComposer}
+            onSetShowAdvancedOptions={setShowAdvancedOptions}
+          />
 
           <div className="posts-list">
             {/* Only show skeletons on initial load (no posts yet), not during infinite scroll */}
@@ -2563,175 +2400,7 @@ function Feed() {
             </div>
           )}
 
-          {/* Mobile Floating Create Post Button - hidden when typing */}
-          {isMobile && (
-            <button
-              className={`mobile-create-post floating-layer ${
-                !isTyping && !showMobileComposer ? 'visible' : 'hidden'
-              }`}
-              onClick={() => setShowMobileComposer(true)}
-              aria-label="Create post"
-              aria-hidden={isTyping || showMobileComposer}
-            >
-              ＋
-            </button>
-          )}
-
-          {/* Mobile Composer Bottom Sheet */}
-          {isMobile && showMobileComposer && (
-            <div className="mobile-composer-sheet">
-              <div className="mobile-composer-header">
-                <button
-                  className="mobile-composer-close"
-                  onClick={() => {
-                    setShowMobileComposer(false);
-                    setIsTyping(false);
-                  }}
-                  aria-label="Close composer"
-                >
-                  ✕
-                </button>
-                <h2 className="mobile-composer-title">Share something</h2>
-                <button
-                  type="button"
-                  onClick={handlePostSubmit}
-                  disabled={loading || uploadingMedia}
-                  className="mobile-composer-post"
-                >
-                  {loading ? 'Publishing...' : 'Publish'}
-                </button>
-              </div>
-
-              <div className="mobile-composer-content">
-                <form onSubmit={handlePostSubmit}>
-                  <textarea
-                    id="mobile-post-input"
-                    name="mobileNewPost"
-                    value={newPost}
-                    onChange={(e) => {
-                      const el = e.target;
-                      el.style.height = 'auto';
-                      el.style.height = el.scrollHeight + 'px';
-                      setNewPost(el.value);
-                    }}
-                    onPaste={handlePaste}
-                    onFocus={() => setIsTyping(true)}
-                    onBlur={() => setIsTyping(false)}
-                    placeholder={showPollCreator ? "Ask a question..." : "Share something, if you feel like it."}
-                    className="mobile-post-input"
-                    rows="3"
-                    autoFocus
-                    style={{ overflow: 'hidden', resize: 'none' }}
-                  />
-
-                  {selectedMedia.length > 0 && (
-                    <div className="media-preview">
-                      {selectedMedia.map((media, index) => (
-                        <div key={index} className="media-preview-item">
-                          {media.type === 'video' ? (
-                            <video src={getImageUrl(media.url)} controls />
-                          ) : (
-                            <img src={getImageUrl(media.url)} alt={`Upload ${index + 1}`} />
-                          )}
-                          <button
-                            type="button"
-                            className="remove-media"
-                            onClick={() => removeMedia(index)}
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {showContentWarning && (
-                    <div className="content-warning-input">
-                      <select
-                        id="mobile-content-warning-select"
-                        name="mobileContentWarning"
-                        value={contentWarning}
-                        onChange={(e) => setContentWarning(e.target.value)}
-                        className="cw-input"
-                      >
-                        <option value="">Select a content warning...</option>
-                        <option value="Mental Health">Mental Health</option>
-                        <option value="Violence">Violence</option>
-                        <option value="Sexual Content">Sexual Content</option>
-                        <option value="Substance Use">Substance Use</option>
-                        <option value="Self-Harm">Self-Harm</option>
-                        <option value="Death/Grief">Death/Grief</option>
-                        <option value="Eating Disorders">Eating Disorders</option>
-                        <option value="Abuse">Abuse</option>
-                        <option value="Discrimination">Discrimination</option>
-                        <option value="Medical Content">Medical Content</option>
-                        <option value="Flashing Lights">Flashing Lights</option>
-                        <option value="Other">Other</option>
-                      </select>
-                    </div>
-                  )}
-
-                  {showPollCreator && (
-                    <PollCreator
-                      onPollChange={setPoll}
-                      onCancel={() => {
-                        setShowPollCreator(false);
-                        setPoll(null);
-                      }}
-                      initialPoll={poll}
-                    />
-                  )}
-
-                  <div className="mobile-composer-actions">
-                    <label className="mobile-btn-media">
-                      <input
-                        id="mobile-media-upload-input"
-                        name="mobileMediaUpload"
-                        type="file"
-                        multiple
-                        accept="image/*,video/*"
-                        onChange={handleMediaSelect}
-                        disabled={uploadingMedia || selectedMedia.length >= 3}
-                        style={{ display: 'none' }}
-                      />
-                      📷
-                    </label>
-
-                    <button
-                      type="button"
-                      className={`mobile-btn-action ${showPollCreator ? 'active' : ''}`}
-                      onClick={() => setShowPollCreator(!showPollCreator)}
-                      title="Add poll"
-                    >
-                      📊
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`mobile-btn-action ${showContentWarning ? 'active' : ''}`}
-                      onClick={() => setShowContentWarning(!showContentWarning)}
-                      title="Add content warning"
-                    >
-                      ⚠️
-                    </button>
-
-                    <select
-                      id="mobile-post-privacy-selector"
-                      name="mobilePostPrivacy"
-                      value={postVisibility}
-                      onChange={(e) => setPostVisibility(e.target.value)}
-                      className="mobile-privacy-selector"
-                      aria-label="Select post privacy"
-                    >
-                      <option value="public">🌍 Public</option>
-                      <option value="followers">👥 Connections</option>
-                      <option value="private">🔒 Private</option>
-                    </select>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
+          {/* Mobile FAB + Composer handled by FeedComposer component above */}
         </main>
 
         <aside className={`feed-sidebar ${showMobileSidebar ? 'mobile-visible' : ''}`}>
