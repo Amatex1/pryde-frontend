@@ -25,6 +25,9 @@ function OptimizedImage({
   fetchPriority, // 'high', 'low', or 'auto'
   responsiveSizes, // Object with avatar/feed/full sizes from backend (each with webp/avif)
   imageSize = 'feed', // Which size to use: 'avatar', 'feed', or 'full'
+  // CLS FIX: Explicit dimensions to prevent layout shift
+  width, // Explicit width in pixels or CSS value
+  height, // Explicit height in pixels or CSS value
   // Explicitly destructure and ignore any other props to prevent spreading unknown props to DOM
   // This prevents production crashes like "t.on is not a function" when post objects are accidentally spread
   ...ignoredProps // eslint-disable-line no-unused-vars
@@ -137,10 +140,32 @@ function OptimizedImage({
     '(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 1200px'
   );
 
-  // Container style with aspect ratio
+  // CLS FIX: Determine default aspect ratio based on imageSize if not provided
+  // This ensures the container reserves space before the image loads
+  const effectiveAspectRatio = aspectRatio || (
+    imageSize === 'avatar' ? '1 / 1' :
+    imageSize === 'feed' ? '4 / 3' : // Safe default for feed images
+    undefined
+  );
+
+  // CLS FIX: Determine default dimensions based on imageSize
+  const effectiveWidth = width || (
+    imageSize === 'avatar' ? 48 :
+    imageSize === 'feed' ? '100%' :
+    '100%'
+  );
+
+  const effectiveHeight = height || (
+    imageSize === 'avatar' ? 48 :
+    'auto'
+  );
+
+  // Container style with aspect ratio and dimensions for CLS prevention
   const containerStyle = {
     ...style,
-    ...(aspectRatio && { aspectRatio })
+    width: typeof effectiveWidth === 'number' ? `${effectiveWidth}px` : effectiveWidth,
+    height: typeof effectiveHeight === 'number' ? `${effectiveHeight}px` : effectiveHeight,
+    ...(effectiveAspectRatio && { aspectRatio: effectiveAspectRatio }),
   };
 
   return (
@@ -182,6 +207,7 @@ function OptimizedImage({
             />
 
             {/* JPEG/PNG fallback (for very old browsers) */}
+            {/* CLS FIX: width/height attributes help browser reserve space */}
             <img
               src={imageUrl}
               alt={alt}
@@ -191,9 +217,12 @@ function OptimizedImage({
               loading={loading}
               decoding="async"
               fetchpriority={fetchPriority}
+              width={typeof effectiveWidth === 'number' ? effectiveWidth : undefined}
+              height={typeof effectiveHeight === 'number' ? effectiveHeight : undefined}
             />
           </picture>
         ) : (
+          /* CLS FIX: width/height attributes help browser reserve space */
           <img
             src={imageUrl}
             alt={alt}
@@ -203,6 +232,8 @@ function OptimizedImage({
             loading={loading}
             decoding="async"
             fetchpriority={fetchPriority}
+            width={typeof effectiveWidth === 'number' ? effectiveWidth : undefined}
+            height={typeof effectiveHeight === 'number' ? effectiveHeight : undefined}
           />
         )
       )}

@@ -105,6 +105,7 @@ function PostHeader({
       src={getImageUrl(author.profilePhoto)}
       alt={author.username}
       className="ph-avatar-img"
+      imageSize="avatar"
     />
   ) : (
     <span className="ph-avatar-fallback">{avatarInitial}</span>

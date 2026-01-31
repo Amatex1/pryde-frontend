@@ -2581,6 +2581,7 @@ function Feed() {
                                               fetchPriority={isFirstPost && index === 0 ? 'high' : undefined}
                                               loading={shouldEagerLoad && index === 0 ? 'eager' : 'lazy'}
                                               responsiveSizes={media.sizes}
+                                              imageSize="feed"
                                             />
                                           )}
                                         </div>
@@ -2717,6 +2718,7 @@ function Feed() {
                                 src={getImageUrl(currentUser.profilePhoto)}
                                 alt="You"
                                 className="avatar-image"
+                                imageSize="avatar"
                               />
                             ) : (
                               <span>{currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
@@ -2792,6 +2794,7 @@ function Feed() {
                                 src={getImageUrl(currentUser.profilePhoto)}
                                 alt="You"
                                 className="avatar-image"
+                                imageSize="avatar"
                               />
                             ) : (
                               <span>{currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
@@ -3167,6 +3170,7 @@ function Feed() {
                               src={getImageUrl(friend.profilePhoto)}
                               alt={getDisplayName(friend)}
                               className="avatar-image"
+                              imageSize="avatar"
                             />
                           ) : (
                             <span>{getDisplayName(friend).charAt(0).toUpperCase()}</span>
@@ -3208,6 +3212,7 @@ function Feed() {
                               src={getImageUrl(friend.profilePhoto)}
                               alt={getDisplayName(friend)}
                               className="avatar-image"
+                              imageSize="avatar"
                             />
                           ) : (
                             <span>{getDisplayName(friend).charAt(0).toUpperCase()}</span>
@@ -3281,6 +3286,7 @@ function Feed() {
                         src={getImageUrl(currentUser.profilePhoto)}
                         alt="You"
                         className="avatar-image"
+                        imageSize="avatar"
                       />
                     ) : (
                       <span>{currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
@@ -3364,6 +3370,7 @@ function Feed() {
                     src={getImageUrl(currentUser.profilePhoto)}
                     alt="You"
                     className="avatar-image"
+                    imageSize="avatar"
                   />
                 ) : (
                   <span>{currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
@@ -3431,6 +3438,7 @@ function Feed() {
                       src={getImageUrl(currentUser.profilePhoto)}
                       alt="You"
                       className="avatar-image"
+                      imageSize="avatar"
                     />
                   ) : (
                     <span>{currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}</span>

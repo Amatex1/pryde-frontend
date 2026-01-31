@@ -1,0 +1,68 @@
+/**
+ * VirtualizedFeed CSS
+ * Styles for the virtualized feed component
+ */
+
+.virtualized-feed-container {
+  width: 100%;
+  position: relative;
+}
+
+/* Override react-window's default styling */
+.virtualized-feed-list {
+  /* Remove default scrollbar styling for better UX */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb, rgba(128, 128, 128, 0.4)) transparent;
+}
+
+.virtualized-feed-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.virtualized-feed-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.virtualized-feed-list::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb, rgba(128, 128, 128, 0.4));
+  border-radius: 4px;
+}
+
+.virtualized-feed-list::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover, rgba(128, 128, 128, 0.6));
+}
+
+/* Virtualized post wrapper - handles positioning from react-window */
+.virtualized-post-wrapper {
+  /* Reset positioning to work with react-window's absolute positioning */
+  box-sizing: border-box;
+  padding-bottom: 24px; /* Gap between posts */
+}
+
+/* Ensure post cards within virtualized list maintain proper styling */
+.virtualized-feed-list .post-card {
+  /* Override any height restrictions */
+  height: auto !important;
+  min-height: auto !important;
+  
+  /* Maintain all other post-card styles */
+  position: relative;
+  overflow: visible;
+}
+
+/* Loading indicator at bottom of virtualized list */
+.virtualized-feed-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-4);
+  color: var(--text-muted);
+}
+
+/* End of list indicator */
+.virtualized-feed-end {
+  text-align: center;
+  padding: var(--space-4);
+  color: var(--text-muted);
+}
+

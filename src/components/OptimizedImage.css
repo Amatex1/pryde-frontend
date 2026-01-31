@@ -1,9 +1,14 @@
 /* Optimized Image Container */
+/* CLS FIX: Container reserves space via width/height/aspect-ratio props */
 .optimized-image-container {
   position: relative;
   overflow: hidden;
-  background: var(--background-light, #f7f7f7);
+  background: var(--bg-surface-muted, var(--background-light, #f7f7f7));
   border-radius: 8px;
+  /* Ensure container respects aspect-ratio when set */
+  display: block;
+  /* Prevent container from collapsing */
+  min-height: 1px;
 }
 
 /* Image placeholder with shimmer effect */
