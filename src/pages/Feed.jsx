@@ -19,6 +19,7 @@ import Poll from '../components/Poll';
 import PinnedPostBadge from '../components/PinnedPostBadge';
 import PostHeader from '../components/PostHeader';
 import PausableGif from '../components/PausableGif';
+import FeedPost from '../components/feed/FeedPost';
 import { useBadges } from '../hooks/useBadges';
 // DEPRECATED: EditHistoryModal import removed 2025-12-26
 import DraftManager from '../components/DraftManager';
@@ -2029,6 +2030,106 @@ function Feed() {
     }
   };
 
+  // ============================================
+  // FeedPost Handler Wrappers
+  // These wrap inline functions for FeedPost component
+  // TODO (2A.7): Wrap in useCallback for memoization
+  // ============================================
+
+  const handlePinPost = async (postId, isPinned) => {
+    try {
+      const response = await api.post(`/posts/${postId}/pin`);
+      setPosts(posts.map(p => p._id === postId ? response.data : p));
+      setOpenDropdownId(null);
+    } catch (error) {
+      logger.error('Failed to toggle pin:', error);
+    }
+  };
+
+  const handleDeletePost = async (postId) => {
+    await handleDelete(postId);
+    setOpenDropdownId(null);
+  };
+
+  const handleReportPost = (postId, authorId) => {
+    setReportModal({ isOpen: true, type: 'post', contentId: postId, userId: authorId });
+    setOpenDropdownId(null);
+  };
+
+  const handlePostReactionChange = (postId, reactions, userReaction) => {
+    setPosts(prevPosts =>
+      prevPosts.map(p =>
+        p._id === postId
+          ? { ...p, _reactionsUpdated: Date.now() }
+          : p
+      )
+    );
+  };
+
+  const handleReactionCountClick = (postId) => {
+    setReactionDetailsModal({
+      isOpen: true,
+      targetType: 'post',
+      targetId: postId
+    });
+  };
+
+  const handleEditPostTextChange = (value) => {
+    setEditPostText(value);
+  };
+
+  const handleEditPostVisibilityChange = (value) => {
+    setEditPostVisibility(value);
+  };
+
+  const handleExpandPost = (postId) => {
+    setExpandedPosts(prev => ({ ...prev, [postId]: !prev[postId] }));
+  };
+
+  const handleRevealPost = (postId) => {
+    setRevealedPosts(prev => ({ ...prev, [postId]: true }));
+  };
+
+  const handlePhotoClick = (url) => {
+    setPhotoViewerImage(url);
+  };
+
+  const handlePollVote = (postId, updatedPoll) => {
+    setPosts(prevPosts =>
+      prevPosts.map(p =>
+        p._id === postId ? { ...p, poll: updatedPoll } : p
+      )
+    );
+  };
+
+  const handleCommentGifSelect = (postId, gifUrl) => {
+    setCommentGif(prev => ({ ...prev, [postId]: gifUrl }));
+  };
+
+  const handleToggleGifPicker = (pickerId) => {
+    setShowGifPicker(pickerId);
+  };
+
+  const handleSetShowReactionPicker = (value) => {
+    setShowReactionPicker(value);
+  };
+
+  const handleSetReactionDetailsModal = (value) => {
+    setReactionDetailsModal(value);
+  };
+
+  const handleSetReportModal = (value) => {
+    setReportModal(value);
+  };
+
+  const handleReplyTextChange = (value) => {
+    setReplyText(value);
+  };
+
+  const handleReplyGifSelect = (gifUrl) => {
+    setReplyGif(gifUrl);
+  };
+
   return (
     <div
       className="page-container feed-page"
@@ -2354,505 +2455,84 @@ function Feed() {
               posts
                 .filter(post => !blockedUsers.includes(post.author?._id))
                 .map((post, postIndex) => {
-                // PHASE 1 REFACTOR: Use hasLiked boolean instead of checking likes array
-                const isLiked = post.hasLiked || false;
-                const isFirstPost = postIndex === 0;
-                // PERFORMANCE: Lazy load images for posts after first 3
-                const shouldEagerLoad = postIndex < 3;
+                  const isFirstPost = postIndex === 0;
+                  const shouldEagerLoad = postIndex < 3;
 
-                // Check if this is a system post (from pryde_prompts account)
-                const isSystemPost = post.isSystemPost || post.author?.isSystemAccount;
-
-                return (
-                  <div
-                    key={post._id}
-                    id={`post-${post._id}`}
-                    className={`post-card glossy fade-in ${isSystemPost ? 'system-post' : ''}`}
-                    ref={(el) => postRefs.current[post._id] = el}
-                  >
-                    {/* Pinned Post Badge */}
-                    {post.isPinned && <PinnedPostBadge />}
-
-                    <PostHeader
-                      author={post.author}
-                      createdAt={post.createdAt}
-                      visibility={post.visibility}
-                      edited={post.edited}
-                      isPinned={post.isPinned}
-                      isSystemAccount={isSystemPost}
-                    >
-                      <div className="post-dropdown-container">
-                        <button
-                          className="btn-dropdown"
-                          onClick={() => toggleDropdown(post._id)}
-                          title="More options"
-                        >
-                          ⋮
-                        </button>
-                        {openDropdownId === post._id && (
-                          <div className="dropdown-menu">
-                            {(post.author?._id === currentUser?.id || post.author?._id === currentUser?._id) ? (
-                              <>
-                                <button
-                                  className="dropdown-item"
-                                  onClick={async () => {
-                                    try {
-                                      const response = await api.post(`/posts/${post._id}/pin`);
-                                      setPosts(posts.map(p => p._id === post._id ? response.data : p));
-                                      setOpenDropdownId(null);
-                                    } catch (error) {
-                                      logger.error('Failed to toggle pin:', error);
-                                    }
-                                  }}
-                                >
-                                  📌 {post.isPinned ? 'Unpin' : 'Pin to Profile'}
-                                </button>
-                                {/* DEPRECATED: View Edit History menu item removed 2025-12-26 */}
-                                <button
-                                  className="dropdown-item"
-                                  onClick={() => handleEditPost(post)}
-                                >
-                                  ✏️ Edit
-                                </button>
-                                <button
-                                  className="dropdown-item delete"
-                                  onClick={() => {
-                                    handleDelete(post._id);
-                                    setOpenDropdownId(null);
-                                  }}
-                                >
-                                  🗑️ Delete
-                                </button>
-                              </>
-                            ) : (
-                              <button
-                                className="dropdown-item report"
-                                onClick={() => {
-                                  setReportModal({ isOpen: true, type: 'post', contentId: post._id, userId: post.author?._id });
-                                  setOpenDropdownId(null);
-                                }}
-                              >
-                                🚩 Report
-                              </button>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </PostHeader>
-
-                    <div className="post-content">
-                      {/* NOTE: Share/originalPost rendering removed 2025-12-26 - backend returns 410 Gone */}
-                      {editingPostId === post._id ? (
-                            <div className="post-edit-box">
-                              <textarea
-                                id={`edit-post-${post._id}`}
-                                name="editPost"
-                                ref={editPostTextareaRef}
-                                value={editPostText}
-                                onChange={(e) => {
-                                  setEditPostText(e.target.value);
-                                  // Auto-resize on change
-                                  e.target.style.height = 'auto';
-                                  e.target.style.height = e.target.scrollHeight + 'px';
-                                }}
-                                onKeyDown={(e) => handleEditPostKeyDown(e, post._id)}
-                                className="post-edit-textarea"
-                                autoFocus
-                              />
-                              {/* Show existing media with delete buttons */}
-                              {editPostMedia.length > 0 && (
-                                <div className="edit-media-preview">
-                                  {editPostMedia.map((media, index) => (
-                                    <div key={index} className="edit-media-item">
-                                      {media.type === 'video' ? (
-                                        <video src={getImageUrl(media.url)} />
-                                      ) : (
-                                        <img src={getImageUrl(media.url)} alt={`Media ${index + 1}`} />
-                                      )}
-                                      <button
-                                        type="button"
-                                        className="btn-remove-media"
-                                        onClick={() => handleRemoveEditMedia(media.url)}
-                                        title="Remove this media"
-                                      >
-                                        ✕
-                                      </button>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                              <div className="post-edit-privacy">
-                                <div className="post-edit-privacy-label">Privacy:</div>
-                                <select
-                                  id="edit-post-privacy-selector"
-                                  name="editPostPrivacy"
-                                  value={editPostVisibility}
-                                  onChange={(e) => setEditPostVisibility(e.target.value)}
-                                  aria-label="Edit post privacy"
-                                >
-                                  <option value="public">🌍 Public</option>
-                                  <option value="followers">👥 Connections</option>
-                                  <option value="private">🔒 Private</option>
-                                </select>
-                              </div>
-                              <div className="post-edit-actions">
-                                <button
-                                  onClick={() => handleSaveEditPost(post._id)}
-                                  className="btn-save-post"
-                                >
-                                  Save
-                                </button>
-                                <button
-                                  onClick={handleCancelEditPost}
-                                  className="btn-cancel-post"
-                                >
-                                  Cancel
-                                </button>
-                              </div>
-                            </div>
-                          ) : (
-                            <>
-                              {/* CRITICAL: Poll posts render poll UI, NOT text content */}
-                              {post.poll && post.poll.question ? (
-                                <Poll
-                                  poll={post.poll}
-                                  postId={post._id}
-                                  currentUserId={currentUser?._id}
-                                  onVote={(updatedPost) => {
-                                    setPosts(prevPosts => prevPosts.map(p => p._id === updatedPost._id ? updatedPost : p));
-                                  }}
-                                />
-                              ) : (
-                                <>
-                                  {post.contentWarning && !revealedPosts[post._id] && autoHideContentWarnings ? (
-                                    <div className="content-warning-overlay">
-                                      <div className="cw-header">
-                                        <span className="cw-icon">⚠️</span>
-                                        <span className="cw-text">Content Warning: {post.contentWarning}</span>
-                                      </div>
-                                      <button
-                                        className="btn-reveal-content"
-                                        onClick={() => setRevealedPosts({...revealedPosts, [post._id]: true})}
-                                      >
-                                        Show Content
-                                      </button>
-                                    </div>
-                                  ) : (
-                                    post.content && (
-                                      <>
-                                        <div
-                                          className={`post-text-clamp${expandedPosts[post._id] ? ' post-text-expanded' : ''}`}
-                                        >
-                                          <p>
-                                            <FormattedText text={post.content} />
-                                          </p>
-                                        </div>
-                                        {/* See more toggle - show only for long posts (CSS handles visibility via overflow) */}
-                                        {post.content.length > 280 && (
-                                          <button
-                                            type="button"
-                                            className="see-more-toggle"
-                                            onClick={() => setExpandedPosts(prev => ({
-                                              ...prev,
-                                              [post._id]: !prev[post._id]
-                                            }))}
-                                            aria-expanded={expandedPosts[post._id] || false}
-                                            aria-label={expandedPosts[post._id] ? 'Show less content' : 'Show more content'}
-                                          >
-                                            {expandedPosts[post._id] ? 'See less' : 'See more'}
-                                          </button>
-                                        )}
-                                      </>
-                                    )
-                                  )}
-
-                                  {post.media && post.media.length > 0 && (!post.contentWarning || !autoHideContentWarnings || revealedPosts[post._id]) && (
-                                    <div className={`post-media-grid ${post.media.length === 1 ? 'single' : post.media.length === 2 ? 'double' : 'multiple'}`}>
-                                      {post.media.map((media, index) => (
-                                        <div key={index} className="post-media-item">
-                                          {media.type === 'video' ? (
-                                            <video src={getImageUrl(media.url)} controls />
-                                          ) : (
-                                            <OptimizedImage
-                                              src={getImageUrl(media.url)}
-                                              alt={`Post media ${index + 1}`}
-                                              onClick={() => setPhotoViewerImage(getImageUrl(media.url))}
-                                              style={{ cursor: 'pointer' }}
-                                              fetchPriority={isFirstPost && index === 0 ? 'high' : undefined}
-                                              loading={shouldEagerLoad && index === 0 ? 'eager' : 'lazy'}
-                                              responsiveSizes={media.sizes}
-                                              imageSize="feed"
-                                            />
-                                          )}
-                                        </div>
-                                      ))}
-                                    </div>
-                                  )}
-
-                                  {/* Display GIF if present */}
-                                  {post.gifUrl && (!post.contentWarning || !autoHideContentWarnings || revealedPosts[post._id]) && (
-                                    <div className="post-gif">
-                                      <PausableGif src={post.gifUrl} alt="GIF" loading="lazy" />
-                                    </div>
-                                  )}
-                                </>
-                              )}
-                    </>
-                  )}
-                </div>
-
-                <div className="post-actions soft-actions">
-                      <ReactionButton
-                        targetType="post"
-                        targetId={post._id}
-                        currentUserId={currentUser?.id}
-                        initialUserReaction={getUserReactionEmoji(post.reactions)}
-                        onReactionChange={(reactions, userReaction) => {
-                          // Update post in state with new reactions
-                          setPosts(prevPosts =>
-                            prevPosts.map(p =>
-                              p._id === post._id
-                                ? { ...p, _reactionsUpdated: Date.now() }
-                                : p
-                            )
-                          );
-                        }}
-                        onCountClick={() => setReactionDetailsModal({
-                          isOpen: true,
-                          targetType: 'post',
-                          targetId: post._id
-                        })}
-                      />
-                      <button
-                        className="action-btn subtle"
-                        onClick={() => toggleCommentBox(post._id)}
-                        aria-label={`Reply to post${!post.hideMetrics ? ` (${post.commentCount || 0} replies)` : ''}`}
-                        title="Reply to this post"
-                      >
-                        <span>💬</span>
-                        <span className="action-text">
-                          Reply {!post.hideMetrics && `(${post.commentCount || 0})`}
-                        </span>
-                      </button>
-                      {/* REMOVED: Share button - backend support incomplete (relies on deprecated Friends system) */}
-                      {/* TODO: Reimplement when backend is updated to work with Followers system */}
-                      {/* <button
-                        className="action-btn"
-                        onClick={() => handleShare(post)}
-                        aria-label={`Share post${!post.hideMetrics ? ` (${post.shares?.length || 0} shares)` : ''}`}
-                      >
-                        <span>🔗</span>
-                        <span className="action-text">
-                          Share {!post.hideMetrics && `(${post.shares?.length || 0})`}
-                        </span>
-                      </button> */}
-                      <button
-                        className={`action-btn ghost ${bookmarkedPosts.includes(post._id) ? 'bookmarked' : ''}`}
-                        onClick={() => handleBookmark(post._id)}
-                        title={bookmarkedPosts.includes(post._id) ? 'Remove save' : 'Keep this for later'}
-                        aria-label={bookmarkedPosts.includes(post._id) ? 'Remove save from post' : 'Save post'}
-                      >
-                        <span>{bookmarkedPosts.includes(post._id) ? '🔖' : '🔖'}</span>
-                        <span className="action-text">{bookmarkedPosts.includes(post._id) ? 'Saved' : 'Save'}</span>
-                      </button>
-                    </div>
-
-                    {/* Tags Display - Only render tags with valid slugs */}
-                    {post.tags && post.tags.length > 0 && post.tags.some(tag => tag?.slug) && (
-                      <div className="post-tags">
-                        {post.tags
-                          .filter(tag => tag && tag.slug && tag._id)
-                          .map(tag => (
-                            <Link
-                              key={tag._id}
-                              to={`/tags/${tag.slug}`}
-                              className="post-tag"
-                            >
-                              {tag.icon} {tag.label || tag.slug}
-                            </Link>
-                          ))}
-                      </div>
-                    )}
-
-                    {/* Comments Section - Facebook Style */}
-                    {postComments[post._id] && postComments[post._id].length > 0 && (
-                      <div className="post-comments">
-                        {postComments[post._id]
-                          .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)
-                          .slice(-3)
-                          .map((comment) => (
-                            <CommentThread
-                              key={comment._id}
-                              comment={comment}
-                              replies={commentReplies[comment._id] || []}
-                              currentUser={currentUser}
-                              postId={post._id}
-                              showReplies={showReplies}
-                              editingCommentId={editingCommentId}
-                              editCommentText={editCommentText}
-                              showReactionPicker={showReactionPicker}
-                              commentRefs={commentRefs}
-                              getUserReactionEmoji={getUserReactionEmoji}
-                              handleEditComment={handleEditComment}
-                              handleSaveEditComment={handleSaveEditComment}
-                              handleCancelEditComment={handleCancelEditComment}
-                              handleDeleteComment={handleDeleteComment}
-                              handleCommentReaction={handleCommentReaction}
-                              toggleReplies={toggleReplies}
-                              handleReplyToComment={handleReplyToComment}
-                              setShowReactionPicker={setShowReactionPicker}
-                              setReactionDetailsModal={setReactionDetailsModal}
-                              setReportModal={setReportModal}
-                            />
-                          ))}
-                      </div>
-                    )}
-
-                    {/* Reply Input Box - Shown when replying to a comment */}
-                    {replyingToComment?.postId === post._id && (
-                      <form onSubmit={handleSubmitReply} className="reply-input-box">
-                        <div className="reply-input-wrapper">
-                          <div className="reply-user-avatar">
-                            {currentUser?.profilePhoto ? (
-                              <OptimizedImage
-                                src={getImageUrl(currentUser.profilePhoto)}
-                                alt="You"
-                                className="avatar-image"
-                                imageSize="avatar"
-                              />
-                            ) : (
-                              <span>{currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                            )}
-                          </div>
-                          <input
-                            id={`feed-reply-${replyingToComment.commentId}`}
-                            name="reply"
-                            type="text"
-                            value={replyText}
-                            onChange={(e) => setReplyText(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            placeholder={replyGif ? "Caption, if you'd like" : "Write a reply..."}
-                            className="reply-input"
-                            autoFocus
-                          />
-                        </div>
-                        <div className="reply-composer-actions">
-                          <button
-                            type="button"
-                            onClick={handleCancelReply}
-                            className="btn-cancel-reply"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setShowGifPicker(showGifPicker === `reply-${replyingToComment._id}` ? null : `reply-${replyingToComment._id}`)}
-                            className="btn-gif"
-                            title="Add GIF"
-                          >
-                            GIF
-                          </button>
-                          <button
-                            type="submit"
-                            className="reply-submit-btn"
-                            disabled={!replyText.trim() && !replyGif}
-                          >
-                            ➤
-                          </button>
-                        </div>
-                        {replyGif && (
-                          <div className="reply-gif-preview">
-                            <img src={replyGif} alt="Selected GIF" />
-                            <button
-                              type="button"
-                              className="btn-remove-gif"
-                              onClick={() => setReplyGif(null)}
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        )}
-                        {showGifPicker === `reply-${replyingToComment._id}` && (
-                          <GifPicker
-                            onGifSelect={(gifUrl) => {
-                              setReplyGif(gifUrl);
-                              setShowGifPicker(null);
-                            }}
-                            onClose={() => setShowGifPicker(null)}
-                          />
-                        )}
-                      </form>
-                    )}
-
-                    {/* Comment Input Box */}
-                    {showCommentBox[post._id] && (
-                      <form onSubmit={(e) => handleCommentSubmit(post._id, e)} className="comment-input-box">
-                        <div className="comment-input-wrapper">
-                          <div className="comment-user-avatar">
-                            {currentUser?.profilePhoto ? (
-                              <OptimizedImage
-                                src={getImageUrl(currentUser.profilePhoto)}
-                                alt="You"
-                                className="avatar-image"
-                                imageSize="avatar"
-                              />
-                            ) : (
-                              <span>{currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                            )}
-                          </div>
-                          <input
-                            id={`comment-input-${post._id}`}
-                            name="comment"
-                            type="text"
-                            value={commentText[post._id] || ''}
-                            onChange={(e) => handleCommentChange(post._id, e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            placeholder="Reply, if you feel like it."
-                            className="comment-input glossy"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowGifPicker(showGifPicker === `comment-${post._id}` ? null : `comment-${post._id}`)}
-                            className="btn-gif"
-                            title="Add GIF"
-                          >
-                            GIF
-                          </button>
-                          <button
-                            type="submit"
-                            className="comment-submit-btn"
-                            disabled={!commentText[post._id]?.trim() && !commentGif[post._id]}
-                          >
-                            ➤
-                          </button>
-                        </div>
-                        {commentGif[post._id] && (
-                          <div className="comment-gif-preview">
-                            <img src={commentGif[post._id]} alt="Selected GIF" />
-                            <button
-                              type="button"
-                              className="btn-remove-gif"
-                              onClick={() => setCommentGif(prev => ({ ...prev, [post._id]: null }))}
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        )}
-                        {showGifPicker === `comment-${post._id}` && (
-                          <GifPicker
-                            onGifSelect={(gifUrl) => {
-                              setCommentGif(prev => ({ ...prev, [post._id]: gifUrl }));
-                              setShowGifPicker(null);
-                            }}
-                            onClose={() => setShowGifPicker(null)}
-                          />
-                        )}
-                      </form>
-                    )}
-                  </div>
-                );
-              })
-            )}
+                  return (
+                    <FeedPost
+                      key={post._id}
+                      ref={(el) => postRefs.current[post._id] = el}
+                      post={post}
+                      postIndex={postIndex}
+                      currentUser={currentUser}
+                      isFirstPost={isFirstPost}
+                      shouldEagerLoad={shouldEagerLoad}
+                      openDropdownId={openDropdownId}
+                      editingPostId={editingPostId}
+                      editPostText={editPostText}
+                      editPostVisibility={editPostVisibility}
+                      editPostMedia={editPostMedia}
+                      editPostTextareaRef={editPostTextareaRef}
+                      expandedPosts={expandedPosts}
+                      revealedPosts={revealedPosts}
+                      autoHideContentWarnings={autoHideContentWarnings}
+                      bookmarkedPosts={bookmarkedPosts}
+                      postComments={postComments}
+                      commentReplies={commentReplies}
+                      showReplies={showReplies}
+                      showCommentBox={showCommentBox}
+                      commentText={commentText}
+                      commentGif={commentGif}
+                      showGifPicker={showGifPicker}
+                      replyingToComment={replyingToComment}
+                      replyText={replyText}
+                      replyGif={replyGif}
+                      editingCommentId={editingCommentId}
+                      editCommentText={editCommentText}
+                      showReactionPicker={showReactionPicker}
+                      commentRefs={commentRefs}
+                      onToggleDropdown={toggleDropdown}
+                      onPinPost={handlePinPost}
+                      onEditPost={handleEditPost}
+                      onDeletePost={handleDeletePost}
+                      onReportPost={handleReportPost}
+                      onBookmark={handleBookmark}
+                      onReactionChange={handlePostReactionChange}
+                      onReactionCountClick={handleReactionCountClick}
+                      onEditPostTextChange={handleEditPostTextChange}
+                      onEditPostVisibilityChange={handleEditPostVisibilityChange}
+                      onRemoveEditMedia={handleRemoveEditMedia}
+                      onSaveEditPost={handleSaveEditPost}
+                      onCancelEditPost={handleCancelEditPost}
+                      onEditPostKeyDown={handleEditPostKeyDown}
+                      onExpandPost={handleExpandPost}
+                      onRevealPost={handleRevealPost}
+                      onPhotoClick={handlePhotoClick}
+                      onPollVote={handlePollVote}
+                      onToggleCommentBox={toggleCommentBox}
+                      onCommentChange={handleCommentChange}
+                      onCommentSubmit={handleCommentSubmit}
+                      onCommentGifSelect={handleCommentGifSelect}
+                      onToggleGifPicker={handleToggleGifPicker}
+                      onEditComment={handleEditComment}
+                      onSaveEditComment={handleSaveEditComment}
+                      onCancelEditComment={handleCancelEditComment}
+                      onDeleteComment={handleDeleteComment}
+                      onCommentReaction={handleCommentReaction}
+                      onToggleReplies={toggleReplies}
+                      onReplyToComment={handleReplyToComment}
+                      onSetShowReactionPicker={handleSetShowReactionPicker}
+                      onSetReactionDetailsModal={handleSetReactionDetailsModal}
+                      onSetReportModal={handleSetReportModal}
+                      onReplyTextChange={handleReplyTextChange}
+                      onReplyGifSelect={handleReplyGifSelect}
+                      onSubmitReply={handleSubmitReply}
+                      onCancelReply={handleCancelReply}
+                      getUserReactionEmoji={getUserReactionEmoji}
+                    />
+                  );
+                })
+              )}
           </div>
 
           {/* Loading indicator for infinite scroll */}
