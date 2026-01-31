@@ -2,12 +2,21 @@
    LOUNGE PAGE - POLISHED WITH DESIGN SYSTEM
    ======================================== */
 
+/* Override parent containers to prevent double scroll */
 .lounge-page {
   height: 100vh; /* Fallback */
   height: 100dvh; /* Fixes iOS Safari bottom bar */
   background: var(--bg);
   padding-bottom: 0;
   overflow: hidden; /* Prevent page scroll - only messages should scroll */
+  /* Override PageViewport/PageContainer padding */
+  margin: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
 }
 
 .lounge-container {
