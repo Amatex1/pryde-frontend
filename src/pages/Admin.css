@@ -14,7 +14,7 @@
 }
 
 .admin-header h1 {
-  font-size: 32px;
+  font-size: var(--font-size-3xl);
   background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -25,14 +25,14 @@
 
 .admin-subtitle {
   color: var(--text-muted);
-  font-size: 16px;
+  font-size: var(--font-size-base);
 }
 
 .admin-loading,
 .admin-error {
   text-align: center;
   padding: var(--space-10) var(--space-6);
-  font-size: 18px;
+  font-size: var(--font-size-lg);
 }
 
 .admin-error {
@@ -52,8 +52,8 @@
   border: none;
   background: transparent;
   color: var(--text-muted);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   border-bottom: 3px solid transparent;
   transition: all 0.15s ease;
@@ -93,14 +93,14 @@
 }
 
 .stat-card h3 {
-  font-size: 1.2rem;
+  font-size: var(--font-size-xl);
   margin-bottom: 1rem;
   color: var(--pryde-purple);
 }
 
 .stat-number {
-  font-size: 3rem;
-  font-weight: bold;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
   color: var(--pryde-purple);
   margin-bottom: 1rem;
 }
@@ -109,7 +109,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: var(--text-main);
 }
 
@@ -138,8 +138,8 @@
 .report-reason {
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
 }
 
 .report-type {
@@ -154,7 +154,7 @@
 
 .report-date {
   color: var(--text-muted);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   margin-left: auto;
 }
 
@@ -177,8 +177,8 @@
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -217,7 +217,7 @@
   text-align: center;
   padding: 3rem;
   color: var(--text-muted);
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
 }
 
 /* ========================================
@@ -335,8 +335,8 @@
 .role-badge {
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
 }
 
@@ -363,8 +363,8 @@
 .role-select {
   padding: 0.4rem 0.75rem;
   border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
   border: 2px solid var(--border-subtle);
   cursor: pointer;
@@ -407,8 +407,8 @@
 .status-badge {
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
 }
 
@@ -442,8 +442,8 @@
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   background: var(--gradient-primary);
   color: white;
@@ -465,7 +465,7 @@
 
 .btn-action.btn-small {
   padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   border-radius: 6px;
 }
 
@@ -501,8 +501,8 @@
   background: var(--pryde-purple);
   color: white;
   border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
 }
 
 .activity-table-header span {
@@ -591,7 +591,7 @@
 
 .activity-date {
   color: var(--text-muted);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   text-align: right;
 }
 
@@ -621,7 +621,7 @@
   }
 
   .admin-header h1 {
-    font-size: 2rem;
+    font-size: var(--font-size-3xl);
   }
 
   .admin-tabs {
@@ -633,7 +633,7 @@
 
   .admin-tab {
     padding: 0.75rem 1rem;
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
     white-space: nowrap;
   }
 
@@ -739,12 +739,12 @@
   }
 
   .admin-header h1 {
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
   }
 
   .admin-tab {
     padding: 0.625rem 0.75rem;
-    font-size: 0.8rem;
+    font-size: var(--font-size-sm);
   }
 
   .admin-content {
@@ -758,7 +758,7 @@
 
   .btn-action {
     padding: 0.625rem 0.875rem;
-    font-size: 0.8rem;
+    font-size: var(--font-size-sm);
   }
 }
 
@@ -774,7 +774,7 @@
 .content-preview h4 {
   margin: 0 0 1rem 0;
   color: var(--pryde-purple);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 .preview-card {
@@ -833,7 +833,7 @@
   padding-top: 0.75rem;
   border-top: 1px solid var(--border-light);
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .btn-preview:hover {
@@ -1008,14 +1008,14 @@
 }
 
 .log-type {
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
   color: var(--text-main);
 }
 
 .log-date {
   color: var(--text-muted);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   margin-left: auto;
 }
 
@@ -1029,7 +1029,7 @@
 .log-details p {
   margin: 0.5rem 0;
   color: var(--text-main);
-  font-size: 0.9375rem;
+  font-size: var(--font-size-base);
 }
 
 .log-details strong {
@@ -1125,8 +1125,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
 }
 
 .verification-user .user-info {
@@ -1136,8 +1136,8 @@
 }
 
 .verification-user .user-name {
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -1145,12 +1145,12 @@
 
 .verification-user .user-username {
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
 }
 
 .verification-user .user-email {
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .verification-details {
@@ -1295,13 +1295,13 @@
 .admin-post-modal-header h2 {
   margin: 0;
   color: var(--pryde-purple);
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
 }
 
 .admin-modal-close {
   background: none;
   border: none;
-  font-size: 2rem;
+  font-size: var(--font-size-3xl);
   color: var(--text-muted);
   cursor: pointer;
   padding: 0;
@@ -1349,8 +1349,8 @@
 }
 
 .admin-post-author-name {
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
   color: var(--text-main);
   display: flex;
   align-items: center;
@@ -1359,19 +1359,19 @@
 
 .admin-post-author-username {
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
 }
 
 .admin-post-author-pronouns {
   color: var(--text-muted);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-style: italic;
 }
 
 /* Content Section */
 .admin-post-content {
-  font-size: 1.05rem;
-  line-height: 1.6;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
   color: var(--text-main);
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -1417,7 +1417,7 @@
   padding: 0.375rem 0.875rem;
   background: var(--color-primary-soft);
   border-radius: 16px;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--color-primary);
   font-weight: 500;
 }
@@ -1440,7 +1440,7 @@
 
 .admin-post-meta-item strong {
   color: var(--text-muted);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -1449,7 +1449,7 @@
 .admin-post-reactions h3,
 .admin-post-comments h3 {
   color: var(--pryde-purple);
-  font-size: 1.2rem;
+  font-size: var(--font-size-xl);
   margin-bottom: 1rem;
 }
 
@@ -1469,12 +1469,12 @@
 }
 
 .admin-reaction-emoji {
-  font-size: 1.2rem;
+  font-size: var(--font-size-xl);
 }
 
 .admin-reaction-user {
   color: var(--text-main);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 /* Comments Section */
@@ -1504,7 +1504,7 @@
 
 .admin-comment-date {
   color: var(--text-muted);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
 }
 
 .admin-comment-content {
@@ -1520,7 +1520,7 @@
 }
 
 .admin-comment-reaction {
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
 }
 
 /* Dark Mode */
@@ -1618,12 +1618,12 @@
 }
 
 .badge-icon-preview {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   line-height: 1;
 }
 
 .badge-count {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   background: var(--bg-surface);
   padding: 0.125rem 0.375rem;
@@ -1632,12 +1632,12 @@
 
 .no-badges {
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .badge-manage-btn {
   padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   background: var(--pryde-purple);
   color: white;
   border: none;
@@ -1667,14 +1667,14 @@
 
 .badge-modal .modal-header h3 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   color: var(--text-primary);
 }
 
 .badge-modal .modal-close {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   cursor: pointer;
   color: var(--text-muted);
   padding: 0;
@@ -1699,7 +1699,7 @@
 
 .badge-section h4 {
   margin: 0 0 0.75rem 0;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -1708,7 +1708,7 @@
 .empty-badges {
   color: var(--text-muted);
   font-style: italic;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   margin: 0;
 }
 
@@ -1725,11 +1725,11 @@
   padding: 0.375rem 0.5rem;
   background: var(--soft-lavender);
   border-radius: 6px;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
 }
 
 .badge-item .badge-icon {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 .badge-item .badge-label {
@@ -1742,7 +1742,7 @@
   color: var(--text-muted);
   cursor: pointer;
   padding: 0 0.25rem;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   line-height: 1;
   transition: color 0.2s ease;
 }
@@ -1769,7 +1769,7 @@
   border-radius: 6px;
   background: var(--bg-surface);
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .badge-assign-btn {
@@ -1779,8 +1779,8 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   white-space: nowrap;
   transition: background 0.2s ease;
 }
@@ -1803,7 +1803,7 @@
 }
 
 .badge-reason-input label {
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   font-weight: 500;
 }
@@ -1815,7 +1815,7 @@
   border-radius: 6px;
   background: var(--bg-surface);
   color: var(--text-main);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   resize: vertical;
   min-height: 60px;
 }
@@ -1826,7 +1826,7 @@
 }
 
 .badge-reason-input small {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
 }
 
@@ -1879,8 +1879,8 @@
   border: none;
   color: var(--text-muted);
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   border-radius: var(--radius-md) var(--radius-md) 0 0;
   transition: all 0.2s ease;
 }
@@ -1914,7 +1914,7 @@
 .settings-section h3 {
   margin-bottom: var(--space-4);
   color: var(--text-primary);
-  font-size: 16px;
+  font-size: var(--font-size-base);
 }
 
 .setting-row {
@@ -1928,7 +1928,7 @@
 .setting-row label {
   flex: 1;
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .setting-row input[type="number"] {
@@ -1938,7 +1938,7 @@
   border-radius: var(--radius-md);
   background: var(--bg-input);
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .setting-row input[type="checkbox"] {
@@ -1970,14 +1970,14 @@
 .setting-help {
   width: 100%;
   margin: 0;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   line-height: 1.4;
 }
 
 .section-help {
   margin: 0 0 var(--space-4) 0;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   line-height: 1.4;
 }
@@ -1988,8 +1988,8 @@
   color: white;
   border: none;
   border-radius: var(--radius-md);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.2s ease;
   align-self: flex-start;
@@ -2021,7 +2021,7 @@
 
 .add-word-form h3 {
   margin-bottom: var(--space-3);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   color: var(--text-primary);
 }
 
@@ -2039,7 +2039,7 @@
   border-radius: var(--radius-md);
   background: var(--bg-input);
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .add-word-row select {
@@ -2048,7 +2048,7 @@
   border-radius: var(--radius-md);
   background: var(--bg-input);
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .add-word-row button {
@@ -2057,7 +2057,7 @@
   color: white;
   border: none;
   border-radius: var(--radius-md);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -2075,7 +2075,7 @@
 
 .word-category h4 {
   margin-bottom: var(--space-3);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   color: var(--text-primary);
   text-transform: capitalize;
 }
@@ -2093,7 +2093,7 @@
   padding: var(--space-1) var(--space-2);
   background: var(--bg-hover);
   border-radius: var(--radius-full);
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: var(--text-secondary);
 }
 
@@ -2102,7 +2102,7 @@
   border: none;
   color: var(--color-danger);
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   line-height: 1;
   padding: 0 2px;
   opacity: 0.7;
@@ -2116,7 +2116,7 @@
 .empty-category {
   color: var(--text-muted);
   font-style: italic;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
 }
 
 /* Moderation History */
@@ -2129,7 +2129,7 @@
 
 .moderation-history h3 {
   margin-bottom: var(--space-4);
-  font-size: 16px;
+  font-size: var(--font-size-base);
   color: var(--text-primary);
 }
 
@@ -2143,7 +2143,7 @@
   padding: var(--space-2) var(--space-3);
   text-align: left;
   border-bottom: 1px solid var(--border-subtle);
-  font-size: 13px;
+  font-size: var(--font-size-sm);
 }
 
 .history-table th {
@@ -2160,8 +2160,8 @@
   display: inline-block;
   padding: 2px 8px;
   border-radius: var(--radius-full);
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
 }
 
@@ -2219,14 +2219,14 @@
 .history-user-name {
   font-weight: 600;
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .history-card-meta {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
 }
 
@@ -2249,7 +2249,7 @@
 
 .history-reason,
 .history-content-type {
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary);
 }
 
@@ -2262,7 +2262,7 @@
 }
 
 .history-violations {
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary);
 }
 
@@ -2279,12 +2279,12 @@
   background: rgba(220, 53, 69, 0.15);
   color: #dc3545;
   border-radius: var(--radius-full);
-  font-size: 11px;
-  font-weight: 500;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
 }
 
 .history-content-preview {
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary);
 }
 
@@ -2294,7 +2294,7 @@
   background: var(--bg-tertiary);
   border-radius: var(--radius-sm);
   border-left: 3px solid var(--color-warning, #ffc107);
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   font-family: var(--font-mono, monospace);
   word-break: break-word;
