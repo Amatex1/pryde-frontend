@@ -41,6 +41,7 @@ import { compressPostMedia } from '../utils/compressImage';
 import { uploadMultipleWithProgress } from '../utils/uploadWithProgress';
 import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
 import { withOptimisticUpdate } from '../utils/consistencyGuard';
+import { createEventBatcher, createKeyedBatcher } from '../utils/socketBatcher';
 import { quietCopy } from '../config/uiCopy';
 import { getQuietMode } from '../utils/themeManager';
 import PageTitle from '../components/PageTitle';
@@ -170,6 +171,10 @@ function Feed() {
   const listenersSetUpRef = useRef(false);
   const autoSaveTimerRef = useRef(null); // Auto-save timer
   const scrollHandledRef = useRef(false); // Track if we've already scrolled to a post from URL params
+
+  // ⚡ PHASE 2C: Socket event batchers for performance
+  // These batch multiple socket events within 100ms to reduce React re-renders
+  const socketBatchersRef = useRef(null);
 
   // Handler to block Enter key submission when GIF picker is open
   const handleKeyDown = useCallback((e) => {
@@ -596,17 +601,244 @@ function Feed() {
 
     let cleanupFunctions = [];
 
+    // ⚡ PHASE 2C: Create batchers for socket events
+    // These batch multiple events within 100ms to reduce React re-renders
+    const BATCH_DELAY = 100; // ms
+
+    // Keyed batcher for post reactions - only keep latest per postId
+    const postReactionBatcher = createKeyedBatcher(
+      (eventsMap) => {
+        logger.debug(`⚡ Batched ${eventsMap.size} post reactions`);
+        setPosts(prevPosts => {
+          let updated = [...prevPosts];
+          eventsMap.forEach((data) => {
+            updated = updated.map(p => p._id === data.postId ? data.post : p);
+          });
+          return updated;
+        });
+      },
+      (data) => data.postId,
+      BATCH_DELAY
+    );
+
+    // Keyed batcher for comment reactions - only keep latest per commentId
+    const commentReactionBatcher = createKeyedBatcher(
+      (eventsMap) => {
+        logger.debug(`⚡ Batched ${eventsMap.size} comment reactions`);
+        const updatedComments = Array.from(eventsMap.values()).map(d => d.comment);
+
+        setPostComments(prev => {
+          const updated = { ...prev };
+          Object.keys(updated).forEach(postId => {
+            updated[postId] = updated[postId].map(c => {
+              const match = updatedComments.find(uc => uc._id === c._id);
+              return match || c;
+            });
+          });
+          return updated;
+        });
+
+        setCommentReplies(prev => {
+          const updated = { ...prev };
+          Object.keys(updated).forEach(parentId => {
+            updated[parentId] = updated[parentId].map(c => {
+              const match = updatedComments.find(uc => uc._id === c._id);
+              return match || c;
+            });
+          });
+          return updated;
+        });
+      },
+      (data) => data.comment._id,
+      BATCH_DELAY
+    );
+
+    // Event batcher for new comments
+    const commentAddedBatcher = createEventBatcher(
+      (events) => {
+        logger.debug(`⚡ Batched ${events.length} new comments`);
+        const replies = events.filter(e => e.comment.parentCommentId);
+        const topLevel = events.filter(e => !e.comment.parentCommentId);
+
+        if (replies.length > 0) {
+          setCommentReplies(prev => {
+            const updated = { ...prev };
+            replies.forEach(({ comment }) => {
+              const existing = updated[comment.parentCommentId] || [];
+              if (!existing.some(c => c._id === comment._id)) {
+                updated[comment.parentCommentId] = [...existing, comment];
+              }
+            });
+            return updated;
+          });
+        }
+
+        if (topLevel.length > 0) {
+          setPostComments(prev => {
+            const updated = { ...prev };
+            topLevel.forEach(({ comment, postId }) => {
+              const existing = updated[postId] || [];
+              if (!existing.some(c => c._id === comment._id)) {
+                updated[postId] = [...existing, comment];
+              }
+            });
+            return updated;
+          });
+
+          // Update comment counts
+          const countsByPost = {};
+          topLevel.forEach(({ postId }) => {
+            countsByPost[postId] = (countsByPost[postId] || 0) + 1;
+          });
+          setPosts(prevPosts =>
+            prevPosts.map(p => {
+              if (countsByPost[p._id]) {
+                return { ...p, commentCount: (p.commentCount || 0) + countsByPost[p._id] };
+              }
+              return p;
+            })
+          );
+        }
+      },
+      BATCH_DELAY
+    );
+
+    // Keyed batcher for comment updates - only keep latest per commentId
+    const commentUpdatedBatcher = createKeyedBatcher(
+      (eventsMap) => {
+        logger.debug(`⚡ Batched ${eventsMap.size} comment updates`);
+        const updatedComments = Array.from(eventsMap.values()).map(d => d.comment);
+
+        setPostComments(prev => {
+          const updated = { ...prev };
+          Object.keys(updated).forEach(postId => {
+            updated[postId] = updated[postId].map(c => {
+              const match = updatedComments.find(uc => uc._id === c._id);
+              return match || c;
+            });
+          });
+          return updated;
+        });
+
+        setCommentReplies(prev => {
+          const updated = { ...prev };
+          Object.keys(updated).forEach(parentId => {
+            updated[parentId] = updated[parentId].map(c => {
+              const match = updatedComments.find(uc => uc._id === c._id);
+              return match || c;
+            });
+          });
+          return updated;
+        });
+      },
+      (data) => data.comment._id,
+      BATCH_DELAY
+    );
+
+    // Event batcher for comment deletions
+    const commentDeletedBatcher = createEventBatcher(
+      (events) => {
+        logger.debug(`⚡ Batched ${events.length} comment deletions`);
+        const deletedIds = new Set(events.map(e => e.commentId));
+        const countsByPost = {};
+        events.forEach(({ postId }) => {
+          countsByPost[postId] = (countsByPost[postId] || 0) + 1;
+        });
+
+        setPostComments(prev => {
+          const updated = { ...prev };
+          Object.keys(updated).forEach(postId => {
+            updated[postId] = updated[postId].filter(c => !deletedIds.has(c._id));
+          });
+          return updated;
+        });
+
+        setCommentReplies(prev => {
+          const updated = { ...prev };
+          Object.keys(updated).forEach(parentId => {
+            updated[parentId] = updated[parentId].filter(c => !deletedIds.has(c._id));
+          });
+          // Also remove if it was a parent
+          deletedIds.forEach(id => delete updated[id]);
+          return updated;
+        });
+
+        setPosts(prevPosts =>
+          prevPosts.map(p => {
+            if (countsByPost[p._id]) {
+              return { ...p, commentCount: Math.max(0, (p.commentCount || 0) - countsByPost[p._id]) };
+            }
+            return p;
+          })
+        );
+      },
+      BATCH_DELAY
+    );
+
+    // Event batcher for new posts
+    const postCreatedBatcher = createEventBatcher(
+      (events) => {
+        logger.debug(`⚡ Batched ${events.length} new posts`);
+        const newPosts = events.map(e => e.post);
+        setPosts(prevPosts => {
+          const existingIds = new Set(prevPosts.map(p => p._id));
+          const uniqueNew = newPosts.filter(p => !existingIds.has(p._id));
+          return [...uniqueNew, ...prevPosts];
+        });
+      },
+      BATCH_DELAY
+    );
+
+    // Keyed batcher for post updates - only keep latest per postId
+    const postUpdatedBatcher = createKeyedBatcher(
+      (eventsMap) => {
+        logger.debug(`⚡ Batched ${eventsMap.size} post updates`);
+        setPosts(prevPosts => {
+          let updated = [...prevPosts];
+          eventsMap.forEach((data) => {
+            const updatedPost = data.post;
+            updated = updated.map(p =>
+              p._id === updatedPost.postId || p._id === updatedPost._id ? updatedPost : p
+            );
+          });
+          return updated;
+        });
+      },
+      (data) => data.post._id || data.post.postId,
+      BATCH_DELAY
+    );
+
+    // Event batcher for post deletions
+    const postDeletedBatcher = createEventBatcher(
+      (events) => {
+        logger.debug(`⚡ Batched ${events.length} post deletions`);
+        const deletedIds = new Set(events.map(e => e.postId));
+        setPosts(prevPosts => prevPosts.filter(p => !deletedIds.has(p._id)));
+      },
+      BATCH_DELAY
+    );
+
+    // Store batchers for cleanup
+    socketBatchersRef.current = {
+      postReactionBatcher,
+      commentReactionBatcher,
+      commentAddedBatcher,
+      commentUpdatedBatcher,
+      commentDeletedBatcher,
+      postCreatedBatcher,
+      postUpdatedBatcher,
+      postDeletedBatcher,
+    };
+
     const setupListeners = (socket) => {
-      logger.debug('🔌 Setting up socket listeners in Feed');
+      logger.debug('🔌 Setting up socket listeners in Feed (with batching)');
       // Note: Online user presence is now managed by useOnlineUsers hook
 
       // Listen for real-time post reactions
       if (socket && typeof socket.on === 'function' && typeof socket.off === 'function') {
         const handlePostReaction = (data) => {
           logger.debug('💜 Real-time post reaction received:', data);
-          setPosts((prevPosts) =>
-            prevPosts.map(p => p._id === data.postId ? data.post : p)
-          );
+          postReactionBatcher.add(data);
         };
         socket.on('post_reaction_added', handlePostReaction);
         cleanupFunctions.push(() => socket.off('post_reaction_added', handlePostReaction));
@@ -614,29 +846,7 @@ function Feed() {
         // Listen for real-time comment reactions
         const handleCommentReactionRT = (data) => {
           logger.debug('💜 Real-time comment reaction received:', data);
-          const updatedComment = data.comment;
-
-          // Update in postComments
-          setPostComments(prev => {
-            const updated = { ...prev };
-            Object.keys(updated).forEach(postId => {
-              updated[postId] = updated[postId].map(c =>
-                c._id === updatedComment._id ? updatedComment : c
-              );
-            });
-            return updated;
-          });
-
-          // Update in commentReplies
-          setCommentReplies(prev => {
-            const updated = { ...prev };
-            Object.keys(updated).forEach(parentId => {
-              updated[parentId] = updated[parentId].map(c =>
-                c._id === updatedComment._id ? updatedComment : c
-              );
-            });
-            return updated;
-          });
+          commentReactionBatcher.add(data);
         };
         socket.on('comment_reaction_added', handleCommentReactionRT);
         cleanupFunctions.push(() => socket.off('comment_reaction_added', handleCommentReactionRT));
@@ -644,52 +854,7 @@ function Feed() {
         // Listen for real-time comments
         const handleCommentAddedRT = (data) => {
           logger.debug('💬 Real-time comment received:', data);
-          const newComment = data.comment;
-          const postId = data.postId;
-
-          if (newComment.parentCommentId) {
-            // It's a reply
-            setCommentReplies(prev => {
-              const existing = prev[newComment.parentCommentId] || [];
-              // ✅ Check if comment already exists to prevent duplicates
-              if (existing.some(c => c._id === newComment._id)) {
-                logger.debug('⚠️ Reply already exists, skipping duplicate:', newComment._id);
-                return prev;
-              }
-              return {
-                ...prev,
-                [newComment.parentCommentId]: [...existing, newComment]
-              };
-            });
-          } else {
-            // It's a top-level comment
-            setPostComments(prev => {
-              const existing = prev[postId] || [];
-              // ✅ Check if comment already exists to prevent duplicates
-              if (existing.some(c => c._id === newComment._id)) {
-                logger.debug('⚠️ Comment already exists, skipping duplicate:', newComment._id);
-                return prev;
-              }
-              return {
-                ...prev,
-                [postId]: [...existing, newComment]
-              };
-            });
-
-            // ✅ Only update post comment count if comment was actually added (not a duplicate)
-            setPosts(prevPosts =>
-              prevPosts.map(p => {
-                if (p._id === postId) {
-                  // Check if this comment is already in our local state
-                  const currentComments = postComments[postId] || [];
-                  if (!currentComments.some(c => c._id === newComment._id)) {
-                    return { ...p, commentCount: (p.commentCount || 0) + 1 };
-                  }
-                }
-                return p;
-              })
-            );
-          }
+          commentAddedBatcher.add(data);
         };
         socket.on('comment_added', handleCommentAddedRT);
         cleanupFunctions.push(() => socket.off('comment_added', handleCommentAddedRT));
@@ -697,29 +862,7 @@ function Feed() {
         // Listen for comment updates
         const handleCommentUpdatedRT = (data) => {
           logger.debug('✏️ Real-time comment update received:', data);
-          const updatedComment = data.comment;
-
-          // Update in postComments
-          setPostComments(prev => {
-            const updated = { ...prev };
-            Object.keys(updated).forEach(postId => {
-              updated[postId] = updated[postId].map(c =>
-                c._id === updatedComment._id ? updatedComment : c
-              );
-            });
-            return updated;
-          });
-
-          // Update in commentReplies
-          setCommentReplies(prev => {
-            const updated = { ...prev };
-            Object.keys(updated).forEach(parentId => {
-              updated[parentId] = updated[parentId].map(c =>
-                c._id === updatedComment._id ? updatedComment : c
-              );
-            });
-            return updated;
-          });
+          commentUpdatedBatcher.add(data);
         };
         socket.on('comment_updated', handleCommentUpdatedRT);
         cleanupFunctions.push(() => socket.off('comment_updated', handleCommentUpdatedRT));
@@ -727,33 +870,7 @@ function Feed() {
         // Listen for comment deletions
         const handleCommentDeletedRT = (data) => {
           logger.debug('🗑️ Real-time comment deletion received:', data);
-          const { commentId, postId } = data;
-
-          // Remove from postComments
-          setPostComments(prev => ({
-            ...prev,
-            [postId]: (prev[postId] || []).filter(c => c._id !== commentId)
-          }));
-
-          // Remove from commentReplies
-          setCommentReplies(prev => {
-            const updated = { ...prev };
-            Object.keys(updated).forEach(parentId => {
-              updated[parentId] = updated[parentId].filter(c => c._id !== commentId);
-            });
-            // Also remove if it was a parent
-            delete updated[commentId];
-            return updated;
-          });
-
-          // Update post comment count
-          setPosts(prevPosts =>
-            prevPosts.map(p =>
-              p._id === postId
-                ? { ...p, commentCount: Math.max(0, (p.commentCount || 0) - 1) }
-                : p
-            )
-          );
+          commentDeletedBatcher.add(data);
         };
         socket.on('comment_deleted', handleCommentDeletedRT);
         cleanupFunctions.push(() => socket.off('comment_deleted', handleCommentDeletedRT));
@@ -761,17 +878,7 @@ function Feed() {
         // ✅ Listen for new posts
         const handlePostCreatedRT = (data) => {
           logger.debug('📝 Real-time post created:', data);
-          const newPost = data.post;
-
-          // Only add if not already in feed (prevent duplicates)
-          setPosts(prevPosts => {
-            if (prevPosts.some(p => p._id === newPost._id)) {
-              logger.debug('⚠️ Post already exists, skipping duplicate:', newPost._id);
-              return prevPosts;
-            }
-            // Add to top of feed
-            return [newPost, ...prevPosts];
-          });
+          postCreatedBatcher.add(data);
         };
         socket.on('post_created', handlePostCreatedRT);
         cleanupFunctions.push(() => socket.off('post_created', handlePostCreatedRT));
@@ -779,11 +886,7 @@ function Feed() {
         // ✅ Listen for post updates
         const handlePostUpdatedRT = (data) => {
           logger.debug('✏️ Real-time post updated:', data);
-          const updatedPost = data.post;
-
-          setPosts(prevPosts =>
-            prevPosts.map(p => p._id === updatedPost.postId || p._id === updatedPost._id ? updatedPost : p)
-          );
+          postUpdatedBatcher.add(data);
         };
         socket.on('post_updated', handlePostUpdatedRT);
         cleanupFunctions.push(() => socket.off('post_updated', handlePostUpdatedRT));
@@ -791,9 +894,7 @@ function Feed() {
         // ✅ Listen for post deletions
         const handlePostDeletedRT = (data) => {
           logger.debug('🗑️ Real-time post deleted:', data);
-          const { postId } = data;
-
-          setPosts(prevPosts => prevPosts.filter(p => p._id !== postId));
+          postDeletedBatcher.add(data);
         };
         socket.on('post_deleted', handlePostDeletedRT);
         cleanupFunctions.push(() => socket.off('post_deleted', handlePostDeletedRT));
@@ -843,6 +944,13 @@ function Feed() {
 
       // Clean up all socket listeners
       cleanupFunctions.forEach(cleanup => cleanup?.());
+
+      // ⚡ PHASE 2C: Destroy batchers to prevent memory leaks
+      if (socketBatchersRef.current) {
+        Object.values(socketBatchersRef.current).forEach(batcher => batcher?.destroy?.());
+        socketBatchersRef.current = null;
+      }
+
       // DON'T reset the flag - keep it true to prevent duplicate setup in React Strict Mode
     };
   }, [fetchFriends]);
