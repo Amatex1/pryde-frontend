@@ -3429,15 +3429,15 @@
 /* Main input row - all inline */
 .composer-input-row {
   display: flex;
-  gap: 4px;
-  padding: 6px 6px 39px 7px;
+  gap: 8px;
+  padding: 8px 12px;
   background: var(--bg-secondary, #F5F6FA);
   border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
   border-radius: 24px;
   transition: all 0.15s ease;
-  align-content: stretch;
+  align-items: center;
   flex-wrap: nowrap;
-  justify-content: space-around;
+  width: 100%;
 }
 
 .composer-input-row:focus-within {
@@ -4235,27 +4235,29 @@
   max-width: 100% !important;
 }
 
-/* 6. MESSAGE INPUT: Thinner */
-.messages-page .message-input {
-  min-height: 28px !important;
-  padding: 6px 8px !important;
-  font-size: 15px !important;
-}
+/* 6. MESSAGE INPUT: Thinner - MOBILE ONLY */
+@media (max-width: 1024px) {
+  .messages-page .message-input {
+    min-height: 28px !important;
+    padding: 6px 8px !important;
+    font-size: 15px !important;
+  }
 
-/* 7. SEND BUTTON: Smaller to match thinner composer */
-.messages-page .send-btn,
-.messages-page .btn-send {
-  width: 32px !important;
-  height: 32px !important;
-  font-size: 16px !important;
-}
+  /* 7. SEND BUTTON: Smaller to match thinner composer */
+  .messages-page .send-btn,
+  .messages-page .btn-send {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 16px !important;
+  }
 
-/* 8. ACTION BUTTONS: Smaller */
-.messages-page .composer-actions button,
-.messages-page .message-composer-actions button {
-  width: 28px !important;
-  height: 28px !important;
-  font-size: 14px !important;
+  /* 8. ACTION BUTTONS: Smaller */
+  .messages-page .composer-actions button,
+  .messages-page .message-composer-actions button {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 14px !important;
+  }
 }
 
 /* =========================================================
@@ -4357,38 +4359,40 @@ body:has(.messages-page) {
   flex: 1 !important;
 }
 
-/* Message input field */
-.messages-page .message-input,
-.messages-page .composer-textarea,
-.messages-page .dm-input {
-  min-height: 24px !important;
-  max-height: 120px !important;
-  padding: 4px 8px !important;
-  font-size: 14px !important;
-  resize: none !important;
-  flex: 1 !important;
-}
+/* Message input field - MOBILE/TABLET ONLY */
+@media (max-width: 1024px) {
+  .messages-page .message-input,
+  .messages-page .composer-textarea,
+  .messages-page .dm-input {
+    min-height: 24px !important;
+    max-height: 120px !important;
+    padding: 4px 8px !important;
+    font-size: 14px !important;
+    resize: none !important;
+    flex: 1 !important;
+  }
 
-/* Send button - compact */
-.messages-page .send-btn,
-.messages-page .btn-send,
-.messages-page .send-button {
-  width: 30px !important;
-  height: 30px !important;
-  min-width: 30px !important;
-  font-size: 14px !important;
-  flex-shrink: 0 !important;
-}
+  /* Send button - compact */
+  .messages-page .send-btn,
+  .messages-page .btn-send,
+  .messages-page .send-button {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    font-size: 14px !important;
+    flex-shrink: 0 !important;
+  }
 
-/* Action buttons - compact */
-.messages-page .composer-actions button,
-.messages-page .message-composer-actions button,
-.messages-page .composer-btn {
-  width: 26px !important;
-  height: 26px !important;
-  min-width: 26px !important;
-  font-size: 13px !important;
-  padding: 0 !important;
+  /* Action buttons - compact */
+  .messages-page .composer-actions button,
+  .messages-page .message-composer-actions button,
+  .messages-page .composer-btn {
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
+    font-size: 13px !important;
+    padding: 0 !important;
+  }
 }
 
 /* =========================================================
