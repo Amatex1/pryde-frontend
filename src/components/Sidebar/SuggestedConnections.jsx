@@ -154,7 +154,7 @@ export default function SuggestedConnections() {
         })}
       </div>
       
-      <Link to="/discover" className="suggested-see-more">
+      <Link to="/search" className="suggested-see-more">
         Discover more people →
       </Link>
     </div>
