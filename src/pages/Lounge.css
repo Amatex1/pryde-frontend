@@ -3,10 +3,11 @@
    ======================================== */
 
 .lounge-page {
-  min-height: 100vh; /* Fallback */
-  min-height: 100dvh; /* Fixes iOS Safari bottom bar */
+  height: 100vh; /* Fallback */
+  height: 100dvh; /* Fixes iOS Safari bottom bar */
   background: var(--bg);
   padding-bottom: 0;
+  overflow: hidden; /* Prevent page scroll - only messages should scroll */
 }
 
 .lounge-container {
@@ -713,11 +714,17 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .lounge-page {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
   .lounge-container {
     padding: 0.5rem 0.5rem 0;
     /* Account for mobile navbar (56-64px) + safe area */
     height: calc(100dvh - 60px - var(--mobile-nav-height, 64px) - env(safe-area-inset-bottom, 0px));
     padding-bottom: calc(var(--mobile-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 8px);
+    overflow: hidden;
   }
 
   .lounge-header {
