@@ -306,7 +306,7 @@
 
 .system-account-badge::before {
   content: '✦';
-  font-size: 0.625rem;
+  font-size: var(--font-size-xs);
   opacity: 0.7;
 }
 
@@ -966,8 +966,8 @@
   background: linear-gradient(135deg, var(--pryde-purple) 0%, var(--electric-blue) 100%);
   color: white;
   border-radius: 50%;
-  font-size: 0.625rem; /* Reduced from 0.65rem */
-  font-weight: 900;
+  font-size: var(--font-size-xs); /* Reduced from 0.65rem */
+  font-weight: var(--font-weight-bold);
   flex-shrink: 0;
   box-shadow:
     0 0 0 1px rgba(108, 92, 231, 0.15), /* Reduced glow intensity */
@@ -1108,7 +1108,7 @@ button.btn-content-warning {
   align-items: center !important;
   justify-content: center !important;
   gap: 8px !important;
-  font-size: 0.875rem !important; /* 14px */
+  font-size: var(--font-size-sm) !important; /* 14px */
   line-height: 1 !important;
   border-radius: 10px !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Subtle border */
@@ -1165,13 +1165,13 @@ button.btn-drafts {
   align-items: center !important;
   justify-content: center !important;
   gap: 8px !important;
-  font-size: 0.875rem !important; /* 14px */
+  font-size: var(--font-size-sm) !important; /* 14px */
   line-height: 1 !important;
   border-radius: 10px !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Subtle border */
   background: transparent !important; /* Transparent - not featured */
   color: var(--text-main) !important;
-  font-weight: 400 !important; /* Normal weight - not bold */
+  font-weight: var(--font-weight-normal) !important; /* Normal weight - not bold */
   cursor: pointer !important;
   transition: all 0.2s ease !important;
   gap: 0.25rem !important;
@@ -1184,8 +1184,8 @@ button.btn-drafts {
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   background: var(--soft-lavender);
   color: var(--pryde-purple);
   animation: fadeIn 0.3s ease;
@@ -1293,7 +1293,7 @@ label.hide-metrics-checkbox:hover {
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
   color: white !important;
-  font-size: 10px !important;
+  font-size: var(--font-size-xs) !important;
   line-height: 1 !important;
 }
 
@@ -1366,13 +1366,13 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 }
 
 .cw-icon {
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
 }
 
 .cw-text {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: white;
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -1411,7 +1411,7 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 
 .post-time,
 .post-timestamp {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   display: flex;
   align-items: center;
@@ -1419,7 +1419,7 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
 }
 
 .post-privacy-icon {
-  font-size: 0.9rem;
+  font-size: var(--font-size-base);
   cursor: help;
   opacity: 0.7;
   transition: opacity 0.3s ease;
@@ -1434,7 +1434,7 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   border: none;
   padding: 0;
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
   font-style: italic;
   cursor: pointer;
   transition: color 0.15s ease;
@@ -1501,8 +1501,8 @@ html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox:hover {
   border: none;
   background: transparent;
   color: var(--text-muted);
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   text-decoration: none;
   transition: color 0.15s ease, text-decoration 0.15s ease;
@@ -1579,8 +1579,8 @@ html:not([data-theme]) .post-actions {
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  font-size: 14px;
-  font-weight: 400; /* Lighter weight for softer feel */
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal); /* Lighter weight for softer feel */
   white-space: nowrap;
   transition: background 0.2s ease, color 0.2s ease;
 }
@@ -1656,8 +1656,8 @@ html:not([data-theme]) .post-actions {
   border: none;
   color: var(--text-muted);
   cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
   padding: 0.75rem 1rem; /* Increased for 48x48px touch target */
   transition: all 0.2s ease;
   margin-left: -0.5rem;
@@ -1681,8 +1681,8 @@ html:not([data-theme]) .post-actions {
   color: var(--error);
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
 }
 
 .btn-delete:hover {
@@ -1699,8 +1699,8 @@ html:not([data-theme]) .post-actions {
   color: #ff8c00;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
 }
 
 .btn-report:hover {
@@ -1723,7 +1723,7 @@ html:not([data-theme]) .post-actions {
   padding: 0.375rem 0.875rem;
   background: var(--color-primary-soft);
   border-radius: 16px;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   text-decoration: none;
   color: var(--color-primary);
   transition: all 0.2s ease;
@@ -1754,7 +1754,7 @@ html:not([data-theme]) .post-actions {
 .post-stats {
   display: flex;
   gap: 1rem;
-  font-size: 0.9rem;
+  font-size: var(--font-size-base);
   color: var(--text-muted);
   padding: 0.5rem 0;
 }
@@ -1837,12 +1837,12 @@ html:not([data-theme]) .post-actions {
 }
 
 .comment-deleted .deleted-icon {
-  font-size: 1.2rem;
+  font-size: var(--font-size-xl);
   opacity: 0.5;
 }
 
 .comment-deleted .deleted-text {
-  font-size: 0.9rem;
+  font-size: var(--font-size-base);
   position: relative;
 }
 
@@ -1869,7 +1869,7 @@ html:not([data-theme]) .post-actions {
   margin-left: 0 !important;  /* Parent container handles indent */
   margin-top: 4px !important;
   position: relative;
-  font-size: 0.9em;  /* Smaller text for replies */
+  font-size: var(--font-size-sm);  /* Smaller text for replies */
 }
 
 /* First reply tighter to parent */
@@ -1881,7 +1881,7 @@ html:not([data-theme]) .post-actions {
 /* Reply author name - slightly lighter weight */
 .comment--reply .comment-author .author-name,
 .comment.reply .comment-author .author-name {
-  font-weight: 500;  /* Lighter than parent's 600 */
+  font-weight: var(--font-weight-medium);  /* Lighter than parent's 600 */
 }
 
 /* Reply avatar smaller */
@@ -1894,7 +1894,7 @@ html:not([data-theme]) .post-actions {
 /* Reply bubble slightly smaller */
 .comment--reply .comment-body,
 .comment.reply .comment-body {
-  font-size: 13px !important;
+  font-size: var(--font-size-sm) !important;
   padding: 4px 8px !important;
 }
 
@@ -1938,14 +1938,14 @@ html:not([data-theme]) .post-actions {
 }
 
 .reply-expand {
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: var(--text-secondary);
   margin-left: 32px;  /* Reduced from 40px */
   cursor: pointer;
   padding: 4px 0;
   background: none;
   border: none;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .reply-expand:hover {
@@ -2080,7 +2080,7 @@ html:not([data-theme]) .post-actions {
   background: none;
   border: none;
   text-align: left;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   color: var(--text-primary);
   cursor: pointer;
   transition: background 0.15s ease;
@@ -2112,16 +2112,16 @@ html:not([data-theme]) .post-actions {
   align-items: center;
   gap: 4px;
   flex-wrap: nowrap;
-  font-weight: 600;
-  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
   margin-bottom: 0; /* Removed margin to allow inline flow with text */
   margin-right: 6px; /* Space between name and text */
 }
 
 /* Author name */
 .comment-author .author-name {
-  font-weight: 600;
-  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
   line-height: 1.2;
   color: var(--text-main);
   transition: color 0.15s ease;
@@ -2138,12 +2138,12 @@ html:not([data-theme]) .post-actions {
   height: 14px;
   margin-left: 4px;
   transform: translateY(1px);
-  font-size: 0.5rem;
+  font-size: var(--font-size-xs);
 }
 
 /* Author pronouns */
 .comment-author .author-pronouns {
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: var(--text-secondary, var(--text-muted));
   margin-left: 4px;
   font-weight: normal;
@@ -2152,18 +2152,18 @@ html:not([data-theme]) .post-actions {
 /* Comment timestamp (Facebook-style inline & quiet) */
 .comment-timestamp,
 .comment-time {
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: var(--text-secondary, var(--text-muted));
   margin-left: 6px;
   white-space: nowrap;
-  font-weight: 400;
+  font-weight: var(--font-weight-normal);
 }
 
 /* Facebook-style: Username INSIDE comment bubble at top (legacy support) */
 .comment-author-name {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--text-main);
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   display: block;
   margin-bottom: 2px;
   transition: color 0.15s ease;
@@ -2185,8 +2185,8 @@ html:not([data-theme]) .post-actions {
 /* Comment text content below username (inside same bubble) */
 .comment-content-text {
   color: var(--text-main);
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
@@ -2198,8 +2198,8 @@ html:not([data-theme]) .post-actions {
 /* Comment body - Facebook-style bubble (COMPACT DENSITY) */
 .comment-body {
   display: inline-block;
-  font-size: 13.5px !important;  /* Reduced from 14px */
-  line-height: 1.32 !important;  /* Reduced from 1.4 */
+  font-size: var(--font-size-sm) !important;  /* Reduced from 14px */
+  line-height: var(--line-height-tight) !important;  /* Reduced from 1.4 */
   margin-top: 0;
   padding: 5px 9px !important;  /* Reduced from 6px 10px */
   border-radius: 18px;
@@ -2230,7 +2230,7 @@ html:not([data-theme]) .post-actions {
   background: var(--bg-card);
   border-radius: 999px;
   padding: 2px 6px;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -2254,7 +2254,7 @@ html:not([data-theme]) .post-actions {
   margin-top: 2px;
   display: flex;
   gap: 10px;
-  font-size: var(--text-xs);
+  font-size: var(--font-size-xs);
   opacity: 0.7;
   align-items: center;
   color: var(--text-secondary);
@@ -2279,8 +2279,8 @@ html:not([data-theme]) .post-actions {
   background: none;
   border: none;
   color: inherit;
-  font-weight: 600;
-  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
   cursor: pointer;
   transition: color 0.15s ease;
   display: inline-flex;
@@ -2301,7 +2301,7 @@ html:not([data-theme]) .post-actions {
 /* Enable Reply button on replies */
 .reply .comment-actions .comment-action-btn.reply-btn {
   display: inline-flex;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   opacity: 0.8;
 }
 
@@ -2413,7 +2413,7 @@ html:not([data-theme]) .post-actions {
   }
 
   .reaction-btn {
-    font-size: 2rem;
+    font-size: var(--font-size-3xl);
     padding: 0.5rem;
     min-width: 2.75rem;
     min-height: 2.75rem;
@@ -2441,7 +2441,7 @@ html:not([data-theme]) .post-actions {
   }
 
   .reaction-btn {
-    font-size: 1.875rem;
+    font-size: var(--font-size-3xl);
     min-width: 2.5rem;
     min-height: 2.5rem;
   }
@@ -2457,7 +2457,7 @@ html:not([data-theme]) .post-actions {
 .reaction-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   cursor: pointer;
   padding: 0.25rem;
   transition: transform 0.2s ease;
@@ -2486,15 +2486,15 @@ html:not([data-theme]) .post-actions {
   justify-content: center;
   background: var(--color-primary-soft, rgba(108, 92, 231, 0.15));
   color: var(--color-primary);
-  font-weight: var(--weight-semibold, 600);
-  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
   overflow: hidden;
 }
 
 .comment-row.reply .comment-avatar {
   width: 28px;
   height: 28px;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
 }
 
 .comment-avatar:hover {
@@ -2521,8 +2521,8 @@ html:not([data-theme]) .post-actions {
   height: 100%;
   background: var(--gradient-primary);
   color: white;
-  font-weight: 600;
-  font-size: 0.75rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
   border-radius: 50%;
 }
 
@@ -2544,7 +2544,7 @@ html:not([data-theme]) .post-actions {
 .btn-comment-dropdown {
   background: transparent;
   border: none;
-  font-size: 1.125rem;
+  font-size: var(--font-size-lg);
   color: var(--text-muted);
   cursor: pointer;
   padding: var(--space-1) var(--space-2);
@@ -2571,12 +2571,12 @@ html:not([data-theme]) .post-actions {
   max-width: fit-content;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  font-size: 0.9375rem;
+  font-size: var(--font-size-base);
 }
 
 .comment-text .edited-indicator,
 .edited-indicator {
-  font-size: 10px;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   font-style: normal;
   opacity: 0.6;
@@ -2613,7 +2613,7 @@ html:not([data-theme]) .post-actions {
   border: 2px solid var(--pryde-purple);
   background: white;
   color: var(--text-main);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-family: inherit;
   width: 100%;
 }
@@ -2635,8 +2635,8 @@ html:not([data-theme]) .post-actions {
   border-radius: var(--radius-md);
   border: none;
   cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   transition: opacity 0.2s;
 }
 
@@ -2679,7 +2679,7 @@ html:not([data-theme]) .post-actions {
   border: 2px solid var(--pryde-purple);
   background: white;
   color: var(--text-main);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-family: inherit;
   width: 100%;
 }
@@ -2701,8 +2701,8 @@ html:not([data-theme]) .post-actions {
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   transition: all 0.2s;
 }
 
@@ -2752,23 +2752,23 @@ html:not([data-theme]) .post-actions {
 
 .empty-state-primary {
   color: var(--text-main);
-  font-size: 16px;
+  font-size: var(--font-size-base);
   margin-bottom: var(--space-2);
-  font-weight: 400;
+  font-weight: var(--font-weight-normal);
 }
 
 .empty-state-secondary {
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   margin-bottom: var(--space-2);
-  font-weight: 400;
+  font-weight: var(--font-weight-normal);
 }
 
 .empty-state-tertiary {
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   opacity: 0.7;
-  font-weight: 400;
+  font-weight: var(--font-weight-normal);
   font-style: italic;
 }
 
@@ -2783,15 +2783,15 @@ html:not([data-theme]) .post-actions {
 
 .no-posts-primary {
   color: var(--text-main);
-  font-size: 16px;
+  font-size: var(--font-size-base);
   margin-bottom: var(--space-2);
-  font-weight: 400;
+  font-weight: var(--font-weight-normal);
 }
 
 .no-posts-secondary {
   color: var(--text-muted);
-  font-size: 14px;
-  font-weight: 400;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
   opacity: 0.85;
 }
 
@@ -2835,8 +2835,8 @@ html:not([data-theme]) .post-actions {
 .sidebar-title {
   color: var(--color-primary);
   margin-bottom: var(--space-4);
-  font-size: 16px;
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2874,15 +2874,15 @@ html:not([data-theme]) .post-actions {
 
 .explore-link strong {
   color: var(--text-main);
-  font-size: 14px;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   margin-bottom: 2px;
 }
 
 .explore-link span {
   color: var(--text-muted);
-  font-size: 12px;
-  font-weight: 400;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
   line-height: 1.4;
   opacity: 0.85;
 }
@@ -2900,17 +2900,17 @@ html:not([data-theme]) .post-actions {
 
 .support-title {
   color: var(--text-main);
-  font-size: 15px;
-  font-weight: 500;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
   margin-bottom: var(--space-3);
   /* No emoji, no urgency colors */
 }
 
 .support-description {
   color: var(--text-muted);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.5;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
   margin-bottom: var(--space-3);
   opacity: 0.9;
 }
@@ -2918,8 +2918,8 @@ html:not([data-theme]) .post-actions {
 .support-link {
   display: inline-block;
   color: var(--pryde-purple);
-  font-size: 14px;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   text-decoration: none;
   padding: 0.5rem 0;
   transition: opacity 0.2s ease;
@@ -2942,7 +2942,7 @@ html:not([data-theme]) .post-actions {
   border: 2px solid var(--border-light);
   background: var(--background-light);
   color: var(--text-main);
-  font-size: 0.9rem;
+  font-size: var(--font-size-base);
   outline: none;
   transition: all 0.3s ease;
 }
@@ -2970,8 +2970,8 @@ html:not([data-theme]) .post-actions {
   border: none;
   background: transparent;
   color: var(--text-muted);
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.3s ease;
   border-bottom: 3px solid transparent;
@@ -3002,8 +3002,8 @@ html:not([data-theme]) .post-actions {
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
   margin-top: 0.5rem;
-  font-weight: 600;
-  font-size: 0.85rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -3057,8 +3057,8 @@ html:not([data-theme]) .post-actions {
 
 .friend-sidebar-avatar span {
   color: white;
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
 }
 
 .friend-sidebar-avatar .status-dot {
@@ -3086,22 +3086,22 @@ html:not([data-theme]) .post-actions {
 }
 
 .friend-sidebar-name {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--pryde-purple); /* Changed from var(--text-main) to purple for better visibility */
-  font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+  font-size: var(--font-size-sm);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .friend-sidebar-status {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
 }
 
 .friend-sidebar-status.online-status {
   color: #10b981;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .friend-sidebar-status.offline-status {
@@ -3129,7 +3129,7 @@ html:not([data-theme]) .post-actions {
   border: none;
   background: var(--pryde-purple);
   color: white;
-  font-size: 0.9rem;
+  font-size: var(--font-size-base);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -3151,8 +3151,8 @@ html:not([data-theme]) .post-actions {
   right: -6px;
   background: #ef4444;
   color: white;
-  font-size: 0.65rem;
-  font-weight: 700;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
   min-width: 16px;
   height: 16px;
   border-radius: 8px;
@@ -3171,12 +3171,12 @@ html:not([data-theme]) .post-actions {
 }
 
 .no-friends p:first-child {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   margin-bottom: 0.25rem;
 }
 
 .friends-hint {
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
 }
 
@@ -3466,8 +3466,8 @@ html:not([data-theme]) .post-actions {
      See: src/components/PostHeader.css */
 
   .post-content {
-    font-size: 0.9375rem;
-    line-height: 1.6;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-relaxed);
   }
 
   .comment-input {
@@ -3530,7 +3530,7 @@ html:not([data-theme]) .post-actions {
   }
 
   .privacy-section h3 {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
   }
 
   .friends-checklist {
@@ -3659,8 +3659,8 @@ html:not([data-theme]) .post-actions {
   }
 
   .comment-text {
-    font-size: 0.9375rem;
-    line-height: 1.4;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
   }
 
   .comment-actions {
@@ -3669,7 +3669,7 @@ html:not([data-theme]) .post-actions {
   }
 
   .comment-action-btn {
-    font-size: 0.8125rem;
+    font-size: var(--font-size-sm);
     min-height: 44px;
     padding: 0.5rem;
   }
@@ -3684,11 +3684,11 @@ html:not([data-theme]) .post-actions {
   }
 
   .comment-author-name {
-    font-size: 0.8125rem;
+    font-size: var(--font-size-sm);
   }
 
   .comment-timestamp {
-    font-size: 0.7rem;
+    font-size: var(--font-size-xs);
   }
 
   /* ========================================
@@ -3711,7 +3711,7 @@ html:not([data-theme]) .post-actions {
   }
 
   .comment-actions {
-    font-size: 12px;  /* Keep compact on mobile */
+    font-size: var(--font-size-xs);  /* Keep compact on mobile */
     margin-left: 0 !important;
   }
 
@@ -3759,7 +3759,7 @@ html:not([data-theme]) .post-actions {
   .reply-input,
   .reply-composer input {
     padding: 0.75rem;
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     border-radius: 8px;
     min-height: 44px;
   }
@@ -3840,8 +3840,8 @@ html:not([data-theme]) .post-actions {
 }
 
 .refresh-spinner {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
   color: var(--pryde-purple);
   text-align: center;
 }
@@ -3858,7 +3858,7 @@ html:not([data-theme]) .post-actions {
   background: var(--pryde-purple);
   color: white;
   border: none;
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   cursor: pointer;
   z-index: 99; /* Below FAB (100), above content */
   transition: all 0.3s ease;
@@ -3888,8 +3888,8 @@ html:not([data-theme]) .post-actions {
 
 .btn-load-more {
   padding: 1rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
   color: var(--pryde-purple);
   background: var(--card-bg);
   border: 2px solid var(--pryde-purple);
@@ -3916,21 +3916,21 @@ html:not([data-theme]) .post-actions {
   text-align: center;
   padding: 2rem;
   color: var(--text-secondary);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 .end-of-feed-primary {
   margin: 0;
-  font-weight: 500;
-  font-size: 16px;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-base);
   color: var(--text-main);
   margin-bottom: var(--space-2);
 }
 
 .end-of-feed-secondary {
   margin: 0;
-  font-weight: 400;
-  font-size: 14px;
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   opacity: 0.8;
 }
@@ -3944,12 +3944,12 @@ html:not([data-theme]) .post-actions {
   }
 
   .refresh-spinner {
-    font-size: 0.9rem;
+    font-size: var(--font-size-base);
   }
 
   .btn-load-more {
     padding: 0.875rem 1.5rem;
-    font-size: 0.9rem;
+    font-size: var(--font-size-base);
     min-width: 180px;
   }
 
@@ -3962,18 +3962,18 @@ html:not([data-theme]) .post-actions {
   /* Removed - conflicts with mobile icon-only styles above */
 
   .post-action-btn {
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
     padding: 0.5rem 0.75rem;
   }
 
   .post-author-name,
   .author-name {
-    font-size: 0.9375rem;
+    font-size: var(--font-size-base);
   }
 
   .post-timestamp,
   .post-time-inline {
-    font-size: 0.7rem;
+    font-size: var(--font-size-xs);
   }
 
   /* Mobile author row - STACKED layout handled by mobileFriendly.css */
@@ -3987,14 +3987,14 @@ html:not([data-theme]) .post-actions {
 
   .reply-input {
     padding: 0.875rem;
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     min-height: 48px;
   }
 
   .btn-submit-reply,
   .btn-cancel-reply {
     padding: 0.875rem 1.25rem;
-    font-size: 0.9375rem;
+    font-size: var(--font-size-base);
     min-height: 48px;
     flex: 1;
   }
@@ -4032,7 +4032,7 @@ html:not([data-theme]) .post-actions {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.875rem; /* 14px */
+  font-size: var(--font-size-sm); /* 14px */
   line-height: 1;
   border-radius: 10px;
 }
@@ -4054,7 +4054,7 @@ html:not([data-theme]) .post-actions {
   height: 36px;
   min-height: 36px;
   max-height: 36px;
-  font-size: 0.875rem; /* 14px */
+  font-size: var(--font-size-sm); /* 14px */
   line-height: 1;
   border-radius: 10px;
   box-sizing: border-box;
@@ -4101,7 +4101,7 @@ html:not([data-theme]) .post-actions {
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
-  font-size: 10px;
+  font-size: var(--font-size-xs);
   line-height: 1;
 }
 
@@ -4216,7 +4216,7 @@ label.btn-media-upload:disabled {
   border: none;
   background: rgba(255, 107, 107, 0.9);
   color: white;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -4414,8 +4414,8 @@ label.btn-media-upload:disabled {
 
 .comment-user-avatar span {
   color: var(--pryde-purple);
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
 }
 
 .comment-input {
@@ -4424,7 +4424,7 @@ label.btn-media-upload:disabled {
   border-radius: 20px;
   border: 1px solid var(--border-light);
   outline: none;
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
   color: var(--text-main);
   background: var(--background-light);
   transition: all 0.3s ease;
@@ -4442,7 +4442,7 @@ label.btn-media-upload:disabled {
   border: none;
   background: var(--pryde-purple);
   color: white;
-  font-size: 1.2rem;
+  font-size: var(--font-size-xl);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -4466,8 +4466,8 @@ label.btn-media-upload:disabled {
   border: 2px solid var(--border-subtle);
   background: var(--bg);
   color: var(--color-primary);
-  font-size: 0.875rem;
-  font-weight: 700;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
   cursor: pointer;
   transition: all 0.2s ease;
   flex-shrink: 0;
@@ -4504,7 +4504,7 @@ label.btn-media-upload:disabled {
   border: none;
   background: rgba(0, 0, 0, 0.7);
   color: white;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -4566,8 +4566,8 @@ label.btn-media-upload:disabled {
 
 .reply-user-avatar span {
   color: var(--pryde-purple);
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
 }
 
 .reply-input,
@@ -4578,7 +4578,7 @@ label.btn-media-upload:disabled {
   border-radius: 999px;
   border: 1px solid var(--border-light);
   outline: none;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   color: var(--text-main);
   background: var(--card-surface);
   transition: all 0.2s ease;
@@ -4607,7 +4607,7 @@ label.btn-media-upload:disabled {
 .btn-cancel-reply,
 .reply-cancel {
   order: 1;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary, var(--text-muted));
   cursor: pointer;
   background: none;
@@ -4637,8 +4637,8 @@ button[data-action="gif"] {
   border: none;
   background: var(--pryde-purple);
   color: white;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -4667,7 +4667,7 @@ button[data-action="gif"] {
   border: none;
   background: var(--pryde-purple);
   color: white;
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -4772,7 +4772,7 @@ button[data-action="gif"] {
 
   .btn-cancel-reply,
   .reply-cancel {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     padding: 4px 6px;
   }
 
@@ -4781,7 +4781,7 @@ button[data-action="gif"] {
   .reply-gif-btn {
     height: 32px;
     min-width: 32px;
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
     padding: 0 10px;
   }
 
@@ -4791,7 +4791,7 @@ button[data-action="gif"] {
     height: 32px;
     width: 32px;
     min-width: 32px;
-    font-size: 1rem;
+    font-size: var(--font-size-base);
   }
 
   /* Ensure comment input wrapper doesn't clip GIF button */
@@ -4806,7 +4806,7 @@ button[data-action="gif"] {
     min-width: 0;
     flex: 1 1 auto;
     padding: 0.625rem 0.875rem;
-    font-size: 0.9rem;
+    font-size: var(--font-size-base);
   }
 
   /* Ensure GIF button is always visible */
@@ -4816,7 +4816,7 @@ button[data-action="gif"] {
     padding: 0 8px;
     height: 32px;
     min-width: 40px;
-    font-size: 0.7rem;
+    font-size: var(--font-size-xs);
   }
 
   /* Comment user avatar: Smaller on narrow screens */
@@ -4916,20 +4916,20 @@ select.privacy-selector:focus {
 
 .privacy-section h3 {
   color: var(--pryde-purple);
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   margin-bottom: 0.5rem;
 }
 
 .privacy-description {
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-base);
   margin-bottom: 1rem;
 }
 
 .privacy-divider {
   text-align: center;
   color: var(--text-muted);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   margin: 2rem 0;
   position: relative;
 }
@@ -5006,8 +5006,8 @@ select.privacy-selector:focus {
 
 .friend-avatar-small span {
   color: var(--pryde-purple);
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
 }
 
 .modal-footer {
@@ -5024,7 +5024,7 @@ select.privacy-selector:focus {
   border: 2px solid var(--border-light);
   background: transparent;
   color: var(--text-main);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -5037,7 +5037,7 @@ select.privacy-selector:focus {
 /* Hashtag Links */
 .hashtag-link {
   color: var(--pryde-purple);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   text-decoration: none;
   transition: all 0.2s ease;
 }
@@ -5058,13 +5058,13 @@ select.privacy-selector:focus {
 
 .hashtag-title {
   color: var(--pryde-purple);
-  font-size: 2rem;
+  font-size: var(--font-size-3xl);
   margin-bottom: 0.5rem;
 }
 
 .hashtag-subtitle {
   color: var(--text-muted);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 /* Hashtag Feed Layout - Single Column (no sidebar) */
@@ -5092,7 +5092,7 @@ select.privacy-selector:focus {
 }
 
 .trending-count {
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   margin-left: 0.5rem;
 }
@@ -5105,8 +5105,8 @@ select.privacy-selector:focus {
 
 .no-trending-primary {
   margin: 0;
-  font-size: 14px;
-  font-weight: 400;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
   color: var(--text-muted);
   opacity: 0.85;
 }
@@ -5169,15 +5169,15 @@ select.privacy-selector:focus {
 
 .comment-modal-header h3 {
   margin: 0;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
   color: var(--text-main);
 }
 
 .btn-close-modal {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: var(--font-size-2xl);
   color: var(--text-muted);
   cursor: pointer;
   padding: 0;
@@ -5213,7 +5213,7 @@ select.privacy-selector:focus {
   border-radius: 16px;
   border: 1px solid var(--border-light);
   outline: none;
-  font-size: 16px;
+  font-size: var(--font-size-base);
   color: var(--text-main);
   background: var(--background-light);
   transition: all 0.3s ease;
@@ -5245,8 +5245,8 @@ select.privacy-selector:focus {
   border: 1px solid var(--border-light);
   border-radius: 12px;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
   transition: all 0.2s ease;
 }
 
@@ -5263,8 +5263,8 @@ select.privacy-selector:focus {
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
-  font-weight: 500;
-  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
   transition: opacity 0.2s;
   min-width: 120px;
 }
@@ -5351,7 +5351,7 @@ select.privacy-selector:focus {
   align-items: center;
   gap: 8px;
   border-radius: 10px;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   line-height: 1;
   box-sizing: border-box;
 }

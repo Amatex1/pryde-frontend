@@ -482,7 +482,7 @@ textarea[name="newPost"] {
   border: 1px solid var(--border-light);
   border-radius: 8px;
   padding: 0.75rem;
-  font-size: 0.9375rem;
+  font-size: var(--font-size-base);
   line-height: 1.5;
   color: var(--text-primary);
   transition: border-color 0.15s ease;
@@ -532,7 +532,7 @@ textarea[name="newPost"]:focus {
   border: 1px solid var(--border-light);
   background: var(--bg-secondary);
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   cursor: pointer;
   transition: all 0.15s ease;
   display: flex;
@@ -565,8 +565,8 @@ textarea[name="newPost"]:focus {
   background: var(--pryde-purple);
   color: white;
   border: none;
-  font-size: 0.9375rem;
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: background 0.15s ease;
   box-shadow: none;
@@ -586,7 +586,7 @@ textarea[name="newPost"]:focus {
 
 /* Draft save status: Muted, small */
 .draft-save-status {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   margin-left: auto;
   margin-right: 0.5rem;
@@ -653,8 +653,8 @@ textarea[name="newPost"]:focus {
 /* Name: Semi-bold, primary color */
 .post-author-name,
 .author-name {
-  font-weight: 600;
-  font-size: 0.9375rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
   color: var(--text-primary);
   display: flex;
   align-items: center;
@@ -664,14 +664,14 @@ textarea[name="newPost"]:focus {
 /* @handle: Muted, smaller */
 .post-author-username,
 .author-username {
-  font-size: 0.8125rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
 }
 
 /* Time: Muted, small */
 .post-time,
 .post-timestamp {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
 }
 
@@ -680,7 +680,7 @@ textarea[name="newPost"]:focus {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   margin-top: 0.25rem;
 }
@@ -699,7 +699,7 @@ textarea[name="newPost"]:focus {
   border: none;
   background: transparent;
   color: var(--text-secondary);
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -718,7 +718,7 @@ textarea[name="newPost"]:focus {
    ──────────────────────────────────────── */
 
 .post-content {
-  font-size: 0.9375rem;
+  font-size: var(--font-size-base);
   line-height: 1.6;
   color: var(--text-primary);
   word-wrap: break-word;
@@ -771,7 +771,7 @@ textarea[name="newPost"]:focus {
   border: none;
   background: transparent;
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -825,7 +825,7 @@ textarea[name="newPost"]:focus {
   border: none;
   background: transparent;
   color: var(--text-primary);
-  font-size: 0.9375rem;
+  font-size: var(--font-size-base);
   cursor: pointer;
   width: 100%;
   text-align: left;
@@ -870,8 +870,8 @@ textarea[name="newPost"]:focus {
 
 /* Poll question: Readable, not too bold */
 .poll-question {
-  font-size: 0.9375rem;
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
   margin-bottom: 0.75rem;
 }
@@ -903,7 +903,7 @@ textarea[name="newPost"]:focus {
 
 /* Poll option text */
 .poll-option-text {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--text-primary);
   position: relative;
   z-index: 1;
@@ -927,7 +927,7 @@ textarea[name="newPost"]:focus {
 
 /* Poll percentage: Muted, small */
 .poll-option-percentage {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   margin-left: 0.5rem;
 }
@@ -940,7 +940,7 @@ textarea[name="newPost"]:focus {
   margin-top: 0.75rem;
   padding-top: 0.75rem;
   border-top: 1px solid var(--border-light);
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
 }
 
@@ -970,8 +970,8 @@ textarea[name="newPost"]:focus {
 
 /* CW title: Clear but not loud */
 .content-warning-title {
-  font-size: 0.9375rem;
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
   margin-bottom: 0.5rem;
   text-shadow: none;
@@ -979,7 +979,7 @@ textarea[name="newPost"]:focus {
 
 /* CW text: Muted */
 .content-warning-text {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary);
   margin-bottom: 1rem;
 }
@@ -991,8 +991,8 @@ textarea[name="newPost"]:focus {
   background: var(--pryde-purple);
   color: white;
   border: none;
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: background 0.15s ease;
   box-shadow: none;
@@ -1082,12 +1082,12 @@ textarea[name="newPost"]:focus {
   /* Name: Slightly larger on mobile */
   .post-author-name,
   .author-name {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
   }
 
   /* Content: Comfortable reading size */
   .post-content {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     line-height: 1.6;
   }
 
@@ -1103,7 +1103,7 @@ textarea[name="newPost"]:focus {
     min-height: 44px;
     min-width: 44px;
     padding: 0.625rem 1rem;
-    font-size: 0.9375rem;
+    font-size: var(--font-size-base);
   }
 
   .btn-dropdown {
@@ -1126,7 +1126,7 @@ textarea[name="newPost"]:focus {
 
   .post-form-textarea,
   textarea[name="newPost"] {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     padding: 0.625rem;
   }
 
@@ -1147,7 +1147,7 @@ textarea[name="newPost"]:focus {
   /* Timestamps: Smaller and lighter */
   .post-time,
   .post-timestamp {
-    font-size: 0.6875rem;
+    font-size: var(--font-size-xs);
   }
 
   /* Metadata: Hide on mobile to reduce noise */
@@ -1172,7 +1172,7 @@ textarea[name="newPost"]:focus {
   }
 
   .poll-option-text {
-    font-size: 0.9375rem;
+    font-size: var(--font-size-base);
   }
 
   /* ────────────────────────────────────────
@@ -1182,7 +1182,7 @@ textarea[name="newPost"]:focus {
   .btn-show-cw {
     min-height: 48px;
     padding: 0.75rem 1.5rem;
-    font-size: 0.9375rem;
+    font-size: var(--font-size-base);
   }
 
   /* ────────────────────────────────────────
@@ -1198,7 +1198,7 @@ textarea[name="newPost"]:focus {
   .dropdown-item {
     min-height: 48px;
     padding: 0.875rem 1rem;
-    font-size: 1rem;
+    font-size: var(--font-size-base);
   }
 }
 

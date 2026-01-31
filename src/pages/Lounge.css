@@ -47,8 +47,8 @@
 }
 
 .lounge-title {
-  font-size: 28px;
-  font-weight: 700;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
   color: var(--text-main);
   margin: 0 0 var(--space-2) 0;
   background: var(--gradient-primary);
@@ -58,7 +58,7 @@
 }
 
 .lounge-subtitle {
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   margin: 0;
   line-height: 1.5;
@@ -71,9 +71,9 @@
   padding: var(--space-2) var(--space-4);
   background: var(--color-primary-soft);
   border-radius: var(--radius-pill);
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   color: var(--color-primary);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .online-indicator {
@@ -105,7 +105,7 @@
   color: var(--color-danger);
   margin-bottom: var(--space-4);
   text-align: center;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 /* ========================================
@@ -131,14 +131,14 @@
   text-align: center;
   padding: 3rem 1rem;
   color: var(--text-muted);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 .lounge-loading-more {
   text-align: center;
   padding: 0.5rem;
   color: var(--text-muted);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
 }
 
 /* Message */
@@ -223,7 +223,7 @@
 }
 
 .lounge-message-time {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
 }
 
@@ -233,10 +233,10 @@
   background: #fef3c7;
   border: 1px solid #fbbf24;
   border-radius: 8px;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: #92400e;
   margin-bottom: 0.5rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .lounge-message-text {
@@ -257,11 +257,11 @@
   background: var(--soft-lavender);
   border: 1px solid var(--border-light);
   border-radius: 12px;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--pryde-purple);
   cursor: pointer;
   transition: all 0.2s;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .lounge-action-btn:hover {
@@ -305,7 +305,7 @@
   background: var(--bg-tertiary, rgba(255, 255, 255, 0.1));
   border: none;
   cursor: pointer;
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   padding: 0.25rem 0.4rem;
   border-radius: 6px;
   color: var(--text-secondary, #94A3B8);
@@ -341,7 +341,7 @@
   background: none;
   border: none;
   color: var(--text-primary, #fff);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   cursor: pointer;
   text-align: left;
   transition: background 0.2s;
@@ -391,13 +391,13 @@
 .delete-modal h3 {
   margin: 0 0 0.5rem 0;
   color: var(--text-primary, #fff);
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
 }
 
 .delete-modal p {
   margin: 0 0 1.5rem 0;
   color: var(--text-secondary, #94A3B8);
-  font-size: 0.9375rem;
+  font-size: var(--font-size-base);
 }
 
 .delete-modal-actions {
@@ -411,7 +411,7 @@
   padding: 0.75rem 1rem;
   border-radius: 8px;
   border: none;
-  font-size: 0.9375rem;
+  font-size: var(--font-size-base);
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -458,7 +458,7 @@
 }
 
 .deleted-icon {
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
 }
 
 /* Input Container */
@@ -482,7 +482,7 @@
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--border-light);
   border-radius: 12px;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   background: var(--soft-lavender);
   color: var(--text-main);
 }
@@ -528,10 +528,10 @@
   border: 2px solid var(--border-light);
   border-radius: 12px;
   color: var(--pryde-purple);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -549,10 +549,10 @@
   border: 2px solid var(--border-subtle);
   border-radius: 12px;
   color: var(--color-primary);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -588,7 +588,7 @@
   border: none;
   background: rgba(0, 0, 0, 0.7);
   color: white;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -629,7 +629,7 @@
   padding: 0.875rem 1rem;
   border: 2px solid var(--border-light);
   border-radius: 16px;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   background: var(--bg-light);
   color: var(--text-main);
   transition: border-color 0.2s;
@@ -651,10 +651,10 @@
   border: none;
   border-radius: 16px;
   color: white;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 .lounge-send-btn:hover:not(:disabled) {
@@ -669,7 +669,7 @@
 
 .lounge-char-count {
   margin-top: 0.5rem;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   text-align: right;
 }
@@ -756,11 +756,11 @@
   }
 
   .lounge-title {
-    font-size: 1.25rem;
+    font-size: var(--font-size-xl);
   }
 
   .lounge-subtitle {
-    font-size: 0.8125rem;
+    font-size: var(--font-size-sm);
   }
 
   .lounge-messages {
@@ -831,8 +831,8 @@
   .lounge-cw-btn,
   .lounge-gif-btn {
     padding: 0 12px;
-    font-size: 0.6875rem;
-    font-weight: 600;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
     border-radius: 8px;
     height: 34px;
     min-height: 34px;
@@ -853,8 +853,8 @@
   .lounge-send-btn {
     margin-left: auto; /* Push to right */
     padding: 0 16px;
-    font-size: 0.8125rem;
-    font-weight: 600;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
     border-radius: 8px;
     height: 34px;
     min-height: 34px;
@@ -909,14 +909,14 @@
 
 .modal-header h2 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   color: var(--text-main);
 }
 
 .modal-close {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   color: var(--text-muted);
   cursor: pointer;
   padding: 0.25rem;
@@ -982,8 +982,8 @@
   justify-content: center;
   background: var(--gradient-primary);
   color: white;
-  font-weight: 600;
-  font-size: 1.25rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xl);
 }
 
 .online-indicator-small {
@@ -1013,7 +1013,7 @@
 }
 
 .online-user-username {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
 }
 
@@ -1022,8 +1022,8 @@
   align-items: center;
   padding: 0.125rem 0.5rem;
   border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -1049,8 +1049,8 @@
   color: white;
   border: none;
   border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.875rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -1109,7 +1109,7 @@
 }
 
 .typing-text {
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   font-style: italic;
 }
@@ -1215,8 +1215,8 @@
   height: 100%;
   background: var(--gradient-primary);
   color: white;
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
   border-radius: 50%;
   cursor: pointer;
   border: 2px solid var(--border-light);
