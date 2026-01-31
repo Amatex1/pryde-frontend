@@ -37,6 +37,9 @@ import Toast from '../components/Toast';
 import FormattedText from '../components/FormattedText';
 import CommentThread from '../components/CommentThread';
 import GifPicker from '../components/GifPicker';
+import GroupPostDropdown from '../components/groups/GroupPostDropdown';
+import GroupActionsDropdown from '../components/groups/GroupActionsDropdown';
+import ReportModal from '../components/ReportModal';
 import { useToast } from '../hooks/useToast';
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
@@ -115,6 +118,21 @@ function Groups() {
   const [replyGif, setReplyGif] = useState(null);
   const [showReactionPicker, setShowReactionPicker] = useState(null);
   const commentRefs = useRef({});
+
+  // Dropdown and report modal state
+  const [openPostDropdown, setOpenPostDropdown] = useState(null); // Track which post dropdown is open
+  const [showGroupActionsDropdown, setShowGroupActionsDropdown] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportingPost, setReportingPost] = useState(null); // { postId, authorId }
+
+  // Edit group modal state
+  const [showEditGroupModal, setShowEditGroupModal] = useState(false);
+  const [editGroupName, setEditGroupName] = useState('');
+  const [editGroupDescription, setEditGroupDescription] = useState('');
+  const [editGroupVisibility, setEditGroupVisibility] = useState('listed');
+  const [editGroupJoinMode, setEditGroupJoinMode] = useState('approval');
+  const [editingGroupSettings, setEditingGroupSettings] = useState(false);
+  const [editGroupError, setEditGroupError] = useState(null);
 
   // Phase 5B: AbortController to prevent double-fetch in StrictMode
   useEffect(() => {
@@ -447,6 +465,87 @@ function Groups() {
     } catch (err) {
       console.error('Failed to unlock post:', err);
       showToast(err.response?.data?.message || 'Failed to unlock post', 'error');
+    }
+  };
+
+  // Report post handler
+  const handleReportPost = (postId, authorId) => {
+    setReportingPost({ postId, authorId });
+    setShowReportModal(true);
+  };
+
+  const closeReportModal = () => {
+    setShowReportModal(false);
+    setReportingPost(null);
+  };
+
+  // Toggle post dropdown
+  const togglePostDropdown = (postId) => {
+    setOpenPostDropdown(prev => prev === postId ? null : postId);
+  };
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.post-dropdown-container') && !e.target.closest('.group-dropdown-container')) {
+        setOpenPostDropdown(null);
+        setShowGroupActionsDropdown(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  // ============================================
+  // GROUP SETTINGS HANDLERS
+  // ============================================
+
+  const openEditGroupModal = () => {
+    if (!group) return;
+    setEditGroupName(group.name);
+    setEditGroupDescription(group.description || '');
+    setEditGroupVisibility(group.visibility || 'listed');
+    setEditGroupJoinMode(group.joinMode || 'approval');
+    setEditGroupError(null);
+    setShowEditGroupModal(true);
+  };
+
+  const handleEditGroup = async (e) => {
+    e.preventDefault();
+    if (!editGroupName.trim() || editingGroupSettings) return;
+
+    try {
+      setEditingGroupSettings(true);
+      await api.patch(`/groups/${slug}`, {
+        name: editGroupName.trim(),
+        description: editGroupDescription.trim(),
+        visibility: editGroupVisibility,
+        joinMode: editGroupJoinMode
+      });
+
+      setShowEditGroupModal(false);
+      fetchGroup(); // Refresh group data
+      showToast('Group settings updated', 'success');
+    } catch (err) {
+      console.error('Failed to update group:', err);
+      setEditGroupError(err.response?.data?.message || 'Failed to update group');
+    } finally {
+      setEditingGroupSettings(false);
+    }
+  };
+
+  const handleDeleteGroup = async () => {
+    if (!confirm(`Are you sure you want to delete "${group.name}"? This will also delete all posts in the group. This cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      await api.delete(`/groups/${slug}`);
+      showToast('Group deleted', 'success');
+      navigate('/groups');
+    } catch (err) {
+      console.error('Failed to delete group:', err);
+      showToast(err.response?.data?.message || 'Failed to delete group', 'error');
     }
   };
 
@@ -1146,6 +1245,17 @@ function Groups() {
                 🔔
               </button>
             )}
+
+            {/* Group actions dropdown (owner only) */}
+            {isOwner && (
+              <GroupActionsDropdown
+                groupId={group._id}
+                isDropdownOpen={showGroupActionsDropdown}
+                onToggleDropdown={() => setShowGroupActionsDropdown(prev => !prev)}
+                onEdit={openEditGroupModal}
+                onDelete={handleDeleteGroup}
+              />
+            )}
           </div>
         </div>
 
@@ -1254,49 +1364,23 @@ function Groups() {
                         visibility="group"
                         edited={post.edited}
                       >
-                        {/* Post actions (edit/delete) */}
-                        {(isAuthor || canDelete) && (
-                          <div className="post-actions">
-                            {isAuthor && (
-                              <button
-                                className="btn-edit-post"
-                                onClick={() => openEditModal(post)}
-                                title="Edit post"
-                              >
-                                ✏️
-                              </button>
-                            )}
-                            {canDelete && (
-                              <button
-                                className="btn-delete-post"
-                                onClick={() => handleDeletePost(post._id)}
-                                title="Delete post"
-                              >
-                                🗑️
-                              </button>
-                            )}
-                            {/* Phase 6A: Lock/Unlock button for moderators */}
-                            {(isOwner || isModerator) && (
-                              post.isLocked ? (
-                                <button
-                                  className="btn-unlock-post"
-                                  onClick={() => handleUnlockPost(post._id)}
-                                  title="Unlock post (enable replies)"
-                                >
-                                  🔓
-                                </button>
-                              ) : (
-                                <button
-                                  className="btn-lock-post"
-                                  onClick={() => handleLockPost(post._id)}
-                                  title="Lock post (disable replies)"
-                                >
-                                  🔒
-                                </button>
-                              )
-                            )}
-                          </div>
-                        )}
+                        {/* Post actions dropdown */}
+                        <GroupPostDropdown
+                          postId={post._id}
+                          isAuthor={isAuthor}
+                          canDelete={canDelete}
+                          canModerate={isOwner || isModerator}
+                          isLocked={post.isLocked}
+                          isDropdownOpen={openPostDropdown === post._id}
+                          authorId={post.author?._id}
+                          onToggleDropdown={togglePostDropdown}
+                          onEdit={openEditModal}
+                          onDelete={handleDeletePost}
+                          onLock={handleLockPost}
+                          onUnlock={handleUnlockPost}
+                          onReport={handleReportPost}
+                          post={post}
+                        />
                       </PostHeader>
 
                       {/* Phase 6A: Locked post indicator */}
@@ -1752,6 +1836,94 @@ function Groups() {
                   </p>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Report Modal */}
+        <ReportModal
+          isOpen={showReportModal}
+          onClose={closeReportModal}
+          reportType="post"
+          contentId={reportingPost?.postId}
+          userId={reportingPost?.authorId}
+        />
+
+        {/* Edit Group Settings Modal */}
+        {showEditGroupModal && (
+          <div className="modal-overlay" onClick={() => setShowEditGroupModal(false)}>
+            <div className="create-group-modal glossy" onClick={e => e.stopPropagation()}>
+              <h2>Group Settings</h2>
+
+              <form onSubmit={handleEditGroup}>
+                <div className="form-group">
+                  <label htmlFor="editGroupName">Group Name *</label>
+                  <input
+                    type="text"
+                    id="editGroupName"
+                    value={editGroupName}
+                    onChange={(e) => setEditGroupName(e.target.value)}
+                    maxLength={50}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="editGroupDescription">Description</label>
+                  <textarea
+                    id="editGroupDescription"
+                    value={editGroupDescription}
+                    onChange={(e) => setEditGroupDescription(e.target.value)}
+                    rows={3}
+                    maxLength={500}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="editGroupVisibility">Visibility</label>
+                  <select
+                    id="editGroupVisibility"
+                    value={editGroupVisibility}
+                    onChange={(e) => setEditGroupVisibility(e.target.value)}
+                  >
+                    <option value="listed">Listed - Appears in group discovery</option>
+                    <option value="unlisted">Unlisted - Only accessible via link</option>
+                    <option value="private">Private - Invite only</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="editGroupJoinMode">Join Mode</label>
+                  <select
+                    id="editGroupJoinMode"
+                    value={editGroupJoinMode}
+                    onChange={(e) => setEditGroupJoinMode(e.target.value)}
+                  >
+                    <option value="auto">Open - Anyone can join</option>
+                    <option value="approval">Approval Required - Requests need owner approval</option>
+                  </select>
+                </div>
+
+                {editGroupError && <p className="error-message">{editGroupError}</p>}
+
+                <div className="modal-buttons">
+                  <button
+                    type="button"
+                    className="btn-cancel"
+                    onClick={() => setShowEditGroupModal(false)}
+                    disabled={editingGroupSettings}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn-create"
+                    disabled={editingGroupSettings || !editGroupName.trim()}
+                  >
+                    {editingGroupSettings ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}
