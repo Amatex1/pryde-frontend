@@ -28,7 +28,7 @@
   justify-content: center;
   background-size: cover;
   background-position: center;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* Cover photo overlay for readability */
@@ -1417,6 +1417,7 @@
   position: relative;
   display: inline-flex;
   margin-left: auto;
+  z-index: 10;
 }
 
 .btn-dropdown,
@@ -1453,13 +1454,14 @@
   top: 100%;
   right: 0;
   margin-top: 0.5rem;
-  min-width: 12.5rem;
+  min-width: 10rem;
   background: var(--bg-card);
   border: 1px solid var(--border-light);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-  overflow: hidden;
+  z-index: 1000;
+  overflow: visible;
+  white-space: nowrap;
 }
 
 [data-theme="dark"] .dropdown-menu {
