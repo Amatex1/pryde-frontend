@@ -269,8 +269,8 @@
   margin-top: -4px; /* Optical alignment */
 }
 
-.ph-actions button,
-.ph-actions .btn-dropdown {
+.ph-actions > button,
+.ph-actions > .btn-dropdown {
   position: static !important;
   transform: none !important;
   margin: 0 !important;
@@ -288,13 +288,13 @@
   transition: background-color 0.15s ease;
 }
 
-.ph-actions button:hover,
-.ph-actions .btn-dropdown:hover {
+.ph-actions > button:hover,
+.ph-actions > .btn-dropdown:hover {
   background-color: var(--bg-hover, rgba(0, 0, 0, 0.05));
 }
 
-.ph-actions button:active,
-.ph-actions .btn-dropdown:active {
+.ph-actions > button:active,
+.ph-actions > .btn-dropdown:active {
   background-color: var(--bg-active, rgba(0, 0, 0, 0.1));
 }
 
