@@ -3,6 +3,7 @@ import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import { compressAvatar, compressCoverPhoto } from '../utils/compressImage';
 import { uploadWithProgress } from '../utils/uploadWithProgress';
+import ImageCropEditor from './ImageCropEditor';
 import './EditProfileModal.css';
 
 function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
@@ -39,14 +40,15 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
   // Badge visibility toggle
   const [showBadges, setShowBadges] = useState(true);
 
-  // Photo positioning and zoom state
-  const [coverPos, setCoverPos] = useState({ x: 0, y: 0, scale: 1 });
-  const [avatarPos, setAvatarPos] = useState({ x: 0, y: 0, scale: 1 });
-  const [isDraggingCover, setIsDraggingCover] = useState(false);
-  const [isDraggingAvatar, setIsDraggingAvatar] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const coverPreviewRef = useRef(null);
-  const avatarPreviewRef = useRef(null);
+  // Photo crop editor state
+  // tempCoverImage/tempAvatarImage: holds the raw image URL before cropping
+  // editingCover/editingAvatar: controls when the crop editor is visible
+  const [tempCoverImage, setTempCoverImage] = useState(null);
+  const [tempAvatarImage, setTempAvatarImage] = useState(null);
+  const [editingCover, setEditingCover] = useState(false);
+  const [editingAvatar, setEditingAvatar] = useState(false);
+  const coverInputRef = useRef(null);
+  const avatarInputRef = useRef(null);
 
   useEffect(() => {
     if (isOpen && user) {
@@ -80,17 +82,11 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
         coverPhoto: user.coverPhoto || null
       });
 
-      // Initialize photo positions from user data
-      setCoverPos({
-        x: user.coverPhotoPosition?.x || 0,
-        y: user.coverPhotoPosition?.y || 0,
-        scale: user.coverPhotoPosition?.scale || 1
-      });
-      setAvatarPos({
-        x: user.profilePhotoPosition?.x || 0,
-        y: user.profilePhotoPosition?.y || 0,
-        scale: user.profilePhotoPosition?.scale || 1
-      });
+      // Reset crop editor state when modal opens
+      setTempCoverImage(null);
+      setTempAvatarImage(null);
+      setEditingCover(false);
+      setEditingAvatar(false);
       // Initialize badge visibility (hideBadges=false means showBadges=true)
       setShowBadges(!user.privacySettings?.hideBadges);
     }
@@ -144,72 +140,8 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
     }));
   };
 
-  // Drag handlers for cover photo
-  const startCoverDrag = (e) => {
-    e.preventDefault();
-    setIsDraggingCover(true);
-    setDragStart({ x: e.clientX - coverPos.x, y: e.clientY - coverPos.y });
-  };
-
-  const handleCoverDrag = (e) => {
-    if (!isDraggingCover) return;
-    e.preventDefault();
-    setCoverPos(prev => ({
-      ...prev,
-      x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y
-    }));
-  };
-
-  const endCoverDrag = () => {
-    setIsDraggingCover(false);
-  };
-
-  // Drag handlers for avatar photo
-  const startAvatarDrag = (e) => {
-    e.preventDefault();
-    setIsDraggingAvatar(true);
-    setDragStart({ x: e.clientX - avatarPos.x, y: e.clientY - avatarPos.y });
-  };
-
-  const handleAvatarDrag = (e) => {
-    if (!isDraggingAvatar) return;
-    e.preventDefault();
-    setAvatarPos(prev => ({
-      ...prev,
-      x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y
-    }));
-  };
-
-  const endAvatarDrag = () => {
-    setIsDraggingAvatar(false);
-  };
-
-  // Global mouse event listeners for dragging
-  useEffect(() => {
-    if (isDraggingCover) {
-      window.addEventListener('mousemove', handleCoverDrag);
-      window.addEventListener('mouseup', endCoverDrag);
-      return () => {
-        window.removeEventListener('mousemove', handleCoverDrag);
-        window.removeEventListener('mouseup', endCoverDrag);
-      };
-    }
-  }, [isDraggingCover, dragStart, coverPos]);
-
-  useEffect(() => {
-    if (isDraggingAvatar) {
-      window.addEventListener('mousemove', handleAvatarDrag);
-      window.addEventListener('mouseup', endAvatarDrag);
-      return () => {
-        window.removeEventListener('mousemove', handleAvatarDrag);
-        window.removeEventListener('mouseup', endAvatarDrag);
-      };
-    }
-  }, [isDraggingAvatar, dragStart, avatarPos]);
-
-  const handlePhotoUpload = async (e, type) => {
+  // Handle file selection - opens crop editor instead of immediate upload
+  const handleFileSelect = (e, type) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -219,28 +151,37 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
       return;
     }
 
+    // Create temporary URL for crop editor
+    const imageUrl = URL.createObjectURL(file);
+
+    if (type === 'profile') {
+      setTempAvatarImage(imageUrl);
+      setEditingAvatar(true);
+    } else {
+      setTempCoverImage(imageUrl);
+      setEditingCover(true);
+    }
+
+    // Clear the input so the same file can be selected again
+    e.target.value = '';
+  };
+
+  // Handle crop completion - uploads the cropped image
+  const handleCropComplete = async (type, cropResult) => {
     setUploadingPhoto(true);
     setUploadProgress(0);
 
     try {
-      // Compress image before upload
-      let compressedFile = file;
-      try {
-        if (type === 'profile') {
-          compressedFile = await compressAvatar(file);
-        } else {
-          compressedFile = await compressCoverPhoto(file);
-        }
-      } catch (error) {
-        console.warn('Image compression failed, using original:', error);
-      }
+      // Create a File from the cropped blob
+      const fileName = type === 'profile' ? 'avatar.jpg' : 'cover.jpg';
+      const croppedFile = new File([cropResult.blob], fileName, { type: 'image/jpeg' });
 
       const endpoint = type === 'profile' ? '/upload/profile-photo' : '/upload/cover-photo';
 
       // Upload with progress tracking
       const response = await uploadWithProgress({
         url: `${api.defaults.baseURL}${endpoint}`,
-        file: compressedFile,
+        file: croppedFile,
         fieldName: 'photo',
         onProgress: (percent) => {
           setUploadProgress(percent);
@@ -254,24 +195,34 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
 
       if (type === 'profile') {
         setFormData(prev => ({ ...prev, profilePhoto: response.url }));
-        // Reset avatar position for new photo
-        setAvatarPos({ x: 0, y: 0, scale: 1 });
+        setEditingAvatar(false);
+        setTempAvatarImage(null);
       } else {
         setFormData(prev => ({ ...prev, coverPhoto: response.url }));
-        // Reset cover position for new photo
-        setCoverPos({ x: 0, y: 0, scale: 1 });
+        setEditingCover(false);
+        setTempCoverImage(null);
       }
     } catch (error) {
       console.error('Failed to upload photo:', error);
-
-      // Extract user-friendly error message
-      const errorMessage = error.message ||
-                          'Image upload failed. Please try again or use a smaller image.';
-
+      const errorMessage = error.message || 'Image upload failed. Please try again.';
       alert(errorMessage);
     } finally {
       setUploadingPhoto(false);
       setUploadProgress(0);
+    }
+  };
+
+  // Handle crop cancel - restores previous state
+  const handleCropCancel = (type) => {
+    if (type === 'profile') {
+      setEditingAvatar(false);
+      // Clean up the temporary URL
+      if (tempAvatarImage) URL.revokeObjectURL(tempAvatarImage);
+      setTempAvatarImage(null);
+    } else {
+      setEditingCover(false);
+      if (tempCoverImage) URL.revokeObjectURL(tempCoverImage);
+      setTempCoverImage(null);
     }
   };
 
@@ -285,14 +236,12 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
 
     setLoading(true);
     try {
-      // Include photo URLs and position metadata in the update
-      // formData already contains profilePhoto and coverPhoto from user or upload
+      // formData already contains profilePhoto and coverPhoto URLs
+      // Since we now upload pre-cropped images, no position metadata needed
       const updateData = {
         ...formData,
         // If pronouns is 'custom', send the customPronouns value instead
-        pronouns: formData.pronouns === 'custom' ? formData.customPronouns : formData.pronouns,
-        coverPhotoPosition: coverPos,
-        profilePhotoPosition: avatarPos
+        pronouns: formData.pronouns === 'custom' ? formData.customPronouns : formData.pronouns
       };
 
       const response = await api.put('/users/profile', updateData);
@@ -327,60 +276,54 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                 <div className="photo-editor-item">
                   <label>Cover Photo</label>
                   <div className="photo-editor-container">
-                    <div
-                      ref={coverPreviewRef}
-                      className="photo-preview-interactive cover"
-                      onMouseDown={startCoverDrag}
-                      style={{
-                        cursor: isDraggingCover ? 'grabbing' : 'grab',
-                        overflow: 'hidden',
-                        position: 'relative',
-                        userSelect: 'none'
-                      }}
-                    >
-                      {formData.coverPhoto || user?.coverPhoto ? (
-                        <div
-                          style={{
-                            backgroundImage: `url(${getImageUrl(formData.coverPhoto || user.coverPhoto)})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            width: '100%',
-                            height: '100%',
-                            transform: `translate(${coverPos.x}px, ${coverPos.y}px) scale(${coverPos.scale})`,
-                            transformOrigin: 'center',
-                            transition: isDraggingCover ? 'none' : 'transform 0.1s ease'
-                          }}
+                    {editingCover && tempCoverImage ? (
+                      /* Crop editor mode - shown when user selects a new image */
+                      <>
+                        <ImageCropEditor
+                          image={tempCoverImage}
+                          aspect={16 / 6} /* Wide aspect for cover photos */
+                          cropShape="rect"
+                          onCropComplete={(result) => handleCropComplete('cover', result)}
+                          onCancel={() => handleCropCancel('cover')}
                         />
-                      ) : (
-                        <div className="photo-placeholder">No cover photo</div>
-                      )}
-                    </div>
-                    <div className="photo-controls">
-                      <label htmlFor="cover-zoom">Zoom: {coverPos.scale.toFixed(2)}x</label>
-                      <input
-                        id="cover-zoom"
-                        type="range"
-                        min="1"
-                        max="2"
-                        step="0.01"
-                        value={coverPos.scale}
-                        onChange={(e) => setCoverPos({ ...coverPos, scale: parseFloat(e.target.value) })}
-                        className="zoom-slider"
-                      />
-                      <input
-                        type="file"
-                        id="cover-photo-upload"
-                        accept="image/*"
-                        onChange={(e) => handlePhotoUpload(e, 'cover')}
-                        disabled={uploadingPhoto}
-                        style={{ marginTop: '8px' }}
-                      />
-                      {uploadingPhoto && (
-                        <div className="upload-progress" style={{ marginTop: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                          Uploading... {uploadProgress}%
+                        {uploadingPhoto && (
+                          <div className="upload-progress">
+                            Uploading... {uploadProgress}%
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      /* Preview mode - shows current cover photo */
+                      <>
+                        <div className="photo-preview cover">
+                          {formData.coverPhoto || user?.coverPhoto ? (
+                            <img
+                              src={getImageUrl(formData.coverPhoto || user.coverPhoto)}
+                              alt="Cover"
+                            />
+                          ) : (
+                            <div className="photo-placeholder">No cover photo</div>
+                          )}
                         </div>
-                      )}
-                    </div>
+                        <input
+                          ref={coverInputRef}
+                          type="file"
+                          id="cover-photo-upload"
+                          accept="image/*"
+                          onChange={(e) => handleFileSelect(e, 'cover')}
+                          disabled={uploadingPhoto}
+                          style={{ display: 'none' }}
+                        />
+                        <button
+                          type="button"
+                          className="photo-change-btn"
+                          onClick={() => coverInputRef.current?.click()}
+                          disabled={uploadingPhoto}
+                        >
+                          {formData.coverPhoto || user?.coverPhoto ? 'Change Cover' : 'Add Cover Photo'}
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -388,61 +331,54 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                 <div className="photo-editor-item">
                   <label>Profile Photo</label>
                   <div className="photo-editor-container">
-                    <div
-                      ref={avatarPreviewRef}
-                      className="photo-preview-interactive avatar"
-                      onMouseDown={startAvatarDrag}
-                      style={{
-                        cursor: isDraggingAvatar ? 'grabbing' : 'grab',
-                        overflow: 'hidden',
-                        position: 'relative',
-                        userSelect: 'none',
-                        borderRadius: '50%'
-                      }}
-                    >
-                      {formData.profilePhoto || user?.profilePhoto ? (
-                        <div
-                          style={{
-                            backgroundImage: `url(${getImageUrl(formData.profilePhoto || user.profilePhoto)})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            width: '100%',
-                            height: '100%',
-                            transform: `translate(${avatarPos.x}px, ${avatarPos.y}px) scale(${avatarPos.scale})`,
-                            transformOrigin: 'center',
-                            transition: isDraggingAvatar ? 'none' : 'transform 0.1s ease'
-                          }}
+                    {editingAvatar && tempAvatarImage ? (
+                      /* Crop editor mode - circular crop for avatar */
+                      <>
+                        <ImageCropEditor
+                          image={tempAvatarImage}
+                          aspect={1} /* Square/circular aspect for avatars */
+                          cropShape="round"
+                          onCropComplete={(result) => handleCropComplete('profile', result)}
+                          onCancel={() => handleCropCancel('profile')}
                         />
-                      ) : (
-                        <div className="photo-placeholder">No photo</div>
-                      )}
-                    </div>
-                    <div className="photo-controls">
-                      <label htmlFor="avatar-zoom">Zoom: {avatarPos.scale.toFixed(2)}x</label>
-                      <input
-                        id="avatar-zoom"
-                        type="range"
-                        min="1"
-                        max="2"
-                        step="0.01"
-                        value={avatarPos.scale}
-                        onChange={(e) => setAvatarPos({ ...avatarPos, scale: parseFloat(e.target.value) })}
-                        className="zoom-slider"
-                      />
-                      <input
-                        type="file"
-                        id="profile-photo-upload"
-                        accept="image/*"
-                        onChange={(e) => handlePhotoUpload(e, 'profile')}
-                        disabled={uploadingPhoto}
-                        style={{ marginTop: '8px' }}
-                      />
-                      {uploadingPhoto && (
-                        <div className="upload-progress" style={{ marginTop: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                          Uploading... {uploadProgress}%
+                        {uploadingPhoto && (
+                          <div className="upload-progress">
+                            Uploading... {uploadProgress}%
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      /* Preview mode - shows current avatar */
+                      <>
+                        <div className="photo-preview avatar">
+                          {formData.profilePhoto || user?.profilePhoto ? (
+                            <img
+                              src={getImageUrl(formData.profilePhoto || user.profilePhoto)}
+                              alt="Profile"
+                            />
+                          ) : (
+                            <div className="photo-placeholder">No photo</div>
+                          )}
                         </div>
-                      )}
-                    </div>
+                        <input
+                          ref={avatarInputRef}
+                          type="file"
+                          id="profile-photo-upload"
+                          accept="image/*"
+                          onChange={(e) => handleFileSelect(e, 'profile')}
+                          disabled={uploadingPhoto}
+                          style={{ display: 'none' }}
+                        />
+                        <button
+                          type="button"
+                          className="photo-change-btn"
+                          onClick={() => avatarInputRef.current?.click()}
+                          disabled={uploadingPhoto}
+                        >
+                          {formData.profilePhoto || user?.profilePhoto ? 'Change Photo' : 'Add Photo'}
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
