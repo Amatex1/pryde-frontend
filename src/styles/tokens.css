@@ -75,24 +75,18 @@
   --space-6: 32px;
   --space-7: 40px;
   --space-8: 48px;
-  
+
   /* ========================================
      TYPOGRAPHY SCALE
+     MOVED TO: typography-tokens.css (single source of truth)
+
+     Legacy aliases for backward compatibility:
      ======================================== */
-  --font-size-h1: 2.5rem;
-  --font-size-h2: 2rem;
-  --font-size-h3: 1.5rem;
-  --font-size-body: 1rem;
-  --font-size-meta: 0.875rem;
-  
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-  
-  --line-height-tight: 1.2;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.8;
+  --font-size-h1: var(--font-size-3xl);    /* Was 2.5rem, now 2rem (32px) */
+  --font-size-h2: var(--font-size-2xl);    /* Was 2rem, now 1.5rem (24px) */
+  --font-size-h3: var(--font-size-xl);     /* Was 1.5rem, now 1.25rem (20px) */
+  --font-size-body: var(--font-size-base); /* 1rem (16px) */
+  --font-size-meta: var(--font-size-sm);   /* Was 0.875rem (14px), now xs (12px) for meta */
 }
 
 /* ========================================

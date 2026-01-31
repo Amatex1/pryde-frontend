@@ -1,0 +1,152 @@
+/**
+ * PRYDE Typography Tokens - Single Source of Truth
+ * ================================================
+ * 
+ * This file consolidates ALL typography tokens.
+ * DO NOT define font-size, font-weight, or line-height tokens elsewhere.
+ * 
+ * Migration Status: NEW FILE - Phase 1
+ * Last Updated: 2026-01-31
+ */
+
+:root {
+  /* ========================================
+     FONT FAMILIES
+     ======================================== */
+  
+  /* Primary UI font - system stack for performance */
+  --font-family-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  
+  /* Brand font - for marketing/hero sections (requires font loading) */
+  --font-family-brand: "IBM Plex Sans", var(--font-family-ui);
+  
+  /* Monospace - for code snippets */
+  --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  /* ========================================
+     FONT SIZE SCALE (7 sizes only)
+     
+     Usage Guide:
+     - xs:   timestamps, badges, tiny labels
+     - sm:   meta text, captions, button text
+     - base: body text, inputs, comments
+     - lg:   subheadings, emphasis
+     - xl:   section titles
+     - 2xl:  page headings
+     - 3xl:  hero/page titles
+     ======================================== */
+  
+  --font-size-xs:   0.75rem;    /* 12px */
+  --font-size-sm:   0.875rem;   /* 14px */
+  --font-size-base: 1rem;       /* 16px */
+  --font-size-lg:   1.125rem;   /* 18px */
+  --font-size-xl:   1.25rem;    /* 20px */
+  --font-size-2xl:  1.5rem;     /* 24px */
+  --font-size-3xl:  2rem;       /* 32px */
+
+  /* Aliases for backward compatibility */
+  --text-xs:   var(--font-size-xs);
+  --text-sm:   var(--font-size-sm);
+  --text-base: var(--font-size-base);
+  --text-md:   var(--font-size-base);  /* Alias */
+  --text-lg:   var(--font-size-lg);
+  --text-xl:   var(--font-size-xl);
+  --text-2xl:  var(--font-size-2xl);
+  --text-3xl:  var(--font-size-3xl);
+
+  /* ========================================
+     FONT WEIGHTS (4 weights only)
+     
+     Usage Guide:
+     - normal:   body text, metadata, descriptions
+     - medium:   buttons, labels, interactive elements
+     - semibold: author names, headings, emphasis
+     - bold:     page titles, strong emphasis (use sparingly)
+     ======================================== */
+  
+  --font-weight-normal:   400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+
+  /* Aliases for backward compatibility */
+  --weight-regular:  var(--font-weight-normal);
+  --weight-medium:   var(--font-weight-medium);
+  --weight-semibold: var(--font-weight-semibold);
+  --weight-bold:     var(--font-weight-bold);
+
+  /* ========================================
+     LINE HEIGHTS (3 values only)
+     
+     Usage Guide:
+     - tight:   headings, single-line labels
+     - normal:  body text, comments, UI text
+     - relaxed: long-form content, bios, descriptions
+     ======================================== */
+  
+  --line-height-tight:   1.25;
+  --line-height-normal:  1.5;
+  --line-height-relaxed: 1.65;
+
+  /* Aliases for backward compatibility */
+  --lh-tight:   var(--line-height-tight);
+  --lh-normal:  var(--line-height-normal);
+  --lh-relaxed: var(--line-height-relaxed);
+  --line-height-body: var(--line-height-normal);
+  --line-height-base: var(--line-height-normal);
+
+  /* ========================================
+     COMPONENT-SPECIFIC TOKENS
+     Semantic aliases for specific UI elements
+     ======================================== */
+  
+  /* Buttons */
+  --button-font-size:   var(--font-size-sm);   /* 14px */
+  --button-font-weight: var(--font-weight-medium);
+  --button-line-height: var(--line-height-tight);
+
+  /* Inputs */
+  --input-font-size:    var(--font-size-base); /* 16px - prevents iOS zoom */
+  --input-line-height:  var(--line-height-normal);
+
+  /* Post Content */
+  --post-font-size:     var(--font-size-base); /* 16px */
+  --post-line-height:   var(--line-height-relaxed);
+
+  /* Comments */
+  --comment-font-size:  var(--font-size-sm);   /* 14px */
+  --comment-line-height: var(--line-height-normal);
+
+  /* Meta/Timestamps */
+  --meta-font-size:     var(--font-size-xs);   /* 12px */
+  --meta-font-weight:   var(--font-weight-normal);
+  --meta-opacity:       0.7;
+
+  /* Author Names */
+  --author-font-size:   var(--font-size-base); /* 16px */
+  --author-font-weight: var(--font-weight-semibold);
+
+  /* Headings */
+  --h1-font-size:       var(--font-size-3xl);  /* 32px */
+  --h2-font-size:       var(--font-size-2xl);  /* 24px */
+  --h3-font-size:       var(--font-size-xl);   /* 20px */
+  --heading-font-weight: var(--font-weight-semibold);
+  --heading-line-height: var(--line-height-tight);
+
+  /* Navbar */
+  --nav-font-size:      var(--font-size-sm);   /* 14px */
+  --nav-icon-size:      1.25rem;               /* 20px */
+  --nav-badge-font-size: var(--font-size-xs);  /* 12px */
+}
+
+/* ========================================
+   MOBILE ADJUSTMENTS
+   ======================================== */
+
+@media (max-width: 480px) {
+  :root {
+    /* Slightly larger touch targets on mobile */
+    --button-font-size: var(--font-size-base); /* 16px on mobile */
+  }
+}
+

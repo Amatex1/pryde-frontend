@@ -1,45 +1,22 @@
 /**
  * PRYDE Global Typography System
- * Inter font with consistent tokens
- * Last Updated: 2026-01-26
+ * Utility classes and density modes
+ * Last Updated: 2026-01-31
+ *
+ * NOTE: Token definitions moved to typography-tokens.css
+ * This file now contains only utility classes and density modes.
  */
 
 /* ========================================
-   TYPOGRAPHY TOKENS
+   TEXT DENSITY TOKENS (user-selectable)
+   These override the base tokens for density modes
    ======================================== */
 
 :root {
-  /* Font families */
-  --font-ui: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-brand: "IBM Plex Sans", "Inter", system-ui, sans-serif;
-
-  /* Font sizes */
-  --text-xs: 0.75rem;   /* 12px */
-  --text-sm: 0.875rem;  /* 14px */
-  --text-base: 1rem;    /* 16px */
-  --text-md: 1.0625rem; /* 17px (mobile-friendly body) */
-  --text-lg: 1.25rem;   /* 20px */
-  --text-xl: 1.5rem;    /* 24px */
-  --text-2xl: 2rem;     /* 32px */
-  --text-3xl: 2.5rem;   /* 40px */
-
-  /* Font weights */
-  --weight-light: 300;
-  --weight-regular: 400;
-  --weight-medium: 500;
-  --weight-semibold: 600;
-  --weight-bold: 700;
-  --weight-extrabold: 800;
-
-  /* Line heights */
-  --lh-tight: 1.25;
-  --lh-normal: 1.5;
-  --lh-relaxed: 1.65;
-
-  /* Text density (user-selectable) */
-  --density-body: var(--text-base);
-  --density-line: var(--lh-relaxed);
-  --density-meta: var(--text-sm);
+  /* Text density (user-selectable) - defaults to base tokens */
+  --density-body: var(--font-size-base);
+  --density-line: var(--line-height-relaxed);
+  --density-meta: var(--font-size-sm);
 }
 
 /* ========================================
@@ -47,16 +24,16 @@
    ======================================== */
 
 html {
-  font-family: var(--font-ui);
+  font-family: var(--font-family-ui);
   font-size: 16px;
-  line-height: var(--lh-normal);
+  line-height: var(--line-height-normal);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
 body {
-  font-size: var(--text-base);
-  font-weight: var(--weight-regular);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
 }
 
 /* ========================================
@@ -64,17 +41,17 @@ body {
    ======================================== */
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-ui);
-  font-weight: var(--weight-semibold);
-  line-height: var(--lh-tight);
+  font-family: var(--font-family-ui);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
   margin: 0;
 }
 
 /* Brand headers (h1, h2) use IBM Plex Sans */
 h1,
 h2 {
-  font-family: var(--font-brand);
-  font-weight: var(--weight-semibold);
+  font-family: var(--font-family-brand);
+  font-weight: var(--font-weight-semibold);
   letter-spacing: -0.015em;
   transition:
     font-weight 180ms ease,
@@ -82,18 +59,18 @@ h2 {
     transform 180ms ease;
 }
 
-h1 { font-size: var(--text-3xl); font-weight: var(--weight-bold); }
-h2 { font-size: var(--text-2xl); }
-h3 { font-size: var(--text-xl); }
-h4 { font-size: var(--text-lg); }
-h5 { font-size: var(--text-base); }
-h6 { font-size: var(--text-sm); }
+h1 { font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold); }
+h2 { font-size: var(--font-size-2xl); }
+h3 { font-size: var(--font-size-xl); }
+h4 { font-size: var(--font-size-lg); }
+h5 { font-size: var(--font-size-base); }
+h6 { font-size: var(--font-size-sm); }
 
 /* Subtle hover animation (non-intrusive) */
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   h1:hover,
   h2:hover {
-    font-weight: var(--weight-bold);
+    font-weight: var(--font-weight-bold);
     letter-spacing: -0.02em;
   }
 }
@@ -116,15 +93,15 @@ p,
 .timestamp,
 .post-meta {
   font-size: var(--density-meta);
-  font-weight: var(--weight-regular);
+  font-weight: var(--font-weight-normal);
   opacity: 0.8;
 }
 
 .label,
 .badge,
 .ui-label {
-  font-size: var(--text-xs);
-  font-weight: var(--weight-medium);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
   letter-spacing: 0.02em;
   text-transform: none;
 }
@@ -137,8 +114,8 @@ input,
 textarea,
 button,
 select {
-  font-family: var(--font-ui);
-  font-size: var(--text-base);
+  font-family: var(--font-family-ui);
+  font-size: var(--font-size-base);
 }
 
 /* ========================================
@@ -146,13 +123,13 @@ select {
    ======================================== */
 
 .quiet-mode body {
-  font-weight: var(--weight-regular);
+  font-weight: var(--font-weight-normal);
 }
 
 .quiet-mode h1,
 .quiet-mode h2,
 .quiet-mode h3 {
-  font-weight: var(--weight-medium);
+  font-weight: var(--font-weight-medium);
 }
 
 /* Disable hover polish in quiet mode */
@@ -174,16 +151,16 @@ body[data-density="compact"] {
 
 /* Cozy mode - default comfortable spacing */
 body[data-density="cozy"] {
-  --density-body: var(--text-base);
-  --density-line: var(--lh-relaxed);
-  --density-meta: var(--text-sm);
+  --density-body: var(--font-size-base);
+  --density-line: var(--line-height-relaxed);
+  --density-meta: var(--font-size-sm);
 }
 
 /* Safe default (if attribute not set) */
 body:not([data-density]) {
-  --density-body: var(--text-base);
-  --density-line: var(--lh-relaxed);
-  --density-meta: var(--text-sm);
+  --density-body: var(--font-size-base);
+  --density-line: var(--line-height-relaxed);
+  --density-meta: var(--font-size-sm);
 }
 
 /* ========================================
@@ -192,11 +169,11 @@ body:not([data-density]) {
 
 @media (max-width: 480px) {
   body {
-    font-size: var(--text-md);
+    font-size: var(--font-size-base);
   }
 
-  h1 { font-size: 2rem; }
-  h2 { font-size: 1.75rem; }
+  h1 { font-size: var(--font-size-2xl); }
+  h2 { font-size: var(--font-size-xl); }
 }
 
 /* ========================================
@@ -247,7 +224,7 @@ body:not([data-density]) {
 .density-toggle button {
   padding: 6px 12px;
   border-radius: 999px;
-  font-size: var(--text-sm);
+  font-size: var(--font-size-sm);
   background: transparent;
   border: 1px solid currentColor;
   opacity: 0.7;
@@ -257,7 +234,7 @@ body:not([data-density]) {
 
 .density-toggle button.active {
   opacity: 1;
-  font-weight: var(--weight-medium);
+  font-weight: var(--font-weight-medium);
 }
 
 .density-toggle button:hover {

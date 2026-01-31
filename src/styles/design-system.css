@@ -68,35 +68,17 @@ Noise hides real problems.
   --space-2xl: 32px; /* Page-level spacing (reduced from 48px) */
 
   /* ========================================
-     TYPOGRAPHY SCALE (PRE-LAUNCH POLISH)
-     Base: 16px (prevents iOS zoom on input focus)
+     TYPOGRAPHY SCALE
+     MOVED TO: typography-tokens.css (single source of truth)
 
-     FONT WEIGHT RULE: Only 3 weights across app
+     FONT WEIGHT RULE: Only 4 weights across app
      - 400 (normal): Body text, metadata
      - 500 (medium): Buttons, labels
      - 600 (semibold): Author names, headings
+     - 700 (bold): Page titles (use sparingly)
+
+     See typography-tokens.css for all definitions.
      ======================================== */
-  --font-size-xs: 12px;   /* Tiny text (timestamps, metadata) */
-  --font-size-sm: 14px;   /* Small text (labels, captions) */
-  --font-size-base: 16px; /* Body text (default) */
-  --font-size-lg: 18px;   /* Large text (subheadings) */
-  --font-size-xl: 20px;   /* Extra large (section titles) */
-  --font-size-2xl: 24px;  /* Headings */
-  --font-size-3xl: 32px;  /* Page titles */
-
-  /* Font weights (LOCKED - only these 3 allowed) */
-  --font-weight-normal: 400;  /* Body text, metadata */
-  --font-weight-medium: 500;  /* Buttons, labels */
-  --font-weight-semibold: 600; /* Author names, headings */
-
-  --line-height-tight: 1.3;   /* Headings */
-  --line-height-body: 1.55;   /* Body text - comfortable reading */
-  --line-height-base: 1.55;   /* Alias for body */
-  --line-height-relaxed: 1.6; /* Long-form content */
-
-  /* Metadata styling (timestamps, pronouns, separators) */
-  --meta-font-size: 0.85em;
-  --meta-opacity: 0.65;
 
   /* ========================================
      CONTAINER WIDTHS (Mobile-first)
@@ -121,7 +103,7 @@ Noise hides real problems.
   --button-radius: 8px;
   --button-radius-compact: 10px; /* Compact button radius */
   --button-radius-pill: 999px;
-  --button-font-size: 14px; /* Unified button font size */
+  /* --button-font-size defined in typography-tokens.css */
   --button-gap: 8px; /* Gap between icon and text in buttons */
 
   /* ========================================

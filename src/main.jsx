@@ -21,6 +21,7 @@ import './styles/darkMode.css'
 import './styles/quiet-mode.css'
 import './styles/mobileFriendly.css'
 import './styles/tabletFriendly.css'
+import './styles/typography-tokens.css' /* Single source of truth for typography */
 import './styles/typography.css'
 import './styles/mobile-brand.css'
 import './styles/purple-identity.css'
