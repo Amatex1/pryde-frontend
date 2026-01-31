@@ -106,8 +106,8 @@
   border: none;
   background: transparent;
   color: var(--text-muted);
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   text-decoration: none;
   transition: color 0.15s ease, text-decoration 0.15s ease;
@@ -324,8 +324,8 @@ div.profile-layout,
   border: none;
   background: rgba(255, 255, 255, 0.95);
   color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.2s ease;
   z-index: 10;
@@ -376,7 +376,7 @@ div.profile-layout,
     width: 100px;
     height: 100px;
     margin: -50px auto 0;
-    font-size: 2.5rem;
+    font-size: var(--font-size-3xl);
   }
 
   .profile-identity {
@@ -408,8 +408,8 @@ div.profile-layout,
   backdrop-filter: blur(10px);
   border: 2px solid var(--pryde-purple);
   color: var(--pryde-purple);
-  font-weight: 600;
-  font-size: 0.85rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(108, 92, 231, 0.15);
@@ -441,8 +441,8 @@ div.profile-layout,
   background: var(--soft-lavender);
   color: var(--pryde-purple);
   text-align: center;
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
   border-bottom: 2px solid var(--pryde-purple);
 }
 
@@ -460,8 +460,8 @@ div.profile-layout,
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
-  font-weight: 700;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
   color: white;
   overflow: hidden;
   border: 4px solid var(--surface-1, var(--bg-card));
@@ -499,8 +499,8 @@ div.profile-layout,
 
 /* 1. Display Name (largest) */
 .profile-name {
-  font-size: 28px;
-  font-weight: 700;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
   color: var(--text-primary);
   margin: 0;
   display: flex;
@@ -561,7 +561,7 @@ div.profile-layout,
   background: linear-gradient(135deg, var(--pryde-purple) 0%, var(--electric-blue) 100%);
   color: white !important;
   border-radius: 50%;
-  font-size: 0.6rem; /* Reduced from 0.75rem */
+  font-size: var(--font-size-xs); /* Reduced from 0.75rem */
   font-weight: 900;
   line-height: 1;
   flex-shrink: 0;
@@ -606,17 +606,17 @@ div.profile-layout,
 }
 
 .nickname {
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   color: var(--text-muted);
   font-style: italic;
-  font-weight: normal;
+  font-weight: var(--font-weight-normal);
 }
 
 /* 2. @handle (muted) */
 .profile-username {
   color: var(--text-muted);
-  font-size: 16px;
-  font-weight: 400;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
   margin: 0;
 }
 
@@ -633,8 +633,8 @@ div.profile-layout,
   border-radius: 6px;
   background: var(--bg-secondary);
   color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   border: 1px solid var(--border-subtle);
 }
 
@@ -648,8 +648,8 @@ div.profile-layout,
   border-radius: 20px;
   background: var(--soft-lavender);
   color: var(--pryde-purple);
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   border: 1px solid var(--pryde-purple);
 }
 
@@ -657,8 +657,8 @@ div.profile-layout,
 .profile-bio {
   color: var(--text-secondary);
   margin: 8px 0 0 0;
-  line-height: 1.5;
-  font-size: 15px;
+  line-height: var(--line-height-normal);
+  font-size: var(--font-size-base);
 }
 
 /* Meta info (location, website) */
@@ -677,9 +677,9 @@ div.profile-layout,
 
 .social-title {
   color: var(--pryde-purple);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   margin-bottom: 1rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .social-grid {
@@ -719,7 +719,7 @@ div.profile-layout,
 
 .social-icon {
   color: var(--text-muted);
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   transition: color 0.3s ease;
 }
 
@@ -727,7 +727,7 @@ div.profile-layout,
   color: var(--text-secondary);
   text-decoration: none;
   transition: color 0.2s ease;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .meta-item:hover {
@@ -756,15 +756,15 @@ div.profile-layout,
 }
 
 .stat-value {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
   color: var(--text-primary);
 }
 
 .stat-label {
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 /* Add Friend Button */
@@ -802,8 +802,8 @@ div.profile-layout,
   border: 2px solid var(--border-light);
   background: var(--card-surface);
   color: var(--text-main);
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -895,8 +895,8 @@ div.profile-layout,
   text-align: left;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -927,10 +927,10 @@ div.profile-layout,
   border: none;
   background: var(--gradient-primary);
   color: white;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
 }
 
 .btn-message {
@@ -951,10 +951,10 @@ div.profile-layout,
   border: none;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
@@ -964,7 +964,7 @@ div.profile-layout,
 }
 
 .notes-helper-text {
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: var(--text-secondary);
   opacity: 0.7;
 }
@@ -1031,8 +1031,8 @@ div.profile-layout,
   background: linear-gradient(135deg, #6C5CE7 0%, #0984E3 100%);
   color: white;
   border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
 }
 
 /* Looking For */
@@ -1048,7 +1048,7 @@ div.profile-layout,
   padding: 0.5rem;
   background: var(--background-light);
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: var(--text-main);
 }
 
@@ -1082,7 +1082,7 @@ div.profile-layout,
 
 .link-arrow {
   color: #ffffff;
-  font-size: 1.2rem;
+  font-size: var(--font-size-xl);
 }
 
 /* Website Link */
@@ -1124,10 +1124,10 @@ div.profile-layout,
   padding: 0.6rem 1.2rem;
   border-radius: 10px;
   border: none;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .btn-block {
@@ -1181,13 +1181,13 @@ div.profile-layout,
 }
 
 .stat-value {
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
   color: var(--gold);
 }
 
 .stat-label {
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
 }
 
@@ -1332,8 +1332,8 @@ div.profile-layout,
 .section-title {
   color: var(--text-main);
   margin-bottom: 1rem;
-  font-size: 1.3rem;
-  font-weight: 600;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
 }
 
 /* Light mode - use purple for section titles */
@@ -1350,7 +1350,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   border-radius: 12px;
   background: var(--background-light);
   color: var(--text-main);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   resize: vertical;
   min-height: 100px;
   font-family: inherit;
@@ -1400,7 +1400,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   width: 28px;
   height: 28px;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: var(--font-size-xl);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1423,7 +1423,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   border-radius: 12px;
   background: var(--background-light);
   color: var(--text-main);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   cursor: pointer;
 }
 
@@ -1458,8 +1458,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   line-height: 1;
   border-radius: 10px;
   border: 1px solid var(--border-subtle);
@@ -1548,9 +1548,9 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   border-radius: 10px;
   background: transparent;
   color: var(--text-main);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   cursor: pointer;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -1572,8 +1572,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 0.875rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
   transition: all 0.2s ease;
   margin-left: auto;
   white-space: nowrap;
@@ -1663,8 +1663,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .sidebar-title {
   color: var(--color-primary);
   margin-bottom: var(--space-4);
-  font-size: 16px;
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1681,8 +1681,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   padding: 0.75rem 1rem;
   background: var(--bg-subtle);
   border-radius: var(--radius-md);
-  font-size: 14px;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   color: var(--text-main);
   transition: all 0.2s ease;
 }
@@ -1713,7 +1713,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   border-radius: var(--radius-md);
   text-decoration: none;
   color: var(--text-main);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   transition: all 0.2s ease;
 }
 
@@ -1732,7 +1732,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .link-arrow {
-  font-size: 18px;
+  font-size: var(--font-size-lg);
   transition: transform 0.2s ease;
 }
 
@@ -1780,7 +1780,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .friend-name {
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   color: var(--text-light);
   text-align: center;
 }
@@ -1826,7 +1826,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .loading, .error {
   text-align: center;
   padding: 3rem;
-  font-size: 1.2rem;
+  font-size: var(--font-size-xl);
   color: var(--text-muted);
 }
 
@@ -1911,7 +1911,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .profile-page .post-stats {
   display: flex;
   gap: 1rem;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   padding: 0.5rem 0;
 }
@@ -1980,7 +1980,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     padding: var(--action-btn-padding-desktop);
     border-radius: var(--radius-pill);
     gap: var(--space-2);
-    font-size: 14px;
+    font-size: var(--font-size-sm);
     min-width: auto;
     flex: 0 0 auto; /* Auto width on desktop */
   }
@@ -2070,8 +2070,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   border: none;
   color: var(--text-muted);
   cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   padding: 0.75rem 1rem;
   transition: all 0.2s ease;
   margin-left: -0.5rem;
@@ -2114,7 +2114,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .profile-page .reaction-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   cursor: pointer;
   padding: 0.25rem;
   transition: transform 0.2s ease;
@@ -2165,7 +2165,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   background: transparent;
   padding: 0.5rem 0;
   position: relative;
-  font-size: 0.9em;  /* Slightly smaller for visual hierarchy */
+  font-size: var(--font-size-sm);  /* Slightly smaller for visual hierarchy */
 }
 
 .profile-page .comment-avatar {
@@ -2177,8 +2177,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   align-items: center;
   justify-content: center;
   color: white;
-  font-weight: 600;
-  font-size: 0.875rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
   flex-shrink: 0;
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -2209,9 +2209,9 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .profile-page .comment-author-name {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--text-main);
-  font-size: 0.9375rem; /* Increased from 0.875rem */
+  font-size: var(--font-size-base); /* Increased from 0.875rem */
 }
 
 [data-theme="dark"] .profile-page .comment-author-name {
@@ -2221,8 +2221,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 /* Timestamp in actions row */
 .profile-page .comment-timestamp {
   color: var(--text-muted);
-  font-size: 0.8125rem; /* Increased from 0.75rem */
-  font-weight: 400;
+  font-size: var(--font-size-sm); /* Increased from 0.75rem */
+  font-weight: var(--font-weight-normal);
 }
 
 [data-theme="dark"] .profile-page .comment-timestamp {
@@ -2231,7 +2231,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .profile-page .comment-text {
   color: var(--text-main);
-  font-size: 0.9375rem; /* Increased from 0.875rem */
+  font-size: var(--font-size-base); /* Increased from 0.875rem */
   line-height: 1.4;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -2244,7 +2244,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .profile-page .comment-text .edited-indicator {
-  font-size: 0.75rem; /* Increased from 0.7rem */
+  font-size: var(--font-size-xs); /* Increased from 0.7rem */
   color: var(--text-muted);
   font-style: italic;
   margin-left: 0.25rem;
@@ -2255,7 +2255,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   border: none;
   padding: 0;
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
   font-style: italic;
   cursor: pointer;
   transition: color 0.15s ease;
@@ -2277,15 +2277,15 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   align-items: center;
   gap: 1rem;
   margin-top: 0.5rem;
-  font-size: 0.8125rem; /* Increased from 0.75rem */
+  font-size: var(--font-size-sm); /* Increased from 0.75rem */
 }
 
 .profile-page .comment-action-btn {
   background: none;
   border: none;
   color: var(--text-muted);
-  font-weight: 600;
-  font-size: 0.875rem; /* Increased from 0.8125rem */
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm); /* Increased from 0.8125rem */
   cursor: pointer;
   padding: 0;
   transition: color 0.2s ease;
@@ -2349,12 +2349,12 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   cursor: pointer;
   padding: 0.75rem 1rem; /* Increased for 48x48px touch target */
   border-radius: 4px;
   transition: all 0.2s ease;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   min-width: 48px; /* Ensure minimum touch target size */
   min-height: 48px; /* Ensure minimum touch target size */
   display: inline-flex;
@@ -2412,7 +2412,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .profile-page .reaction-btn {
-    font-size: 2.25rem; /* Slightly larger for better visibility */
+    font-size: var(--font-size-3xl); /* Slightly larger for better visibility */
     padding: 0.625rem;
     min-width: 3rem; /* Larger touch targets */
     min-height: 3rem;
@@ -2429,7 +2429,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .profile-page .reaction-btn {
-    font-size: 2rem;
+    font-size: var(--font-size-3xl);
     padding: 0.5rem;
     min-width: 2.75rem;
     min-height: 2.75rem;
@@ -2444,7 +2444,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .profile-page .reaction-btn {
-    font-size: 1.875rem;
+    font-size: var(--font-size-2xl);
     padding: 0.5rem;
     min-width: 2.5rem;
     min-height: 2.5rem;
@@ -2472,7 +2472,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .profile-page .reaction-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   cursor: pointer;
   padding: 0.25rem;
   transition: transform 0.2s ease;
@@ -2494,7 +2494,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   cursor: pointer;
   padding: 0.25rem 0.5rem;
   border-radius: 6px;
@@ -2518,7 +2518,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   border-radius: 8px;
   background: var(--card-surface);
   color: var(--text-main);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .profile-page .comment-edit-actions {
@@ -2531,8 +2531,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   padding: 0.4rem 0.8rem;
   border-radius: 6px;
   border: none;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -2572,7 +2572,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   border-radius: 8px;
   background: var(--card-surface);
   color: var(--text-main);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .reply-actions {
@@ -2585,8 +2585,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   padding: 0.4rem 0.8rem;
   border-radius: 6px;
   border: none;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -2695,7 +2695,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .profile-identity-pills .badge {
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
     padding: 0.375rem 0.75rem;
   }
 
@@ -2725,7 +2725,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;
     height: 100px;
-    font-size: 3rem;
+    font-size: var(--font-size-3xl);
     margin-top: -50px;
   }
 
@@ -2737,16 +2737,16 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .btn-cover-upload {
-    font-size: 0.85rem;
+    font-size: var(--font-size-sm);
     padding: 0.6rem 1rem;
   }
 
   .profile-name {
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
   }
 
   .profile-bio {
-    font-size: 0.9375rem;
+    font-size: var(--font-size-base);
     padding: 0 1rem;
   }
 
@@ -2786,8 +2786,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .comment-text {
-    font-size: 0.9375rem;
-    line-height: 1.5;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
   }
 
   .reply-input-box {
@@ -2799,7 +2799,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
   .reply-input {
     padding: 0.75rem;
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     border-radius: 8px;
     min-height: 44px;
   }
@@ -2814,7 +2814,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .btn-cancel-reply {
     flex: 1;
     padding: 0.75rem 1.25rem;
-    font-size: 0.9375rem;
+    font-size: var(--font-size-base);
     border-radius: 8px;
     min-height: 44px;
   }
@@ -2826,13 +2826,13 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
   .profile-tab {
     white-space: nowrap;
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
     padding: 0.75rem 1rem;
   }
 
   .btn-edit-profile-cover {
     padding: 0.625rem 1rem;
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
   }
 
   /* Hide upload buttons on mobile - move to Edit Profile */
@@ -2867,7 +2867,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .btn-cancel-request {
     flex: 1;
     min-width: calc(50% - 0.375rem);
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
     padding: 0.75rem 1rem;
   }
 
@@ -2933,7 +2933,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .btn-content-warning,
   .privacy-selector,
   .btn-post {
-    font-size: 0.85rem;
+    font-size: var(--font-size-sm);
     padding: 0.6rem 1rem;
   }
 
@@ -2955,14 +2955,14 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     min-height: 32px;
     max-height: 32px;
     padding: 0 8px;
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
   }
 
   .btn-media-upload,
   .btn-content-warning,
   .privacy-selector,
   .btn-post {
-    font-size: 0.75rem !important;
+    font-size: var(--font-size-xs) !important;
     padding: 0.4rem 0.6rem !important;
   }
 
@@ -2990,12 +2990,12 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .profile-avatar {
     width: 80px;
     height: 80px;
-    font-size: 2.5rem;
+    font-size: var(--font-size-3xl);
     margin-top: -40px; /* Half of 80px */
   }
 
   .profile-name {
-    font-size: 1.25rem;
+    font-size: var(--font-size-xl);
   }
 
   .profile-stats {
@@ -3018,7 +3018,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .btn-content-warning,
   .privacy-selector,
   .btn-post {
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
     padding: 0.5rem 0.75rem;
   }
 
@@ -3129,7 +3129,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .comment-text {
-    font-size: 0.9375rem;
+    font-size: var(--font-size-base);
   }
 
   .reply-input-box {
@@ -3140,14 +3140,14 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
   .reply-input {
     padding: 0.875rem;
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     min-height: 48px;
   }
 
   .btn-submit-reply,
   .btn-cancel-reply {
     padding: 0.875rem 1.25rem;
-    font-size: 0.9375rem;
+    font-size: var(--font-size-base);
     min-height: 48px;
     flex: 1;
   }
@@ -3167,7 +3167,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   border-radius: 12px;
   border: 2px solid var(--border-light);
   outline: none;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   color: var(--text-main);
   background: var(--card-surface);
   resize: none;
@@ -3232,8 +3232,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  font-weight: bold;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
   transition: all 0.2s ease;
 }
 
@@ -3275,7 +3275,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   border: 2px solid var(--border-light);
   background: var(--background-light);
   color: var(--text-main);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -3302,8 +3302,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   padding: 0.5rem 1.5rem;
   border-radius: 8px;
   border: none;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -3355,14 +3355,14 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .page-header h1 {
-  font-size: 2rem;
+  font-size: var(--font-size-3xl);
   margin-bottom: 0.5rem;
   color: var(--text-main);
 }
 
 .page-subtitle {
   color: var(--text-secondary);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 .btn-back {
@@ -3373,7 +3373,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   cursor: pointer;
   margin-bottom: 1rem;
   color: var(--text-main);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   transition: all 0.2s ease;
 }
 
@@ -3418,8 +3418,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
   color: var(--text-secondary);
 }
 
@@ -3435,20 +3435,20 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .user-card .user-name {
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
   color: var(--text-main);
   margin-bottom: 0.25rem;
 }
 
 .user-card .user-username {
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary);
   margin-bottom: 0.5rem;
 }
 
 .user-card .user-bio {
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3503,8 +3503,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   border: 1px solid var(--border-light);
   padding: 0.375rem 0.75rem;
   border-radius: 6px;
-  font-size: 0.8125rem;
-  font-weight: 400;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
   color: var(--text-secondary);
   transition: all 0.15s ease;
 }
@@ -3538,7 +3538,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
   
   .profile-identity-pills .badge {
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
     padding: 0.3125rem 0.625rem;
   }
 }
@@ -3621,8 +3621,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
-  font-weight: 600;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
   color: var(--text-muted);
   overflow: hidden;
   flex-shrink: 0;
@@ -3635,7 +3635,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .profile-avatar {
     width: 140px;
     height: 140px;
-    font-size: 3.5rem;
+    font-size: var(--font-size-3xl);
     margin-top: -70px;
   }
 }
@@ -3665,37 +3665,37 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 /* Profile name: Clear hierarchy */
 .profile-name {
-  font-size: 1.75rem;
-  font-weight: 700;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
   color: var(--text-primary);
   margin: 0;
-  line-height: 1.2;
+  line-height: var(--line-height-tight);
   text-shadow: none; /* Remove decorative text shadow */
 }
 
 @media (min-width: 769px) {
   .profile-name {
-    font-size: 2rem;
+    font-size: var(--font-size-3xl);
   }
 }
 
 .profile-name .nickname {
-  font-size: 1.25rem;
-  font-weight: 400;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-normal);
   color: var(--text-muted);
   font-style: italic;
 }
 
 /* Username: Muted, secondary */
 .profile-username {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   color: var(--text-muted);
   margin: 0;
 }
 
 /* Bio: Readable, centered */
 .profile-bio {
-  font-size: 0.9375rem;
+  font-size: var(--font-size-base);
   line-height: 1.6;
   color: var(--text-secondary);
   margin: 0.5rem 0 0 0;
@@ -3715,7 +3715,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   text-decoration: none;
 }
@@ -3755,13 +3755,13 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .stat-value {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
   color: var(--text-primary);
 }
 
 .stat-label {
-  font-size: 0.8125rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -3779,8 +3779,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .profile-action-buttons button {
   padding: 0.625rem 1.25rem;
   border-radius: 8px;
-  font-size: 0.9375rem;
-  font-weight: 500;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
   border: 1px solid var(--border-medium);
   background: var(--bg-primary);
   color: var(--text-primary);
@@ -3816,12 +3816,12 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .profile-avatar {
     width: 100px;
     height: 100px;
-    font-size: 2.5rem;
+    font-size: var(--font-size-3xl);
     margin-top: -50px;
   }
 
   .profile-name {
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
   }
 
   .profile-stats {
@@ -3829,7 +3829,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .stat-value {
-    font-size: 1.125rem;
+    font-size: var(--font-size-lg);
   }
 }
 
@@ -3845,7 +3845,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .profile-avatar {
     width: 110px;
     height: 110px;
-    font-size: 2.75rem;
+    font-size: var(--font-size-3xl);
     margin-top: -55px;
   }
 
@@ -3857,7 +3857,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
   /* Compact name for tablets */
   .profile-name {
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
   }
 
   /* Reduce identity pill sizes on tablets */
@@ -3867,7 +3867,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .profile-identity-pills .badge {
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
     padding: 0.3125rem 0.625rem;
   }
 
@@ -3882,7 +3882,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .tiered-badge-display .user-badge {
-    font-size: 0.65rem;
+    font-size: var(--font-size-xs);
     padding: 0.2rem 0.5rem;
   }
 
@@ -3892,7 +3892,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .stat-value {
-    font-size: 1.125rem;
+    font-size: var(--font-size-lg);
   }
 
   /* Profile actions - smaller buttons */
@@ -3903,7 +3903,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .profile-actions .btn-primary,
   .profile-actions .btn-secondary {
     padding: 0.5rem 1rem;
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
   }
 }
 
@@ -3919,13 +3919,13 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .profile-avatar {
     width: 90px;
     height: 90px;
-    font-size: 2.25rem;
+    font-size: var(--font-size-2xl);
     margin-top: -45px;
   }
 
   /* Push profile name down with margin to avoid avatar overlap */
   .profile-name {
-    font-size: 1.35rem;
+    font-size: var(--font-size-xl);
     margin-top: 0.5rem;
   }
 
@@ -3941,7 +3941,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .sidebar-title {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     margin-bottom: 0.75rem;
   }
 
@@ -3952,7 +3952,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
   .interest-tag {
     padding: 0.5rem 0.75rem;
-    font-size: 0.8rem;
+    font-size: var(--font-size-sm);
   }
 
   /* Looking For section spacing */
@@ -3962,7 +3962,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
   .looking-for-item {
     padding: 0.625rem 0.875rem;
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
   }
 
   /* Social Links section spacing */
@@ -3972,7 +3972,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
   .social-link {
     padding: 0.625rem 0.875rem;
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
   }
 }
 
@@ -4013,7 +4013,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .profile-identity .profile-card--hybrid .profile-name {
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
     text-align: center;
     margin-top: 0;
   }
@@ -4051,7 +4051,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .profile-identity .profile-card--hybrid .profile-name {
-    font-size: 1.75rem;
+    font-size: var(--font-size-2xl);
     text-align: center;
   }
 
@@ -4143,7 +4143,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   /* Name - Compact spacing */
   .profile-identity .profile-card--hybrid .profile-name {
     margin: 0 0 4px 0;
-    font-size: 1.75rem;
+    font-size: var(--font-size-2xl);
     text-align: left;
   }
 
