@@ -58,7 +58,12 @@ export function useMessageSocket({
       });
 
       const cleanupMessageSent = onMessageSent((sentMessage) => {
-        console.log('✅ [MessagesApp] Received message:sent event:', sentMessage);
+        console.log('✅ [MessagesApp] Received message:sent event:', {
+          _id: sentMessage?._id,
+          _tempId: sentMessage?._tempId,
+          recipientId: sentMessage?.recipient?._id,
+          selectedChat
+        });
 
         if (sentMessage._tempId) {
           clearOptimisticTimeout(sentMessage._tempId);
@@ -66,12 +71,20 @@ export function useMessageSocket({
 
         if (String(selectedChat) === String(sentMessage.recipient?._id)) {
           setMessages((prev) => {
+            // 🔍 DEBUG: Log current messages state for debugging
+            console.log('🔍 [message:sent] Current messages:', prev.map(m => ({
+              _id: m._id,
+              _isOptimistic: m._isOptimistic
+            })));
+
             let optimisticIndex = -1;
             if (sentMessage._tempId) {
               optimisticIndex = prev.findIndex(msg => msg._id === sentMessage._tempId);
+              console.log(`🔍 [message:sent] Looking for _tempId "${sentMessage._tempId}", found at index: ${optimisticIndex}`);
             }
             if (optimisticIndex === -1) {
               optimisticIndex = prev.findIndex(msg => msg._isOptimistic);
+              console.log(`🔍 [message:sent] Fallback to _isOptimistic, found at index: ${optimisticIndex}`);
             }
 
             if (optimisticIndex !== -1) {
@@ -81,10 +94,22 @@ export function useMessageSocket({
               }
               const updated = [...prev];
               updated[optimisticIndex] = sentMessage;
+              console.log('✅ [message:sent] Replaced optimistic message at index:', optimisticIndex);
               return updated;
             }
 
-            if (prev.some(msg => msg._id === sentMessage._id)) return prev;
+            // 🔥 FIX: Check for BOTH _id AND _tempId to prevent duplicates
+            // This handles edge cases where optimistic message wasn't found but message already exists
+            const isDuplicate = prev.some(msg =>
+              msg._id === sentMessage._id ||
+              (sentMessage._tempId && msg._id === sentMessage._tempId)
+            );
+            if (isDuplicate) {
+              console.log('⚠️ [message:sent] Duplicate detected, skipping add');
+              return prev;
+            }
+
+            console.log('➕ [message:sent] Adding new message (no optimistic found)');
             return [...prev, sentMessage];
           });
         } else {
