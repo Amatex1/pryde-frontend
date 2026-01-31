@@ -874,25 +874,9 @@ function Lounge() {
             </div>
           )}
 
-          <div className="lounge-input-row">
-            <button
-              type="button"
-              className="lounge-cw-btn"
-              onClick={() => setShowCWInput(!showCWInput)}
-              title="Add content warning"
-            >
-              CW
-            </button>
-
-            <button
-              type="button"
-              className="lounge-gif-btn"
-              onClick={() => setShowGifPicker(!showGifPicker)}
-              title="Add GIF"
-            >
-              GIF
-            </button>
-
+          {/* Lounge-only mobile UX: Stacked layout for better typing */}
+          <div className="lounge-composer-wrapper">
+            {/* Row 1: Text input (full width on mobile) */}
             <input
               type="text"
               placeholder={selectedGif ? "Add a caption (optional)..." : "Type a message..."}
@@ -904,13 +888,34 @@ function Lounge() {
               disabled={sending}
             />
 
-            <button
-              type="submit"
-              className="lounge-send-btn"
-              disabled={(!newMessage.trim() && !selectedGif) || sending}
-            >
-              {sending ? 'Sending...' : 'Send'}
-            </button>
+            {/* Row 2: Buttons (stacked below input on mobile) */}
+            <div className="lounge-button-row">
+              <button
+                type="button"
+                className="lounge-cw-btn"
+                onClick={() => setShowCWInput(!showCWInput)}
+                title="Add content warning"
+              >
+                CW
+              </button>
+
+              <button
+                type="button"
+                className="lounge-gif-btn"
+                onClick={() => setShowGifPicker(!showGifPicker)}
+                title="Add GIF"
+              >
+                GIF
+              </button>
+
+              <button
+                type="submit"
+                className="lounge-send-btn"
+                disabled={(!newMessage.trim() && !selectedGif) || sending}
+              >
+                {sending ? 'Sending...' : 'Send'}
+              </button>
+            </div>
           </div>
 
           {showGifPicker && (

@@ -503,6 +503,19 @@
   color: white;
 }
 
+/* Lounge Composer Wrapper - Desktop: single row layout */
+.lounge-composer-wrapper {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* Button row - Desktop: inline with input */
+.lounge-button-row {
+  display: contents; /* Buttons flow into parent flex on desktop */
+}
+
+/* Legacy class for backwards compatibility */
 .lounge-input-row {
   display: flex;
   gap: 0.75rem;
@@ -767,10 +780,15 @@
     height: 32px;
   }
 
+  /* ========================================
+     LOUNGE-ONLY MOBILE UX ADJUSTMENTS
+     Stacked layout for comfortable typing
+     ======================================== */
+
   .lounge-input-container {
-    border-radius: 16px;
+    border-radius: 12px;
     padding: 0.5rem;
-    /* Position just above the navbar */
+    /* Position just above the navbar with safe area */
     margin-bottom: calc(var(--mobile-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 8px);
     position: fixed;
     bottom: 0;
@@ -779,36 +797,72 @@
     z-index: 10;
   }
 
-  .lounge-input-row {
-    gap: 0.25rem;
-    flex-wrap: nowrap;
+  /* MOBILE LAYOUT: Vertical stacking
+     Row 1: Full-width text input
+     Row 2: [CW][GIF] spacer [Send] */
+  .lounge-composer-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
-  /* Compact CW and GIF buttons on mobile */
+  /* Text input: Full width, comfortable to type in */
+  .lounge-input {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 16px; /* Prevents iOS zoom */
+    line-height: 1.45;
+    min-height: 44px;
+    max-height: 120px;
+    border-radius: 10px;
+    border-width: 1px;
+    flex: none;
+  }
+
+  /* Button row: CW/GIF on left, Send on right */
+  .lounge-button-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  /* CW/GIF buttons: De-emphasized utility, softer than Send */
   .lounge-cw-btn,
   .lounge-gif-btn {
-    padding: 0.375rem 0.5rem;
-    font-size: 0.625rem;
-    border-radius: 6px;
-    min-width: auto;
-    flex-shrink: 0;
+    padding: 0 12px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    border-radius: 8px;
+    height: 34px;
+    min-height: 34px;
     border-width: 1px;
+    /* Softer visual weight than Send */
+    background: var(--bg-secondary, rgba(0, 0, 0, 0.04));
+    border-color: var(--border-subtle, rgba(0, 0, 0, 0.1));
+    color: var(--text-muted, #6B6E80);
   }
 
-  .lounge-input {
-    padding: 0.625rem 0.75rem;
-    font-size: 0.9375rem;
-    min-height: 40px;
-    border-radius: 10px;
-    flex: 1;
-    min-width: 0; /* Allow shrinking */
+  .lounge-cw-btn:hover,
+  .lounge-gif-btn:hover {
+    background: var(--bg-hover, rgba(0, 0, 0, 0.08));
+    transform: none; /* Disable hover lift on mobile */
   }
 
+  /* Send button: Primary action, stands out */
   .lounge-send-btn {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.75rem;
-    border-radius: 10px;
-    flex-shrink: 0;
+    margin-left: auto; /* Push to right */
+    padding: 0 16px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: 8px;
+    height: 34px;
+    min-height: 34px;
+  }
+
+  /* Legacy class - hide on mobile with new structure */
+  .lounge-input-row {
+    display: none;
   }
 }
 
