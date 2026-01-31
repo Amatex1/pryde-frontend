@@ -794,23 +794,27 @@ textarea[name="newPost"]:focus {
 }
 
 /* Dropdown menu: Save, Share, Report, Copy link, Edit/Delete */
+.post-dropdown-container .dropdown-menu,
 .dropdown-menu {
   position: absolute;
   top: 100%;
   right: 0;
   margin-top: 0.5rem;
   min-width: 200px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
   overflow: hidden;
+  padding: 0.25rem 0;
 }
 
+[data-theme="dark"] .post-dropdown-container .dropdown-menu,
 [data-theme="dark"] .dropdown-menu {
-  border-color: var(--border-dark);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  background: #15162A;
+  border-color: #374151;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 
 .dropdown-item {
