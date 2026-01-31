@@ -4346,6 +4346,9 @@ label.btn-media-upload:disabled {
 
   .privacy-selector {
     flex: 0 0 auto;
+    max-width: 110px !important; /* Prevent overflow on mobile */
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
   .btn-post {
@@ -4880,11 +4883,14 @@ select.privacy-selector {
   height: var(--button-height-compact) !important; /* Use design system height */
   min-height: var(--button-height-compact) !important;
   max-height: var(--button-height-compact) !important;
-  min-width: 120px !important;
+  min-width: 100px !important; /* Reduced from 120px */
+  max-width: 130px !important; /* Prevent overflow - fits "👥 Connections" */
   box-sizing: border-box !important;
   appearance: none !important;
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 .post-actions-bar .privacy-selector:hover,
