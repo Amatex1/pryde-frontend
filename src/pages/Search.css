@@ -22,18 +22,20 @@
   z-index: 100;
 }
 
-.back-btn {
+.search-page .back-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 40px;
   height: 40px;
+  min-width: 40px;
   border: none;
   background: transparent;
   color: var(--text-main);
   cursor: pointer;
   border-radius: 50%;
   transition: background 0.2s;
+  flex-shrink: 0;
 }
 
 .back-btn:hover {
@@ -51,7 +53,8 @@
   border: 1px solid var(--border-light);
 }
 
-.search-input-container .search-icon {
+.search-page .search-input-container .search-icon {
+  position: static !important;
   color: var(--text-muted);
   flex-shrink: 0;
 }
