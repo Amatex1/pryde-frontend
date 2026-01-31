@@ -789,6 +789,7 @@
   gap: 0.75rem;
   cursor: pointer;
   user-select: none;
+  position: relative; /* Contain absolutely positioned checkbox */
 }
 
 .toggle-label input[type="checkbox"] {
@@ -796,11 +797,14 @@
   opacity: 0;
   width: 0;
   height: 0;
+  pointer-events: none; /* Prevent interference */
 }
 
 .toggle-switch-slider {
   position: relative;
+  display: inline-block; /* Ensure it takes up space */
   width: 48px;
+  min-width: 48px; /* Prevent shrinking */
   height: 26px;
   background: var(--bg-tertiary, #444);
   border-radius: 26px;
