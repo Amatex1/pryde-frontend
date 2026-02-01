@@ -4097,7 +4097,6 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .profile-avatar.profile-avatar--overlay {
     position: absolute;
     left: 28px;
-    top: 178px; /* Position so avatar overlaps bottom of cover (cover is 240px, avatar is 124px, overlap ~62px) */
     width: 124px;
     height: 124px;
     border-radius: 50%;
