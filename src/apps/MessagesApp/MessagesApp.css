@@ -133,19 +133,32 @@
   padding: var(--msg-pad, 16px);
 }
 
-/* Centered conversation column */
-.messages-app .conversation-wrapper,
-.messages-app .conversation-inner {
+/* -----------------------------
+   FIX 3: ALIGN CONVERSATION CONTENT
+   Remove unintended centering on normal screens
+------------------------------ */
+
+.messages-app .conversation-wrapper {
   width: 100%;
-  max-width: 760px;
-  margin-inline: auto;
+  display: flex;
 }
 
-/* Anchor messages to bottom naturally */
 .messages-app .conversation-inner {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0 12px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+}
+
+/* Optional: constrain only on ultra-wide screens */
+@media (min-width: 1400px) {
+  .messages-app .conversation-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
 }
 
 /* -----------------------------
@@ -167,22 +180,30 @@
 
 /* -----------------------------
    COMPOSER (ALWAYS VISIBLE)
+   FIX 1: Single visual surface - no double box
+   FIX 2: Slim desktop height
 ------------------------------ */
 
 .messages-app__composer {
   flex: 0 0 auto;
-  background: var(--bg-surface);
+  background: var(--bg-secondary);
   border-top: 1px solid var(--border-subtle);
-  padding: 10px 16px;
+  padding: 8px 12px;
+  border-radius: 0;
   display: flex;
-  justify-content: stretch; /* Full width */
+  justify-content: stretch;
   width: 100%;
 }
 
+/* FIX 1: Inner wrappers become layout-only (no nested boxes) */
 .messages-app__composer .message-composer,
 .messages-app__composer .calm-composer {
   width: 100%;
-  max-width: none; /* Full width - no max constraint */
+  max-width: none;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
 }
 
 /* Thinner input */
@@ -192,6 +213,24 @@
   padding: 8px 14px;
   border-radius: 18px;
   font-size: 14px;
+}
+
+/* FIX 2: Slim desktop composer height (mobile untouched) */
+@media (min-width: 900px) {
+  .messages-app__composer {
+    padding: 6px 12px;
+  }
+
+  .messages-app__composer textarea {
+    min-height: 36px;
+    line-height: 1.4;
+    padding: 6px 8px;
+    font-size: var(--text-base, 0.9375rem);
+  }
+
+  .messages-app__composer .composer-actions {
+    gap: 6px;
+  }
 }
 
 /* -----------------------------
