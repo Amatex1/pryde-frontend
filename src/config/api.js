@@ -1,35 +1,22 @@
 // src/config/api.js
 
 const isProduction = import.meta.env.PROD;
+const BACKEND_URL = 'https://pryde-backend.onrender.com';
 
-// Your backend root (NO /api here)
-const BACKEND_URL =
-  import.meta.env.VITE_BACKEND_URL ||
-  'https://pryde-backend.onrender.com';
-
-// ===============================
-// API endpoints (WITH /api prefix)
-// ===============================
 export const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
   (isProduction ? '/api' : `${BACKEND_URL}/api`);
 
 export const API_AUTH_URL = `${BACKEND_URL}/api`;
 
-// ===============================
-// Socket (root-level)
-// ===============================
 export const SOCKET_URL =
   import.meta.env.VITE_SOCKET_URL || BACKEND_URL;
 
-// ===============================
-// 🔥 Uploads (served at backend ROOT)
-// ===============================
+// 🔥 FIX: In prod, uploads go through /api proxy like everything else
+// In dev, uploads go directly to backend ROOT (not /api)
 export const UPLOADS_BASE_URL =
   import.meta.env.VITE_UPLOADS_URL ||
-  (isProduction ? '' : BACKEND_URL);
-// In prod: "" → relative path (/upload/...)
-// In dev: https://pryde-backend.onrender.com/upload/...
+  (isProduction ? '/api' : BACKEND_URL); // ✅ Changed this line
 
 export default {
   API_BASE_URL,
