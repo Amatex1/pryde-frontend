@@ -21,6 +21,7 @@ import { initThemeListener, getThemePreference, setThemeMode } from './utils/the
 import DebugOverlay from './components/DebugOverlay';
 import OfflineBanner from './components/OfflineBanner';
 import OnboardingTour from './components/onboarding/OnboardingTour';
+import QuietReturnToast from './components/onboarding/QuietReturnToast';
 
 // Eager load critical components (needed immediately)
 // IMPORTANT: Only load components that DON'T use React Router hooks
@@ -502,6 +503,12 @@ function AppContent() {
                 }
               }}
             />
+
+            {/* 🌙 Quiet Return Toast - Soft welcome for returning inactive users */}
+            {/* Shows once per inactivity window (14-30 days), auto-dismisses after 5s */}
+            {user && (user.hasCompletedTour || user.hasSkippedTour || user.onboardingTourDismissed) && (
+              <QuietReturnToast />
+            )}
           </div>
         </Suspense>
       </Router>

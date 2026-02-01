@@ -1,0 +1,122 @@
+/**
+ * QuietReturnToast - Calm Onboarding Phase 4
+ * 
+ * Soft, minimal toast styling that matches the calm onboarding aesthetic.
+ * Appears at the top of the viewport, auto-dismisses after 5s.
+ */
+
+.quiet-return-toast {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  max-width: 90%;
+  width: max-content;
+  animation: quietReturnFadeIn 0.3s ease-out;
+}
+
+.quiet-return-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 1.25rem;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-subtle, #e5e5e5);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.quiet-return-message {
+  font-size: 0.9375rem;
+  color: var(--text-secondary, #555);
+  line-height: 1.4;
+}
+
+.quiet-return-dismiss {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: var(--text-muted, #888);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.quiet-return-dismiss:hover {
+  background: var(--bg-hover, #f5f5f5);
+  color: var(--text-secondary, #555);
+}
+
+.quiet-return-dismiss:focus-visible {
+  outline: 2px solid var(--accent-primary, #7c3aed);
+  outline-offset: 2px;
+}
+
+/* Closing animation */
+.quiet-return-closing {
+  animation: quietReturnFadeOut 0.3s ease-out forwards;
+}
+
+/* Animations */
+@keyframes quietReturnFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes quietReturnFadeOut {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+}
+
+/* Dark theme */
+[data-theme="dark"] .quiet-return-content {
+  background: var(--bg-card, #1a1a1a);
+  border-color: var(--border-subtle, #333);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .quiet-return-toast {
+    top: 0.75rem;
+    max-width: calc(100% - 1.5rem);
+  }
+
+  .quiet-return-content {
+    padding: 0.75rem 1rem;
+  }
+
+  .quiet-return-message {
+    font-size: 0.875rem;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .quiet-return-toast,
+  .quiet-return-closing {
+    animation: none;
+  }
+}
+
