@@ -7,11 +7,7 @@ import { sanitizeMessage } from '../utils/sanitize';
 const AudioPlayer = lazy(() => import('./AudioPlayer'));
 
 /**
- * MessageBubble - Calm message group display
- *
- * Groups consecutive messages by sender for rhythm and flow.
- * Shows avatar ONLY once per group.
- * Applies calm spacing with tight grouping inside, larger gaps between.
+ * MessageBubble — Calm grouped message display
  */
 export default function MessageBubble({
   group,
@@ -43,7 +39,7 @@ export default function MessageBubble({
 
       {/* Bubble Group */}
       <div className={`bubble-group ${isOutgoing ? 'outgoing' : 'incoming'}`}>
-        {/* Avatar - only shown once per group, for incoming messages */}
+        {/* Avatar (incoming only) */}
         {!isOutgoing && (
           <div className="bubble-avatar">
             {senderInfo.profilePhoto ? (
@@ -57,9 +53,8 @@ export default function MessageBubble({
           </div>
         )}
 
-        {/* Messages stack */}
+        {/* Messages */}
         <div className="bubble-stack">
-          {/* Sender name - only for incoming, first message */}
           {!isOutgoing && (
             <span className="bubble-sender">{getDisplayName(senderInfo)}</span>
           )}
@@ -70,7 +65,12 @@ export default function MessageBubble({
             const isSingle = messages.length === 1;
             const isEditing = editingMessageId === msg._id;
 
-            // Determine bubble corner style
+            // Normalize attachment to string URL
+            const attachmentUrl =
+              typeof msg.attachment === 'string'
+                ? msg.attachment
+                : msg.attachment?.url || null;
+
             let cornerClass = '';
             if (isSingle) {
               cornerClass = isOutgoing ? 'corner-single-out' : 'corner-single-in';
@@ -84,14 +84,12 @@ export default function MessageBubble({
 
             return (
               <div key={msg._id} className="bubble-row">
-                {/* Deleted message placeholder */}
                 {msg.isDeleted ? (
                   <div className="bubble deleted">
                     <span className="deleted-icon">🗑️</span>
                     <span className="deleted-text">Message deleted</span>
                   </div>
                 ) : isEditing ? (
-                  /* Edit mode */
                   <div className="bubble-edit">
                     <input
                       type="text"
@@ -101,12 +99,11 @@ export default function MessageBubble({
                       autoFocus
                     />
                     <div className="edit-actions">
-                      <button onClick={() => onSaveEdit(msg._id)} className="edit-save">✓</button>
-                      <button onClick={onCancelEdit} className="edit-cancel">✕</button>
+                      <button onClick={() => onSaveEdit(msg._id)}>✓</button>
+                      <button onClick={onCancelEdit}>✕</button>
                     </div>
                   </div>
                 ) : (
-                  /* Normal bubble */
                   <>
                     <div
                       className={`bubble ${isOutgoing ? 'outgoing' : 'incoming'} ${cornerClass}`}
@@ -119,69 +116,33 @@ export default function MessageBubble({
                         </div>
                       )}
 
-                      {/* Text content */}
+                      {/* Text */}
                       {msg.content && (
-                        <span className="bubble-text">{sanitizeMessage(msg.content)}</span>
+                        <span className="bubble-text">
+                          {sanitizeMessage(msg.content)}
+                        </span>
                       )}
 
-                      {/* Attachment */}
-                      {msg.attachment && (
-  <div className="bubble-attachment">
-    {(() => {
-      // Handle both string and object attachment formats
-      const attachmentUrl = typeof msg.attachment === 'string' 
-        ? msg.attachment 
-        : msg.attachment?.url || msg.attachment?.path;
-      
-      // Debug logging
-      console.log('📎 Attachment:', msg.attachment);
-      console.log('📍 Resolved URL:', attachmentUrl);
-      
-      if (!attachmentUrl) {
-        console.error('❌ No valid attachment URL found in:', msg.attachment);
-        return <div style={{color: 'red'}}>Invalid attachment</div>;
-      }
+                      {/* Attachment (Image / Video) */}
+                      {attachmentUrl && (
+                        <div className="bubble-attachment">
+                          {/\.(jpg|jpeg|png|gif|webp)$/i.test(attachmentUrl) && (
+                            <img
+                              src={getImageUrl(attachmentUrl)}
+                              alt="Attachment"
+                              loading="lazy"
+                            />
+                          )}
 
-      // Check file extension
-      const fileExt = attachmentUrl.toLowerCase();
-      const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileExt);
-      const isVideo = /\.(mp4|webm|ogg)$/i.test(fileExt);
-      
-      if (isImage) {
-        const fullUrl = getImageUrl(attachmentUrl);
-        console.log('🖼️ Rendering image:', fullUrl);
-        return (
-          <img
-            src={fullUrl}
-            alt="Attachment"
-            loading="lazy"
-            onError={(e) => {
-              console.error('❌ Image failed to load:', fullUrl, e);
-              e.target.style.border = '2px solid red';
-            }}
-            onLoad={() => console.log('✅ Image loaded:', fullUrl)}
-            style={{ maxWidth: '100%', display: 'block' }}
-          />
-        );
-      }
-      
-      if (isVideo) {
-        const fullUrl = getImageUrl(attachmentUrl);
-        console.log('🎥 Rendering video:', fullUrl);
-        return <video src={fullUrl} controls style={{ maxWidth: '100%' }} />;
-      }
-      
-      // Fallback
-      console.warn('⚠️ Unrecognized file type:', attachmentUrl);
-      return (
-        <div style={{ padding: '8px', background: '#333', borderRadius: '4px' }}>
-          📎 {attachmentUrl.split('/').pop()}
-        </div>
-      );
-    })()}
-  </div>
-)}
-
+                          {/\.(mp4|webm|ogg)$/i.test(attachmentUrl) && (
+                            <video
+                              src={getImageUrl(attachmentUrl)}
+                              controls
+                              preload="metadata"
+                            />
+                          )}
+                        </div>
+                      )}
 
                       {/* Voice Note */}
                       {msg.voiceNote?.url && (
@@ -194,7 +155,7 @@ export default function MessageBubble({
                       )}
 
                       {/* Reactions */}
-                      {msg.reactions && msg.reactions.length > 0 && (
+                      {msg.reactions?.length > 0 && (
                         <div className="bubble-reactions">
                           {Object.entries(
                             msg.reactions.reduce((acc, r) => {
@@ -210,7 +171,7 @@ export default function MessageBubble({
                       )}
                     </div>
 
-                    {/* Timestamp - only on last message in group */}
+                    {/* Timestamp */}
                     {isLast && (
                       <span className="bubble-time">
                         {new Date(msg.createdAt).toLocaleTimeString('en-US', {
@@ -222,34 +183,41 @@ export default function MessageBubble({
                       </span>
                     )}
 
-                    {/* Actions menu */}
+                    {/* Actions */}
                     <div className="bubble-actions">
                       <button
                         className="action-trigger"
-                        onClick={() => setOpenMessageMenu(openMessageMenu === msg._id ? null : msg._id)}
+                        onClick={() =>
+                          setOpenMessageMenu(
+                            openMessageMenu === msg._id ? null : msg._id
+                          )
+                        }
                       >
                         ⋮
                       </button>
+
                       {openMessageMenu === msg._id && (
                         <div className="action-menu">
-                          <button onClick={() => { onReply(msg); setOpenMessageMenu(null); }}>
-                            ↩️ Reply
-                          </button>
-                          <button onClick={() => { onReact(msg._id); setOpenMessageMenu(null); }}>
-                            😊 React
-                          </button>
-                          {isOutgoing && (
+                          <button onClick={() => onReply(msg)}>↩️ Reply</button>
+                          <button onClick={() => onReact(msg._id)}>😊 React</button>
+
+                          {isOutgoing ? (
                             <>
-                              <button onClick={() => { onEdit(msg._id, msg.content); setOpenMessageMenu(null); }}>
+                              <button onClick={() => onEdit(msg._id, msg.content)}>
                                 ✏️ Edit
                               </button>
-                              <button className="danger" onClick={() => { onDelete(msg._id, true); setOpenMessageMenu(null); }}>
+                              <button
+                                className="danger"
+                                onClick={() => onDelete(msg._id, true)}
+                              >
                                 🗑️ Delete
                               </button>
                             </>
-                          )}
-                          {!isOutgoing && (
-                            <button className="danger" onClick={() => { onDelete(msg._id, false); setOpenMessageMenu(null); }}>
+                          ) : (
+                            <button
+                              className="danger"
+                              onClick={() => onDelete(msg._id, false)}
+                            >
                               🗑️ Delete for me
                             </button>
                           )}
