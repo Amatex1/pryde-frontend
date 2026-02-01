@@ -1,0 +1,124 @@
+/* ========================================
+   TOUR INTRO PAGE - Opt-In Gate for Tour
+   Same calm styling as Welcome page
+   ======================================== */
+
+.tour-intro-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1.5rem;
+  background: var(--bg-primary);
+}
+
+.tour-intro-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 2.5rem;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--border-subtle);
+}
+
+.tour-intro-content {
+  text-align: center;
+}
+
+.tour-intro-title {
+  font-size: var(--font-size-xl, 1.5rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+  line-height: 1.3;
+}
+
+.tour-intro-body {
+  font-size: var(--font-size-base, 1rem);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0 0 2rem 0;
+}
+
+/* Equal-weight option buttons - no highlighted/primary CTA */
+.tour-intro-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tour-intro-option {
+  background: var(--bg-hover);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  font-size: var(--font-size-base, 1rem);
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.tour-intro-option:hover:not(:disabled) {
+  background: var(--accent-muted);
+  border-color: var(--accent-primary);
+}
+
+.tour-intro-option:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.tour-intro-option:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.tour-intro-option:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .tour-intro-container {
+    padding: 1rem;
+    align-items: flex-start;
+    padding-top: 15vh;
+  }
+
+  .tour-intro-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .tour-intro-title {
+    font-size: var(--font-size-lg, 1.25rem);
+  }
+
+  .tour-intro-body {
+    font-size: var(--font-size-sm, 0.9375rem);
+  }
+
+  .tour-intro-option {
+    padding: 0.875rem 1rem;
+    font-size: var(--font-size-sm, 0.9375rem);
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .tour-intro-option {
+    transition: none;
+  }
+  
+  .tour-intro-option:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .tour-intro-card {
+  box-shadow: var(--shadow-soft), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+

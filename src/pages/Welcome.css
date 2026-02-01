@@ -1,0 +1,127 @@
+/* ========================================
+   WELCOME PAGE - Soft Landing for New Users
+   Calm, minimal layout with equal-weight choices
+   ======================================== */
+
+.welcome-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1.5rem;
+  background: var(--bg-primary);
+}
+
+.welcome-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 2.5rem;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--border-subtle);
+}
+
+.welcome-content {
+  text-align: center;
+}
+
+.welcome-title {
+  font-size: var(--font-size-2xl, 1.75rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1.5rem 0;
+  line-height: 1.2;
+}
+
+.welcome-body {
+  margin-bottom: 2rem;
+}
+
+.welcome-body p {
+  font-size: var(--font-size-base, 1rem);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.welcome-body p + p {
+  margin-top: 0.25rem;
+}
+
+/* Equal-weight option buttons - no highlighted/primary CTA */
+.welcome-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.welcome-option {
+  background: var(--bg-hover);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  font-size: var(--font-size-base, 1rem);
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.welcome-option:hover {
+  background: var(--accent-muted);
+  border-color: var(--accent-primary);
+}
+
+.welcome-option:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.welcome-option:active {
+  transform: scale(0.98);
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .welcome-container {
+    padding: 1rem;
+    align-items: flex-start;
+    padding-top: 15vh;
+  }
+
+  .welcome-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .welcome-title {
+    font-size: var(--font-size-xl, 1.5rem);
+  }
+
+  .welcome-body p {
+    font-size: var(--font-size-sm, 0.9375rem);
+  }
+
+  .welcome-option {
+    padding: 0.875rem 1rem;
+    font-size: var(--font-size-sm, 0.9375rem);
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .welcome-option {
+    transition: none;
+  }
+  
+  .welcome-option:active {
+    transform: none;
+  }
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .welcome-card {
+  box-shadow: var(--shadow-soft), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+

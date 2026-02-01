@@ -84,6 +84,8 @@ const Home = lazyWithReload(() => import('./pages/Home'));
 const Login = lazyWithReload(() => import('./pages/Login'));
 const Register = lazyWithReload(() => import('./pages/Register'));
 const InviteRequired = lazyWithReload(() => import('./pages/InviteRequired')); // Phase 7B
+const Welcome = lazyWithReload(() => import('./pages/Welcome')); // Calm onboarding: soft landing page
+const TourIntro = lazyWithReload(() => import('./pages/TourIntro')); // Calm onboarding: tour opt-in gate
 const Footer = lazyWithReload(() => import('./components/Footer'));
 const ForgotPassword = lazyWithReload(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazyWithReload(() => import('./pages/ResetPassword'));
@@ -404,6 +406,10 @@ function AppContent() {
                     authLoading ? <PageLoader /> :
                     isAuth ? <ReactivateAccount /> : <Navigate to="/login" />
                   } />
+
+                  {/* Calm Onboarding Routes - Protected, shown after registration */}
+                  <Route path="/welcome" element={<PrivateRoute><Welcome /></PrivateRoute>} />
+                  <Route path="/tour-intro" element={<PrivateRoute><TourIntro /></PrivateRoute>} />
 
                   {/* Protected Routes */}
                   <Route path="/feed" element={<PrivateRoute><Feed /></PrivateRoute>} />

@@ -414,12 +414,12 @@ function Register({ onLoginSuccess }) {
 
             <PasskeySetup
               onSuccess={() => {
-                navigate('/feed');
+                navigate('/welcome');
               }}
             />
 
             <button
-              onClick={() => navigate('/feed')}
+              onClick={() => navigate('/welcome')}
               className="btn-secondary"
               style={{ marginTop: 'var(--space-md)', width: '100%' }}
             >

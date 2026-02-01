@@ -31,24 +31,24 @@ const TOUR_STEPS = [
   {
     id: 'feed',
     title: 'No algorithms here',
-    body: "Pryde shows posts in time order.\nWhat you see isn't ranked by popularity or engagement.",
+    body: "Pryde shows posts in time order.\nNothing is ranked by popularity or engagement.",
     showActions: false
   },
   {
     id: 'quiet',
     title: "You don't have to post",
-    body: "Lurking is welcome.\nReading quietly is a valid way to belong here.",
+    body: "Reading quietly is a valid way to belong here.",
     showActions: false
   },
   {
     id: 'usage',
-    title: 'How people use Pryde',
-    body: "People write reflections, respond to prompts, save things that resonate,\nor simply check in when they need a quieter space.",
+    title: 'Everyone uses Pryde differently',
+    body: "Some write reflections. Some respond to prompts.\nSome just check in when they need a quieter space.",
     showActions: false
   },
   {
     id: 'start',
-    title: "If you'd like to start",
+    title: "There's no right way to start",
     body: "You can begin with something small — or nothing at all.",
     showActions: true
   }
@@ -83,13 +83,28 @@ function OnboardingTour({ isOpen, onClose, onComplete }) {
     };
   }, [isOpen]);
 
-  // Handle skip tour
+  // Handle skip tour (never show again)
   const handleSkip = useCallback(async () => {
     setIsClosing(true);
     try {
       await api.post('/auth/tour/skip');
     } catch (error) {
       console.error('Failed to save tour skip status:', error);
+    }
+    setTimeout(() => {
+      onClose();
+      setIsClosing(false);
+      setCurrentStep(0);
+    }, 150);
+  }, [onClose]);
+
+  // Handle remind me later (re-show ONCE after 3 days, then never again)
+  const handleRemindLater = useCallback(async () => {
+    setIsClosing(true);
+    try {
+      await api.post('/auth/onboarding/remind-later');
+    } catch (error) {
+      console.error('Failed to save remind later status:', error);
     }
     setTimeout(() => {
       onClose();
@@ -231,17 +246,17 @@ function OnboardingTour({ isOpen, onClose, onComplete }) {
             <div className="tour-actions-optional">
               <button
                 className="tour-action-btn"
-                onClick={handleWriteJournal}
-                type="button"
-              >
-                📝 Start a journal entry
-              </button>
-              <button
-                className="tour-action-btn"
                 onClick={handleViewPrompt}
                 type="button"
               >
-                💭 Browse the feed
+                Browse quietly
+              </button>
+              <button
+                className="tour-action-btn"
+                onClick={handleWriteJournal}
+                type="button"
+              >
+                Write something for myself
               </button>
             </div>
           )}
@@ -249,18 +264,28 @@ function OnboardingTour({ isOpen, onClose, onComplete }) {
 
         {/* Navigation */}
         <div className="tour-navigation">
-          <button 
-            className="tour-btn tour-btn-skip"
-            onClick={handleSkip}
-            type="button"
-            aria-label="Skip tour and don't show again"
-          >
-            Skip tour
-          </button>
+          <div className="tour-nav-left">
+            <button
+              className="tour-btn tour-btn-skip"
+              onClick={handleSkip}
+              type="button"
+              aria-label="Skip tour and don't show again"
+            >
+              Skip tour
+            </button>
+            <button
+              className="tour-btn tour-btn-remind"
+              onClick={handleRemindLater}
+              type="button"
+              aria-label="Remind me later"
+            >
+              Remind me later
+            </button>
+          </div>
 
           <div className="tour-nav-main">
             {!isFirstStep && (
-              <button 
+              <button
                 className="tour-btn tour-btn-back"
                 onClick={handleBack}
                 type="button"
@@ -268,9 +293,9 @@ function OnboardingTour({ isOpen, onClose, onComplete }) {
                 Back
               </button>
             )}
-            
+
             {isLastStep ? (
-              <button 
+              <button
                 className="tour-btn tour-btn-primary"
                 onClick={handleFinish}
                 type="button"
@@ -278,7 +303,7 @@ function OnboardingTour({ isOpen, onClose, onComplete }) {
                 Finish
               </button>
             ) : (
-              <button 
+              <button
                 className="tour-btn tour-btn-primary"
                 onClick={handleNext}
                 type="button"
