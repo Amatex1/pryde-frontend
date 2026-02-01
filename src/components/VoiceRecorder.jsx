@@ -117,6 +117,9 @@ const VoiceRecorder = ({ onRecordingComplete, onCancel }) => {
       setUploading(false);
     }
   };
+if (!(blob instanceof Blob)) {
+  throw new Error('VoiceRecorder expected a Blob');
+}
 
   const formatDuration = (seconds) => {
     const mins = Math.floor(seconds / 60);

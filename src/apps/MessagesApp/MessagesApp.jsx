@@ -658,21 +658,15 @@ export default function MessagesApp() {
           onToggleContentWarning={() => setShowContentWarning(!showContentWarning)}
           showVoiceRecorder={showVoiceRecorder}
           onToggleVoiceRecorder={() => setShowVoiceRecorder(!showVoiceRecorder)}
-          onRecordingComplete={async (audioBlob, duration) => {
-            try {
-              const formData = new FormData();
-              formData.append('audio', audioBlob, 'voice-note.webm');
-              formData.append('duration', duration);
-              const uploadResponse = await api.post('/upload/voice-note', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-              });
-              await handleSendMessage(null, { url: uploadResponse.data.url, duration });
-              setShowVoiceRecorder(false);
-            } catch (error) {
-              logger.error('Failed to send voice note:', error);
-              showAlert('Failed to send voice note', 'Voice Note Failed');
-            }
-          }}
+         onRecordingComplete={async ({ url, duration }) => {
+  try {
+    await handleSendMessage(null, { url, duration });
+    setShowVoiceRecorder(false);
+  } catch (error) {
+    logger.error('Failed to send voice note:', error);
+    showAlert('Failed to send voice note', 'Voice Note Failed');
+  }
+}}
           replyingTo={replyingTo}
           onCancelReply={() => setReplyingTo(null)}
           // Message actions
