@@ -534,13 +534,6 @@ textarea:disabled {
    Clear boundaries for input fields
    ======================================== */
 
-input:not([type="checkbox"]):not([type="radio"]),
-select,
-textarea {
-  border: 1px solid var(--border-color, #ccc);
-  border-radius: 4px;
-}
-
 input:not([type="checkbox"]):not([type="radio"]):focus,
 select:focus,
 textarea:focus {
