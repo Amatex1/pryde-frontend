@@ -107,6 +107,7 @@
 .messages-app__chat {
   display: flex;
   flex-direction: column;
+  height: 100%;
   min-width: 0;
   overflow: hidden;
   background: var(--bg-app);
@@ -283,6 +284,86 @@
   .messages-app__messages-scroll {
     border-bottom: none;
   }
+
+  /* Desktop message row padding */
+  .message-row {
+    padding: 2px 16px;
+  }
+}
+
+/* =========================================================
+   VIRTUALIZATION PREP (STRUCTURAL, NO VISUAL CHANGE)
+   ========================================================= */
+
+/* Normalize message rows for stable height calculation */
+.message-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 2px 12px;
+  box-sizing: border-box;
+}
+
+/* Prevent margin collapse issues */
+.message-row > * {
+  margin: 0;
+}
+
+/* =========================================================
+   TYPING INDICATOR SMOOTHING
+   ========================================================= */
+
+/* Visual smoothing only — socket batching comes later */
+.typing-indicator {
+  opacity: 0;
+  transform: translateY(2px);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.typing-indicator.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Linger effect so it doesn't flicker */
+.typing-indicator.is-visible::after {
+  animation: typing-linger 900ms linear;
+}
+
+@keyframes typing-linger {
+  from { opacity: 1; }
+  to   { opacity: 1; }
+}
+
+/* =========================================================
+   MESSAGE BUBBLE RHYTHM (CALM GROUPING)
+   ========================================================= */
+
+/* Base bubble spacing */
+.message-bubble {
+  padding: 8px 12px;
+  border-radius: 14px;
+  line-height: 1.45;
+  max-width: 72%;
+}
+
+/* Consecutive messages from same author */
+.message-row.is-continuation .message-bubble {
+  margin-top: 2px;
+}
+
+/* Hide repeated avatars for grouped messages */
+.message-row.is-continuation .message-avatar {
+  visibility: hidden;
+}
+
+/* Tighten timestamps without losing clarity */
+.message-timestamp {
+  margin-top: 2px;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
 }
 
 /* -----------------------------
