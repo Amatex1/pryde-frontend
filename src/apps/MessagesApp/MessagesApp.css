@@ -67,6 +67,40 @@
 }
 
 /* -----------------------------
+   THREAD LIST — USERNAME CLEANUP
+   Hide redundant username line (identity handled by info panel)
+------------------------------ */
+
+/* Hide @username line in message thread list */
+.messages-app__threads .thread-username,
+.messages-app__threads .conv-username,
+.messages-app__threads .user-handle {
+  display: none;
+}
+
+/* Ensure layout collapses cleanly */
+.messages-app__threads .thread-header,
+.messages-app__threads .conv-header {
+  row-gap: 2px;
+}
+
+/* Keep display name visually primary */
+.messages-app__threads .thread-name,
+.messages-app__threads .conv-name {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  line-height: 1.3;
+}
+
+/* Message preview sits directly under name */
+.messages-app__threads .thread-preview,
+.messages-app__threads .conv-last-message {
+  margin-top: 2px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* -----------------------------
    COLUMN 2 — CHAT
 ------------------------------ */
 
