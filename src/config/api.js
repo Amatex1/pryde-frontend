@@ -1,33 +1,39 @@
 // src/config/api.js
 
-// Determine if we're in production (Vercel deployment)
 const isProduction = import.meta.env.PROD;
-const isDevelopment = import.meta.env.DEV;
 
-// Direct backend URL (for auth endpoints that need cookies to work cross-origin)
-// Vercel rewrites don't properly forward cookies, so auth calls go direct
-const BACKEND_URL = "https://pryde-backend.onrender.com";
+// Your backend root (NO /api here)
+const BACKEND_URL =
+  import.meta.env.VITE_BACKEND_URL ||
+  'https://pryde-backend.onrender.com';
 
-// Base URL of backend API (must include /api)
-// Production: Use relative /api path (goes through Vercel proxy for non-auth calls)
-// Development: Use direct backend URL or localhost
+// ===============================
+// API endpoints (WITH /api prefix)
+// ===============================
 export const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
-  (isProduction ? "/api" : `${BACKEND_URL}/api`);
+  (isProduction ? '/api' : `${BACKEND_URL}/api`);
 
-// Auth API URL - ALWAYS goes direct to backend (cookies don't work through Vercel proxy)
-// This is used for /refresh, /auth/login, /auth/register, /auth/logout
 export const API_AUTH_URL = `${BACKEND_URL}/api`;
 
-// Socket URL uses the server root, NOT /api
-// Note: WebSockets still need direct connection to backend (proxy only handles HTTP)
+// ===============================
+// Socket (root-level)
+// ===============================
 export const SOCKET_URL =
   import.meta.env.VITE_SOCKET_URL || BACKEND_URL;
 
-// Default export for compatibility
+// ===============================
+// 🔥 Uploads (served at backend ROOT)
+// ===============================
+export const UPLOADS_BASE_URL =
+  import.meta.env.VITE_UPLOADS_URL ||
+  (isProduction ? '' : BACKEND_URL);
+// In prod: "" → relative path (/upload/...)
+// In dev: https://pryde-backend.onrender.com/upload/...
+
 export default {
   API_BASE_URL,
   API_AUTH_URL,
   SOCKET_URL,
+  UPLOADS_BASE_URL,
 };
-
