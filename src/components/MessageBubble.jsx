@@ -126,57 +126,61 @@ export default function MessageBubble({
 
                       {/* Attachment */}
                       {msg.attachment && (
-                    <div className="bubble-attachment">
-                      {(() => {
-                        // Get the attachment URL
-                        const attachmentUrl = typeof msg.attachment === 'string' 
-                          ? msg.attachment 
-                          : msg.attachment?.url;
-                        
-                        // Debug: log what we're getting
-                        console.log('Attachment data:', msg.attachment);
-                        console.log('Resolved URL:', attachmentUrl);
-                        
-                        if (!attachmentUrl) {
-                          console.warn('No valid attachment URL found');
-                          return null;
-                        }
+  <div className="bubble-attachment">
+    {(() => {
+      // Handle both string and object attachment formats
+      const attachmentUrl = typeof msg.attachment === 'string' 
+        ? msg.attachment 
+        : msg.attachment?.url || msg.attachment?.path;
+      
+      // Debug logging
+      console.log('📎 Attachment:', msg.attachment);
+      console.log('📍 Resolved URL:', attachmentUrl);
+      
+      if (!attachmentUrl) {
+        console.error('❌ No valid attachment URL found in:', msg.attachment);
+        return <div style={{color: 'red'}}>Invalid attachment</div>;
+      }
 
-                        // Check file type
-                        const isImage = attachmentUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i);
-                        const isVideo = attachmentUrl.match(/\.(mp4|webm|ogg)$/i);
-                        
-                        if (isImage) {
-                          const fullUrl = getImageUrl(attachmentUrl);
-                          console.log('Image URL:', fullUrl);
-                          return (
-                            <img
-                              src={fullUrl}
-                              alt="Attachment"
-                              loading="lazy"
-                              onError={(e) => {
-                                console.error('Image failed to load:', fullUrl);
-                                e.target.style.display = 'none';
-                              }}
-                              onLoad={() => console.log('Image loaded successfully:', fullUrl)}
-                            />
-                          );
-                        }
-                        
-                        if (isVideo) {
-                          return <video src={getImageUrl(attachmentUrl)} controls />;
-                        }
-                        
-                        // Fallback for unrecognized file types
-                        console.warn('Unrecognized file type:', attachmentUrl);
-                        return (
-                          <div className="unsupported-attachment">
-                            📎 Attachment: {attachmentUrl.split('/').pop()}
-                          </div>
-                        );
-                      })()}
-                    </div>
-                  )}
+      // Check file extension
+      const fileExt = attachmentUrl.toLowerCase();
+      const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileExt);
+      const isVideo = /\.(mp4|webm|ogg)$/i.test(fileExt);
+      
+      if (isImage) {
+        const fullUrl = getImageUrl(attachmentUrl);
+        console.log('🖼️ Rendering image:', fullUrl);
+        return (
+          <img
+            src={fullUrl}
+            alt="Attachment"
+            loading="lazy"
+            onError={(e) => {
+              console.error('❌ Image failed to load:', fullUrl, e);
+              e.target.style.border = '2px solid red';
+            }}
+            onLoad={() => console.log('✅ Image loaded:', fullUrl)}
+            style={{ maxWidth: '100%', display: 'block' }}
+          />
+        );
+      }
+      
+      if (isVideo) {
+        const fullUrl = getImageUrl(attachmentUrl);
+        console.log('🎥 Rendering video:', fullUrl);
+        return <video src={fullUrl} controls style={{ maxWidth: '100%' }} />;
+      }
+      
+      // Fallback
+      console.warn('⚠️ Unrecognized file type:', attachmentUrl);
+      return (
+        <div style={{ padding: '8px', background: '#333', borderRadius: '4px' }}>
+          📎 {attachmentUrl.split('/').pop()}
+        </div>
+      );
+    })()}
+  </div>
+)}
 
 
                       {/* Voice Note */}
