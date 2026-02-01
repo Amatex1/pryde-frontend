@@ -126,30 +126,57 @@ export default function MessageBubble({
 
                       {/* Attachment */}
                       {msg.attachment && (
-                      <div className="bubble-attachment">
-                        {typeof msg.attachment === 'string' ? (
-                          msg.attachment.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                    <div className="bubble-attachment">
+                      {(() => {
+                        // Get the attachment URL
+                        const attachmentUrl = typeof msg.attachment === 'string' 
+                          ? msg.attachment 
+                          : msg.attachment?.url;
+                        
+                        // Debug: log what we're getting
+                        console.log('Attachment data:', msg.attachment);
+                        console.log('Resolved URL:', attachmentUrl);
+                        
+                        if (!attachmentUrl) {
+                          console.warn('No valid attachment URL found');
+                          return null;
+                        }
+
+                        // Check file type
+                        const isImage = attachmentUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+                        const isVideo = attachmentUrl.match(/\.(mp4|webm|ogg)$/i);
+                        
+                        if (isImage) {
+                          const fullUrl = getImageUrl(attachmentUrl);
+                          console.log('Image URL:', fullUrl);
+                          return (
                             <img
-                              src={getImageUrl(msg.attachment)}
+                              src={fullUrl}
                               alt="Attachment"
                               loading="lazy"
+                              onError={(e) => {
+                                console.error('Image failed to load:', fullUrl);
+                                e.target.style.display = 'none';
+                              }}
+                              onLoad={() => console.log('Image loaded successfully:', fullUrl)}
                             />
-                          ) : msg.attachment.match(/\.(mp4|webm|ogg)$/i) ? (
-                            <video src={getImageUrl(msg.attachment)} controls />
-                          ) : null
-                        ) : msg.attachment.url ? (
-                          msg.attachment.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-                            <img
-                              src={getImageUrl(msg.attachment.url)}
-                              alt="Attachment"
-                              loading="lazy"
-                            />
-                          ) : msg.attachment.url.match(/\.(mp4|webm|ogg)$/i) ? (
-                            <video src={getImageUrl(msg.attachment.url)} controls />
-                          ) : null
-                        ) : null}
-                      </div>
-                    )}
+                          );
+                        }
+                        
+                        if (isVideo) {
+                          return <video src={getImageUrl(attachmentUrl)} controls />;
+                        }
+                        
+                        // Fallback for unrecognized file types
+                        console.warn('Unrecognized file type:', attachmentUrl);
+                        return (
+                          <div className="unsupported-attachment">
+                            📎 Attachment: {attachmentUrl.split('/').pop()}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
 
 
                       {/* Voice Note */}
