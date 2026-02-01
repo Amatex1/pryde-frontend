@@ -126,14 +126,31 @@ export default function MessageBubble({
 
                       {/* Attachment */}
                       {msg.attachment && (
-                        <div className="bubble-attachment">
-                          {msg.attachment.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-                            <img src={getImageUrl(msg.attachment)} alt="Attachment" />
+                      <div className="bubble-attachment">
+                        {typeof msg.attachment === 'string' ? (
+                          msg.attachment.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                            <img
+                              src={getImageUrl(msg.attachment)}
+                              alt="Attachment"
+                              loading="lazy"
+                            />
                           ) : msg.attachment.match(/\.(mp4|webm|ogg)$/i) ? (
                             <video src={getImageUrl(msg.attachment)} controls />
-                          ) : null}
-                        </div>
-                      )}
+                          ) : null
+                        ) : msg.attachment.url ? (
+                          msg.attachment.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                            <img
+                              src={getImageUrl(msg.attachment.url)}
+                              alt="Attachment"
+                              loading="lazy"
+                            />
+                          ) : msg.attachment.url.match(/\.(mp4|webm|ogg)$/i) ? (
+                            <video src={getImageUrl(msg.attachment.url)} controls />
+                          ) : null
+                        ) : null}
+                      </div>
+                    )}
+
 
                       {/* Voice Note */}
                       {msg.voiceNote?.url && (
