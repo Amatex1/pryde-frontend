@@ -231,7 +231,9 @@
 
 /* FIX 1: Inner wrappers become layout-only (no nested boxes) */
 .messages-app__composer .message-composer,
-.messages-app__composer .calm-composer {
+.messages-app__composer .calm-composer,
+.messages-app__composer .message-composer-inner,
+.messages-app__composer .composer-input-row {
   width: 100%;
   max-width: none;
   background: transparent;
@@ -252,11 +254,11 @@
 /* FIX 2: Slim desktop composer height (mobile untouched) */
 @media (min-width: 900px) {
   .messages-app__composer {
-    padding: 6px 12px;
+    padding: 6px 10px;
   }
 
   .messages-app__composer textarea {
-    min-height: 36px;
+    min-height: 34px;
     line-height: 1.4;
     padding: 6px 8px;
     font-size: var(--text-base, 0.9375rem);
@@ -264,6 +266,12 @@
 
   .messages-app__composer .composer-actions {
     gap: 6px;
+  }
+
+  .messages-app__composer button,
+  .messages-app__composer .icon-button {
+    height: 30px;
+    min-height: 30px;
   }
 }
 
