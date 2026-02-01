@@ -257,8 +257,12 @@
     padding: 6px 10px;
   }
 
+  /* Auto-grow textarea (max 4 lines) */
   .messages-app__composer textarea {
+    resize: none;
+    overflow-y: auto;
     min-height: 34px;
+    max-height: calc(1.4em * 4 + 12px); /* 4 lines */
     line-height: 1.4;
     padding: 6px 8px;
     font-size: var(--text-base, 0.9375rem);
@@ -272,6 +276,12 @@
   .messages-app__composer .icon-button {
     height: 30px;
     min-height: 30px;
+  }
+
+  /* Remove redundant borders */
+  .messages-app__chat-header,
+  .messages-app__messages-scroll {
+    border-bottom: none;
   }
 }
 
