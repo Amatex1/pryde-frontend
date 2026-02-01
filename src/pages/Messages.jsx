@@ -1772,15 +1772,17 @@ function Messages() {
                               </div>
                               <div className="conv-info">
                                 <div className="conv-header">
-                                  <div className="conv-name">{isSelfChat ? '📝 Notes to self' : getDisplayName(otherUser)}</div>
+                                  <div className="conv-name-group">
+                                    <div className="conv-name">{isSelfChat ? '📝 Notes to self' : getDisplayName(otherUser)}</div>
+                                    {/* Show @username for others, not for self-chat */}
+                                    {!isSelfChat && getUsername(otherUser) && (
+                                      <div className="conv-username">{getUsername(otherUser)}</div>
+                                    )}
+                                  </div>
                                   <div className="conv-time">
                                     {conv.lastMessage?.createdAt ? new Date(conv.lastMessage.createdAt).toLocaleTimeString() : ''}
                                   </div>
                                 </div>
-                                {/* Show @username for others, not for self-chat */}
-                                {!isSelfChat && getUsername(otherUser) && (
-                                  <div className="conv-username">{getUsername(otherUser)}</div>
-                                )}
                                 <div className="conv-last-message">
                                   {mutedConversations.includes(conv._id) && '🔕 '}
                                   {conv.lastMessage?.voiceNote?.url ? '🎤 Voice note' : (conv.lastMessage?.content || 'No messages')}
