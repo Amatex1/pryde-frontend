@@ -12,11 +12,9 @@ export const API_AUTH_URL = `${BACKEND_URL}/api`;
 export const SOCKET_URL =
   import.meta.env.VITE_SOCKET_URL || BACKEND_URL;
 
-// 🔥 FIX: In prod, uploads go through /api proxy like everything else
-// In dev, uploads go directly to backend ROOT (not /api)
+// 🔥 Uploads ALWAYS go directly to backend (files are stored there, not on Vercel)
 export const UPLOADS_BASE_URL =
-  import.meta.env.VITE_UPLOADS_URL ||
-  (isProduction ? '/api' : BACKEND_URL); // ✅ Changed this line
+  import.meta.env.VITE_UPLOADS_URL || BACKEND_URL;
 
 export default {
   API_BASE_URL,
