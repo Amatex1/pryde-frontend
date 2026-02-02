@@ -107,7 +107,34 @@ export default function MessageList({
                                     ? { background: getSentMessageColor(currentTheme).background, color: getSentMessageColor(currentTheme).text }
                                     : { background: getUserChatColor(msg.sender._id, currentTheme).background, color: getUserChatColor(msg.sender._id, currentTheme).text }}
                                 >
-                                  {sanitizeMessage(msg.content)}
+                                  {msg.content && sanitizeMessage(msg.content)}
+                                  {/* Attachment (Image / Video) */}
+                                  {msg.attachment && (
+                                    <div className="bubble-attachment">
+                                      {(msg.attachment.includes('.jpg') ||
+                                        msg.attachment.includes('.jpeg') ||
+                                        msg.attachment.includes('.png') ||
+                                        msg.attachment.includes('.gif') ||
+                                        msg.attachment.includes('.webp') ||
+                                        msg.attachment.startsWith('data:image') ||
+                                        msg.attachment.includes('/upload/image/')) && (
+                                        <img
+                                          src={getImageUrl(msg.attachment)}
+                                          alt="Attachment"
+                                          loading="lazy"
+                                        />
+                                      )}
+                                      {(msg.attachment.includes('.mp4') ||
+                                        msg.attachment.includes('.webm') ||
+                                        msg.attachment.includes('.ogg')) && (
+                                        <video
+                                          src={getImageUrl(msg.attachment)}
+                                          controls
+                                          preload="metadata"
+                                        />
+                                      )}
+                                    </div>
+                                  )}
                                   {msg.reactions && msg.reactions.length > 0 && (
                                     <div className="message-reactions">
                                       {Object.entries(msg.reactions.reduce((acc, r) => { acc[r.emoji] = (acc[r.emoji] || 0) + 1; return acc; }, {})).map(([emoji, count]) => {

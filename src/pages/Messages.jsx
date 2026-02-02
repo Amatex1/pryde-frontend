@@ -2049,7 +2049,35 @@ function Messages() {
                                                   }
                                             }
                                           >
-                                            {sanitizeMessage(msg.content)}
+                                            {msg.content && sanitizeMessage(msg.content)}
+
+                                            {/* Attachment (Image / Video) */}
+                                            {msg.attachment && (
+                                              <div className="bubble-attachment">
+                                                {(msg.attachment.includes('.jpg') ||
+                                                  msg.attachment.includes('.jpeg') ||
+                                                  msg.attachment.includes('.png') ||
+                                                  msg.attachment.includes('.gif') ||
+                                                  msg.attachment.includes('.webp') ||
+                                                  msg.attachment.startsWith('data:image') ||
+                                                  msg.attachment.includes('/upload/image/')) && (
+                                                  <img
+                                                    src={getImageUrl(msg.attachment)}
+                                                    alt="Attachment"
+                                                    loading="lazy"
+                                                  />
+                                                )}
+                                                {(msg.attachment.includes('.mp4') ||
+                                                  msg.attachment.includes('.webm') ||
+                                                  msg.attachment.includes('.ogg')) && (
+                                                  <video
+                                                    src={getImageUrl(msg.attachment)}
+                                                    controls
+                                                    preload="metadata"
+                                                  />
+                                                )}
+                                              </div>
+                                            )}
 
                                             {/* Voice Note Player - Lazy Loaded */}
                                             {msg.voiceNote?.url && (
