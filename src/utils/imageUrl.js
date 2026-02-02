@@ -13,11 +13,12 @@ export const getImageUrl = (path) => {
   const encodedFilename = encodeURIComponent(filename);
   const encodedPath = [...pathParts, encodedFilename].join('/');
 
-  // Ensure clean joining
+  // Ensure clean joining with /api prefix
+  // Backend routes are at /api/upload/image and /api/upload/file
   const baseUrl = UPLOADS_BASE_URL.replace(/\/$/, '');
   const cleanPath = encodedPath.startsWith('/')
     ? encodedPath
     : `/${encodedPath}`;
 
-  return `${baseUrl}${cleanPath}`;
+  return `${baseUrl}/api${cleanPath}`;
 };

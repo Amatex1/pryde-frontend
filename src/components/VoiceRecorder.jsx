@@ -1,12 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
-import api from '../utils/api';
 import './VoiceRecorder.css';
 
 const VoiceRecorder = ({ onRecordingComplete, onCancel }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [duration, setDuration] = useState(0);
-  const [uploading, setUploading] = useState(false);
 
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
@@ -36,7 +34,10 @@ const VoiceRecorder = ({ onRecordingComplete, onCancel }) => {
 
       mediaRecorder.onstop = async () => {
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        await uploadVoiceNote(blob);
+        // Pass blob and duration to parent - let parent handle upload
+        if (onRecordingComplete) {
+          onRecordingComplete(blob, duration);
+        }
         stream.getTracks().forEach(track => track.stop());
       };
 
@@ -91,50 +92,11 @@ const VoiceRecorder = ({ onRecordingComplete, onCancel }) => {
     if (onCancel) onCancel();
   };
 
-  const uploadVoiceNote = async (blob) => {
-    setUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append('audio', blob, 'voice-note.webm');
-      formData.append('duration', duration);
-
-      const response = await api.post('/upload/voice-note', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      if (onRecordingComplete) {
-        onRecordingComplete({
-          url: response.data.url,
-          duration: duration
-        });
-      }
-    } catch (error) {
-      console.error('Error uploading voice note:', error);
-      alert('Failed to upload voice note');
-    } finally {
-      setUploading(false);
-    }
-  };
-if (!(blob instanceof Blob)) {
-  throw new Error('VoiceRecorder expected a Blob');
-}
-
   const formatDuration = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
-
-  if (uploading) {
-    return (
-      <div className="voice-recorder uploading">
-        <div className="uploading-spinner"></div>
-        <span>Uploading voice note...</span>
-      </div>
-    );
-  }
 
   if (!isRecording) {
     return (
