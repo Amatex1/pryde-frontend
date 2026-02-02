@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { onUserOnline, onUserOffline, onOnlineUsers } from '../utils/socket';
 import api from '../utils/api';
-import { getImageUrl } from '../utils/imageUtils';
+import { getImageUrl } from '../utils/imageUrl';
 import { getQuietMode } from '../utils/themeManager';
 import './OnlinePresence.css';
 
@@ -21,13 +21,6 @@ function OnlinePresence() {
 
   // Check quiet mode for presence softening
   const isQuietMode = getQuietMode();
-
-  // Helper function to get image URL
-  const getImageUrl = (path) => {
-    if (!path) return null;
-    if (path.startsWith('http')) return path;
-    return `${import.meta.env.VITE_API_URL || 'https://pryde-social.onrender.com'}${path}`;
-  };
 
   // Helper function to format time since last seen
   const getTimeSince = (date) => {

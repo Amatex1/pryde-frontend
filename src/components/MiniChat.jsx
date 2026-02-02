@@ -4,6 +4,7 @@ import { getUserChatColor, getSentMessageColor } from '../utils/chatColors';
 import { getDisplayName, getDisplayNameInitial } from '../utils/getDisplayName';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
+import { getImageUrl } from '../utils/imageUrl';
 import './MiniChat.css';
 
 function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMinimized }) {
@@ -16,13 +17,6 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
   const messagesEndRef = useRef(null);
   const { user: currentUserData } = useAuth(); // Use centralized auth context
   const currentUserId = currentUserData?._id || currentUserData?.id;
-
-  // Helper function to get image URL
-  const getImageUrl = (path) => {
-    if (!path) return null;
-    if (path.startsWith('http')) return path;
-    return `${import.meta.env.VITE_API_URL || 'https://pryde-social.onrender.com'}${path}`;
-  };
 
   // Helper function to format date headers
   const formatDateHeader = (date) => {

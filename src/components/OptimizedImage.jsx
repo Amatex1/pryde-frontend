@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { getImageUrl } from '../utils/imageUrl';
 import './OptimizedImage.css';
 
 /**
@@ -36,13 +37,6 @@ function OptimizedImage({
   const [hasError, setHasError] = useState(false);
   const [isInView, setIsInView] = useState(loading === 'eager');
   const imgRef = useRef(null);
-
-  // Helper function to get image URL
-  const getImageUrl = (path) => {
-    if (!path) return null;
-    if (path.startsWith('http')) return path;
-    return `${import.meta.env.VITE_API_URL || 'https://pryde-social.onrender.com'}${path}`;
-  };
 
   // Intersection Observer for lazy loading
   useEffect(() => {

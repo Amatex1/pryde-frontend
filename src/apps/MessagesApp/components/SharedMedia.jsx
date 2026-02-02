@@ -6,6 +6,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../../utils/api';
 import logger from '../../../utils/logger';
+import { getImageUrl } from '../../../utils/imageUrl';
 
 export default function SharedMedia({ userId }) {
   const [media, setMedia] = useState([]);
@@ -92,12 +93,12 @@ export default function SharedMedia({ userId }) {
                 {imageMedia.map(item => (
                   <a
                     key={item._id}
-                    href={item.attachment}
+                    href={getImageUrl(item.attachment)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="shared-media__item"
                   >
-                    <img src={item.attachment} alt="" loading="lazy" />
+                    <img src={getImageUrl(item.attachment)} alt="" loading="lazy" />
                   </a>
                 ))}
               </div>
