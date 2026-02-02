@@ -126,7 +126,13 @@ export default function MessageBubble({
                       {/* Attachment (Image / Video) */}
                       {attachmentUrl && (
                         <div className="bubble-attachment">
-                          {/\.(jpg|jpeg|png|gif|webp)$/i.test(attachmentUrl) && (
+                          {(attachmentUrl.includes('.jpg') ||
+                            attachmentUrl.includes('.jpeg') ||
+                            attachmentUrl.includes('.png') ||
+                            attachmentUrl.includes('.gif') ||
+                            attachmentUrl.includes('.webp') ||
+                            attachmentUrl.startsWith('data:image') ||
+                            attachmentUrl.includes('/upload/image/')) && (
                             <img
                               src={getImageUrl(attachmentUrl)}
                               alt="Attachment"
@@ -134,7 +140,9 @@ export default function MessageBubble({
                             />
                           )}
 
-                          {/\.(mp4|webm|ogg)$/i.test(attachmentUrl) && (
+                          {(attachmentUrl.includes('.mp4') ||
+                            attachmentUrl.includes('.webm') ||
+                            attachmentUrl.includes('.ogg')) && (
                             <video
                               src={getImageUrl(attachmentUrl)}
                               controls
