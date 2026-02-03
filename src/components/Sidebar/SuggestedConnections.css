@@ -50,10 +50,14 @@
   text-decoration: none;
 }
 
-.suggested-avatar .avatar-image {
+.suggested-avatar .avatar-image,
+.suggested-avatar .optimized-image-container,
+.suggested-avatar .optimized-image-container img,
+.suggested-avatar .optimized-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 50%;
 }
 
 .suggested-info {

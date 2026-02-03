@@ -91,4 +91,13 @@
   }
 }
 
+/* Avatar context - inherit circular shape from parent */
+/* When OptimizedImage is used inside avatar containers, make it circular */
+[class*="avatar"] .optimized-image-container,
+[class*="avatar"] .optimized-image-container img,
+[class*="avatar"] .optimized-image,
+[class*="avatar"] .optimized-image-container .optimized-image {
+  border-radius: 50%;
+}
+
 /* Dark mode support */
