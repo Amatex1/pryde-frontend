@@ -117,26 +117,48 @@ export const sanitizeURL = (url) => {
 };
 
 /**
+ * Decode HTML entities to their corresponding characters
+ * Uses the browser's built-in HTML parser for safe decoding
+ *
+ * @param {string} text - Text with HTML entities
+ * @returns {string} Text with decoded entities
+ */
+export const decodeHTMLEntities = (text) => {
+  if (!text || typeof text !== 'string') {
+    return '';
+  }
+
+  // Use a textarea element to safely decode HTML entities
+  // This is safe because we've already sanitized the content
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = text;
+  return textarea.value;
+};
+
+/**
  * Sanitize post/comment content
  * Preserves line breaks and basic formatting
  * Converts URLs to clickable links (handled by FormattedText component)
- * 
+ * Decodes HTML entities so symbols like > < & display correctly
+ *
  * @param {string} content - Post or comment content
- * @returns {string} Sanitized content
+ * @returns {string} Sanitized content with decoded entities
  */
 export const sanitizeContent = (content) => {
   if (!content || typeof content !== 'string') {
     return '';
   }
-  
+
   // Allow line breaks but strip all other HTML
   const config = {
     ALLOWED_TAGS: ['br'],
     ALLOWED_ATTR: [],
     KEEP_CONTENT: true
   };
-  
-  return DOMPurify.sanitize(content, config);
+
+  // SECURITY: Sanitize first to prevent XSS, then decode entities for display
+  const sanitized = DOMPurify.sanitize(content, config);
+  return decodeHTMLEntities(sanitized);
 };
 
 /**
@@ -187,6 +209,7 @@ export default {
   sanitizeURL,
   sanitizeContent,
   sanitizeMessage,
-  sanitizeObject
+  sanitizeObject,
+  decodeHTMLEntities
 };
 
