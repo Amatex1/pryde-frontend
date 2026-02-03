@@ -93,11 +93,15 @@
 
 /* Avatar context - inherit circular shape from parent */
 /* When OptimizedImage is used inside avatar containers, make it circular */
+/* IMPORTANT: Must override global img { height: auto } rules */
 [class*="avatar"] .optimized-image-container,
 [class*="avatar"] .optimized-image-container img,
 [class*="avatar"] .optimized-image,
 [class*="avatar"] .optimized-image-container .optimized-image {
-  border-radius: 50%;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
 }
 
 /* Dark mode support */

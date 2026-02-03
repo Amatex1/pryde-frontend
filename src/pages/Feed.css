@@ -2507,10 +2507,10 @@ html:not([data-theme]) .post-actions {
 .comment-avatar .optimized-image-container,
 .comment-avatar .optimized-image-container img,
 .comment-avatar .optimized-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
 }
 
 /* Default letter avatar fallback */
