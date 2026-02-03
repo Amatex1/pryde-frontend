@@ -1,6 +1,6 @@
 /**
  * ModerationV3Panel Styles
- * PRYDE_MODERATION_PLATFORM_V3 Admin UI
+ * PRYDE_MODERATION_ROLLOUT_V4 Admin UI
  */
 
 .moderation-v3-panel {
@@ -136,4 +136,172 @@
 .stat-item { text-align: center; padding: 1rem; background: var(--card-bg, #f8f9fa); border-radius: 8px; }
 .stat-value { display: block; font-size: 1.5rem; font-weight: 700; }
 .stat-label { font-size: 0.85rem; color: #666; }
+
+/* V4: Status Row */
+.v4-status-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+.phase-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background: #e3f2fd;
+  color: #1565c0;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* V4: Observation Banner */
+.v4-observe-banner {
+  background: linear-gradient(135deg, #fff3cd, #ffeeba);
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  color: #856404;
+  font-size: 0.9rem;
+}
+
+/* V4: Rollout Section */
+.rollout-section { max-width: 600px; }
+.rollout-section .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.rollout-current {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--card-bg, #f8f9fa);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+.current-phase .phase-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-right: 0.5rem;
+}
+.current-phase .phase-name {
+  color: #666;
+}
+.mode-indicator {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.mode-indicator.live { background: #d4edda; color: #155724; }
+.mode-indicator.shadow { background: #fff3cd; color: #856404; }
+
+/* V4: Read-Only Notice */
+.v4-read-only-notice {
+  background: #e7f3ff;
+  border: 1px solid #b8daff;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.v4-read-only-notice strong { color: #004085; }
+.v4-read-only-notice p { margin: 0.5rem 0 0; color: #555; font-size: 0.9rem; }
+
+/* V4: Enabled Actions Grid */
+.enabled-actions { margin-bottom: 1.5rem; }
+.enabled-actions h4 { margin-bottom: 0.75rem; }
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+}
+.action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 2px solid #ddd;
+  transition: all 0.2s;
+}
+.action-item.enabled {
+  background: #d4edda;
+  border-color: #28a745;
+}
+.action-item.disabled {
+  background: #f8f9fa;
+  border-color: #ddd;
+  opacity: 0.6;
+}
+.action-item .action-icon { font-size: 1.5rem; margin-bottom: 0.25rem; }
+.action-item .action-name { font-size: 0.75rem; font-weight: 600; }
+.action-item .action-status { font-size: 0.85rem; margin-top: 0.25rem; }
+
+/* V4: Phases List */
+.rollout-phases { margin-bottom: 1.5rem; }
+.rollout-phases h4 { margin-bottom: 0.75rem; }
+.phases-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.phase-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #f8f9fa;
+}
+.phase-item.current {
+  background: #e3f2fd;
+  border-color: #1565c0;
+  border-width: 2px;
+}
+.phase-item.completed {
+  background: #d4edda;
+  border-color: #28a745;
+}
+.phase-item .phase-num {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ddd;
+  border-radius: 50%;
+  font-weight: 700;
+}
+.phase-item.current .phase-num { background: #1565c0; color: white; }
+.phase-item.completed .phase-num { background: #28a745; color: white; }
+.phase-item .phase-info strong { display: block; }
+.phase-item .phase-info small { color: #666; font-size: 0.8rem; }
+
+/* V4: Rollout Guidance */
+.rollout-guidance {
+  background: #f0f7ff;
+  border-radius: 8px;
+  padding: 1rem;
+}
+.rollout-guidance h4 { margin-bottom: 0.5rem; }
+.rollout-guidance ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+.rollout-guidance li {
+  margin-bottom: 0.25rem;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+/* V4: Mode Rollout Summary */
+.mode-rollout-summary {
+  background: #f8f9fa;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+.mode-rollout-summary p { margin: 0.25rem 0; font-size: 0.9rem; }
+.mode-rollout-summary .enabled-summary { color: #666; }
 
