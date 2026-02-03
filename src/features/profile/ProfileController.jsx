@@ -38,7 +38,7 @@ const EditProfileModal = lazy(() => import('../../components/EditProfileModal'))
 import { useModal } from '../../hooks/useModal';
 import { useToast } from '../../hooks/useToast';
 import api from '../../utils/api';
-import { getCurrentUser } from '../../utils/auth';
+import { useAuth } from '../../context/AuthContext';
 import { setupSocketListeners } from '../../utils/socketHelpers';
 import logger from '../../utils/logger';
 import './ProfileController.css';
@@ -48,7 +48,7 @@ export default function ProfileController() {
   const navigate = useNavigate();
   // Get menu handler from AppLayout outlet context
   const { onMenuOpen } = useOutletContext() || {};
-  const currentUser = getCurrentUser();
+  const { user: currentUser } = useAuth(); // Use centralized auth context
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const { toasts, showToast, removeToast } = useToast();
 

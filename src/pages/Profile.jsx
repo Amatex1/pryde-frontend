@@ -25,7 +25,7 @@ import PollCreator from '../components/PollCreator';
 import DraftManager from '../components/DraftManager';
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
-import { getCurrentUser } from '../utils/auth';
+import { useAuth } from '../context/AuthContext';
 import { getImageUrl } from '../utils/imageUrl';
 import { useToast } from '../hooks/useToast';
 import { convertEmojiShortcuts } from '../utils/textFormatting';
@@ -44,7 +44,7 @@ function Profile() {
   const navigate = useNavigate();
   // Get menu handler from AppLayout outlet context
   const { onMenuOpen } = useOutletContext() || {};
-  const currentUser = getCurrentUser();
+  const { user: currentUser } = useAuth(); // Use centralized auth context
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const [user, setUser] = useState(null);
   const [userBadges, setUserBadges] = useState([]); // Full badge objects with visibility applied
