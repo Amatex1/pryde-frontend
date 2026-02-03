@@ -305,3 +305,67 @@
 .mode-rollout-summary p { margin: 0.25rem 0; font-size: 0.9rem; }
 .mode-rollout-summary .enabled-summary { color: #666; }
 
+/* V5: Observation Guidance */
+.v5-observation-guidance {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  border: 1px solid #90caf9;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+.v5-observation-guidance h4 {
+  margin: 0 0 0.75rem;
+  color: #1565c0;
+}
+.v5-observation-guidance ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+.v5-observation-guidance li {
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-size: 0.9rem;
+}
+.v5-observation-guidance .v5-warning {
+  margin: 0.75rem 0 0;
+  padding: 0.5rem 0.75rem;
+  background: #fff3cd;
+  border-radius: 6px;
+  color: #856404;
+  font-size: 0.85rem;
+}
+
+/* V5: Reserved Actions Note */
+.v5-reserved-note {
+  margin-top: 0.75rem;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+/* V5: Action Grid for 2 items */
+.action-grid.v5-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* V5: Read-Only Banner */
+.v5-read-only-banner {
+  background: #e7f3ff;
+  border: 1px solid #b8daff;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  text-align: center;
+}
+.v5-read-only-banner strong { color: #004085; display: block; margin-bottom: 0.5rem; }
+.v5-read-only-banner p { margin: 0; color: #555; font-size: 0.9rem; }
+
+/* V5: 4-column stats grid */
+.mode-stats .stats-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 768px) {
+  .mode-stats .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,16 +1,16 @@
 /**
- * ModerationV3Panel - PRYDE_MODERATION_ROLLOUT_V4 Admin UI
+ * ModerationV3Panel - PRYDE_MODERATION_SAFE_ROLLOUT_V5 Admin UI
  *
- * Frontend component for V4 moderation governance:
+ * Frontend component for V5 moderation governance:
  * - Event Stream: Real-time moderation events (read-only)
  * - Rollout Status: Current phase and enabled actions
  * - Simulation: Test content through pipeline
- * - Shadow Mode: Default safe mode for observation
  *
- * V4 RULES:
- * - Shadow mode by default
- * - Read-only visibility first
- * - Admins observe before acting
+ * V5 SAFE ROLLOUT RULES:
+ * - Shadow mode by default (7-day minimum observation)
+ * - TRULY READ-ONLY: No mode toggle, no enforcement controls
+ * - Limited to NOTE and DAMPEN only
+ * - Admins observe before any enforcement
  * - Frontend never recalculates moderation logic
  */
 
@@ -32,14 +32,14 @@ const EXPLANATION_LABELS = Object.fromEntries(
   ])
 );
 
-export default function ModerationV3Panel({ showAlert, showConfirm }) {
+export default function ModerationV3Panel({ showAlert }) {
   const [activeSection, setActiveSection] = useState('events');
   const [events, setEvents] = useState([]);
   const [settings, setSettings] = useState(null);
-  const [mode, setMode] = useState('SHADOW'); // V4: Default to SHADOW
+  const [mode, setMode] = useState('SHADOW'); // V5: Default to SHADOW, read-only
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
-  const [rollout, setRollout] = useState(null); // V4: Rollout status
+  const [rollout, setRollout] = useState(null); // V5: Rollout status
 
   // Simulation state
   const [simContent, setSimContent] = useState('');
@@ -58,41 +58,22 @@ export default function ModerationV3Panel({ showAlert, showConfirm }) {
         api.get('/admin/moderation-v2/mode'),
         api.get('/admin/moderation-v2/settings'),
         api.get('/admin/moderation-v2/stats'),
-        api.get('/admin/moderation-v2/rollout') // V4: Get rollout status
+        api.get('/admin/moderation-v2/rollout') // V5: Get rollout status
       ]);
       setEvents(eventsRes.data.events || []);
-      setMode(modeRes.data.mode || 'SHADOW'); // V4: Default SHADOW
+      setMode(modeRes.data.mode || 'SHADOW'); // V5: Default SHADOW
       setSettings(settingsRes.data.settings || {});
       setStats(statsRes.data.stats || {});
-      setRollout(rolloutRes.data || null); // V4: Rollout data
+      setRollout(rolloutRes.data || null); // V5: Rollout data
     } catch (error) {
-      console.error('Load V4 data error:', error);
+      console.error('Load V5 data error:', error);
       showAlert?.('Failed to load moderation data', 'Error');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleToggleMode = async () => {
-    const newMode = mode === 'LIVE' ? 'SHADOW' : 'LIVE';
-    const confirmed = await showConfirm?.(
-      `Switch to ${newMode} mode? ${newMode === 'SHADOW' 
-        ? 'All layers will execute but NO penalties will apply.' 
-        : 'Penalties will apply to users.'}`,
-      'Change Moderation Mode',
-      `Switch to ${newMode}`,
-      'Cancel'
-    );
-    if (!confirmed) return;
-
-    try {
-      await api.put('/admin/moderation-v2/mode', { mode: newMode });
-      setMode(newMode);
-      showAlert?.(`Moderation mode set to ${newMode}`, 'Success');
-    } catch (error) {
-      showAlert?.(error.response?.data?.message || 'Failed to change mode', 'Error');
-    }
-  };
+  // V5: Mode toggle REMOVED - read-only panel
 
   const handleSimulate = async () => {
     if (!simContent.trim()) return;
@@ -111,13 +92,13 @@ export default function ModerationV3Panel({ showAlert, showConfirm }) {
   };
 
   if (loading) {
-    return <div className="v3-loading">Loading V4 Moderation Panel...</div>;
+    return <div className="v3-loading">Loading V5 Moderation Panel...</div>;
   }
 
   return (
     <div className="moderation-v3-panel">
       <div className="v3-header">
-        <h2>🛡️ Moderation V4</h2>
+        <h2>🛡️ Moderation V5 (Safe Rollout)</h2>
         <div className="v4-status-row">
           <div className={`mode-badge ${mode.toLowerCase()}`}>
             {mode === 'LIVE' ? '🟢 LIVE' : '🟡 SHADOW'}
@@ -130,14 +111,26 @@ export default function ModerationV3Panel({ showAlert, showConfirm }) {
         </div>
       </div>
 
-      {/* V4: Read-only observation reminder */}
+      {/* V5: 7-day observation period guidance */}
+      <div className="v5-observation-guidance">
+        <h4>📋 V5 Safe Rollout Process</h4>
+        <ol>
+          <li><strong>Phase 0 (Shadow):</strong> All layers execute, no penalties. Observe for 7 days minimum.</li>
+          <li><strong>Phase 1 (Logging):</strong> NOTE action enabled. Observe for 48-72 hours.</li>
+          <li><strong>Phase 2 (Dampening):</strong> DAMPEN enabled (non-punitive). STOP and observe.</li>
+        </ol>
+        <p className="v5-warning">⚠️ Do not enable additional actions until false positives are rare and admins trust the system.</p>
+      </div>
+
+      {/* V5: Read-only observation reminder */}
       {mode === 'SHADOW' && (
         <div className="v4-observe-banner">
-          🔍 <strong>Observation Mode:</strong> All layers execute but NO penalties apply.
-          Review events and tune rules before enabling enforcement.
+          🔍 <strong>Shadow Mode Active:</strong> All layers execute but NO penalties apply.
+          Review events below before considering any enforcement.
         </div>
       )}
 
+      {/* V5: Removed Mode tab - truly read-only */}
       <div className="v3-tabs">
         <button className={activeSection === 'events' ? 'active' : ''}
                 onClick={() => setActiveSection('events')}>📋 Events</button>
@@ -145,16 +138,13 @@ export default function ModerationV3Panel({ showAlert, showConfirm }) {
                 onClick={() => setActiveSection('rollout')}>📊 Rollout</button>
         <button className={activeSection === 'simulate' ? 'active' : ''}
                 onClick={() => setActiveSection('simulate')}>🧪 Simulate</button>
-        <button className={activeSection === 'rules' ? 'active' : ''}
-                onClick={() => setActiveSection('rules')}>⚙️ Rules</button>
-        <button className={activeSection === 'mode' ? 'active' : ''}
-                onClick={() => setActiveSection('mode')}>🎚️ Mode</button>
+        <button className={activeSection === 'status' ? 'active' : ''}
+                onClick={() => setActiveSection('status')}>📈 Status</button>
       </div>
 
       <div className="v3-content">
         {activeSection === 'events' && <EventsSection events={events} onRefresh={loadData} />}
         {activeSection === 'rollout' && <RolloutSection rollout={rollout} onRefresh={loadData} />}
-        {activeSection === 'rules' && <RulesSection settings={settings} onRefresh={loadData} showAlert={showAlert} />}
         {activeSection === 'simulate' && (
           <SimulateSection
             content={simContent}
@@ -164,8 +154,8 @@ export default function ModerationV3Panel({ showAlert, showConfirm }) {
             simulating={simulating}
           />
         )}
-        {activeSection === 'mode' && (
-          <ModeSection mode={mode} onToggle={handleToggleMode} stats={stats} rollout={rollout} />
+        {activeSection === 'status' && (
+          <StatusSection mode={mode} stats={stats} rollout={rollout} />
         )}
       </div>
     </div>
@@ -313,7 +303,7 @@ function SimulateSection({ content, setContent, result, onSimulate, simulating }
   );
 }
 
-// V4: Rollout status section
+// V5: Rollout status section - read-only, NOTE/DAMPEN only
 function RolloutSection({ rollout, onRefresh }) {
   if (!rollout) {
     return <div className="rollout-section"><p>Loading rollout status...</p></div>;
@@ -322,10 +312,13 @@ function RolloutSection({ rollout, onRefresh }) {
   const phases = rollout.phases || [];
   const enabledActions = rollout.enabledActions || {};
 
+  // V5: Only show NOTE and DAMPEN actions
+  const v5Actions = ['NOTE', 'DAMPEN'];
+
   return (
     <div className="rollout-section">
       <div className="section-header">
-        <h3>📊 Rollout Status</h3>
+        <h3>📊 Rollout Status (V5 Safe Rollout)</h3>
         <button onClick={onRefresh} className="refresh-btn">🔄 Refresh</button>
       </div>
 
@@ -340,27 +333,30 @@ function RolloutSection({ rollout, onRefresh }) {
       </div>
 
       <div className="v4-read-only-notice">
-        <strong>🔍 Read-Only View</strong>
-        <p>This panel shows the current rollout status. To enable actions, use the super_admin console with escalation.</p>
+        <strong>🔒 Read-Only Panel</strong>
+        <p>V5 Safe Rollout is limited to observation only. No enforcement controls are available in this UI.</p>
       </div>
 
       <div className="enabled-actions">
-        <h4>Enabled Actions</h4>
-        <div className="action-grid">
-          {['NOTE', 'DAMPEN', 'REVIEW', 'MUTE', 'BLOCK'].map(action => (
+        <h4>V5 Actions (NOTE + DAMPEN only)</h4>
+        <div className="action-grid v5-grid">
+          {v5Actions.map(action => (
             <div key={action} className={`action-item ${enabledActions[action] ? 'enabled' : 'disabled'}`}>
               <span className="action-icon">{ACTION_LABELS[action]?.icon}</span>
               <span className="action-name">{action}</span>
-              <span className="action-status">{enabledActions[action] ? '✓' : '○'}</span>
+              <span className="action-status">{enabledActions[action] ? '✓ Enabled' : '○ Disabled'}</span>
             </div>
           ))}
         </div>
+        <p className="v5-reserved-note">
+          <em>REVIEW, MUTE, BLOCK are reserved for future phases after system is proven stable.</em>
+        </p>
       </div>
 
       <div className="rollout-phases">
-        <h4>Rollout Phases</h4>
+        <h4>V5 Rollout Phases</h4>
         <div className="phases-list">
-          {phases.map(phase => (
+          {phases.slice(0, 3).map(phase => (
             <div
               key={phase.phase}
               className={`phase-item ${rollout.currentPhase === phase.phase ? 'current' : ''} ${rollout.currentPhase > phase.phase ? 'completed' : ''}`}
@@ -376,22 +372,24 @@ function RolloutSection({ rollout, onRefresh }) {
       </div>
 
       <div className="rollout-guidance">
-        <h4>📋 Rollout Guidelines</h4>
+        <h4>📋 V5 Rollout Guidelines</h4>
         <ul>
+          <li>Shadow mode first - observe for <strong>7 days minimum</strong></li>
           <li>Enable <strong>one action at a time</strong></li>
-          <li>Observe for <strong>48-72 hours</strong> before proceeding</li>
+          <li>Observe for <strong>48-72 hours</strong> between phases</li>
           <li>Review false positives in Events tab</li>
-          <li>Adjust rules as needed before enabling next action</li>
+          <li><strong>STOP after DAMPEN</strong> - do not proceed further until system is trusted</li>
         </ul>
       </div>
     </div>
   );
 }
 
-function ModeSection({ mode, onToggle, stats, rollout }) {
+// V5: Read-only status section (replaces ModeSection)
+function StatusSection({ mode, stats, rollout }) {
   return (
     <div className="mode-section">
-      <h3>🎚️ Moderation Mode</h3>
+      <h3>📈 System Status (Read-Only)</h3>
 
       <div className={`mode-display ${mode.toLowerCase()}`}>
         <span className="mode-icon">{mode === 'LIVE' ? '🟢' : '🟡'}</span>
@@ -400,25 +398,29 @@ function ModeSection({ mode, onToggle, stats, rollout }) {
 
       <div className="mode-description">
         {mode === 'LIVE' ? (
-          <p>Moderation is <strong>active</strong>. Enabled actions apply to users.</p>
+          <p>Moderation is <strong>active</strong>. Enabled actions (NOTE, DAMPEN only) apply to content.</p>
         ) : (
-          <p>Moderation is in <strong>shadow mode</strong>. All layers execute but NO penalties apply. Use this to observe before enabling enforcement.</p>
+          <p>Moderation is in <strong>shadow mode</strong>. All layers execute but NO penalties apply.</p>
         )}
       </div>
 
-      {/* V4: Show current phase and enabled actions */}
+      {/* V5: Show current phase and enabled actions (read-only) */}
       {rollout && (
         <div className="mode-rollout-summary">
           <p>Current Phase: <strong>{rollout.currentPhase} - {rollout.phaseName}</strong></p>
           <p className="enabled-summary">
-            Enabled: {Object.entries(rollout.enabledActions || {}).filter(([,v]) => v).map(([k]) => k).join(', ') || 'None'}
+            Enabled: {Object.entries(rollout.enabledActions || {})
+              .filter(([k, v]) => v && ['NOTE', 'DAMPEN'].includes(k))
+              .map(([k]) => k).join(', ') || 'None'}
           </p>
         </div>
       )}
 
-      <button onClick={onToggle} className={`mode-toggle-btn ${mode.toLowerCase()}`}>
-        Switch to {mode === 'LIVE' ? 'SHADOW' : 'LIVE'} Mode
-      </button>
+      {/* V5: No toggle button - read-only */}
+      <div className="v5-read-only-banner">
+        <strong>🔒 Read-Only Panel</strong>
+        <p>Mode changes are not available in V5 Safe Rollout UI. Contact super_admin for system changes.</p>
+      </div>
 
       {stats && (
         <div className="mode-stats">
@@ -426,11 +428,19 @@ function ModeSection({ mode, onToggle, stats, rollout }) {
           <div className="stats-grid">
             <div className="stat-item">
               <span className="stat-value">{stats.totalEvents || 0}</span>
-              <span className="stat-label">Events</span>
+              <span className="stat-label">Total Events</span>
             </div>
             <div className="stat-item">
               <span className="stat-value">{stats.shadowEvents || 0}</span>
               <span className="stat-label">Shadow Events</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-value">{stats.noteActions || 0}</span>
+              <span className="stat-label">NOTE Actions</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-value">{stats.dampenActions || 0}</span>
+              <span className="stat-label">DAMPEN Actions</span>
             </div>
           </div>
         </div>
