@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Link, useOutletContext } from 'react-router-d
 import Navbar from '../components/Navbar';
 import CustomModal from '../components/CustomModal';
 import OptimizedImage from '../components/OptimizedImage';
+import ModerationV3Panel from '../components/admin/ModerationV3Panel';
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
@@ -631,6 +632,12 @@ function Admin() {
           >
             🔧 Moderation
           </button>
+          <button
+            className={`admin-tab ${activeTab === 'moderation-v3' ? 'active' : ''}`}
+            onClick={() => handleTabChange('moderation-v3')}
+          >
+            🛡️ Moderation V3
+          </button>
         </div>
 
         <div className="admin-content">
@@ -691,6 +698,12 @@ function Admin() {
               showAlert={showAlert}
               showConfirm={showConfirm}
               showPrompt={showPrompt}
+            />
+          )}
+          {activeTab === 'moderation-v3' && (
+            <ModerationV3Panel
+              showAlert={showAlert}
+              showConfirm={showConfirm}
             />
           )}
         </div>
