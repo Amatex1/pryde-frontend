@@ -293,7 +293,7 @@ div.profile-layout,
 
 /* Cover Photo - Atmosphere */
 .profile-cover {
-  height: 260px;
+  height: 200px;
   width: 100%;
   overflow: hidden;
   background: var(--gradient-primary);
@@ -348,13 +348,13 @@ div.profile-layout,
 
 /* Profile Card - Stability */
 .profile-card {
-  padding: 24px;
+  padding: 16px;
   border-radius: 16px;
   background: transparent;
   box-shadow: none;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   align-items: start;
 }
 
@@ -737,10 +737,14 @@ div.profile-layout,
 /* Stats */
 .profile-stats {
   display: flex;
-  gap: 24px;
+  flex-direction: column;
+  gap: 12px;
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid var(--border-subtle);
+  grid-column: 2;
+  grid-row: 1 / -1;
+  align-self: start;
 }
 
 .stat-item {
@@ -4086,7 +4090,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 /* Base styles for profile-identity wrapper */
 .profile-header .profile-identity {
-  display: flex;
+ display: flex;
   flex-direction: column;
   width: 100%;
 }
@@ -4190,7 +4194,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
   /* Cover Photo - Compact height with rounded top corners */
   .profile-cover {
-    height: 240px;
+    height: 200px;
     border-radius: 16px 16px 0 0;
     overflow: hidden;
   }
@@ -4226,6 +4230,10 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     background: rgba(18, 18, 30, 0.72);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: start;
   }
 
   [data-theme="light"] .profile-header .profile-identity .profile-card.profile-card--hybrid {
@@ -4261,6 +4269,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     max-width: 720px;
     line-height: 1.45;
     padding: 0;
+    grid-column: 1 / -1;
   }
 
   /* Stats - Less blocky, secondary emphasis */
@@ -4268,9 +4277,13 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     margin-top: 14px;
     padding-top: 10px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
-    gap: 26px;
+    gap: 12px;
     opacity: 0.9;
     justify-content: flex-start;
+    flex-direction: column;
+    grid-column: 2;
+    grid-row: 1 / -1;
+    align-self: start;
   }
 
   [data-theme="light"] .profile-identity .profile-card--hybrid .profile-stats {
@@ -4282,11 +4295,13 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     margin-top: 16px;
     margin-left: 0;
     justify-content: flex-start;
+    grid-column: 1;
   }
 
   /* Identity pills - Left aligned */
   .profile-identity .profile-card--hybrid .profile-identity-pills {
     justify-content: flex-start;
+    grid-column: 1;
   }
 
   /* Content area - Reduce vertical waste */
