@@ -626,17 +626,21 @@ function Admin() {
           >
             🏅 Badges
           </button>
+          {/* PRYDE_LEGACY_MODERATION_PASSIVE_MODE: Legacy moderation tab hidden
+              Legacy system is now in PASSIVE mode - V5 is the sole enforcement authority.
+              Tab kept for backward compatibility but unreachable via nav.
           <button
             className={`admin-tab ${activeTab === 'moderation' ? 'active' : ''}`}
             onClick={() => handleTabChange('moderation')}
           >
             🔧 Moderation
           </button>
+          */}
           <button
             className={`admin-tab ${activeTab === 'moderation-v3' ? 'active' : ''}`}
             onClick={() => handleTabChange('moderation-v3')}
           >
-            🛡️ Moderation V3
+            🛡️ Moderation V5
           </button>
         </div>
 
