@@ -1855,48 +1855,69 @@ function Profile() {
             <div className="mobile-profile-sidebar">
               {/* Interests */}
               {user.interests && user.interests.length > 0 && (
-                <div className="sidebar-card glossy fade-in">
-                  <h3 className="sidebar-title">🏷️ Interests</h3>
+                <div className="profile-rail-section">
+                  <h3 className="profile-rail-section-title">🏷️ Interests</h3>
                   <div className="interests-tags">
                     {user.interests.map((interest, index) => (
-                      <span key={index} className="interest-tag">{interest}</span>
+                      <span key={index} className="interest-chip">{interest}</span>
                     ))}
                   </div>
+                  <div className="profile-rail-divider"></div>
                 </div>
               )}
 
               {/* Looking For */}
               {user.lookingFor && user.lookingFor.length > 0 && (
-                <div className="sidebar-card glossy fade-in">
-                  <h3 className="sidebar-title">🔍 Looking For</h3>
-                  <div className="looking-for-list">
+                <div className="profile-rail-section">
+                  <h3 className="profile-rail-section-title">🔍 Looking For</h3>
+                  <div className="looking-for-grid">
                     {user.lookingFor.map((item, index) => (
-                      <span key={index} className="looking-for-item">
-                        {item === 'friends' && '👥 Friends'}
-                        {item === 'support' && '🤝 Support'}
-                        {item === 'community' && '🌈 Community'}
-                        {item === 'networking' && '💼 Networking'}
-                      </span>
+                      <div key={index} className="looking-for-item">
+                        <span className="looking-for-icon">
+                          {item === 'friends' && '👥'}
+                          {item === 'support' && '🤝'}
+                          {item === 'community' && '🌈'}
+                          {item === 'networking' && '💼'}
+                        </span>
+                        <span className="looking-for-label">
+                          {item === 'friends' && 'Friends'}
+                          {item === 'support' && 'Support'}
+                          {item === 'community' && 'Community'}
+                          {item === 'networking' && 'Networking'}
+                        </span>
+                      </div>
                     ))}
                   </div>
+                  <div className="profile-rail-divider"></div>
                 </div>
               )}
 
               {/* Social Links */}
               {user.socialLinks && user.socialLinks.length > 0 && (
-                <div className="sidebar-card glossy fade-in">
-                  <h3 className="sidebar-title">🔗 Social Links</h3>
-                  <div className="social-links-list">
+                <div className="profile-rail-section">
+                  <h3 className="profile-rail-section-title">🔗 Social Links</h3>
+                  <div className="social-links-inline">
                     {user.socialLinks.map((link, index) => (
                       <a
                         key={index}
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="social-link"
+                        className="social-link-item"
                       >
-                        <strong>{link.platform}</strong>
-                        <span className="link-arrow">→</span>
+                        <span className="social-platform-icon">
+                          {link.platform === 'Twitter' && '🐦'}
+                          {link.platform === 'Instagram' && '📷'}
+                          {link.platform === 'Facebook' && '📘'}
+                          {link.platform === 'LinkedIn' && '💼'}
+                          {link.platform === 'GitHub' && '💻'}
+                          {link.platform === 'YouTube' && '📺'}
+                          {link.platform === 'TikTok' && '🎵'}
+                          {link.platform === 'Website' && '🌐'}
+                          {!['Twitter', 'Instagram', 'Facebook', 'LinkedIn', 'GitHub', 'YouTube', 'TikTok', 'Website'].includes(link.platform) && '🔗'}
+                        </span>
+                        <span className="social-platform-label">{link.platform}</span>
+                        <span className="social-external-arrow">↗</span>
                       </a>
                     ))}
                   </div>

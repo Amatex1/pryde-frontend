@@ -1025,14 +1025,15 @@ div.profile-layout,
   gap: 0.5rem;
 }
 
-.interest-tag {
+.interest-chip {
   display: inline-block;
-  padding: 0.5rem 0.75rem;
-  background: linear-gradient(135deg, #6C5CE7 0%, #0984E3 100%);
-  color: white;
-  border-radius: 20px;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  padding: 0.375rem 0.625rem;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-radius: 16px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  border: 1px solid var(--border-subtle);
 }
 
 /* Looking For */
@@ -1050,6 +1051,107 @@ div.profile-layout,
   border-radius: 8px;
   font-size: var(--font-size-sm);
   color: var(--text-main);
+}
+
+.looking-for-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.looking-for-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-main);
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.looking-for-item:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.looking-for-icon {
+  font-size: var(--font-size-xl);
+  margin-bottom: 0.25rem;
+}
+
+.looking-for-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+}
+
+/* Mobile: Single column */
+@media (max-width: 768px) {
+  .looking-for-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .looking-for-item {
+    flex-direction: row;
+    text-align: left;
+    padding: 0.625rem 0.875rem;
+  }
+
+  .looking-for-icon {
+    margin-bottom: 0;
+    margin-right: 0.5rem;
+  }
+
+  .looking-for-label {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* Social Links */
+.social-links-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.social-link-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--text-main);
+  transition: all 0.2s ease;
+  font-size: var(--font-size-sm);
+}
+
+.social-link-item:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  transform: translateX(2px);
+}
+
+.social-platform-icon {
+  font-size: var(--font-size-lg);
+  flex-shrink: 0;
+}
+
+.social-platform-label {
+  flex: 1;
+  font-weight: var(--font-weight-medium);
+}
+
+.social-external-arrow {
+  font-size: var(--font-size-sm);
+  opacity: 0.6;
+  flex-shrink: 0;
 }
 
 /* Social Links */
