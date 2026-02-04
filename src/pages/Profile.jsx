@@ -1709,7 +1709,19 @@ function Profile() {
           <div className="profile-identity">
             {/* Profile Card - Hybrid layout with identity content */}
             <div className="profile-card profile-card--hybrid">
-                {/* PART A: Identity Row - Name + Username + Badges in one horizontal row */}
+                {/* 1. Display Name (largest) */}
+                <h1 className="profile-name">
+                  {user.displayName || user.fullName || user.username}
+                  {user.nickname &&
+                   user.nickname !== user.displayName &&
+                   user.nickname !== user.username &&
+                   <span className="nickname"> "{user.nickname}"</span>}
+                </h1>
+
+                {/* 2. @handle (muted) */}
+                <p className="profile-username">@{user.username}</p>
+
+                {/* PART A: Identity Row - Pronouns, gender, orientation, age, location badges */}
                 <div className="profile-identity-row">
                   {/* 5. Pronouns & tags */}
                   <div className="profile-identity-pills">
@@ -1742,20 +1754,13 @@ function Profile() {
                         })()} years old
                       </span>
                     )}
+                    {user.location && (
+                      <span className="badge">
+                        📍 {sanitizeText(user.location)}
+                      </span>
+                    )}
                   </div>
                 </div>
-
-                {/* 1. Display Name (largest) */}
-                <h1 className="profile-name">
-                  {user.displayName || user.fullName || user.username}
-                  {user.nickname &&
-                   user.nickname !== user.displayName &&
-                   user.nickname !== user.username &&
-                   <span className="nickname"> "{user.nickname}"</span>}
-                </h1>
-
-                {/* 2. @handle (muted) */}
-                <p className="profile-username">@{user.username}</p>
 
                 {/* 3. Founder / Creator role (single elegant pill) */}
                 <TieredBadgeDisplay badges={userBadges} context="profile" isOwnProfile={isOwnProfile} onEditBadges={() => setEditProfileModal(true)} />
@@ -1763,11 +1768,8 @@ function Profile() {
                 {/* 6. Bio */}
                 {user.bio && <p className="profile-bio">{sanitizeBio(user.bio)}</p>}
 
-                {/* Meta info (location, website) */}
+                {/* Meta info (website only, location moved to badges) */}
                 <div className="profile-meta">
-                  {user.location && (
-                    <span className="meta-item">📍 {sanitizeText(user.location)}</span>
-                  )}
                   {user.website && (
                     <a href={sanitizeURL(user.website)} target="_blank" rel="noopener noreferrer" className="meta-item">
                       🔗 {sanitizeText(user.website)}
