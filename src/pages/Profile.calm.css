@@ -84,30 +84,44 @@
   object-fit: cover;
 }
 
-/* Profile details: Vertical stack, centered */
+/* Profile details: Grid layout with inline name+username, centered */
 .profile-details {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+  display: grid;
+  grid-template-columns: max-content auto;
+  column-gap: 0.5rem;
+  row-gap: 0.5rem;
+  align-items: baseline;
+  justify-content: center;
   text-align: center;
   width: 100%;
 }
 
-/* Display name: Prominent but calm */
+/* Display name: Prominent but calm - inline with username */
 .profile-name {
   font-size: 1.75rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
   text-shadow: none; /* Remove decorative shadow */
+  grid-column: 1;
+  grid-row: 1;
 }
 
-/* Username: Muted, secondary */
+/* Username: Muted, secondary - inline with display name */
 .profile-username {
   font-size: 1rem;
   color: var(--text-muted);
   margin: 0;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: baseline;
+}
+
+/* Grid: All elements below name/username span both columns */
+.profile-details .profile-badges,
+.profile-details .profile-bio,
+.profile-details .profile-stats {
+  grid-column: 1 / -1;
 }
 
 /* Pronouns/age pills: Flat, muted */

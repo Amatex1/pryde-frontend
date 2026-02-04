@@ -12,22 +12,21 @@
  */
 
 .profile-identity-spine {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  display: grid;
+  grid-template-columns: max-content auto;
+  column-gap: 0.5rem;
+  row-gap: 0.75rem;
   padding: 1.5rem;
   max-width: 100%;
+  align-items: baseline;
 }
 
 /* ────────────────────────────────────────
-   NAME ROW: Display Name + Role Icon
+   NAME ROW: Display Name + Role Icon + Username (inline)
    ──────────────────────────────────────── */
 
 .pis-name-row {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  display: contents; /* Flatten so h1 becomes direct grid child */
 }
 
 .pis-display-name {
@@ -38,6 +37,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  grid-column: 1;
+  grid-row: 1;
 }
 
 /* Role Icon: Small, calm, next to name */
@@ -58,7 +59,7 @@
 }
 
 /* ────────────────────────────────────────
-   USERNAME
+   USERNAME: Inline with display name
    ──────────────────────────────────────── */
 
 .pis-username {
@@ -66,6 +67,21 @@
   color: var(--text-secondary);
   margin: 0;
   font-weight: 500;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: baseline;
+}
+
+/* ────────────────────────────────────────
+   GRID: All elements below name/username span both columns
+   ──────────────────────────────────────── */
+
+.pis-role-sublabel,
+.pis-public-badges,
+.pis-traits,
+.pis-bio,
+.pis-stats {
+  grid-column: 1 / -1;
 }
 
 /* ────────────────────────────────────────

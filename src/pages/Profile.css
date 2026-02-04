@@ -491,23 +491,27 @@ div.profile-layout,
 
 /* Identity Stack */
 .profile-identity {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: max-content auto;
+  column-gap: 0.5rem;
+  row-gap: 12px;
   min-width: 0; /* Allow text truncation */
+  align-items: baseline;
 }
 
-/* 1. Display Name (largest) */
+/* 1. Display Name (largest) - inline with username */
 .profile-name {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
   color: var(--text-primary);
-  margin: 0 0 6px 0;
-  display: flex;
+  margin: 0;
+  display: inline-flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
   line-height: 1.2;
+  grid-column: 1;
+  grid-row: 1;
 }
 
 .profile-name .verified-badge {
@@ -612,13 +616,25 @@ div.profile-layout,
   font-weight: var(--font-weight-normal);
 }
 
-/* 2. @handle (muted) */
+/* 2. @handle (muted) - inline with display name */
 .profile-username {
   color: var(--text-muted);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-normal);
   margin: 0;
   opacity: 0.6;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: baseline;
+}
+
+/* Grid: All elements below name/username span both columns */
+.profile-identity .tiered-badge-display,
+.profile-identity .profile-identity-pills,
+.profile-identity .profile-bio,
+.profile-identity .profile-stats,
+.profile-identity .profile-action-buttons {
+  grid-column: 1 / -1;
 }
 
 /* 5. Pronouns & tags */
@@ -3793,11 +3809,14 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   font-style: italic;
 }
 
-/* Username: Muted, secondary */
+/* Username: Muted, secondary - inline with display name */
 .profile-username {
   font-size: var(--font-size-base);
   color: var(--text-muted);
   margin: 0;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: baseline;
 }
 
 /* Bio: Readable, centered */
