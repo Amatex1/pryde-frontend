@@ -64,8 +64,8 @@ function TieredBadgeDisplay({ badges = [], context = 'profile', isOwnProfile = f
   const renderMoreTrigger = () => {
     if (remainingBadges.length === 0) return null;
 
-    const handleClick = context === 'card' ? () => setExpanded(!expanded) : () => setModalOpen(true);
-    const buttonText = context === 'card' && expanded ? 'Minimise' : `View ${remainingBadges.length} more`;
+    const handleClick = (context === 'card' || context === 'profile') ? () => setExpanded(!expanded) : () => setModalOpen(true);
+    const buttonText = (context === 'card' || context === 'profile') && expanded ? 'Minimise' : `View ${remainingBadges.length} more`;
 
     return (
       <button
@@ -78,9 +78,9 @@ function TieredBadgeDisplay({ badges = [], context = 'profile', isOwnProfile = f
     );
   };
 
-  // Expanded badges for card context
+  // Expanded badges for card and profile contexts
   const renderExpandedBadges = () => {
-    if (context !== 'card' || !expanded || remainingBadges.length === 0) return null;
+    if ((context !== 'card' && context !== 'profile') || !expanded || remainingBadges.length === 0) return null;
 
     return (
       <div className="badge-expanded-row">

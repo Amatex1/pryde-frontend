@@ -4294,15 +4294,15 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
   /* Name - Compact spacing */
   .profile-identity .profile-card--hybrid .profile-name {
-    margin: 0 0 4px 0;
+    margin: 0 0 2px 0;
     font-size: var(--font-size-2xl);
     text-align: left;
   }
 
 /* Handle - Muted appearance, positioned directly under name */
 .profile-identity .profile-card--hybrid .profile-username {
-  margin: 0 0 4px 0;
-  opacity: 0.6;
+  margin: 0 0 2px 0;
+  opacity: 0.7;
   text-align: left;
   font-size: var(--font-size-sm);
 }
