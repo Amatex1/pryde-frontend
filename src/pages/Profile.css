@@ -4275,7 +4275,6 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     grid-template-columns: 1fr auto;
     gap: 16px;
     align-items: start;
-    max-width: 1200px; /* Constrain header content width for cohesion */
     margin-left: auto;
     margin-right: auto;
   }
