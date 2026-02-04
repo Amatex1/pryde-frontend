@@ -4316,11 +4316,12 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   /* PART A: Identity Row Container - Fixed top-left position */
   .profile-identity .profile-card--hybrid .profile-identity-row {
     display: flex;
-    align-items: center;
     gap: 12px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     margin-bottom: 10px;
     grid-column: 1;
+    align-content: flex-end;
+    align-items: baseline;
   }
 
   /* Name inside identity row */
