@@ -133,6 +133,35 @@
   border-color: rgba(255, 255, 255, 0.15);
 }
 
+/* ────────────────────────────────────────
+   EXPANDED BADGES CONTAINER
+   - Contained area under initial badges
+   - Uses spacing/grouping, not borders
+   - Calm and predictable interaction
+   ──────────────────────────────────────── */
+
+.badge-expanded-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.75rem 0;
+  background: transparent;
+  border-radius: 0;
+  animation: badgeExpandIn 0.2s ease-out;
+}
+
+@keyframes badgeExpandIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Modal backdrop */
 .badge-tier-3-backdrop {
   position: fixed;
@@ -285,6 +314,13 @@
 }
 
 /* Feed context: Compact display */
+.tiered-badge-display--feed {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .tiered-badge-display--feed .badge-tier-1 {
   margin-left: 0.375rem;
 }
@@ -293,18 +329,35 @@
   display: none; /* Hide Tier 2 in feed for cleanliness */
 }
 
-.tiered-badge-display--feed .badge-tier-3-trigger {
-  display: none; /* Hide Tier 3 trigger in feed */
-}
-
 /* Card context: Minimal display */
 .tiered-badge-display--card .badge-tier-1 {
   margin-left: 0.25rem;
 }
 
-.tiered-badge-display--card .badge-tier-2,
-.tiered-badge-display--card .badge-tier-3-trigger {
+.tiered-badge-display--card .badge-tier-2 {
   display: none;
+}
+
+/* Show trigger for card context inline expansion */
+.tiered-badge-display--card .badge-tier-3-trigger {
+  display: inline-flex;
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Expanded badges row for card context */
+.badge-expanded-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  align-items: center;
 }
 
 /* ────────────────────────────────────────

@@ -3,7 +3,7 @@ import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import { compressAvatar, compressCoverPhoto } from '../utils/compressImage';
 import { uploadWithProgress } from '../utils/uploadWithProgress';
-import ImageCropEditor from './ImageCropEditor';
+import ImageEditor from './ImageEditor';
 import './EditProfileModal.css';
 
 function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
@@ -40,13 +40,16 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
   // Badge visibility toggle
   const [showBadges, setShowBadges] = useState(true);
 
-  // Photo crop editor state
-  // tempCoverImage/tempAvatarImage: holds the raw image URL before cropping
-  // editingCover/editingAvatar: controls when the crop editor is visible
+  // Photo editor state
+  // tempCoverImage/tempAvatarImage: holds the raw image URL before editing
+  // editingCover/editingAvatar: controls when the editor is visible
+  // avatarMetadata/coverMetadata: stores x, y, scale transforms
   const [tempCoverImage, setTempCoverImage] = useState(null);
   const [tempAvatarImage, setTempAvatarImage] = useState(null);
   const [editingCover, setEditingCover] = useState(false);
   const [editingAvatar, setEditingAvatar] = useState(false);
+  const [avatarMetadata, setAvatarMetadata] = useState({ x: 0, y: 0, scale: 1 });
+  const [coverMetadata, setCoverMetadata] = useState({ x: 0, y: 0, scale: 1 });
   const coverInputRef = useRef(null);
   const avatarInputRef = useRef(null);
 
@@ -82,11 +85,14 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
         coverPhoto: user.coverPhoto || null
       });
 
-      // Reset crop editor state when modal opens
+      // Reset editor state when modal opens
       setTempCoverImage(null);
       setTempAvatarImage(null);
       setEditingCover(false);
       setEditingAvatar(false);
+      // Initialize metadata from existing user data
+      setAvatarMetadata(user.profilePhotoPosition || { x: 0, y: 0, scale: 1 });
+      setCoverMetadata(user.coverPhotoPosition || { x: 0, y: 0, scale: 1 });
       // Initialize badge visibility (hideBadges=false means showBadges=true)
       setShowBadges(!user.privacySettings?.hideBadges);
     }
@@ -166,22 +172,25 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
     e.target.value = '';
   };
 
-  // Handle crop completion - uploads the cropped image
-  const handleCropComplete = async (type, cropResult) => {
+  // Handle editor completion - uploads the image and saves metadata
+  const handleEditorComplete = async (type) => {
     setUploadingPhoto(true);
     setUploadProgress(0);
 
     try {
-      // Create a File from the cropped blob
+      // Get the file from the temporary image URL
+      const imageUrl = type === 'profile' ? tempAvatarImage : tempCoverImage;
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
       const fileName = type === 'profile' ? 'avatar.jpg' : 'cover.jpg';
-      const croppedFile = new File([cropResult.blob], fileName, { type: 'image/jpeg' });
+      const file = new File([blob], fileName, { type: 'image/jpeg' });
 
       const endpoint = type === 'profile' ? '/upload/profile-photo' : '/upload/cover-photo';
 
       // Upload with progress tracking
-      const response = await uploadWithProgress({
+      const uploadResponse = await uploadWithProgress({
         url: `${api.defaults.baseURL}${endpoint}`,
-        file: croppedFile,
+        file: file,
         fieldName: 'photo',
         onProgress: (percent) => {
           setUploadProgress(percent);
@@ -189,16 +198,25 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
       });
 
       // Validate response
-      if (!response || !response.url) {
+      if (!uploadResponse || !uploadResponse.url) {
         throw new Error('Upload succeeded but no URL returned');
       }
 
+      // Update form data with new image URL and metadata
       if (type === 'profile') {
-        setFormData(prev => ({ ...prev, profilePhoto: response.url }));
+        setFormData(prev => ({
+          ...prev,
+          profilePhoto: uploadResponse.url,
+          profilePhotoPosition: avatarMetadata
+        }));
         setEditingAvatar(false);
         setTempAvatarImage(null);
       } else {
-        setFormData(prev => ({ ...prev, coverPhoto: response.url }));
+        setFormData(prev => ({
+          ...prev,
+          coverPhoto: uploadResponse.url,
+          coverPhotoPosition: coverMetadata
+        }));
         setEditingCover(false);
         setTempCoverImage(null);
       }
@@ -236,12 +254,14 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
 
     setLoading(true);
     try {
-      // formData already contains profilePhoto and coverPhoto URLs
-      // Since we now upload pre-cropped images, no position metadata needed
+      // formData contains profilePhoto, coverPhoto URLs and position metadata
       const updateData = {
         ...formData,
         // If pronouns is 'custom', send the customPronouns value instead
-        pronouns: formData.pronouns === 'custom' ? formData.customPronouns : formData.pronouns
+        pronouns: formData.pronouns === 'custom' ? formData.customPronouns : formData.pronouns,
+        // Include position metadata for non-destructive editing
+        profilePhotoPosition: avatarMetadata,
+        coverPhotoPosition: coverMetadata
       };
 
       const response = await api.put('/users/profile', updateData);
@@ -277,20 +297,37 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                   <label>Cover Photo</label>
                   <div className="photo-editor-container">
                     {editingCover && tempCoverImage ? (
-                      /* Crop editor mode - shown when user selects a new image */
+                      /* Editor mode - shown when user selects a new image */
                       <>
-                        <ImageCropEditor
+                        <ImageEditor
                           image={tempCoverImage}
                           aspect={16 / 6} /* Wide aspect for cover photos */
                           cropShape="rect"
-                          onCropComplete={(result) => handleCropComplete('cover', result)}
-                          onCancel={() => handleCropCancel('cover')}
+                          initialCrop={{ x: coverMetadata.x, y: coverMetadata.y }}
+                          initialZoom={coverMetadata.scale}
+                          onCropChange={(crop) => setCoverMetadata(prev => ({ ...prev, x: crop.x, y: crop.y }))}
+                          onZoomChange={(zoom) => setCoverMetadata(prev => ({ ...prev, scale: zoom }))}
+                          onReset={() => setCoverMetadata({ x: 0, y: 0, scale: 1 })}
+                          showSafeAreaGuide={true}
+                          safeAreaGuideType="cover"
                         />
-                        {uploadingPhoto && (
-                          <div className="upload-progress">
-                            Uploading... {uploadProgress}%
-                          </div>
-                        )}
+                        <div className="editor-actions">
+                          <button
+                            type="button"
+                            className="btn-cancel-edit"
+                            onClick={() => handleEditorCancel('cover')}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-save-edit"
+                            onClick={() => handleEditorComplete('cover')}
+                            disabled={uploadingPhoto}
+                          >
+                            {uploadingPhoto ? `Uploading... ${uploadProgress}%` : 'Save Cover'}
+                          </button>
+                        </div>
                       </>
                     ) : (
                       /* Preview mode - shows current cover photo */
@@ -332,20 +369,37 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                   <label>Profile Photo</label>
                   <div className="photo-editor-container">
                     {editingAvatar && tempAvatarImage ? (
-                      /* Crop editor mode - circular crop for avatar */
+                      /* Editor mode - shown when user selects a new image */
                       <>
-                        <ImageCropEditor
+                        <ImageEditor
                           image={tempAvatarImage}
-                          aspect={1} /* Square/circular aspect for avatars */
+                          aspect={1} /* Square aspect for avatars */
                           cropShape="round"
-                          onCropComplete={(result) => handleCropComplete('profile', result)}
-                          onCancel={() => handleCropCancel('profile')}
+                          initialCrop={{ x: avatarMetadata.x, y: avatarMetadata.y }}
+                          initialZoom={avatarMetadata.scale}
+                          onCropChange={(crop) => setAvatarMetadata(prev => ({ ...prev, x: crop.x, y: crop.y }))}
+                          onZoomChange={(zoom) => setAvatarMetadata(prev => ({ ...prev, scale: zoom }))}
+                          onReset={() => setAvatarMetadata({ x: 0, y: 0, scale: 1 })}
+                          showSafeAreaGuide={true}
+                          safeAreaGuideType="avatar"
                         />
-                        {uploadingPhoto && (
-                          <div className="upload-progress">
-                            Uploading... {uploadProgress}%
-                          </div>
-                        )}
+                        <div className="editor-actions">
+                          <button
+                            type="button"
+                            className="btn-cancel-edit"
+                            onClick={() => handleEditorCancel('profile')}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-save-edit"
+                            onClick={() => handleEditorComplete('profile')}
+                            disabled={uploadingPhoto}
+                          >
+                            {uploadingPhoto ? `Uploading... ${uploadProgress}%` : 'Save Photo'}
+                          </button>
+                        </div>
                       </>
                     ) : (
                       /* Preview mode - shows current avatar */

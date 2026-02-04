@@ -16,7 +16,8 @@ import { separateBadgesByTier } from '../utils/badgeTiers';
 import './TieredBadgeDisplay.css';
 
 function TieredBadgeDisplay({ badges = [], context = 'profile' }) {
-  const [showMoreModal, setShowMoreModal] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   const { tier1, tier2, tier3 } = separateBadgesByTier(badges);
 
@@ -42,45 +43,57 @@ function TieredBadgeDisplay({ badges = [], context = 'profile' }) {
   const renderMoreTrigger = () => {
     if (remainingBadges.length === 0) return null;
 
+    const handleClick = context === 'card' ? () => setExpanded(!expanded) : () => setModalOpen(true);
+    const buttonText = context === 'card' && expanded ? 'Minimise' : `View ${remainingBadges.length} more`;
+
     return (
       <button
-        className="badge-more-trigger"
-        onClick={() => setShowMoreModal(!showMoreModal)}
+        className="badge-tier-3-trigger"
+        onClick={handleClick}
         aria-label="View more badges"
       >
-        View {remainingBadges.length} more
+        {buttonText}
       </button>
     );
   };
 
-  // Modal for remaining badges
-  const renderMoreModal = () => {
-    if (!showMoreModal || remainingBadges.length === 0) return null;
+  // Expanded badges for card context
+  const renderExpandedBadges = () => {
+    if (context !== 'card' || !expanded || remainingBadges.length === 0) return null;
+
+    return (
+      <div className="badge-expanded-row">
+        {remainingBadges.map(badge => (
+          <UserBadge key={badge.id} badge={badge} showLabel={true} />
+        ))}
+      </div>
+    );
+  };
+
+  // Modal for all badges
+  const renderModal = () => {
+    if (!modalOpen) return null;
 
     return (
       <>
-        <div
-          className="badge-more-backdrop"
-          onClick={() => setShowMoreModal(false)}
-        />
-        <div className="badge-more-modal">
-          <div className="badge-more-header">
-            <h3>All Badges</h3>
+        <div className="badge-tier-3-backdrop" onClick={() => setModalOpen(false)} />
+        <div className="badge-tier-3-modal">
+          <div className="badge-tier-3-header">
+            <h3>All badges</h3>
             <button
-              className="badge-more-close"
-              onClick={() => setShowMoreModal(false)}
-              aria-label="Close"
+              className="badge-tier-3-close"
+              onClick={() => setModalOpen(false)}
+              aria-label="Close modal"
             >
-              ✕
+              ×
             </button>
           </div>
-          <div className="badge-more-content">
-            {remainingBadges.map(badge => (
-              <div key={badge.id} className="badge-more-item">
-                <UserBadge badge={badge} showLabel={false} />
-                <div className="badge-more-info">
-                  <span className="badge-more-label">{badge.label}</span>
-                  <span className="badge-more-tooltip">{badge.tooltip}</span>
+          <div className="badge-tier-3-content">
+            {allBadges.map(badge => (
+              <div key={badge.id} className="badge-tier-3-item">
+                <div className="badge-tier-3-info">
+                  <UserBadge badge={badge} showLabel={true} />
+                  <div className="badge-tier-3-tooltip">{badge.tooltip}</div>
                 </div>
               </div>
             ))}
@@ -95,11 +108,14 @@ function TieredBadgeDisplay({ badges = [], context = 'profile' }) {
   }
 
   return (
-    <div className={`tiered-badge-display tiered-badge-display--${context}`}>
-      {renderInlineBadges()}
-      {renderMoreTrigger()}
-      {renderMoreModal()}
-    </div>
+    <>
+      <div className={`tiered-badge-display tiered-badge-display--${context}`}>
+        {renderInlineBadges()}
+        {renderMoreTrigger()}
+        {renderExpandedBadges()}
+      </div>
+      {renderModal()}
+    </>
   );
 }
 

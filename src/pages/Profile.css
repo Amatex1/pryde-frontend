@@ -4090,7 +4090,6 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 /* Base styles for profile-identity wrapper */
 .profile-header .profile-identity {
- display: flex;
   flex-direction: column;
   width: 100%;
 }
@@ -4301,12 +4300,13 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     text-align: left;
   }
 
-  /* Handle - Muted appearance */
-  .profile-identity .profile-card--hybrid .profile-username {
-    margin: 0 0 10px 0;
-    opacity: 0.75;
-    text-align: left;
-  }
+/* Handle - Muted appearance, positioned directly under name */
+.profile-identity .profile-card--hybrid .profile-username {
+  margin: 0 0 4px 0;
+  opacity: 0.6;
+  text-align: left;
+  font-size: var(--font-size-sm);
+}
 
   /* Bio - Readable, constrained width */
   .profile-identity .profile-card--hybrid .profile-bio {
