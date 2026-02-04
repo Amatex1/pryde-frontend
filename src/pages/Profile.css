@@ -4313,73 +4313,93 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     margin-top: 0;
   }
 
-  /* PART A: Identity Row - Name + Username + Badges inline */
-  .profile-identity .profile-card--hybrid .profile-name {
+  /* PART A: Identity Row Container - Fixed top-left position */
+  .profile-identity .profile-card--hybrid .profile-identity-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    grid-column: 1;
+  }
+
+  /* Name inside identity row */
+  .profile-identity .profile-card--hybrid .profile-identity-row .profile-name {
     display: inline;
     margin: 0;
     font-size: var(--font-size-2xl);
     text-align: left;
   }
 
-  /* Handle - Inline with name */
-  .profile-identity .profile-card--hybrid .profile-username {
+  /* Username inside identity row - smaller, reduced opacity */
+  .profile-identity .profile-card--hybrid .profile-identity-row .profile-username {
     display: inline;
-    margin: 0 0 0 0.5rem;
-    opacity: 0.7;
+    margin: 0;
+    opacity: 0.6;
     text-align: left;
     font-size: var(--font-size-sm);
   }
 
-  /* Badges inline with name and username */
-  .profile-identity .profile-card--hybrid .tiered-badge-display {
+  /* Badges inside identity row - inline, no vertical offset */
+  .profile-identity .profile-card--hybrid .profile-identity-row .tiered-badge-display {
     display: inline-flex;
-    margin-left: 0.5rem;
+    margin: 0;
     vertical-align: middle;
   }
 
-  /* Pronouns/Gender/Age pills - reduced spacing */
+  /* PART C: Pronouns/Gender/Age pills - reduced spacing */
   .profile-identity .profile-card--hybrid .profile-identity-pills {
-    margin-top: 0.5rem;
+    margin-top: 6px;
     grid-column: 1;
   }
 
-  /* Bio - Readable, constrained width, reduced spacing */
+  /* PART C: Bio - Readable, constrained width, reduced spacing */
   .profile-identity .profile-card--hybrid .profile-bio {
-    margin-top: 0.5rem;
+    margin-top: 6px;
     max-width: 720px;
     line-height: var(--line-height-normal);
     padding: 0;
     grid-column: 1;
   }
 
-  /* Meta info (location) - reduced spacing */
+  /* PART C: Meta info (location) - reduced spacing */
   .profile-identity .profile-card--hybrid .profile-meta {
-    margin-top: 0.5rem;
+    margin-top: 6px;
     grid-column: 1;
   }
 
-  /* Stats - HORIZONTAL layout, bottom-right, visually secondary */
-  .profile-identity .profile-card--hybrid .profile-stats {
-    margin-top: 0;
-    padding-top: 0;
-    border-top: none;
-    gap: 1.5rem;
-    opacity: 0.8; /* Visually secondary */
-    justify-content: flex-end;
-    flex-direction: row; /* HORIZONTAL */
+  /* PART B: Stats Bottom Container - Fixed bottom-right anchor */
+  .profile-identity .profile-card--hybrid .profile-stats-bottom {
+    display: flex;
+    gap: 20px;
+    align-self: flex-end;
+    justify-self: flex-end;
+    margin-top: auto;
     grid-column: 2;
     grid-row: 1 / -1;
-    align-self: end; /* Bottom-right */
+  }
+
+  /* Stats - HORIZONTAL layout, visually secondary */
+  .profile-identity .profile-card--hybrid .profile-stats {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+    border-top: none;
+    opacity: 0.8;
+    justify-content: flex-end;
     text-align: center;
   }
 
   .profile-identity .profile-card--hybrid .profile-stats .stat-label {
-    opacity: 0.7; /* Reduced opacity for labels */
+    opacity: 0.6; /* Reduced prominence */
+    font-size: var(--font-size-xs);
   }
 
-  /* Action buttons - Left column, reduced spacing */
+  /* PART C: Action buttons - Left column, reduced spacing */
   .profile-identity .profile-card--hybrid .profile-action-buttons {
-    margin-top: 0.75rem;
+    margin-top: 10px;
     margin-left: 0;
     justify-content: flex-start;
     grid-column: 1;

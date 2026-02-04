@@ -1709,22 +1709,23 @@ function Profile() {
           <div className="profile-identity">
             {/* Profile Card - Hybrid layout with identity content */}
             <div className="profile-card profile-card--hybrid">
-                {/* 1. Display Name (largest) */}
-                <h1 className="profile-name">
-                  {user.displayName || user.fullName || user.username}
-                  {user.nickname &&
-                   user.nickname !== user.displayName &&
-                   user.nickname !== user.username &&
-                   <span className="nickname"> "{user.nickname}"</span>}
-                </h1>
+                {/* PART A: Identity Row - Name + Username + Badges in one horizontal row */}
+                <div className="profile-identity-row">
+                  {/* 1. Display Name (largest) */}
+                  <h1 className="profile-name">
+                    {user.displayName || user.fullName || user.username}
+                    {user.nickname &&
+                     user.nickname !== user.displayName &&
+                     user.nickname !== user.username &&
+                     <span className="nickname"> "{user.nickname}"</span>}
+                  </h1>
 
-                {/* 2. @handle (muted) */}
-                <p className="profile-username">@{user.username}</p>
+                  {/* 2. @handle (muted) */}
+                  <p className="profile-username">@{user.username}</p>
 
-                {/* 3. Founder / Creator role (single elegant pill) */}
-                <TieredBadgeDisplay badges={userBadges} context="profile" isOwnProfile={isOwnProfile} onEditBadges={() => setEditProfileModal(true)} />
-
-                {/* 4. Badges (small muted row) - handled by TieredBadgeDisplay */}
+                  {/* 3. Founder / Creator role (single elegant pill) */}
+                  <TieredBadgeDisplay badges={userBadges} context="profile" isOwnProfile={isOwnProfile} onEditBadges={() => setEditProfileModal(true)} />
+                </div>
 
                 {/* 5. Pronouns & tags */}
                 <div className="profile-identity-pills">
@@ -1774,20 +1775,22 @@ function Profile() {
                   )}
                 </div>
 
-                {/* Stats */}
-                <div className="profile-stats">
-                  <div className="stat-item">
-                    <span className="stat-value">{posts.length}</span>
-                    <span className="stat-label">Posts</span>
+                {/* PART B: Stats - Bottom-right anchor */}
+                <div className="profile-stats-bottom">
+                  <div className="profile-stats">
+                    <div className="stat-item">
+                      <span className="stat-value">{posts.length}</span>
+                      <span className="stat-label">Posts</span>
+                    </div>
+                    <Link to={`/profile/${user.username}/followers`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <span className="stat-value">{user.followers?.length || 0}</span>
+                      <span className="stat-label">Followers</span>
+                    </Link>
+                    <Link to={`/profile/${user.username}/following`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <span className="stat-value">{user.following?.length || 0}</span>
+                      <span className="stat-label">Following</span>
+                    </Link>
                   </div>
-                  <Link to={`/profile/${user.username}/followers`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <span className="stat-value">{user.followers?.length || 0}</span>
-                    <span className="stat-label">Followers</span>
-                  </Link>
-                  <Link to={`/profile/${user.username}/following`} className="stat-item" style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <span className="stat-value">{user.following?.length || 0}</span>
-                    <span className="stat-label">Following</span>
-                  </Link>
                 </div>
 
               {/* Action Buttons */}
