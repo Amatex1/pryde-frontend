@@ -614,14 +614,13 @@ div.profile-layout,
   font-weight: var(--font-weight-normal);
 }
 
-/* 2. @handle (muted) - inline with display name */
+/* 2. @handle (muted) - below display name */
 .profile-username {
-  display: inline;
+  display: block;
   color: var(--text-muted);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-normal);
-  margin: 0;
-  margin-left: 0.5rem;
+  margin: 4px 0 0 0;
   opacity: 0.6;
   line-height: 1.2;
 }
@@ -3806,13 +3805,12 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   font-style: italic;
 }
 
-/* Username: Muted, secondary - inline with display name */
+/* Username: Muted, secondary - below display name */
 .profile-username {
-  display: inline;
+  display: block;
   font-size: var(--font-size-base);
   color: var(--text-muted);
-  margin: 0;
-  margin-left: 0.5rem;
+  margin: 4px 0 0 0;
   opacity: 0.6;
   line-height: 1.2;
 }
@@ -4136,19 +4134,20 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     gap: 12px; /* Tighter spacing for mobile */
   }
 
-  /* Avatar + Name inline on mobile */
+  /* Name on mobile */
   .profile-identity .profile-card--hybrid .profile-name {
     font-size: var(--font-size-2xl);
     text-align: center;
     margin-top: 0;
     order: 1;
-    display: inline;
+    display: block;
   }
 
   .profile-identity .profile-card--hybrid .profile-username {
     text-align: center;
-    order: 1; /* Same order as name to keep them inline */
-    display: inline;
+    order: 2; /* Below name */
+    display: block;
+    margin-top: 4px;
   }
 
   /* Stats inline row, compact */
@@ -4312,44 +4311,45 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     margin-top: 0;
   }
 
-  /* PART A: Identity Row Container - Fixed top-left position */
-  .profile-identity .profile-card--hybrid .profile-identity-row {
-    display: flex;
-    gap: 12px;
-    flex-wrap: nowrap;
-    margin-bottom: 10px;
-    grid-column: 1;
-    align-content: flex-end;
-    align-items: baseline;
-  }
-
-  /* Name inside identity row */
-  .profile-identity .profile-card--hybrid .profile-identity-row .profile-name {
-    display: inline;
+  /* Name - Top of profile card */
+  .profile-identity .profile-card--hybrid .profile-name {
+    display: block;
     margin: 0;
     font-size: var(--font-size-2xl);
     text-align: left;
+    grid-column: 1;
   }
 
-  /* Username inside identity row - smaller, reduced opacity */
-  .profile-identity .profile-card--hybrid .profile-identity-row .profile-username {
-    display: inline;
-    margin: 0;
+  /* Username - Below name, muted */
+  .profile-identity .profile-card--hybrid .profile-username {
+    display: block;
+    margin: 4px 0 0 0;
     opacity: 0.6;
     text-align: left;
     font-size: var(--font-size-sm);
+    grid-column: 1;
   }
 
-  /* Badges inside identity row - inline, no vertical offset */
-  .profile-identity .profile-card--hybrid .profile-identity-row .tiered-badge-display {
-    display: inline-flex;
-    margin: 0;
-    vertical-align: middle;
+  /* PART A: Identity Row Container - For identity pills */
+  .profile-identity .profile-card--hybrid .profile-identity-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    grid-column: 1;
+    align-items: center;
   }
 
-  /* PART C: Pronouns/Gender/Age pills - reduced spacing */
+  /* PART C: Pronouns/Gender/Age pills - inside identity row */
   .profile-identity .profile-card--hybrid .profile-identity-pills {
-    margin-top: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Tiered badges - below identity pills */
+  .profile-identity .profile-card--hybrid .tiered-badge-display {
+    margin-top: 10px;
     grid-column: 1;
   }
 
