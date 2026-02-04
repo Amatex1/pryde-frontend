@@ -16,79 +16,71 @@ import { separateBadgesByTier } from '../utils/badgeTiers';
 import './TieredBadgeDisplay.css';
 
 function TieredBadgeDisplay({ badges = [], context = 'profile' }) {
-  const [showTier3Modal, setShowTier3Modal] = useState(false);
-  
+  const [showMoreModal, setShowMoreModal] = useState(false);
+
   const { tier1, tier2, tier3 } = separateBadgesByTier(badges);
-  
-  // Tier 1: Identity badges (always visible, inline)
-  const renderTier1 = () => {
-    if (tier1.length === 0) return null;
+
+  // Combine all badges and show max 2 inline
+  const allBadges = [...tier1, ...tier2, ...tier3];
+  const inlineBadges = allBadges.slice(0, 2);
+  const remainingBadges = allBadges.slice(2);
+
+  // Inline badges (max 2, from all tiers combined)
+  const renderInlineBadges = () => {
+    if (inlineBadges.length === 0) return null;
 
     return (
-      <div className="badge-tier-1">
-        {tier1.map(badge => (
+      <div className="badge-inline-row">
+        {inlineBadges.map(badge => (
           <UserBadge key={badge.id} badge={badge} showLabel={true} />
         ))}
       </div>
     );
   };
-  
-  // Tier 2: Status badges (muted row)
-  const renderTier2 = () => {
-    if (tier2.length === 0) return null;
-    
-    return (
-      <div className="badge-tier-2">
-        {tier2.map(badge => (
-          <UserBadge key={badge.id} badge={badge} showLabel={true} />
-        ))}
-      </div>
-    );
-  };
-  
-  // Tier 3: Cosmetic badges (popover trigger)
-  const renderTier3Trigger = () => {
-    if (tier3.length === 0) return null;
+
+  // "View X more" trigger for remaining badges
+  const renderMoreTrigger = () => {
+    if (remainingBadges.length === 0) return null;
 
     return (
       <button
-        className="badge-tier-3-trigger"
-        onClick={() => setShowTier3Modal(!showTier3Modal)}
+        className="badge-more-trigger"
+        onClick={() => setShowMoreModal(!showMoreModal)}
         aria-label="View more badges"
       >
-        ✨ View {tier3.length} more badge{tier3.length !== 1 ? 's' : ''}
+        View {remainingBadges.length} more
       </button>
     );
   };
 
-  // Tier 3: Modal/popover content
-  const renderTier3Modal = () => {
-    if (!showTier3Modal || tier3.length === 0) return null;
+  // Modal for remaining badges
+  const renderMoreModal = () => {
+    if (!showMoreModal || remainingBadges.length === 0) return null;
 
     return (
       <>
         <div
-          className="badge-tier-3-backdrop"
-          onClick={() => setShowTier3Modal(false)}
+          className="badge-more-backdrop"
+          onClick={() => setShowMoreModal(false)}
         />
-        <div className="badge-tier-3-modal">
-          <div className="badge-tier-3-header">
+        <div className="badge-more-modal">
+          <div className="badge-more-header">
             <h3>All Badges</h3>
             <button
-              className="badge-tier-3-close"
-              onClick={() => setShowTier3Modal(false)}
+              className="badge-more-close"
+              onClick={() => setShowMoreModal(false)}
               aria-label="Close"
             >
               ✕
             </button>
           </div>
-          <div className="badge-tier-3-content">
-            {tier3.map(badge => (
-              <div key={badge.id} className="badge-tier-3-item">
+          <div className="badge-more-content">
+            {remainingBadges.map(badge => (
+              <div key={badge.id} className="badge-more-item">
                 <UserBadge badge={badge} showLabel={false} />
-                <div className="badge-tier-3-info">
-                  <span className="badge-tier-3-label">{badge.label}</span>
-                  <span className="badge-tier-3-tooltip">{badge.tooltip}</span>
+                <div className="badge-more-info">
+                  <span className="badge-more-label">{badge.label}</span>
+                  <span className="badge-more-tooltip">{badge.tooltip}</span>
                 </div>
               </div>
             ))}
@@ -98,16 +90,15 @@ function TieredBadgeDisplay({ badges = [], context = 'profile' }) {
     );
   };
 
-  if (tier1.length === 0 && tier2.length === 0 && tier3.length === 0) {
+  if (allBadges.length === 0) {
     return null;
   }
 
   return (
     <div className={`tiered-badge-display tiered-badge-display--${context}`}>
-      {renderTier1()}
-      {renderTier2()}
-      {renderTier3Trigger()}
-      {renderTier3Modal()}
+      {renderInlineBadges()}
+      {renderMoreTrigger()}
+      {renderMoreModal()}
     </div>
   );
 }

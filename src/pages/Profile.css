@@ -4104,7 +4104,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   padding: 0;
 }
 
-/* MOBILE: ≤768px - Centered layout with avatar above content */
+/* MOBILE: ≤768px - Stacked vertical layout: Avatar+Name, Stats inline, Pronouns/Age, Bio */
 @media (max-width: 768px) {
   .profile-header .profile-identity {
     align-items: center;
@@ -4116,28 +4116,70 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .profile-identity .profile-card.profile-card--hybrid {
     align-items: center;
     padding: 0 16px;
+    gap: 12px; /* Tighter spacing for mobile */
   }
 
+  /* Avatar + Name stacked first */
   .profile-identity .profile-card--hybrid .profile-name {
     font-size: var(--font-size-2xl);
     text-align: center;
     margin-top: 0;
+    order: 1;
   }
 
   .profile-identity .profile-card--hybrid .profile-username {
     text-align: center;
+    order: 2;
   }
 
-  .profile-identity .profile-card--hybrid .profile-identity-pills {
-    justify-content: center;
-  }
-
+  /* Stats inline row, compact */
   .profile-identity .profile-card--hybrid .profile-stats {
     justify-content: center;
+    flex-direction: row; /* Keep horizontal */
+    gap: 1rem; /* Compact spacing */
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-light);
+    order: 3;
   }
 
+  .profile-identity .profile-card--hybrid .profile-stats .stat-item {
+    flex: 1; /* Equal width for compact layout */
+    min-width: 0;
+  }
+
+  .profile-identity .profile-card--hybrid .profile-stats .stat-value {
+    font-size: var(--font-size-lg);
+  }
+
+  .profile-identity .profile-card--hybrid .profile-stats .stat-label {
+    font-size: var(--font-size-xs);
+  }
+
+  /* Pronouns/Age row */
+  .profile-identity .profile-card--hybrid .profile-identity-pills {
+    justify-content: center;
+    order: 4;
+    margin-top: 8px;
+  }
+
+  /* Bio last */
+  .profile-identity .profile-card--hybrid .profile-bio {
+    order: 5;
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  /* Action buttons */
   .profile-identity .profile-card--hybrid .profile-action-buttons {
     justify-content: center;
+    order: 6;
+    margin-top: 16px;
+  }
+
+  /* Badge display - ensure it doesn't interfere */
+  .profile-identity .profile-card--hybrid .tiered-badge-display {
+    order: 7;
   }
 }
 
@@ -4234,6 +4276,9 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     grid-template-columns: 1fr auto;
     gap: 16px;
     align-items: start;
+    max-width: 1200px; /* Constrain header content width for cohesion */
+    margin-left: auto;
+    margin-right: auto;
   }
 
   [data-theme="light"] .profile-header .profile-identity .profile-card.profile-card--hybrid {
@@ -4272,18 +4317,19 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     grid-column: 1 / -1;
   }
 
-  /* Stats - Less blocky, secondary emphasis */
+  /* Stats - Less blocky, secondary emphasis, right-aligned */
   .profile-identity .profile-card--hybrid .profile-stats {
     margin-top: 14px;
     padding-top: 10px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     gap: 12px;
     opacity: 0.9;
-    justify-content: flex-start;
+    justify-content: flex-end; /* Right-aligned */
     flex-direction: column;
     grid-column: 2;
     grid-row: 1 / -1;
     align-self: start;
+    text-align: right; /* Right-align stat text */
   }
 
   [data-theme="light"] .profile-identity .profile-card--hybrid .profile-stats {
