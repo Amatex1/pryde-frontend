@@ -502,10 +502,10 @@ div.profile-layout,
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
   color: var(--text-primary);
-  margin: 0;
+  margin: 0 0 6px 0;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
   line-height: 1.2;
 }
@@ -615,9 +615,10 @@ div.profile-layout,
 /* 2. @handle (muted) */
 .profile-username {
   color: var(--text-muted);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-normal);
   margin: 0;
+  opacity: 0.6;
 }
 
 /* 5. Pronouns & tags */
