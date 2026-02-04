@@ -1862,9 +1862,12 @@ function Profile() {
               {user.interests && user.interests.length > 0 && (
                 <div className="profile-rail-section">
                   <h3 className="profile-rail-section-title">🏷️ Interests</h3>
-                  <div className="interests-tags">
+                  <div className="looking-for-grid">
                     {user.interests.map((interest, index) => (
-                      <span key={index} className="interest-chip">{interest}</span>
+                      <div key={index} className="looking-for-item">
+                        <span className="looking-for-icon">🏷️</span>
+                        <span className="looking-for-label">{interest}</span>
+                      </div>
                     ))}
                   </div>
                   <div className="profile-rail-divider"></div>
@@ -1939,9 +1942,11 @@ function Profile() {
               {user.interests && user.interests.length > 0 && (
                 <div className="sidebar-card glossy fade-in">
                   <h3 className="sidebar-title">🏷️ Interests</h3>
-                  <div className="interests-tags">
+                  <div className="looking-for-list">
                     {user.interests.map((interest, index) => (
-                      <span key={index} className="interest-tag">{interest}</span>
+                      <span key={index} className="looking-for-item">
+                        🏷️ {interest}
+                      </span>
                     ))}
                   </div>
                 </div>
