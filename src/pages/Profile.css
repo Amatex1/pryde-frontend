@@ -4318,6 +4318,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     font-size: var(--font-size-2xl);
     text-align: left;
     grid-column: 1;
+    grid-row: 1;
   }
 
   /* Username - Below name, muted */
@@ -4328,6 +4329,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     text-align: left;
     font-size: var(--font-size-sm);
     grid-column: 1;
+    grid-row: 2;
   }
 
   /* PART A: Identity Row Container - For identity pills */
@@ -4337,6 +4339,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     flex-wrap: wrap;
     margin-top: 10px;
     grid-column: 1;
+    grid-row: 3;
     align-items: center;
   }
 
@@ -4351,6 +4354,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .profile-identity .profile-card--hybrid .tiered-badge-display {
     margin-top: 10px;
     grid-column: 1;
+    grid-row: 4;
   }
 
   /* PART C: Bio - Readable, constrained width, reduced spacing */
@@ -4360,12 +4364,14 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     line-height: var(--line-height-normal);
     padding: 0;
     grid-column: 1;
+    grid-row: 5;
   }
 
   /* PART C: Meta info (location) - reduced spacing */
   .profile-identity .profile-card--hybrid .profile-meta {
     margin-top: 6px;
     grid-column: 1;
+    grid-row: 6;
   }
 
   /* PART B: Stats Bottom Container - Fixed bottom-right anchor */
