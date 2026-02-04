@@ -351,7 +351,29 @@
   text-decoration: underline;
 }
 
-/* Expanded badges row for card context */
+/* Post context: Same as card - minimal display, max 2 badges inline */
+.tiered-badge-display--post .badge-tier-1 {
+  margin-left: 0.25rem;
+}
+
+.tiered-badge-display--post .badge-tier-2 {
+  display: none;
+}
+
+/* Show trigger for post context inline expansion */
+.tiered-badge-display--post .badge-tier-3-trigger {
+  display: inline-flex;
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Expanded badges row for card and post contexts */
 .badge-expanded-row {
   display: flex;
   flex-wrap: wrap;

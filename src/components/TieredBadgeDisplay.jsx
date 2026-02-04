@@ -44,8 +44,12 @@ function TieredBadgeDisplay({ badges = [], context = 'profile', isOwnProfile = f
 
   // Combine all badges and show max 2 inline
   const allBadges = [...tier1, ...tier2, ...tier3];
-  const inlineBadges = allBadges.slice(0, 2);
-  const remainingBadges = allBadges.slice(2);
+
+  // For post/card context: show max 2 badges inline
+  // For profile context: show all badges with proper tiering
+  const maxInlineBadges = (context === 'card' || context === 'post') ? 2 : allBadges.length;
+  const inlineBadges = allBadges.slice(0, maxInlineBadges);
+  const remainingBadges = allBadges.slice(maxInlineBadges);
 
   // Inline badges (max 2, from all tiers combined)
   const renderInlineBadges = () => {
@@ -64,8 +68,12 @@ function TieredBadgeDisplay({ badges = [], context = 'profile', isOwnProfile = f
   const renderMoreTrigger = () => {
     if (remainingBadges.length === 0) return null;
 
-    const handleClick = (context === 'card' || context === 'profile') ? () => setExpanded(!expanded) : () => setModalOpen(true);
-    const buttonText = (context === 'card' || context === 'profile') && expanded ? 'Minimise' : `View ${remainingBadges.length} more`;
+    // For post/card context: inline expansion only (no modal)
+    // For profile context: inline expansion
+    // For feed context: modal
+    const isInlineExpansion = (context === 'card' || context === 'post' || context === 'profile');
+    const handleClick = isInlineExpansion ? () => setExpanded(!expanded) : () => setModalOpen(true);
+    const buttonText = isInlineExpansion && expanded ? 'Minimise' : `+${remainingBadges.length}`;
 
     return (
       <button
@@ -78,9 +86,9 @@ function TieredBadgeDisplay({ badges = [], context = 'profile', isOwnProfile = f
     );
   };
 
-  // Expanded badges for card and profile contexts
+  // Expanded badges for card, post, and profile contexts
   const renderExpandedBadges = () => {
-    if ((context !== 'card' && context !== 'profile') || !expanded || remainingBadges.length === 0) return null;
+    if ((context !== 'card' && context !== 'post' && context !== 'profile') || !expanded || remainingBadges.length === 0) return null;
 
     return (
       <div className="badge-expanded-row">
@@ -172,7 +180,7 @@ TieredBadgeDisplay.propTypes = {
     priority: PropTypes.number,
     color: PropTypes.string
   })),
-  context: PropTypes.oneOf(['profile', 'feed', 'card']),
+  context: PropTypes.oneOf(['profile', 'feed', 'card', 'post']),
   isOwnProfile: PropTypes.bool,
   onEditBadges: PropTypes.func,
   authorId: PropTypes.string

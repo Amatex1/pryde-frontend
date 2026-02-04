@@ -159,9 +159,9 @@ function PostHeader({
             </span>
           )}
 
-          {/* PHASE A: Tiered badges - max 1-2 shown on post cards */}
+          {/* PHASE A: Tiered badges - max 2 shown on post cards */}
           {author.badges?.length > 0 && !isSystem && (
-            <TieredBadgeDisplay badges={author.badges} context="card" />
+            <TieredBadgeDisplay badges={author.badges} context="post" authorId={author._id} />
           )}
         </div>
 
