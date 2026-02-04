@@ -866,7 +866,7 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
             </section>
 
             {/* Badge Settings */}
-            <section className="form-section">
+            <section className="form-section" id="badge-settings">
               <h3>🏅 Badge Settings</h3>
               <p className="section-description">Control whether your badges are visible on your profile.</p>
               <div className="form-group toggle-group">

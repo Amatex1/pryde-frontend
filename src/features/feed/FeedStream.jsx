@@ -137,7 +137,7 @@ const FeedStream = forwardRef(function FeedStream({
                   <Link to={`/profile/${post.author?.username}`} className="comment-author" style={{ textDecoration: 'none' }}>
                     <span className="author-name">{post.author?.displayName || post.author?.username || 'User'}</span>
                     {post.author?.badges?.length > 0 && (
-                      <TieredBadgeDisplay badges={post.author.badges} context="feed" />
+                      <TieredBadgeDisplay badges={post.author.badges} context="feed" authorId={post.author._id} />
                     )}
                     {post.author?.pronouns && (
                       <span className="author-pronouns">({post.author.pronouns})</span>

@@ -9,15 +9,36 @@
  * This component enforces visual hierarchy and restraint.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import UserBadge from './UserBadge';
 import { separateBadgesByTier } from '../utils/badgeTiers';
+import api from '../utils/api';
 import './TieredBadgeDisplay.css';
 
-function TieredBadgeDisplay({ badges = [], context = 'profile' }) {
+function TieredBadgeDisplay({ badges = [], context = 'profile', isOwnProfile = false, onEditBadges, authorId }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [fullBadges, setFullBadges] = useState(null);
+  const [loadingFullBadges, setLoadingFullBadges] = useState(false);
+
+  // Fetch full badges when modal opens for feed context
+  useEffect(() => {
+    if (modalOpen && context === 'feed' && authorId && !fullBadges && !loadingFullBadges) {
+      setLoadingFullBadges(true);
+      api.get(`/badges/user/${authorId}`)
+        .then(response => {
+          setFullBadges(response.data || []);
+        })
+        .catch(error => {
+          console.error('Failed to fetch full badges:', error);
+          setFullBadges([]);
+        })
+        .finally(() => {
+          setLoadingFullBadges(false);
+        });
+    }
+  }, [modalOpen, context, authorId, fullBadges, loadingFullBadges]);
 
   const { tier1, tier2, tier3 } = separateBadgesByTier(badges);
 
@@ -74,6 +95,9 @@ function TieredBadgeDisplay({ badges = [], context = 'profile' }) {
   const renderModal = () => {
     if (!modalOpen) return null;
 
+    // Use full badges for feed context if available, otherwise use allBadges
+    const badgesToShow = (context === 'feed' && fullBadges) ? fullBadges : allBadges;
+
     return (
       <>
         <div className="badge-tier-3-backdrop" onClick={() => setModalOpen(false)} />
@@ -89,14 +113,18 @@ function TieredBadgeDisplay({ badges = [], context = 'profile' }) {
             </button>
           </div>
           <div className="badge-tier-3-content">
-            {allBadges.map(badge => (
-              <div key={badge.id} className="badge-tier-3-item">
-                <div className="badge-tier-3-info">
-                  <UserBadge badge={badge} showLabel={true} />
-                  <div className="badge-tier-3-tooltip">{badge.tooltip}</div>
+            {loadingFullBadges ? (
+              <div className="badge-loading">Loading badges...</div>
+            ) : (
+              badgesToShow.map(badge => (
+                <div key={badge.id} className="badge-tier-3-item">
+                  <div className="badge-tier-3-info">
+                    <UserBadge badge={badge} showLabel={true} />
+                    <div className="badge-tier-3-tooltip">{badge.tooltip}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </>
@@ -107,11 +135,27 @@ function TieredBadgeDisplay({ badges = [], context = 'profile' }) {
     return null;
   }
 
+  // Badge management hint for profile owners
+  const renderBadgeHint = () => {
+    if (!isOwnProfile || remainingBadges.length === 0) return null;
+
+    return (
+      <button
+        className="badge-management-hint"
+        onClick={onEditBadges}
+        aria-label="Edit badge settings"
+      >
+        View & rearrange badges
+      </button>
+    );
+  };
+
   return (
     <>
       <div className={`tiered-badge-display tiered-badge-display--${context}`}>
         {renderInlineBadges()}
         {renderMoreTrigger()}
+        {renderBadgeHint()}
         {renderExpandedBadges()}
       </div>
       {renderModal()}
@@ -128,7 +172,10 @@ TieredBadgeDisplay.propTypes = {
     priority: PropTypes.number,
     color: PropTypes.string
   })),
-  context: PropTypes.oneOf(['profile', 'feed', 'card'])
+  context: PropTypes.oneOf(['profile', 'feed', 'card']),
+  isOwnProfile: PropTypes.bool,
+  onEditBadges: PropTypes.func,
+  authorId: PropTypes.string
 };
 
 export default TieredBadgeDisplay;

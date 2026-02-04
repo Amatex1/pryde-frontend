@@ -1722,7 +1722,7 @@ function Profile() {
                 <p className="profile-username">@{user.username}</p>
 
                 {/* 3. Founder / Creator role (single elegant pill) */}
-                <TieredBadgeDisplay badges={userBadges} context="profile" />
+                <TieredBadgeDisplay badges={userBadges} context="profile" isOwnProfile={isOwnProfile} onEditBadges={() => setEditProfileModal(true)} />
 
                 {/* 4. Badges (small muted row) - handled by TieredBadgeDisplay */}
 
