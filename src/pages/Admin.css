@@ -20,7 +20,7 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   margin-bottom: var(--space-2);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .admin-subtitle {
@@ -160,7 +160,7 @@
 
 .report-body {
   margin-bottom: 1rem;
-  line-height: 1.6;
+  line-height: var(--line-height-relaxed);
 }
 
 .report-body p {
@@ -273,7 +273,7 @@
   z-index: 2;
   padding: 1rem;
   text-align: left;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   white-space: nowrap;
   vertical-align: middle;
 }
@@ -401,7 +401,7 @@
 .role-select.role-super_admin {
   color: var(--accent-primary);
   background: rgba(108, 92, 231, 0.2);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .status-badge {
@@ -542,12 +542,12 @@
 }
 
 .activity-user {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--pryde-purple);
 }
 
 .activity-user-link {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--pryde-purple);
   text-decoration: none;
   transition: all 0.2s ease;
@@ -687,7 +687,7 @@
   .users-table td::before,
   .blocks-table td::before {
     content: attr(data-label);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     color: var(--accent-primary);
     display: block;
     margin-bottom: 0.25rem;
@@ -801,7 +801,7 @@
 .preview-content {
   margin: 0.75rem 0;
   color: var(--text-main);
-  line-height: 1.5;
+  line-height: var(--line-height-normal);
   word-wrap: break-word;
 }
 
@@ -961,7 +961,7 @@
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .filter-btn:hover {
@@ -1042,7 +1042,7 @@
   padding: 1rem;
   border-radius: 8px;
   color: #28a745;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .log-notes {
@@ -1058,7 +1058,7 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   transition: all 0.3s ease;
 }
 
@@ -1173,7 +1173,7 @@
 }
 
 .verification-details .detail-label {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--text-muted);
   min-width: 120px;
 }
@@ -1200,7 +1200,7 @@
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -1419,7 +1419,7 @@
   border-radius: 16px;
   font-size: var(--font-size-sm);
   color: var(--color-primary);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 /* Metadata Section */
@@ -1509,7 +1509,7 @@
 
 .admin-comment-content {
   color: var(--text-main);
-  line-height: 1.5;
+  line-height: var(--line-height-normal);
   margin-bottom: 0.5rem;
 }
 
@@ -1619,7 +1619,7 @@
 
 .badge-icon-preview {
   font-size: var(--font-size-base);
-  line-height: 1;
+  line-height: var(--line-height-tight);
 }
 
 .badge-count {
@@ -1678,7 +1678,7 @@
   cursor: pointer;
   color: var(--text-muted);
   padding: 0;
-  line-height: 1;
+  line-height: var(--line-height-tight);
 }
 
 .badge-modal .modal-close:hover {
@@ -1743,7 +1743,7 @@
   cursor: pointer;
   padding: 0 0.25rem;
   font-size: var(--font-size-base);
-  line-height: 1;
+  line-height: var(--line-height-tight);
   transition: color 0.2s ease;
 }
 
@@ -1805,7 +1805,7 @@
 .badge-reason-input label {
   font-size: var(--font-size-sm);
   color: var(--text-muted);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .badge-reason-textarea {
@@ -1963,7 +1963,7 @@
 
 .setting-row-checkbox .checkbox-label span {
   color: var(--text-primary);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 /* Help text for settings */
@@ -1972,14 +1972,14 @@
   margin: 0;
   font-size: var(--font-size-xs);
   color: var(--text-muted);
-  line-height: 1.4;
+  line-height: var(--line-height-normal);
 }
 
 .section-help {
   margin: 0 0 var(--space-4) 0;
   font-size: var(--font-size-sm);
   color: var(--text-muted);
-  line-height: 1.4;
+  line-height: var(--line-height-normal);
 }
 
 .btn-save-settings {
@@ -2103,7 +2103,7 @@
   color: var(--color-danger);
   cursor: pointer;
   font-size: var(--font-size-sm);
-  line-height: 1;
+  line-height: var(--line-height-tight);
   padding: 0 2px;
   opacity: 0.7;
   transition: opacity 0.2s ease;
@@ -2148,7 +2148,7 @@
 
 .history-table th {
   color: var(--text-muted);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   background: var(--bg-hover);
 }
 
@@ -2217,7 +2217,7 @@
 }
 
 .history-user-name {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
   font-size: var(--font-size-sm);
 }

@@ -483,7 +483,7 @@ textarea[name="newPost"] {
   border-radius: 8px;
   padding: 0.75rem;
   font-size: var(--font-size-base);
-  line-height: 1.5;
+  line-height: var(--line-height-normal);
   color: var(--text-primary);
   transition: border-color 0.15s ease;
   box-shadow: none;
@@ -719,7 +719,7 @@ textarea[name="newPost"]:focus {
 
 .post-content {
   font-size: var(--font-size-base);
-  line-height: 1.6;
+  line-height: var(--line-height-relaxed);
   color: var(--text-primary);
   word-wrap: break-word;
   word-break: break-word;
@@ -1088,7 +1088,7 @@ textarea[name="newPost"]:focus {
   /* Content: Comfortable reading size */
   .post-content {
     font-size: var(--font-size-base);
-    line-height: 1.6;
+    line-height: var(--line-height-relaxed);
   }
 
   /* ────────────────────────────────────────

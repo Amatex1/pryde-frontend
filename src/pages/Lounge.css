@@ -61,7 +61,7 @@
   font-size: var(--font-size-sm);
   color: var(--text-muted);
   margin: 0;
-  line-height: 1.5;
+  line-height: var(--line-height-normal);
 }
 
 .lounge-online-count {
@@ -211,7 +211,7 @@
 }
 
 .lounge-message-sender {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--pryde-purple);
   cursor: pointer;
   transition: color 0.2s;
@@ -241,7 +241,7 @@
 
 .lounge-message-text {
   color: var(--text-main);
-  line-height: 1.5;
+  line-height: var(--line-height-normal);
   word-wrap: break-word;
   white-space: pre-wrap;
 }
@@ -310,7 +310,7 @@
   border-radius: 6px;
   color: var(--text-secondary, #94A3B8);
   transition: all 0.2s ease;
-  line-height: 1;
+  line-height: var(--line-height-tight);
 }
 
 .btn-lounge-menu:hover {
@@ -811,7 +811,7 @@
     width: 100%;
     padding: 10px 12px;
     font-size: 16px; /* Prevents iOS zoom */
-    line-height: 1.45;
+    line-height: var(--line-height-normal);
     min-height: 44px;
     max-height: 120px;
     border-radius: 10px;
@@ -920,7 +920,7 @@
   color: var(--text-muted);
   cursor: pointer;
   padding: 0.25rem;
-  line-height: 1;
+  line-height: var(--line-height-tight);
   transition: color 0.2s ease;
 }
 
@@ -1003,7 +1003,7 @@
 }
 
 .online-user-name {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--text-main);
   margin-bottom: 0.25rem;
   display: flex;

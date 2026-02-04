@@ -133,7 +133,7 @@
 .group-description {
   color: var(--text-muted);
   margin-bottom: 1rem;
-  line-height: 1.6;
+  line-height: var(--line-height-relaxed);
   /* Reserve space for description - 2 lines minimum */
   min-height: 3.2rem;
 }
@@ -146,7 +146,7 @@
   padding-top: 1rem;
   border-top: 1px solid var(--border-light);
   color: var(--pryde-purple);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   /* Fixed height for stats row */
   min-height: 2.5rem;
 }
@@ -382,7 +382,7 @@
    ===================================================== */
 
 .group-posts .post-content p {
-  line-height: 1.6;
+  line-height: var(--line-height-relaxed);
   color: var(--text-main);
   margin: 0;
 }
@@ -592,7 +592,7 @@
   border-radius: 8px;
   background: var(--gradient-primary);
   color: white;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -679,7 +679,7 @@
   cursor: pointer;
   color: var(--text-muted);
   padding: 0.25rem;
-  line-height: 1;
+  line-height: var(--line-height-tight);
 }
 
 .member-modal .btn-close:hover {
@@ -750,7 +750,7 @@
 
 .member-name {
   display: block;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   color: var(--text-main);
   white-space: nowrap;
   overflow: hidden;
@@ -906,7 +906,7 @@
 }
 
 .log-action {
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   text-transform: capitalize;
 }
 
@@ -917,7 +917,7 @@
 }
 
 .log-actor {
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .log-target {
@@ -1000,7 +1000,7 @@
   color: var(--text-muted);
   font-size: var(--font-size-sm);
   margin: 0 0 1.25rem 0;
-  line-height: 1.5;
+  line-height: var(--line-height-normal);
 }
 
 .notification-toggle {
@@ -1035,7 +1035,7 @@
 
 .toggle-icon {
   font-size: var(--font-size-xl);
-  line-height: 1;
+  line-height: var(--line-height-tight);
 }
 
 .toggle-text {
@@ -1046,7 +1046,7 @@
 
 .toggle-text strong {
   color: var(--text-main);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .toggle-text small {

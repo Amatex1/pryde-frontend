@@ -65,7 +65,7 @@
 .post-content {
   margin-bottom: 1rem !important;
   padding: 0 !important;
-  line-height: 1.6 !important;
+  line-height: var(--line-height-relaxed) !important;
   color: var(--text-main) !important;
   white-space: pre-wrap !important; /* Preserve line breaks and spaces */
   word-break: break-word !important; /* Break long words */
@@ -491,27 +491,25 @@ div.profile-layout,
 
 /* Identity Stack */
 .profile-identity {
-  display: grid;
-  grid-template-columns: max-content auto;
-  column-gap: 0.5rem;
-  row-gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   min-width: 0; /* Allow text truncation */
-  align-items: baseline;
+  align-items: flex-start;
 }
 
-/* 1. Display Name (largest) - inline with username */
+/* 1. Display Name (largest) - stacked above username */
 .profile-name {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
   color: var(--text-primary);
   margin: 0;
+  margin-bottom: 2px;
   display: inline-flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-  line-height: 1.2;
-  grid-column: 1;
-  grid-row: 1;
+  line-height: var(--line-height-tight);
 }
 
 .profile-name .verified-badge {
@@ -566,8 +564,8 @@ div.profile-layout,
   color: white !important;
   border-radius: 50%;
   font-size: var(--font-size-xs); /* Reduced from 0.75rem */
-  font-weight: 900;
-  line-height: 1;
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
   flex-shrink: 0;
   box-shadow:
     0 0 0 1px rgba(108, 92, 231, 0.15), /* Reduced glow */
@@ -618,14 +616,14 @@ div.profile-layout,
 
 /* 2. @handle (muted) - inline with display name */
 .profile-username {
+  display: inline;
   color: var(--text-muted);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-normal);
   margin: 0;
+  margin-left: 0.5rem;
   opacity: 0.6;
-  grid-column: 2;
-  grid-row: 1;
-  align-self: baseline;
+  line-height: 1.2;
 }
 
 /* Grid: All elements below name/username span both columns */
@@ -729,7 +727,7 @@ div.profile-layout,
 }
 
 .social-platform {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--pryde-purple);
   transition: color 0.3s ease;
 }
@@ -830,7 +828,7 @@ div.profile-layout,
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
-  line-height: 1;
+  line-height: var(--line-height-tight);
   padding: 0;
 }
 
@@ -1583,7 +1581,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   gap: 6px;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  line-height: 1;
+  line-height: var(--line-height-tight);
   border-radius: 10px;
   border: 1px solid var(--border-subtle);
   background: transparent;
@@ -1851,7 +1849,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .social-link strong {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .link-arrow {
@@ -2076,7 +2074,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   justify-content: center;
   gap: 0;
   font-size: 0; /* Hide text on mobile */
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   min-width: var(--action-btn-min-touch);
   min-height: var(--action-btn-min-touch);
   flex: 1 1 0; /* Equal width buttons on mobile */
@@ -2087,7 +2085,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .profile-page .post-actions .action-btn .action-emoji {
   display: inline-block;
   font-size: var(--action-btn-emoji-size);
-  line-height: 1;
+  line-height: var(--line-height-tight);
 }
 
 /* Hide text on mobile */
@@ -2355,7 +2353,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .profile-page .comment-text {
   color: var(--text-main);
   font-size: var(--font-size-base); /* Increased from 0.875rem */
-  line-height: 1.4;
+  line-height: var(--line-height-normal);
   word-wrap: break-word;
   overflow-wrap: break-word;
   margin: 0;
@@ -2432,7 +2430,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 /* Twitter/X style view replies button - Scoped to Profile page */
 .profile-page .view-replies-btn {
   color: var(--electric-blue);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .profile-page .view-replies-btn:hover {
@@ -2447,7 +2445,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .profile-page .delete-btn:hover {
   color: #991b1b; /* Even darker red on hover */
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 /* Dark mode delete button */
@@ -2599,7 +2597,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   cursor: pointer;
   padding: 0.25rem;
   transition: transform 0.2s ease;
-  line-height: 1;
+  line-height: var(--line-height-tight);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2792,7 +2790,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
     display: block !important;
-    line-height: 0 !important; /* Remove any line-height spacing */
+    line-height: var(--line-height-tight) !important; /* Remove any line-height spacing */
   }
 
   .upload-message-banner {
@@ -3175,8 +3173,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .post-content,
   .comment-text,
   .bio-text {
-    font-size: var(--font-size-base) !important; /* 16px - mobile readability */
-    line-height: 1.5;
+    font-size: var(--font-size-base); /* 16px - mobile readability */
+    line-height: var(--line-height-normal);
   }
 
   /* Fix username and display name sizing */
@@ -3184,14 +3182,14 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .comment-author-name,
   .username,
   .display-name {
-    font-size: var(--font-size-base) !important; /* 16px - mobile readability */
+    font-size: var(--font-size-base); /* 16px - mobile readability */
     white-space: normal;
     word-wrap: break-word;
   }
 
   /* Profile name needs flex-wrap on mobile for badges */
   .profile-name {
-    font-size: var(--font-size-xl) !important; /* 20px - mobile heading */
+    font-size: var(--font-size-xl); /* 20px - mobile heading */
     white-space: normal;
     word-wrap: break-word;
     flex-wrap: wrap !important;
@@ -3216,13 +3214,13 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   /* Fix timestamp sizing */
   .post-timestamp,
   .comment-timestamp {
-    font-size: var(--font-size-sm) !important; /* 14px - mobile meta */
+    font-size: var(--font-size-sm); /* 14px - mobile meta */
   }
 
   /* Fix action button text */
   .action-btn,
   .comment-action-btn {
-    font-size: var(--font-size-sm) !important; /* 14px - touch targets */
+    font-size: var(--font-size-sm); /* 14px - touch targets */
     white-space: nowrap;
   }
 
@@ -3298,7 +3296,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   font-family: inherit;
   min-height: 0;
   height: auto;
-  line-height: 1.5;
+  line-height: var(--line-height-normal);
   box-sizing: border-box;
   transition: height 120ms ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
 }
@@ -3384,7 +3382,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .edit-post-actions .visibility-select {
   display: flex;
   align-items: center;
-  line-height: 1;
+  line-height: var(--line-height-tight);
 }
 
 .edit-post-buttons {
@@ -3811,18 +3809,19 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 /* Username: Muted, secondary - inline with display name */
 .profile-username {
+  display: inline;
   font-size: var(--font-size-base);
   color: var(--text-muted);
   margin: 0;
-  grid-column: 2;
-  grid-row: 1;
-  align-self: baseline;
+  margin-left: 0.5rem;
+  opacity: 0.6;
+  line-height: 1.2;
 }
 
 /* Bio: Readable, centered */
 .profile-bio {
   font-size: var(--font-size-base);
-  line-height: 1.6;
+  line-height: var(--line-height-relaxed);
   color: var(--text-secondary);
   margin: 0.5rem 0 0 0;
   max-width: 500px;
@@ -4138,17 +4137,19 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     gap: 12px; /* Tighter spacing for mobile */
   }
 
-  /* Avatar + Name stacked first */
+  /* Avatar + Name inline on mobile */
   .profile-identity .profile-card--hybrid .profile-name {
     font-size: var(--font-size-2xl);
     text-align: center;
     margin-top: 0;
     order: 1;
+    display: inline;
   }
 
   .profile-identity .profile-card--hybrid .profile-username {
     text-align: center;
-    order: 2;
+    order: 1; /* Same order as name to keep them inline */
+    display: inline;
   }
 
   /* Stats inline row, compact */
@@ -4331,7 +4332,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .profile-identity .profile-card--hybrid .profile-bio {
     margin-top: 10px;
     max-width: 720px;
-    line-height: 1.45;
+    line-height: var(--line-height-normal);
     padding: 0;
     grid-column: 1 / -1;
   }

@@ -25,7 +25,7 @@
 .groups-list-subtitle {
   color: var(--text-muted);
   margin: 0 0 1.5rem 0;
-  line-height: 1.6;
+  line-height: var(--line-height-relaxed);
 }
 
 .header-actions {
@@ -162,7 +162,7 @@
 .group-card-description {
   color: var(--text-muted);
   margin: 0 0 1rem 0;
-  line-height: 1.5;
+  line-height: var(--line-height-normal);
   font-size: var(--font-size-base);
   /* Reserve space for 2 lines */
   min-height: 3rem;
