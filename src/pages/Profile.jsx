@@ -1711,54 +1711,54 @@ function Profile() {
             <div className="profile-card profile-card--hybrid">
                 {/* PART A: Identity Row - Name + Username + Badges in one horizontal row */}
                 <div className="profile-identity-row">
-                  {/* 1. Display Name (largest) */}
-                  <h1 className="profile-name">
-                    {user.displayName || user.fullName || user.username}
-                    {user.nickname &&
-                     user.nickname !== user.displayName &&
-                     user.nickname !== user.username &&
-                     <span className="nickname"> "{user.nickname}"</span>}
-                  </h1>
-
-                  {/* 2. @handle (muted) */}
-                  <p className="profile-username">@{user.username}</p>
-
-                  {/* 3. Founder / Creator role (single elegant pill) */}
-                  <TieredBadgeDisplay badges={userBadges} context="profile" isOwnProfile={isOwnProfile} onEditBadges={() => setEditProfileModal(true)} />
+                  {/* 5. Pronouns & tags */}
+                  <div className="profile-identity-pills">
+                    {user.pronouns && (
+                      <span className="badge">
+                        {user.pronouns.charAt(0).toUpperCase() + user.pronouns.slice(1)}
+                      </span>
+                    )}
+                    {user.gender && (
+                      <span className="badge">
+                        {user.gender.charAt(0).toUpperCase() + user.gender.slice(1)}
+                      </span>
+                    )}
+                    {user.sexualOrientation && (
+                      <span className="badge">
+                        {user.sexualOrientation.charAt(0).toUpperCase() + user.sexualOrientation.slice(1)}
+                      </span>
+                    )}
+                    {user.birthday && (
+                      <span className="badge">
+                        🎂 {(() => {
+                          const birthDate = new Date(user.birthday);
+                          const today = new Date();
+                          let age = today.getFullYear() - birthDate.getFullYear();
+                          const monthDiff = today.getMonth() - birthDate.getMonth();
+                          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                            age--;
+                          }
+                          return age;
+                        })()} years old
+                      </span>
+                    )}
+                  </div>
                 </div>
 
-                {/* 5. Pronouns & tags */}
-                <div className="profile-identity-pills">
-                  {user.pronouns && (
-                    <span className="badge">
-                      {user.pronouns.charAt(0).toUpperCase() + user.pronouns.slice(1)}
-                    </span>
-                  )}
-                  {user.gender && (
-                    <span className="badge">
-                      {user.gender.charAt(0).toUpperCase() + user.gender.slice(1)}
-                    </span>
-                  )}
-                  {user.sexualOrientation && (
-                    <span className="badge">
-                      {user.sexualOrientation.charAt(0).toUpperCase() + user.sexualOrientation.slice(1)}
-                    </span>
-                  )}
-                  {user.birthday && (
-                    <span className="badge">
-                      🎂 {(() => {
-                        const birthDate = new Date(user.birthday);
-                        const today = new Date();
-                        let age = today.getFullYear() - birthDate.getFullYear();
-                        const monthDiff = today.getMonth() - birthDate.getMonth();
-                        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                          age--;
-                        }
-                        return age;
-                      })()} years old
-                    </span>
-                  )}
-                </div>
+                {/* 1. Display Name (largest) */}
+                <h1 className="profile-name">
+                  {user.displayName || user.fullName || user.username}
+                  {user.nickname &&
+                   user.nickname !== user.displayName &&
+                   user.nickname !== user.username &&
+                   <span className="nickname"> "{user.nickname}"</span>}
+                </h1>
+
+                {/* 2. @handle (muted) */}
+                <p className="profile-username">@{user.username}</p>
+
+                {/* 3. Founder / Creator role (single elegant pill) */}
+                <TieredBadgeDisplay badges={userBadges} context="profile" isOwnProfile={isOwnProfile} onEditBadges={() => setEditProfileModal(true)} />
 
                 {/* 6. Bio */}
                 {user.bio && <p className="profile-bio">{sanitizeBio(user.bio)}</p>}
