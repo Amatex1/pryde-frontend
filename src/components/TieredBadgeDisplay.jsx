@@ -40,16 +40,23 @@ function TieredBadgeDisplay({ badges = [], context = 'profile', isOwnProfile = f
     }
   }, [modalOpen, context, authorId, fullBadges, loadingFullBadges]);
 
-  const { tier1, tier2, tier3 } = separateBadgesByTier(badges);
+  // PART B: Filter badges for post/card contexts to show only authority badges
+  const AUTHORITY_BADGE_IDS = ['founder', 'pryde_team', 'admin', 'moderator', 'verified'];
+
+  const filteredBadges = (context === 'card' || context === 'post')
+    ? badges.filter(badge => AUTHORITY_BADGE_IDS.includes(badge.id))
+    : badges;
+
+  const { tier1, tier2, tier3 } = separateBadgesByTier(filteredBadges);
 
   // Combine all badges and show max 2 inline
   const allBadges = [...tier1, ...tier2, ...tier3];
 
-  // For post/card context: show max 2 badges inline
+  // For post/card context: show max 2 badges inline, NO expansion UI
   // For profile context: show all badges with proper tiering
   const maxInlineBadges = (context === 'card' || context === 'post') ? 2 : allBadges.length;
   const inlineBadges = allBadges.slice(0, maxInlineBadges);
-  const remainingBadges = allBadges.slice(maxInlineBadges);
+  const remainingBadges = (context === 'card' || context === 'post') ? [] : allBadges.slice(maxInlineBadges);
 
   // Inline badges (max 2, from all tiers combined)
   const renderInlineBadges = () => {
@@ -68,10 +75,12 @@ function TieredBadgeDisplay({ badges = [], context = 'profile', isOwnProfile = f
   const renderMoreTrigger = () => {
     if (remainingBadges.length === 0) return null;
 
-    // For post/card context: inline expansion only (no modal)
+    // PART B: No expansion UI for post/card contexts
+    if (context === 'card' || context === 'post') return null;
+
     // For profile context: inline expansion
     // For feed context: modal
-    const isInlineExpansion = (context === 'card' || context === 'post' || context === 'profile');
+    const isInlineExpansion = (context === 'profile');
     const handleClick = isInlineExpansion ? () => setExpanded(!expanded) : () => setModalOpen(true);
     const buttonText = isInlineExpansion && expanded ? 'Minimise' : `+${remainingBadges.length}`;
 

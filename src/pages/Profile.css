@@ -4313,59 +4313,74 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     margin-top: 0;
   }
 
-  /* Name - Compact spacing */
+  /* PART A: Identity Row - Name + Username + Badges inline */
   .profile-identity .profile-card--hybrid .profile-name {
-    margin: 0 0 2px 0;
+    display: inline;
+    margin: 0;
     font-size: var(--font-size-2xl);
     text-align: left;
   }
 
-/* Handle - Muted appearance, positioned directly under name */
-.profile-identity .profile-card--hybrid .profile-username {
-  margin: 0 0 2px 0;
-  opacity: 0.7;
-  text-align: left;
-  font-size: var(--font-size-sm);
-}
-
-  /* Bio - Readable, constrained width */
-  .profile-identity .profile-card--hybrid .profile-bio {
-    margin-top: 10px;
-    max-width: 720px;
-    line-height: var(--line-height-normal);
-    padding: 0;
-    grid-column: 1 / -1;
+  /* Handle - Inline with name */
+  .profile-identity .profile-card--hybrid .profile-username {
+    display: inline;
+    margin: 0 0 0 0.5rem;
+    opacity: 0.7;
+    text-align: left;
+    font-size: var(--font-size-sm);
   }
 
-  /* Stats - Less blocky, secondary emphasis, right-aligned */
-  .profile-identity .profile-card--hybrid .profile-stats {
-    margin-top: 14px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    gap: 12px;
-    opacity: 0.9;
-    justify-content: flex-end; /* Right-aligned */
-    flex-direction: column;
-    grid-column: 2;
-    grid-row: 1 / -1;
-    align-self: start;
-    text-align: right; /* Right-align stat text */
+  /* Badges inline with name and username */
+  .profile-identity .profile-card--hybrid .tiered-badge-display {
+    display: inline-flex;
+    margin-left: 0.5rem;
+    vertical-align: middle;
   }
 
-  [data-theme="light"] .profile-identity .profile-card--hybrid .profile-stats {
-    border-top-color: rgba(0, 0, 0, 0.08);
-  }
-
-  /* Action buttons - Proper spacing */
-  .profile-identity .profile-card--hybrid .profile-action-buttons {
-    margin-top: 16px;
-    margin-left: 0;
-    justify-content: flex-start;
+  /* Pronouns/Gender/Age pills - reduced spacing */
+  .profile-identity .profile-card--hybrid .profile-identity-pills {
+    margin-top: 0.5rem;
     grid-column: 1;
   }
 
-  /* Identity pills - Left aligned */
-  .profile-identity .profile-card--hybrid .profile-identity-pills {
+  /* Bio - Readable, constrained width, reduced spacing */
+  .profile-identity .profile-card--hybrid .profile-bio {
+    margin-top: 0.5rem;
+    max-width: 720px;
+    line-height: var(--line-height-normal);
+    padding: 0;
+    grid-column: 1;
+  }
+
+  /* Meta info (location) - reduced spacing */
+  .profile-identity .profile-card--hybrid .profile-meta {
+    margin-top: 0.5rem;
+    grid-column: 1;
+  }
+
+  /* Stats - HORIZONTAL layout, bottom-right, visually secondary */
+  .profile-identity .profile-card--hybrid .profile-stats {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+    gap: 1.5rem;
+    opacity: 0.8; /* Visually secondary */
+    justify-content: flex-end;
+    flex-direction: row; /* HORIZONTAL */
+    grid-column: 2;
+    grid-row: 1 / -1;
+    align-self: end; /* Bottom-right */
+    text-align: center;
+  }
+
+  .profile-identity .profile-card--hybrid .profile-stats .stat-label {
+    opacity: 0.7; /* Reduced opacity for labels */
+  }
+
+  /* Action buttons - Left column, reduced spacing */
+  .profile-identity .profile-card--hybrid .profile-action-buttons {
+    margin-top: 0.75rem;
+    margin-left: 0;
     justify-content: flex-start;
     grid-column: 1;
   }
