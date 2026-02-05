@@ -159,10 +159,19 @@ function PostHeader({
             </span>
           )}
 
-          {/* PHASE A: Tiered badges - max 2 shown on post cards */}
-          {author.badges?.length > 0 && !isSystem && (
-            <TieredBadgeDisplay badges={author.badges} context="post" authorId={author._id} />
-          )}
+          {/* INTENTIONAL MINIMALISM: Only show badges for System bots, Founder/Creator, Admin/Moderator */}
+          {author.badges?.length > 0 && !isSystem && (() => {
+            const allowedBadges = author.badges.filter(badge =>
+              badge.id === 'founder' ||
+              badge.id === 'creator' ||
+              badge.id === 'admin' ||
+              badge.id === 'moderator' ||
+              badge.category === 'CORE_ROLE'
+            );
+            return allowedBadges.length > 0 ? (
+              <TieredBadgeDisplay badges={allowedBadges} context="post" authorId={author._id} />
+            ) : null;
+          })()}
         </div>
 
         {/* Row 2: Username · Timestamp · (edited) · Privacy - all on same line */}
