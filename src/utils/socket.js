@@ -328,13 +328,23 @@ export const connectSocket = (userId, authState = null) => {
             logger.error('❌ Socket connection error:', error.message);
             console.error('❌ Socket connection error:', error);
 
+            // 🔥 NEW: Handle auth errors explicitly - hard stop reconnection
+            if (
+                error?.message?.includes('Session has been logged out') ||
+                error?.message?.includes('Authentication') ||
+                error?.message?.includes('Unauthorized') ||
+                error?.message?.toLowerCase().includes('jwt')
+            ) {
+                console.error('🔐 [Socket] Auth error detected — disabling reconnection');
+                socket.io.opts.reconnection = false;
+                socket.disconnect();
+                return;
+            }
+
             // 🔥 DIAGNOSTIC: Log detailed error info for debugging
             if (error.message.includes('timeout')) {
                 logger.error('⏱️ Socket authentication timeout - backend may be slow or down');
                 console.error('⏱️ This usually means the backend is not responding or CORS is blocking the request');
-            } else if (error.message.includes('Authentication')) {
-                logger.error('🔑 Socket authentication failed - token may be invalid');
-                console.error('🔑 Check if your JWT token is valid and not expired');
             } else if (error.message.includes('websocket')) {
                 console.error('🔌 WebSocket connection failed!');
                 console.error('Possible causes:');

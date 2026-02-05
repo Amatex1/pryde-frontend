@@ -50,7 +50,7 @@ import {
   markAuthenticated as markAuthStatusAuthenticated,
   markUnauthenticated as markAuthStatusUnauthenticated
 } from '../state/authStatus';
-import { initializeSocket, disconnectSocket } from '../utils/socket';
+import { initializeSocket, disconnectSocket, disconnectSocketForLogout } from '../utils/socket';
 
 const AuthContext = createContext(null);
 
@@ -232,7 +232,10 @@ export function AuthProvider({ children }) {
         // Initialize socket for authenticated user
         // 🔐 Socket now knows isAuthReady=true, so it will connect
         try {
-          initializeSocket(userData._id);
+          initializeSocket(userData._id, {
+            isAuthReady: true,
+            authStatus: 'authenticated'
+          });
         } catch (socketErr) {
           logger.warn('[AuthContext] Socket initialization failed:', socketErr);
         }
@@ -325,7 +328,10 @@ export function AuthProvider({ children }) {
     // Initialize socket (now isAuthReady=true)
     if (userData?._id) {
       try {
-        initializeSocket(userData._id);
+        initializeSocket(userData._id, {
+          isAuthReady: true,
+          authStatus: 'authenticated'
+        });
       } catch (socketErr) {
         logger.warn('[AuthContext] Socket initialization failed:', socketErr);
       }
@@ -354,8 +360,9 @@ export function AuthProvider({ children }) {
     logger.debug('[AuthContext] 🚪 Processing logout...');
 
     // Disconnect socket first
+    // 🔥 CRITICAL: Use logout-safe disconnect to prevent reconnection
     try {
-      disconnectSocket();
+      disconnectSocketForLogout();
     } catch (err) {
       logger.warn('[AuthContext] Socket disconnect failed:', err);
     }
