@@ -4252,9 +4252,14 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     overflow: visible;
   }
 
-  /* Cover Photo - Compact height with rounded top corners */
+  /*
+    DESKTOP PROFILE BANNER — FINAL LOCK
+    Adjusted to restore visual balance after header compaction.
+    Do not modify without full profile header review.
+  */
   .profile-cover {
-    height: 200px;
+    height: 300px;
+    min-height: 300px;
     border-radius: 16px 16px 0 0;
     overflow: hidden;
   }
