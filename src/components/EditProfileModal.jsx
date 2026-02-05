@@ -40,15 +40,13 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
   const [locationSuggestions, setLocationSuggestions] = useState([]);
 
   // Photo editor state
-  // tempCoverImage/tempAvatarImage: holds the raw image URL before editing
-  // editingCover/editingAvatar: controls when the editor is visible
-  // avatarMetadata/coverMetadata: stores x, y, scale transforms
-  const [tempCoverImage, setTempCoverImage] = useState(null);
-  const [tempAvatarImage, setTempAvatarImage] = useState(null);
-  const [editingCover, setEditingCover] = useState(false);
-  const [editingAvatar, setEditingAvatar] = useState(false);
-  const [avatarMetadata, setAvatarMetadata] = useState({ x: 0, y: 0, scale: 1 });
-  const [coverMetadata, setCoverMetadata] = useState({ x: 0, y: 0, scale: 1 });
+  // NON-DESTRUCTIVE EDITING: Editor is always available when image exists
+  // avatarPos/coverPos: stores x, y, scale transforms (live state)
+  // No temp images needed - editor works directly with existing URLs
+  const [avatarPos, setAvatarPos] = useState({ x: 0, y: 0, scale: 1 });
+  const [coverPos, setCoverPos] = useState({ x: 0, y: 0, scale: 1 });
+  const [isDraggingAvatar, setIsDraggingAvatar] = useState(false);
+  const [isDraggingCover, setIsDraggingCover] = useState(false);
   const coverInputRef = useRef(null);
   const avatarInputRef = useRef(null);
 
@@ -84,14 +82,10 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
         coverPhoto: user.coverPhoto || null
       });
 
-      // Reset editor state when modal opens
-      setTempCoverImage(null);
-      setTempAvatarImage(null);
-      setEditingCover(false);
-      setEditingAvatar(false);
-      // Initialize metadata from existing user data
-      setAvatarMetadata(user.profilePhotoPosition || { x: 0, y: 0, scale: 1 });
-      setCoverMetadata(user.coverPhotoPosition || { x: 0, y: 0, scale: 1 });
+      // Initialize position state from existing user data
+      // NON-DESTRUCTIVE: Load saved positions so user can continue editing
+      setAvatarPos(user.profilePhotoPosition || { x: 0, y: 0, scale: 1 });
+      setCoverPos(user.coverPhotoPosition || { x: 0, y: 0, scale: 1 });
     }
   }, [isOpen, user]);
 
@@ -143,8 +137,8 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
     }));
   };
 
-  // Handle file selection - opens crop editor instead of immediate upload
-  const handleFileSelect = (e, type) => {
+  // Handle photo upload - uploads new image and resets position
+  const handlePhotoUpload = async (e, type) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -154,40 +148,28 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
       return;
     }
 
-    // Create temporary URL for crop editor
-    const imageUrl = URL.createObjectURL(file);
-
-    if (type === 'profile') {
-      setTempAvatarImage(imageUrl);
-      setEditingAvatar(true);
-    } else {
-      setTempCoverImage(imageUrl);
-      setEditingCover(true);
-    }
-
-    // Clear the input so the same file can be selected again
-    e.target.value = '';
-  };
-
-  // Handle editor completion - uploads the image and saves metadata
-  const handleEditorComplete = async (type) => {
     setUploadingPhoto(true);
     setUploadProgress(0);
 
     try {
-      // Get the file from the temporary image URL
-      const imageUrl = type === 'profile' ? tempAvatarImage : tempCoverImage;
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      const fileName = type === 'profile' ? 'avatar.jpg' : 'cover.jpg';
-      const file = new File([blob], fileName, { type: 'image/jpeg' });
+      // Compress image before upload
+      let compressedFile = file;
+      try {
+        if (type === 'profile') {
+          compressedFile = await compressAvatar(file);
+        } else {
+          compressedFile = await compressCoverPhoto(file);
+        }
+      } catch (error) {
+        console.warn('Image compression failed, using original:', error);
+      }
 
       const endpoint = type === 'profile' ? '/upload/profile-photo' : '/upload/cover-photo';
 
       // Upload with progress tracking
-      const uploadResponse = await uploadWithProgress({
+      const response = await uploadWithProgress({
         url: `${api.defaults.baseURL}${endpoint}`,
-        file: file,
+        file: compressedFile,
         fieldName: 'photo',
         onProgress: (percent) => {
           setUploadProgress(percent);
@@ -195,49 +177,30 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
       });
 
       // Validate response
-      if (!uploadResponse || !uploadResponse.url) {
+      if (!response || !response.url) {
         throw new Error('Upload succeeded but no URL returned');
       }
 
-      // Update form data with new image URL and metadata
       if (type === 'profile') {
-        setFormData(prev => ({
-          ...prev,
-          profilePhoto: uploadResponse.url,
-          profilePhotoPosition: avatarMetadata
-        }));
-        setEditingAvatar(false);
-        setTempAvatarImage(null);
+        setFormData(prev => ({ ...prev, profilePhoto: response.url }));
+        // Reset avatar position for new photo
+        setAvatarPos({ x: 0, y: 0, scale: 1 });
       } else {
-        setFormData(prev => ({
-          ...prev,
-          coverPhoto: uploadResponse.url,
-          coverPhotoPosition: coverMetadata
-        }));
-        setEditingCover(false);
-        setTempCoverImage(null);
+        setFormData(prev => ({ ...prev, coverPhoto: response.url }));
+        // Reset cover position for new photo
+        setCoverPos({ x: 0, y: 0, scale: 1 });
       }
     } catch (error) {
       console.error('Failed to upload photo:', error);
-      const errorMessage = error.message || 'Image upload failed. Please try again.';
+
+      // Extract user-friendly error message
+      const errorMessage = error.message ||
+                          'Image upload failed. Please try again or use a smaller image.';
+
       alert(errorMessage);
     } finally {
       setUploadingPhoto(false);
       setUploadProgress(0);
-    }
-  };
-
-  // Handle crop cancel - restores previous state
-  const handleCropCancel = (type) => {
-    if (type === 'profile') {
-      setEditingAvatar(false);
-      // Clean up the temporary URL
-      if (tempAvatarImage) URL.revokeObjectURL(tempAvatarImage);
-      setTempAvatarImage(null);
-    } else {
-      setEditingCover(false);
-      if (tempCoverImage) URL.revokeObjectURL(tempCoverImage);
-      setTempCoverImage(null);
     }
   };
 
@@ -251,14 +214,14 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
 
     setLoading(true);
     try {
-      // formData contains profilePhoto, coverPhoto URLs and position metadata
+      // Include photo URLs and position metadata in the update
+      // formData already contains profilePhoto and coverPhoto from user or upload
       const updateData = {
         ...formData,
         // If pronouns is 'custom', send the customPronouns value instead
         pronouns: formData.pronouns === 'custom' ? formData.customPronouns : formData.pronouns,
-        // Include position metadata for non-destructive editing
-        profilePhotoPosition: avatarMetadata,
-        coverPhotoPosition: coverMetadata
+        coverPhotoPosition: coverPos,
+        profilePhotoPosition: avatarPos
       };
 
       const response = await api.put('/users/profile', updateData);
@@ -289,147 +252,163 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
               <h3>📸 Visual</h3>
 
               <div className="photo-editors">
-                {/* Cover Photo Editor */}
+                {/* Cover Photo Editor - Always-On Non-Destructive */}
                 <div className="photo-editor-item">
                   <label>Cover Photo</label>
                   <div className="photo-editor-container">
-                    {editingCover && tempCoverImage ? (
-                      /* Editor mode - shown when user selects a new image */
-                      <>
-                        <ImageEditor
-                          image={tempCoverImage}
-                          aspect={16 / 6} /* Wide aspect for cover photos */
-                          cropShape="rect"
-                          initialCrop={{ x: coverMetadata.x, y: coverMetadata.y }}
-                          initialZoom={coverMetadata.scale}
-                          onCropChange={(crop) => setCoverMetadata(prev => ({ ...prev, x: crop.x, y: crop.y }))}
-                          onZoomChange={(zoom) => setCoverMetadata(prev => ({ ...prev, scale: zoom }))}
-                          onReset={() => setCoverMetadata({ x: 0, y: 0, scale: 1 })}
-                          showSafeAreaGuide={true}
-                          safeAreaGuideType="cover"
+                    <div
+                      className="photo-preview-draggable cover"
+                      onMouseDown={(e) => {
+                        if (!formData.coverPhoto && !user?.coverPhoto) return;
+                        setIsDraggingCover(true);
+                        const startX = e.clientX;
+                        const startY = e.clientY;
+                        const startPosX = coverPos.x;
+                        const startPosY = coverPos.y;
+
+                        const handleMouseMove = (e) => {
+                          const deltaX = e.clientX - startX;
+                          const deltaY = e.clientY - startY;
+                          setCoverPos(prev => ({
+                            ...prev,
+                            x: startPosX + deltaX,
+                            y: startPosY + deltaY
+                          }));
+                        };
+
+                        const handleMouseUp = () => {
+                          setIsDraggingCover(false);
+                          document.removeEventListener('mousemove', handleMouseMove);
+                          document.removeEventListener('mouseup', handleMouseUp);
+                        };
+
+                        document.addEventListener('mousemove', handleMouseMove);
+                        document.addEventListener('mouseup', handleMouseUp);
+                      }}
+                    >
+                      {formData.coverPhoto || user?.coverPhoto ? (
+                        <div
+                          style={{
+                            backgroundImage: `url(${getImageUrl(formData.coverPhoto || user.coverPhoto)})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            width: '100%',
+                            height: '100%',
+                            transform: `translate(${coverPos.x}px, ${coverPos.y}px) scale(${coverPos.scale})`,
+                            transformOrigin: 'center',
+                            transition: isDraggingCover ? 'none' : 'transform 0.1s ease'
+                          }}
                         />
-                        <div className="editor-actions">
-                          <button
-                            type="button"
-                            className="btn-cancel-edit"
-                            onClick={() => handleEditorCancel('cover')}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="button"
-                            className="btn-save-edit"
-                            onClick={() => handleEditorComplete('cover')}
-                            disabled={uploadingPhoto}
-                          >
-                            {uploadingPhoto ? `Uploading... ${uploadProgress}%` : 'Save Cover'}
-                          </button>
+                      ) : (
+                        <div className="photo-placeholder">No cover photo</div>
+                      )}
+                    </div>
+                    <div className="photo-controls">
+                      <label htmlFor="cover-zoom">Zoom: {coverPos.scale.toFixed(2)}x</label>
+                      <input
+                        id="cover-zoom"
+                        type="range"
+                        min="1"
+                        max="2"
+                        step="0.01"
+                        value={coverPos.scale}
+                        onChange={(e) => setCoverPos({ ...coverPos, scale: parseFloat(e.target.value) })}
+                        className="zoom-slider"
+                      />
+                      <input
+                        type="file"
+                        id="cover-photo-upload"
+                        accept="image/*"
+                        onChange={(e) => handlePhotoUpload(e, 'cover')}
+                        disabled={uploadingPhoto}
+                        style={{ marginTop: '8px' }}
+                      />
+                      {uploadingPhoto && (
+                        <div className="upload-progress" style={{ marginTop: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                          Uploading... {uploadProgress}%
                         </div>
-                      </>
-                    ) : (
-                      /* Preview mode - shows current cover photo */
-                      <>
-                        <div className="photo-preview cover">
-                          {formData.coverPhoto || user?.coverPhoto ? (
-                            <img
-                              src={getImageUrl(formData.coverPhoto || user.coverPhoto)}
-                              alt="Cover"
-                            />
-                          ) : (
-                            <div className="photo-placeholder">No cover photo</div>
-                          )}
-                        </div>
-                        <input
-                          ref={coverInputRef}
-                          type="file"
-                          id="cover-photo-upload"
-                          accept="image/*"
-                          onChange={(e) => handleFileSelect(e, 'cover')}
-                          disabled={uploadingPhoto}
-                          style={{ display: 'none' }}
-                        />
-                        <button
-                          type="button"
-                          className="photo-change-btn"
-                          onClick={() => coverInputRef.current?.click()}
-                          disabled={uploadingPhoto}
-                        >
-                          {formData.coverPhoto || user?.coverPhoto ? 'Change Cover' : 'Add Cover Photo'}
-                        </button>
-                      </>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                {/* Profile Photo Editor */}
+                {/* Profile Photo Editor - Always-On Non-Destructive */}
                 <div className="photo-editor-item">
                   <label>Profile Photo</label>
                   <div className="photo-editor-container">
-                    {editingAvatar && tempAvatarImage ? (
-                      /* Editor mode - shown when user selects a new image */
-                      <>
-                        <ImageEditor
-                          image={tempAvatarImage}
-                          aspect={1} /* Square aspect for avatars */
-                          cropShape="round"
-                          initialCrop={{ x: avatarMetadata.x, y: avatarMetadata.y }}
-                          initialZoom={avatarMetadata.scale}
-                          onCropChange={(crop) => setAvatarMetadata(prev => ({ ...prev, x: crop.x, y: crop.y }))}
-                          onZoomChange={(zoom) => setAvatarMetadata(prev => ({ ...prev, scale: zoom }))}
-                          onReset={() => setAvatarMetadata({ x: 0, y: 0, scale: 1 })}
-                          showSafeAreaGuide={true}
-                          safeAreaGuideType="avatar"
+                    <div
+                      className="photo-preview-draggable avatar"
+                      onMouseDown={(e) => {
+                        if (!formData.profilePhoto && !user?.profilePhoto) return;
+                        setIsDraggingAvatar(true);
+                        const startX = e.clientX;
+                        const startY = e.clientY;
+                        const startPosX = avatarPos.x;
+                        const startPosY = avatarPos.y;
+
+                        const handleMouseMove = (e) => {
+                          const deltaX = e.clientX - startX;
+                          const deltaY = e.clientY - startY;
+                          setAvatarPos(prev => ({
+                            ...prev,
+                            x: startPosX + deltaX,
+                            y: startPosY + deltaY
+                          }));
+                        };
+
+                        const handleMouseUp = () => {
+                          setIsDraggingAvatar(false);
+                          document.removeEventListener('mousemove', handleMouseMove);
+                          document.removeEventListener('mouseup', handleMouseUp);
+                        };
+
+                        document.addEventListener('mousemove', handleMouseMove);
+                        document.addEventListener('mouseup', handleMouseUp);
+                      }}
+                    >
+                      {formData.profilePhoto || user?.profilePhoto ? (
+                        <div
+                          style={{
+                            backgroundImage: `url(${getImageUrl(formData.profilePhoto || user.profilePhoto)})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            width: '100%',
+                            height: '100%',
+                            transform: `translate(${avatarPos.x}px, ${avatarPos.y}px) scale(${avatarPos.scale})`,
+                            transformOrigin: 'center',
+                            transition: isDraggingAvatar ? 'none' : 'transform 0.1s ease'
+                          }}
                         />
-                        <div className="editor-actions">
-                          <button
-                            type="button"
-                            className="btn-cancel-edit"
-                            onClick={() => handleEditorCancel('profile')}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="button"
-                            className="btn-save-edit"
-                            onClick={() => handleEditorComplete('profile')}
-                            disabled={uploadingPhoto}
-                          >
-                            {uploadingPhoto ? `Uploading... ${uploadProgress}%` : 'Save Photo'}
-                          </button>
+                      ) : (
+                        <div className="photo-placeholder">No photo</div>
+                      )}
+                    </div>
+                    <div className="photo-controls">
+                      <label htmlFor="avatar-zoom">Zoom: {avatarPos.scale.toFixed(2)}x</label>
+                      <input
+                        id="avatar-zoom"
+                        type="range"
+                        min="1"
+                        max="2"
+                        step="0.01"
+                        value={avatarPos.scale}
+                        onChange={(e) => setAvatarPos({ ...avatarPos, scale: parseFloat(e.target.value) })}
+                        className="zoom-slider"
+                      />
+                      <input
+                        type="file"
+                        id="profile-photo-upload"
+                        accept="image/*"
+                        onChange={(e) => handlePhotoUpload(e, 'profile')}
+                        disabled={uploadingPhoto}
+                        style={{ marginTop: '8px' }}
+                      />
+                      {uploadingPhoto && (
+                        <div className="upload-progress" style={{ marginTop: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                          Uploading... {uploadProgress}%
                         </div>
-                      </>
-                    ) : (
-                      /* Preview mode - shows current avatar */
-                      <>
-                        <div className="photo-preview avatar">
-                          {formData.profilePhoto || user?.profilePhoto ? (
-                            <img
-                              src={getImageUrl(formData.profilePhoto || user.profilePhoto)}
-                              alt="Profile"
-                            />
-                          ) : (
-                            <div className="photo-placeholder">No photo</div>
-                          )}
-                        </div>
-                        <input
-                          ref={avatarInputRef}
-                          type="file"
-                          id="profile-photo-upload"
-                          accept="image/*"
-                          onChange={(e) => handleFileSelect(e, 'profile')}
-                          disabled={uploadingPhoto}
-                          style={{ display: 'none' }}
-                        />
-                        <button
-                          type="button"
-                          className="photo-change-btn"
-                          onClick={() => avatarInputRef.current?.click()}
-                          disabled={uploadingPhoto}
-                        >
-                          {formData.profilePhoto || user?.profilePhoto ? 'Change Photo' : 'Add Photo'}
-                        </button>
-                      </>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
