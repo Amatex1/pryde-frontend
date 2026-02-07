@@ -48,6 +48,7 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
   const [isDraggingAvatar, setIsDraggingAvatar] = useState(false);
   const [isDraggingCover, setIsDraggingCover] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [initialFormData, setInitialFormData] = useState({});
   const coverInputRef = useRef(null);
   const avatarInputRef = useRef(null);
 
@@ -93,7 +94,14 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    setHasChanges(true);
+    checkForChanges({ ...formData, [name]: value });
+  };
+
+  const checkForChanges = (currentData) => {
+    const hasFormChanges = JSON.stringify(currentData) !== JSON.stringify(initialFormData);
+    const hasPhotoChanges = avatarPos.x !== 0 || avatarPos.y !== 0 || avatarPos.scale !== 1.05 ||
+                           coverPos.x !== 0 || coverPos.y !== 0 || coverPos.scale !== 1.05;
+    setHasChanges(hasFormChanges || hasPhotoChanges);
   };
 
   const handleAddInterest = () => {
@@ -107,11 +115,11 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
   };
 
   const handleRemoveInterest = (interest) => {
-    setFormData(prev => ({
-      ...prev,
-      interests: prev.interests.filter(i => i !== interest)
-    }));
-    setHasChanges(true);
+    setFormData(prev => {
+      const newData = { ...prev, interests: prev.interests.filter(i => i !== interest) };
+      checkForChanges(newData);
+      return newData;
+    });
   };
 
   const handleAddSocialLink = () => {
@@ -133,12 +141,16 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
   };
 
   const toggleLookingFor = (option) => {
-    setFormData(prev => ({
-      ...prev,
-      lookingFor: prev.lookingFor.includes(option)
-        ? prev.lookingFor.filter(o => o !== option)
-        : [...prev.lookingFor, option]
-    }));
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        lookingFor: prev.lookingFor.includes(option)
+          ? prev.lookingFor.filter(o => o !== option)
+          : [...prev.lookingFor, option]
+      };
+      checkForChanges(newData);
+      return newData;
+    });
   };
 
   // Handle photo upload - uploads new image and resets position
@@ -267,7 +279,7 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                         onMouseDown={(e) => {
                           if (!formData.coverPhoto && !user?.coverPhoto) return;
                           setIsDraggingCover(true);
-                          setHasChanges(true);
+                          checkForChanges(formData);
                           const startX = e.clientX;
                           const startY = e.clientY;
                           const startPosX = coverPos.x;
@@ -325,7 +337,7 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                           }
 
                           e.preventDefault();
-                          setHasChanges(true);
+                          checkForChanges(formData);
                           const maxX = 100;
                           const maxY = 100;
                           setCoverPos(prev => ({
@@ -405,7 +417,7 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                         onMouseDown={(e) => {
                           if (!formData.profilePhoto && !user?.profilePhoto) return;
                           setIsDraggingAvatar(true);
-                          setHasChanges(true);
+                          checkForChanges(formData);
                           const startX = e.clientX;
                           const startY = e.clientY;
                           const startPosX = avatarPos.x;
@@ -463,7 +475,7 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                           }
 
                           e.preventDefault();
-                          setHasChanges(true);
+                          checkForChanges(formData);
                           const maxX = 50;
                           const maxY = 50;
                           setAvatarPos(prev => ({
@@ -506,7 +518,7 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                         value={avatarPos.scale}
                         onChange={(e) => {
                           setAvatarPos({ ...avatarPos, scale: parseFloat(e.target.value) });
-                          setHasChanges(true);
+                          checkForChanges(formData);
                         }}
                         className="zoom-slider"
                       />
@@ -1003,11 +1015,11 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
               {hasChanges && <span>Changes won't apply until you save</span>}
             </div>
             <div className="form-actions">
-              <button type="button" onClick={onClose} className="btn-cancel">
-                Cancel
-              </button>
               <button type="submit" disabled={loading || !hasChanges} className="btn-save">
                 {loading ? 'Saving...' : 'Save Changes'}
+              </button>
+              <button type="button" onClick={onClose} className="btn-cancel">
+                Cancel
               </button>
             </div>
           </div>
