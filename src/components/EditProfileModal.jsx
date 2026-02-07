@@ -43,10 +43,11 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
   // NON-DESTRUCTIVE EDITING: Editor is always available when image exists
   // avatarPos/coverPos: stores x, y, scale transforms (live state)
   // No temp images needed - editor works directly with existing URLs
-  const [avatarPos, setAvatarPos] = useState({ x: 0, y: 0, scale: 1 });
-  const [coverPos, setCoverPos] = useState({ x: 0, y: 0, scale: 1 });
+  const [avatarPos, setAvatarPos] = useState({ x: 0, y: 0, scale: 1.05 });
+  const [coverPos, setCoverPos] = useState({ x: 0, y: 0, scale: 1.05 });
   const [isDraggingAvatar, setIsDraggingAvatar] = useState(false);
   const [isDraggingCover, setIsDraggingCover] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
   const coverInputRef = useRef(null);
   const avatarInputRef = useRef(null);
 
@@ -84,14 +85,15 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
 
       // Initialize position state from existing user data
       // NON-DESTRUCTIVE: Load saved positions so user can continue editing
-      setAvatarPos(user.profilePhotoPosition || { x: 0, y: 0, scale: 1 });
-      setCoverPos(user.coverPhotoPosition || { x: 0, y: 0, scale: 1 });
+      setAvatarPos(user.profilePhotoPosition || { x: 0, y: 0, scale: 1.05 });
+      setCoverPos(user.coverPhotoPosition || { x: 0, y: 0, scale: 1.05 });
     }
   }, [isOpen, user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    setHasChanges(true);
   };
 
   const handleAddInterest = () => {
@@ -109,6 +111,7 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
       ...prev,
       interests: prev.interests.filter(i => i !== interest)
     }));
+    setHasChanges(true);
   };
 
   const handleAddSocialLink = () => {
@@ -126,6 +129,7 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
       ...prev,
       socialLinks: prev.socialLinks.filter((_, i) => i !== index)
     }));
+    setHasChanges(true);
   };
 
   const toggleLookingFor = (option) => {
@@ -184,12 +188,13 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
       if (type === 'profile') {
         setFormData(prev => ({ ...prev, profilePhoto: response.url }));
         // Reset avatar position for new photo
-        setAvatarPos({ x: 0, y: 0, scale: 1 });
+        setAvatarPos({ x: 0, y: 0, scale: 1.05 });
       } else {
         setFormData(prev => ({ ...prev, coverPhoto: response.url }));
         // Reset cover position for new photo
-        setCoverPos({ x: 0, y: 0, scale: 1 });
+        setCoverPos({ x: 0, y: 0, scale: 1.05 });
       }
+      setHasChanges(true);
     } catch (error) {
       console.error('Failed to upload photo:', error);
 
@@ -256,51 +261,109 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                 <div className="photo-editor-item">
                   <label>Cover Photo</label>
                   <div className="photo-editor-container">
-                    <div
-                      className="photo-preview-draggable cover"
-                      onMouseDown={(e) => {
-                        if (!formData.coverPhoto && !user?.coverPhoto) return;
-                        setIsDraggingCover(true);
-                        const startX = e.clientX;
-                        const startY = e.clientY;
-                        const startPosX = coverPos.x;
-                        const startPosY = coverPos.y;
+                    <div className="photo-preview-wrapper cover">
+                      <div
+                        className={`photo-preview-draggable cover ${isDraggingCover ? 'dragging' : ''}`}
+                        onMouseDown={(e) => {
+                          if (!formData.coverPhoto && !user?.coverPhoto) return;
+                          setIsDraggingCover(true);
+                          setHasChanges(true);
+                          const startX = e.clientX;
+                          const startY = e.clientY;
+                          const startPosX = coverPos.x;
+                          const startPosY = coverPos.y;
 
-                        const handleMouseMove = (e) => {
-                          const deltaX = e.clientX - startX;
-                          const deltaY = e.clientY - startY;
+                          const handleMouseMove = (e) => {
+                            const deltaX = e.clientX - startX;
+                            const deltaY = e.clientY - startY;
+                            const newX = startPosX + deltaX;
+                            const newY = startPosY + deltaY;
+
+                            // Soft bounds - allow some overflow but ease back
+                            const maxX = 100;
+                            const maxY = 100;
+                            const boundedX = Math.max(-maxX, Math.min(maxX, newX));
+                            const boundedY = Math.max(-maxY, Math.min(maxY, newY));
+
+                            setCoverPos(prev => ({
+                              ...prev,
+                              x: boundedX,
+                              y: boundedY
+                            }));
+                          };
+
+                          const handleMouseUp = () => {
+                            setIsDraggingCover(false);
+                            document.removeEventListener('mousemove', handleMouseMove);
+                            document.removeEventListener('mouseup', handleMouseUp);
+                          };
+
+                          document.addEventListener('mousemove', handleMouseMove);
+                          document.addEventListener('mouseup', handleMouseUp);
+                        }}
+                        onKeyDown={(e) => {
+                          if (!formData.coverPhoto && !user?.coverPhoto) return;
+                          const step = 5;
+                          let newX = coverPos.x;
+                          let newY = coverPos.y;
+
+                          switch (e.key) {
+                            case 'ArrowUp':
+                              newY -= step;
+                              break;
+                            case 'ArrowDown':
+                              newY += step;
+                              break;
+                            case 'ArrowLeft':
+                              newX -= step;
+                              break;
+                            case 'ArrowRight':
+                              newX += step;
+                              break;
+                            default:
+                              return;
+                          }
+
+                          e.preventDefault();
+                          setHasChanges(true);
+                          const maxX = 100;
+                          const maxY = 100;
                           setCoverPos(prev => ({
                             ...prev,
-                            x: startPosX + deltaX,
-                            y: startPosY + deltaY
+                            x: Math.max(-maxX, Math.min(maxX, newX)),
+                            y: Math.max(-maxY, Math.min(maxY, newY))
                           }));
-                        };
-
-                        const handleMouseUp = () => {
-                          setIsDraggingCover(false);
-                          document.removeEventListener('mousemove', handleMouseMove);
-                          document.removeEventListener('mouseup', handleMouseUp);
-                        };
-
-                        document.addEventListener('mousemove', handleMouseMove);
-                        document.addEventListener('mouseup', handleMouseUp);
-                      }}
-                    >
-                      {formData.coverPhoto || user?.coverPhoto ? (
-                        <div
-                          style={{
-                            backgroundImage: `url(${getImageUrl(formData.coverPhoto || user.coverPhoto)})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            width: '100%',
-                            height: '100%',
-                            transform: `translate(${coverPos.x}px, ${coverPos.y}px) scale(${coverPos.scale})`,
-                            transformOrigin: 'center',
-                            transition: isDraggingCover ? 'none' : 'transform 0.1s ease'
-                          }}
-                        />
-                      ) : (
-                        <div className="photo-placeholder">No cover photo</div>
+                        }}
+                        tabIndex={formData.coverPhoto || user?.coverPhoto ? 0 : -1}
+                        role="img"
+                        aria-label="Cover photo editor - drag to reposition"
+                      >
+                        {formData.coverPhoto || user?.coverPhoto ? (
+                          <div
+                            className="photo-image"
+                            style={{
+                              backgroundImage: `url(${getImageUrl(formData.coverPhoto || user.coverPhoto)})`,
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center',
+                              width: '100%',
+                              height: '100%',
+                              transform: `translate(${coverPos.x}px, ${coverPos.y}px) scale(${coverPos.scale})`,
+                              transformOrigin: 'center',
+                              transition: isDraggingCover ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                            }}
+                          />
+                        ) : (
+                          <div className="photo-placeholder">No cover photo</div>
+                        )}
+                      </div>
+                      {/* Safety Guides */}
+                      {(formData.coverPhoto || user?.coverPhoto) && (
+                        <div className={`safety-guides cover ${isDraggingCover ? 'faded' : ''}`}>
+                          {/* Avatar overlap guide */}
+                          <div className="guide avatar-guide"></div>
+                          {/* Text clearance guide */}
+                          <div className="guide text-guide"></div>
+                        </div>
                       )}
                     </div>
                     <div className="photo-controls">
@@ -336,55 +399,104 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                 <div className="photo-editor-item">
                   <label>Profile Photo</label>
                   <div className="photo-editor-container">
-                    <div
-                      className="photo-preview-draggable avatar"
-                      onMouseDown={(e) => {
-                        if (!formData.profilePhoto && !user?.profilePhoto) return;
-                        setIsDraggingAvatar(true);
-                        const startX = e.clientX;
-                        const startY = e.clientY;
-                        const startPosX = avatarPos.x;
-                        const startPosY = avatarPos.y;
+                    <div className="photo-preview-wrapper avatar">
+                      <div
+                        className={`photo-preview-draggable avatar ${isDraggingAvatar ? 'dragging' : ''}`}
+                        onMouseDown={(e) => {
+                          if (!formData.profilePhoto && !user?.profilePhoto) return;
+                          setIsDraggingAvatar(true);
+                          setHasChanges(true);
+                          const startX = e.clientX;
+                          const startY = e.clientY;
+                          const startPosX = avatarPos.x;
+                          const startPosY = avatarPos.y;
 
-                        const handleMouseMove = (e) => {
-                          const deltaX = e.clientX - startX;
-                          const deltaY = e.clientY - startY;
+                          const handleMouseMove = (e) => {
+                            const deltaX = e.clientX - startX;
+                            const deltaY = e.clientY - startY;
+                            const newX = startPosX + deltaX;
+                            const newY = startPosY + deltaY;
+
+                            // Soft bounds - allow some overflow but ease back
+                            const maxX = 50;
+                            const maxY = 50;
+                            const boundedX = Math.max(-maxX, Math.min(maxX, newX));
+                            const boundedY = Math.max(-maxY, Math.min(maxY, newY));
+
+                            setAvatarPos(prev => ({
+                              ...prev,
+                              x: boundedX,
+                              y: boundedY
+                            }));
+                          };
+
+                          const handleMouseUp = () => {
+                            setIsDraggingAvatar(false);
+                            document.removeEventListener('mousemove', handleMouseMove);
+                            document.removeEventListener('mouseup', handleMouseUp);
+                          };
+
+                          document.addEventListener('mousemove', handleMouseMove);
+                          document.addEventListener('mouseup', handleMouseUp);
+                        }}
+                        onKeyDown={(e) => {
+                          if (!formData.profilePhoto && !user?.profilePhoto) return;
+                          const step = 5;
+                          let newX = avatarPos.x;
+                          let newY = avatarPos.y;
+
+                          switch (e.key) {
+                            case 'ArrowUp':
+                              newY -= step;
+                              break;
+                            case 'ArrowDown':
+                              newY += step;
+                              break;
+                            case 'ArrowLeft':
+                              newX -= step;
+                              break;
+                            case 'ArrowRight':
+                              newX += step;
+                              break;
+                            default:
+                              return;
+                          }
+
+                          e.preventDefault();
+                          setHasChanges(true);
+                          const maxX = 50;
+                          const maxY = 50;
                           setAvatarPos(prev => ({
                             ...prev,
-                            x: startPosX + deltaX,
-                            y: startPosY + deltaY
+                            x: Math.max(-maxX, Math.min(maxX, newX)),
+                            y: Math.max(-maxY, Math.min(maxY, newY))
                           }));
-                        };
-
-                        const handleMouseUp = () => {
-                          setIsDraggingAvatar(false);
-                          document.removeEventListener('mousemove', handleMouseMove);
-                          document.removeEventListener('mouseup', handleMouseUp);
-                        };
-
-                        document.addEventListener('mousemove', handleMouseMove);
-                        document.addEventListener('mouseup', handleMouseUp);
-                      }}
-                    >
-                      {formData.profilePhoto || user?.profilePhoto ? (
-                        <div
-                          style={{
-                            backgroundImage: `url(${getImageUrl(formData.profilePhoto || user.profilePhoto)})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            width: '100%',
-                            height: '100%',
-                            transform: `translate(${avatarPos.x}px, ${avatarPos.y}px) scale(${avatarPos.scale})`,
-                            transformOrigin: 'center',
-                            transition: isDraggingAvatar ? 'none' : 'transform 0.1s ease'
-                          }}
-                        />
-                      ) : (
-                        <div className="photo-placeholder">No photo</div>
-                      )}
+                        }}
+                        tabIndex={formData.profilePhoto || user?.profilePhoto ? 0 : -1}
+                        role="img"
+                        aria-label="Profile photo editor - drag to reposition"
+                      >
+                        {formData.profilePhoto || user?.profilePhoto ? (
+                          <div
+                            className="photo-image"
+                            style={{
+                              backgroundImage: `url(${getImageUrl(formData.profilePhoto || user.profilePhoto)})`,
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center',
+                              width: '100%',
+                              height: '100%',
+                              transform: `translate(${avatarPos.x}px, ${avatarPos.y}px) scale(${avatarPos.scale})`,
+                              transformOrigin: 'center',
+                              transition: isDraggingAvatar ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                            }}
+                          />
+                        ) : (
+                          <div className="photo-placeholder">No photo</div>
+                        )}
+                      </div>
                     </div>
                     <div className="photo-controls">
-                      <label htmlFor="avatar-zoom">Zoom: {avatarPos.scale.toFixed(2)}x</label>
+                      <label htmlFor="avatar-zoom">Fine tune size</label>
                       <input
                         id="avatar-zoom"
                         type="range"
@@ -392,7 +504,10 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
                         max="2"
                         step="0.01"
                         value={avatarPos.scale}
-                        onChange={(e) => setAvatarPos({ ...avatarPos, scale: parseFloat(e.target.value) })}
+                        onChange={(e) => {
+                          setAvatarPos({ ...avatarPos, scale: parseFloat(e.target.value) });
+                          setHasChanges(true);
+                        }}
                         className="zoom-slider"
                       />
                       <input
@@ -883,13 +998,18 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
             </section>
           </div>
 
-          <div className="form-footer">
-            <button type="button" onClick={onClose} className="btn-cancel">
-              Cancel
-            </button>
-            <button type="submit" disabled={loading} className="btn-save">
-              {loading ? 'Saving...' : 'Save Changes'}
-            </button>
+          <div className="form-footer sticky">
+            <div className="change-indicator">
+              {hasChanges && <span>Changes won't apply until you save</span>}
+            </div>
+            <div className="form-actions">
+              <button type="button" onClick={onClose} className="btn-cancel">
+                Cancel
+              </button>
+              <button type="submit" disabled={loading || !hasChanges} className="btn-save">
+                {loading ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
           </div>
         </form>
       </div>

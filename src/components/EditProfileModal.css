@@ -152,8 +152,9 @@
   gap: 1rem;
 }
 
-/* Photo preview (non-interactive display) */
-.photo-preview {
+/* Photo preview wrapper with mask */
+.photo-preview-wrapper {
+  position: relative;
   width: 100%;
   height: 200px;
   border-radius: 12px;
@@ -163,25 +164,90 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
 }
 
-.photo-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.photo-preview.cover {
+.photo-preview-wrapper.cover {
   height: 150px;
-  border-radius: 12px;
 }
 
-.photo-preview.avatar {
+.photo-preview-wrapper.avatar {
   height: 200px;
   width: 200px;
   border-radius: 50%;
   margin: 0 auto;
+  /* Circular mask for profile photo */
+  mask: radial-gradient(circle at center, black 100%, transparent 100%);
+  -webkit-mask: radial-gradient(circle at center, black 100%, transparent 100%);
+}
+
+/* Draggable photo preview */
+.photo-preview-draggable {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  user-select: none;
+  outline: none;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.photo-preview-draggable:hover {
+  cursor: grab;
+}
+
+.photo-preview-draggable.dragging {
+  cursor: grabbing;
+}
+
+.photo-preview-draggable.dragging .photo-image {
+  /* Pryde purple outline during drag */
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+/* Photo image with transforms */
+.photo-image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  will-change: transform;
+}
+
+/* Soft dimming outside mask areas */
+.photo-preview-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.photo-preview-wrapper.cover::before {
+  /* Dimmed area outside crop bounds for cover photos */
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.4) 0%,
+    rgba(0, 0, 0, 0.2) 20%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.2) 80%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+}
+
+.photo-preview-wrapper.avatar::before {
+  /* Circular dimming for profile photos */
+  background: radial-gradient(
+    circle at center,
+    transparent 40%,
+    rgba(0, 0, 0, 0.3) 70%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
 }
 
 .photo-placeholder {
@@ -189,6 +255,8 @@
   font-size: 0.9rem;
   text-align: center;
   padding: 1rem;
+  position: relative;
+  z-index: 2;
 }
 
 /* Change photo button */
@@ -882,5 +950,82 @@
   color: var(--text-secondary);
   margin: 0;
   padding-left: 60px;
+}
+
+/* Safety Guides */
+.safety-guides {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.safety-guides.cover .guide {
+  position: absolute;
+  border: 1px dashed var(--border-muted, rgba(255, 255, 255, 0.3));
+  background: transparent;
+}
+
+.safety-guides.cover .avatar-guide {
+  /* Avatar overlap area - top left */
+  top: 20px;
+  left: 20px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.safety-guides.cover .text-guide {
+  /* Text clearance area - bottom center */
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 40px;
+  border-radius: 4px;
+}
+
+.safety-guides.faded .guide {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.safety-guides:not(.faded) .guide {
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+
+/* Unified Save Footer */
+.form-footer.sticky {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-subtle);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.change-indicator {
+  text-align: center;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .photo-preview-draggable,
+  .photo-image,
+  .safety-guides .guide {
+    transition: none !important;
+  }
 }
 
