@@ -5,9 +5,12 @@
 
 .in-place-editor {
   position: relative;
+  width: 100%;
+  height: 100%;
   cursor: grab;
   user-select: none;
   outline: none;
+  display: block;
 }
 
 .in-place-editor:focus {
@@ -28,7 +31,7 @@
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
-  z-index: 5;
+  z-index: 3;
 }
 
 .in-place-editor:hover .edit-affordance,
@@ -67,7 +70,7 @@
   right: 0;
   bottom: 0;
   pointer-events: none;
-  z-index: 2;
+  z-index: 1;
   transition: opacity 0.3s ease;
 }
 

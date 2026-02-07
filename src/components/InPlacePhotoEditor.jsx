@@ -178,9 +178,9 @@ function InPlacePhotoEditor({
     };
   }, []);
 
-  // If not editing, render children as-is
+  // Always render children, but add editing functionality when isEditing is true
   if (!isEditing) {
-    return children;
+    return <>{children}</>;
   }
 
   return (
@@ -193,6 +193,7 @@ function InPlacePhotoEditor({
       tabIndex={0}
       role="img"
       aria-label={`${type === 'cover' ? 'Cover photo' : 'Profile photo'} editor - drag to reposition or use arrow keys`}
+      style={{ width: '100%', height: '100%', position: 'relative' }}
     >
       {children}
 
