@@ -6,6 +6,8 @@ import PhotoViewer from '../components/PhotoViewer';
 import Toast from '../components/Toast';
 import CustomModal from '../components/CustomModal';
 import EditProfileModal from '../components/EditProfileModal';
+import InPlacePhotoEditor from '../components/InPlacePhotoEditor';
+import PhotoEditSaveBar from '../components/PhotoEditSaveBar';
 import ReactionDetailsModal from '../components/ReactionDetailsModal';
 import FormattedText from '../components/FormattedText';
 import ProfileSkeleton from '../components/ProfileSkeleton';
@@ -119,6 +121,13 @@ function Profile() {
   const [profileError, setProfileError] = useState(null); // Track profile loading errors
   const [searchResults, setSearchResults] = useState(null); // Search results from ProfilePostSearch
   // NOTE: EditHistory state removed 2025-12-26 - backend returns 410 Gone
+  
+  // In-place photo editing state
+  const [isEditingPhotos, setIsEditingPhotos] = useState(false);
+  const [tempCoverPos, setTempCoverPos] = useState(null);
+  const [tempAvatarPos, setTempAvatarPos] = useState(null);
+  const [hasPhotoChanges, setHasPhotoChanges] = useState(false);
+  const [isSavingPhotos, setIsSavingPhotos] = useState(false);
   const editTextareaRef = useRef(null);
   const isMountedRef = useRef(true); // Track if component is mounted to prevent race conditions
   // Phase 5B: Removed windowWidth state - use CSS media queries instead to prevent resize jitter
@@ -1386,7 +1395,60 @@ function Profile() {
     }
   };
 
-  // REMOVED: Photo upload and reposition handlers - All image editing moved to EditProfileModal
+  // In-place photo editing handlers
+  const handleEnterPhotoEditMode = () => {
+    setIsEditingPhotos(true);
+    setTempCoverPos(user.coverPhotoPosition || { x: 0, y: 0, scale: 1 });
+    setTempAvatarPos(user.profilePhotoPosition || { x: 0, y: 0, scale: 1 });
+    setHasPhotoChanges(false);
+  };
+
+  const handleCoverPositionChange = (newPosition) => {
+    setTempCoverPos(newPosition);
+    setHasPhotoChanges(true);
+  };
+
+  const handleAvatarPositionChange = (newPosition) => {
+    setTempAvatarPos(newPosition);
+    setHasPhotoChanges(true);
+  };
+
+  const handleSavePhotoChanges = async () => {
+    if (!hasPhotoChanges) return;
+
+    setIsSavingPhotos(true);
+    try {
+      const updateData = {
+        coverPhotoPosition: tempCoverPos,
+        profilePhotoPosition: tempAvatarPos
+      };
+
+      const response = await api.put('/users/profile', updateData);
+      
+      // Update user state with new positions
+      setUser(response.data.user);
+      
+      // Exit edit mode
+      setIsEditingPhotos(false);
+      setTempCoverPos(null);
+      setTempAvatarPos(null);
+      setHasPhotoChanges(false);
+      
+      showToast('Photo positions saved successfully!', 'success');
+    } catch (error) {
+      logger.error('Failed to save photo positions:', error);
+      showToast('Failed to save photo positions. Please try again.', 'error');
+    } finally {
+      setIsSavingPhotos(false);
+    }
+  };
+
+  const handleCancelPhotoEdit = () => {
+    setIsEditingPhotos(false);
+    setTempCoverPos(null);
+    setTempAvatarPos(null);
+    setHasPhotoChanges(false);
+  };
 
   const handleAddFriend = async () => {
     try {
@@ -1612,35 +1674,54 @@ function Profile() {
           {/* Cover Photo - Atmosphere */}
           <div className="profile-cover">
             {user.coverPhoto ? (
-              <div
-                className="profile-cover-image"
-                onClick={() => setPhotoViewerImage(getImageUrl(user.coverPhoto))}
-                style={{
-                  backgroundImage: `url(${getImageUrl(user.coverPhoto)})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  width: '100%',
-                  height: '100%',
-                  opacity: 0.92,
-                  transform: user.coverPhotoPosition
-                    ? `translate(${user.coverPhotoPosition.x}px, ${user.coverPhotoPosition.y}px) scale(${user.coverPhotoPosition.scale || 1})`
-                    : 'none',
-                  transformOrigin: 'center',
-                  cursor: 'pointer'
-                }}
-              />
+              <InPlacePhotoEditor
+                type="cover"
+                imageUrl={getImageUrl(user.coverPhoto)}
+                position={isEditingPhotos ? tempCoverPos : (user.coverPhotoPosition || { x: 0, y: 0, scale: 1 })}
+                onPositionChange={handleCoverPositionChange}
+                isEditing={isEditingPhotos}
+              >
+                <div
+                  className="profile-cover-image"
+                  onClick={() => !isEditingPhotos && setPhotoViewerImage(getImageUrl(user.coverPhoto))}
+                  style={{
+                    backgroundImage: `url(${getImageUrl(user.coverPhoto)})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    width: '100%',
+                    height: '100%',
+                    opacity: 0.92,
+                    transform: isEditingPhotos && tempCoverPos
+                      ? `translate(${tempCoverPos.x}px, ${tempCoverPos.y}px) scale(${tempCoverPos.scale || 1})`
+                      : user.coverPhotoPosition
+                      ? `translate(${user.coverPhotoPosition.x}px, ${user.coverPhotoPosition.y}px) scale(${user.coverPhotoPosition.scale || 1})`
+                      : 'none',
+                    transformOrigin: 'center',
+                    cursor: isEditingPhotos ? 'grab' : 'pointer'
+                  }}
+                />
+              </InPlacePhotoEditor>
             ) : (
               <div className="profile-cover-placeholder"></div>
             )}
-            {/* Edit Profile button in top right of cover photo */}
-            {isOwnProfile && (
-              <button
-                className="btn-edit-profile-cover"
-                onClick={() => setEditProfileModal(true)}
-                title="Edit Profile"
-              >
-                ✏️ Edit Profile
-              </button>
+            {/* Edit buttons in top right of cover photo */}
+            {isOwnProfile && !isEditingPhotos && (
+              <div className="profile-header-actions">
+                <button
+                  className="btn-edit-cover"
+                  onClick={handleEnterPhotoEditMode}
+                  title="Edit cover photo"
+                >
+                  📷 Edit Cover
+                </button>
+                <button
+                  className="btn-edit-profile-cover"
+                  onClick={() => setEditProfileModal(true)}
+                  title="Edit Profile"
+                >
+                  ✏️ Edit Profile
+                </button>
+              </div>
             )}
           </div>
 
@@ -1682,26 +1763,46 @@ function Profile() {
           {/* Avatar OVERLAY - moved outside profile-card so it can truly overlap cover */}
           <div className="profile-avatar profile-avatar--overlay">
             {user.profilePhoto ? (
-              <div
-                className="profile-avatar-image"
-                onClick={() => setPhotoViewerImage(getImageUrl(user.profilePhoto))}
-                style={{
-                  backgroundImage: `url(${getImageUrl(user.profilePhoto)})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  width: '100%',
-                  height: '100%',
-                  transform: user.profilePhotoPosition &&
-                    (user.profilePhotoPosition.x !== 50 || user.profilePhotoPosition.y !== 50) &&
-                    (user.profilePhotoPosition.x !== 0 || user.profilePhotoPosition.y !== 0 || (user.profilePhotoPosition.scale && user.profilePhotoPosition.scale !== 1))
-                    ? `translate(${user.profilePhotoPosition.x}px, ${user.profilePhotoPosition.y}px) scale(${user.profilePhotoPosition.scale || 1})`
-                    : 'none',
-                  transformOrigin: 'center',
-                  cursor: 'pointer'
-                }}
-              />
+              <InPlacePhotoEditor
+                type="avatar"
+                imageUrl={getImageUrl(user.profilePhoto)}
+                position={isEditingPhotos ? tempAvatarPos : (user.profilePhotoPosition || { x: 0, y: 0, scale: 1 })}
+                onPositionChange={handleAvatarPositionChange}
+                isEditing={isEditingPhotos}
+              >
+                <div
+                  className="profile-avatar-image"
+                  onClick={() => !isEditingPhotos && setPhotoViewerImage(getImageUrl(user.profilePhoto))}
+                  style={{
+                    backgroundImage: `url(${getImageUrl(user.profilePhoto)})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    width: '100%',
+                    height: '100%',
+                    transform: isEditingPhotos && tempAvatarPos
+                      ? `translate(${tempAvatarPos.x}px, ${tempAvatarPos.y}px) scale(${tempAvatarPos.scale || 1})`
+                      : user.profilePhotoPosition &&
+                        (user.profilePhotoPosition.x !== 50 || user.profilePhotoPosition.y !== 50) &&
+                        (user.profilePhotoPosition.x !== 0 || user.profilePhotoPosition.y !== 0 || (user.profilePhotoPosition.scale && user.profilePhotoPosition.scale !== 1))
+                      ? `translate(${user.profilePhotoPosition.x}px, ${user.profilePhotoPosition.y}px) scale(${user.profilePhotoPosition.scale || 1})`
+                      : 'none',
+                    transformOrigin: 'center',
+                    cursor: isEditingPhotos ? 'grab' : 'pointer'
+                  }}
+                />
+              </InPlacePhotoEditor>
             ) : (
               <span>{user.displayName?.charAt(0).toUpperCase()}</span>
+            )}
+            {/* Edit avatar button - appears on hover when not in edit mode */}
+            {isOwnProfile && !isEditingPhotos && user.profilePhoto && (
+              <button
+                className="btn-edit-avatar"
+                onClick={handleEnterPhotoEditMode}
+                title="Edit profile photo"
+              >
+                ✏️
+              </button>
             )}
           </div>
 
@@ -2962,7 +3063,17 @@ function Profile() {
         defaultValue={modalState.defaultValue}
       />
 
-      {/* REMOVED: PhotoRepositionModal - All image editing moved to Edit Profile modal */}
+      {/* Photo Edit Save Bar - appears when editing photos */}
+      {isEditingPhotos && (
+        <PhotoEditSaveBar
+          hasChanges={hasPhotoChanges}
+          onSave={handleSavePhotoChanges}
+          onCancel={handleCancelPhotoEdit}
+          isSaving={isSavingPhotos}
+        />
+      )}
+
+      {/* REMOVED: PhotoRepositionModal - All image editing moved to in-place editing */}
 
       {/* DEPRECATED: EditHistoryModal removed 2025-12-26 */}
 

@@ -314,11 +314,18 @@ div.profile-layout,
   background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
 }
 
-/* Edit Profile Button */
-.btn-edit-profile-cover {
+/* Profile Header Actions - Container for edit buttons */
+.profile-header-actions {
   position: absolute;
   top: 16px;
   right: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+/* Edit Cover Button */
+.btn-edit-cover {
   padding: 8px 16px;
   border-radius: 8px;
   border: none;
@@ -328,7 +335,36 @@ div.profile-layout,
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.2s ease;
-  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .btn-edit-cover {
+  background: rgba(30, 30, 30, 0.95);
+  color: var(--text-primary);
+}
+
+.btn-edit-cover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background: var(--pryde-purple);
+  color: white;
+}
+
+.btn-edit-cover:active {
+  transform: translateY(0);
+}
+
+/* Edit Profile Button */
+.btn-edit-profile-cover {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -344,6 +380,40 @@ div.profile-layout,
 
 .btn-edit-profile-cover:active {
   transform: translateY(0);
+}
+
+/* Edit Avatar Button - appears on avatar hover */
+.btn-edit-avatar {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-card);
+  background: var(--pryde-purple);
+  color: white;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.2s ease;
+  z-index: 15;
+}
+
+.profile-avatar--overlay:hover .btn-edit-avatar {
+  opacity: 1;
+}
+
+.btn-edit-avatar:hover {
+  transform: scale(1.1);
+  background: var(--electric-blue);
+}
+
+.btn-edit-avatar:active {
+  transform: scale(1);
 }
 
 /* Profile Card - Stability */

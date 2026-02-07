@@ -31,6 +31,14 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
   const [newInterest, setNewInterest] = useState('');
   const [newSocialLink, setNewSocialLink] = useState({ platform: '', url: '' });
   const [loading, setLoading] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [initialFormData, setInitialFormData] = useState({});
+
+  // Check for changes to enable/disable save button
+  const checkForChanges = (currentData) => {
+    const hasFormChanges = JSON.stringify(currentData) !== JSON.stringify(initialFormData);
+    setHasChanges(hasFormChanges);
+  };
 
   useEffect(() => {
     if (isOpen && user) {
@@ -40,7 +48,7 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
       // Check if user has custom pronouns (not in predefined list)
       const isCustomPronouns = user.pronouns && !predefinedPronouns.includes(user.pronouns);
 
-      setFormData({
+      const initialData = {
         fullName: user.fullName || '',
         nickname: user.nickname || '',
         displayNameType: user.displayNameType || 'fullName',
@@ -59,24 +67,30 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
         interests: user.interests || [],
         lookingFor: user.lookingFor || [],
         communicationStyle: user.communicationStyle || '',
-        safetyPreferences: user.safetyPreferences || '',
-        profilePhoto: user.profilePhoto || null,
-        coverPhoto: user.coverPhoto || null
-      });
+        safetyPreferences: user.safetyPreferences || ''
+      };
+
+      setFormData(initialData);
+      setInitialFormData(initialData);
+      setHasChanges(false);
     }
   }, [isOpen, user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const newData = { ...formData, [name]: value };
+    setFormData(newData);
+    checkForChanges(newData);
   };
 
   const handleAddInterest = () => {
     if (newInterest.trim() && !formData.interests.includes(newInterest.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        interests: [...prev.interests, newInterest.trim()]
-      }));
+      const newData = {
+        ...formData,
+        interests: [...formData.interests, newInterest.trim()]
+      };
+      setFormData(newData);
+      checkForChanges(newData);
       setNewInterest('');
     }
   };
@@ -91,32 +105,33 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
 
   const handleAddSocialLink = () => {
     if (newSocialLink.platform.trim() && newSocialLink.url.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        socialLinks: [...prev.socialLinks, { ...newSocialLink }]
-      }));
+      const newData = {
+        ...formData,
+        socialLinks: [...formData.socialLinks, { ...newSocialLink }]
+      };
+      setFormData(newData);
+      checkForChanges(newData);
       setNewSocialLink({ platform: '', url: '' });
     }
   };
 
   const handleRemoveSocialLink = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      socialLinks: prev.socialLinks.filter((_, i) => i !== index)
-    }));
-    setHasChanges(true);
+    setFormData(prev => {
+      const newData = { ...prev, socialLinks: prev.socialLinks.filter((_, i) => i !== index) };
+      checkForChanges(newData);
+      return newData;
+    });
   };
 
   const toggleLookingFor = (option) => {
-    setFormData(prev => {
-      const newData = {
-        ...prev,
-        lookingFor: prev.lookingFor.includes(option)
-          ? prev.lookingFor.filter(o => o !== option)
-          : [...prev.lookingFor, option]
-      };
-      return newData;
-    });
+    const newData = {
+      ...formData,
+      lookingFor: formData.lookingFor.includes(option)
+        ? formData.lookingFor.filter(o => o !== option)
+        : [...formData.lookingFor, option]
+    };
+    setFormData(newData);
+    checkForChanges(newData);
   };
 
   const handleSubmit = async (e) => {
@@ -158,6 +173,8 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
 
         <form onSubmit={handleSubmit} className="edit-profile-form">
           <div className="form-body">
+            {/* Note: Photo editing moved to in-place editing on profile header */}
+            
             {/* Basic Information */}
             <section className="form-section">
               <h3>ℹ️ Basic Information</h3>
@@ -632,7 +649,7 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
               {hasChanges && <span>Changes won't apply until you save</span>}
             </div>
             <div className="form-actions">
-              <button type="submit" disabled={loading || !hasChanges} className="btn-save">
+              <button type="submit" disabled={loading} className="btn-save">
                 {loading ? 'Saving...' : 'Save Changes'}
               </button>
               <button type="button" onClick={onClose} className="btn-cancel">
