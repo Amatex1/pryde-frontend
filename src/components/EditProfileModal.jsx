@@ -1,9 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../utils/api';
-import { getImageUrl } from '../utils/imageUrl';
-import { compressAvatar, compressCoverPhoto } from '../utils/compressImage';
-import { uploadWithProgress } from '../utils/uploadWithProgress';
-import ImageEditor from './ImageEditor';
 import BadgeSettings from './BadgeSettings';
 import './EditProfileModal.css';
 
@@ -35,22 +31,6 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
   const [newInterest, setNewInterest] = useState('');
   const [newSocialLink, setNewSocialLink] = useState({ platform: '', url: '' });
   const [loading, setLoading] = useState(false);
-  const [uploadingPhoto, setUploadingPhoto] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [locationSuggestions, setLocationSuggestions] = useState([]);
-
-  // Photo editor state
-  // NON-DESTRUCTIVE EDITING: Editor is always available when image exists
-  // avatarPos/coverPos: stores x, y, scale transforms (live state)
-  // No temp images needed - editor works directly with existing URLs
-  const [avatarPos, setAvatarPos] = useState({ x: 0, y: 0, scale: 1.05 });
-  const [coverPos, setCoverPos] = useState({ x: 0, y: 0, scale: 1.05 });
-  const [isDraggingAvatar, setIsDraggingAvatar] = useState(false);
-  const [isDraggingCover, setIsDraggingCover] = useState(false);
-  const [hasChanges, setHasChanges] = useState(false);
-  const [initialFormData, setInitialFormData] = useState({});
-  const coverInputRef = useRef(null);
-  const avatarInputRef = useRef(null);
 
   useEffect(() => {
     if (isOpen && user) {
@@ -83,25 +63,12 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
         profilePhoto: user.profilePhoto || null,
         coverPhoto: user.coverPhoto || null
       });
-
-      // Initialize position state from existing user data
-      // NON-DESTRUCTIVE: Load saved positions so user can continue editing
-      setAvatarPos(user.profilePhotoPosition || { x: 0, y: 0, scale: 1.05 });
-      setCoverPos(user.coverPhotoPosition || { x: 0, y: 0, scale: 1.05 });
     }
   }, [isOpen, user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    checkForChanges({ ...formData, [name]: value });
-  };
-
-  const checkForChanges = (currentData) => {
-    const hasFormChanges = JSON.stringify(currentData) !== JSON.stringify(initialFormData);
-    const hasPhotoChanges = avatarPos.x !== 0 || avatarPos.y !== 0 || avatarPos.scale !== 1.05 ||
-                           coverPos.x !== 0 || coverPos.y !== 0 || coverPos.scale !== 1.05;
-    setHasChanges(hasFormChanges || hasPhotoChanges);
   };
 
   const handleAddInterest = () => {
@@ -148,77 +115,8 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
           ? prev.lookingFor.filter(o => o !== option)
           : [...prev.lookingFor, option]
       };
-      checkForChanges(newData);
       return newData;
     });
-  };
-
-  // Handle photo upload - uploads new image and resets position
-  const handlePhotoUpload = async (e, type) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      alert('Only image files are allowed.');
-      return;
-    }
-
-    setUploadingPhoto(true);
-    setUploadProgress(0);
-
-    try {
-      // Compress image before upload
-      let compressedFile = file;
-      try {
-        if (type === 'profile') {
-          compressedFile = await compressAvatar(file);
-        } else {
-          compressedFile = await compressCoverPhoto(file);
-        }
-      } catch (error) {
-        console.warn('Image compression failed, using original:', error);
-      }
-
-      const endpoint = type === 'profile' ? '/upload/profile-photo' : '/upload/cover-photo';
-
-      // Upload with progress tracking
-      const response = await uploadWithProgress({
-        url: `${api.defaults.baseURL}${endpoint}`,
-        file: compressedFile,
-        fieldName: 'photo',
-        onProgress: (percent) => {
-          setUploadProgress(percent);
-        }
-      });
-
-      // Validate response
-      if (!response || !response.url) {
-        throw new Error('Upload succeeded but no URL returned');
-      }
-
-      if (type === 'profile') {
-        setFormData(prev => ({ ...prev, profilePhoto: response.url }));
-        // Reset avatar position for new photo
-        setAvatarPos({ x: 0, y: 0, scale: 1.05 });
-      } else {
-        setFormData(prev => ({ ...prev, coverPhoto: response.url }));
-        // Reset cover position for new photo
-        setCoverPos({ x: 0, y: 0, scale: 1.05 });
-      }
-      setHasChanges(true);
-    } catch (error) {
-      console.error('Failed to upload photo:', error);
-
-      // Extract user-friendly error message
-      const errorMessage = error.message ||
-                          'Image upload failed. Please try again or use a smaller image.';
-
-      alert(errorMessage);
-    } finally {
-      setUploadingPhoto(false);
-      setUploadProgress(0);
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -231,14 +129,10 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
 
     setLoading(true);
     try {
-      // Include photo URLs and position metadata in the update
-      // formData already contains profilePhoto and coverPhoto from user or upload
       const updateData = {
         ...formData,
         // If pronouns is 'custom', send the customPronouns value instead
-        pronouns: formData.pronouns === 'custom' ? formData.customPronouns : formData.pronouns,
-        coverPhotoPosition: coverPos,
-        profilePhotoPosition: avatarPos
+        pronouns: formData.pronouns === 'custom' ? formData.customPronouns : formData.pronouns
       };
 
       const response = await api.put('/users/profile', updateData);
@@ -264,283 +158,6 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
 
         <form onSubmit={handleSubmit} className="edit-profile-form">
           <div className="form-body">
-            {/* Visual Section */}
-            <section className="form-section">
-              <h3>📸 Visual</h3>
-
-              <div className="photo-editors">
-                {/* Cover Photo Editor - Always-On Non-Destructive */}
-                <div className="photo-editor-item">
-                  <label>Cover Photo</label>
-                  <div className="photo-editor-container">
-                    <div className="photo-preview-wrapper cover">
-                      <div
-                        className={`photo-preview-draggable cover ${isDraggingCover ? 'dragging' : ''}`}
-                        onMouseDown={(e) => {
-                          if (!formData.coverPhoto && !user?.coverPhoto) return;
-                          setIsDraggingCover(true);
-                          checkForChanges(formData);
-                          const startX = e.clientX;
-                          const startY = e.clientY;
-                          const startPosX = coverPos.x;
-                          const startPosY = coverPos.y;
-
-                          const handleMouseMove = (e) => {
-                            const deltaX = e.clientX - startX;
-                            const deltaY = e.clientY - startY;
-                            const newX = startPosX + deltaX;
-                            const newY = startPosY + deltaY;
-
-                            // Soft bounds - allow some overflow but ease back
-                            const maxX = 100;
-                            const maxY = 100;
-                            const boundedX = Math.max(-maxX, Math.min(maxX, newX));
-                            const boundedY = Math.max(-maxY, Math.min(maxY, newY));
-
-                            setCoverPos(prev => ({
-                              ...prev,
-                              x: boundedX,
-                              y: boundedY
-                            }));
-                          };
-
-                          const handleMouseUp = () => {
-                            setIsDraggingCover(false);
-                            document.removeEventListener('mousemove', handleMouseMove);
-                            document.removeEventListener('mouseup', handleMouseUp);
-                          };
-
-                          document.addEventListener('mousemove', handleMouseMove);
-                          document.addEventListener('mouseup', handleMouseUp);
-                        }}
-                        onKeyDown={(e) => {
-                          if (!formData.coverPhoto && !user?.coverPhoto) return;
-                          const step = 5;
-                          let newX = coverPos.x;
-                          let newY = coverPos.y;
-
-                          switch (e.key) {
-                            case 'ArrowUp':
-                              newY -= step;
-                              break;
-                            case 'ArrowDown':
-                              newY += step;
-                              break;
-                            case 'ArrowLeft':
-                              newX -= step;
-                              break;
-                            case 'ArrowRight':
-                              newX += step;
-                              break;
-                            default:
-                              return;
-                          }
-
-                          e.preventDefault();
-                          checkForChanges(formData);
-                          const maxX = 100;
-                          const maxY = 100;
-                          setCoverPos(prev => ({
-                            ...prev,
-                            x: Math.max(-maxX, Math.min(maxX, newX)),
-                            y: Math.max(-maxY, Math.min(maxY, newY))
-                          }));
-                        }}
-                        tabIndex={formData.coverPhoto || user?.coverPhoto ? 0 : -1}
-                        role="img"
-                        aria-label="Cover photo editor - drag to reposition"
-                      >
-                        {formData.coverPhoto || user?.coverPhoto ? (
-                          <div
-                            className="photo-image"
-                            style={{
-                              backgroundImage: `url(${getImageUrl(formData.coverPhoto || user.coverPhoto)})`,
-                              backgroundSize: 'cover',
-                              backgroundPosition: 'center',
-                              width: '100%',
-                              height: '100%',
-                              transform: `translate(${coverPos.x}px, ${coverPos.y}px) scale(${coverPos.scale})`,
-                              transformOrigin: 'center',
-                              transition: isDraggingCover ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-                            }}
-                          />
-                        ) : (
-                          <div className="photo-placeholder">No cover photo</div>
-                        )}
-                      </div>
-                      {/* Safety Guides */}
-                      {(formData.coverPhoto || user?.coverPhoto) && (
-                        <div className={`safety-guides cover ${isDraggingCover ? 'faded' : ''}`}>
-                          {/* Avatar overlap guide */}
-                          <div className="guide avatar-guide"></div>
-                          {/* Text clearance guide */}
-                          <div className="guide text-guide"></div>
-                        </div>
-                      )}
-                    </div>
-                    <div className="photo-controls">
-                      <label htmlFor="cover-zoom">Zoom: {coverPos.scale.toFixed(2)}x</label>
-                      <input
-                        id="cover-zoom"
-                        type="range"
-                        min="1"
-                        max="2"
-                        step="0.01"
-                        value={coverPos.scale}
-                        onChange={(e) => setCoverPos({ ...coverPos, scale: parseFloat(e.target.value) })}
-                        className="zoom-slider"
-                      />
-                      <input
-                        type="file"
-                        id="cover-photo-upload"
-                        accept="image/*"
-                        onChange={(e) => handlePhotoUpload(e, 'cover')}
-                        disabled={uploadingPhoto}
-                        style={{ marginTop: '8px' }}
-                      />
-                      {uploadingPhoto && (
-                        <div className="upload-progress" style={{ marginTop: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                          Uploading... {uploadProgress}%
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Profile Photo Editor - Always-On Non-Destructive */}
-                <div className="photo-editor-item">
-                  <label>Profile Photo</label>
-                  <div className="photo-editor-container">
-                    <div className="photo-preview-wrapper avatar">
-                      <div
-                        className={`photo-preview-draggable avatar ${isDraggingAvatar ? 'dragging' : ''}`}
-                        onMouseDown={(e) => {
-                          if (!formData.profilePhoto && !user?.profilePhoto) return;
-                          setIsDraggingAvatar(true);
-                          checkForChanges(formData);
-                          const startX = e.clientX;
-                          const startY = e.clientY;
-                          const startPosX = avatarPos.x;
-                          const startPosY = avatarPos.y;
-
-                          const handleMouseMove = (e) => {
-                            const deltaX = e.clientX - startX;
-                            const deltaY = e.clientY - startY;
-                            const newX = startPosX + deltaX;
-                            const newY = startPosY + deltaY;
-
-                            // Soft bounds - allow some overflow but ease back
-                            const maxX = 50;
-                            const maxY = 50;
-                            const boundedX = Math.max(-maxX, Math.min(maxX, newX));
-                            const boundedY = Math.max(-maxY, Math.min(maxY, newY));
-
-                            setAvatarPos(prev => ({
-                              ...prev,
-                              x: boundedX,
-                              y: boundedY
-                            }));
-                          };
-
-                          const handleMouseUp = () => {
-                            setIsDraggingAvatar(false);
-                            document.removeEventListener('mousemove', handleMouseMove);
-                            document.removeEventListener('mouseup', handleMouseUp);
-                          };
-
-                          document.addEventListener('mousemove', handleMouseMove);
-                          document.addEventListener('mouseup', handleMouseUp);
-                        }}
-                        onKeyDown={(e) => {
-                          if (!formData.profilePhoto && !user?.profilePhoto) return;
-                          const step = 5;
-                          let newX = avatarPos.x;
-                          let newY = avatarPos.y;
-
-                          switch (e.key) {
-                            case 'ArrowUp':
-                              newY -= step;
-                              break;
-                            case 'ArrowDown':
-                              newY += step;
-                              break;
-                            case 'ArrowLeft':
-                              newX -= step;
-                              break;
-                            case 'ArrowRight':
-                              newX += step;
-                              break;
-                            default:
-                              return;
-                          }
-
-                          e.preventDefault();
-                          checkForChanges(formData);
-                          const maxX = 50;
-                          const maxY = 50;
-                          setAvatarPos(prev => ({
-                            ...prev,
-                            x: Math.max(-maxX, Math.min(maxX, newX)),
-                            y: Math.max(-maxY, Math.min(maxY, newY))
-                          }));
-                        }}
-                        tabIndex={formData.profilePhoto || user?.profilePhoto ? 0 : -1}
-                        role="img"
-                        aria-label="Profile photo editor - drag to reposition"
-                      >
-                        {formData.profilePhoto || user?.profilePhoto ? (
-                          <div
-                            className="photo-image"
-                            style={{
-                              backgroundImage: `url(${getImageUrl(formData.profilePhoto || user.profilePhoto)})`,
-                              backgroundSize: 'cover',
-                              backgroundPosition: 'center',
-                              width: '100%',
-                              height: '100%',
-                              transform: `translate(${avatarPos.x}px, ${avatarPos.y}px) scale(${avatarPos.scale})`,
-                              transformOrigin: 'center',
-                              transition: isDraggingAvatar ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-                            }}
-                          />
-                        ) : (
-                          <div className="photo-placeholder">No photo</div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="photo-controls">
-                      <label htmlFor="avatar-zoom">Fine tune size</label>
-                      <input
-                        id="avatar-zoom"
-                        type="range"
-                        min="1"
-                        max="2"
-                        step="0.01"
-                        value={avatarPos.scale}
-                        onChange={(e) => {
-                          setAvatarPos({ ...avatarPos, scale: parseFloat(e.target.value) });
-                          checkForChanges(formData);
-                        }}
-                        className="zoom-slider"
-                      />
-                      <input
-                        type="file"
-                        id="profile-photo-upload"
-                        accept="image/*"
-                        onChange={(e) => handlePhotoUpload(e, 'profile')}
-                        disabled={uploadingPhoto}
-                        style={{ marginTop: '8px' }}
-                      />
-                      {uploadingPhoto && (
-                        <div className="upload-progress" style={{ marginTop: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                          Uploading... {uploadProgress}%
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
             {/* Basic Information */}
             <section className="form-section">
               <h3>ℹ️ Basic Information</h3>
