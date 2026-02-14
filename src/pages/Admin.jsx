@@ -1466,17 +1466,39 @@ function SecurityTab({ logs, stats, onResolve }) {
   };
 
   const filteredLogs = logs.filter(log => {
-    // Status filter
-    if (statusFilter === 'unresolved' && log.resolved) return false;
-    if (statusFilter === 'resolved' && !log.resolved) return false;
+    // Status filter - must pass this first
+    let passesStatusFilter = true;
+    if (statusFilter === 'unresolved') {
+      passesStatusFilter = !log.resolved;
+    } else if (statusFilter === 'resolved') {
+      passesStatusFilter = log.resolved;
+    }
+    // If doesn't pass status filter, exclude it
+    if (!passesStatusFilter) return false;
 
-    // Type filter
+    // Type filter - only check if status filter passed
     if (typeFilter === 'all') return true;
-    if (typeFilter === 'underage') return log.type.includes('underage');
+    if (typeFilter === 'underage') return log.type && log.type.includes('underage');
     if (typeFilter === 'email_verification') return log.type === 'email_verification';
     if (typeFilter === 'failed_login') return log.type === 'failed_login';
     return log.type === typeFilter;
   });
+
+  const handleResolveAll = async () => {
+    const unresolvedLogs = filteredLogs.filter(log => !log.resolved);
+    if (unresolvedLogs.length === 0) {
+      alert('No unresolved logs to resolve');
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to resolve all ${unresolvedLogs.length} unresolved logs?`)) {
+      return;
+    }
+
+    for (const log of unresolvedLogs) {
+      await onResolve(log._id);
+    }
+  };
 
   const getSeverityColor = (severity) => {
     switch (severity) {
@@ -1561,7 +1583,7 @@ function SecurityTab({ logs, stats, onResolve }) {
             className={`filter-btn ${typeFilter === 'underage' ? 'active' : ''}`}
             onClick={() => setTypeFilter('underage')}
           >
-            Underage ({logs.filter(l => l.type.includes('underage')).length})
+            Underage ({logs.filter(l => l.type && l.type.includes('underage')).length})
           </button>
           <button
             className={`filter-btn ${typeFilter === 'email_verification' ? 'active' : ''}`}
@@ -1574,6 +1596,16 @@ function SecurityTab({ logs, stats, onResolve }) {
             onClick={() => setTypeFilter('failed_login')}
           >
             Failed Logins ({logs.filter(l => l.type === 'failed_login').length})
+          </button>
+        </div>
+
+        <div className="filter-group">
+          <button
+            className="btn-resolve-all"
+            onClick={handleResolveAll}
+            disabled={filteredLogs.filter(l => !l.resolved).length === 0}
+          >
+            ✅ Resolve All ({filteredLogs.filter(l => !l.resolved).length})
           </button>
         </div>
       </div>

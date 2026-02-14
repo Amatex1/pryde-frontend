@@ -17,7 +17,12 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/pryde-logo.png" />
 
     <!-- Optimized viewport for all devices: phones, tablets, and desktops -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- user-scalable=no prevents zoom, maximum-scale=1.0 locks orientation -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+
+    <!-- Lock screen orientation to portrait on mobile -->
+    <meta name="screen-orientation" content="portrait" />
+    <meta name="x5-orientation" content="portrait" />
 
     <!-- PWA Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes" />
