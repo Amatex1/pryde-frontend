@@ -18,11 +18,10 @@
   [data-theme="midnight-prism"] .home-root {
     position: relative;
     min-height: 100vh;
-    background: #0A0E1F;
     overflow: hidden;
   }
 
-  /* STEP 1: Restore visible galaxy background */
+  /* Full galaxy visible */
   [data-theme="midnight-prism"] .home-root::before {
     content: "";
     position: fixed;
@@ -30,27 +29,17 @@
     background:
       url("/assets/midnight-sanctuary.webp")
       center center / cover no-repeat;
-    opacity: 0.85;
-    filter:
-      saturate(1.05)
-      brightness(0.95)
-      contrast(1.05);
+    opacity: 0.9;
     z-index: -2;
     pointer-events: none;
   }
 
-  /* STEP 2: Light overlay for readability (not heavy) */
+  /* Very subtle readability layer */
   [data-theme="midnight-prism"] .home-root::after {
     content: "";
     position: fixed;
     inset: 0;
-    background:
-      linear-gradient(
-        180deg,
-        rgba(10,14,35,0.35) 0%,
-        rgba(12,16,40,0.45) 50%,
-        rgba(10,14,35,0.55) 100%
-      );
+    background: rgba(10, 14, 35, 0.35);
     z-index: -1;
     pointer-events: none;
   }
