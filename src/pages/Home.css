@@ -15,20 +15,21 @@
    ======================================== */
 
 @media (min-width: 900px) {
+  /* STEP 3: Deep indigo base gradient (not black) */
   [data-theme="midnight-prism"] .home-root {
     position: relative;
     min-height: 100vh;
     background:
       linear-gradient(
         180deg,
-        #0C1024 0%,
+        #0E132C 0%,
         #111633 50%,
-        #141A3A 100%
+        #151C3E 100%
       );
     overflow: hidden;
   }
 
-  /* Fixed atmospheric layer */
+  /* STEP 1: Calm atmospheric layer - reduced brightness, saturation, activity */
   [data-theme="midnight-prism"] .home-root::before {
     content: "";
     position: fixed;
@@ -36,18 +37,28 @@
     background:
       url("/assets/midnight-sanctuary.webp")
       center center / cover no-repeat;
-    opacity: 0.22;
-    filter: saturate(0.85) brightness(0.75);
+    opacity: 0.16;
+    filter:
+      saturate(0.75)
+      brightness(0.65)
+      contrast(0.9)
+      blur(4px);
     z-index: -2;
     pointer-events: none;
   }
 
-  /* Readability layer */
+  /* STEP 2: Stronger indigo readability layer */
   [data-theme="midnight-prism"] .home-root::after {
     content: "";
     position: fixed;
     inset: 0;
-    background: rgba(8, 12, 30, 0.55);
+    background:
+      linear-gradient(
+        180deg,
+        rgba(10,14,35,0.75) 0%,
+        rgba(12,16,40,0.82) 50%,
+        rgba(10,14,35,0.88) 100%
+      );
     z-index: -1;
     pointer-events: none;
   }
@@ -76,46 +87,7 @@
   overflow: hidden;
 }
 
-/* Atmospheric glow for Midnight Prism theme (desktop only) */
-@media (min-width: 900px) {
-  [data-theme="midnight-prism"] .home-hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      circle at 50% 30%,
-      rgba(164, 110, 255, 0.12),
-      transparent 60%
-    );
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* Hero light source (magical layer) */
-  [data-theme="midnight-prism"] .home-hero::after {
-    content: "";
-    position: absolute;
-    top: -20%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 800px;
-    height: 600px;
-    background: radial-gradient(
-      circle,
-      rgba(164,110,255,0.25),
-      rgba(164,110,255,0.12),
-      transparent 70%
-    );
-    filter: blur(80px);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  [data-theme="midnight-prism"] .home-hero > * {
-    position: relative;
-    z-index: 1;
-  }
-}
+/* STEP 4: Removed glow stacking - keeping calm sanctuary aesthetic */
 
 .home-hero .hero-content {
   max-width: 900px;
@@ -406,8 +378,9 @@
 }
 
 /* ========================================
-   MIDNIGHT PRISM V2 - MAGICAL BUTTON GLOW
+   MIDNIGHT SANCTUARY - CALM BUTTON STYLING
    Desktop only (>=900px)
+   STEP 4: Removed heavy glow stacking
    ======================================== */
 
 @media (min-width: 900px) {
@@ -417,15 +390,13 @@
       var(--accent-primary),
       #8F63FF
     );
-    box-shadow: 0 0 18px var(--accent-glow-soft);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     transition: all 250ms ease;
   }
 
   [data-theme="midnight-prism"] .btn-primary:hover {
-    box-shadow:
-      0 0 28px var(--accent-glow-strong),
-      0 0 45px rgba(164,110,255,0.2);
-    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transform: translateY(-1px);
   }
 }
 
