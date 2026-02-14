@@ -33,9 +33,10 @@
     content: "";
     position: fixed;
     inset: 0;
-    background:
-      url("/assets/midnight-sanctuary.webp")
-      center center / cover no-repeat;
+    background-image: url("/assets/midnight-sanctuary.webp");
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
     opacity: 1;
     z-index: -2;
     pointer-events: none;

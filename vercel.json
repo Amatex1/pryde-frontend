@@ -9,7 +9,7 @@
       "destination": "https://pryde-backend.onrender.com/socket.io/:path*"
     },
     {
-      "source": "/((?!api|socket\\.io).*)",
+      "source": "/((?!api|socket\\.io|assets).*)",
       "destination": "/index.html"
     }
   ],
