@@ -3,76 +3,10 @@
    Emotionally-Driven Design
    ======================================== */
 
-.home-root {
+.home-page {
   min-height: 100vh;
   min-height: 100dvh;
   background: var(--color-bg);
-}
-
-/* ========================================
-   MIDNIGHT SANCTUARY - FIXED INDIGO ATMOSPHERIC BACKGROUND
-   Desktop only (>=900px)
-   ======================================== */
-
-@media (min-width: 900px) {
-  /* STEP 3: Deep indigo base gradient (not black) */
-  [data-theme="midnight-prism"] .home-root {
-    position: relative;
-    min-height: 100vh;
-    background:
-      linear-gradient(
-        180deg,
-        #0E132C 0%,
-        #111633 50%,
-        #151C3E 100%
-      );
-    overflow: hidden;
-  }
-
-  /* STEP 1: Calm atmospheric layer - reduced brightness, saturation, activity */
-  [data-theme="midnight-prism"] .home-root::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background:
-      url("/assets/midnight-sanctuary.webp")
-      center center / cover no-repeat;
-    opacity: 0.16;
-    filter:
-      saturate(0.75)
-      brightness(0.65)
-      contrast(0.9)
-      blur(4px);
-    z-index: -2;
-    pointer-events: none;
-  }
-
-  /* STEP 2: Stronger indigo readability layer */
-  [data-theme="midnight-prism"] .home-root::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background:
-      linear-gradient(
-        180deg,
-        rgba(10,14,35,0.75) 0%,
-        rgba(12,16,40,0.82) 50%,
-        rgba(10,14,35,0.88) 100%
-      );
-    z-index: -1;
-    pointer-events: none;
-  }
-
-  /* Enhanced text contrast for Midnight Sanctuary */
-  [data-theme="midnight-prism"] .home-root h1,
-  [data-theme="midnight-prism"] .home-root h2,
-  [data-theme="midnight-prism"] .home-root h3 {
-    color: #F3F5FF;
-  }
-
-  [data-theme="midnight-prism"] .home-root p {
-    color: rgba(243, 245, 255, 0.78);
-  }
 }
 
 /* ========================================
