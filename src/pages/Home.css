@@ -10,75 +10,29 @@
 }
 
 /* ========================================
-   MIDNIGHT DREAM - FULL GALAXY + GLASS STRUCTURE
-   Desktop only (>=900px)
+   GALAXY CALM — HOMEPAGE THEME OVERRIDES
+   Background handled by .galaxy-background div
    ======================================== */
 
-@media (min-width: 900px) {
-  [data-theme="midnight-prism"] .home-root {
-    position: relative;
-    min-height: 100vh;
-    overflow: hidden;
-    /* No opaque background - let ::before image show through */
-    background: transparent;
-  }
+/* Content stacks above the fixed galaxy background */
+[data-theme="galaxy-calm"] .home-root {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
 
-  /* Background image layer */
-  [data-theme="midnight-prism"] .home-root::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url(/assets/midnight-sanctuary.jpg);
-    background-position: center center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 0;
-    pointer-events: none;
-  }
+/* Remove solid backgrounds - let galaxy show through */
+[data-theme="galaxy-calm"] .home-hero,
+[data-theme="galaxy-calm"] .home-why,
+[data-theme="galaxy-calm"] .home-experience,
+[data-theme="galaxy-calm"] .home-final-cta {
+  background: transparent;
+}
 
-  /* Dark overlay for text readability */
-  [data-theme="midnight-prism"] .home-root::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      180deg,
-      rgba(20, 25, 45, 0.4) 0%,
-      rgba(20, 25, 45, 0.6) 100%
-    );
-    z-index: 1;
-    pointer-events: none;
-  }
-
-  /* All content sections must stack above the background */
-  [data-theme="midnight-prism"] .home-hero,
-  [data-theme="midnight-prism"] .home-why,
-  [data-theme="midnight-prism"] .home-experience,
-  [data-theme="midnight-prism"] .home-community,
-  [data-theme="midnight-prism"] .home-final-cta,
-  [data-theme="midnight-prism"] footer {
-    position: relative;
-    z-index: 2;
-  }
-
-  /* STEP 3: Remove solid backgrounds - make sections transparent */
-  [data-theme="midnight-prism"] .home-why,
-  [data-theme="midnight-prism"] .home-experience,
-  [data-theme="midnight-prism"] .home-final-cta {
-    background: transparent;
-  }
-
-  [data-theme="midnight-prism"] .home-community {
-    background: transparent;
-    border-top: 1px solid rgba(255,255,255,0.08);
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
+[data-theme="galaxy-calm"] .home-community {
+  background: transparent;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
 /* ========================================
@@ -93,21 +47,14 @@
   overflow: hidden;
 }
 
-/* STEP 5: Hero text clarity for Midnight Dream */
-@media (min-width: 900px) {
-  [data-theme="midnight-prism"] .home-hero {
-    background: transparent;
-  }
+/* Hero text clarity for Galaxy Calm */
+[data-theme="galaxy-calm"] .home-hero {
+  background: transparent;
+}
 
-  [data-theme="midnight-prism"] .home-hero h1 {
-    color: #F7F9FF;
-    text-shadow: 0 4px 20px rgba(0,0,0,0.35);
-  }
-
-  [data-theme="midnight-prism"] .hero-sub {
-    color: rgba(255,255,255,0.9);
-    opacity: 1;
-  }
+[data-theme="galaxy-calm"] .hero-sub {
+  color: rgba(255,255,255,0.9);
+  opacity: 1;
 }
 
 .home-hero .hero-content {
@@ -188,21 +135,11 @@
   transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* STEP 4: Glass card style for content blocks (desktop only) */
-@media (min-width: 900px) {
-  [data-theme="midnight-prism"] .mock-post-card {
-    background: rgba(20, 25, 60, 0.55);
-    backdrop-filter: blur(14px);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 22px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-  }
-
-  [data-theme="midnight-prism"] .mock-post-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 14px 40px rgba(0,0,0,0.45);
-    border-color: rgba(255,255,255,0.18);
-  }
+/* Glass card hover for mock post card */
+[data-theme="galaxy-calm"] .mock-post-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+  border-color: rgba(255,255,255,0.18);
 }
 
 .mock-post-card h3 {
@@ -248,21 +185,11 @@
   transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* STEP 4: Glass card style for experience cards (desktop only) */
-@media (min-width: 900px) {
-  [data-theme="midnight-prism"] .experience-card {
-    background: rgba(20, 25, 60, 0.55);
-    backdrop-filter: blur(14px);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 22px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-  }
-
-  [data-theme="midnight-prism"] .experience-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 14px 40px rgba(0,0,0,0.45);
-    border-color: rgba(255,255,255,0.18);
-  }
+/* Glass card hover for experience cards */
+[data-theme="galaxy-calm"] .experience-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+  border-color: rgba(255,255,255,0.18);
 }
 
 .experience-card h3 {
@@ -315,21 +242,11 @@
   transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* STEP 4: Glass card style for community cards (desktop only) */
-@media (min-width: 900px) {
-  [data-theme="midnight-prism"] .community-card {
-    background: rgba(20, 25, 60, 0.55);
-    backdrop-filter: blur(14px);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 22px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-  }
-
-  [data-theme="midnight-prism"] .community-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 14px 40px rgba(0,0,0,0.45);
-    border-color: rgba(255,255,255,0.18);
-  }
+/* Glass card hover for community cards */
+[data-theme="galaxy-calm"] .community-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+  border-color: rgba(255,255,255,0.18);
 }
 
 /* ========================================
@@ -392,28 +309,7 @@
   font-size: 18px;
 }
 
-/* ========================================
-   MIDNIGHT SANCTUARY - CALM BUTTON STYLING
-   Desktop only (>=900px)
-   STEP 4: Removed heavy glow stacking
-   ======================================== */
-
-@media (min-width: 900px) {
-  [data-theme="midnight-prism"] .btn-primary {
-    background: linear-gradient(
-      135deg,
-      var(--accent-primary),
-      #8F63FF
-    );
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    transition: all 250ms ease;
-  }
-
-  [data-theme="midnight-prism"] .btn-primary:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    transform: translateY(-1px);
-  }
-}
+/* Button styling now handled by galaxy-calm.css .primary-button */
 
 /* ========================================
    RESPONSIVE DESIGN

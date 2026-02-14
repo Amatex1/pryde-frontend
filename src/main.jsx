@@ -31,6 +31,7 @@ import './styles/cursors.css'
 import './styles/responsive-modals.css'
 import './styles/hover-utilities.css'
 import './styles/pwa-native-feel.css'
+import './styles/themes/galaxy-calm.css'
 
 /* ================================
    SAFE INITIALIZATION ONLY

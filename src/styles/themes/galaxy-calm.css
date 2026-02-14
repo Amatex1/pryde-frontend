@@ -1,0 +1,134 @@
+/* =========================================
+   PRYDE SOCIAL — GALAXY CALM THEME
+   ========================================= */
+
+/* =========================
+   THEME ROOT VARIABLES
+   ========================= */
+
+:root[data-theme="galaxy-calm"] {
+  --bg-overlay-top: rgba(10, 10, 25, 0.6);
+  --bg-overlay-mid: rgba(10, 10, 25, 0.5);
+  --bg-overlay-bottom: rgba(10, 10, 25, 0.65);
+
+  --text-primary: rgba(255, 255, 255, 0.92);
+  --text-secondary: rgba(255, 255, 255, 0.82);
+
+  --glass-bg: rgba(20, 22, 40, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.08);
+
+  --hero-glow: rgba(140, 100, 255, 0.25);
+}
+
+
+/* =========================
+   BACKGROUND SYSTEM
+   ========================= */
+
+.galaxy-background {
+  position: fixed;
+  inset: 0;
+  background-image: url('/assets/midnight-sanctuary.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -2;
+}
+
+/* Unified dark overlay for readability */
+.galaxy-background::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    var(--bg-overlay-top) 0%,
+    var(--bg-overlay-mid) 40%,
+    var(--bg-overlay-bottom) 100%
+  );
+  z-index: -1;
+}
+
+
+/* =========================
+   TEXT HIERARCHY
+   ========================= */
+
+[data-theme="galaxy-calm"] h1,
+[data-theme="galaxy-calm"] h2,
+[data-theme="galaxy-calm"] h3 {
+  color: var(--text-primary);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="galaxy-calm"] p {
+  color: var(--text-secondary);
+}
+
+
+/* =========================
+   HERO ENHANCEMENT
+   ========================= */
+
+[data-theme="galaxy-calm"] .hero-title {
+  letter-spacing: 0.3px;
+  text-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.6),
+    0 0 30px var(--hero-glow);
+}
+
+
+/* =========================
+   GLASS CARDS
+   ========================= */
+
+[data-theme="galaxy-calm"] .glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+}
+
+
+/* =========================
+   BUTTON POLISH
+   ========================= */
+
+[data-theme="galaxy-calm"] .primary-button {
+  background: linear-gradient(
+    135deg,
+    rgba(150, 110, 255, 0.9),
+    rgba(110, 70, 255, 0.9)
+  );
+  color: white;
+  box-shadow: 0 6px 24px rgba(120, 80, 255, 0.4);
+}
+
+[data-theme="galaxy-calm"] .primary-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(120, 80, 255, 0.5);
+}
+
+
+/* =========================
+   REMOVE HARD LINES
+   ========================= */
+
+[data-theme="galaxy-calm"] hr,
+[data-theme="galaxy-calm"] .section-divider {
+  display: none;
+}
+
+
+/* =========================
+   FOOTER BLEND
+   ========================= */
+
+[data-theme="galaxy-calm"] footer {
+  background: linear-gradient(
+    to top,
+    rgba(60, 40, 140, 0.9),
+    rgba(40, 25, 100, 0.8)
+  );
+  border: none;
+}
