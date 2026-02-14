@@ -44,9 +44,26 @@ html[data-galaxy="true"] body::before {
 /* Ensure layout layers sit above galaxy */
 html[data-galaxy="true"] #root,
 html[data-galaxy="true"] .app-layout,
-html[data-galaxy="true"] .page-container {
+html[data-galaxy="true"] .app-container,
+html[data-galaxy="true"] .page-container,
+html[data-galaxy="true"] .home-root {
   position: relative;
   z-index: 1;
+}
+
+/* Force all page-level wrappers transparent so galaxy shows through.
+   .app-container has background !important via purple-identity.css,
+   so we need !important here to override it. */
+html[data-galaxy="true"] .app-container,
+html[data-galaxy="true"] .home-root,
+html[data-galaxy="true"] .notifications-page,
+html[data-galaxy="true"] .events-page,
+html[data-galaxy="true"] .lounge-page,
+html[data-galaxy="true"] .photo-essay-page,
+html[data-galaxy="true"] .search-page,
+html[data-galaxy="true"] .messages-page {
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
 
