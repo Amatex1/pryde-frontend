@@ -1,9 +1,11 @@
 /* ================================
    GALAXY BACKGROUND LAYER
    Isolated — No Token Overrides
+   Uses data-galaxy="true" attribute
+   so data-theme stays light/dark
 ================================= */
 
-:root[data-theme="galaxy"] body {
+:root[data-galaxy="true"] body {
   background:
     radial-gradient(
       ellipse at 50% 20%,
@@ -14,7 +16,7 @@
 }
 
 /* Subtle star depth */
-:root[data-theme="galaxy"] body::before {
+:root[data-galaxy="true"] body::before {
   content: "";
   position: fixed;
   inset: 0;
@@ -27,9 +29,9 @@
 }
 
 /* Ensure layout layers sit above galaxy */
-:root[data-theme="galaxy"] #root,
-:root[data-theme="galaxy"] .app-layout,
-:root[data-theme="galaxy"] .page-container {
+:root[data-galaxy="true"] #root,
+:root[data-galaxy="true"] .app-layout,
+:root[data-galaxy="true"] .page-container {
   position: relative;
   z-index: 1;
 }
@@ -37,9 +39,10 @@
 
 /* ================================
    LIGHT MODE SPILL-THROUGH
+   Only when galaxy + light theme
 ================================= */
 
-:root[data-theme="galaxy"][data-color-mode="light"] {
+:root[data-galaxy="true"][data-theme="light"] {
   --surface-primary: rgba(255,255,255,0.92);
   --surface-secondary: rgba(255,255,255,0.85);
   --card-background: rgba(255,255,255,0.90);
@@ -48,11 +51,11 @@
 }
 
 /* Blur for glass effect */
-:root[data-theme="galaxy"] .card,
-:root[data-theme="galaxy"] .feed-post,
-:root[data-theme="galaxy"] .page-header,
-:root[data-theme="galaxy"] .navbar,
-:root[data-theme="galaxy"] .modal-content {
+:root[data-galaxy="true"] .card,
+:root[data-galaxy="true"] .feed-post,
+:root[data-galaxy="true"] .page-header,
+:root[data-galaxy="true"] .navbar,
+:root[data-galaxy="true"] .modal-content {
   backdrop-filter: blur(14px);
 }
 
@@ -62,7 +65,7 @@
 ================================= */
 
 /* Quiet Mode dims galaxy intensity */
-:root[data-theme="galaxy"][data-quiet="true"] body {
+:root[data-galaxy="true"][data-quiet="true"] body {
   background:
     radial-gradient(
       ellipse at 50% 20%,
@@ -73,7 +76,7 @@
 }
 
 /* Quiet Mode softens glow */
-:root[data-theme="galaxy"][data-quiet="true"] body::before {
+:root[data-galaxy="true"][data-quiet="true"] body::before {
   opacity: 0.2;
 }
 
@@ -83,7 +86,7 @@
 ================================= */
 
 @media (max-width: 768px) {
-  :root[data-theme="galaxy"] body {
+  :root[data-galaxy="true"] body {
     background-attachment: scroll;
   }
 }

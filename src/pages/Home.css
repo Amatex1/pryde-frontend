@@ -15,21 +15,21 @@
    ======================================== */
 
 /* Content stacks above the fixed galaxy background */
-[data-theme="galaxy"] .home-root {
+[data-galaxy="true"] .home-root {
   position: relative;
   z-index: 1;
   background: transparent;
 }
 
 /* Remove solid backgrounds - let galaxy show through */
-[data-theme="galaxy"] .home-hero,
-[data-theme="galaxy"] .home-why,
-[data-theme="galaxy"] .home-experience,
-[data-theme="galaxy"] .home-final-cta {
+[data-galaxy="true"] .home-hero,
+[data-galaxy="true"] .home-why,
+[data-galaxy="true"] .home-experience,
+[data-galaxy="true"] .home-final-cta {
   background: transparent;
 }
 
-[data-theme="galaxy"] .home-community {
+[data-galaxy="true"] .home-community {
   background: transparent;
   border-top: 1px solid rgba(255,255,255,0.08);
   border-bottom: 1px solid rgba(255,255,255,0.08);
@@ -48,11 +48,11 @@
 }
 
 /* Hero text clarity for Galaxy */
-[data-theme="galaxy"] .home-hero {
+[data-galaxy="true"] .home-hero {
   background: transparent;
 }
 
-[data-theme="galaxy"] .hero-sub {
+[data-galaxy="true"] .hero-sub {
   color: rgba(255,255,255,0.9);
   opacity: 1;
 }
@@ -136,7 +136,7 @@
 }
 
 /* Glass card hover for mock post card */
-[data-theme="galaxy"] .mock-post-card:hover {
+[data-galaxy="true"] .mock-post-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 14px 40px rgba(0,0,0,0.45);
   border-color: rgba(255,255,255,0.18);
@@ -186,7 +186,7 @@
 }
 
 /* Glass card hover for experience cards */
-[data-theme="galaxy"] .experience-card:hover {
+[data-galaxy="true"] .experience-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 14px 40px rgba(0,0,0,0.45);
   border-color: rgba(255,255,255,0.18);
@@ -243,7 +243,7 @@
 }
 
 /* Glass card hover for community cards */
-[data-theme="galaxy"] .community-card:hover {
+[data-galaxy="true"] .community-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 14px 40px rgba(0,0,0,0.45);
   border-color: rgba(255,255,255,0.18);

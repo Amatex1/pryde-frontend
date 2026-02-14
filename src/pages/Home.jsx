@@ -7,27 +7,15 @@ import './Home.css';
 function Home() {
   const isAuth = isAuthenticated();
 
-  // Apply Galaxy theme on homepage only
+  // Apply Galaxy layer on homepage only (visual layer — does not touch data-theme)
   useEffect(() => {
-    const previousTheme = document.documentElement.getAttribute('data-theme');
-    const previousColorMode = document.documentElement.getAttribute('data-color-mode');
-    document.documentElement.setAttribute('data-theme', 'galaxy');
-    // Preserve light/dark preference as data-color-mode
-    if (!previousColorMode) {
-      const colorMode = previousTheme === 'light' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-color-mode', colorMode);
-    }
+    const wasGalaxy = document.documentElement.getAttribute('data-galaxy') === 'true';
+    document.documentElement.setAttribute('data-galaxy', 'true');
 
     return () => {
-      if (previousTheme && previousTheme !== 'galaxy') {
-        document.documentElement.setAttribute('data-theme', previousTheme);
-        document.documentElement.removeAttribute('data-color-mode');
-      } else if (previousTheme === 'galaxy') {
-        // Was already in galaxy mode (user has it enabled globally)
-        document.documentElement.setAttribute('data-theme', 'galaxy');
-      } else {
-        document.documentElement.removeAttribute('data-theme');
-        document.documentElement.removeAttribute('data-color-mode');
+      if (!wasGalaxy) {
+        // Only remove if galaxy wasn't already on (user toggle)
+        document.documentElement.removeAttribute('data-galaxy');
       }
     };
   }, []);

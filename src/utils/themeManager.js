@@ -51,17 +51,16 @@ export const initializeTheme = () => {
   const savedDarkMode = localStorage.getItem('darkMode');
   const savedQuietMode = localStorage.getItem('quietMode');
 
-  // Set data-theme attribute (default: dark)
+  // Set data-theme attribute (default: dark) — always light or dark
   const theme = savedDarkMode === 'false' ? 'light' : 'dark';
-  const galaxyMode = localStorage.getItem('galaxyMode') === 'true';
+  document.documentElement.setAttribute('data-theme', theme);
 
+  // Galaxy is an independent visual layer — does not touch data-theme
+  const galaxyMode = localStorage.getItem('galaxyMode') === 'true';
   if (galaxyMode) {
-    // Galaxy layer: set data-theme="galaxy" and preserve light/dark as data-color-mode
-    document.documentElement.setAttribute('data-theme', 'galaxy');
-    document.documentElement.setAttribute('data-color-mode', theme);
+    document.documentElement.setAttribute('data-galaxy', 'true');
   } else {
-    document.documentElement.setAttribute('data-theme', theme);
-    document.documentElement.removeAttribute('data-color-mode');
+    document.documentElement.removeAttribute('data-galaxy');
   }
 
   // 🔒 PWA FIX: Update theme-color meta for mobile browser chrome
@@ -141,17 +140,7 @@ export const getTextDensity = () => {
  * @param {string} theme - 'light' or 'dark'
  */
 export const setTheme = (theme) => {
-  const galaxyMode = localStorage.getItem('galaxyMode') === 'true';
-
-  if (galaxyMode) {
-    // Galaxy active: keep data-theme="galaxy", update data-color-mode
-    document.documentElement.setAttribute('data-theme', 'galaxy');
-    document.documentElement.setAttribute('data-color-mode', theme);
-  } else {
-    document.documentElement.setAttribute('data-theme', theme);
-    document.documentElement.removeAttribute('data-color-mode');
-  }
-
+  document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('darkMode', theme === 'dark' ? 'true' : 'false');
 
   // 🔒 PWA FIX: Update theme-color meta for mobile browser chrome
@@ -169,11 +158,8 @@ export const setTheme = (theme) => {
  * @returns {string} - New theme value
  */
 export const toggleTheme = () => {
-  const galaxyMode = localStorage.getItem('galaxyMode') === 'true';
-  const currentColorMode = galaxyMode
-    ? document.documentElement.getAttribute('data-color-mode') || 'dark'
-    : document.documentElement.getAttribute('data-theme') || 'dark';
-  const newTheme = currentColorMode === 'dark' ? 'light' : 'dark';
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
   setTheme(newTheme);
   return newTheme;
 };
@@ -275,12 +261,7 @@ export const getQuietModeSettings = () => {
  * @returns {string} - 'light' or 'dark'
  */
 export const getTheme = () => {
-  const dataTheme = document.documentElement.getAttribute('data-theme');
-  if (dataTheme === 'galaxy') {
-    // Galaxy active: return the underlying color mode
-    return document.documentElement.getAttribute('data-color-mode') || 'dark';
-  }
-  return dataTheme || 'dark';
+  return document.documentElement.getAttribute('data-theme') || 'dark';
 };
 
 /**
@@ -293,8 +274,9 @@ export const getQuietMode = () => {
 
 // =========================================
 // GALAXY MODE
-// Isolated visual layer — does NOT override
-// data-color-mode (light/dark) or quiet mode
+// Isolated visual layer via data-galaxy attr
+// Does NOT touch data-theme (light/dark)
+// Does NOT touch data-quiet
 // =========================================
 
 /**
@@ -307,23 +289,15 @@ export const getGalaxyMode = () => {
 
 /**
  * Set galaxy mode on or off
- * Galaxy sets data-theme="galaxy" and preserves light/dark via data-color-mode
+ * Galaxy uses data-galaxy="true" — data-theme stays as light/dark
  * @param {boolean} enabled
  */
 export const setGalaxyMode = (enabled) => {
   localStorage.setItem('galaxyMode', enabled ? 'true' : 'false');
   if (enabled) {
-    // Preserve current light/dark preference as data-color-mode
-    const savedDarkMode = localStorage.getItem('darkMode');
-    const colorMode = savedDarkMode === 'false' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', 'galaxy');
-    document.documentElement.setAttribute('data-color-mode', colorMode);
+    document.documentElement.setAttribute('data-galaxy', 'true');
   } else {
-    // Restore previous light/dark theme
-    const savedDarkMode = localStorage.getItem('darkMode');
-    const theme = savedDarkMode === 'false' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', theme);
-    document.documentElement.removeAttribute('data-color-mode');
+    document.documentElement.removeAttribute('data-galaxy');
   }
 };
 
