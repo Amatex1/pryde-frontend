@@ -105,41 +105,41 @@
 }
 
 /* ======================================================
-   🌌 MIDNIGHT DREAM THEME (DESKTOP HOMEPAGE ONLY)
-   Softer colors with galaxy background
+   🌌 TWILIGHT GALAXY THEME (DESKTOP HOMEPAGE ONLY)
+   Much lighter colors - soft twilight atmosphere
    ====================================================== */
 
 [data-theme="midnight-prism"] {
-  --bg-deep-base: #1A1F3A;
-  --bg-deep-mid: #252A45;
-  --bg-deep-accent: #2F3550;
+  --bg-deep-base: #2D3548;
+  --bg-deep-mid: #3A4158;
+  --bg-deep-accent: #454D68;
 
-  --surface-1: #2A2F4A;
-  --surface-2: #353A55;
-  --surface-3: #404560;
+  --surface-1: #3F4759;
+  --surface-2: #4A5269;
+  --surface-3: #555D78;
 
-  --text-primary: #F7F9FF;
-  --text-secondary: rgba(247, 249, 255, 0.85);
-  --text-muted: rgba(247, 249, 255, 0.65);
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255, 255, 255, 0.92);
+  --text-muted: rgba(255, 255, 255, 0.75);
 
-  --accent-primary: #A46EFF;
-  --accent-rose: #FF7AC8;
-  --accent-cyan: #6FD8FF;
+  --accent-primary: #B57FFF;
+  --accent-rose: #FF8FD8;
+  --accent-cyan: #7FE8FF;
 
-  --accent-glow-soft: rgba(164, 110, 255, 0.25);
-  --accent-glow-strong: rgba(164, 110, 255, 0.45);
+  --accent-glow-soft: rgba(181, 127, 255, 0.3);
+  --accent-glow-strong: rgba(181, 127, 255, 0.5);
 
   /* Map to existing variable names for compatibility */
   --bg-page: linear-gradient(180deg, var(--bg-deep-base) 0%, var(--bg-deep-mid) 50%, var(--bg-deep-accent) 100%);
   --bg-app: linear-gradient(180deg, var(--bg-deep-base) 0%, var(--bg-deep-mid) 50%, var(--bg-deep-accent) 100%);
   --color-bg: linear-gradient(180deg, var(--bg-deep-base) 0%, var(--bg-deep-mid) 50%, var(--bg-deep-accent) 100%);
   --color-surface: var(--surface-1);
-  --color-border: rgba(164, 110, 255, 0.12);
+  --color-border: rgba(181, 127, 255, 0.18);
   --color-text: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-brand: var(--accent-primary);
-  --color-brand-hover: #B57FFF;
-  --color-text-inverse: #111224;
+  --color-brand-hover: #C68FFF;
+  --color-text-inverse: #1A1F2E;
 }
 
 /* ============================= */

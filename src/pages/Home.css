@@ -19,16 +19,16 @@
     position: relative;
     min-height: 100vh;
     overflow: hidden;
-    /* Softer gradient fallback */
+    /* Much lighter gradient fallback */
     background: linear-gradient(
       180deg,
-      #1A1F3A 0%,
-      #252A45 50%,
-      #2F3550 100%
+      #2D3548 0%,
+      #3A4158 50%,
+      #454D68 100%
     );
   }
 
-  /* Full galaxy visible */
+  /* Full galaxy visible with higher opacity */
   [data-theme="midnight-prism"] .home-root::before {
     content: "";
     position: fixed;
@@ -36,17 +36,17 @@
     background:
       url("/assets/midnight-sanctuary.webp")
       center center / cover no-repeat;
-    opacity: 0.9;
+    opacity: 1;
     z-index: -2;
     pointer-events: none;
   }
 
-  /* Very subtle readability layer */
+  /* Very light readability layer - barely visible */
   [data-theme="midnight-prism"] .home-root::after {
     content: "";
     position: fixed;
     inset: 0;
-    background: rgba(10, 14, 35, 0.25);
+    background: rgba(30, 35, 50, 0.15);
     z-index: -1;
     pointer-events: none;
   }
