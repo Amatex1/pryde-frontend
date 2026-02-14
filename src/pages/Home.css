@@ -31,7 +31,7 @@
   /* Full galaxy visible with higher opacity */
   [data-theme="midnight-prism"] .home-root::before {
     content: "";
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
