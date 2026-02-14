@@ -3,10 +3,70 @@
    Emotionally-Driven Design
    ======================================== */
 
-.home-page {
+.home-root {
   min-height: 100vh;
   min-height: 100dvh;
   background: var(--color-bg);
+}
+
+/* ========================================
+   MIDNIGHT DREAM - FULL GALAXY + GLASS STRUCTURE
+   Desktop only (>=900px)
+   ======================================== */
+
+@media (min-width: 900px) {
+  [data-theme="midnight-prism"] .home-root {
+    position: relative;
+    min-height: 100vh;
+    background: #0A0E1F;
+    overflow: hidden;
+  }
+
+  /* STEP 1: Restore visible galaxy background */
+  [data-theme="midnight-prism"] .home-root::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      url("/assets/midnight-sanctuary.webp")
+      center center / cover no-repeat;
+    opacity: 0.85;
+    filter:
+      saturate(1.05)
+      brightness(0.95)
+      contrast(1.05);
+    z-index: -2;
+    pointer-events: none;
+  }
+
+  /* STEP 2: Light overlay for readability (not heavy) */
+  [data-theme="midnight-prism"] .home-root::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(10,14,35,0.35) 0%,
+        rgba(12,16,40,0.45) 50%,
+        rgba(10,14,35,0.55) 100%
+      );
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* STEP 3: Remove solid backgrounds - make sections transparent */
+  [data-theme="midnight-prism"] .home-why,
+  [data-theme="midnight-prism"] .home-experience,
+  [data-theme="midnight-prism"] .home-final-cta {
+    background: transparent;
+  }
+
+  [data-theme="midnight-prism"] .home-community {
+    background: transparent;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
 }
 
 /* ========================================
@@ -21,7 +81,22 @@
   overflow: hidden;
 }
 
-/* STEP 4: Removed glow stacking - keeping calm sanctuary aesthetic */
+/* STEP 5: Hero text clarity for Midnight Dream */
+@media (min-width: 900px) {
+  [data-theme="midnight-prism"] .home-hero {
+    background: transparent;
+  }
+
+  [data-theme="midnight-prism"] .home-hero h1 {
+    color: #F7F9FF;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.35);
+  }
+
+  [data-theme="midnight-prism"] .hero-sub {
+    color: rgba(255,255,255,0.9);
+    opacity: 1;
+  }
+}
 
 .home-hero .hero-content {
   max-width: 900px;
@@ -101,22 +176,20 @@
   transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Midnight Prism V2 - Stronger card separation (desktop only) */
+/* STEP 4: Glass card style for content blocks (desktop only) */
 @media (min-width: 900px) {
   [data-theme="midnight-prism"] .mock-post-card {
-    background: var(--surface-1);
+    background: rgba(20, 25, 60, 0.55);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 22px;
-    border: 1px solid rgba(164,110,255,0.08);
-    box-shadow:
-      0 8px 28px rgba(0, 0, 0, 0.45),
-      0 0 30px rgba(164, 110, 255, 0.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
   }
 
   [data-theme="midnight-prism"] .mock-post-card:hover {
     transform: translateY(-3px);
-    box-shadow:
-      0 14px 40px rgba(0, 0, 0, 0.55),
-      0 0 36px rgba(164, 110, 255, 0.12);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+    border-color: rgba(255,255,255,0.18);
   }
 }
 
@@ -163,22 +236,20 @@
   transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Midnight Prism V2 - Stronger card separation (desktop only) */
+/* STEP 4: Glass card style for experience cards (desktop only) */
 @media (min-width: 900px) {
   [data-theme="midnight-prism"] .experience-card {
-    background: var(--surface-1);
+    background: rgba(20, 25, 60, 0.55);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 22px;
-    border: 1px solid rgba(164,110,255,0.08);
-    box-shadow:
-      0 8px 28px rgba(0, 0, 0, 0.45),
-      0 0 30px rgba(164, 110, 255, 0.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
   }
 
   [data-theme="midnight-prism"] .experience-card:hover {
     transform: translateY(-3px);
-    box-shadow:
-      0 14px 40px rgba(0, 0, 0, 0.55),
-      0 0 36px rgba(164, 110, 255, 0.12);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+    border-color: rgba(255,255,255,0.18);
   }
 }
 
@@ -232,22 +303,20 @@
   transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Midnight Prism V2 - Stronger card separation (desktop only) */
+/* STEP 4: Glass card style for community cards (desktop only) */
 @media (min-width: 900px) {
   [data-theme="midnight-prism"] .community-card {
-    background: var(--surface-1);
+    background: rgba(20, 25, 60, 0.55);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 22px;
-    border: 1px solid rgba(164,110,255,0.08);
-    box-shadow:
-      0 8px 28px rgba(0, 0, 0, 0.45),
-      0 0 30px rgba(164, 110, 255, 0.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
   }
 
   [data-theme="midnight-prism"] .community-card:hover {
     transform: translateY(-3px);
-    box-shadow:
-      0 14px 40px rgba(0, 0, 0, 0.55),
-      0 0 36px rgba(164, 110, 255, 0.12);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+    border-color: rgba(255,255,255,0.18);
   }
 }
 
