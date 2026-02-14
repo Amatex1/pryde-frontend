@@ -249,7 +249,73 @@ function Privacy() {
         </section>
 
         <section className="legal-section">
-          <h2>12. Contact</h2>
+          <h2>12. Cookies & Essential Technologies</h2>
+          <p className="legal-highlight">
+            <strong>🍪 We only use essential cookies for security and functionality. Pryde Social does not use tracking, analytics, or advertising cookies. No consent is required for essential cookies under GDPR.</strong>
+          </p>
+
+          <h3>A. What Cookies We Use</h3>
+          <ul>
+            <li><strong>Session cookies</strong> - Keep you logged in (authentication)</li>
+            <li><strong>Security cookies</strong> - CSRF protection tokens (XSRF-TOKEN)</li>
+            <li><strong>Preference cookies</strong> - Remember your settings (dark mode, etc.)</li>
+          </ul>
+          <p>
+            <strong>We do not use tracking or advertising cookies.</strong>
+          </p>
+          <p>
+            <strong>Cookie Details:</strong>
+          </p>
+          <ul>
+            <li><strong>Authentication Token:</strong> Stores your login session (HttpOnly, Secure, SameSite)</li>
+            <li><strong>XSRF-TOKEN:</strong> Protects against cross-site request forgery attacks</li>
+            <li><strong>Dark Mode Preference:</strong> Remembers your theme choice</li>
+          </ul>
+
+          <h3>B. Why We Use Cookies</h3>
+          <ul>
+            <li><strong>Keep you logged in</strong> - Maintain your session across pages</li>
+            <li><strong>Protect your account</strong> - Prevent unauthorized access and CSRF attacks</li>
+            <li><strong>Remember preferences</strong> - Save your settings like dark mode</li>
+            <li><strong>Improve site stability</strong> - Ensure smooth functionality</li>
+          </ul>
+          <p>
+            All cookies are essential for the platform to function properly and securely.
+          </p>
+
+          <h3>C. Managing Cookies</h3>
+          <p>
+            You can disable cookies in your browser settings, but please note that doing so will prevent you from logging in and using Pryde Social, as all our cookies are essential for the platform to function.
+          </p>
+          <p>
+            <strong>Browser Cookie Settings:</strong>
+          </p>
+          <ul>
+            <li><strong>Chrome:</strong> Settings → Privacy and security → Cookies and other site data</li>
+            <li><strong>Firefox:</strong> Settings → Privacy & Security → Cookies and Site Data</li>
+            <li><strong>Safari:</strong> Preferences → Privacy → Manage Website Data</li>
+            <li><strong>Edge:</strong> Settings → Cookies and site permissions → Manage and delete cookies</li>
+          </ul>
+
+          <h3>D. GDPR Compliance</h3>
+          <p>
+            Under the General Data Protection Regulation (GDPR), websites are required to obtain consent for non-essential cookies. However, <strong>essential cookies that are strictly necessary for the website to function do not require consent</strong>.
+          </p>
+          <p>
+            All cookies used by Pryde Social fall into the "strictly necessary" category:
+          </p>
+          <ul>
+            <li><strong>Authentication:</strong> Required to keep you logged in</li>
+            <li><strong>Security:</strong> Required to protect against attacks (CSRF)</li>
+            <li><strong>Preferences:</strong> Required to remember your settings (dark mode)</li>
+          </ul>
+          <p>
+            Therefore, <strong>no cookie consent banner is legally required</strong> for Pryde Social under GDPR Article 6(1)(f) (legitimate interests) and ePrivacy Directive Article 5(3).
+          </p>
+        </section>
+
+        <section className="legal-section">
+          <h2>13. Contact</h2>
           <div className="contact-info">
             <p><strong>📧</strong> <span className="contact-email">prydeapp-team@outlook.com</span></p>
           </div>

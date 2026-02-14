@@ -135,6 +135,12 @@ const Helplines = lazyWithReload(() => import('./pages/legal/Helplines'));
 const TrustAndSafety = lazyWithReload(() => import('./pages/legal/TrustAndSafety')); // Phase 6B
 const PlatformGuarantees = lazyWithReload(() => import('./pages/PlatformGuarantees')); // Phase 7A
 
+// Trust Center Consolidation (Phase 8)
+const TrustCenter = lazyWithReload(() => import('./pages/TrustCenter'));
+const CommunityGuidelines = lazyWithReload(() => import('./pages/CommunityGuidelines'));
+const SafetyModeration = lazyWithReload(() => import('./pages/SafetyModeration'));
+const SecurityOverview = lazyWithReload(() => import('./pages/SecurityOverview'));
+
 // Layout components
 import AppLayout from './layouts/AppLayout';
 import FullViewportLayout from './layouts/FullViewportLayout';
@@ -452,20 +458,35 @@ function AppContent() {
                   } />
 
                   {/* Legal Pages - Public Access */}
+                  {/* Trust Center Hub */}
+                  <Route path="/trust-center" element={<><TrustCenter /><Footer /></>} />
+
+                  {/* Core Legal Pages */}
                   <Route path="/terms" element={<><Terms /><Footer /></>} />
                   <Route path="/privacy" element={<><Privacy /><Footer /></>} />
+                  <Route path="/dmca" element={<><DMCA /><Footer /></>} />
+
+                  {/* Consolidated Pages (New) */}
+                  <Route path="/community-guidelines" element={<><CommunityGuidelines /><Footer /></>} />
+                  <Route path="/safety-moderation" element={<><SafetyModeration /><Footer /></>} />
+                  <Route path="/security" element={<><SecurityOverview /><Footer /></>} />
+
+                  {/* Redirects for Old Routes */}
+                  <Route path="/acceptable-use" element={<Navigate to="/community-guidelines" replace />} />
+                  <Route path="/safety" element={<Navigate to="/safety-moderation" replace />} />
+                  <Route path="/safety-center" element={<Navigate to="/safety-moderation" replace />} />
+                  <Route path="/trust-safety" element={<Navigate to="/safety-moderation" replace />} />
+                  <Route path="/trust-and-safety" element={<Navigate to="/safety-moderation" replace />} />
+                  <Route path="/cookie-policy" element={<Navigate to="/privacy" replace />} />
+
+                  {/* Legacy Routes (Keep for now) */}
                   <Route path="/community" element={<><Community /><Footer /></>} />
-                  <Route path="/community-guidelines" element={<><Community /><Footer /></>} />
-                  <Route path="/safety" element={<><Safety /><Footer /></>} />
-                  <Route path="/security" element={<><Security /><Footer /></>} />
+
+                  {/* Other Legal Pages */}
                   <Route path="/contact" element={<><Contact /><Footer /></>} />
                   <Route path="/faq" element={<><FAQ /><Footer /></>} />
                   <Route path="/legal-requests" element={<><LegalRequests /><Footer /></>} />
-                  <Route path="/dmca" element={<><DMCA /><Footer /></>} />
-                  <Route path="/acceptable-use" element={<><AcceptableUse /><Footer /></>} />
-                  <Route path="/cookie-policy" element={<><CookiePolicy /><Footer /></>} />
                   <Route path="/helplines" element={<><Helplines /><Footer /></>} />
-                  <Route path="/trust-and-safety" element={<><TrustAndSafety /><Footer /></>} />
                   <Route path="/guarantees" element={<><PlatformGuarantees /><Footer /></>} />
 
                   {/* Custom Profile URL - catch-all for /@username style URLs */}

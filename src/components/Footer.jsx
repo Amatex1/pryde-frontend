@@ -27,27 +27,19 @@ function Footer() {
           </p>
         </div>
 
-        {/* Legal Links */}
+        {/* Legal Links - Consolidated */}
         <div className="footer-links-container">
-          <a href="/guarantees">Platform Guarantees</a>
+          <a href="/trust-center">Trust Center</a>
           <span className="separator">•</span>
-          <a href="/terms">Terms of Service</a>
+          <a href="/terms">Terms</a>
           <span className="separator">•</span>
-          <a href="/privacy">Privacy Policy</a>
-          <span className="separator">•</span>
-          <a href="/trust-safety">Trust & Safety</a>
-          <span className="separator">•</span>
-          <a href="/security">Security</a>
-          <span className="separator">•</span>
-          <a href="/community">Community Guidelines</a>
-          <span className="separator">•</span>
-          <a href="/acceptable-use">Acceptable Use</a>
-          <span className="separator">•</span>
-          <a href="/safety">Safety Center</a>
-          <span className="separator">•</span>
-          <a href="/cookies">Cookie Policy</a>
+          <a href="/privacy">Privacy</a>
           <span className="separator">•</span>
           <a href="/dmca">DMCA</a>
+          <span className="separator">•</span>
+          <a href="/community-guidelines">Community Guidelines</a>
+          <span className="separator">•</span>
+          <a href="/security">Security</a>
           <span className="separator">•</span>
           <a href="/faq">FAQ</a>
           <span className="separator">•</span>
