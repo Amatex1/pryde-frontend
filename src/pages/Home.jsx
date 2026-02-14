@@ -7,22 +7,22 @@ import './Home.css';
 function Home() {
   const isAuth = isAuthenticated();
 
-  // Apply Midnight Prism theme only on desktop (>=900px)
-  useEffect(() => {
-    if (window.innerWidth >= 900) {
-      const previousTheme = document.documentElement.getAttribute('data-theme');
+  // Midnight Prism theme disabled - using default theme
+  // useEffect(() => {
+  //   if (window.innerWidth >= 900) {
+  //     const previousTheme = document.documentElement.getAttribute('data-theme');
 
-      document.documentElement.setAttribute('data-theme', 'midnight-prism');
+  //     document.documentElement.setAttribute('data-theme', 'midnight-prism');
 
-      return () => {
-        if (previousTheme) {
-          document.documentElement.setAttribute('data-theme', previousTheme);
-        } else {
-          document.documentElement.removeAttribute('data-theme');
-        }
-      };
-    }
-  }, []);
+  //     return () => {
+  //       if (previousTheme) {
+  //         document.documentElement.setAttribute('data-theme', previousTheme);
+  //       } else {
+  //         document.documentElement.removeAttribute('data-theme');
+  //       }
+  //     };
+  //   }
+  // }, []);
 
   return (
     <div className="home-root">
