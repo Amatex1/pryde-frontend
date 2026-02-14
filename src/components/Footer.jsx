@@ -11,9 +11,9 @@ function Footer() {
         {/* Site Name and Copyright */}
         <div className="footer-branding">
           <picture>
-            <source srcSet="/icon-192.webp" type="image/webp" />
+            <source srcSet="/pryde-logo.webp" type="image/webp" />
             <img
-              src="/icon-192.png"
+              src="/pryde-logo.png"
               alt="Pryde Social Logo"
               className="footer-logo-img"
               width="50"
