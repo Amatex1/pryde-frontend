@@ -25,6 +25,14 @@
    BACKGROUND SYSTEM
    ========================= */
 
+/* Force body/root transparent so galaxy image shows through */
+:root[data-theme="galaxy-calm"],
+:root[data-theme="galaxy-calm"] body,
+:root[data-theme="galaxy-calm"] #root {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
 .galaxy-background {
   position: fixed;
   inset: 0;
@@ -32,7 +40,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  z-index: -2;
+  z-index: 0;
 }
 
 /* Unified dark overlay for readability */
@@ -46,7 +54,8 @@
     var(--bg-overlay-mid) 40%,
     var(--bg-overlay-bottom) 100%
   );
-  z-index: -1;
+  z-index: 1;
+  pointer-events: none;
 }
 
 

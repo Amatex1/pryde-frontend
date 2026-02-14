@@ -10,14 +10,9 @@ function Home() {
   // Apply Galaxy Calm theme on homepage only
   useEffect(() => {
     const previousTheme = document.documentElement.getAttribute('data-theme');
-
-    // Use setTimeout to ensure this runs after App.jsx's theme initialization
-    const timeoutId = setTimeout(() => {
-      document.documentElement.setAttribute('data-theme', 'galaxy-calm');
-    }, 0);
+    document.documentElement.setAttribute('data-theme', 'galaxy-calm');
 
     return () => {
-      clearTimeout(timeoutId);
       if (previousTheme) {
         document.documentElement.setAttribute('data-theme', previousTheme);
       } else {
@@ -54,6 +49,9 @@ function Home() {
                 <>
                   <Link to="/register" className="primary-button">
                     Join as a Founding Member
+                  </Link>
+                  <Link to="/login" className="btn-secondary">
+                    Sign In
                   </Link>
                   <Link to="/groups" className="btn-secondary">
                     Explore the Space

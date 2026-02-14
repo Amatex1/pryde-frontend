@@ -264,6 +264,46 @@ export const getQuietMode = () => {
   return document.documentElement.getAttribute('data-quiet') === 'true';
 };
 
+// =========================================
+// GALAXY MODE
+// Toggle galaxy-calm theme on/off
+// =========================================
+
+/**
+ * Get galaxy mode state from localStorage
+ * @returns {boolean}
+ */
+export const getGalaxyMode = () => {
+  return localStorage.getItem('galaxyMode') === 'true';
+};
+
+/**
+ * Set galaxy mode on or off
+ * @param {boolean} enabled
+ */
+export const setGalaxyMode = (enabled) => {
+  localStorage.setItem('galaxyMode', enabled ? 'true' : 'false');
+  if (enabled) {
+    document.documentElement.setAttribute('data-theme', 'galaxy-calm');
+  } else {
+    // Restore previous light/dark theme
+    const savedDarkMode = localStorage.getItem('darkMode');
+    const theme = savedDarkMode === 'false' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+  }
+};
+
+/**
+ * Toggle galaxy mode
+ * @returns {boolean} - New galaxy mode state
+ */
+export const toggleGalaxyMode = () => {
+  const current = getGalaxyMode();
+  const newValue = !current;
+  setGalaxyMode(newValue);
+  return newValue;
+};
+
 /**
  * Apply theme from user settings
  * @param {Object} user - User object with privacy settings
