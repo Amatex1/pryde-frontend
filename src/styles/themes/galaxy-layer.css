@@ -1,22 +1,35 @@
 /* ================================
    GALAXY BACKGROUND LAYER
    Isolated — No Token Overrides
-   Uses data-galaxy="true" attribute
-   so data-theme stays light/dark
+   Uses data-galaxy="true" on <html>
+   data-theme stays light/dark always
+
+   Must override:
+   - index.html inline critical CSS
+   - purple-identity.css !important
 ================================= */
 
-:root[data-galaxy="true"] body {
+/* Galaxy background on html (wins over inline critical CSS) */
+html[data-galaxy="true"] {
   background:
     radial-gradient(
       ellipse at 50% 20%,
       rgba(90, 70, 140, 0.25),
       rgba(10, 10, 20, 0.95)
     ),
-    url('/assets/midnight-sanctuary.webp') center/cover no-repeat fixed;
+    url('/assets/midnight-sanctuary.webp') center/cover no-repeat fixed !important;
+  background-color: transparent !important;
+}
+
+/* Force body and #root transparent so galaxy shows through */
+html[data-galaxy="true"] body,
+html[data-galaxy="true"] #root {
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
 /* Subtle star depth */
-:root[data-galaxy="true"] body::before {
+html[data-galaxy="true"] body::before {
   content: "";
   position: fixed;
   inset: 0;
@@ -29,9 +42,9 @@
 }
 
 /* Ensure layout layers sit above galaxy */
-:root[data-galaxy="true"] #root,
-:root[data-galaxy="true"] .app-layout,
-:root[data-galaxy="true"] .page-container {
+html[data-galaxy="true"] #root,
+html[data-galaxy="true"] .app-layout,
+html[data-galaxy="true"] .page-container {
   position: relative;
   z-index: 1;
 }
@@ -42,7 +55,7 @@
    Only when galaxy + light theme
 ================================= */
 
-:root[data-galaxy="true"][data-theme="light"] {
+html[data-galaxy="true"][data-theme="light"] {
   --surface-primary: rgba(255,255,255,0.92);
   --surface-secondary: rgba(255,255,255,0.85);
   --card-background: rgba(255,255,255,0.90);
@@ -51,11 +64,11 @@
 }
 
 /* Blur for glass effect */
-:root[data-galaxy="true"] .card,
-:root[data-galaxy="true"] .feed-post,
-:root[data-galaxy="true"] .page-header,
-:root[data-galaxy="true"] .navbar,
-:root[data-galaxy="true"] .modal-content {
+html[data-galaxy="true"] .card,
+html[data-galaxy="true"] .feed-post,
+html[data-galaxy="true"] .page-header,
+html[data-galaxy="true"] .navbar,
+html[data-galaxy="true"] .modal-content {
   backdrop-filter: blur(14px);
 }
 
@@ -65,18 +78,18 @@
 ================================= */
 
 /* Quiet Mode dims galaxy intensity */
-:root[data-galaxy="true"][data-quiet="true"] body {
+html[data-galaxy="true"][data-quiet="true"] {
   background:
     radial-gradient(
       ellipse at 50% 20%,
       rgba(70, 60, 120, 0.18),
       rgba(8, 8, 15, 0.97)
     ),
-    url('/assets/midnight-sanctuary.webp') center/cover no-repeat fixed;
+    url('/assets/midnight-sanctuary.webp') center/cover no-repeat fixed !important;
 }
 
 /* Quiet Mode softens glow */
-:root[data-galaxy="true"][data-quiet="true"] body::before {
+html[data-galaxy="true"][data-quiet="true"] body::before {
   opacity: 0.2;
 }
 
@@ -86,8 +99,8 @@
 ================================= */
 
 @media (max-width: 768px) {
-  :root[data-galaxy="true"] body {
-    background-attachment: scroll;
+  html[data-galaxy="true"] {
+    background-attachment: scroll !important;
   }
 }
 
