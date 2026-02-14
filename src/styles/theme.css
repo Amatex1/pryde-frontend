@@ -186,11 +186,6 @@ button {
    DARK MODE
    ======================================== */
 
-/* ========================================
-   GALAXY LAYER (isolated visual layer)
-   ======================================== */
-@import './themes/galaxy-layer.css';
-
 [data-theme="dark"] {
   /* ========================================
      BACKGROUNDS
