@@ -12,9 +12,13 @@ function Home() {
     if (window.innerWidth >= 900) {
       const previousTheme = document.documentElement.getAttribute('data-theme');
 
-      document.documentElement.setAttribute('data-theme', 'midnight-prism');
+      // Use setTimeout to ensure this runs after App.jsx's theme initialization
+      const timeoutId = setTimeout(() => {
+        document.documentElement.setAttribute('data-theme', 'midnight-prism');
+      }, 0);
 
       return () => {
+        clearTimeout(timeoutId);
         if (previousTheme) {
           document.documentElement.setAttribute('data-theme', previousTheme);
         } else {
