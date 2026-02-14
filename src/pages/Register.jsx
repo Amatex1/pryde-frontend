@@ -35,6 +35,7 @@ function Register({ onLoginSuccess }) {
   const [usernameAvailable, setUsernameAvailable] = useState(null);
   const [checkingUsername, setCheckingUsername] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState({ score: 0, label: '', color: '' });
+  const [usernameCheckTimestamp, setUsernameCheckTimestamp] = useState(null);
 
   // Phase 7B: Invite-only mode state
   const [inviteCode, setInviteCode] = useState(inviteCodeFromUrl || '');
@@ -133,6 +134,7 @@ function Register({ onLoginSuccess }) {
   const checkUsernameAvailability = async (username) => {
     if (!username || username.length < 3) {
       setUsernameAvailable(null);
+      setUsernameCheckTimestamp(null);
       return;
     }
 
@@ -141,9 +143,11 @@ function Register({ onLoginSuccess }) {
     try {
       const response = await api.get(`/auth/check-username/${username}`);
       setUsernameAvailable(response.data);
+      setUsernameCheckTimestamp(Date.now()); // Track when check was performed
     } catch (error) {
       console.error('Username check error:', error);
       setUsernameAvailable({ available: false, message: 'Error checking username' });
+      setUsernameCheckTimestamp(null);
     } finally {
       setCheckingUsername(false);
     }
@@ -498,11 +502,31 @@ function Register({ onLoginSuccess }) {
                     {checkingUsername ? (
                       <span style={{ color: 'var(--text-muted)' }}>⏳ Checking availability...</span>
                     ) : usernameAvailable ? (
-                      usernameAvailable.available ? (
-                        <span style={{ color: '#4caf50', fontWeight: '600' }}>✓ {usernameAvailable.message}</span>
-                      ) : (
-                        <span style={{ color: '#ff6b6b', fontWeight: '600' }}>✗ {usernameAvailable.message}</span>
-                      )
+                      <>
+                        {usernameAvailable.available ? (
+                          <span style={{ color: '#4caf50', fontWeight: '600' }}>✓ {usernameAvailable.message}</span>
+                        ) : (
+                          <span style={{ color: '#ff6b6b', fontWeight: '600' }}>✗ {usernameAvailable.message}</span>
+                        )}
+                        {/* Show warning if check is stale (>30 seconds old) */}
+                        {usernameAvailable.available && usernameCheckTimestamp &&
+                         Date.now() - usernameCheckTimestamp > 30000 && (
+                          <div style={{
+                            marginTop: 'var(--space-sm)',
+                            padding: 'var(--space-sm)',
+                            background: 'rgba(255, 165, 0, 0.1)',
+                            border: '1px solid rgba(255, 165, 0, 0.3)',
+                            borderRadius: 'var(--border-radius-sm)',
+                            fontSize: 'var(--font-size-xs)',
+                            color: '#ffa500',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 'var(--space-xs)'
+                          }}>
+                            ⚠️ Username availability may have changed. Please re-check before submitting.
+                          </div>
+                        )}
+                      </>
                     ) : null}
                   </div>
                 )}
@@ -548,38 +572,66 @@ function Register({ onLoginSuccess }) {
                   autoComplete="new-password"
                 />
                 {formData.password && (
-                  <div className="password-strength" style={{ marginTop: 'var(--space-sm)' }}>
+                  <div className="password-strength" style={{
+                    marginTop: 'var(--space-md)',
+                    padding: 'var(--space-md)',
+                    background: 'var(--bg-subtle)',
+                    borderRadius: 'var(--border-radius-md)',
+                    border: `2px solid ${passwordStrength.color || 'var(--border-color)'}`,
+                    transition: 'border-color 0.3s ease'
+                  }}>
                     <div style={{
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       marginBottom: 'var(--space-sm)'
                     }}>
-                      <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)' }}>
-                        Password Strength:
+                      <span style={{
+                        fontSize: 'var(--font-size-md)',
+                        fontWeight: '600',
+                        color: 'var(--text-primary)'
+                      }}>
+                        Password Strength
                       </span>
                       <span style={{
-                        fontSize: 'var(--font-size-sm)',
-                        fontWeight: '600',
-                        color: passwordStrength.color
+                        fontSize: 'var(--font-size-md)',
+                        fontWeight: '700',
+                        color: passwordStrength.color,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px'
                       }}>
                         {passwordStrength.label}
                       </span>
                     </div>
                     <div style={{
                       width: '100%',
-                      height: '6px',
-                      background: 'var(--bg-subtle)',
-                      borderRadius: 'var(--border-radius-sm)',
-                      overflow: 'hidden'
+                      height: '10px',
+                      background: 'var(--bg-primary)',
+                      borderRadius: 'var(--border-radius-full)',
+                      overflow: 'hidden',
+                      boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)'
                     }}>
                       <div style={{
                         width: `${(passwordStrength.score / 7) * 100}%`,
                         height: '100%',
-                        background: passwordStrength.color,
+                        background: `linear-gradient(90deg, ${passwordStrength.color}, ${passwordStrength.color}dd)`,
                         transition: 'all 0.3s ease',
-                        borderRadius: 'var(--border-radius-sm)'
+                        borderRadius: 'var(--border-radius-full)',
+                        boxShadow: `0 0 8px ${passwordStrength.color}66`
                       }} />
+                    </div>
+                    <div style={{
+                      marginTop: 'var(--space-sm)',
+                      fontSize: 'var(--font-size-xs)',
+                      color: 'var(--text-muted)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--space-xs)'
+                    }}>
+                      {passwordStrength.score <= 2 && '⚠️ Too weak - add more characters and variety'}
+                      {passwordStrength.score > 2 && passwordStrength.score <= 4 && '✓ Getting better - add special characters'}
+                      {passwordStrength.score > 4 && passwordStrength.score <= 6 && '✓ Good password - you\'re protected'}
+                      {passwordStrength.score > 6 && '✓ Excellent! Maximum security'}
                     </div>
                   </div>
                 )}
