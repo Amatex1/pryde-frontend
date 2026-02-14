@@ -53,7 +53,16 @@ export const initializeTheme = () => {
 
   // Set data-theme attribute (default: dark)
   const theme = savedDarkMode === 'false' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', theme);
+  const galaxyMode = localStorage.getItem('galaxyMode') === 'true';
+
+  if (galaxyMode) {
+    // Galaxy layer: set data-theme="galaxy" and preserve light/dark as data-color-mode
+    document.documentElement.setAttribute('data-theme', 'galaxy');
+    document.documentElement.setAttribute('data-color-mode', theme);
+  } else {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.removeAttribute('data-color-mode');
+  }
 
   // 🔒 PWA FIX: Update theme-color meta for mobile browser chrome
   updateThemeColorMeta(theme);
@@ -132,7 +141,17 @@ export const getTextDensity = () => {
  * @param {string} theme - 'light' or 'dark'
  */
 export const setTheme = (theme) => {
-  document.documentElement.setAttribute('data-theme', theme);
+  const galaxyMode = localStorage.getItem('galaxyMode') === 'true';
+
+  if (galaxyMode) {
+    // Galaxy active: keep data-theme="galaxy", update data-color-mode
+    document.documentElement.setAttribute('data-theme', 'galaxy');
+    document.documentElement.setAttribute('data-color-mode', theme);
+  } else {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.removeAttribute('data-color-mode');
+  }
+
   localStorage.setItem('darkMode', theme === 'dark' ? 'true' : 'false');
 
   // 🔒 PWA FIX: Update theme-color meta for mobile browser chrome
@@ -150,8 +169,11 @@ export const setTheme = (theme) => {
  * @returns {string} - New theme value
  */
 export const toggleTheme = () => {
-  const currentTheme = document.documentElement.getAttribute('data-theme');
-  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  const galaxyMode = localStorage.getItem('galaxyMode') === 'true';
+  const currentColorMode = galaxyMode
+    ? document.documentElement.getAttribute('data-color-mode') || 'dark'
+    : document.documentElement.getAttribute('data-theme') || 'dark';
+  const newTheme = currentColorMode === 'dark' ? 'light' : 'dark';
   setTheme(newTheme);
   return newTheme;
 };
@@ -253,7 +275,12 @@ export const getQuietModeSettings = () => {
  * @returns {string} - 'light' or 'dark'
  */
 export const getTheme = () => {
-  return document.documentElement.getAttribute('data-theme') || 'dark';
+  const dataTheme = document.documentElement.getAttribute('data-theme');
+  if (dataTheme === 'galaxy') {
+    // Galaxy active: return the underlying color mode
+    return document.documentElement.getAttribute('data-color-mode') || 'dark';
+  }
+  return dataTheme || 'dark';
 };
 
 /**
@@ -266,7 +293,8 @@ export const getQuietMode = () => {
 
 // =========================================
 // GALAXY MODE
-// Toggle galaxy-calm theme on/off
+// Isolated visual layer — does NOT override
+// data-color-mode (light/dark) or quiet mode
 // =========================================
 
 /**
@@ -279,17 +307,23 @@ export const getGalaxyMode = () => {
 
 /**
  * Set galaxy mode on or off
+ * Galaxy sets data-theme="galaxy" and preserves light/dark via data-color-mode
  * @param {boolean} enabled
  */
 export const setGalaxyMode = (enabled) => {
   localStorage.setItem('galaxyMode', enabled ? 'true' : 'false');
   if (enabled) {
-    document.documentElement.setAttribute('data-theme', 'galaxy-calm');
+    // Preserve current light/dark preference as data-color-mode
+    const savedDarkMode = localStorage.getItem('darkMode');
+    const colorMode = savedDarkMode === 'false' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', 'galaxy');
+    document.documentElement.setAttribute('data-color-mode', colorMode);
   } else {
     // Restore previous light/dark theme
     const savedDarkMode = localStorage.getItem('darkMode');
     const theme = savedDarkMode === 'false' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.removeAttribute('data-color-mode');
   }
 };
 

@@ -10,26 +10,26 @@
 }
 
 /* ========================================
-   GALAXY CALM — HOMEPAGE THEME OVERRIDES
-   Background handled by .galaxy-background div
+   GALAXY — HOMEPAGE THEME OVERRIDES
+   Background handled by galaxy-layer.css on body
    ======================================== */
 
 /* Content stacks above the fixed galaxy background */
-[data-theme="galaxy-calm"] .home-root {
+[data-theme="galaxy"] .home-root {
   position: relative;
   z-index: 1;
   background: transparent;
 }
 
 /* Remove solid backgrounds - let galaxy show through */
-[data-theme="galaxy-calm"] .home-hero,
-[data-theme="galaxy-calm"] .home-why,
-[data-theme="galaxy-calm"] .home-experience,
-[data-theme="galaxy-calm"] .home-final-cta {
+[data-theme="galaxy"] .home-hero,
+[data-theme="galaxy"] .home-why,
+[data-theme="galaxy"] .home-experience,
+[data-theme="galaxy"] .home-final-cta {
   background: transparent;
 }
 
-[data-theme="galaxy-calm"] .home-community {
+[data-theme="galaxy"] .home-community {
   background: transparent;
   border-top: 1px solid rgba(255,255,255,0.08);
   border-bottom: 1px solid rgba(255,255,255,0.08);
@@ -47,12 +47,12 @@
   overflow: hidden;
 }
 
-/* Hero text clarity for Galaxy Calm */
-[data-theme="galaxy-calm"] .home-hero {
+/* Hero text clarity for Galaxy */
+[data-theme="galaxy"] .home-hero {
   background: transparent;
 }
 
-[data-theme="galaxy-calm"] .hero-sub {
+[data-theme="galaxy"] .hero-sub {
   color: rgba(255,255,255,0.9);
   opacity: 1;
 }
@@ -136,7 +136,7 @@
 }
 
 /* Glass card hover for mock post card */
-[data-theme="galaxy-calm"] .mock-post-card:hover {
+[data-theme="galaxy"] .mock-post-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 14px 40px rgba(0,0,0,0.45);
   border-color: rgba(255,255,255,0.18);
@@ -186,7 +186,7 @@
 }
 
 /* Glass card hover for experience cards */
-[data-theme="galaxy-calm"] .experience-card:hover {
+[data-theme="galaxy"] .experience-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 14px 40px rgba(0,0,0,0.45);
   border-color: rgba(255,255,255,0.18);
@@ -243,7 +243,7 @@
 }
 
 /* Glass card hover for community cards */
-[data-theme="galaxy-calm"] .community-card:hover {
+[data-theme="galaxy"] .community-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 14px 40px rgba(0,0,0,0.45);
   border-color: rgba(255,255,255,0.18);
@@ -309,7 +309,7 @@
   font-size: 18px;
 }
 
-/* Button styling now handled by galaxy-calm.css .primary-button */
+/* Button styling now handled by galaxy-layer.css */
 
 /* ========================================
    RESPONSIVE DESIGN

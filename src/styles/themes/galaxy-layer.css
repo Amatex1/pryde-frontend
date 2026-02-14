@@ -1,0 +1,90 @@
+/* ================================
+   GALAXY BACKGROUND LAYER
+   Isolated — No Token Overrides
+================================= */
+
+:root[data-theme="galaxy"] body {
+  background:
+    radial-gradient(
+      ellipse at 50% 20%,
+      rgba(90, 70, 140, 0.25),
+      rgba(10, 10, 20, 0.95)
+    ),
+    url('/assets/midnight-sanctuary.webp') center/cover no-repeat fixed;
+}
+
+/* Subtle star depth */
+:root[data-theme="galaxy"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 3px 3px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* Ensure layout layers sit above galaxy */
+:root[data-theme="galaxy"] #root,
+:root[data-theme="galaxy"] .app-layout,
+:root[data-theme="galaxy"] .page-container {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* ================================
+   LIGHT MODE SPILL-THROUGH
+================================= */
+
+:root[data-theme="galaxy"][data-color-mode="light"] {
+  --surface-primary: rgba(255,255,255,0.92);
+  --surface-secondary: rgba(255,255,255,0.85);
+  --card-background: rgba(255,255,255,0.90);
+  --modal-background: rgba(255,255,255,0.96);
+  --navbar-background: rgba(255,255,255,0.92);
+}
+
+/* Blur for glass effect */
+:root[data-theme="galaxy"] .card,
+:root[data-theme="galaxy"] .feed-post,
+:root[data-theme="galaxy"] .page-header,
+:root[data-theme="galaxy"] .navbar,
+:root[data-theme="galaxy"] .modal-content {
+  backdrop-filter: blur(14px);
+}
+
+
+/* ================================
+   QUIET MODE COMPATIBILITY
+================================= */
+
+/* Quiet Mode dims galaxy intensity */
+:root[data-theme="galaxy"][data-quiet="true"] body {
+  background:
+    radial-gradient(
+      ellipse at 50% 20%,
+      rgba(70, 60, 120, 0.18),
+      rgba(8, 8, 15, 0.97)
+    ),
+    url('/assets/midnight-sanctuary.webp') center/cover no-repeat fixed;
+}
+
+/* Quiet Mode softens glow */
+:root[data-theme="galaxy"][data-quiet="true"] body::before {
+  opacity: 0.2;
+}
+
+
+/* ================================
+   MOBILE SAFE GUARD
+================================= */
+
+@media (max-width: 768px) {
+  :root[data-theme="galaxy"] body {
+    background-attachment: scroll;
+  }
+}
+
