@@ -17,6 +17,29 @@
   padding: 120px 20px;
   text-align: center;
   background: linear-gradient(135deg, var(--color-surface), var(--color-bg));
+  position: relative;
+  overflow: hidden;
+}
+
+/* Atmospheric glow for Midnight Prism theme (desktop only) */
+@media (min-width: 900px) {
+  [data-theme="midnight-prism"] .home-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 50% 30%,
+      rgba(164, 110, 255, 0.12),
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  [data-theme="midnight-prism"] .home-hero > * {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 .home-hero .hero-content {
@@ -94,6 +117,25 @@
   border: 1px solid var(--color-border);
   padding: 24px;
   border-radius: 16px;
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Midnight Prism card elevation (desktop only) */
+@media (min-width: 900px) {
+  [data-theme="midnight-prism"] .mock-post-card {
+    background: var(--surface-1);
+    border-radius: 20px;
+    box-shadow:
+      0 6px 20px rgba(0, 0, 0, 0.35),
+      0 0 18px rgba(164, 110, 255, 0.06);
+  }
+
+  [data-theme="midnight-prism"] .mock-post-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.45),
+      0 0 24px rgba(164, 110, 255, 0.1);
+  }
 }
 
 .mock-post-card h3 {
@@ -136,6 +178,25 @@
   border: 1px solid var(--color-border);
   padding: 24px;
   border-radius: 16px;
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Midnight Prism card elevation (desktop only) */
+@media (min-width: 900px) {
+  [data-theme="midnight-prism"] .experience-card {
+    background: var(--surface-1);
+    border-radius: 20px;
+    box-shadow:
+      0 6px 20px rgba(0, 0, 0, 0.35),
+      0 0 18px rgba(164, 110, 255, 0.06);
+  }
+
+  [data-theme="midnight-prism"] .experience-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.45),
+      0 0 24px rgba(164, 110, 255, 0.1);
+  }
 }
 
 .experience-card h3 {
@@ -185,6 +246,25 @@
   font-size: 18px;
   font-weight: var(--font-weight-bold);
   color: var(--color-text);
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Midnight Prism card elevation (desktop only) */
+@media (min-width: 900px) {
+  [data-theme="midnight-prism"] .community-card {
+    background: var(--surface-1);
+    border-radius: 20px;
+    box-shadow:
+      0 6px 20px rgba(0, 0, 0, 0.35),
+      0 0 18px rgba(164, 110, 255, 0.06);
+  }
+
+  [data-theme="midnight-prism"] .community-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.45),
+      0 0 24px rgba(164, 110, 255, 0.1);
+  }
 }
 
 /* ========================================

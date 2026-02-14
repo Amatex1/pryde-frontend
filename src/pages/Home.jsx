@@ -1,10 +1,28 @@
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 import { isAuthenticated } from '../utils/auth';
 import Footer from '../components/Footer';
 import './Home.css';
 
 function Home() {
   const isAuth = isAuthenticated();
+
+  // Apply Midnight Prism theme only on desktop (>=900px)
+  useEffect(() => {
+    if (window.innerWidth >= 900) {
+      const previousTheme = document.documentElement.getAttribute('data-theme');
+
+      document.documentElement.setAttribute('data-theme', 'midnight-prism');
+
+      return () => {
+        if (previousTheme) {
+          document.documentElement.setAttribute('data-theme', previousTheme);
+        } else {
+          document.documentElement.removeAttribute('data-theme');
+        }
+      };
+    }
+  }, []);
 
   return (
     <div className="home-page">
