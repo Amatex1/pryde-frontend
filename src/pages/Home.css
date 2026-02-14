@@ -19,6 +19,13 @@
     position: relative;
     min-height: 100vh;
     overflow: hidden;
+    /* Softer gradient fallback */
+    background: linear-gradient(
+      180deg,
+      #1A1F3A 0%,
+      #252A45 50%,
+      #2F3550 100%
+    );
   }
 
   /* Full galaxy visible */
@@ -39,7 +46,7 @@
     content: "";
     position: fixed;
     inset: 0;
-    background: rgba(10, 14, 35, 0.35);
+    background: rgba(10, 14, 35, 0.25);
     z-index: -1;
     pointer-events: none;
   }

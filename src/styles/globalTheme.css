@@ -105,22 +105,22 @@
 }
 
 /* ======================================================
-   🌌 MIDNIGHT PRISM V2 THEME (DESKTOP HOMEPAGE ONLY)
-   Magical + Moody Atmosphere with layered backgrounds
+   🌌 MIDNIGHT DREAM THEME (DESKTOP HOMEPAGE ONLY)
+   Softer colors with galaxy background
    ====================================================== */
 
 [data-theme="midnight-prism"] {
-  --bg-deep-base: #0F1022;
-  --bg-deep-mid: #17142E;
-  --bg-deep-accent: #221A3F;
+  --bg-deep-base: #1A1F3A;
+  --bg-deep-mid: #252A45;
+  --bg-deep-accent: #2F3550;
 
-  --surface-1: #1D1933;
-  --surface-2: #241E3F;
-  --surface-3: #2C2350;
+  --surface-1: #2A2F4A;
+  --surface-2: #353A55;
+  --surface-3: #404560;
 
-  --text-primary: #F4F2FF;
-  --text-secondary: rgba(244, 242, 255, 0.78);
-  --text-muted: rgba(244, 242, 255, 0.55);
+  --text-primary: #F7F9FF;
+  --text-secondary: rgba(247, 249, 255, 0.85);
+  --text-muted: rgba(247, 249, 255, 0.65);
 
   --accent-primary: #A46EFF;
   --accent-rose: #FF7AC8;
@@ -134,7 +134,7 @@
   --bg-app: linear-gradient(180deg, var(--bg-deep-base) 0%, var(--bg-deep-mid) 50%, var(--bg-deep-accent) 100%);
   --color-bg: linear-gradient(180deg, var(--bg-deep-base) 0%, var(--bg-deep-mid) 50%, var(--bg-deep-accent) 100%);
   --color-surface: var(--surface-1);
-  --color-border: rgba(164, 110, 255, 0.08);
+  --color-border: rgba(164, 110, 255, 0.12);
   --color-text: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-brand: var(--accent-primary);
