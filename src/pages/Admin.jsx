@@ -46,6 +46,7 @@ function Admin() {
   const [selectedPost, setSelectedPost] = useState(null);
   const [showPostModal, setShowPostModal] = useState(false);
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const listenersSetUpRef = useRef(false);
 
   useEffect(() => {
@@ -585,6 +586,11 @@ function Admin() {
     );
   }
 
+  const handleNavClick = (tab) => {
+    handleTabChange(tab);
+    setSidebarOpen(false); // Close sidebar on mobile after selection
+  };
+
   const renderSidebar = () => {
     return (
       <>
@@ -592,13 +598,13 @@ function Admin() {
           <div className="admin-section-title">Overview</div>
           <button
             className={`admin-nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => handleTabChange('dashboard')}
+            onClick={() => handleNavClick('dashboard')}
           >
             📊 Dashboard
           </button>
           <button
             className={`admin-nav-item ${activeTab === 'activity' ? 'active' : ''}`}
-            onClick={() => handleTabChange('activity')}
+            onClick={() => handleNavClick('activity')}
           >
             📈 Activity
           </button>
@@ -608,19 +614,19 @@ function Admin() {
           <div className="admin-section-title">Moderation</div>
           <button
             className={`admin-nav-item ${activeTab === 'reports' ? 'active' : ''}`}
-            onClick={() => handleTabChange('reports')}
+            onClick={() => handleNavClick('reports')}
           >
             🚩 Reports
           </button>
           <button
             className={`admin-nav-item ${activeTab === 'moderation-v3' ? 'active' : ''}`}
-            onClick={() => handleTabChange('moderation-v3')}
+            onClick={() => handleNavClick('moderation-v3')}
           >
             🛡️ Moderation V5
           </button>
           <button
             className={`admin-nav-item ${activeTab === 'blocks' ? 'active' : ''}`}
-            onClick={() => handleTabChange('blocks')}
+            onClick={() => handleNavClick('blocks')}
           >
             🚫 Blocks
           </button>
@@ -630,13 +636,13 @@ function Admin() {
           <div className="admin-section-title">User Management</div>
           <button
             className={`admin-nav-item ${activeTab === 'users' ? 'active' : ''}`}
-            onClick={() => handleTabChange('users')}
+            onClick={() => handleNavClick('users')}
           >
             👥 Users
           </button>
           <button
             className={`admin-nav-item ${activeTab === 'badges' ? 'active' : ''}`}
-            onClick={() => handleTabChange('badges')}
+            onClick={() => handleNavClick('badges')}
           >
             🏅 Badges
           </button>
@@ -646,7 +652,7 @@ function Admin() {
           <div className="admin-section-title">Platform & Security</div>
           <button
             className={`admin-nav-item ${activeTab === 'security' ? 'active' : ''}`}
-            onClick={() => handleTabChange('security')}
+            onClick={() => handleNavClick('security')}
           >
             🔒 Security
           </button>
@@ -733,9 +739,27 @@ function Admin() {
     <div className="page-container">
       <Navbar onMenuClick={onMenuOpen} />
       <div className="admin-layout">
-        <aside className="admin-sidebar">
+        {/* Mobile Menu Toggle */}
+        <button
+          className="admin-mobile-toggle"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          aria-label="Toggle navigation"
+        >
+          {sidebarOpen ? '✕' : '☰'} Menu
+        </button>
+
+        <aside className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
           {renderSidebar()}
         </aside>
+
+        {/* Overlay for mobile */}
+        {sidebarOpen && (
+          <div
+            className="admin-sidebar-overlay"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
         <main className="admin-content">
           {renderSelectedTab()}
         </main>
@@ -1433,13 +1457,25 @@ function ActivityTab({ activity, onViewPost }) {
 
 // Security Tab Component
 function SecurityTab({ logs, stats, onResolve }) {
-  const [filter, setFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [openMenuId, setOpenMenuId] = useState(null);
+
+  const toggleActionMenu = (id) => {
+    setOpenMenuId(prev => prev === id ? null : id);
+  };
 
   const filteredLogs = logs.filter(log => {
-    if (filter === 'all') return true;
-    if (filter === 'unresolved') return !log.resolved;
-    if (filter === 'underage') return log.type.includes('underage');
-    return log.type === filter;
+    // Status filter
+    if (statusFilter === 'unresolved' && log.resolved) return false;
+    if (statusFilter === 'resolved' && !log.resolved) return false;
+
+    // Type filter
+    if (typeFilter === 'all') return true;
+    if (typeFilter === 'underage') return log.type.includes('underage');
+    if (typeFilter === 'email_verification') return log.type === 'email_verification';
+    if (typeFilter === 'failed_login') return log.type === 'failed_login';
+    return log.type === typeFilter;
   });
 
   const getSeverityColor = (severity) => {
@@ -1491,24 +1527,55 @@ function SecurityTab({ logs, stats, onResolve }) {
       )}
 
       <div className="security-filters">
-        <button
-          className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-          onClick={() => setFilter('all')}
-        >
-          All ({logs.length})
-        </button>
-        <button
-          className={`filter-btn ${filter === 'unresolved' ? 'active' : ''}`}
-          onClick={() => setFilter('unresolved')}
-        >
-          Unresolved ({logs.filter(l => !l.resolved).length})
-        </button>
-        <button
-          className={`filter-btn ${filter === 'underage' ? 'active' : ''}`}
-          onClick={() => setFilter('underage')}
-        >
-          Underage ({logs.filter(l => l.type.includes('underage')).length})
-        </button>
+        <div className="filter-group">
+          <label className="filter-label">Status:</label>
+          <button
+            className={`filter-btn ${statusFilter === 'all' ? 'active' : ''}`}
+            onClick={() => setStatusFilter('all')}
+          >
+            All ({logs.length})
+          </button>
+          <button
+            className={`filter-btn ${statusFilter === 'unresolved' ? 'active' : ''}`}
+            onClick={() => setStatusFilter('unresolved')}
+          >
+            Unresolved ({logs.filter(l => !l.resolved).length})
+          </button>
+          <button
+            className={`filter-btn ${statusFilter === 'resolved' ? 'active' : ''}`}
+            onClick={() => setStatusFilter('resolved')}
+          >
+            Resolved ({logs.filter(l => l.resolved).length})
+          </button>
+        </div>
+
+        <div className="filter-group">
+          <label className="filter-label">Type:</label>
+          <button
+            className={`filter-btn ${typeFilter === 'all' ? 'active' : ''}`}
+            onClick={() => setTypeFilter('all')}
+          >
+            All Types
+          </button>
+          <button
+            className={`filter-btn ${typeFilter === 'underage' ? 'active' : ''}`}
+            onClick={() => setTypeFilter('underage')}
+          >
+            Underage ({logs.filter(l => l.type.includes('underage')).length})
+          </button>
+          <button
+            className={`filter-btn ${typeFilter === 'email_verification' ? 'active' : ''}`}
+            onClick={() => setTypeFilter('email_verification')}
+          >
+            Email Verification ({logs.filter(l => l.type === 'email_verification').length})
+          </button>
+          <button
+            className={`filter-btn ${typeFilter === 'failed_login' ? 'active' : ''}`}
+            onClick={() => setTypeFilter('failed_login')}
+          >
+            Failed Logins ({logs.filter(l => l.type === 'failed_login').length})
+          </button>
+        </div>
       </div>
 
       <div className="security-logs-list">
@@ -1565,12 +1632,34 @@ function SecurityTab({ logs, stats, onResolve }) {
                   {log.notes && <p className="log-notes"><strong>Notes:</strong> {log.notes}</p>}
                 </div>
               ) : (
-                <button
-                  className="btn-resolve-log"
-                  onClick={() => onResolve(log._id)}
-                >
-                  Mark as Resolved
-                </button>
+                <div className="admin-actions">
+                  <button
+                    className="admin-action-trigger"
+                    onClick={() => toggleActionMenu(log._id)}
+                    title="Actions"
+                  >
+                    ⋯
+                  </button>
+
+                  {openMenuId === log._id && (
+                    <div className="admin-action-menu">
+                      <button onClick={() => {
+                        onResolve(log._id);
+                        setOpenMenuId(null);
+                      }}>
+                        ✅ Mark as Resolved
+                      </button>
+                      <button onClick={() => {
+                        // Copy log details to clipboard
+                        const details = `Type: ${log.type}\nEmail: ${log.email || 'N/A'}\nIP: ${log.ipAddress || 'N/A'}\nDate: ${new Date(log.createdAt).toLocaleString()}`;
+                        navigator.clipboard.writeText(details);
+                        setOpenMenuId(null);
+                      }}>
+                        📋 Copy Details
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           ))
