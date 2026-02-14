@@ -24,6 +24,10 @@ function Admin() {
     return params.get('tab') || 'dashboard';
   };
 
+  const toggleActionMenu = (id) => {
+    setOpenMenuId(prev => prev === id ? null : id);
+  };
+
   const [activeTab, setActiveTab] = useState(getTabFromUrl());
   const [stats, setStats] = useState(null);
   const [reports, setReports] = useState([]);
@@ -41,6 +45,7 @@ function Admin() {
   const [selectedReport, setSelectedReport] = useState(null);
   const [selectedPost, setSelectedPost] = useState(null);
   const [showPostModal, setShowPostModal] = useState(false);
+  const [openMenuId, setOpenMenuId] = useState(null);
   const listenersSetUpRef = useRef(false);
 
   useEffect(() => {
@@ -580,137 +585,160 @@ function Admin() {
     );
   }
 
-  return (
-    <div className="page-container">
-      <Navbar onMenuClick={onMenuOpen} />
-      <div className="admin-container">
-        <div className="admin-header">
-          <h1>🛡️ Admin Panel</h1>
-          <p className="admin-subtitle">Platform Management & Moderation</p>
-        </div>
-
-        <div className="admin-tabs" role="tablist" aria-label="Admin sections">
-          <button id="tab-dashboard" aria-controls="content-dashboard" role="tab" aria-selected={activeTab === 'dashboard'} className={`admin-tab ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => handleTabChange('dashboard')} >
+  const renderSidebar = () => {
+    return (
+      <>
+        <div className="admin-section">
+          <div className="admin-section-title">Overview</div>
+          <button
+            className={`admin-nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
+            onClick={() => handleTabChange('dashboard')}
+          >
             📊 Dashboard
           </button>
-          <button id="tab-reports" aria-controls="content-reports" role="tab" aria-selected={activeTab === 'reports'} className={`admin-tab ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => handleTabChange('reports')} >
+          <button
+            className={`admin-nav-item ${activeTab === 'activity' ? 'active' : ''}`}
+            onClick={() => handleTabChange('activity')}
+          >
+            📈 Activity
+          </button>
+        </div>
+
+        <div className="admin-section">
+          <div className="admin-section-title">Moderation</div>
+          <button
+            className={`admin-nav-item ${activeTab === 'reports' ? 'active' : ''}`}
+            onClick={() => handleTabChange('reports')}
+          >
             🚩 Reports
           </button>
           <button
-            className={`admin-tab ${activeTab === 'users' ? 'active' : ''}`}
+            className={`admin-nav-item ${activeTab === 'moderation-v3' ? 'active' : ''}`}
+            onClick={() => handleTabChange('moderation-v3')}
+          >
+            🛡️ Moderation V5
+          </button>
+          <button
+            className={`admin-nav-item ${activeTab === 'blocks' ? 'active' : ''}`}
+            onClick={() => handleTabChange('blocks')}
+          >
+            🚫 Blocks
+          </button>
+        </div>
+
+        <div className="admin-section">
+          <div className="admin-section-title">User Management</div>
+          <button
+            className={`admin-nav-item ${activeTab === 'users' ? 'active' : ''}`}
             onClick={() => handleTabChange('users')}
           >
             👥 Users
           </button>
           <button
-            className={`admin-tab ${activeTab === 'blocks' ? 'active' : ''}`}
-            onClick={() => handleTabChange('blocks')}
-          >
-            🚫 Blocks
-          </button>
-          <button
-            className={`admin-tab ${activeTab === 'activity' ? 'active' : ''}`}
-            onClick={() => handleTabChange('activity')}
-          >
-            📈 Activity
-          </button>
-          <button
-            className={`admin-tab ${activeTab === 'security' ? 'active' : ''}`}
-            onClick={() => handleTabChange('security')}
-          >
-            🔒 Security
-          </button>
-          <button
-            className={`admin-tab ${activeTab === 'badges' ? 'active' : ''}`}
+            className={`admin-nav-item ${activeTab === 'badges' ? 'active' : ''}`}
             onClick={() => handleTabChange('badges')}
           >
             🏅 Badges
           </button>
-          {/* PRYDE_LEGACY_MODERATION_PASSIVE_MODE: Legacy moderation tab hidden
-              Legacy system is now in PASSIVE mode - V5 is the sole enforcement authority.
-              Tab kept for backward compatibility but unreachable via nav.
-          <button
-            className={`admin-tab ${activeTab === 'moderation' ? 'active' : ''}`}
-            onClick={() => handleTabChange('moderation')}
-          >
-            🔧 Moderation
-          </button>
-          */}
-          <button
-            className={`admin-tab ${activeTab === 'moderation-v3' ? 'active' : ''}`}
-            onClick={() => handleTabChange('moderation-v3')}
-          >
-            🛡️ Moderation V5
-          </button>
         </div>
 
-        <div className="admin-content">
-{activeTab === 'dashboard' && stats && (
-            <section id="content-dashboard" role="region" aria-labelledby="tab-dashboard"><DashboardTab stats={stats} /></section>
-          )}
-          {activeTab === 'reports' && (
-            <ReportsTab reports={reports} onResolve={handleResolveReport} />
-          )}
-          {activeTab === 'users' && (
-            <UsersTab
-              users={users}
-              badges={badges}
-              onSuspend={handleSuspendUser}
-              onBan={handleBanUser}
-              onUnsuspend={handleUnsuspendUser}
-              onUnban={handleUnbanUser}
-              onChangeRole={handleChangeRole}
-              onSendPasswordReset={handleSendPasswordReset}
-              onUpdateEmail={handleUpdateEmail}
-              onAssignBadge={handleAssignBadge}
-              onRevokeBadge={handleRevokeBadge}
-            />
-          )}
-          {activeTab === 'blocks' && (
-            <BlocksTab blocks={blocks} />
-          )}
-          {activeTab === 'activity' && activity && (
-            <ActivityTab activity={activity} onViewPost={handleViewPost} />
-          )}
-          {activeTab === 'security' && (
-            loading ? (
-              <div className="loading-state">
-                <div className="shimmer" style={{ height: '100px', borderRadius: '12px', marginBottom: '1rem' }}></div>
-                <div className="shimmer" style={{ height: '60px', borderRadius: '12px', marginBottom: '1rem' }}></div>
-                <div className="shimmer" style={{ height: '60px', borderRadius: '12px', marginBottom: '1rem' }}></div>
-                <div className="shimmer" style={{ height: '60px', borderRadius: '12px' }}></div>
-              </div>
-            ) : (
-              <SecurityTab
-                logs={securityLogs}
-                stats={securityStats}
-                onResolve={handleResolveSecurityLog}
-              />
-            )
-          )}
-          {activeTab === 'badges' && (
-            <BadgesTab
-              badges={badges}
-              onRefresh={() => loadTabData()}
-            />
-          )}
-          {activeTab === 'moderation' && (
-            <ModerationTab
-              settings={moderationSettings}
-              history={moderationHistory}
-              onRefresh={() => loadTabData()}
-              showAlert={showAlert}
-              showConfirm={showConfirm}
-              showPrompt={showPrompt}
-            />
-          )}
-          {activeTab === 'moderation-v3' && (
-            <ModerationV3Panel
-              showAlert={showAlert}
-              showConfirm={showConfirm}
-            />
-          )}
+        <div className="admin-section">
+          <div className="admin-section-title">Platform & Security</div>
+          <button
+            className={`admin-nav-item ${activeTab === 'security' ? 'active' : ''}`}
+            onClick={() => handleTabChange('security')}
+          >
+            🔒 Security
+          </button>
         </div>
+      </>
+    );
+  };
+
+  const renderSelectedTab = () => {
+    return (
+      <>
+        {activeTab === 'dashboard' && stats && (
+          <section id="content-dashboard" role="region" aria-labelledby="tab-dashboard">
+            <DashboardTab stats={stats} />
+          </section>
+        )}
+        {activeTab === 'reports' && (
+          <ReportsTab reports={reports} onResolve={handleResolveReport} />
+        )}
+        {activeTab === 'users' && (
+          <UsersTab
+            users={users}
+            badges={badges}
+            onSuspend={handleSuspendUser}
+            onBan={handleBanUser}
+            onUnsuspend={handleUnsuspendUser}
+            onUnban={handleUnbanUser}
+            onChangeRole={handleChangeRole}
+            onSendPasswordReset={handleSendPasswordReset}
+            onUpdateEmail={handleUpdateEmail}
+            onAssignBadge={handleAssignBadge}
+            onRevokeBadge={handleRevokeBadge}
+          />
+        )}
+        {activeTab === 'blocks' && (
+          <BlocksTab blocks={blocks} />
+        )}
+        {activeTab === 'activity' && activity && (
+          <ActivityTab activity={activity} onViewPost={handleViewPost} />
+        )}
+        {activeTab === 'security' && (
+          loading ? (
+            <div className="loading-state">
+              <div className="shimmer" style={{ height: '100px', borderRadius: '12px', marginBottom: '1rem' }}></div>
+              <div className="shimmer" style={{ height: '60px', borderRadius: '12px', marginBottom: '1rem' }}></div>
+              <div className="shimmer" style={{ height: '60px', borderRadius: '12px', marginBottom: '1rem' }}></div>
+              <div className="shimmer" style={{ height: '60px', borderRadius: '12px' }}></div>
+            </div>
+          ) : (
+            <SecurityTab
+              logs={securityLogs}
+              stats={securityStats}
+              onResolve={handleResolveSecurityLog}
+            />
+          )
+        )}
+        {activeTab === 'badges' && (
+          <BadgesTab
+            badges={badges}
+            onRefresh={() => loadTabData()}
+          />
+        )}
+        {activeTab === 'moderation' && (
+          <ModerationTab
+            settings={moderationSettings}
+            history={moderationHistory}
+            onRefresh={() => loadTabData()}
+            showAlert={showAlert}
+            showConfirm={showConfirm}
+            showPrompt={showPrompt}
+          />
+        )}
+        {activeTab === 'moderation-v3' && (
+          <ModerationV3Panel
+            showAlert={showAlert}
+            showConfirm={showConfirm}
+          />
+        )}
+      </>
+    );
+  };
+
+  return (
+    <div className="page-container">
+      <Navbar onMenuClick={onMenuOpen} />
+      <div className="admin-layout">
+        <aside className="admin-sidebar">
+          {renderSidebar()}
+        </aside>
+        <main className="admin-content">
+          {renderSelectedTab()}
+        </main>
       </div>
 
       <CustomModal
@@ -1056,6 +1084,11 @@ function BadgeManagementModal({ user, badges = [], onAssignBadge, onRevokeBadge,
 // Users Tab Component
 function UsersTab({ users, badges = [], onSuspend, onBan, onUnsuspend, onUnban, onChangeRole, onSendPasswordReset, onUpdateEmail, onAssignBadge, onRevokeBadge }) {
   const [badgeModalUser, setBadgeModalUser] = useState(null);
+  const [openMenuId, setOpenMenuId] = useState(null);
+
+  const toggleActionMenu = (id) => {
+    setOpenMenuId(prev => prev === id ? null : id);
+  };
 
   return (
     <div className="users-list">
@@ -1181,33 +1214,56 @@ function UsersTab({ users, badges = [], onSuspend, onBan, onUnsuspend, onUnban, 
                       🛡️ Platform Owner (Protected)
                     </span>
                   ) : (
-                    <>
+                    <div className="admin-actions">
                       <button
-                        className="btn-action"
-                        onClick={() => onSendPasswordReset(user._id, user.email, user.username)}
-                        title="Send password reset link"
+                        className="admin-action-trigger"
+                        onClick={() => toggleActionMenu(user._id)}
+                        title="Actions"
                       >
-                        🔑 Reset Password
+                        ⋯
                       </button>
-                      {user.isSuspended ? (
-                        <button className="btn-action" onClick={() => onUnsuspend(user._id)}>
-                          🔓 Unsuspend
-                        </button>
-                      ) : (
-                        <button className="btn-action" onClick={() => onSuspend(user._id)}>
-                          ⏸️ Suspend
-                        </button>
+
+                      {openMenuId === user._id && (
+                        <div className="admin-action-menu">
+                          <button onClick={() => {
+                            onSendPasswordReset(user._id, user.email, user.username);
+                            setOpenMenuId(null);
+                          }}>
+                            🔑 Reset Password
+                          </button>
+                          {user.isSuspended ? (
+                            <button onClick={() => {
+                              onUnsuspend(user._id);
+                              setOpenMenuId(null);
+                            }}>
+                              🔓 Unsuspend
+                            </button>
+                          ) : (
+                            <button onClick={() => {
+                              onSuspend(user._id);
+                              setOpenMenuId(null);
+                            }}>
+                              ⏸️ Suspend
+                            </button>
+                          )}
+                          {user.isBanned ? (
+                            <button onClick={() => {
+                              onUnban(user._id);
+                              setOpenMenuId(null);
+                            }}>
+                              ✅ Unban
+                            </button>
+                          ) : (
+                            <button onClick={() => {
+                              onBan(user._id);
+                              setOpenMenuId(null);
+                            }}>
+                              🚫 Ban
+                            </button>
+                          )}
+                        </div>
                       )}
-                      {user.isBanned ? (
-                        <button className="btn-action" onClick={() => onUnban(user._id)}>
-                          ✅ Unban
-                        </button>
-                      ) : (
-                        <button className="btn-action btn-danger" onClick={() => onBan(user._id)}>
-                          🚫 Ban
-                        </button>
-                      )}
-                    </>
+                    </div>
                   )}
                 </td>
               </tr>
