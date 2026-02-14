@@ -10,6 +10,49 @@
 }
 
 /* ========================================
+   MIDNIGHT PRISM V2 - ENVIRONMENTAL BACKGROUND LAYER
+   Desktop only (>=900px)
+   ======================================== */
+
+@media (min-width: 900px) {
+  [data-theme="midnight-prism"] .home-page {
+    position: relative;
+    background:
+      linear-gradient(180deg,
+        var(--bg-deep-base) 0%,
+        var(--bg-deep-mid) 50%,
+        var(--bg-deep-accent) 100%
+      );
+    overflow: hidden;
+  }
+
+  /* Side vignette darkening + top glow */
+  [data-theme="midnight-prism"] .home-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 50% 30%,
+        rgba(164, 110, 255, 0.18),
+        transparent 55%
+      ),
+      linear-gradient(to right,
+        rgba(0,0,0,0.45),
+        transparent 25%,
+        transparent 75%,
+        rgba(0,0,0,0.45)
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  [data-theme="midnight-prism"] .home-page > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* ========================================
    STEP 1: HERO SECTION
    ======================================== */
 
@@ -32,6 +75,26 @@
       rgba(164, 110, 255, 0.12),
       transparent 60%
     );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Hero light source (magical layer) */
+  [data-theme="midnight-prism"] .home-hero::after {
+    content: "";
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 600px;
+    background: radial-gradient(
+      circle,
+      rgba(164,110,255,0.25),
+      rgba(164,110,255,0.12),
+      transparent 70%
+    );
+    filter: blur(80px);
     pointer-events: none;
     z-index: 0;
   }
@@ -120,21 +183,22 @@
   transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Midnight Prism card elevation (desktop only) */
+/* Midnight Prism V2 - Stronger card separation (desktop only) */
 @media (min-width: 900px) {
   [data-theme="midnight-prism"] .mock-post-card {
     background: var(--surface-1);
-    border-radius: 20px;
+    border-radius: 22px;
+    border: 1px solid rgba(164,110,255,0.08);
     box-shadow:
-      0 6px 20px rgba(0, 0, 0, 0.35),
-      0 0 18px rgba(164, 110, 255, 0.06);
+      0 8px 28px rgba(0, 0, 0, 0.45),
+      0 0 30px rgba(164, 110, 255, 0.05);
   }
 
   [data-theme="midnight-prism"] .mock-post-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     box-shadow:
-      0 10px 30px rgba(0, 0, 0, 0.45),
-      0 0 24px rgba(164, 110, 255, 0.1);
+      0 14px 40px rgba(0, 0, 0, 0.55),
+      0 0 36px rgba(164, 110, 255, 0.12);
   }
 }
 
@@ -181,21 +245,22 @@
   transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Midnight Prism card elevation (desktop only) */
+/* Midnight Prism V2 - Stronger card separation (desktop only) */
 @media (min-width: 900px) {
   [data-theme="midnight-prism"] .experience-card {
     background: var(--surface-1);
-    border-radius: 20px;
+    border-radius: 22px;
+    border: 1px solid rgba(164,110,255,0.08);
     box-shadow:
-      0 6px 20px rgba(0, 0, 0, 0.35),
-      0 0 18px rgba(164, 110, 255, 0.06);
+      0 8px 28px rgba(0, 0, 0, 0.45),
+      0 0 30px rgba(164, 110, 255, 0.05);
   }
 
   [data-theme="midnight-prism"] .experience-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     box-shadow:
-      0 10px 30px rgba(0, 0, 0, 0.45),
-      0 0 24px rgba(164, 110, 255, 0.1);
+      0 14px 40px rgba(0, 0, 0, 0.55),
+      0 0 36px rgba(164, 110, 255, 0.12);
   }
 }
 
@@ -249,21 +314,22 @@
   transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Midnight Prism card elevation (desktop only) */
+/* Midnight Prism V2 - Stronger card separation (desktop only) */
 @media (min-width: 900px) {
   [data-theme="midnight-prism"] .community-card {
     background: var(--surface-1);
-    border-radius: 20px;
+    border-radius: 22px;
+    border: 1px solid rgba(164,110,255,0.08);
     box-shadow:
-      0 6px 20px rgba(0, 0, 0, 0.35),
-      0 0 18px rgba(164, 110, 255, 0.06);
+      0 8px 28px rgba(0, 0, 0, 0.45),
+      0 0 30px rgba(164, 110, 255, 0.05);
   }
 
   [data-theme="midnight-prism"] .community-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     box-shadow:
-      0 10px 30px rgba(0, 0, 0, 0.45),
-      0 0 24px rgba(164, 110, 255, 0.1);
+      0 14px 40px rgba(0, 0, 0, 0.55),
+      0 0 36px rgba(164, 110, 255, 0.12);
   }
 }
 
@@ -325,6 +391,30 @@
 .btn-primary.large {
   padding: 14px 36px;
   font-size: 18px;
+}
+
+/* ========================================
+   MIDNIGHT PRISM V2 - MAGICAL BUTTON GLOW
+   Desktop only (>=900px)
+   ======================================== */
+
+@media (min-width: 900px) {
+  [data-theme="midnight-prism"] .btn-primary {
+    background: linear-gradient(
+      135deg,
+      var(--accent-primary),
+      #8F63FF
+    );
+    box-shadow: 0 0 18px var(--accent-glow-soft);
+    transition: all 250ms ease;
+  }
+
+  [data-theme="midnight-prism"] .btn-primary:hover {
+    box-shadow:
+      0 0 28px var(--accent-glow-strong),
+      0 0 45px rgba(164,110,255,0.2);
+    transform: translateY(-2px);
+  }
 }
 
 /* ========================================
