@@ -3,52 +3,64 @@
    Emotionally-Driven Design
    ======================================== */
 
-.home-page {
+.home-root {
   min-height: 100vh;
   min-height: 100dvh;
   background: var(--color-bg);
 }
 
 /* ========================================
-   MIDNIGHT PRISM V2 - ENVIRONMENTAL BACKGROUND LAYER
+   MIDNIGHT SANCTUARY - FIXED INDIGO ATMOSPHERIC BACKGROUND
    Desktop only (>=900px)
    ======================================== */
 
 @media (min-width: 900px) {
-  [data-theme="midnight-prism"] .home-page {
+  [data-theme="midnight-prism"] .home-root {
     position: relative;
+    min-height: 100vh;
     background:
-      linear-gradient(180deg,
-        var(--bg-deep-base) 0%,
-        var(--bg-deep-mid) 50%,
-        var(--bg-deep-accent) 100%
+      linear-gradient(
+        180deg,
+        #0C1024 0%,
+        #111633 50%,
+        #141A3A 100%
       );
     overflow: hidden;
   }
 
-  /* Side vignette darkening + top glow */
-  [data-theme="midnight-prism"] .home-page::before {
+  /* Fixed atmospheric layer */
+  [data-theme="midnight-prism"] .home-root::before {
     content: "";
-    position: absolute;
+    position: fixed;
     inset: 0;
     background:
-      radial-gradient(circle at 50% 30%,
-        rgba(164, 110, 255, 0.18),
-        transparent 55%
-      ),
-      linear-gradient(to right,
-        rgba(0,0,0,0.45),
-        transparent 25%,
-        transparent 75%,
-        rgba(0,0,0,0.45)
-      );
+      url("/assets/midnight-sanctuary.webp")
+      center center / cover no-repeat;
+    opacity: 0.22;
+    filter: saturate(0.85) brightness(0.75);
+    z-index: -2;
     pointer-events: none;
-    z-index: 0;
   }
 
-  [data-theme="midnight-prism"] .home-page > * {
-    position: relative;
-    z-index: 1;
+  /* Readability layer */
+  [data-theme="midnight-prism"] .home-root::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 12, 30, 0.55);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* Enhanced text contrast for Midnight Sanctuary */
+  [data-theme="midnight-prism"] .home-root h1,
+  [data-theme="midnight-prism"] .home-root h2,
+  [data-theme="midnight-prism"] .home-root h3 {
+    color: #F3F5FF;
+  }
+
+  [data-theme="midnight-prism"] .home-root p {
+    color: rgba(243, 245, 255, 0.78);
   }
 }
 

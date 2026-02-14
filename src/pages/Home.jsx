@@ -25,7 +25,7 @@ function Home() {
   }, []);
 
   return (
-    <div className="home-page">
+    <div className="home-root">
       {/* STEP 1: Hero Section */}
       <section className="home-hero">
         <div className="hero-content">
