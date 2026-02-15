@@ -94,6 +94,37 @@ html[data-galaxy="true"] .modal-content {
 }
 
 
+/* =========================
+   Galaxy Sidebar Glass
+========================= */
+
+[data-galaxy="true"] .feed-sidebar {
+  background: rgba(15, 16, 33, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  padding: 1.25rem;
+}
+
+/* Light mode variant */
+[data-galaxy="true"][data-theme="light"] .feed-sidebar {
+  background: rgba(255, 255, 255, 0.75);
+}
+
+/* Sidebar text readability */
+[data-galaxy="true"] .feed-sidebar h3,
+[data-galaxy="true"] .feed-sidebar h4 {
+  font-weight: 600;
+}
+
+[data-galaxy="true"] .feed-sidebar p,
+[data-galaxy="true"] .feed-sidebar a {
+  opacity: 0.95;
+}
+
+
 /* ================================
    QUIET MODE COMPATIBILITY
 ================================= */

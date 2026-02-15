@@ -24,8 +24,8 @@
 @media (min-width: 1024px) {
   .feed-layout {
     display: grid;
-    grid-template-columns: minmax(600px, 820px) 300px; /* Wider feed: 600-820px, fixed sidebar: 300px */
-    gap: 32px; /* More breathing room */
+    grid-template-columns: 1fr minmax(300px, 360px); /* Flexible feed + sidebar */
+    gap: 2rem;
     justify-content: flex-start; /* LEFT-WEIGHTED - not centered */
     align-items: start;
     max-width: 1400px;
@@ -45,11 +45,17 @@
   padding: var(--space-md);  /* Compact density: 12px */
 }
 
-.feed-sidebar {
-  position: sticky;
-  top: 88px; /* Below navbar */
-  align-self: start;
-  width: 100%;
+/* Desktop sticky sidebar — stays in view while scrolling feed */
+@media (min-width: 1024px) {
+  .feed-sidebar {
+    position: sticky;
+    top: calc(var(--navbar-height, 72px) + 1rem);
+    align-self: start;
+    height: fit-content;
+    max-height: calc(100vh - var(--navbar-height, 72px) - 2rem);
+    overflow-y: auto;
+    width: 100%;
+  }
 }
 
 /* FIX: Hide sidebar on tablet/mobile (500px-1023px), show in hamburger menu instead */
@@ -2797,11 +2803,7 @@ html:not([data-theme]) .post-actions {
 }
 
 .feed-sidebar {
-  position: sticky;
-  top: 100px;
-  height: fit-content;
   min-width: 0; /* Prevent overflow */
-  overflow: hidden; /* Prevent content from breaking out */
   /* Visually lighter than main feed - secondary attention */
   opacity: 0.98;
 }
