@@ -4,8 +4,8 @@
  * Displays users the current user might want to connect with,
  * based on shared interests, location, or mutual connections.
  *
- * QUIET MODE: Component is completely hidden to enforce
- * "No algorithmic discovery" contract.
+ * QUIET MODE: Component remains visible with reduced visual
+ * prominence (opacity) to preserve feature accessibility.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -18,11 +18,7 @@ import OptimizedImage from '../OptimizedImage';
 import './SuggestedConnections.css';
 
 export default function SuggestedConnections() {
-  // QUIET MODE: Fully disappear - no placeholder, no empty container
   const isQuietMode = getQuietMode();
-  if (isQuietMode) {
-    return null;
-  }
 
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -67,7 +63,7 @@ export default function SuggestedConnections() {
 
   if (loading) {
     return (
-      <div className="suggested-connections">
+      <div className={`suggested-connections${isQuietMode ? ' quiet-softened' : ''}`}>
         <h3 className="sidebar-title">Suggested Connections</h3>
         <div className="suggested-loading">
           <div className="suggested-skeleton" />
@@ -80,7 +76,7 @@ export default function SuggestedConnections() {
 
   if (suggestions.length === 0) {
     return (
-      <div className="suggested-connections">
+      <div className={`suggested-connections${isQuietMode ? ' quiet-softened' : ''}`}>
         <h3 className="sidebar-title">Suggested Connections</h3>
         <p className="suggested-empty">
           No suggestions right now. Check back later!
@@ -90,7 +86,7 @@ export default function SuggestedConnections() {
   }
 
   return (
-    <div className="suggested-connections">
+    <div className={`suggested-connections${isQuietMode ? ' quiet-softened' : ''}`}>
       <h3 className="sidebar-title">Suggested Connections</h3>
       <p className="suggested-subtitle">People you might want to know</p>
       

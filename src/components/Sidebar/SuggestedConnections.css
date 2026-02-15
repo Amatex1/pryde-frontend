@@ -1,6 +1,6 @@
 /**
  * SuggestedConnections Styles
- * 
+ *
  * Clean, minimal design matching Pryde sidebar aesthetic
  */
 
@@ -191,3 +191,8 @@
   padding: 1rem;
 }
 
+
+/* Quiet mode: reduce visual prominence, keep widget accessible */
+[data-quiet="true"] .suggested-connections {
+  opacity: 0.65;
+}

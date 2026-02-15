@@ -632,41 +632,46 @@ html {
 }
 
 /* ==================================================
-   NAVIGATION: QUIET MODE SIMPLIFICATION
-   Hide non-essential nav items to reduce density
-   Core items remain: Feed, Messages, Profile, Settings
+   NAVIGATION: QUIET MODE - REDUCED EMPHASIS
+   All nav items remain accessible; visual prominence
+   is reduced so the interface feels calmer.
+   Quiet mode must never remove route access.
    ================================================== */
 
-/* Hide Discover/Groups link in navigation */
+/* Reduce emphasis on Discover/Groups/Events nav links */
 [data-quiet="true"] .mobile-menu-item[href="/discover"],
 [data-quiet="true"] .mobile-menu-item[href="/groups"],
-[data-quiet="true"] .nav-link[href="/discover"],
-[data-quiet="true"] .nav-link[href="/groups"] {
-  display: none !important;
-}
-
-/* Hide Events in quiet mode */
 [data-quiet="true"] .mobile-menu-item[href="/events"],
+[data-quiet="true"] .nav-link[href="/discover"],
+[data-quiet="true"] .nav-link[href="/groups"],
 [data-quiet="true"] .nav-link[href="/events"] {
-  display: none !important;
+  opacity: 0.6;
+  font-size: 0.95em;
+  transition: opacity 0.2s ease;
 }
 
-/* Hide "Explore Pryde" section header in mobile menu */
+/* Hover restore for de-emphasised nav links */
+[data-quiet="true"] .mobile-menu-item[href="/discover"]:hover,
+[data-quiet="true"] .mobile-menu-item[href="/groups"]:hover,
+[data-quiet="true"] .mobile-menu-item[href="/events"]:hover,
+[data-quiet="true"] .nav-link[href="/discover"]:hover,
+[data-quiet="true"] .nav-link[href="/groups"]:hover,
+[data-quiet="true"] .nav-link[href="/events"]:hover {
+  opacity: 1;
+}
+
+/* Soften "Explore Pryde" section header in mobile menu */
 [data-quiet="true"] .mobile-menu-section-header {
-  display: none !important;
+  opacity: 0.6;
+  font-size: 0.95em;
+  transition: opacity 0.2s ease;
 }
 
-/* Hide explore links in sidebar */
+/* Soften explore links in sidebar */
 [data-quiet="true"] .explore-links {
-  display: none !important;
-}
-
-/* Ensure core navigation items remain visible */
-[data-quiet="true"] .mobile-menu-item[href="/feed"],
-[data-quiet="true"] .mobile-menu-item[href="/messages"],
-[data-quiet="true"] .mobile-menu-item[href="/settings"],
-[data-quiet="true"] .mobile-menu-item[href*="/profile"] {
-  display: flex !important;
+  opacity: 0.6;
+  font-size: 0.95em;
+  transition: opacity 0.2s ease;
 }
 
 /* No gaps in navigation - use CSS grid for clean layout */
@@ -674,9 +679,11 @@ html {
   gap: 0.5rem;
 }
 
-/* Hide suggested connections link */
+/* Soften suggested connections "See more" link */
 [data-quiet="true"] .suggested-see-more {
-  display: none !important;
+  opacity: 0.6;
+  font-size: 0.95em;
+  transition: opacity 0.2s ease;
 }
 
 /* ==================================================
