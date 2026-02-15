@@ -73,13 +73,18 @@ export default function PhotoRepositionInline({
             transform: `translate(${position.x}px, ${position.y}px) scale(${position.scale})`
           }}
         />
-        <div className="photo-editor-inline-hint">
-          Drag to reposition
-        </div>
+        {type === "cover" && (
+          <div className="photo-editor-inline-hint">
+            Drag to reposition
+          </div>
+        )}
       </div>
 
       {/* Controls bar */}
       <div className="photo-editor-inline-controls">
+        {type === "avatar" && (
+          <span className="photo-editor-inline-hint-bar">Drag to reposition</span>
+        )}
         <div className="photo-editor-inline-zoom">
           <span className="zoom-label">🔍 {zoomPercent}%</span>
           <input
