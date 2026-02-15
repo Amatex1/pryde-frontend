@@ -1,0 +1,81 @@
+.photo-editor-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 25, 0.95);
+  backdrop-filter: blur(20px);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+
+.photo-editor-header {
+  padding: 20px;
+  text-align: center;
+  color: white;
+  font-weight: 500;
+}
+
+.photo-editor-frame {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+}
+
+.photo-editor-frame:active {
+  cursor: grabbing;
+}
+
+.photo-editor-frame.cover img {
+  width: 120%;
+  max-height: 100%;
+}
+
+.photo-editor-frame.avatar {
+  border-radius: 50%;
+}
+
+.photo-editor-frame.avatar img {
+  width: 140%;
+}
+
+.photo-editor-frame img {
+  user-select: none;
+  pointer-events: none;
+  transition: transform 0.05s linear;
+}
+
+.photo-editor-controls {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  gap: 12px;
+  background: rgba(20, 24, 50, 0.85);
+  backdrop-filter: blur(12px);
+}
+
+.photo-editor-controls .spacer {
+  flex: 1;
+}
+
+.photo-editor-controls button {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.photo-editor-controls button.primary {
+  background: #6C5CE7;
+  color: white;
+}
+
+.photo-editor-controls button.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
