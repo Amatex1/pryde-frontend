@@ -7,7 +7,7 @@ import ProfileUrlSetting from '../components/ProfileUrlSetting'; // Custom profi
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
 import { logout, getAuthToken } from '../utils/auth';
-import { setQuietMode, setQuietSubToggle, getQuietSubToggle, setCursorStyle, getCursorStyle, getCursorStyleOptions, setTextDensity, getTextDensity } from '../utils/themeManager';
+import { getTheme, setTheme as setThemeManager, getGalaxyMode, setGalaxyMode as setGalaxyModeManager, setQuietMode, setQuietSubToggle, getQuietSubToggle, setCursorStyle, getCursorStyle, getCursorStyleOptions, setTextDensity, getTextDensity } from '../utils/themeManager';
 import { useAuth } from '../context/AuthContext';
 import logger from '../utils/logger';
 import {
@@ -39,6 +39,9 @@ function Settings() {
   });
   const [loading, setLoading] = useState(true); // ✅ Start with loading state
   const [message, setMessage] = useState('');
+  // APPEARANCE: Theme and Galaxy state
+  const [currentTheme, setCurrentTheme] = useState(() => getTheme());
+  const [galaxyEnabled, setGalaxyEnabled] = useState(() => getGalaxyMode());
   const [quietModeEnabled, setQuietModeEnabled] = useState(false); // PHASE 2: Quiet Mode
   // QUIET MODE V2: Sub-toggles for granular control
   const [quietVisuals, setQuietVisuals] = useState(true);
@@ -319,6 +322,40 @@ function Settings() {
       // Revert on error
       setTextDensityState(previousDensity);
       setTextDensity(previousDensity);
+    }
+  };
+
+  // APPEARANCE: Handle light mode toggle
+  const handleThemeToggle = async (useLightMode) => {
+    const newTheme = useLightMode ? 'light' : 'dark';
+    try {
+      setCurrentTheme(newTheme);
+      setThemeManager(newTheme);
+      await api.patch('/users/me/settings', { theme: newTheme });
+      setMessage(useLightMode ? 'Light mode enabled' : 'Dark mode enabled');
+    } catch (error) {
+      logger.error('Failed to update theme:', error);
+      setMessage('Failed to update theme');
+      // Revert on error
+      const revert = useLightMode ? 'dark' : 'light';
+      setCurrentTheme(revert);
+      setThemeManager(revert);
+    }
+  };
+
+  // APPEARANCE: Handle galaxy toggle
+  const handleGalaxyToggle = async (enabled) => {
+    try {
+      setGalaxyEnabled(enabled);
+      setGalaxyModeManager(enabled);
+      await api.patch('/users/me/settings', { galaxyMode: enabled });
+      setMessage(enabled ? 'Galaxy background enabled' : 'Galaxy background disabled');
+    } catch (error) {
+      logger.error('Failed to update galaxy mode:', error);
+      setMessage('Failed to update galaxy mode');
+      // Revert on error
+      setGalaxyEnabled(!enabled);
+      setGalaxyModeManager(!enabled);
     }
   };
 
@@ -690,6 +727,46 @@ function Settings() {
                     checked={pushEnabled}
                     onChange={handlePushNotificationToggle}
                     disabled={pushLoading || pushPermission === 'denied'}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* APPEARANCE: Light Mode + Galaxy Mode */}
+          <div className="settings-section">
+            <h2 className="section-title">🎨 Appearance</h2>
+            <p className="section-description">
+              Customize your visual experience. Dark + Galaxy is the default Pryde identity.
+            </p>
+
+            <div className="notification-settings">
+              <div className="notification-item">
+                <div className="notification-info">
+                  <h3>Light Mode</h3>
+                  <p>For accessibility and bright environments. Dark mode is the default.</p>
+                </div>
+                <label className="toggle-switch" aria-label="Toggle light mode for accessibility">
+                  <input
+                    type="checkbox"
+                    checked={currentTheme === 'light'}
+                    onChange={(e) => handleThemeToggle(e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div className="notification-item">
+                <div className="notification-info">
+                  <h3>Galaxy Background</h3>
+                  <p>Immersive galaxy background for a unique visual experience.</p>
+                </div>
+                <label className="toggle-switch" aria-label="Toggle galaxy background">
+                  <input
+                    type="checkbox"
+                    checked={galaxyEnabled}
+                    onChange={(e) => handleGalaxyToggle(e.target.checked)}
                   />
                   <span className="toggle-slider"></span>
                 </label>

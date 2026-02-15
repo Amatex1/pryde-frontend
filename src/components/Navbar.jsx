@@ -4,29 +4,16 @@ import { useMediaQuery } from 'react-responsive';
 import { logout } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
 import { prefetchRoute, prefetchOnIdle } from '../utils/routePrefetch';
-import DarkModeToggle from './DarkModeToggle';
 import GlobalSearch from './GlobalSearch';
 import NotificationBell from './NotificationBell';
 import MessagesDropdown from './MessagesDropdown';
 import { SkeletonNavbarActions } from './SkeletonLoader';
 import api from '../utils/api';
-import { getTheme, toggleTheme as toggleThemeManager, getQuietMode, setQuietMode as setQuietModeManager, getGalaxyMode, toggleGalaxyMode as toggleGalaxyModeManager } from '../utils/themeManager';
+import { getQuietMode, setQuietMode as setQuietModeManager } from '../utils/themeManager';
 import prydeLogo from '../assets/pryde-logo.png';
 import { useAuth } from '../context/AuthContext';
 import { useUnreadMessages } from '../hooks/useUnreadMessages'; // ✅ Use singleton hook
 import './Navbar.css';
-
-// Hook to get dark mode state using centralized theme manager
-function useDarkMode() {
-  const [isDark, setIsDark] = useState(() => getTheme() === 'dark');
-
-  const toggleDarkMode = () => {
-    const newTheme = toggleThemeManager();
-    setIsDark(newTheme === 'dark');
-  };
-
-  return [isDark, toggleDarkMode];
-}
 
 /**
  * Navbar Component
@@ -43,9 +30,7 @@ function Navbar({ onMenuClick }) {
   const [showDropdown, setShowDropdown] = useState(false);
   // Internal mobile menu state - only used if onMenuClick is not provided
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [isDark, toggleDarkMode] = useDarkMode();
   const [quietMode, setQuietMode] = useState(() => getQuietMode());
-  const [galaxyMode, setGalaxyMode] = useState(() => getGalaxyMode());
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
@@ -74,11 +59,6 @@ function Navbar({ onMenuClick }) {
     } catch (error) {
       console.error('Failed to sync quiet mode:', error);
     }
-  };
-
-  const toggleGalaxyMode = () => {
-    const newValue = toggleGalaxyModeManager();
-    setGalaxyMode(newValue);
   };
 
   // Sync quiet mode from user data (only on mount)
@@ -266,21 +246,6 @@ function Navbar({ onMenuClick }) {
             </Link>
             <button
               className="mobile-menu-item"
-              onClick={toggleDarkMode}
-              aria-label={`${isDark ? 'Disable' : 'Enable'} dark mode`}
-              aria-pressed={isDark}
-            >
-              <span className="mobile-menu-icon" aria-hidden="true">{isDark ? '☀️' : '🌙'}</span>
-              <div className="mobile-menu-item-content">
-                <span className="mobile-menu-item-title">Dark Mode</span>
-                <span className="mobile-menu-item-description">
-                  {isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-                </span>
-              </div>
-              {isDark && <span className="mode-indicator" aria-hidden="true">✓</span>}
-            </button>
-            <button
-              className="mobile-menu-item"
               onClick={toggleQuietMode}
               aria-label={`${quietMode ? 'Disable' : 'Enable'} quiet mode - peaceful browsing with softer colors`}
               aria-pressed={quietMode}
@@ -294,21 +259,15 @@ function Navbar({ onMenuClick }) {
               </div>
               {quietMode && <span className="mode-indicator" aria-hidden="true">✓</span>}
             </button>
-            <button
-              className="mobile-menu-item"
-              onClick={toggleGalaxyMode}
-              aria-label={`${galaxyMode ? 'Disable' : 'Enable'} galaxy mode - immersive galaxy background`}
-              aria-pressed={galaxyMode}
-            >
-              <span className="mobile-menu-icon" aria-hidden="true">🌌</span>
+            <Link to="/settings" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
+              <span className="mobile-menu-icon" aria-hidden="true">🎨</span>
               <div className="mobile-menu-item-content">
-                <span className="mobile-menu-item-title">Galaxy Mode</span>
+                <span className="mobile-menu-item-title">Appearance</span>
                 <span className="mobile-menu-item-description">
-                  Immersive galaxy background
+                  Light mode, galaxy background & more
                 </span>
               </div>
-              {galaxyMode && <span className="mode-indicator" aria-hidden="true">✓</span>}
-            </button>
+            </Link>
             <div className="mobile-menu-divider" role="separator"></div>
             <button
               onClick={() => { handleLogout(); setShowMobileMenu(false); }}
@@ -408,17 +367,6 @@ function Navbar({ onMenuClick }) {
                 </Link>
               )}
               <button
-                className="dropdown-item dropdown-dark-mode"
-                onClick={toggleDarkMode}
-                role="menuitemcheckbox"
-                aria-checked={isDark}
-                aria-label={`${isDark ? 'Disable' : 'Enable'} dark mode`}
-              >
-                <span className="dark-mode-icon" aria-hidden="true">{isDark ? '☀️' : '🌙'}</span>
-                <span>Dark Mode</span>
-                {isDark && <span className="mode-indicator" aria-hidden="true">✓</span>}
-              </button>
-              <button
                 className="dropdown-item dropdown-quiet-mode"
                 onClick={toggleQuietMode}
                 role="menuitemcheckbox"
@@ -429,17 +377,16 @@ function Navbar({ onMenuClick }) {
                 <span>Quiet Mode</span>
                 {quietMode && <span className="mode-indicator" aria-hidden="true">✓</span>}
               </button>
-              <button
-                className="dropdown-item dropdown-galaxy-mode"
-                onClick={toggleGalaxyMode}
-                role="menuitemcheckbox"
-                aria-checked={galaxyMode}
-                aria-label={`${galaxyMode ? 'Disable' : 'Enable'} galaxy mode - immersive galaxy background`}
+              <Link
+                to="/settings"
+                className="dropdown-item"
+                onClick={() => setShowDropdown(false)}
+                role="menuitem"
+                aria-label="Appearance settings"
               >
-                <span className="galaxy-mode-icon" aria-hidden="true">🌌</span>
-                <span>Galaxy Mode</span>
-                {galaxyMode && <span className="mode-indicator" aria-hidden="true">✓</span>}
-              </button>
+                <span className="dropdown-icon" aria-hidden="true">🎨</span>
+                <span>Appearance</span>
+              </Link>
               <div className="dropdown-divider" role="separator"></div>
               <button
                 onClick={handleLogout}

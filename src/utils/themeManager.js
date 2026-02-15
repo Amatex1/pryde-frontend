@@ -56,8 +56,13 @@ export const initializeTheme = () => {
   document.documentElement.setAttribute('data-theme', theme);
 
   // Galaxy is an independent visual layer — does not touch data-theme
-  const galaxyMode = localStorage.getItem('galaxyMode') === 'true';
-  if (galaxyMode) {
+  // DEFAULT: Galaxy ON for new users (core identity: Dark + Galaxy)
+  const savedGalaxy = localStorage.getItem('galaxyMode');
+  if (savedGalaxy === null) {
+    // New user — default to galaxy ON
+    document.documentElement.setAttribute('data-galaxy', 'true');
+    localStorage.setItem('galaxyMode', 'true');
+  } else if (savedGalaxy === 'true') {
     document.documentElement.setAttribute('data-galaxy', 'true');
   } else {
     document.documentElement.removeAttribute('data-galaxy');
@@ -100,6 +105,7 @@ export const initializeTheme = () => {
 
   return {
     theme,
+    galaxyMode: savedGalaxy !== 'false',
     quietMode: quietMode === 'true',
     quietVisuals: quietVisuals === 'true',
     quietWriting: quietWriting === 'true',
