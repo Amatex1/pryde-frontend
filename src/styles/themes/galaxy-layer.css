@@ -145,6 +145,11 @@ html[data-galaxy="true"][data-quiet="true"] body::before {
   opacity: 0.2;
 }
 
+/* Subtle dimming for extra calm feeling */
+html[data-galaxy="true"][data-quiet="true"] {
+  filter: brightness(0.95);
+}
+
 
 /* ================================
    MOBILE SAFE GUARD

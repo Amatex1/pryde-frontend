@@ -129,9 +129,9 @@ html {
   animation: none;
 }
 
-/* Softer toast notifications */
-[data-quiet="true"] .toast,
-[data-quiet-mode="true"] .toast {
+/* Softer toast notifications (exclude .toast-quiet so its fade animation plays) */
+[data-quiet="true"] .toast:not(.toast-quiet),
+[data-quiet-mode="true"] .toast:not(.toast-quiet) {
   animation: none;
   opacity: 0.9;
 }

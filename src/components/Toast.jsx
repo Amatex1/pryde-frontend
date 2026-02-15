@@ -29,6 +29,8 @@ function Toast({ message, type = 'success', onClose, duration = 3000 }) {
         return 'ℹ️';
       case 'warning':
         return '⚠️';
+      case 'quiet':
+        return '🍃';
       default:
         return '✅';
     }

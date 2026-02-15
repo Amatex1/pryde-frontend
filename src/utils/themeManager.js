@@ -165,10 +165,42 @@ export const toggleTheme = () => {
 };
 
 /**
+ * Show a gentle DOM-based toast when Quiet Mode activates.
+ * Uses the existing .toast / .toast-quiet CSS classes.
+ * Called only on the off → on transition.
+ */
+const showQuietModeToast = () => {
+  // Avoid duplicate toasts
+  const existing = document.querySelector('.toast-quiet');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.className = 'toast toast-quiet';
+  toast.setAttribute('role', 'status');
+  toast.setAttribute('aria-live', 'polite');
+  toast.setAttribute('aria-atomic', 'true');
+  toast.innerHTML =
+    '<span class="toast-icon" aria-hidden="true">🍃</span>' +
+    '<span class="toast-message">Quiet Mode is on. Take your time.</span>' +
+    '<button class="toast-close" aria-label="Close notification">&times;</button>';
+
+  // Allow manual dismiss
+  toast.querySelector('.toast-close').addEventListener('click', () => toast.remove());
+
+  document.body.appendChild(toast);
+
+  // Auto-remove after 4.5 s
+  setTimeout(() => {
+    if (toast.parentNode) toast.remove();
+  }, 4500);
+};
+
+/**
  * Set quiet mode
  * @param {boolean} enabled - Whether quiet mode is enabled
  */
 export const setQuietMode = (enabled) => {
+  const wasEnabled = document.documentElement.getAttribute('data-quiet') === 'true';
   const value = enabled ? 'true' : 'false';
   document.documentElement.setAttribute('data-quiet', value);
   localStorage.setItem('quietMode', value);
@@ -183,6 +215,11 @@ export const setQuietMode = (enabled) => {
     document.documentElement.setAttribute('data-quiet-visuals', quietVisuals);
     document.documentElement.setAttribute('data-quiet-writing', quietWriting);
     document.documentElement.setAttribute('data-quiet-metrics', quietMetrics);
+
+    // Show gentle confirmation only on off → on transition
+    if (!wasEnabled) {
+      showQuietModeToast();
+    }
   } else {
     // Remove sub-toggle attributes when quiet mode is off
     document.documentElement.removeAttribute('data-quiet-visuals');

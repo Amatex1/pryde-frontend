@@ -98,6 +98,45 @@
 }
 
 /* ========================================
+   QUIET MODE TOAST
+   Gentle fade only — no slide, no bounce
+   ======================================== */
+
+@keyframes quietFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes quietFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.toast-quiet {
+  background: rgba(30, 30, 40, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #F5F6FA;
+  box-shadow: none;
+  animation: quietFadeIn 0.4s ease, quietFadeOut 0.4s ease 4.1s forwards;
+}
+
+.toast-quiet .toast-close {
+  color: #F5F6FA;
+}
+
+/* Light mode variant */
+html[data-theme="light"] .toast-quiet {
+  background: rgba(255, 255, 255, 0.9);
+  color: #1E1E26;
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme="light"] .toast-quiet .toast-close {
+  color: #1E1E26;
+}
+
+/* ========================================
    THEME SUPPORT
    All theming handled by CSS variables in variables.css
    ======================================== */
@@ -116,4 +155,3 @@
     transform: none !important;
   }
 }
-
