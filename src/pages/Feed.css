@@ -52,8 +52,6 @@
     top: calc(var(--navbar-height, 72px) + 1rem);
     align-self: start;
     height: fit-content;
-    max-height: calc(100vh - var(--navbar-height, 72px) - 2rem);
-    overflow-y: auto;
     width: 100%;
   }
 }
