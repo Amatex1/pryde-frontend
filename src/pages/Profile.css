@@ -300,6 +300,19 @@ div.profile-layout,
   position: relative;
 }
 
+/* Editing state: expand cover to fit inline editor + controls bar */
+.profile-cover--editing {
+  height: auto;
+  min-height: 200px;
+  overflow: visible;
+  z-index: 20;
+}
+
+/* Hide avatar while editing avatar photo (editor shows in cover area) */
+.profile-avatar--editing-hidden {
+  display: none !important;
+}
+
 .profile-cover-image {
   width: 100%;
   height: 100%;
@@ -4339,6 +4352,12 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     min-height: 300px;
     border-radius: 16px 16px 0 0;
     overflow: hidden;
+  }
+
+  .profile-cover--editing {
+    height: auto;
+    min-height: 300px;
+    overflow: visible;
   }
 
   /* TRUE OVERLAY AVATAR - Positioned relative to header, overlaps cover */

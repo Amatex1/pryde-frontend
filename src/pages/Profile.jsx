@@ -6,7 +6,7 @@ import PhotoViewer from '../components/PhotoViewer';
 import Toast from '../components/Toast';
 import CustomModal from '../components/CustomModal';
 import EditProfileModal from '../components/EditProfileModal';
-import PhotoRepositionFullscreen from '../components/PhotoRepositionFullscreen';
+import PhotoRepositionInline from '../components/PhotoRepositionFullscreen';
 import ReactionDetailsModal from '../components/ReactionDetailsModal';
 import FormattedText from '../components/FormattedText';
 import ProfileSkeleton from '../components/ProfileSkeleton';
@@ -121,7 +121,7 @@ function Profile() {
   const [searchResults, setSearchResults] = useState(null); // Search results from ProfilePostSearch
   // NOTE: EditHistory state removed 2025-12-26 - backend returns 410 Gone
   
-  // Full-screen photo reposition editor state
+  // Inline photo reposition editor state
   const [editingType, setEditingType] = useState(null); // "cover" | "avatar" | null
   const editTextareaRef = useRef(null);
   const isMountedRef = useRef(true); // Track if component is mounted to prevent race conditions
@@ -1390,9 +1390,30 @@ function Profile() {
     }
   };
 
-  // Full-screen photo reposition handlers
+  // Inline photo reposition handlers
   const handleEditCover = () => setEditingType("cover");
   const handleEditAvatar = () => setEditingType("avatar");
+
+  const handleSavePosition = async (newPosition) => {
+    try {
+      await api.put("/users/profile", {
+        ...(editingType === "cover"
+          ? { coverPhotoPosition: newPosition }
+          : { profilePhotoPosition: newPosition })
+      });
+      setUser(prev => ({
+        ...prev,
+        ...(editingType === "cover"
+          ? { coverPhotoPosition: newPosition }
+          : { profilePhotoPosition: newPosition })
+      }));
+      showToast('Photo position saved!', 'success');
+    } catch (error) {
+      logger.error('Failed to save photo position:', error);
+      showToast('Failed to save photo position. Please try again.', 'error');
+    }
+    setEditingType(null);
+  };
 
   const handleAddFriend = async () => {
     try {
@@ -1616,46 +1637,67 @@ function Profile() {
         */}
         <div className="profile-header fade-in">
           {/* Cover Photo - Atmosphere */}
-          <div className="profile-cover">
-            {user.coverPhoto ? (
-              <div
-                className="profile-cover-image"
-                onClick={() => setPhotoViewerImage(getImageUrl(user.coverPhoto))}
-                style={{
-                  backgroundImage: `url(${getImageUrl(user.coverPhoto)})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  width: '100%',
-                  height: '100%',
-                  opacity: 0.92,
-                  transform: user.coverPhotoPosition
-                    ? `translate(${user.coverPhotoPosition.x}px, ${user.coverPhotoPosition.y}px) scale(${user.coverPhotoPosition.scale || 1})`
-                    : 'none',
-                  transformOrigin: 'center',
-                  cursor: 'pointer'
-                }}
+          <div className={`profile-cover${editingType ? ' profile-cover--editing' : ''}`}>
+            {editingType ? (
+              /* ── Inline photo editor (cover OR avatar) ── */
+              <PhotoRepositionInline
+                type={editingType}
+                imageUrl={
+                  editingType === "cover"
+                    ? getImageUrl(user.coverPhoto)
+                    : getImageUrl(user.profilePhoto)
+                }
+                initialPosition={
+                  editingType === "cover"
+                    ? (user.coverPhotoPosition || { x: 0, y: 0, scale: 1 })
+                    : (user.profilePhotoPosition || { x: 0, y: 0, scale: 1 })
+                }
+                onCancel={() => setEditingType(null)}
+                onSave={handleSavePosition}
               />
             ) : (
-              <div className="profile-cover-placeholder"></div>
-            )}
-            {/* Edit buttons in top right of cover photo */}
-            {isOwnProfile && (
-              <div className="profile-header-actions">
-                <button
-                  className="btn-edit-cover"
-                  onClick={handleEditCover}
-                  title="Edit cover photo"
-                >
-                  📷 Edit Cover
-                </button>
-                <button
-                  className="btn-edit-profile-cover"
-                  onClick={() => setEditProfileModal(true)}
-                  title="Edit Profile"
-                >
-                  ✏️ Edit Profile
-                </button>
-              </div>
+              <>
+                {user.coverPhoto ? (
+                  <div
+                    className="profile-cover-image"
+                    onClick={() => setPhotoViewerImage(getImageUrl(user.coverPhoto))}
+                    style={{
+                      backgroundImage: `url(${getImageUrl(user.coverPhoto)})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      width: '100%',
+                      height: '100%',
+                      opacity: 0.92,
+                      transform: user.coverPhotoPosition
+                        ? `translate(${user.coverPhotoPosition.x}px, ${user.coverPhotoPosition.y}px) scale(${user.coverPhotoPosition.scale || 1})`
+                        : 'none',
+                      transformOrigin: 'center',
+                      cursor: 'pointer'
+                    }}
+                  />
+                ) : (
+                  <div className="profile-cover-placeholder"></div>
+                )}
+                {/* Edit buttons in top right of cover photo */}
+                {isOwnProfile && (
+                  <div className="profile-header-actions">
+                    <button
+                      className="btn-edit-cover"
+                      onClick={handleEditCover}
+                      title="Edit cover photo"
+                    >
+                      📷 Edit Cover
+                    </button>
+                    <button
+                      className="btn-edit-profile-cover"
+                      onClick={() => setEditProfileModal(true)}
+                      title="Edit Profile"
+                    >
+                      ✏️ Edit Profile
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
@@ -1694,8 +1736,8 @@ function Profile() {
             <div className="upload-message-banner">{uploadMessage}</div>
           )}
 
-          {/* Avatar OVERLAY - moved outside profile-card so it can truly overlap cover */}
-          <div className="profile-avatar profile-avatar--overlay">
+          {/* Avatar OVERLAY - hidden when editing avatar (editor shows in cover area) */}
+          <div className={`profile-avatar profile-avatar--overlay${editingType === 'avatar' ? ' profile-avatar--editing-hidden' : ''}`}>
             {user.profilePhoto ? (
               <div
                 className="profile-avatar-image"
@@ -2986,46 +3028,6 @@ function Profile() {
         inputType={modalState.inputType}
         defaultValue={modalState.defaultValue}
       />
-
-      {/* Full-screen photo reposition editor */}
-      {editingType && (
-        <PhotoRepositionFullscreen
-          type={editingType}
-          imageUrl={
-            editingType === "cover"
-              ? getImageUrl(user.coverPhoto)
-              : getImageUrl(user.profilePhoto)
-          }
-          initialPosition={
-            editingType === "cover"
-              ? (user.coverPhotoPosition || { x: 0, y: 0, scale: 1 })
-              : (user.profilePhotoPosition || { x: 0, y: 0, scale: 1 })
-          }
-          onCancel={() => setEditingType(null)}
-          onSave={async (newPosition) => {
-            try {
-              await api.put("/users/profile", {
-                ...(editingType === "cover"
-                  ? { coverPhotoPosition: newPosition }
-                  : { profilePhotoPosition: newPosition })
-              });
-
-              setUser(prev => ({
-                ...prev,
-                ...(editingType === "cover"
-                  ? { coverPhotoPosition: newPosition }
-                  : { profilePhotoPosition: newPosition })
-              }));
-
-              showToast('Photo position saved!', 'success');
-            } catch (error) {
-              logger.error('Failed to save photo position:', error);
-              showToast('Failed to save photo position. Please try again.', 'error');
-            }
-            setEditingType(null);
-          }}
-        />
-      )}
 
       {/* Mobile Comment Sheet - Full Discussion */}
       {commentSheetOpen && (

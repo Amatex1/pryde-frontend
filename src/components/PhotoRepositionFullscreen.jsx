@@ -1,7 +1,7 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import "./PhotoRepositionFullscreen.css";
 
-export default function PhotoRepositionFullscreen({
+export default function PhotoRepositionInline({
   type, // "cover" | "avatar"
   imageUrl,
   initialPosition = { x: 0, y: 0, scale: 1 },
@@ -10,56 +10,56 @@ export default function PhotoRepositionFullscreen({
 }) {
   const [position, setPosition] = useState(initialPosition);
   const [isDragging, setIsDragging] = useState(false);
-
+  const frameRef = useRef(null);
   const dragRef = useRef({ startX: 0, startY: 0, startPosX: 0, startPosY: 0 });
 
   const bounds = type === "cover"
-    ? { maxX: 150, maxY: 150 }
-    : { maxX: 80, maxY: 80 };
+    ? { maxX: 200, maxY: 100 }
+    : { maxX: 60, maxY: 60 };
 
-  const handlePointerDown = (e) => {
+  const handlePointerDown = useCallback((e) => {
     e.preventDefault();
+    e.target.setPointerCapture?.(e.pointerId);
     setIsDragging(true);
-
     dragRef.current = {
       startX: e.clientX,
       startY: e.clientY,
       startPosX: position.x,
       startPosY: position.y
     };
-  };
+  }, [position.x, position.y]);
 
-  const handlePointerMove = (e) => {
+  const handlePointerMove = useCallback((e) => {
     if (!isDragging) return;
-
     const deltaX = e.clientX - dragRef.current.startX;
     const deltaY = e.clientY - dragRef.current.startY;
-
     let newX = dragRef.current.startPosX + deltaX;
     let newY = dragRef.current.startPosY + deltaY;
-
     newX = Math.max(-bounds.maxX, Math.min(bounds.maxX, newX));
     newY = Math.max(-bounds.maxY, Math.min(bounds.maxY, newY));
-
     setPosition(prev => ({ ...prev, x: newX, y: newY }));
-  };
+  }, [isDragging, bounds.maxX, bounds.maxY]);
 
-  const handlePointerUp = () => {
+  const handlePointerUp = useCallback(() => {
     setIsDragging(false);
-  };
+  }, []);
 
-  const handleReset = () => {
+  const handleScaleChange = useCallback((e) => {
+    setPosition(prev => ({ ...prev, scale: parseFloat(e.target.value) }));
+  }, []);
+
+  const handleReset = useCallback(() => {
     setPosition({ x: 0, y: 0, scale: 1 });
-  };
+  }, []);
+
+  const zoomPercent = Math.round(position.scale * 100);
 
   return (
-    <div className="photo-editor-overlay">
-      <div className="photo-editor-header">
-        <h3>{type === "cover" ? "Edit Cover Photo" : "Edit Profile Photo"}</h3>
-      </div>
-
+    <div className={`photo-editor-inline ${type}`}>
+      {/* Drag area */}
       <div
-        className={`photo-editor-frame ${type}`}
+        ref={frameRef}
+        className={`photo-editor-inline-frame ${type}`}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -73,24 +73,37 @@ export default function PhotoRepositionFullscreen({
             transform: `translate(${position.x}px, ${position.y}px) scale(${position.scale})`
           }}
         />
+        <div className="photo-editor-inline-hint">
+          Drag to reposition
+        </div>
       </div>
 
-      <div className="photo-editor-controls">
-        <button onClick={handleReset} className="secondary">
-          Reset
-        </button>
-        <div className="spacer" />
-        <button onClick={onCancel} className="secondary">
-          Cancel
-        </button>
-        <button
-          onClick={() => onSave(position)}
-          className="primary"
-        >
-          Save
-        </button>
+      {/* Controls bar */}
+      <div className="photo-editor-inline-controls">
+        <div className="photo-editor-inline-zoom">
+          <span className="zoom-label">🔍 {zoomPercent}%</span>
+          <input
+            type="range"
+            min="1"
+            max="2.5"
+            step="0.01"
+            value={position.scale}
+            onChange={handleScaleChange}
+            className="zoom-slider"
+          />
+        </div>
+        <div className="photo-editor-inline-buttons">
+          <button onClick={handleReset} className="pe-btn pe-btn--secondary">
+            Reset
+          </button>
+          <button onClick={onCancel} className="pe-btn pe-btn--secondary">
+            Cancel
+          </button>
+          <button onClick={() => onSave(position)} className="pe-btn pe-btn--primary">
+            Save
+          </button>
+        </div>
       </div>
     </div>
   );
 }
-

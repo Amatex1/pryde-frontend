@@ -1,81 +1,193 @@
-.photo-editor-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(10, 12, 25, 0.95);
-  backdrop-filter: blur(20px);
-  z-index: 9999;
+/* ── Inline Photo Editor ── */
+
+/* Wrapper: sits inside .profile-cover, fills it */
+.photo-editor-inline {
+  position: relative;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.photo-editor-header {
-  padding: 20px;
-  text-align: center;
-  color: white;
-  font-weight: 500;
-}
-
-.photo-editor-frame {
+/* ── Drag frame ── */
+.photo-editor-inline-frame {
   flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   overflow: hidden;
   touch-action: none;
   cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: rgba(0, 0, 0, 0.15);
 }
 
-.photo-editor-frame:active {
+.photo-editor-inline-frame:active {
   cursor: grabbing;
 }
 
-.photo-editor-frame.cover img {
-  width: 120%;
-  max-height: 100%;
+/* Cover: image fills the cover area */
+.photo-editor-inline-frame.cover {
+  width: 100%;
+  height: 100%;
 }
 
-.photo-editor-frame.avatar {
+.photo-editor-inline-frame.cover img {
+  width: 130%;
+  height: auto;
+  min-height: 100%;
+  object-fit: cover;
+}
+
+/* Avatar: circular frame, centered in the cover area */
+.photo-editor-inline-frame.avatar {
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  margin: auto;
+  background: var(--bg-primary, #111);
 }
 
-.photo-editor-frame.avatar img {
-  width: 140%;
+.photo-editor-inline-frame.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.photo-editor-frame img {
+/* Shared img rules */
+.photo-editor-inline-frame img {
   user-select: none;
   pointer-events: none;
   transition: transform 0.05s linear;
 }
 
-.photo-editor-controls {
+/* Hint overlay */
+.photo-editor-inline-hint {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ── Controls bar ── */
+.photo-editor-inline-controls {
   display: flex;
   align-items: center;
-  padding: 16px;
-  gap: 12px;
-  background: rgba(20, 24, 50, 0.85);
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(10, 12, 25, 0.88);
   backdrop-filter: blur(12px);
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.photo-editor-controls .spacer {
+/* Zoom row */
+.photo-editor-inline-zoom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex: 1;
+  min-width: 140px;
 }
 
-.photo-editor-controls button {
-  padding: 10px 18px;
+.zoom-label {
+  color: #fff;
+  font-size: 12px;
+  white-space: nowrap;
+  min-width: 52px;
+}
+
+.zoom-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  max-width: 160px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.25);
+  outline: none;
+}
+
+.zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #6C5CE7;
+  cursor: pointer;
+  border: 2px solid #fff;
+}
+
+.zoom-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #6C5CE7;
+  cursor: pointer;
+  border: 2px solid #fff;
+}
+
+/* Buttons row */
+.photo-editor-inline-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.pe-btn {
+  padding: 7px 14px;
   border-radius: 8px;
   border: none;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
 }
 
-.photo-editor-controls button.primary {
+.pe-btn:active {
+  transform: scale(0.96);
+}
+
+.pe-btn--primary {
   background: #6C5CE7;
-  color: white;
+  color: #fff;
 }
 
-.photo-editor-controls button.secondary {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+.pe-btn--primary:hover {
+  background: #5a4bd8;
 }
 
+.pe-btn--secondary {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.pe-btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .photo-editor-inline-frame.avatar {
+    width: 150px;
+    height: 150px;
+  }
+
+  .photo-editor-inline-controls {
+    padding: 6px 8px;
+  }
+
+  .pe-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
