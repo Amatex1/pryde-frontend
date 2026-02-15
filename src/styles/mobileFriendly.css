@@ -1130,9 +1130,7 @@
     grid-template-columns: 1fr !important;
   }
 
-  .admin-sidebar {
-    display: none !important; /* Hide sidebar on mobile */
-  }
+  /* admin-sidebar is handled by Admin.css with slide-in animation */
 
   .admin-stats {
     grid-template-columns: 1fr !important;
