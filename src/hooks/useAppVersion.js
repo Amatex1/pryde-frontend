@@ -30,8 +30,8 @@ export default function useAppVersion() {
 
     const checkVersion = async () => {
       try {
-        // Check backend version
-        const backendResponse = await api.get('/version');
+        // Check backend version (cache-bust through Vercel proxy)
+        const backendResponse = await api.get(`/version?t=${Date.now()}`);
         const currentBackendVersion = backendResponse.data?.version;
 
         if (!currentBackendVersion) {
@@ -42,9 +42,9 @@ export default function useAppVersion() {
         // Check frontend version from version.json (bypasses cache)
         let currentFrontendVersion = APP_VERSION;
         try {
-          const frontendResponse = await fetch('/version.json', {
+          const frontendResponse = await fetch(`/version.json?t=${Date.now()}`, {
             cache: 'no-store',
-            headers: { 'Cache-Control': 'no-cache' }
+            headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
           });
           if (frontendResponse.ok) {
             const frontendData = await frontendResponse.json();
