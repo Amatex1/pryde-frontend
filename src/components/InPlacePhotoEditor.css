@@ -11,6 +11,9 @@
   user-select: none;
   outline: none;
   display: block;
+  /* Prevent browser from intercepting touch gestures (scroll/pan/zoom)
+     so drag-to-reposition works on mobile */
+  touch-action: none;
 }
 
 .in-place-editor:focus {

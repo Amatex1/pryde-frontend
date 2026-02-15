@@ -414,6 +414,13 @@ div.profile-layout,
   opacity: 1;
 }
 
+/* On touch devices (mobile), always show the edit avatar button since hover doesn't exist */
+@media (max-width: 768px) {
+  .btn-edit-avatar {
+    opacity: 1;
+  }
+}
+
 .btn-edit-avatar:hover {
   transform: scale(1.1);
   background: var(--electric-blue);
