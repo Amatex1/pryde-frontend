@@ -7,16 +7,20 @@
   position: relative;
   width: 100%;
   height: 100%;
+  display: block;
+  outline: none;
+}
+
+/* Only apply editing styles when in edit mode */
+.in-place-editor.editing {
   cursor: grab;
   user-select: none;
-  outline: none;
-  display: block;
   /* Prevent browser from intercepting touch gestures (scroll/pan/zoom)
      so drag-to-reposition works on mobile */
   touch-action: none;
 }
 
-.in-place-editor:focus {
+.in-place-editor.editing:focus {
   outline: 2px solid var(--pryde-purple);
   outline-offset: 2px;
 }
