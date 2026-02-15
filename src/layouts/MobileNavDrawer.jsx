@@ -20,7 +20,7 @@ import { useAuth } from '../context/AuthContext';
 import { useUnreadMessages } from '../hooks/useUnreadMessages';
 import { getImageUrl } from '../utils/imageUrl';
 import { logout } from '../utils/auth';
-import { getQuietMode, setQuietMode as setQuietModeManager } from '../utils/themeManager';
+import { getQuietMode, setQuietMode as setQuietModeManager, getGalaxyMode, toggleGalaxyMode as toggleGalaxyModeManager } from '../utils/themeManager';
 import { useState } from 'react';
 import './MobileNavDrawer.css';
 
@@ -32,11 +32,17 @@ export default function MobileNavDrawer({ open, onClose }) {
   
   // Theme state
   const [quietMode, setQuietMode] = useState(() => getQuietMode());
+  const [galaxyMode, setGalaxyMode] = useState(() => getGalaxyMode());
 
   const toggleQuietMode = async () => {
     const newQuietMode = !quietMode;
     setQuietMode(newQuietMode);
     setQuietModeManager(newQuietMode);
+  };
+
+  const toggleGalaxyMode = () => {
+    const newValue = toggleGalaxyModeManager();
+    setGalaxyMode(newValue);
   };
 
   const handleLogout = () => {
@@ -204,12 +210,28 @@ export default function MobileNavDrawer({ open, onClose }) {
             {quietMode && <span className="mode-indicator" aria-hidden="true">✓</span>}
           </button>
 
+          <button
+            className="mobile-nav-item"
+            onClick={toggleGalaxyMode}
+            aria-label={`${galaxyMode ? 'Disable' : 'Enable'} galaxy mode - immersive galaxy background`}
+            aria-pressed={galaxyMode}
+          >
+            <span className="mobile-nav-icon" aria-hidden="true">🌌</span>
+            <div className="mobile-nav-item-content">
+              <span className="mobile-nav-item-title">Galaxy Mode</span>
+              <span className="mobile-nav-item-description">
+                Immersive galaxy background
+              </span>
+            </div>
+            {galaxyMode && <span className="mode-indicator" aria-hidden="true">✓</span>}
+          </button>
+
           <Link to="/settings" className="mobile-nav-item" onClick={handleLinkClick}>
             <span className="mobile-nav-icon" aria-hidden="true">🎨</span>
             <div className="mobile-nav-item-content">
               <span className="mobile-nav-item-title">Appearance</span>
               <span className="mobile-nav-item-description">
-                Light mode, galaxy background & more
+                Light mode & more
               </span>
             </div>
           </Link>

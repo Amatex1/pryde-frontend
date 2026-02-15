@@ -9,7 +9,7 @@ import NotificationBell from './NotificationBell';
 import MessagesDropdown from './MessagesDropdown';
 import { SkeletonNavbarActions } from './SkeletonLoader';
 import api from '../utils/api';
-import { getQuietMode, setQuietMode as setQuietModeManager } from '../utils/themeManager';
+import { getQuietMode, setQuietMode as setQuietModeManager, getGalaxyMode, toggleGalaxyMode as toggleGalaxyModeManager } from '../utils/themeManager';
 import prydeLogo from '../assets/pryde-logo.png';
 import { useAuth } from '../context/AuthContext';
 import { useUnreadMessages } from '../hooks/useUnreadMessages'; // ✅ Use singleton hook
@@ -31,6 +31,7 @@ function Navbar({ onMenuClick }) {
   // Internal mobile menu state - only used if onMenuClick is not provided
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [quietMode, setQuietMode] = useState(() => getQuietMode());
+  const [galaxyMode, setGalaxyMode] = useState(() => getGalaxyMode());
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
@@ -59,6 +60,11 @@ function Navbar({ onMenuClick }) {
     } catch (error) {
       console.error('Failed to sync quiet mode:', error);
     }
+  };
+
+  const toggleGalaxyMode = () => {
+    const newValue = toggleGalaxyModeManager();
+    setGalaxyMode(newValue);
   };
 
   // Sync quiet mode from user data (only on mount)
@@ -259,12 +265,27 @@ function Navbar({ onMenuClick }) {
               </div>
               {quietMode && <span className="mode-indicator" aria-hidden="true">✓</span>}
             </button>
+            <button
+              className="mobile-menu-item"
+              onClick={toggleGalaxyMode}
+              aria-label={`${galaxyMode ? 'Disable' : 'Enable'} galaxy mode - immersive galaxy background`}
+              aria-pressed={galaxyMode}
+            >
+              <span className="mobile-menu-icon" aria-hidden="true">🌌</span>
+              <div className="mobile-menu-item-content">
+                <span className="mobile-menu-item-title">Galaxy Mode</span>
+                <span className="mobile-menu-item-description">
+                  Immersive galaxy background
+                </span>
+              </div>
+              {galaxyMode && <span className="mode-indicator" aria-hidden="true">✓</span>}
+            </button>
             <Link to="/settings" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
               <span className="mobile-menu-icon" aria-hidden="true">🎨</span>
               <div className="mobile-menu-item-content">
                 <span className="mobile-menu-item-title">Appearance</span>
                 <span className="mobile-menu-item-description">
-                  Light mode, galaxy background & more
+                  Light mode & more
                 </span>
               </div>
             </Link>
@@ -376,6 +397,17 @@ function Navbar({ onMenuClick }) {
                 <span className="quiet-mode-icon" aria-hidden="true">🍃</span>
                 <span>Quiet Mode</span>
                 {quietMode && <span className="mode-indicator" aria-hidden="true">✓</span>}
+              </button>
+              <button
+                className="dropdown-item dropdown-galaxy-mode"
+                onClick={toggleGalaxyMode}
+                role="menuitemcheckbox"
+                aria-checked={galaxyMode}
+                aria-label={`${galaxyMode ? 'Disable' : 'Enable'} galaxy mode - immersive galaxy background`}
+              >
+                <span className="galaxy-mode-icon" aria-hidden="true">🌌</span>
+                <span>Galaxy Mode</span>
+                {galaxyMode && <span className="mode-indicator" aria-hidden="true">✓</span>}
               </button>
               <Link
                 to="/settings"
