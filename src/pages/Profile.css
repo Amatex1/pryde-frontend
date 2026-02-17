@@ -467,6 +467,9 @@ div.profile-layout,
     height: 100px;
     margin: -50px auto 0;
     font-size: var(--font-size-3xl);
+    /* FIX: Ensure avatar appears ABOVE cover photo on mobile */
+    position: relative;
+    z-index: 10;
   }
 
   .profile-identity {
@@ -475,6 +478,33 @@ div.profile-layout,
 
   .profile-stats {
     justify-content: center;
+  }
+}
+
+/* Mobile: Ensure cover photo doesn't overlap avatar - position header relative */
+@media (max-width: 768px) {
+  .profile-header {
+    position: relative;
+    overflow: visible;
+  }
+
+  .profile-cover {
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Force avatar above cover on mobile with absolute positioning */
+  .profile-avatar.profile-avatar--overlay {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    margin-top: -50px;
+  }
+  
+  /* Adjust profile identity to account for absolutely positioned avatar */
+  .profile-identity {
+    padding-top: 50px;
   }
 }
 
