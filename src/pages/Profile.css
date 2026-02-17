@@ -4251,7 +4251,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .profile-header .profile-identity {
     align-items: center;
     text-align: center;
-    padding-top: 55px; /* Space below avatar - avatar is 100px, half overlaps cover */
+    padding-top: 65px; /* Space below avatar - increased to prevent overlap with identity pills */
+    overflow: visible !important; /* Ensure badges aren't clipped */
     margin-top: 0; /* No negative margin - let avatar overlap naturally */
   }
 
