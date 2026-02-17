@@ -1,4 +1,4 @@
-/* ── Inline Photo Editor ── */
+/* ── Inline Photo Editor using react-easy-crop ── */
 
 /* Wrapper: sits inside .profile-cover, fills it */
 .photo-editor-inline {
@@ -9,81 +9,26 @@
   flex-direction: column;
 }
 
-/* ── Drag frame ── */
-.photo-editor-inline-frame {
+/* ── Crop container (react-easy-crop wrapper) ── */
+.photo-editor-crop-container {
   flex: 1;
-  overflow: hidden;
-  touch-action: none;
-  cursor: grab;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
+  overflow: hidden;
+  width: 100%;
   background: rgba(0, 0, 0, 0.15);
 }
 
-.photo-editor-inline-frame:active {
-  cursor: grabbing;
-}
-
-/* Cover: image fills the cover area */
-.photo-editor-inline-frame.cover {
-  width: 100%;
+.photo-editor-crop-container.cover {
+  min-height: 200px;
   height: 100%;
 }
 
-.photo-editor-inline-frame.cover img {
-  width: 130%;
-  height: auto;
-  min-height: 100%;
-  object-fit: cover;
-}
-
-/* Avatar: circular frame matching actual profile-avatar size, centered */
-.photo-editor-inline-frame.avatar {
-  flex: 0 0 auto;          /* prevent flex stretch — keeps it a perfect circle */
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  border: 4px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-  margin: auto;
-  background: var(--bg-primary, #111);
-}
-
-.photo-editor-inline-frame.avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Shared img rules */
-.photo-editor-inline-frame img {
-  user-select: none;
-  pointer-events: none;
-  transition: transform 0.05s linear;
-}
-
-/* Hint overlay */
-.photo-editor-inline-hint {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  font-size: 12px;
-  padding: 4px 12px;
-  border-radius: 12px;
-  pointer-events: none;
-  white-space: nowrap;
-}
-
-/* Hint text inside controls bar (avatar only) */
-.photo-editor-inline-hint-bar {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 12px;
-  white-space: nowrap;
+.photo-editor-crop-container.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-height: 200px;
 }
 
 /* ── Controls bar ── */
@@ -91,58 +36,73 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
+  padding: 12px 16px;
   background: rgba(10, 12, 25, 0.88);
   backdrop-filter: blur(12px);
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
+}
+
+/* Hint text */
+.photo-editor-inline-hint-bar {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 /* Zoom row */
 .photo-editor-inline-zoom {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex: 1;
   min-width: 140px;
 }
 
 .zoom-label {
   color: #fff;
-  font-size: 12px;
+  font-size: 13px;
   white-space: nowrap;
-  min-width: 52px;
+  min-width: 56px;
 }
 
 .zoom-slider {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  max-width: 160px;
-  height: 4px;
-  border-radius: 2px;
+  max-width: 180px;
+  height: 5px;
+  border-radius: 3px;
   background: rgba(255, 255, 255, 0.25);
   outline: none;
+  cursor: pointer;
 }
 
 .zoom-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: #6C5CE7;
   cursor: pointer;
   border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.15s;
+}
+
+.zoom-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
 }
 
 .zoom-slider::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: #6C5CE7;
   cursor: pointer;
   border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 /* Buttons row */
@@ -152,13 +112,14 @@
 }
 
 .pe-btn {
-  padding: 7px 14px;
+  padding: 8px 16px;
   border-radius: 8px;
   border: none;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
+  white-space: nowrap;
 }
 
 .pe-btn:active {
@@ -183,33 +144,49 @@
   background: rgba(255, 255, 255, 0.22);
 }
 
-/* ── Responsive: match actual profile-avatar sizes ── */
-@media (min-width: 769px) {
-  .photo-editor-inline-frame.avatar {
-    width: 124px;
-    height: 124px;
-  }
-}
-
+/* ── Responsive styles ── */
 @media (max-width: 768px) {
-  .photo-editor-inline-frame.avatar {
-    width: 100px;
-    height: 100px;
+  .photo-editor-inline-controls {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .photo-editor-inline-zoom {
+    min-width: 120px;
+  }
+
+  .zoom-slider {
+    max-width: 140px;
+  }
+
+  .pe-btn {
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+
+  .photo-editor-inline-hint-bar {
+    font-size: 11px;
   }
 }
 
 @media (max-width: 480px) {
-  .photo-editor-inline-frame.avatar {
-    width: 80px;
-    height: 80px;
-  }
-
   .photo-editor-inline-controls {
-    padding: 6px 8px;
+    padding: 8px 10px;
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .pe-btn {
-    padding: 6px 10px;
+  .photo-editor-inline-zoom {
+    order: -1;
+    margin-bottom: 8px;
+  }
+
+  .photo-editor-inline-buttons {
+    justify-content: center;
+  }
+
+  .zoom-label {
+    min-width: 48px;
     font-size: 12px;
   }
 }

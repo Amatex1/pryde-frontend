@@ -498,7 +498,14 @@ div.profile-layout,
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 20;
+    z-index: 100; /* Much higher to ensure it's above cover */
+    margin-top: -50px;
+  }
+  
+  /* Also fix non-overlay avatar */
+  .profile-avatar:not(.profile-avatar--overlay) {
+    position: relative;
+    z-index: 100;
     margin-top: -50px;
   }
   
