@@ -511,7 +511,7 @@ div.profile-layout,
   
   /* Adjust profile identity to account for absolutely positioned avatar */
   .profile-identity {
-    padding-top: 50px;
+    padding-top: 80px !important;
   }
 }
 
