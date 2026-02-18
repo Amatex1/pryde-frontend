@@ -2990,6 +2990,9 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
   .profile-name {
     font-size: var(--font-size-2xl);
+    overflow-x: visible;
+    white-space: normal;
+    word-wrap: break-word;
   }
 
   .profile-bio {
@@ -2999,13 +3002,21 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
   .profile-stats {
     flex-wrap: nowrap;
-    gap: 1.5rem;
-    padding: 1rem;
+    gap: 1rem;
+    padding: 0.75rem;
     justify-content: center;
   }
 
   .stat-item {
     min-width: auto;
+  }
+
+  .stat-value {
+    font-size: var(--font-size-base);
+  }
+
+  .stat-label {
+    font-size: var(--font-size-xs);
   }
 
   .friends-grid {
