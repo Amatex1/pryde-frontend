@@ -1,6 +1,6 @@
 /* ========================================
-   HOME PAGE - CALM CONVERSION LAYOUT
-   Emotionally-Driven Design
+   HOME PAGE — WARM + POLISHED
+   Calm Conversion Layout
    ======================================== */
 
 .home-root {
@@ -9,11 +9,6 @@
   background: var(--color-bg);
 }
 
-/* ========================================
-   GALAXY — HOMEPAGE THEME OVERRIDES
-   Background handled by galaxy-layer.css on body
-   ======================================== */
-
 /* Content stacks above the fixed galaxy background */
 [data-galaxy="true"] .home-root {
   position: relative;
@@ -21,303 +16,412 @@
   background: transparent;
 }
 
-/* Remove solid backgrounds - let galaxy show through */
+/* Transparent pass-through for all sections in galaxy mode */
 [data-galaxy="true"] .home-hero,
 [data-galaxy="true"] .home-why,
-[data-galaxy="true"] .home-experience,
 [data-galaxy="true"] .home-final-cta {
   background: transparent;
 }
 
-[data-galaxy="true"] .home-community {
-  background: transparent;
-  border-top: 1px solid rgba(255,255,255,0.08);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
 
 /* ========================================
-   STEP 1: HERO SECTION
+   HERO SECTION
    ======================================== */
 
 .home-hero {
-  padding: 120px 20px;
+  padding: 160px 24px 140px;
   text-align: center;
-  background: linear-gradient(135deg, var(--color-surface), var(--color-bg));
+  background: linear-gradient(170deg, var(--color-surface) 0%, var(--color-bg) 100%);
   position: relative;
   overflow: hidden;
 }
 
-/* Hero text clarity for Galaxy */
 [data-galaxy="true"] .home-hero {
-  background: transparent;
+  padding: 180px 24px 160px;
 }
 
-[data-galaxy="true"] .hero-sub {
-  color: rgba(255,255,255,0.9);
-  opacity: 1;
+/* Soft gradient overlay to reduce raw galaxy intensity */
+[data-galaxy="true"] .home-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 7, 22, 0.30) 0%,
+    rgba(8, 7, 22, 0.10) 55%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 0;
 }
 
-.home-hero .hero-content {
-  max-width: 900px;
+/* Subtle radial glow behind hero headline */
+.hero-glow {
+  position: absolute;
+  width: 700px;
+  height: 700px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -58%);
+  background: radial-gradient(
+    circle at center,
+    rgba(108, 92, 231, 0.12) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-galaxy="true"] .hero-glow {
+  background: radial-gradient(
+    circle at center,
+    rgba(108, 92, 231, 0.20) 0%,
+    transparent 62%
+  );
+}
+
+.hero-content {
+  max-width: 820px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
-.home-hero h1 {
-  font-size: 42px;
+.hero-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-brand);
   margin-bottom: 20px;
+  opacity: 0.9;
+}
+
+.hero-title {
+  font-size: clamp(38px, 5.5vw, 62px);
+  line-height: 1.1;
+  font-weight: 700;
   color: var(--color-text);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
+  margin-bottom: 22px;
+  letter-spacing: -0.025em;
+}
+
+[data-galaxy="true"] .hero-title {
+  color: rgba(255, 255, 255, 0.97);
 }
 
 .hero-sub {
   font-size: 18px;
-  max-width: 700px;
-  margin: 0 auto 30px;
-  opacity: 0.85;
+  max-width: 640px;
+  margin: 0 auto 36px;
   color: var(--color-text-secondary);
-  line-height: var(--line-height-relaxed);
+  line-height: 1.7;
+}
+
+[data-galaxy="true"] .hero-sub {
+  color: rgba(255, 255, 255, 0.75);
+  opacity: 1;
 }
 
 .hero-actions {
   display: flex;
   justify-content: center;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 14px;
+  margin-bottom: 24px;
   flex-wrap: wrap;
 }
 
 .hero-meta {
-  font-size: 14px;
-  opacity: 0.6;
-  color: var(--color-text-secondary);
+  font-size: 13px;
+  color: var(--color-meta);
+  letter-spacing: 0.02em;
 }
+
+[data-galaxy="true"] .hero-meta {
+  color: rgba(255, 255, 255, 0.42);
+}
+
 
 /* ========================================
-   STEP 2: WHY PRYDE EXISTS SECTION
+   HERO BUTTONS (rounded pill style)
    ======================================== */
 
-.home-why {
-  padding: 80px 20px;
-  background: var(--color-bg);
+.btn-hero-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 30px;
+  background: var(--color-brand);
+  color: #fff;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  border: none;
+  cursor: pointer;
 }
+
+.btn-hero-primary:hover {
+  background: var(--color-brand-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(108, 92, 231, 0.32);
+}
+
+.btn-hero-primary:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 3px;
+}
+
+.btn-hero-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  background: transparent;
+  color: var(--color-text);
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid var(--color-border-strong);
+  cursor: pointer;
+}
+
+.btn-hero-secondary:hover {
+  background: var(--color-surface-muted);
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+}
+
+.btn-hero-secondary:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 3px;
+}
+
+[data-galaxy="true"] .btn-hero-secondary {
+  color: rgba(255, 255, 255, 0.88);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+[data-galaxy="true"] .btn-hero-secondary:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(108, 92, 231, 0.5);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+
+/* ========================================
+   SHARED SECTION LAYOUT
+   ======================================== */
 
 .container {
   max-width: 1100px;
   margin: 0 auto;
 }
 
-.why-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  align-items: center;
-}
-
-.why-text h2 {
-  font-size: 32px;
-  margin-bottom: 20px;
+.section-heading {
+  font-size: clamp(26px, 3.5vw, 36px);
+  font-weight: 700;
   color: var(--color-text);
-  font-weight: var(--font-weight-bold);
-}
-
-.why-text p {
-  font-size: 16px;
-  line-height: var(--line-height-relaxed);
-  color: var(--color-text-secondary);
-}
-
-.mock-post-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  padding: 24px;
-  border-radius: 16px;
-  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Glass card hover for mock post card */
-[data-galaxy="true"] .mock-post-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 40px rgba(0,0,0,0.45);
-  border-color: rgba(255,255,255,0.18);
-}
-
-.mock-post-card h3 {
-  font-size: 18px;
+  text-align: center;
   margin-bottom: 12px;
-  color: var(--color-text);
+  letter-spacing: -0.01em;
 }
 
-.mock-post-card p {
-  font-size: 14px;
-  line-height: var(--line-height-relaxed);
-  color: var(--color-text-secondary);
+[data-galaxy="true"] .section-heading {
+  color: rgba(255, 255, 255, 0.95);
 }
+
+.section-sub {
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  max-width: 520px;
+  margin: 0 auto 52px;
+  line-height: 1.65;
+}
+
+[data-galaxy="true"] .section-sub {
+  color: rgba(255, 255, 255, 0.62);
+}
+
 
 /* ========================================
-   STEP 3: EXPERIENCE SECTION
+   WHY PRYDE — 3 FEATURE CARDS
    ======================================== */
 
-.home-experience {
-  padding: 80px 20px;
+.home-why {
+  padding: 100px 24px;
   background: var(--color-bg);
 }
 
-.home-experience h2 {
-  font-size: 32px;
-  margin-bottom: 40px;
-  color: var(--color-text);
-  font-weight: var(--font-weight-bold);
-  text-align: center;
-}
-
-.experience-grid {
+.why-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
 
-.experience-card {
+.why-card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  padding: 24px;
-  border-radius: 16px;
-  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(108, 92, 231, 0.15);
+  border-radius: 20px;
+  padding: 32px 26px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
-/* Glass card hover for experience cards */
-[data-galaxy="true"] .experience-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 40px rgba(0,0,0,0.45);
-  border-color: rgba(255,255,255,0.18);
+.why-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(108, 92, 231, 0.10);
+  border-color: rgba(108, 92, 231, 0.30);
 }
 
-.experience-card h3 {
-  font-size: 20px;
-  margin-bottom: 12px;
+[data-galaxy="true"] .why-card {
+  background: rgba(18, 16, 38, 0.55);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(108, 92, 231, 0.22);
+}
+
+[data-galaxy="true"] .why-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(108, 92, 231, 0.22);
+  border-color: rgba(108, 92, 231, 0.46);
+}
+
+.why-card-icon {
+  font-size: 28px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.why-card h3 {
+  font-size: 18px;
+  font-weight: 600;
   color: var(--color-text);
-  font-weight: var(--font-weight-bold);
+  margin-bottom: 10px;
 }
 
-.experience-card p {
-  font-size: 14px;
-  line-height: var(--line-height-relaxed);
-  color: var(--color-text-secondary);
+[data-galaxy="true"] .why-card h3 {
+  color: rgba(255, 255, 255, 0.95);
 }
+
+.why-card p {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+[data-galaxy="true"] .why-card p {
+  color: rgba(255, 255, 255, 0.60);
+}
+
+
 
 /* ========================================
-   STEP 4: COMMUNITY PREVIEW SECTION
+   TRUST STRIP
    ======================================== */
 
-.home-community {
-  padding: 80px 20px;
+.home-trust {
+  padding: 36px 24px;
   background: var(--color-surface);
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
 }
 
-.home-community h2 {
-  font-size: 32px;
-  margin-bottom: 40px;
-  color: var(--color-text);
-  font-weight: var(--font-weight-bold);
-  text-align: center;
+[data-galaxy="true"] .home-trust {
+  background: rgba(12, 10, 28, 0.68);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-.community-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+.trust-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-.community-card {
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  padding: 24px;
-  border-radius: 16px;
-  text-align: center;
-  font-size: 18px;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text);
-  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
 }
 
-/* Glass card hover for community cards */
-[data-galaxy="true"] .community-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 40px rgba(0,0,0,0.45);
-  border-color: rgba(255,255,255,0.18);
+[data-galaxy="true"] .trust-item {
+  color: rgba(255, 255, 255, 0.65);
 }
+
+.trust-icon {
+  font-size: 16px;
+}
+
+.trust-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--color-border-strong);
+  opacity: 0.35;
+  flex-shrink: 0;
+}
+
 
 /* ========================================
-   STEP 5: FINAL CTA SECTION
+   FINAL CTA SECTION
    ======================================== */
 
 .home-final-cta {
-  padding: 80px 20px;
+  padding: 130px 24px;
   text-align: center;
   background: var(--color-bg);
 }
 
-.home-final-cta h2 {
-  font-size: 36px;
-  margin-bottom: 30px;
+.final-cta-heading {
+  font-size: clamp(30px, 4vw, 46px);
+  line-height: 1.2;
+  font-weight: 700;
   color: var(--color-text);
-  font-weight: var(--font-weight-bold);
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
 }
+
+[data-galaxy="true"] .final-cta-heading {
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.final-cta-sub {
+  font-size: 17px;
+  color: var(--color-text-secondary);
+  max-width: 460px;
+  margin: 0 auto 36px;
+  line-height: 1.65;
+}
+
+[data-galaxy="true"] .final-cta-sub {
+  color: rgba(255, 255, 255, 0.62);
+}
+
 
 /* ========================================
-   BUTTON STYLES
-   ======================================== */
-
-.btn-primary,
-.btn-secondary {
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 16px;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  display: inline-block;
-  cursor: pointer;
-  border: none;
-}
-
-.btn-primary {
-  background: var(--color-brand);
-  color: var(--color-text-inverse);
-}
-
-.btn-primary:hover {
-  background: var(--color-brand-hover);
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  background: transparent;
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
-}
-
-.btn-secondary:hover {
-  background: var(--color-surface);
-  border-color: var(--color-brand);
-}
-
-.btn-primary.large {
-  padding: 14px 36px;
-  font-size: 18px;
-}
-
-/* Button styling now handled by galaxy-layer.css */
-
-/* ========================================
-   RESPONSIVE DESIGN
+   RESPONSIVE
    ======================================== */
 
 @media (max-width: 900px) {
-  .home-hero h1 {
-    font-size: 32px;
+  .home-hero {
+    padding: 120px 20px 100px;
+  }
+
+  [data-galaxy="true"] .home-hero {
+    padding: 130px 20px 110px;
   }
 
   .hero-sub {
@@ -326,52 +430,77 @@
 
   .hero-actions {
     flex-direction: column;
+    align-items: center;
   }
 
-  .why-grid {
-    grid-template-columns: 1fr;
+  .btn-hero-primary,
+  .btn-hero-secondary {
+    width: 100%;
+    max-width: 320px;
   }
 
-  .experience-grid,
-  .community-grid {
+  .why-cards,
+  .community-posts {
     grid-template-columns: 1fr;
   }
 
   .home-why,
-  .home-experience,
   .home-community,
   .home-final-cta {
-    padding: 60px 20px;
+    padding: 72px 20px;
   }
 
-  .home-hero {
-    padding: 80px 20px;
+  .trust-divider {
+    display: none;
   }
 
-  .why-text h2,
-  .home-experience h2,
-  .home-community h2 {
-    font-size: 28px;
-  }
-
-  .home-final-cta h2 {
-    font-size: 28px;
+  .trust-inner {
+    gap: 20px;
   }
 }
+
+@media (max-width: 600px) {
+  .home-hero {
+    padding: 100px 16px 80px;
+  }
+
+  .hero-glow {
+    width: 400px;
+    height: 400px;
+  }
+
+  .section-sub {
+    margin-bottom: 36px;
+  }
+
+  .trust-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 0 8px;
+  }
+}
+
+
 /* ========================================
    ACCESSIBILITY
    ======================================== */
 
 @media (prefers-reduced-motion: reduce) {
-  * {
-    animation: none !important;
+  .why-card,
+  .btn-hero-primary,
+  .btn-hero-secondary {
     transition: none !important;
+  }
+
+  .why-card:hover,
+  .btn-hero-primary:hover {
+    transform: none !important;
   }
 }
 
-/* Focus states */
-.btn-primary:focus,
-.btn-secondary:focus {
+.btn-hero-primary:focus,
+.btn-hero-secondary:focus {
   outline: 2px solid var(--color-brand);
   outline-offset: 2px;
 }

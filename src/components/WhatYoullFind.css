@@ -1,0 +1,144 @@
+/* ========================================
+   WHAT YOU'LL FIND HERE
+   Static feature section — no dynamic data
+   ======================================== */
+
+.wyf-section {
+  padding: 100px 24px;
+  background: var(--color-surface-muted);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+[data-galaxy="true"] .wyf-section {
+  background: transparent;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.wyf-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.wyf-heading {
+  font-size: clamp(26px, 3.5vw, 36px);
+  font-weight: 700;
+  color: var(--color-text);
+  text-align: center;
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+[data-galaxy="true"] .wyf-heading {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.wyf-sub {
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  max-width: 480px;
+  margin: 0 auto 52px;
+  line-height: 1.65;
+}
+
+[data-galaxy="true"] .wyf-sub {
+  color: rgba(255, 255, 255, 0.60);
+}
+
+/* ── Cards ── */
+
+.wyf-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.wyf-card {
+  background: var(--color-surface);
+  border: 1px solid rgba(108, 92, 231, 0.15);
+  border-radius: 20px;
+  padding: 32px 26px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.wyf-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(108, 92, 231, 0.10);
+  border-color: rgba(108, 92, 231, 0.30);
+}
+
+[data-galaxy="true"] .wyf-card {
+  background: rgba(18, 16, 38, 0.55);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(108, 92, 231, 0.22);
+}
+
+[data-galaxy="true"] .wyf-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(108, 92, 231, 0.22);
+  border-color: rgba(108, 92, 231, 0.46);
+}
+
+.wyf-icon {
+  font-size: 28px;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.wyf-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 10px;
+}
+
+[data-galaxy="true"] .wyf-card-title {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.wyf-card-body {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+[data-galaxy="true"] .wyf-card-body {
+  color: rgba(255, 255, 255, 0.60);
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 900px) {
+  .wyf-section {
+    padding: 72px 20px;
+  }
+
+  .wyf-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .wyf-section {
+    padding: 60px 16px;
+  }
+
+  .wyf-sub {
+    margin-bottom: 36px;
+  }
+}
+
+/* ── Accessibility ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .wyf-card {
+    transition: none !important;
+  }
+
+  .wyf-card:hover {
+    transform: none !important;
+  }
+}
