@@ -203,6 +203,19 @@
   }
 }
 
+/* ========================================
+   ANNOUNCEMENT NOTIFICATION STYLE
+   ======================================== */
+.notification-card.announcement {
+  border-left: 4px solid var(--pryde-purple, #6C5CE7);
+  background: color-mix(in srgb, var(--pryde-purple, #6C5CE7) 8%, var(--bg-card, #fff));
+}
+
+.notification-card.announcement .notification-icon {
+  background: color-mix(in srgb, var(--pryde-purple, #6C5CE7) 18%, transparent);
+  color: var(--pryde-purple, #6C5CE7);
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .notifications-container {

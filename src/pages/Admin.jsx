@@ -39,6 +39,10 @@ function Admin() {
   const [badges, setBadges] = useState([]);
   const [moderationSettings, setModerationSettings] = useState(null);
   const [moderationHistory, setModerationHistory] = useState([]);
+  const [broadcastMessage, setBroadcastMessage] = useState('');
+  const [broadcastLink, setBroadcastLink] = useState('');
+  const [broadcastSending, setBroadcastSending] = useState(false);
+  const [broadcastResult, setBroadcastResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
@@ -496,6 +500,34 @@ function Admin() {
     }
   };
 
+  const handleBroadcast = async () => {
+    if (!broadcastMessage.trim()) return;
+    const confirmed = await showConfirm(
+      `Send "@everyone" announcement to ALL active users?\n\nMessage: "${broadcastMessage.trim()}"`,
+      'Send @everyone Announcement',
+      'Send Announcement',
+      'Cancel'
+    );
+    if (!confirmed) return;
+
+    setBroadcastSending(true);
+    setBroadcastResult(null);
+    try {
+      const response = await api.post('/admin/broadcast', {
+        message: broadcastMessage.trim(),
+        link: broadcastLink.trim() || '/feed'
+      });
+      setBroadcastResult({ success: true, notified: response.data.notified });
+      setBroadcastMessage('');
+      setBroadcastLink('');
+    } catch (error) {
+      console.error('Broadcast error:', error);
+      setBroadcastResult({ success: false, error: error.response?.data?.message || 'Failed to send announcement' });
+    } finally {
+      setBroadcastSending(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="page-container">
@@ -657,6 +689,18 @@ function Admin() {
             🔒 Security
           </button>
         </div>
+
+        {currentUser?.role === 'super_admin' && (
+          <div className="admin-section">
+            <div className="admin-section-title">Announcements</div>
+            <button
+              className={`admin-nav-item ${activeTab === 'broadcast' ? 'active' : ''}`}
+              onClick={() => handleNavClick('broadcast')}
+            >
+              📢 @everyone Broadcast
+            </button>
+          </div>
+        )}
       </>
     );
   };
@@ -730,6 +774,78 @@ function Admin() {
             showAlert={showAlert}
             showConfirm={showConfirm}
           />
+        )}
+        {activeTab === 'broadcast' && currentUser?.role === 'super_admin' && (
+          <section id="content-broadcast" role="region" aria-labelledby="tab-broadcast">
+            <div className="admin-tab-content">
+              <h2 className="admin-section-heading">📢 @everyone Announcement</h2>
+              <p className="admin-section-description">
+                Send a site-wide announcement notification to all active users. Use this for important updates only.
+              </p>
+
+              <div className="broadcast-form">
+                <div className="broadcast-field">
+                  <label htmlFor="broadcast-message" className="broadcast-label">
+                    Announcement message <span className="required">*</span>
+                  </label>
+                  <textarea
+                    id="broadcast-message"
+                    className="broadcast-textarea"
+                    placeholder="Write your announcement here... (max 500 characters)"
+                    value={broadcastMessage}
+                    onChange={(e) => setBroadcastMessage(e.target.value)}
+                    maxLength={500}
+                    rows={4}
+                    disabled={broadcastSending}
+                  />
+                  <div className="broadcast-char-count">
+                    {broadcastMessage.length}/500
+                  </div>
+                </div>
+
+                <div className="broadcast-field">
+                  <label htmlFor="broadcast-link" className="broadcast-label">
+                    Link (optional)
+                  </label>
+                  <input
+                    id="broadcast-link"
+                    type="text"
+                    className="broadcast-input"
+                    placeholder="/feed  or  /groups/community-news"
+                    value={broadcastLink}
+                    onChange={(e) => setBroadcastLink(e.target.value)}
+                    disabled={broadcastSending}
+                  />
+                  <p className="broadcast-hint">Where users will go when they click the notification. Defaults to /feed.</p>
+                </div>
+
+                {broadcastResult && (
+                  <div className={`broadcast-result ${broadcastResult.success ? 'broadcast-result--success' : 'broadcast-result--error'}`}>
+                    {broadcastResult.success
+                      ? `Announcement delivered to ${broadcastResult.notified} users.`
+                      : `Error: ${broadcastResult.error}`}
+                  </div>
+                )}
+
+                <button
+                  className="broadcast-send-btn"
+                  onClick={handleBroadcast}
+                  disabled={broadcastSending || !broadcastMessage.trim()}
+                >
+                  {broadcastSending ? 'Sending...' : 'Send @everyone Announcement'}
+                </button>
+              </div>
+
+              <div className="broadcast-info-box">
+                <strong>How it works:</strong>
+                <ul>
+                  <li>All active users receive a notification in their bell immediately.</li>
+                  <li>You can also include <code>@everyone</code> in any post you create — it will trigger the same broadcast automatically.</li>
+                  <li>Only Super Admins can use this feature.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
         )}
       </>
     );

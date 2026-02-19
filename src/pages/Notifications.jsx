@@ -95,6 +95,7 @@ function Notifications() {
       case 'reaction': return '😊';
       case 'group_post': return '📝';
       case 'group_mention': return '💬';
+      case 'announcement': return '📢';
       default: return '🔔';
     }
   };
@@ -122,6 +123,8 @@ function Notifications() {
         return `${senderName} posted in ${groupName}`;
       case 'group_mention':
         return `${senderName} mentioned you in ${groupName}`;
+      case 'announcement':
+        return notification.message || `${senderName} sent an @everyone announcement`;
       default:
         return notification.message || 'New notification';
     }
@@ -164,7 +167,7 @@ function Notifications() {
             {notifications.map(notification => (
               <div
                 key={notification._id}
-                className={`notification-card ${!notification.read ? 'unread' : ''}`}
+                className={`notification-card ${!notification.read ? 'unread' : ''} ${notification.type === 'announcement' ? 'announcement' : ''}`}
                 onClick={() => handleNotificationClick(notification)}
               >
                 <div className="notification-icon">{getNotificationIcon(notification.type)}</div>

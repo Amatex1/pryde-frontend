@@ -42,7 +42,7 @@ self.addEventListener('push', (event) => {
     body: data.body,
     icon: '/pryde-logo-small.webp',
     badge: '/pryde-logo-small.webp',
-    data: data.url || '/messages',
+    data: data.data?.url || '/',
   };
 
   event.waitUntil(

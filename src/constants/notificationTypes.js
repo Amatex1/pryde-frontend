@@ -21,6 +21,7 @@ export const SOCIAL_NOTIFICATION_TYPES = Object.freeze([
   'group_post',
   'system',
   'moderation',
+  'announcement',
   'resonance',
   'circle_invite',
   'circle_post',
