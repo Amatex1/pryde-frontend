@@ -6,6 +6,19 @@
    ======================================== */
 
 /* ========================================
+   COMMUNITY IDENTITY BANNER
+   ======================================== */
+.community-banner {
+  background: linear-gradient(135deg, #4c1d95, #6d28d9);
+  color: white;
+  padding: 14px 18px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-weight: 500;
+  box-shadow: 0 0 18px rgba(139, 92, 246, 0.25);
+}
+
+/* ========================================
    FEED LAYOUT - CALM, CENTERED GRID
    Sidebar ALWAYS stays beside feed on desktop
    ======================================== */
@@ -69,16 +82,29 @@
    ======================================== */
 
 .create-post {
-  padding: var(--space-md);  /* Compact density: 12px */
-  border-radius: var(--radius-md);  /* Compact density: 12px */
-  background: rgba(255, 255, 255, 0.015); /* Barely visible - optional feel */
-  border: 1px solid rgba(255, 255, 255, 0.06); /* Subtle border */
-  box-shadow: none; /* NO shadow - composer ranks below feed cards */
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: rgba(21, 22, 42, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   margin: 0;
-  /* NO gradients, NO glow, NO visual dominance */
+  animation: composerFadeIn 0.35s ease both;
+}
+
+@keyframes composerFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+[data-theme="light"] .create-post {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
 .section-title {
@@ -4009,14 +4035,18 @@ html:not([data-theme]) .post-actions {
 .post-actions-bar {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap; /* Allow wrapping to multiple rows */
-  justify-content: flex-end; /* Align buttons to the right */
+  flex-wrap: nowrap; /* Single row — no wrapping */
+  justify-content: flex-end;
   align-items: center;
-  align-content: stretch;
-  gap: 8px; /* Tight spacing between buttons */
+  gap: 8px;
   margin-top: 1rem;
   overflow-x: auto;
-  opacity: 0.85; /* Soften tool row - available, not featured */
+  scrollbar-width: none; /* Hide scrollbar on Firefox */
+  opacity: 0.85;
+}
+
+.post-actions-bar::-webkit-scrollbar {
+  display: none; /* Hide scrollbar on Chrome/Safari */
 }
 
 /* ========================================
@@ -4318,8 +4348,8 @@ label.btn-media-upload:disabled {
 
 @media (max-width: 768px) {
   .post-actions-bar {
-    flex-wrap: wrap; /* Allow wrapping on mobile too */
-    justify-content: flex-end; /* Align to right */
+    flex-wrap: nowrap;
+    justify-content: flex-end;
     gap: 6px;
     overflow-x: auto;
     padding-bottom: 4px;

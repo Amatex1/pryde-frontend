@@ -21,6 +21,7 @@ import PostHeader from '../components/PostHeader';
 import PausableGif from '../components/PausableGif';
 import FeedPost from '../components/feed/FeedPost';
 import FeedComposer from '../components/feed/FeedComposer';
+import CommunityBanner from '../components/CommunityBanner';
 import { useBadges } from '../hooks/useBadges';
 // DEPRECATED: EditHistoryModal import removed 2025-12-26
 import DraftManager from '../components/DraftManager';
@@ -2337,6 +2338,8 @@ function Feed() {
               <span className="tab-label">Everyone</span>
             </button>
           </div>
+
+          <CommunityBanner />
 
           {/* FeedComposer - Desktop only (mobile has FAB + bottom sheet below) */}
           <FeedComposer

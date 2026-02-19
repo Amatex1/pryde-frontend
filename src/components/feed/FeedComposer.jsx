@@ -199,16 +199,6 @@ const FeedComposer = memo(function FeedComposer({
 
               <button
                 type="button"
-                className="btn-gif"
-                onClick={() => onSetShowGifPicker(showGifPicker === 'main-post' ? null : 'main-post')}
-                disabled={selectedPostGif !== null}
-                title="Add GIF"
-              >
-                GIF
-              </button>
-
-              <button
-                type="button"
                 className={`btn-poll ${showPollCreator ? 'active' : ''}`}
                 onClick={() => onSetShowPollCreator(!showPollCreator)}
                 title="Add poll"
@@ -266,6 +256,16 @@ const FeedComposer = memo(function FeedComposer({
             title="View saved drafts"
           >
             📝 Drafts
+          </button>
+
+          <button
+            type="button"
+            className="btn-gif"
+            onClick={() => onSetShowGifPicker(showGifPicker === 'main-post' ? null : 'main-post')}
+            disabled={selectedPostGif !== null}
+            title="Add GIF"
+          >
+            GIF
           </button>
 
           <button type="submit" disabled={loading || uploadingMedia} className="btn-post glossy-gold">

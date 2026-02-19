@@ -52,6 +52,27 @@ function CommunityGuidelines() {
         </section>
 
         <section className="legal-section">
+          <div style={{
+            background: 'linear-gradient(135deg, #4c1d95, #6d28d9)',
+            borderRadius: '12px',
+            padding: '1.5rem 1.75rem',
+            marginBottom: '2rem',
+            color: 'white'
+          }}>
+            <h2 style={{ color: 'white', marginTop: 0 }}>Our Core Principles</h2>
+            <ul style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '1.8' }}>
+              <li>Identity-based attacks, slurs, or dehumanising language are not permitted.</li>
+              <li>Debate ideas — never someone's existence or identity.</li>
+              <li>Emotional expression, strong language, and venting are allowed when not directed at others.</li>
+              <li>We uplift. We do not harass.</li>
+              <li>Automated systems may temporarily hide content pending human review.</li>
+              <li>Moderation decisions can be reviewed and appealed.</li>
+              <li>Pryde may temporarily restrict features to protect community safety.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section className="legal-section">
           <h2>1. Our Core Values</h2>
           <p>
             <strong>Pryde Social is grounded in:</strong>
@@ -263,17 +284,20 @@ function CommunityGuidelines() {
             Depending on the severity and context, we may:
           </p>
           <ul>
-            <li>Remove harmful content</li>
-            <li>Issue a private warning with guidance</li>
+            <li><strong>Temporarily hide content</strong> while a human reviews it — this is reversible and doesn't mean you've done something wrong</li>
+            <li>Issue a private note with context and guidance</li>
             <li>Temporarily restrict access to certain features (Lounge, reactions, messaging)</li>
             <li>Temporarily suspend the account</li>
-            <li>Permanently ban the account</li>
+            <li>Permanently ban the account for the most serious violations</li>
           </ul>
+          <p>
+            <strong>Automated systems</strong> may temporarily hide content if it matches patterns associated with identity-based harm. These decisions are always reviewable by a human and can be appealed by reaching out to us.
+          </p>
           <p>
             <strong>Severe violations</strong> (CSAM, credible threats, hate speech, targeted harassment) result in immediate permanent bans.
           </p>
           <p>
-            Our goal is to protect the community while giving people room to learn and grow.
+            Our goal is to protect the community while giving people room to learn and grow. If a moderation action feels wrong, talk to us — we're human too.
           </p>
         </section>
 
