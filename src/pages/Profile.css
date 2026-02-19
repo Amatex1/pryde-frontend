@@ -4289,6 +4289,18 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     margin-top: 4px;
   }
 
+  /* Identity row wrapper — order must be on THIS element (direct flex child), not .profile-identity-pills inside it */
+  .profile-identity .profile-card--hybrid .profile-identity-row {
+    order: 3;
+    width: 100%; /* Allow pills to flex-wrap properly */
+  }
+
+  /* Stats wrapper — order must be on THIS element (direct flex child), not .profile-stats inside it */
+  .profile-identity .profile-card--hybrid .profile-stats-bottom {
+    order: 4;
+    width: 100%;
+  }
+
   /* Stats inline row, compact */
   .profile-identity .profile-card--hybrid .profile-stats {
     justify-content: center;
@@ -4297,7 +4309,6 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     margin-top: 8px;
     padding-top: 8px;
     border-top: 1px solid var(--border-light);
-    order: 3;
   }
 
   .profile-identity .profile-card--hybrid .profile-stats .stat-item {
@@ -4313,30 +4324,36 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     font-size: var(--font-size-xs);
   }
 
-  /* Pronouns/Age row */
+  /* Pronouns/Age row — centering only; ordering is controlled by parent .profile-identity-row */
   .profile-identity .profile-card--hybrid .profile-identity-pills {
     justify-content: center;
-    order: 4;
     margin-top: 8px;
   }
 
-  /* Bio last */
+  /* Bio */
   .profile-identity .profile-card--hybrid .profile-bio {
     order: 5;
     margin-top: 12px;
     text-align: center;
   }
 
+  /* Profile meta (website link) */
+  .profile-identity .profile-card--hybrid .profile-meta {
+    order: 6;
+    justify-content: center;
+  }
+
   /* Action buttons */
   .profile-identity .profile-card--hybrid .profile-action-buttons {
     justify-content: center;
-    order: 6;
+    order: 7;
     margin-top: 16px;
   }
 
-  /* Badge display - ensure it doesn't interfere */
+  /* Badge display — width: 100% ensures flex-wrap works even with align-items: center on card */
   .profile-identity .profile-card--hybrid .tiered-badge-display {
-    order: 7;
+    order: 8;
+    width: 100%;
   }
 }
 
