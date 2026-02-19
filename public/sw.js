@@ -35,7 +35,13 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('push', (event) => {
   if (!event.data) return;
 
-  const data = event.data.json();
+  let data;
+  try {
+    data = event.data.json();
+  } catch {
+    // Plain-text payload (e.g. DevTools test button) — wrap it
+    data = { title: 'Pryde', body: event.data.text() };
+  }
 
   const title = data.title || 'Pryde';
   const options = {
