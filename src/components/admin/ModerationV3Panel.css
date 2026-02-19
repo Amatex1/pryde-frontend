@@ -592,3 +592,70 @@
   background: #f0f7ff;
   border-color: #b8d4f0;
 }
+
+/* ── Strike Simulation UI ─────────────────────────────────────────────────── */
+
+/* "Simulation" badge in the event header */
+.sim-badge {
+  background: #6f42c1;
+  color: #fff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* Simulation panel inside an EventCard */
+.sim-strike-panel {
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  background: #f3eeff;
+  border: 1px solid #d0b8ff;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.sim-strike-header {
+  font-weight: 600;
+  color: #4a1c96;
+  margin-bottom: 0.4rem;
+}
+
+.sim-strike-details {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.sim-detail { color: #333; }
+
+/* Simulated action badges */
+.sim-action-badge {
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+.sim-action-badge.sim-green  { background: #d4edda; color: #155724; }
+.sim-action-badge.sim-orange { background: #fff3cd; color: #856404; }
+.sim-action-badge.sim-red    { background: #f8d7da; color: #721c24; }
+.sim-action-badge.sim-gray   { background: #e2e3e5; color: #383d41; }
+
+/* Dark theme overrides */
+[data-theme="dark"] .sim-badge { background: #9b59d6; }
+
+[data-theme="dark"] .sim-strike-panel {
+  background: #1e1540;
+  border-color: #5b3d9e;
+}
+
+[data-theme="dark"] .sim-strike-header { color: #c9a8ff; }
+
+[data-theme="dark"] .sim-detail { color: var(--text-muted, #9FA1C0); }
+
+[data-theme="dark"] .sim-action-badge.sim-green  { background: #1a3326; color: #6fcf97; }
+[data-theme="dark"] .sim-action-badge.sim-orange { background: #3a2c00; color: #f2c94c; }
+[data-theme="dark"] .sim-action-badge.sim-red    { background: #3a0f12; color: #eb5757; }
+[data-theme="dark"] .sim-action-badge.sim-gray   { background: #2d2f3e; color: #9FA1C0; }

@@ -186,9 +186,22 @@ function EventsSection({ events, onRefresh }) {
   );
 }
 
+// Human-readable labels for simulated strike actions
+const SIM_ACTION_LABELS = {
+  NONE:                     { text: 'No restriction',        color: 'green'  },
+  WOULD_48_HOUR_RESTRICTION: { text: '48-hour restriction',   color: 'orange' },
+  WOULD_30_DAY_SHADOW:      { text: '30-day restriction',    color: 'red'    },
+  WOULD_PERMANENT_BAN:      { text: 'Permanent ban',         color: 'red'    }
+};
+
 function EventCard({ event }) {
   const action = ACTION_LABELS[event.response?.action] || ACTION_LABELS.ALLOW;
   const explanation = EXPLANATION_LABELS[event.explanationCode] || { text: event.explanationCode, color: 'gray' };
+
+  const hasSimulation = event.simulatedAction != null;
+  const simLabel = hasSimulation
+    ? (SIM_ACTION_LABELS[event.simulatedAction] || { text: event.simulatedAction, color: 'gray' })
+    : null;
 
   return (
     <div className={`event-card ${event.shadowMode ? 'shadow-event' : ''}`}>
@@ -196,6 +209,9 @@ function EventCard({ event }) {
         <span className={`action-badge ${action.color}`}>{action.icon} {action.text}</span>
         <span className="event-time">{new Date(event.createdAt).toLocaleString()}</span>
         {event.shadowMode && <span className="shadow-badge">SHADOW</span>}
+        {event.enforcementState === 'SIMULATION_ONLY' && (
+          <span className="sim-badge">Simulation</span>
+        )}
       </div>
       <div className="event-content">
         <p className="content-preview">{event.contentPreview || '(no preview)'}</p>
@@ -206,6 +222,23 @@ function EventCard({ event }) {
         <span className="detail">Confidence: {Math.round((event.confidence || 0) * 100)}%</span>
       </div>
       <div className={`event-explanation ${explanation.color}`}>{explanation.text}</div>
+
+      {hasSimulation && (
+        <div className="sim-strike-panel">
+          <div className="sim-strike-header">⚡ Strike Simulation (no enforcement)</div>
+          <div className="sim-strike-details">
+            <span className="sim-detail">
+              Category strike: <strong>{event.simulatedCategoryLevel ?? '—'}</strong>
+            </span>
+            <span className="sim-detail">
+              Global strikes: <strong>{event.simulatedGlobalLevel ?? '—'}</strong>
+            </span>
+            <span className={`sim-action-badge sim-${simLabel.color}`}>
+              {simLabel.text}
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
