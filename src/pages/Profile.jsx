@@ -1736,8 +1736,11 @@ function Profile() {
             <div className="upload-message-banner">{uploadMessage}</div>
           )}
 
-          {/* Avatar OVERLAY - hidden when editing avatar (editor shows in cover area) */}
-          <div className={`profile-avatar profile-avatar--overlay${editingType === 'avatar' ? ' profile-avatar--editing-hidden' : ''}`}>
+          {/* Avatar OVERLAY - hidden during any editing mode.
+              During cover edit: avatar has z-index:100 which sits above the crop canvas (z-index:20)
+              and blocks touch/pointer events on that portion of the crop area on mobile.
+              During avatar edit: editor replaces the avatar visually in the cover area. */}
+          <div className={`profile-avatar profile-avatar--overlay${editingType ? ' profile-avatar--editing-hidden' : ''}`}>
             {user.profilePhoto ? (
               <div
                 className="profile-avatar-image"

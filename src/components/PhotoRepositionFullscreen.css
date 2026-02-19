@@ -196,3 +196,11 @@
     font-size: 12px;
   }
 }
+
+/* ── Desktop: match cover crop area to the taller desktop cover (300px) ── */
+@media (min-width: 1025px) {
+  .photo-editor-crop-container.cover {
+    height: 300px;
+    min-height: 300px;
+  }
+}

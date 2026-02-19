@@ -121,22 +121,16 @@ export default function PhotoRepositionInline({
   // For cover: wider aspect (16:9 or similar)
   const aspectRatio = type === "avatar" ? 1 : 16 / 9;
 
-  // Calculate container dimensions based on type
-  const containerHeight = type === "avatar" ? "auto" : "100%";
-  const containerMinHeight = type === "avatar" ? "200px" : "auto";
-
   // Zoom percentage for display
   const zoomPercent = Math.round(zoom * 100);
 
   return (
     <div className={`photo-editor-inline ${type}`}>
-      {/* Crop area */}
+      {/* Crop area — height is controlled by CSS (.photo-editor-crop-container.cover / .avatar).
+          Inline height/minHeight removed: "height:100%" resolved to 0 on mobile because
+          the parent chain contains height:auto elements, collapsing the crop canvas. */}
       <div
         className={`photo-editor-crop-container ${type}`}
-        style={{
-          height: containerHeight,
-          minHeight: containerMinHeight
-        }}
       >
         <Cropper
           image={imageUrl}
