@@ -85,12 +85,13 @@ export const unsubscribeFromPushNotifications = async () => {
     const subscription = await registration.pushManager.getSubscription();
 
     if (subscription) {
+      // Tell backend to remove only this device's subscription
+      await api.post('/push/unsubscribe', { endpoint: subscription.endpoint });
       // Unsubscribe from push service
       await subscription.unsubscribe();
+    } else {
+      await api.post('/push/unsubscribe');
     }
-
-    // Notify backend
-    await api.post('/push/unsubscribe');
 
     isSubscribed = false;
     return true;
