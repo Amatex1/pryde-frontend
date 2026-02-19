@@ -227,6 +227,8 @@ export const setQuietMode = (enabled) => {
       showQuietModeToast();
     }
   } else {
+    // Dismiss any lingering "Quiet Mode is on" toast
+    document.querySelector('.toast-quiet')?.remove();
     // Remove sub-toggle attributes when quiet mode is off
     document.documentElement.removeAttribute('data-quiet-visuals');
     document.documentElement.removeAttribute('data-quiet-writing');
