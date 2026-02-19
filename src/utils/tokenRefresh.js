@@ -92,7 +92,13 @@ export async function refreshAccessToken({ force = false } = {}) {
       logger.warn('[TokenRefresh] ⚠️ No accessToken in response');
       return null;
     } catch (error) {
-      logger.error('[TokenRefresh] ❌ Error:', error.message);
+      // TypeError("Failed to fetch") = network error (server sleeping, offline, CORS preflight)
+      // This is transient and handled gracefully — log as warn, not error
+      if (error instanceof TypeError) {
+        logger.warn('[TokenRefresh] ⚠️ Network unavailable (server may be waking up)');
+      } else {
+        logger.error('[TokenRefresh] ❌ Error:', error.message);
+      }
       return null;
     } finally {
       isRefreshing = false;
