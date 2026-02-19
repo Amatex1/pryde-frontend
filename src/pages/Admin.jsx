@@ -791,15 +791,14 @@ function Admin() {
                   <textarea
                     id="broadcast-message"
                     className="broadcast-textarea"
-                    placeholder="Write your announcement here... (max 500 characters)"
+                    placeholder="Write your announcement here..."
                     value={broadcastMessage}
                     onChange={(e) => setBroadcastMessage(e.target.value)}
-                    maxLength={500}
                     rows={4}
                     disabled={broadcastSending}
                   />
                   <div className="broadcast-char-count">
-                    {broadcastMessage.length}/500
+                    {broadcastMessage.length} characters
                   </div>
                 </div>
 
