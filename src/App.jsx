@@ -28,6 +28,7 @@ import QuietReturnToast from './components/onboarding/QuietReturnToast';
 import SafetyWarning from './components/SafetyWarning';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
 import CookieBanner from './components/CookieBanner';
+import PushNotificationPrompt from './components/PushNotificationPrompt';
 import ErrorBoundary from './components/ErrorBoundary';
 import UpdateBanner from './components/UpdateBanner';
 import AuthLoadingScreen from './components/AuthLoadingScreen'; // 🔥 NEW: Global auth loading screen
@@ -505,6 +506,9 @@ function AppContent() {
 
             {/* Cookie Banner */}
             <CookieBanner />
+
+            {/* One-time push notification permission prompt */}
+            {isAuthenticated && <PushNotificationPrompt />}
 
             {/* 🎯 Onboarding Tour - Calm welcome for new users */}
             {/* IMPORTANT: Must be inside Router because it uses useNavigate() */}
