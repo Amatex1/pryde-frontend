@@ -4273,17 +4273,19 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     gap: 12px; /* Tighter spacing for mobile */
   }
 
-  /* Name on mobile */
+  /* Name on mobile — left-aligned */
   .profile-identity .profile-card--hybrid .profile-name {
     font-size: var(--font-size-2xl);
-    text-align: center;
+    text-align: left;
+    align-self: flex-start;
     margin-top: 0;
     order: 1;
     display: block;
   }
 
   .profile-identity .profile-card--hybrid .profile-username {
-    text-align: center;
+    text-align: left;
+    align-self: flex-start;
     order: 2; /* Below name */
     display: block;
     margin-top: 4px;
