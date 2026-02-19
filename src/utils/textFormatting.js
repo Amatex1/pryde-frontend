@@ -1,8 +1,26 @@
 // Emoji shortcuts mapping
-// NOTE: Only :word: style shortcuts are converted.
-// Text emoticons like :) ;) :D <3 XD etc. are left as-is
-// so users can use both emoticons and emojis on the platform.
+// :word: style shortcuts AND common text emoticons are all converted.
+// Underscore variants like :thumbs_up: are also supported (normalised before lookup).
 export const emojiShortcuts = {
+  // ── Text emoticons ──────────────────────────────────────────────────────
+  ':)':   '😊',
+  ':-)':  '😊',
+  ':D':   '😄',
+  ':-D':  '😄',
+  ':(': '😢',
+  ':-(': '😢',
+  ":'(":  '😢',
+  ';)':   '😉',
+  ';-)':  '😉',
+  ':P':   '😛',
+  ':-P':  '😛',
+  ':o':   '😮',
+  ':O':   '😮',
+  ':-o':  '😮',
+  ':-O':  '😮',
+  '<3':   '❤️',
+  '</3':  '💔',
+  // ── :word: shortcuts ────────────────────────────────────────────────────
   ':thumbsup:': '👍',
   ':thumbsdown:': '👎',
   ':heart:': '❤️',
@@ -100,7 +118,14 @@ export const emojiShortcuts = {
 // Convert emoji shortcuts to actual emojis
 export const convertEmojiShortcuts = (text) => {
   let result = text;
-  
+
+  // Normalise underscore shortcodes so :thumbs_up: works the same as :thumbsup:
+  result = result.replace(/:([a-z][a-z0-9_]+[a-z0-9]):/g, (match, word) => {
+    const normalised = ':' + word.replace(/_/g, '') + ':';
+    // Only collapse if the normalised form actually exists in our map
+    return emojiShortcuts[normalised] ? normalised : match;
+  });
+
   // Sort shortcuts by length (longest first) to avoid partial replacements
   const sortedShortcuts = Object.keys(emojiShortcuts).sort((a, b) => b.length - a.length);
   
