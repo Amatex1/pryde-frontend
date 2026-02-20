@@ -67,12 +67,14 @@ const CommentThread = ({
 
   // Menu state for 3-dot context menu
   const [openMenuId, setOpenMenuId] = useState(null);
-  const menuRef = useRef(null);
 
-  // Close menu when clicking outside
+  // Close menu when clicking outside any comment-menu-container
+  // Using closest() instead of a ref because menuRef would point to the last
+  // rendered container (a reply), causing clicks on other menus to falsely
+  // register as "outside" and close the menu before the click event fires.
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      if (!event.target.closest('.comment-menu-container')) {
         setOpenMenuId(null);
       }
     };
@@ -206,7 +208,7 @@ const CommentThread = ({
             </div>
 
             {/* 3-dot menu */}
-            <div className="comment-menu-container" ref={menuRef}>
+            <div className="comment-menu-container">
               <button
                 className="comment-menu-btn"
                 onClick={() => setOpenMenuId(openMenuId === comment._id ? null : comment._id)}
@@ -372,7 +374,7 @@ const CommentThread = ({
                     </div>
 
                     {/* 3-dot menu */}
-                    <div className="comment-menu-container" ref={menuRef}>
+                    <div className="comment-menu-container">
                       <button
                         className="comment-menu-btn"
                         onClick={() => setOpenMenuId(openMenuId === reply._id ? null : reply._id)}
