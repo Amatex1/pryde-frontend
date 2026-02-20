@@ -43,7 +43,7 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   transition: all 0.2s;
 }
 
@@ -62,7 +62,7 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   transition: all 0.2s;
 }
 
@@ -104,7 +104,7 @@
 }
 
 .session-icon {
-  font-size: 24px;
+  font-size: var(--font-size-2xl);
   flex-shrink: 0;
   opacity: 0.8;
 }
@@ -115,7 +115,7 @@
 }
 
 .session-device {
-  font-size: 15px;
+  font-size: var(--font-size-base);
   margin-bottom: 4px;
   display: flex;
   align-items: center;
@@ -132,7 +132,7 @@
   color: white;
   padding: 2px 8px;
   border-radius: 12px;
-  font-size: 11px;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.3px;
@@ -142,7 +142,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   margin-bottom: 8px;
 }
@@ -153,11 +153,11 @@
 
 .session-ip {
   font-family: monospace;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
 }
 
 .session-time-compact {
-  font-size: 13px;
+  font-size: var(--font-size-sm);
 }
 
 /* Expand button */
@@ -165,7 +165,7 @@
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   padding: 4px 0;
   cursor: pointer;
   display: inline-flex;
@@ -188,7 +188,7 @@
 .session-detail-row {
   display: flex;
   gap: 8px;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   margin-bottom: 6px;
 }
 
@@ -210,7 +210,7 @@
   border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   transition: all 0.2s;
   white-space: nowrap;
   align-self: flex-start;

@@ -91,7 +91,7 @@ select:focus,
 
 /* Upload Progress Indicator */
 .upload-progress {
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary);
   margin-top: 6px;
   display: flex;
@@ -167,7 +167,7 @@ select:focus,
   padding: var(--space-2) 14px;
   border-radius: var(--radius-pill);
   border: 1px solid transparent;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   cursor: pointer;
   background: var(--color-primary-dark);  /* WCAG AAA: 7.1:1 contrast */
@@ -237,12 +237,12 @@ select:focus,
 
 .pryde-btn-sm {
   padding: 6px 12px;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
 }
 
 .pryde-btn-lg {
   padding: 12px 24px;
-  font-size: 16px;
+  font-size: var(--font-size-base);
 }
 
 .pryde-input {
@@ -252,7 +252,7 @@ select:focus,
   border-radius: var(--radius-md);
   background: var(--bg-card);
   color: var(--text-main);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -273,7 +273,7 @@ select:focus,
   border-radius: var(--radius-md);
   background: var(--bg-card);
   color: var(--text-main);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   font-family: inherit;
   resize: vertical;
   min-height: 100px;
@@ -291,7 +291,7 @@ select:focus,
   align-items: center;
   padding: 4px 10px;
   border-radius: var(--radius-pill);
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   font-weight: 500;
   background: var(--color-primary-soft);
   color: var(--color-primary);
@@ -400,7 +400,7 @@ select:focus,
     width: 100%;
     max-width: 100%;
     padding: 0.5rem 0.75rem;
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
   }
 }
 
@@ -487,11 +487,11 @@ select:focus,
 @media (max-width: 600px) {
   .pryde-btn, .btn {
     padding: 12px 16px;
-    font-size: 16px;
+    font-size: var(--font-size-base);
   }
   .pryde-input, .pryde-textarea {
     min-height: 48px;
-    font-size: 16px;
+    font-size: var(--font-size-base);
   }
   .pryde-container {
     padding: 0 14px;
@@ -568,7 +568,7 @@ select:focus,
   background: var(--color-primary-soft, rgba(108, 92, 231, 0.15));
   color: var(--color-primary);
   font-weight: var(--weight-semibold, 600);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   overflow: hidden;
 }
 
@@ -615,7 +615,7 @@ select:focus,
   margin-top: 2px;
   display: flex;
   gap: 8px;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   opacity: 0.65;
   align-items: center;
 }
@@ -640,7 +640,7 @@ select:focus,
 /* Timestamp in actions row */
 .comment-time {
   opacity: 0.6;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
 }
 
@@ -677,7 +677,7 @@ select:focus,
   align-items: center;
   gap: 4px;
   font-weight: 600;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   color: var(--text-main);
   text-decoration: none;
   flex-shrink: 0;
@@ -814,7 +814,7 @@ body[data-density="cozy"] .comment-row {
   margin-top: 2px;
   display: flex;
   gap: 8px;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   opacity: 0.65;
 }
 

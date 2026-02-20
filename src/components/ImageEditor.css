@@ -86,7 +86,7 @@
 }
 
 .zoom-icon {
-  font-size: 18px;
+  font-size: var(--font-size-lg);
 }
 
 .crop-zoom-slider {
@@ -131,7 +131,7 @@
 .editor-instructions {
   text-align: center;
   color: var(--text-muted, #666);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   line-height: 1.4;
 }
 
@@ -150,7 +150,7 @@
   }
 
   .editor-instructions {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
   }
 }
 

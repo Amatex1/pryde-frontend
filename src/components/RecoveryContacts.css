@@ -20,13 +20,13 @@
 .recovery-info h3 {
   margin: 0 0 8px 0;
   color: var(--text-primary);
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
 }
 
 .recovery-info p {
   margin: 0 0 8px 0;
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
 }
 
 .recovery-note {
@@ -46,7 +46,7 @@
   border-radius: 8px;
   padding: 10px 14px;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   margin-top: 12px;
   display: flex;
   align-items: center;
@@ -93,7 +93,7 @@
 .close-form-btn {
   background: transparent;
   border: none;
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   color: var(--text-muted);
   cursor: pointer;
   width: 32px;
@@ -117,7 +117,7 @@
   border-radius: 8px;
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
   margin-bottom: 12px;
 }
 
@@ -175,7 +175,7 @@
 .contacts-section h4 {
   margin: 0 0 12px 0;
   color: var(--text-primary);
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
 }
 
 .contact-item {
@@ -203,19 +203,19 @@
 .contact-name {
   color: var(--text-primary);
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   margin-bottom: 4px;
 }
 
 .contact-username {
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .contact-status {
   padding: 6px 12px;
   border-radius: 12px;
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -302,12 +302,12 @@
 .user-name {
   color: var(--text-primary);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
 }
 
 .user-username {
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
 }
 
 .user-result button {

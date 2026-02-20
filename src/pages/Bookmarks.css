@@ -20,14 +20,14 @@
 
 .bookmarks-subtitle {
   color: #616161;
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
 }
 
 .loading {
   text-align: center;
   padding: 40px;
   color: #616161;
-  font-size: 1.2rem;
+  font-size: var(--font-size-xl);
 }
 
 .no-bookmarks {
@@ -50,7 +50,7 @@
 
 .no-bookmarks p {
   color: #616161;
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
 }
 
 .bookmarks-grid {
@@ -106,12 +106,12 @@
 .author-name {
   font-weight: 600;
   color: #2B2B2B;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 .author-username {
   color: #616161;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .remove-bookmark-btn {
@@ -164,13 +164,13 @@
 
 .post-date {
   color: #616161;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .post-stats {
   display: flex;
   gap: 15px;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: #616161;
 }
 

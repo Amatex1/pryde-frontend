@@ -22,7 +22,7 @@
 
 .discover-subtitle {
   color: var(--text-muted);
-  font-size: 16px;
+  font-size: var(--font-size-base);
 }
 
 /* Phase 2C: Renamed from tags-grid to discover-groups-grid */
@@ -55,7 +55,7 @@
 }
 
 .discover-group-card .group-label {
-  font-size: 20px;
+  font-size: var(--font-size-xl);
   color: var(--text-main);
   margin-bottom: var(--space-3);
   font-weight: 600;
@@ -63,7 +63,7 @@
 
 .discover-group-card .group-description {
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   line-height: 1.6;
   margin-bottom: var(--space-4);
   min-height: 48px;
@@ -77,7 +77,7 @@
 .discover-group-card .group-member-count {
   color: var(--pryde-purple);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .loading {
@@ -121,13 +121,13 @@
 .modal-header h2 {
   margin: 0;
   color: var(--text-main);
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
 }
 
 .modal-close {
   background: none;
   border: none;
-  font-size: 2rem;
+  font-size: var(--font-size-3xl);
   color: var(--text-muted);
   cursor: pointer;
   padding: 0;
@@ -180,6 +180,6 @@
   }
 
   .discover-header h1 {
-    font-size: 2rem;
+    font-size: var(--font-size-3xl);
   }
 }

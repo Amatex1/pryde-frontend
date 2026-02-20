@@ -42,7 +42,7 @@
 }
 
 .notifications-header h1 {
-  font-size: 24px;
+  font-size: var(--font-size-2xl);
   background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -57,7 +57,7 @@
   border: none;
   background: var(--color-primary-soft);
   color: var(--color-primary);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -73,7 +73,7 @@
   text-align: center;
   padding: var(--space-8) var(--space-4);
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .empty-icon {
@@ -114,7 +114,7 @@
 }
 
 .notification-icon {
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   flex-shrink: 0;
   width: 40px;
   height: 40px;
@@ -137,7 +137,7 @@
 }
 
 .notification-time {
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
 }
 
@@ -189,7 +189,7 @@
   }
 
   .notifications-header h1 {
-    font-size: 22px;
+    font-size: var(--font-size-2xl);
   }
 
   .notification-card {
@@ -223,12 +223,12 @@
   }
 
   .notifications-header h1 {
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
   }
 
   .mark-all-read-btn {
     padding: 0.4rem 0.75rem;
-    font-size: 0.85rem;
+    font-size: var(--font-size-sm);
   }
 
   .notification-card {
@@ -238,7 +238,7 @@
   .notification-icon {
     width: 35px;
     height: 35px;
-    font-size: 1.25rem;
+    font-size: var(--font-size-xl);
   }
 }
 

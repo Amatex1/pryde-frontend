@@ -88,7 +88,7 @@
 }
 
 .hero-eyebrow {
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -111,7 +111,7 @@
 }
 
 .hero-sub {
-  font-size: 18px;
+  font-size: var(--font-size-lg);
   max-width: 640px;
   margin: 0 auto 36px;
   color: var(--color-text-secondary);
@@ -132,7 +132,7 @@
 }
 
 .hero-meta {
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   color: var(--color-meta);
   letter-spacing: 0.02em;
 }
@@ -154,7 +154,7 @@
   background: var(--color-brand);
   color: #fff;
   border-radius: 50px;
-  font-size: 15px;
+  font-size: var(--font-size-base);
   font-weight: 600;
   text-decoration: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
@@ -181,7 +181,7 @@
   background: transparent;
   color: var(--color-text);
   border-radius: 50px;
-  font-size: 15px;
+  font-size: var(--font-size-base);
   font-weight: 500;
   text-decoration: none;
   transition: all 0.2s ease;
@@ -235,7 +235,7 @@
 }
 
 .section-sub {
-  font-size: 16px;
+  font-size: var(--font-size-base);
   color: var(--color-text-secondary);
   text-align: center;
   max-width: 520px;
@@ -297,7 +297,7 @@
 }
 
 .why-card h3 {
-  font-size: 18px;
+  font-size: var(--font-size-lg);
   font-weight: 600;
   color: var(--color-text);
   margin-bottom: 10px;
@@ -308,7 +308,7 @@
 }
 
 .why-card p {
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
   line-height: 1.7;
 }
@@ -352,7 +352,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   color: var(--color-text-secondary);
   white-space: nowrap;
@@ -363,7 +363,7 @@
 }
 
 .trust-icon {
-  font-size: 16px;
+  font-size: var(--font-size-base);
 }
 
 .trust-divider {
@@ -425,7 +425,7 @@
   }
 
   .hero-sub {
-    font-size: 16px;
+    font-size: var(--font-size-base);
   }
 
   .hero-actions {

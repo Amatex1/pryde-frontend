@@ -119,11 +119,11 @@
 }
 
 .gif-error-icon {
-  font-size: 2rem;
+  font-size: var(--font-size-3xl);
 }
 
 .gif-error-text {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted, #888);
 }
 

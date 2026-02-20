@@ -69,7 +69,7 @@
   background: linear-gradient(135deg, #6B46C1, #9F7AEA);
   color: white;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   text-decoration: none;
   flex-shrink: 0;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -89,7 +89,7 @@
 }
 
 .ph-avatar-fallback {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -127,7 +127,7 @@
 
 .ph-name {
   font-weight: 600; /* Semi-bold for clean look */
-  font-size: 0.9375rem; /* 15px - clean readable size */
+  font-size: var(--font-size-base); /* 15px - clean readable size */
   line-height: 1.4;
   color: var(--text-primary, #2B2B2B);
   white-space: nowrap;
@@ -145,7 +145,7 @@
 
 /* System Badge - Clean pill style */
 .ph-system-badge {
-  font-size: 0.6875rem; /* 11px */
+  font-size: var(--font-size-xs); /* 11px */
   font-weight: 600;
   padding: 2px 8px;
   background: var(--pryde-purple, #6B46C1);
@@ -190,7 +190,7 @@
 
 /* Meta Row - Username · Timestamp · Privacy on second line */
 .ph-meta-row {
-  font-size: 0.875rem; /* 14px */
+  font-size: var(--font-size-sm); /* 14px */
   color: var(--text-secondary, #616161);
   line-height: 1.4;
   display: flex;
@@ -205,7 +205,7 @@
 .ph-username {
   color: var(--text-secondary, #616161);
   font-weight: 400;
-  font-size: 0.875rem; /* 14px */
+  font-size: var(--font-size-sm); /* 14px */
   line-height: 1.4;
   margin: 0;
   padding: 0;
@@ -217,12 +217,12 @@
   flex-shrink: 0;
   user-select: none;
   opacity: 0.6;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
 }
 
 .ph-timestamp {
   color: var(--text-secondary, #616161);
-  font-size: 0.875rem; /* 14px */
+  font-size: var(--font-size-sm); /* 14px */
   font-weight: 400;
   flex-shrink: 1;
   overflow: hidden;
@@ -237,14 +237,14 @@
 
 .ph-edited {
   color: var(--text-secondary, #616161);
-  font-size: 0.875rem; /* 14px */
+  font-size: var(--font-size-sm); /* 14px */
   font-weight: 400;
   flex-shrink: 0;
   font-style: italic;
 }
 
 .ph-privacy {
-  font-size: 0.875rem; /* 14px */
+  font-size: var(--font-size-sm); /* 14px */
   color: var(--text-secondary, #616161);
   flex-shrink: 0;
   cursor: help;
@@ -283,7 +283,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   color: var(--text-secondary, #65676b);
   transition: background-color 0.15s ease;
 }
@@ -321,12 +321,12 @@
   }
 
   .ph-name {
-    font-size: 0.875rem; /* 14px on mobile */
+    font-size: var(--font-size-sm); /* 14px on mobile */
     font-weight: 600;
   }
 
   .ph-meta-row {
-    font-size: 0.8125rem; /* 13px on mobile */
+    font-size: var(--font-size-sm); /* 13px on mobile */
     gap: 5px;
   }
 
@@ -334,11 +334,11 @@
   .ph-timestamp,
   .ph-edited,
   .ph-separator {
-    font-size: 0.8125rem; /* 13px on mobile */
+    font-size: var(--font-size-sm); /* 13px on mobile */
   }
 
   .ph-privacy {
-    font-size: 0.8125rem;
+    font-size: var(--font-size-sm);
   }
 }
 

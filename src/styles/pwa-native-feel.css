@@ -154,7 +154,7 @@ body.browser-mode .pwa-only-feature {
   color: white;
   padding: 8px 12px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   z-index: 999;
   pointer-events: none;

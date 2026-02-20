@@ -22,7 +22,7 @@
   border: none;
   padding: 10px 16px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
@@ -55,7 +55,7 @@
 }
 
 .admin-section-title {
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 12px;
@@ -71,7 +71,7 @@
   border-radius: 8px;
   background: transparent;
   border: none;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   cursor: pointer;
   margin-bottom: 6px;
   color: var(--text-primary);
@@ -104,25 +104,25 @@
 
 /* Typography Hierarchy */
 .admin-content h1 {
-  font-size: 20px;
+  font-size: var(--font-size-xl);
   margin-bottom: 16px;
   color: var(--text-primary);
   font-weight: 600;
 }
 
 .admin-content h2 {
-  font-size: 16px;
+  font-size: var(--font-size-base);
   margin-bottom: 12px;
   color: var(--text-primary);
   font-weight: 600;
 }
 
 .admin-content table {
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .admin-content .meta-text {
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
 }
 
@@ -134,7 +134,7 @@
 .admin-action-trigger {
   background: transparent;
   border: none;
-  font-size: 18px;
+  font-size: var(--font-size-lg);
   cursor: pointer;
   padding: 4px 8px;
   color: var(--text-primary);
@@ -166,7 +166,7 @@
   padding: 8px;
   border: none;
   background: transparent;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   cursor: pointer;
   border-radius: 6px;
   color: var(--text-primary);
@@ -1215,7 +1215,7 @@
 }
 
 .filter-label {
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   color: var(--text-primary);
   min-width: 60px;
@@ -1230,7 +1230,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 500;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .filter-btn:hover {
@@ -1252,7 +1252,7 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   transition: all 0.2s ease;
 }
 
@@ -2645,7 +2645,7 @@
 .admin-section-description {
   color: var(--text-muted);
   margin-bottom: 1.5rem;
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
 }
 
 .broadcast-form {
@@ -2667,7 +2667,7 @@
 
 .broadcast-label {
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: var(--text-primary);
 }
 
@@ -2683,7 +2683,7 @@
   border-radius: 8px;
   background: var(--bg, #f7fafc);
   color: var(--text-primary);
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
   resize: vertical;
   min-height: 100px;
   box-sizing: border-box;
@@ -2697,7 +2697,7 @@
 }
 
 .broadcast-char-count {
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   text-align: right;
 }
@@ -2709,7 +2709,7 @@
   border-radius: 8px;
   background: var(--bg, #f7fafc);
   color: var(--text-primary);
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
   box-sizing: border-box;
   font-family: inherit;
   transition: border-color 0.2s;
@@ -2721,7 +2721,7 @@
 }
 
 .broadcast-hint {
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   margin: 0;
 }
@@ -2729,7 +2729,7 @@
 .broadcast-result {
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   font-weight: 500;
 }
 
@@ -2752,7 +2752,7 @@
   color: #fff;
   border: none;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.2s, transform 0.1s;
@@ -2773,7 +2773,7 @@
   border: 1px solid color-mix(in srgb, var(--pryde-purple, #6C5CE7) 25%, transparent);
   border-radius: 10px;
   padding: 1rem 1.25rem;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: var(--text-primary);
 }
 

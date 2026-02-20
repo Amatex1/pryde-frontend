@@ -52,7 +52,7 @@
 /* Hint text */
 .photo-editor-inline-hint-bar {
   color: rgba(255, 255, 255, 0.7);
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   white-space: nowrap;
 }
 
@@ -67,7 +67,7 @@
 
 .zoom-label {
   color: #fff;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   white-space: nowrap;
   min-width: 56px;
 }
@@ -121,7 +121,7 @@
   padding: 8px 16px;
   border-radius: 8px;
   border: none;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
@@ -167,11 +167,11 @@
 
   .pe-btn {
     padding: 7px 12px;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
   }
 
   .photo-editor-inline-hint-bar {
-    font-size: 11px;
+    font-size: var(--font-size-xs);
   }
 }
 
@@ -193,7 +193,7 @@
 
   .zoom-label {
     min-width: 48px;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
   }
 }
 

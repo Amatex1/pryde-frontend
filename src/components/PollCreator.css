@@ -16,14 +16,14 @@
 .poll-header h4 {
   margin: 0;
   color: var(--text-primary);
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
 }
 
 .poll-cancel-btn {
   background: transparent;
   border: none;
   color: var(--text-muted);
-  font-size: 1.2rem;
+  font-size: var(--font-size-xl);
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 6px;
@@ -39,7 +39,7 @@
 .poll-hint {
   margin: 0 0 20px 0;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   font-style: italic;
 }
 
@@ -52,7 +52,7 @@
   margin-bottom: 8px;
   color: var(--text-primary);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .poll-field input[type="text"],
@@ -63,7 +63,7 @@
   border-radius: 8px;
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
   transition: all 0.3s ease;
 }
 
@@ -78,7 +78,7 @@
 .char-count {
   display: block;
   text-align: right;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   margin-top: 4px;
 }
@@ -100,7 +100,7 @@
   width: 36px;
   height: 36px;
   border-radius: 6px;
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
@@ -126,7 +126,7 @@
   width: 100%;
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -169,7 +169,7 @@
   gap: 10px;
   cursor: pointer;
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .poll-checkbox input[type="checkbox"] {

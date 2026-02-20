@@ -314,7 +314,7 @@ textarea:disabled,
   /* Compact button text */
   button,
   .btn {
-    font-size: 14px;
+    font-size: var(--font-size-sm);
     padding: 12px 16px;
   }
 
@@ -336,9 +336,9 @@ textarea:disabled,
   }
 
   /* Reduce font sizes slightly */
-  h1 { font-size: 1.5rem; }
-  h2 { font-size: 1.25rem; }
-  h3 { font-size: 1.1rem; }
+  h1 { font-size: var(--font-size-2xl); }
+  h2 { font-size: var(--font-size-xl); }
+  h3 { font-size: var(--font-size-lg); }
 }
 
 /* Mobile screens (480px) */

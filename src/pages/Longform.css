@@ -33,7 +33,7 @@
   border-radius: 8px;
   background: var(--card-surface);
   color: var(--text-main);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -61,7 +61,7 @@
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -79,7 +79,7 @@
   padding: 1rem;
   border: 1px solid var(--border-light);
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   margin-bottom: 1rem;
   font-family: inherit;
   background: var(--bg-input, var(--card-surface, white));
@@ -87,7 +87,7 @@
 }
 
 .longform-title-input {
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   font-weight: 600;
 }
 
@@ -114,7 +114,7 @@
   padding: 0.5rem 1rem;
   border: 1px solid var(--border-light);
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   background: var(--bg-input, var(--card-surface, white));
   color: var(--text-main, inherit);
 }
@@ -123,7 +123,7 @@
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   cursor: pointer;
 }
 
@@ -152,14 +152,14 @@
 }
 
 .longform-card-header h3 {
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   color: var(--text-main);
   flex: 1;
 }
 
 .longform-date {
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   white-space: nowrap;
   margin-left: 1rem;
 }
@@ -181,7 +181,7 @@
 
 .longform-read-time,
 .longform-visibility {
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
 }
 
@@ -193,7 +193,7 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .btn-delete:hover {

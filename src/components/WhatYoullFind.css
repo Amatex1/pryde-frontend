@@ -35,7 +35,7 @@
 }
 
 .wyf-sub {
-  font-size: 16px;
+  font-size: var(--font-size-base);
   color: var(--color-text-secondary);
   text-align: center;
   max-width: 480px;
@@ -89,7 +89,7 @@
 }
 
 .wyf-card-title {
-  font-size: 18px;
+  font-size: var(--font-size-lg);
   font-weight: 600;
   color: var(--color-text);
   margin-bottom: 10px;
@@ -100,7 +100,7 @@
 }
 
 .wyf-card-body {
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
   line-height: 1.7;
 }

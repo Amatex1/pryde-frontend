@@ -9,7 +9,7 @@
   border-radius: 50%;
   border: 1px solid var(--border-light);
   background: #5a4bd8;
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -89,7 +89,7 @@
 
 .notification-header h3 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -100,7 +100,7 @@
   background: none;
   border: none;
   color: var(--pryde-purple);
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   cursor: pointer;
   padding: 0.25rem 0.5rem;
@@ -134,7 +134,7 @@
 
 .no-notifications p {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
 }
 
 .notification-item {
@@ -165,7 +165,7 @@
 }
 
 .notif-icon {
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   flex-shrink: 0;
 }
 
@@ -179,7 +179,7 @@
 
 .notif-text {
   margin: 0 0 0.25rem 0;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: var(--text-main);
   line-height: 1.5;
   white-space: normal;
@@ -189,7 +189,7 @@
 }
 
 .notif-time {
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
 }
 
@@ -215,11 +215,11 @@
   }
 
   .notification-header h3 {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
   }
 
   .mark-all-read {
-    font-size: 0.8rem;
+    font-size: var(--font-size-xs);
     padding: 0.25rem 0.4rem;
   }
 
@@ -228,11 +228,11 @@
   }
 
   .notif-text {
-    font-size: 0.85rem;
+    font-size: var(--font-size-sm);
   }
 
   .notif-time {
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
   }
 }
 
@@ -248,7 +248,7 @@
   }
 
   .notification-header h3 {
-    font-size: 0.95rem;
+    font-size: var(--font-size-base);
   }
 
   .notification-item {
@@ -256,11 +256,11 @@
   }
 
   .notif-icon {
-    font-size: 1.25rem;
+    font-size: var(--font-size-xl);
   }
 
   .notif-text {
-    font-size: 0.8rem;
+    font-size: var(--font-size-xs);
   }
 }
 

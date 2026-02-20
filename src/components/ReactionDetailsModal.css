@@ -54,7 +54,7 @@
 
 .reaction-modal-header h3 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -64,7 +64,7 @@
 .modal-close-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   color: var(--text-muted);
   cursor: pointer;
   width: 2rem;
@@ -105,7 +105,7 @@
   border: 2px solid var(--border-subtle);
   background: var(--bg);
   color: var(--text-main);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -152,12 +152,12 @@
 
 .reaction-loading p {
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
 }
 
 .reaction-error p {
   color: var(--color-error, #ff4444);
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
 }
 
 .reaction-item {
@@ -187,7 +187,7 @@
   justify-content: center;
   color: white;
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
 }
 
 .reaction-user-avatar img {
@@ -203,7 +203,7 @@
 
 .reaction-user-name {
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
   color: var(--text-main);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -211,7 +211,7 @@
 }
 
 .reaction-user-username {
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -219,7 +219,7 @@
 }
 
 .reaction-emoji {
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   flex-shrink: 0;
 }
 

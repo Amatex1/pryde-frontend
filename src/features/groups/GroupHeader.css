@@ -76,7 +76,7 @@
   border: none;
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -97,7 +97,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -129,7 +129,7 @@
   gap: 1rem;
   align-items: center;
   color: var(--text-muted, #666);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
 }
 
 .visibility-badge,

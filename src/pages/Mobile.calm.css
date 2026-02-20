@@ -107,7 +107,7 @@
   .btn-message {
     min-height: 44px;
     padding: 0.75rem 1.25rem;
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     border-radius: 8px;
   }
   
@@ -128,7 +128,7 @@
   .post-input {
     min-height: 44px;
     padding: 0.75rem;
-    font-size: 1rem;
+    font-size: var(--font-size-base);
   }
   
   /* ────────────────────────────────────────
@@ -167,11 +167,11 @@
   }
   
   .profile-name {
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
   }
   
   .profile-username {
-    font-size: 0.9375rem;
+    font-size: var(--font-size-base);
   }
   
   /* Hide Tier 2 & 3 badges on mobile for cleanliness */
@@ -186,7 +186,7 @@
   /* Keep Tier 1 badges visible but smaller */
   .badge-tier-1 .user-badge {
     height: 1.125rem;
-    font-size: 0.6875rem;
+    font-size: var(--font-size-xs);
     padding: 0 0.4375rem;
   }
   
@@ -197,7 +197,7 @@
   }
   
   .profile-identity-pills .badge {
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
     padding: 0.3125rem 0.625rem;
   }
   
@@ -209,11 +209,11 @@
   }
   
   .stat-value {
-    font-size: 1.125rem;
+    font-size: var(--font-size-lg);
   }
   
   .stat-label {
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
   }
   
   /* Action buttons: Stack vertically if needed */
@@ -247,7 +247,7 @@
     min-height: 48px;
     padding: 0.75rem 1rem;
     border-radius: 0;
-    font-size: 0.9375rem;
+    font-size: var(--font-size-base);
     border: none;
     border-bottom: 2px solid transparent;
   }
@@ -273,7 +273,7 @@
     height: 56px;
     bottom: 1.5rem;
     right: 1.5rem;
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
   
@@ -342,16 +342,16 @@
      ──────────────────────────────────────── */
   
   .post-content {
-    font-size: 0.9375rem;
+    font-size: var(--font-size-base);
     line-height: 1.6;
   }
   
   .post-author-name {
-    font-size: 0.9375rem;
+    font-size: var(--font-size-base);
   }
   
   .post-timestamp {
-    font-size: 0.8125rem;
+    font-size: var(--font-size-sm);
   }
   
   /* ────────────────────────────────────────
@@ -380,7 +380,7 @@
   }
   
   .comment-content {
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
   }
   
   /* ────────────────────────────────────────
@@ -441,7 +441,7 @@
   }
   
   .stat-value {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
   }
   
   .fab-compose {

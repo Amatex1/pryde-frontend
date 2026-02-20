@@ -32,19 +32,19 @@
 }
 
 .group-card-icon {
-  font-size: 2rem;
+  font-size: var(--font-size-3xl);
   margin-bottom: 0.5rem;
 }
 
 .group-card-name {
   margin: 0 0 0.5rem;
-  font-size: 1.125rem;
+  font-size: var(--font-size-lg);
 }
 
 .group-card-description {
   margin: 0 0 0.75rem;
   color: var(--text-secondary, #aaa);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   line-height: 1.4;
 }
 
@@ -52,11 +52,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted, #888);
 }
 
 .private-badge {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 

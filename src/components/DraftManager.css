@@ -19,14 +19,14 @@
 
 .draft-manager-header h3 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   color: var(--text-primary);
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 2rem;
+  font-size: var(--font-size-3xl);
   color: var(--text-muted);
   cursor: pointer;
   padding: 0;
@@ -58,7 +58,7 @@
   padding: 10px 15px;
   border-radius: 8px;
   margin-bottom: 15px;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   text-align: center;
 }
 
@@ -89,7 +89,7 @@
   color: var(--text-inverse);
   padding: 4px 10px;
   border-radius: 12px;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   white-space: nowrap;
   flex-shrink: 0;
@@ -103,7 +103,7 @@
 .draft-preview {
   margin: 0 0 8px 0;
   color: var(--text-primary);
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -112,7 +112,7 @@
 }
 
 .draft-time {
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
 }
 
@@ -126,7 +126,7 @@
 .delete-btn {
   padding: 6px 14px;
   border-radius: 6px;
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;

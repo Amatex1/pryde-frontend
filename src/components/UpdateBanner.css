@@ -35,7 +35,7 @@
 }
 
 .update-banner-content .emoji {
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   line-height: 1;
 }
 
@@ -46,7 +46,7 @@
 }
 
 .update-banner-text strong {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -64,7 +64,7 @@
   padding: 6px 12px;
   border: none;
   border-radius: 999px;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.15s ease, opacity 0.15s ease;
@@ -98,7 +98,7 @@
 @media (min-width: 640px) {
   .update-banner-text p {
     display: inline;
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
     opacity: 0.9;
     margin: 0;
   }

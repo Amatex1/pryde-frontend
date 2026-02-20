@@ -18,7 +18,7 @@
 }
 
 .tag-feed-header h1 {
-  font-size: 2rem;
+  font-size: var(--font-size-3xl);
   color: var(--pryde-purple);
   margin-bottom: 0.5rem;
 }
@@ -58,7 +58,7 @@
   border-radius: 12px;
   background: var(--bg-light);
   color: var(--text-main);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   resize: vertical;
   min-height: 100px;
   font-family: inherit;
@@ -79,7 +79,7 @@
   background: var(--gradient-primary);
   color: white;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -140,7 +140,7 @@
 .author-avatar .avatar-fallback {
   color: white;
   font-weight: 600;
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   text-transform: uppercase;
 }
 
@@ -204,7 +204,7 @@
 }
 
 .post-date {
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
 }
 
@@ -241,7 +241,7 @@
   border: 1px solid var(--border-light);
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   transition: all 0.3s ease;
   text-decoration: none;
   color: var(--text-main);
@@ -270,7 +270,7 @@
   padding: 0.25rem 0.75rem;
   background: var(--soft-lavender);
   border-radius: 16px;
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   text-decoration: none;
   color: var(--pryde-purple);
   transition: all 0.3s ease;
@@ -310,7 +310,7 @@
 }
 
 .tag-migration-stub h1 {
-  font-size: 2rem;
+  font-size: var(--font-size-3xl);
   color: var(--pryde-purple);
   margin-bottom: 0.5rem;
 }
@@ -330,7 +330,7 @@
 }
 
 .migration-stub-title {
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   color: var(--pryde-purple);
   margin-bottom: 0.75rem;
   font-weight: 600;
@@ -340,12 +340,12 @@
   color: var(--text-main);
   margin-bottom: 1rem;
   line-height: 1.6;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 .migration-stub-hint {
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   margin-bottom: 1.5rem;
 }
 
@@ -359,7 +359,7 @@
   font-weight: 600;
   text-decoration: none;
   transition: all 0.3s ease;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 .btn-go-to-group:hover,
@@ -381,7 +381,7 @@
 }
 
 .migration-banner-icon {
-  font-size: 2rem;
+  font-size: var(--font-size-3xl);
   flex-shrink: 0;
 }
 
@@ -392,13 +392,13 @@
 .migration-banner-content h3 {
   margin: 0 0 0.25rem 0;
   color: var(--pryde-purple);
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
 }
 
 .migration-banner-content p {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 @media (max-width: 600px) {
@@ -407,7 +407,7 @@
   }
 
   .tag-migration-stub h1 {
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
   }
 
   .migration-stub-icon {

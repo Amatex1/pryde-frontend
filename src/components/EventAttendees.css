@@ -5,7 +5,7 @@
   background: transparent;
   border: none;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   cursor: pointer;
   padding: 8px 0;
   transition: all 0.2s;
@@ -16,7 +16,7 @@
 }
 
 .attendees-icon {
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
 }
 
 .attendees-text {
@@ -42,7 +42,7 @@
   background: transparent;
   border: none;
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -100,7 +100,7 @@
 .attendee-name {
   color: var(--text-primary);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -108,7 +108,7 @@
 
 .attendee-username {
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
 }
 
 .attendee-status {
@@ -118,7 +118,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   flex-shrink: 0;
 }
 

@@ -152,7 +152,7 @@ Noise hides real problems.
 
 /* Reset and base sizing */
 html {
-  font-size: 16px; /* Prevents iOS zoom on input focus */
+  font-size: var(--font-size-base); /* Prevents iOS zoom on input focus */
   -webkit-text-size-adjust: 100%;
   box-sizing: border-box;
 }
@@ -544,7 +544,7 @@ button,
   min-height: var(--button-height-mobile);
   padding: 0 12px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
 }
 
 @media (min-width: 1024px) {

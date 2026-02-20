@@ -12,7 +12,7 @@
   height: 1.25rem; /* Fixed height for alignment */
   padding: 0 0.5rem;
   border-radius: 6px; /* Reduced from 9999px for more platform-grade feel */
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   font-weight: 500;
   white-space: nowrap;
   vertical-align: middle;
@@ -26,12 +26,12 @@
 }
 
 .user-badge-icon {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   line-height: 1;
 }
 
 .user-badge-label {
-  font-size: 0.6875rem;
+  font-size: var(--font-size-xs);
   font-weight: 500;
   letter-spacing: 0.01em;
 }
@@ -158,11 +158,11 @@
   .user-badge {
     height: 1.125rem;
     padding: 0 0.4375rem;
-    font-size: 0.6875rem;
+    font-size: var(--font-size-xs);
   }
   
   .user-badge-icon {
-    font-size: 0.8125rem;
+    font-size: var(--font-size-sm);
   }
   
   .user-badge-label {

@@ -4,7 +4,7 @@
   border-radius: 50%;
   border: 2px solid var(--border-default);
   background: var(--bg-card);
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   cursor: pointer;
   display: flex;
   align-items: center;

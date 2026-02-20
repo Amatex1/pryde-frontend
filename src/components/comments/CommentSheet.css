@@ -43,7 +43,7 @@
 .sheet-close-btn {
   background: none;
   border: none;
-  font-size: 18px;
+  font-size: var(--font-size-lg);
   cursor: pointer;
   padding: 8px;
   color: inherit;
@@ -75,7 +75,7 @@
   border-radius: 20px;
   border: 1px solid var(--border-subtle);
   background: var(--bg-subtle);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .comment-sheet-input-form .comment-submit-btn {
@@ -111,7 +111,7 @@
   border: 1px solid var(--border-subtle);
   background: var(--bg-subtle);
   color: var(--text-primary);
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   cursor: pointer;
   flex-shrink: 0;
@@ -150,7 +150,7 @@
   border: none;
   background: rgba(0, 0, 0, 0.6);
   color: white;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -171,14 +171,14 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: var(--text-secondary);
 }
 
 .comment-sheet-reply-form .btn-cancel-reply-small {
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: var(--font-size-base);
   cursor: pointer;
   color: var(--text-secondary);
   padding: 4px;
@@ -196,7 +196,7 @@
   border-radius: 20px;
   border: 1px solid var(--border-subtle);
   background: var(--bg-primary);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .comment-sheet-reply-form .comment-submit-btn {

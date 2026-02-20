@@ -136,7 +136,7 @@
   border: none;
   background: transparent;
   color: var(--text-primary);
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   cursor: pointer;
   border-radius: 8px;
   flex-shrink: 0;
@@ -209,7 +209,7 @@
   border-radius: 999px;
   background: var(--bg-tertiary);
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   width: fit-content;
 }
 
@@ -249,7 +249,7 @@
   max-height: 120px;
   padding: 8px 14px;
   border-radius: 18px;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 /* FIX 2: Slim desktop composer height (mobile untouched) */
@@ -399,7 +399,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: var(--font-size-3xl);
   color: white;
 }
 
@@ -427,14 +427,14 @@
 }
 
 .messages-app__info .info-name {
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   font-weight: 600;
   color: var(--text-primary);
   margin: 0 0 4px;
 }
 
 .messages-app__info .info-username {
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   margin: 0;
 }
@@ -443,7 +443,7 @@
   padding: 12px;
   background: var(--bg-hover);
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary);
   line-height: 1.5;
   margin-bottom: 16px;
@@ -468,7 +468,7 @@
   border: 1px solid var(--border-subtle);
   text-align: left;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: var(--text-primary);
   transition: background 150ms ease;
 }
@@ -561,7 +561,7 @@
   background: var(--bg-secondary, rgba(128, 128, 128, 0.1));
   border: none;
   border-radius: 8px;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--text-primary, inherit);
   cursor: pointer;
   transition: background 0.15s ease;
@@ -593,7 +593,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   padding: 8px;
   border-radius: 50%;
   display: flex;
@@ -620,7 +620,7 @@
   border-radius: 50%;
   width: 32px;
   height: 32px;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   cursor: pointer;
   z-index: 10;
   color: var(--text-primary, inherit);
@@ -704,13 +704,13 @@
   padding: 16px;
   background: var(--bg-secondary, rgba(128, 128, 128, 0.1));
   border-radius: 12px;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary, #666);
 }
 
 /* GIF button text style */
 .composer-action-btn[title="GIF"] {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   letter-spacing: -0.02em;
 }
@@ -733,7 +733,7 @@
   padding: 16px;
   background: var(--bg-secondary, rgba(128, 128, 128, 0.1));
   border-radius: 12px;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary, #666);
   text-align: center;
 }
@@ -752,7 +752,7 @@
   color: #fff;
   border: none;
   border-radius: 20px;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
@@ -846,7 +846,7 @@
     border: none;
     background: transparent;
     color: var(--text-primary);
-    font-size: 1.25rem;
+    font-size: var(--font-size-xl);
     cursor: pointer;
     border-radius: 8px;
     margin-right: 8px;
@@ -966,7 +966,7 @@
 
 .unread-divider__label {
   flex-shrink: 0;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -994,13 +994,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   color: var(--text-primary, inherit);
 }
 
 .shared-media__toggle {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-secondary, #666);
   transition: transform 0.2s ease;
 }
@@ -1035,7 +1035,7 @@
 }
 
 .shared-media__empty {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-secondary, #666);
   text-align: center;
   padding: 16px;
@@ -1049,7 +1049,7 @@
   background: var(--bg-secondary, rgba(128, 128, 128, 0.1));
   border: none;
   border-radius: 6px;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-secondary, #666);
   cursor: pointer;
   transition: background 0.15s ease;

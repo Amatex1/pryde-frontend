@@ -39,7 +39,7 @@
 
 .online-count {
   font-weight: 600;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .online-dropdown {
@@ -65,14 +65,14 @@
 .dropdown-header h4 {
   color: var(--gold);
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 .btn-close {
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   cursor: pointer;
   padding: 0;
   width: 24px;
@@ -89,7 +89,7 @@
 
 .online-list {
   color: var(--text-light);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .online-list p {
@@ -108,7 +108,7 @@
   border-radius: 12px;
   background: var(--background-light);
   color: var(--text-main);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   transition: all 0.3s ease;
 }
 
@@ -183,7 +183,7 @@
   justify-content: center;
   color: white;
   font-weight: 600;
-  font-size: 18px;
+  font-size: var(--font-size-lg);
 }
 
 .status-dot {
@@ -215,12 +215,12 @@
 .friend-name {
   color: var(--text-main);
   font-weight: 600;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .friend-status {
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: var(--font-size-xs);
 }
 
 .no-friends {

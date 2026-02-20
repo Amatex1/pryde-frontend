@@ -54,12 +54,12 @@
   }
 
   h1 { font-size: 28px; }
-  h2 { font-size: 24px; }
-  h3 { font-size: 20px; }
-  h4 { font-size: 18px; }
+  h2 { font-size: var(--font-size-2xl); }
+  h3 { font-size: var(--font-size-xl); }
+  h4 { font-size: var(--font-size-lg); }
 
   .post-content {
-    font-size: 16px;
+    font-size: var(--font-size-base);
     line-height: 1.65;
   }
 
@@ -73,11 +73,11 @@
   }
 
   .nav-item-icon {
-    font-size: 22px;
+    font-size: var(--font-size-2xl);
   }
 
   .nav-item-text {
-    font-size: 16px;
+    font-size: var(--font-size-base);
     display: inline;
   }
 
@@ -103,7 +103,7 @@
   input[type="email"],
   input[type="password"],
   textarea {
-    font-size: 16px;
+    font-size: var(--font-size-base);
     padding: 12px 16px;
     min-height: 48px;
   }

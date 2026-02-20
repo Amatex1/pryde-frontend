@@ -48,7 +48,7 @@
 
 .gif-picker-header h4 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -58,7 +58,7 @@
 .gif-picker-close {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   cursor: pointer;
   color: var(--text-muted);
   width: 2rem;
@@ -89,7 +89,7 @@
   border-radius: 12px;
   background: var(--bg);
   color: var(--text-main);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   transition: all 0.2s ease;
 }
 
@@ -105,7 +105,7 @@
   color: white;
   border: none;
   border-radius: 12px;
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -138,7 +138,7 @@
   border: 2px solid var(--border-subtle);
   background: var(--bg);
   color: var(--text-main);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -202,14 +202,14 @@
   text-align: center;
   padding: 3rem 1rem;
   color: var(--text-muted);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 .gif-picker-footer {
   padding: 0.75rem 1.5rem;
   border-top: 1px solid var(--border-subtle);
   text-align: center;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
 }
 
@@ -228,7 +228,7 @@
   text-align: center;
   padding: 2rem;
   color: var(--text-error, #ef4444);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 /* Mobile responsive */
@@ -259,7 +259,7 @@
   }
 
   .gif-category-btn {
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
     padding: 0.4rem 0.8rem;
     /* Prevent buttons from shrinking */
     flex-shrink: 0;

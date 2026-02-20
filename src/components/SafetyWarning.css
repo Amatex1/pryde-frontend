@@ -54,7 +54,7 @@
 
 .safety-warning-header h2 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   font-weight: 800;
 }
 
@@ -63,7 +63,7 @@
 }
 
 .safety-warning-message {
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   color: var(--text-main);
   margin-bottom: 1.5rem;
   line-height: 1.6;
@@ -81,7 +81,7 @@
 .safety-recommendations h3 {
   margin-top: 0;
   color: var(--text-main);
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
 }
 
 .safety-recommendations ul {
@@ -92,7 +92,7 @@
 .safety-recommendations li {
   margin: 0.75rem 0;
   color: var(--text-main);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   line-height: 1.5;
 }
 
@@ -120,7 +120,7 @@
   padding: 1rem 1.5rem;
   border: none;
   border-radius: 10px;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -163,7 +163,7 @@
 
 .safety-warning-footer small {
   color: var(--text-muted);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   line-height: 1.5;
 }
 
@@ -183,15 +183,15 @@
   }
 
   .safety-warning-header h2 {
-    font-size: 1.25rem;
+    font-size: var(--font-size-xl);
   }
 
   .safety-warning-message {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
   }
 
   .safety-recommendations li {
-    font-size: 0.9375rem;
+    font-size: var(--font-size-base);
   }
 }
 

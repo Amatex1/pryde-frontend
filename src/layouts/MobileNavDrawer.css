@@ -69,7 +69,7 @@
   justify-content: center;
   color: white;
   font-weight: 600;
-  font-size: 18px;
+  font-size: var(--font-size-lg);
   overflow: hidden;
 }
 
@@ -91,7 +91,7 @@
 }
 
 .mobile-nav-view-profile {
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   color: var(--accent-color, #6366f1);
   text-decoration: none;
 }
@@ -101,7 +101,7 @@
   height: 36px;
   border: none;
   background: transparent;
-  font-size: 20px;
+  font-size: var(--font-size-xl);
   cursor: pointer;
   border-radius: 50%;
   display: flex;
@@ -132,7 +132,7 @@
   background: transparent;
   width: 100%;
   text-align: left;
-  font-size: 15px;
+  font-size: var(--font-size-base);
   cursor: pointer;
   transition: background 0.15s ease;
 }
@@ -142,7 +142,7 @@
 }
 
 .mobile-nav-icon {
-  font-size: 20px;
+  font-size: var(--font-size-xl);
   width: 24px;
   text-align: center;
 }
@@ -151,7 +151,7 @@
   margin-left: auto;
   background: var(--accent-color, #6366f1);
   color: white;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   padding: 2px 8px;
   border-radius: 10px;
   font-weight: 600;
@@ -159,7 +159,7 @@
 
 .mobile-nav-section-header {
   padding: 16px 16px 8px;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   text-transform: uppercase;
   color: var(--text-tertiary, #999);
@@ -185,7 +185,7 @@
 }
 
 .mobile-nav-item-description {
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: var(--text-tertiary, #999);
 }
 

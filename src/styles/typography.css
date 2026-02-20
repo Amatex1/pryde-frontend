@@ -94,7 +94,7 @@ p,
 .post-meta {
   font-size: var(--density-meta);
   font-weight: var(--font-weight-normal);
-  opacity: 0.8;
+  opacity: var(--meta-opacity);
 }
 
 .label,

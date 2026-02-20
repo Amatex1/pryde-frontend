@@ -561,7 +561,7 @@
   }
 
   .auth-title {
-    font-size: 2rem;
+    font-size: var(--font-size-3xl);
   }
 
   /* Reduce optional section padding on mobile */

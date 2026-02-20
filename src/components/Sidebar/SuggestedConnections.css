@@ -9,7 +9,7 @@
 }
 
 .suggested-subtitle {
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   margin: 0 0 1rem 0;
 }
@@ -44,7 +44,7 @@
   justify-content: center;
   color: white;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   flex-shrink: 0;
   overflow: hidden;
   text-decoration: none;
@@ -67,7 +67,7 @@
 
 .suggested-name {
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--pryde-purple);
   text-decoration: none;
   display: block;
@@ -82,7 +82,7 @@
 
 .suggested-bio {
   margin: 0.25rem 0 0;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   line-height: 1.3;
   display: -webkit-box;
@@ -120,7 +120,7 @@
   color: white;
   border: none;
   border-radius: var(--radius-sm, 6px);
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -136,7 +136,7 @@
   background: var(--success-muted, rgba(46, 204, 113, 0.15));
   color: var(--success, #2ecc71);
   border-radius: var(--radius-sm, 6px);
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
 }
 
@@ -160,7 +160,7 @@
   display: block;
   margin-top: 1rem;
   text-align: center;
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   color: var(--pryde-purple);
   text-decoration: none;
   font-weight: 500;
@@ -185,7 +185,7 @@
 }
 
 .suggested-empty {
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   text-align: center;
   padding: 1rem;

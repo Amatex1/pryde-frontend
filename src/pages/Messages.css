@@ -2205,7 +2205,7 @@
 
   /* Full-width input on mobile */
   .message-input {
-    font-size: 16px; /* Prevents iOS zoom */
+    font-size: var(--font-size-base); /* Prevents iOS zoom */
     min-height: 44px;
     padding: 10px 14px;
     border-radius: 20px;
@@ -2259,7 +2259,7 @@
 
   .search-input {
     width: 100%;
-    font-size: 16px; /* Prevents iOS zoom */
+    font-size: var(--font-size-base); /* Prevents iOS zoom */
   }
 
   .btn-search {
@@ -2297,7 +2297,7 @@
   .form-group input,
   .form-group textarea {
     width: 100%;
-    font-size: 16px; /* Prevents iOS zoom */
+    font-size: var(--font-size-base); /* Prevents iOS zoom */
     padding: 0.875rem;
   }
 
@@ -3591,7 +3591,7 @@
   }
 
   .calm-composer .message-input {
-    font-size: 16px; /* Prevents iOS zoom */
+    font-size: var(--font-size-base); /* Prevents iOS zoom */
     min-height: 32px;
     padding: 6px 4px;
   }
@@ -3599,7 +3599,7 @@
   .calm-composer .send-btn {
     width: 32px;
     height: 32px;
-    font-size: 16px;
+    font-size: var(--font-size-base);
   }
 
   /* Hide trailing actions on very small screens if needed */

@@ -38,7 +38,7 @@
 }
 
 .footer-logo {
-  font-size: 1.8rem;
+  font-size: var(--font-size-3xl);
   font-weight: 800;
   background: linear-gradient(135deg, var(--pryde-purple) 0%, var(--electric-blue) 100%);
   -webkit-background-clip: text;
@@ -49,7 +49,7 @@
 
 .footer-copyright {
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   margin: 0;
 }
 
@@ -65,7 +65,7 @@
 .footer-links-container a {
   color: var(--text-main);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   transition: color 0.3s ease;
   opacity: 0.85;
 }
@@ -78,7 +78,7 @@
 .footer-links-container .separator {
   color: var(--text-muted);
   opacity: 0.4;
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
 }
 
 .footer-notice {
@@ -92,7 +92,7 @@
 .footer-notice p {
   /* Use white/light text for visibility on purple gradient background */
   color: rgba(255, 255, 255, 0.9);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   margin: 0;
   font-weight: 500;
 }
@@ -118,11 +118,11 @@
   }
 
   .footer-logo {
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
   }
 
   .footer-links-container {
-    font-size: 0.85rem;
+    font-size: var(--font-size-sm);
     gap: 0.5rem;
   }
 
@@ -131,7 +131,7 @@
   }
 
   .footer-notice p {
-    font-size: 0.85rem;
+    font-size: var(--font-size-sm);
   }
 }
 
@@ -155,6 +155,6 @@
 
   .footer-copyright,
   .footer-notice p {
-    font-size: 0.8rem;
+    font-size: var(--font-size-xs);
   }
 }

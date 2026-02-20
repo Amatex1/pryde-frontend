@@ -16,7 +16,7 @@
   background: var(--accent-primary);
   color: var(--text-inverse);
   border: none;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -71,7 +71,7 @@
 .audio-time {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   font-family: 'Courier New', monospace;
 }
@@ -82,7 +82,7 @@
 }
 
 .audio-icon {
-  font-size: 1.2rem;
+  font-size: var(--font-size-xl);
   flex-shrink: 0;
 }
 

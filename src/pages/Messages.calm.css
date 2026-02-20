@@ -67,7 +67,7 @@
 }
 
 .sidebar-title {
-  font-size: 1.125rem;
+  font-size: var(--font-size-lg);
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
@@ -91,7 +91,7 @@
   border: 1px solid var(--border-light);
   background: transparent;
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -167,7 +167,7 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -205,7 +205,7 @@
 
 .conv-name {
   font-weight: 600;
-  font-size: 0.9375rem;
+  font-size: var(--font-size-base);
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -218,14 +218,14 @@
 }
 
 .conv-time {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .conv-preview {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
@@ -244,7 +244,7 @@
   border-radius: 10px;
   background: var(--pryde-purple);
   color: white;
-  font-size: 0.6875rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   margin-left: auto;
 }
@@ -314,7 +314,7 @@
 
 .thread-display-name {
   font-weight: 600;
-  font-size: 0.9375rem;
+  font-size: var(--font-size-base);
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -322,7 +322,7 @@
 }
 
 .thread-username {
-  font-size: 0.8125rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -343,7 +343,7 @@
   border: none;
   background: transparent;
   color: var(--text-secondary);
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -363,7 +363,7 @@
   border: none;
   background: transparent;
   color: var(--text-secondary);
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   cursor: pointer;
   display: none; /* Hidden on desktop */
   align-items: center;
@@ -413,7 +413,7 @@
   max-width: 70%;
   padding: 0.75rem 1rem; /* Slightly more padding */
   border-radius: 18px; /* Slightly more rounded */
-  font-size: 0.9375rem;
+  font-size: var(--font-size-base);
   line-height: 1.5;
   word-wrap: break-word;
   word-break: break-word;
@@ -458,7 +458,7 @@
 
 /* Message timestamp: Small, muted, no pill, no box */
 .message-timestamp {
-  font-size: 0.6875rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   margin-top: 0.25rem;
   display: block;
@@ -479,7 +479,7 @@
   border-left: 3px solid var(--pryde-purple);
   background: rgba(139, 92, 246, 0.08);
   border-radius: 4px;
-  font-size: 0.8125rem;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
@@ -522,7 +522,7 @@
   border: none;
   background: transparent;
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -613,7 +613,7 @@
   border-radius: 22px;
   background: var(--bg-secondary);
   color: var(--text-primary);
-  font-size: 0.9375rem;
+  font-size: var(--font-size-base);
   line-height: 1.5;
   resize: none;
   overflow-y: auto;
@@ -644,7 +644,7 @@
   border: none;
   background: transparent;
   color: var(--text-secondary);
-  font-size: 1.125rem;
+  font-size: var(--font-size-lg);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -670,7 +670,7 @@
   border: none;
   background: var(--pryde-purple);
   color: white;
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -697,7 +697,7 @@
   background: var(--bg-secondary);
   border-left: 3px solid var(--pryde-purple);
   border-radius: 4px;
-  font-size: 0.8125rem;
+  font-size: var(--font-size-sm);
 }
 
 .composer-reply-text {
@@ -715,7 +715,7 @@
   border: none;
   background: transparent;
   color: var(--text-muted);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -898,14 +898,14 @@
 }
 
 .empty-state-content h3 {
-  font-size: 1.125rem;
+  font-size: var(--font-size-lg);
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
 }
 
 .empty-state-content p {
-  font-size: 0.9375rem;
+  font-size: var(--font-size-base);
   color: var(--text-secondary);
   margin: 0;
 }
@@ -941,7 +941,7 @@
   border: none;
   background: transparent;
   color: var(--text-primary);
-  font-size: 0.9375rem;
+  font-size: var(--font-size-base);
   cursor: pointer;
   width: 100%;
   text-align: left;

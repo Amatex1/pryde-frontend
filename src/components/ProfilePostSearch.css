@@ -15,7 +15,7 @@
 .search-icon {
   position: absolute;
   left: 16px;
-  font-size: 1.2rem;
+  font-size: var(--font-size-xl);
   color: var(--text-muted);
   pointer-events: none;
 }
@@ -27,7 +27,7 @@
   border-radius: 28px;
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   transition: all 0.2s;
 }
 
@@ -46,7 +46,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -89,7 +89,7 @@
   border: 1px solid var(--border-color);
   border-radius: 20px;
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -112,7 +112,7 @@
   text-align: center;
   padding: 12px;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   font-weight: 500;
 }
 

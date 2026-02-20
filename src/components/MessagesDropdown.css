@@ -7,7 +7,7 @@
   padding: var(--space-2) var(--space-4);
   border-radius: var(--button-radius);
   font-weight: var(--font-weight-medium);
-  font-size: 0.9375rem;
+  font-size: var(--font-size-base);
   text-decoration: none;
   transition: all 0.2s ease;
   display: inline-flex;
@@ -67,7 +67,7 @@
 
 .messages-dropdown-header h3 {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
   color: white;
 }
@@ -85,7 +85,7 @@
 }
 
 .messages-dropdown-empty .empty-icon {
-  font-size: 2rem;
+  font-size: var(--font-size-3xl);
   display: block;
   margin-bottom: 0.5rem;
 }
@@ -118,7 +118,7 @@
   justify-content: center;
   color: white;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -143,7 +143,7 @@
 
 .msg-name {
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--text-main);
   white-space: nowrap;
   overflow: hidden;
@@ -151,14 +151,14 @@
 }
 
 .msg-time {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   flex-shrink: 0;
 }
 
 .msg-preview {
   margin: 0;
-  font-size: 0.8125rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -182,7 +182,7 @@
   text-align: center;
   color: var(--pryde-purple);
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   text-decoration: none;
   border-top: 1px solid var(--border-light);
   transition: background 0.2s ease;

@@ -73,13 +73,13 @@
 }
 
 .image-error span {
-  font-size: 2rem;
+  font-size: var(--font-size-3xl);
   margin-bottom: 8px;
   opacity: 0.5;
 }
 
 .image-error p {
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   margin: 0;
   opacity: 0.7;
 }

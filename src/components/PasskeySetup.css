@@ -17,13 +17,13 @@
 
 .passkey-info h3 {
   color: var(--text-main);
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   margin-bottom: 1rem;
 }
 
 .passkey-info p {
   color: var(--text-muted);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   line-height: 1.6;
   margin-bottom: 1.5rem;
 }
@@ -40,7 +40,7 @@
 
 .passkey-benefits li {
   color: var(--text-main);
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
   padding: 0.5rem 0;
   display: flex;
   align-items: center;
@@ -53,13 +53,13 @@
 
 .passkey-name-input h3 {
   color: var(--text-main);
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   margin-bottom: 0.5rem;
 }
 
 .passkey-name-input p {
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   margin-bottom: 1rem;
 }
 
@@ -68,7 +68,7 @@
   padding: 0.75rem 1rem;
   border: 2px solid var(--border-light);
   border-radius: 0.5rem;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   background: var(--bg-light);
   color: var(--text-main);
   transition: all 0.2s ease;
@@ -89,7 +89,7 @@
 .passkey-actions button {
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -117,7 +117,7 @@
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
   color: #ff6b6b;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   margin-bottom: 1rem;
   text-align: center;
 }

@@ -37,14 +37,14 @@
 }
 
 .push-prompt-title {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
   margin: 0;
   color: var(--text-primary, #fff);
 }
 
 .push-prompt-body {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary, rgba(255, 255, 255, 0.65));
   margin: 0;
   line-height: 1.5;
@@ -61,7 +61,7 @@
   padding: 10px 16px;
   border-radius: 10px;
   border: none;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   cursor: pointer;
   transition: opacity 0.15s ease;

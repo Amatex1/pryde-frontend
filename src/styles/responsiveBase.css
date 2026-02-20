@@ -13,7 +13,7 @@
 }
 
 html {
-  font-size: 16px;
+  font-size: var(--font-size-base);
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
 }
@@ -28,7 +28,7 @@ body {
 /* Prevent mobile font scaling chaos */
 button, input, textarea, select {
   font-family: inherit;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 /* ============================= */

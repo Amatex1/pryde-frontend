@@ -4,7 +4,7 @@
   border: none;
   padding: 10px 16px;
   border-radius: 20px;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -72,13 +72,13 @@
 }
 
 .recording-text {
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .recording-duration {
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   font-weight: 700;
   color: var(--pryde-purple);
   font-family: 'Courier New', monospace;
@@ -94,7 +94,7 @@
   padding: 8px 14px;
   border-radius: 8px;
   border: none;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;

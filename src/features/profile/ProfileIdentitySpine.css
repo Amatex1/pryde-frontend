@@ -43,7 +43,7 @@
 
 /* Role Icon: Small, calm, next to name */
 .pis-role-icon {
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   opacity: 0.9;
   display: inline-flex;
   align-items: center;
@@ -63,7 +63,7 @@
    ──────────────────────────────────────── */
 
 .pis-username {
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   color: var(--text-secondary);
   margin: 0;
   font-weight: 500;
@@ -89,7 +89,7 @@
    ──────────────────────────────────────── */
 
 .pis-role-sublabel {
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   margin: 0;
   padding: 0.375rem 0.75rem;
@@ -131,7 +131,7 @@
 
 /* Override UserBadge styles for profile display */
 .pis-public-badges .user-badge {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   padding: 0.375rem 0.75rem;
   border-radius: 20px;
@@ -150,11 +150,11 @@
 }
 
 .pis-public-badges .user-badge-icon {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 .pis-public-badges .user-badge-label {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
 }
 
 /* ────────────────────────────────────────
@@ -169,7 +169,7 @@
 }
 
 .pis-trait-pill {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   color: var(--text-secondary);
   background: var(--bg-subtle, #F4F5FA);
@@ -189,7 +189,7 @@
    ──────────────────────────────────────── */
 
 .pis-bio {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   line-height: 1.6;
   color: var(--text-primary);
   margin: 0.5rem 0 0 0;
@@ -228,13 +228,13 @@
 }
 
 .pis-stat-value {
-  font-size: 1.125rem;
+  font-size: var(--font-size-lg);
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .pis-stat-label {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary);
   font-weight: 500;
 }
@@ -249,15 +249,15 @@
   }
 
   .pis-display-name {
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
   }
 
   .pis-username {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
   }
 
   .pis-bio {
-    font-size: 0.9375rem;
+    font-size: var(--font-size-base);
   }
 
   .pis-stats {
@@ -265,11 +265,11 @@
   }
 
   .pis-stat-value {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
   }
 
   .pis-stat-label {
-    font-size: 0.8125rem;
+    font-size: var(--font-size-sm);
   }
 }
 

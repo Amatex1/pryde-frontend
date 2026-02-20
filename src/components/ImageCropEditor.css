@@ -55,7 +55,7 @@
 }
 
 .zoom-icon {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   opacity: 0.7;
 }
 
@@ -94,7 +94,7 @@
 }
 
 .zoom-value {
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary, #999);
   min-width: 2.5rem;
   text-align: right;
@@ -110,7 +110,7 @@
 .crop-btn {
   padding: 0.5rem 1.25rem;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -148,7 +148,7 @@
 
   .crop-btn {
     padding: 0.625rem 1rem;
-    font-size: 0.85rem;
+    font-size: var(--font-size-sm);
   }
 
   .crop-actions {

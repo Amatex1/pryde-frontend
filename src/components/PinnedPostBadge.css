@@ -6,13 +6,13 @@
   color: white;
   padding: 4px 12px;
   border-radius: 12px;
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   margin-bottom: 8px;
 }
 
 .pin-icon {
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .pin-text {

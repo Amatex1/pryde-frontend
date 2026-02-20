@@ -22,13 +22,13 @@
 .photo-essay-header h1 {
   margin: 0 0 10px 0;
   color: var(--pryde-purple);
-  font-size: 2rem;
+  font-size: var(--font-size-3xl);
 }
 
 .photo-essay-header p {
   margin: 0;
   color: var(--text-muted);
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
 }
 
 .photo-essay-form {
@@ -53,7 +53,7 @@
   padding: 12px;
   border: 1px solid var(--border-light);
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   background: white;
   transition: all 0.3s ease;
 }
@@ -115,7 +115,7 @@
   border: none;
   background: rgba(255, 0, 0, 0.8);
   color: white;
-  font-size: 1.2rem;
+  font-size: var(--font-size-xl);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -133,7 +133,7 @@
   padding: 8px;
   border: 1px solid var(--border-light);
   border-radius: 6px;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   background: white;
 }
 

@@ -38,14 +38,14 @@
 }
 
 .reactivate-description {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   color: var(--text-muted);
   line-height: 1.6;
   margin-bottom: 1.5rem;
 }
 
 .reactivate-user {
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   margin-bottom: 1.5rem;
   padding: 0.75rem 1rem;
@@ -63,7 +63,7 @@
   border: 1px solid rgba(255, 71, 87, 0.3);
   border-radius: 12px;
   color: #ff4757;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   margin-bottom: 1.5rem;
 }
 
@@ -80,7 +80,7 @@
   border-radius: 12px;
   background: linear-gradient(135deg, var(--pryde-purple) 0%, var(--electric-blue) 100%);
   color: white;
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -104,7 +104,7 @@
   border-radius: 12px;
   background: transparent;
   color: var(--text-muted);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -121,7 +121,7 @@
 }
 
 .reactivate-help {
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
 }
 
@@ -153,7 +153,7 @@
   }
 
   .reactivate-title {
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
   }
 
   .reactivate-icon {

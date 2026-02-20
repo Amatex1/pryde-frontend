@@ -109,7 +109,7 @@
   border: 1px solid var(--border-color, #333);
   border-radius: 8px;
   color: var(--text-primary, #fff);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 .settings-modal input:focus,
@@ -121,7 +121,7 @@
 
 .settings-modal .form-hint {
   margin-top: 0.5rem;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary, #888);
 }
 

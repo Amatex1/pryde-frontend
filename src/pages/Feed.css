@@ -3454,7 +3454,7 @@ html:not([data-theme]) .post-actions {
   }
 
   .action-btn span:first-child {
-    font-size: 24px !important; /* Show only emoji */
+    font-size: var(--font-size-2xl) !important; /* Show only emoji */
     flex-shrink: 0 !important;
   }
 
@@ -3517,7 +3517,7 @@ html:not([data-theme]) .post-actions {
   }
 
   .comment-input {
-    font-size: 16px; /* Prevents zoom on iOS */
+    font-size: var(--font-size-base); /* Prevents zoom on iOS */
   }
 
   /* Improve media grid on mobile */
@@ -3612,7 +3612,7 @@ html:not([data-theme]) .post-actions {
   input[type="password"],
   textarea,
   select {
-    font-size: 16px !important; /* Prevents iOS zoom */
+    font-size: var(--font-size-base) !important; /* Prevents iOS zoom */
     width: 100%;
     max-width: 100%;
   }
