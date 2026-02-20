@@ -54,7 +54,7 @@
 }
 
 .groups-tabs .tab.active {
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
   background: var(--bg-tertiary, #252525);
 }
 
@@ -64,7 +64,7 @@
   border: 1px solid var(--border-color, #333);
   border-radius: 8px;
   background: var(--bg-tertiary, #252525);
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
 }
 
 /* Modal styles */
@@ -99,7 +99,7 @@
   border: 1px solid var(--border-color, #333);
   border-radius: 8px;
   background: var(--bg-tertiary, #252525);
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
 }
 
 .modal-content textarea {

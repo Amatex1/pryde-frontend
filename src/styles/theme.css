@@ -6,7 +6,7 @@
   /* ========================================
      BRAND COLORS (Original - Keep for backwards compatibility)
      ======================================== */
-  --color-primary: #6C5CE7;
+  --color-primary: var(--color-brand);
   --color-primary-hover: #5a4bd8;
   --color-primary-soft: #EDEAFF;
   --color-accent: #0984E3;
@@ -56,7 +56,7 @@
   --shadow-soft: 0 2px 8px rgba(15, 16, 33, 0.04);
   --shadow-medium: 0 4px 12px rgba(15, 16, 33, 0.08);
   --shadow-strong: 0 8px 24px rgba(15, 16, 33, 0.12);
-  --shadow-focus: 0 0 0 3px rgba(108, 92, 231, 0.15);
+  --shadow-focus: 0 0 0 3px var(--color-brand-muted);
 
   /* ========================================
      BORDER RADIUS
@@ -106,7 +106,7 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 15px;
   line-height: 1.5;
-  color: var(--text-main);
+  color: var(--color-text);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

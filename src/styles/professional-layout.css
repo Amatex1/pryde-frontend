@@ -75,7 +75,7 @@
 /* Post content = confident */
 .post-content,
 .post-text {
-  color: var(--text-primary);
+  color: var(--color-text);
   font-size: 15.5px;
   line-height: 1.6;
 }
@@ -90,12 +90,12 @@
 
 /* Actions = clear but restrained */
 .post-actions button {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   font-weight: 500;
 }
 
 .post-actions button:hover {
-  color: var(--accent-primary);
+  color: var(--color-brand);
 }
 
 /* ---------- 5️⃣ GRADIENT RULES (ONLY WHERE ALLOWED) ---------- */
@@ -105,7 +105,7 @@ button.primary,
 .button-primary {
   background: linear-gradient(
     135deg,
-    var(--accent-primary),
+    var(--color-brand),
     var(--color-primary)
   );
   color: #fff;
@@ -116,7 +116,7 @@ button.primary,
 .tab.active {
   background: linear-gradient(
     135deg,
-    rgba(108,92,231,0.15),
+    var(--color-brand-muted),
     rgba(108,92,231,0.05)
   );
 }
@@ -125,7 +125,7 @@ button.primary,
 .brand-accent {
   background: linear-gradient(
     135deg,
-    var(--accent-primary),
+    var(--color-brand),
     var(--accent-secondary)
   );
 }

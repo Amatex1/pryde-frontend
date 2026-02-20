@@ -26,14 +26,14 @@
   border: 2px solid var(--border-color);
   border-radius: 28px;
   background: var(--bg-primary);
-  color: var(--text-primary);
+  color: var(--color-text);
   font-size: 1rem;
   transition: all 0.2s;
 }
 
 .profile-search-input:focus {
   outline: none;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
 }
 
@@ -55,7 +55,7 @@
 }
 
 .clear-search-btn:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   transform: scale(1.1);
 }
 
@@ -88,7 +88,7 @@
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
   border-radius: 20px;
-  color: var(--text-primary);
+  color: var(--color-text);
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -99,13 +99,13 @@
 
 .filter-tab:hover {
   background: var(--soft-lavender);
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 .filter-tab.active {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 .search-status {

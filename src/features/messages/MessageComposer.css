@@ -75,7 +75,7 @@
   background: var(--bg-tertiary, #252525);
   border: 1px solid var(--border-color, #333);
   border-radius: 8px;
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
 }
 
 /* ========================================
@@ -140,7 +140,7 @@
   background: var(--bg-tertiary, #252525);
   border: 1px solid var(--border-color, #333);
   border-radius: 24px;
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
   font-size: 1rem;  /* Prevents iOS zoom on focus */
 }
 
@@ -176,7 +176,7 @@
 
 .recording-time {
   font-family: monospace;
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
   flex: 1;
 }
 

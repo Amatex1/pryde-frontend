@@ -64,7 +64,7 @@
 }
 
 .setup-step h3 {
-  color: #6C5CE7;
+  color: var(--color-brand);
   margin-top: 0;
   margin-bottom: 10px;
 }
@@ -79,7 +79,7 @@
 
 .verification-input:focus {
   outline: none;
-  border-color: #6C5CE7;
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
@@ -89,7 +89,7 @@
 
 .spinner {
   border: 3px solid #f3f3f3;
-  border-top: 3px solid #6C5CE7;
+  border-top: 3px solid var(--color-brand);
   border-radius: 50%;
   width: 40px;
   height: 40px;

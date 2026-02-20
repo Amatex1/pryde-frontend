@@ -115,7 +115,7 @@
   font-size: 0.9rem;
   background: transparent;
   border: 1px solid var(--border-color);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 .url-actions .btn-secondary:hover {
@@ -131,13 +131,13 @@
 /* Dark mode support - both OS preference and app toggle */
 @media (prefers-color-scheme: dark) {
   .profile-url-setting {
-    background: linear-gradient(135deg, rgba(108, 92, 231, 0.15) 0%, rgba(108, 92, 231, 0.05) 100%);
+    background: linear-gradient(135deg, var(--color-brand-muted) 0%, rgba(108, 92, 231, 0.05) 100%);
   }
 }
 
 /* App theme toggle (overrides OS preference) */
 [data-theme="dark"] .profile-url-setting {
-  background: linear-gradient(135deg, rgba(108, 92, 231, 0.15) 0%, rgba(108, 92, 231, 0.05) 100%);
+  background: linear-gradient(135deg, var(--color-brand-muted) 0%, rgba(108, 92, 231, 0.05) 100%);
 }
 
 [data-theme="light"] .profile-url-setting {

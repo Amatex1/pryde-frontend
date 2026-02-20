@@ -9,7 +9,7 @@
   --glow-strength: 1;
 
   /* 🎨 GLOBAL BRAND COLORS (UNCHANGED) */
-  --color-primary: #6C5CE7;
+  --color-primary: var(--color-brand);
   --color-danger: #FF7675;
   --color-success: #00B894;
   --color-warning: #FDCB6E;
@@ -73,7 +73,7 @@
   --text-secondary: #5E6787;
   --text-muted: #9CA0B3;
 
-  --accent-primary: #6C5CE7;
+  --accent-primary: var(--color-brand);
   --accent-secondary: #2F8FEA;
 
   --border-soft: #E3E7F2;
@@ -135,9 +135,9 @@
   --color-bg: linear-gradient(180deg, var(--bg-deep-base) 0%, var(--bg-deep-mid) 50%, var(--bg-deep-accent) 100%);
   --color-surface: var(--surface-1);
   --color-border: rgba(181, 127, 255, 0.18);
-  --color-text: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-brand: var(--accent-primary);
+  --color-text: var(--color-text);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-brand: var(--color-brand);
   --color-brand-hover: #C68FFF;
   --color-text-inverse: #1A1F2E;
 }
@@ -148,7 +148,7 @@
 
 body {
   background: var(--bg-app);
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .card,

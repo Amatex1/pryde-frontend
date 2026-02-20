@@ -2,7 +2,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: linear-gradient(135deg, var(--pryde-purple), var(--electric-blue));
+  background: linear-gradient(135deg, var(--color-brand), var(--electric-blue));
   color: white;
   padding: 4px 12px;
   border-radius: 12px;

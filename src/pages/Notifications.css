@@ -103,14 +103,14 @@
 }
 
 .notification-card:hover {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.15);
+  box-shadow: 0 4px 12px var(--color-brand-muted);
 }
 
 .notification-card.unread {
   background: var(--soft-lavender);
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 .notification-icon {
@@ -131,7 +131,7 @@
 
 .notification-text {
   margin: 0 0 0.25rem 0;
-  color: var(--text-main);
+  color: var(--color-text);
   font-weight: 500;
   line-height: 1.4;
 }
@@ -144,7 +144,7 @@
 .unread-indicator {
   width: 10px;
   height: 10px;
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   border-radius: 50%;
   flex-shrink: 0;
   margin-top: 0.5rem;
@@ -161,12 +161,12 @@
 }
 
 [data-theme="dark"] .notification-card:hover {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
 }
 
 [data-theme="dark"] .notification-card.unread {
-  background: rgba(108, 92, 231, 0.15);
+  background: var(--color-brand-muted);
 }
 
 [data-theme="dark"] .notification-icon {
@@ -178,7 +178,7 @@
 }
 
 [data-theme="dark"] .mark-all-read-btn:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
 }
 
 /* Tablet breakpoint: 769px - 1024px */
@@ -207,13 +207,13 @@
    ANNOUNCEMENT NOTIFICATION STYLE
    ======================================== */
 .notification-card.announcement {
-  border-left: 4px solid var(--pryde-purple, #6C5CE7);
-  background: color-mix(in srgb, var(--pryde-purple, #6C5CE7) 8%, var(--bg-card, #fff));
+  border-left: 4px solid var(--color-brand);
+  background: color-mix(in srgb, var(--color-brand) 8%, var(--bg-card, #fff));
 }
 
 .notification-card.announcement .notification-icon {
-  background: color-mix(in srgb, var(--pryde-purple, #6C5CE7) 18%, transparent);
-  color: var(--pryde-purple, #6C5CE7);
+  background: color-mix(in srgb, var(--color-brand) 18%, transparent);
+  color: var(--color-brand);
 }
 
 /* Mobile Responsive */

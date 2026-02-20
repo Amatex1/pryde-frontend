@@ -43,13 +43,13 @@
   /* ========================================
      ACCENTS (Brand Colors)
      ======================================== */
-  --accent-primary: #6C5CE7;
+  --accent-primary: var(--color-brand);
   --accent-hover: #5a4bd8;
-  --accent-muted: rgba(108, 92, 231, 0.15);
+  --accent-muted: var(--color-brand-muted);
   --accent-secondary: #0984E3;
 
   /* Brand background for mobile - Pryde purple */
-  --color-brand-bg: #6C5CE7;
+  --color-brand-bg: var(--color-brand);
   --color-brand-bg-light: #7C6CE7;
   --color-brand-bg-dark: #5a4bd8;
   --color-text-on-brand: #FFFFFF; /* White text on purple */
@@ -75,8 +75,8 @@
   /* ========================================
      GRADIENTS
      ======================================== */
-  --gradient-primary: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-  --gradient-soft: linear-gradient(135deg, var(--accent-muted) 0%, var(--accent-primary) 100%);
+  --gradient-primary: linear-gradient(135deg, var(--color-brand) 0%, var(--accent-secondary) 100%);
+  --gradient-soft: linear-gradient(135deg, var(--accent-muted) 0%, var(--color-brand) 100%);
 
   /* ========================================
      LEGACY MAPPINGS (Backward Compatibility)
@@ -84,9 +84,9 @@
      ======================================== */
   --bg: var(--bg-page);
   --bg-card: var(--bg-card);
-  --text-main: var(--text-primary);
+  --text-main: var(--color-text);
   --text-light: var(--text-muted);
-  --pryde-purple: var(--accent-primary);
+  --pryde-purple: var(--color-brand);
   --electric-blue: var(--accent-secondary);
   --soft-lavender: var(--accent-muted);
   --border-light: var(--border-subtle);
@@ -131,14 +131,14 @@
   --border-strong: #454872;
 
   /* ACCENTS - Keep brand colors consistent */
-  --accent-primary: #6C5CE7;
+  --accent-primary: var(--color-brand);
   --accent-hover: #7F6FF2;
   --accent-muted: rgba(108, 92, 231, 0.20);
   --accent-secondary: #0984E3;
 
   /* Brand background for mobile - Pryde purple (dark mode) */
   --color-brand-bg: #5a4bd8;
-  --color-brand-bg-light: #6C5CE7;
+  --color-brand-bg-light: var(--color-brand);
   --color-brand-bg-dark: #4a3bc8;
   --color-text-on-brand: #FFFFFF; /* White text on purple */
 

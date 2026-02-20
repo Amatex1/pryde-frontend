@@ -129,7 +129,7 @@
   font-weight: 600; /* Semi-bold for clean look */
   font-size: 0.9375rem; /* 15px - clean readable size */
   line-height: 1.4;
-  color: var(--text-primary, #2B2B2B);
+  color: var(--color-text);
   white-space: nowrap;
   transition: color 0.15s ease;
   display: inline;
@@ -139,7 +139,7 @@
 }
 
 .ph-name-link:hover .ph-name {
-  color: var(--pryde-purple, #6B46C1);
+  color: var(--color-brand);
   text-decoration: none;
 }
 
@@ -148,7 +148,7 @@
   font-size: 0.6875rem; /* 11px */
   font-weight: 600;
   padding: 2px 8px;
-  background: var(--pryde-purple, #6B46C1);
+  background: var(--color-brand);
   color: white;
   border-radius: 12px;
   display: inline-flex;
@@ -231,7 +231,7 @@
 }
 
 .ph-timestamp:hover {
-  color: var(--pryde-purple, #6B46C1);
+  color: var(--color-brand);
   cursor: pointer;
 }
 
@@ -347,7 +347,7 @@
    ============================================================ */
 
 [data-theme="dark"] .ph-name {
-  color: var(--text-primary, #e0e0e0);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .ph-name-link:hover .ph-name {

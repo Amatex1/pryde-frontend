@@ -56,6 +56,8 @@
   --color-danger-soft: rgba(255, 118, 117, 0.15);
   --color-warning: #FDCB6E;
   --color-warning-soft: rgba(253, 203, 110, 0.15);
+  --color-info: #17a2b8;
+  --color-info-soft: rgba(23, 162, 184, 0.15);
   
   /* ========================================
      SHADOWS (Minimal)
@@ -156,6 +158,10 @@
   --color-text-secondary: #6B7280;
   --color-meta: #9CA3AF;
   --color-text-inverse: #FFFFFF;
+
+  /* Brand softened for quiet mode */
+  --color-brand: #7C6CE7;
+  --color-brand-muted: rgba(124, 108, 231, 0.12);
 }
 
 /* ========================================
@@ -177,6 +183,10 @@
   --color-text-secondary: #A2AAC2;
   --color-meta: #7E859C;
   --color-text-inverse: #0F1629;
+
+  /* Brand desaturated for dark quiet mode */
+  --color-brand: #6b5aa6;
+  --color-brand-muted: rgba(107, 90, 166, 0.15);
 }
 
 /* ========================================

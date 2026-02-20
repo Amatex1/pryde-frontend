@@ -76,7 +76,7 @@
   margin: 0 0 8px 0;
   font-size: 13px;
   font-weight: 600;
-  color: #6C5CE7;
+  color: var(--color-brand);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -183,7 +183,7 @@
 }
 
 [data-theme="light"] .debug-overlay-content h4 {
-  color: #6C5CE7;
+  color: var(--color-brand);
 }
 
 [data-theme="light"] .debug-row {

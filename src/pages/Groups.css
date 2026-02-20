@@ -124,7 +124,7 @@
 
 .group-header h1 {
   font-size: var(--font-size-3xl);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   margin-bottom: 0.5rem;
   /* Prevent text reflow causing height changes */
   min-height: 2.5rem;
@@ -145,7 +145,7 @@
   gap: 1rem;
   padding-top: 1rem;
   border-top: 1px solid var(--border-light);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-weight: var(--font-weight-semibold);
   /* Fixed height for stats row */
   min-height: 2.5rem;
@@ -265,8 +265,8 @@
 }
 
 .role-badge.member {
-  background: linear-gradient(135deg, rgba(108, 92, 231, 0.15), rgba(108, 92, 231, 0.25));
-  color: var(--pryde-purple);
+  background: linear-gradient(135deg, var(--color-brand-muted), rgba(108, 92, 231, 0.25));
+  color: var(--color-brand);
   border: 1px solid rgba(108, 92, 231, 0.3);
 }
 
@@ -298,7 +298,7 @@
 }
 
 .section-title {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   margin-bottom: 1rem;
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
@@ -310,7 +310,7 @@
   border: 2px solid var(--border-light);
   border-radius: 12px;
   background: var(--bg-light);
-  color: var(--text-main);
+  color: var(--color-text);
   font-size: var(--font-size-base);
   resize: vertical;
   min-height: 60px;
@@ -321,7 +321,7 @@
 
 .group-composer .post-input:focus {
   outline: none;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
@@ -383,7 +383,7 @@
 
 .group-posts .post-content p {
   line-height: var(--line-height-relaxed);
-  color: var(--text-main);
+  color: var(--color-text);
   margin: 0;
 }
 
@@ -530,7 +530,7 @@
 }
 
 .edit-post-modal h2 {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   margin-bottom: 1.5rem;
 }
 
@@ -544,12 +544,12 @@
   resize: vertical;
   min-height: 100px;
   background: var(--bg-main);
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .edit-post-modal textarea:focus {
   outline: none;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 .modal-overlay {
@@ -633,9 +633,9 @@
 .btn-manage-members {
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  border: 1px solid var(--pryde-purple);
+  border: 1px solid var(--color-brand);
   background: transparent;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-size: var(--font-size-sm);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -669,7 +669,7 @@
 .member-modal .modal-header h2 {
   margin: 0;
   font-size: var(--font-size-xl);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .member-modal .btn-close {
@@ -683,7 +683,7 @@
 }
 
 .member-modal .btn-close:hover {
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .loading-members {
@@ -751,7 +751,7 @@
 .member-name {
   display: block;
   font-weight: var(--font-weight-medium);
-  color: var(--text-main);
+  color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -913,7 +913,7 @@
 .log-details {
   flex: 1;
   font-size: var(--font-size-sm);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 .log-actor {
@@ -960,7 +960,7 @@
 
 .btn-notification-settings:hover {
   background: var(--soft-lavender);
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 .notification-settings-modal {
@@ -983,7 +983,7 @@
 .notification-settings-modal .modal-header h2 {
   margin: 0;
   font-size: var(--font-size-xl);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .loading-settings {
@@ -1022,7 +1022,7 @@
   width: 20px;
   height: 20px;
   margin-top: 2px;
-  accent-color: var(--pryde-purple);
+  accent-color: var(--color-brand);
   cursor: pointer;
 }
 
@@ -1045,7 +1045,7 @@
 }
 
 .toggle-text strong {
-  color: var(--text-main);
+  color: var(--color-text);
   font-weight: var(--font-weight-medium);
 }
 
@@ -1237,7 +1237,7 @@
 
 .post-actions-bar .action-btn:hover {
   background: rgba(108, 92, 231, 0.1);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .post-comments {
@@ -1268,13 +1268,13 @@
   border: 1px solid var(--border-light);
   outline: none;
   font-size: var(--font-size-sm);
-  color: var(--text-main);
+  color: var(--color-text);
   background: var(--background-light);
   transition: all 0.3s ease;
 }
 
 .comment-input:focus {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   background: var(--card-surface);
 }
 
@@ -1282,7 +1282,7 @@
   padding: 0.5rem 1rem;
   border-radius: 20px;
   border: none;
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1307,8 +1307,8 @@
 
 .btn-gif:hover {
   background: rgba(108, 92, 231, 0.1);
-  border-color: var(--pryde-purple);
-  color: var(--pryde-purple);
+  border-color: var(--color-brand);
+  color: var(--color-brand);
 }
 
 .comment-gif-preview {
@@ -1347,7 +1347,7 @@
   margin-left: 16px;
   padding: 12px 16px;
   background: rgba(108, 92, 231, 0.05);
-  border-left: 3px solid var(--pryde-purple);
+  border-left: 3px solid var(--color-brand);
   border-radius: 16px;
 }
 
@@ -1365,13 +1365,13 @@
   border-radius: 999px;
   border: 1px solid var(--border-light);
   font-size: var(--font-size-sm);
-  color: var(--text-main);
+  color: var(--color-text);
   background: var(--card-surface);
   transition: all 0.2s ease;
 }
 
 .reply-input:focus {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.1);
 }
 
@@ -1380,7 +1380,7 @@
   padding: 0 12px;
   border-radius: 16px;
   border: none;
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1445,7 +1445,7 @@
 
 .btn-dropdown:focus,
 .btn-group-dropdown:focus {
-  outline: 2px solid var(--pryde-purple);
+  outline: 2px solid var(--color-brand);
   outline-offset: 2px;
 }
 
@@ -1481,7 +1481,7 @@
   border: none;
   background: none;
   font-size: var(--font-size-base);
-  color: var(--text-primary);
+  color: var(--color-text);
   cursor: pointer;
   width: 100%;
   text-align: left;

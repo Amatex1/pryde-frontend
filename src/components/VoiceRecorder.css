@@ -1,5 +1,5 @@
 .start-recording-btn {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   border: none;
   padding: 10px 16px;
@@ -38,7 +38,7 @@
   width: 20px;
   height: 20px;
   border: 3px solid var(--border-color);
-  border-top-color: var(--pryde-purple);
+  border-top-color: var(--color-brand);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -74,13 +74,13 @@
 .recording-text {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .recording-duration {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-family: 'Courier New', monospace;
 }
 
@@ -108,7 +108,7 @@
 
 .pause-btn:hover,
 .resume-btn:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   transform: translateY(-1px);
 }
 

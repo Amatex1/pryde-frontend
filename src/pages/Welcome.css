@@ -29,7 +29,7 @@
 .welcome-title {
   font-size: var(--font-size-2xl, 1.75rem);
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--color-text);
   margin: 0 0 1.5rem 0;
   line-height: 1.2;
 }
@@ -40,7 +40,7 @@
 
 .welcome-body p {
   font-size: var(--font-size-base, 1rem);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   line-height: 1.7;
   margin: 0;
 }
@@ -63,7 +63,7 @@
   padding: 1rem 1.25rem;
   font-size: var(--font-size-base, 1rem);
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--color-text);
   cursor: pointer;
   transition: all 0.15s ease;
   text-align: center;
@@ -71,11 +71,11 @@
 
 .welcome-option:hover {
   background: var(--accent-muted);
-  border-color: var(--accent-primary);
+  border-color: var(--color-brand);
 }
 
 .welcome-option:focus-visible {
-  outline: 2px solid var(--accent-primary);
+  outline: 2px solid var(--color-brand);
   outline-offset: 2px;
 }
 

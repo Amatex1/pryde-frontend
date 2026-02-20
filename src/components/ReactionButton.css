@@ -72,7 +72,7 @@
 }
 
 .reaction-count:hover {
-  color: var(--text-primary);
+  color: var(--color-text);
   text-decoration: underline;
 }
 

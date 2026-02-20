@@ -48,7 +48,7 @@
 }
 
 .auth-home-link:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   background: var(--soft-lavender);
 }
 
@@ -75,7 +75,7 @@
 }
 
 .auth-subtitle {
-  color: var(--text-main);
+  color: var(--color-text);
   font-size: var(--font-size-lg);
   font-weight: 400;
   line-height: var(--line-height-relaxed);
@@ -113,7 +113,7 @@
   border: 1px solid var(--border-subtle);
   outline: none;
   font-size: var(--font-size-base);
-  color: var(--text-main);
+  color: var(--color-text);
   background: var(--bg-subtle); /* Slightly reduced brightness for better hierarchy */
   transition: all 0.15s ease;
   min-height: var(--button-height-mobile); /* Ensure touch-friendly */
@@ -136,7 +136,7 @@
   border: none;
   font-size: var(--font-size-base);
   font-weight: 500;
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -161,7 +161,7 @@
 }
 
 .auth-link {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   text-decoration: none;
   font-weight: 600;
   transition: all 0.3s ease;
@@ -188,7 +188,7 @@
 }
 
 .auth-link-muted:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   text-decoration: underline; /* Subtle underline only on hover */
 }
 
@@ -212,7 +212,7 @@
 }
 
 .auth-legal-links a:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .auth-legal-links span {
@@ -270,7 +270,7 @@
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: var(--pryde-purple);
+  accent-color: var(--color-brand);
   flex-shrink: 0;
 }
 
@@ -279,7 +279,7 @@
 }
 
 .checkbox-text a {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   text-decoration: underline;
 }
 
@@ -297,7 +297,7 @@
   align-items: center;
   gap: var(--space-sm);
   cursor: pointer;
-  color: var(--text-main);
+  color: var(--color-text);
   font-size: var(--font-size-sm);
   line-height: var(--line-height-relaxed);
 }
@@ -307,7 +307,7 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: var(--pryde-purple);
+  accent-color: var(--color-brand);
   flex-shrink: 0;
 }
 
@@ -316,7 +316,7 @@
 }
 
 .terms-checkbox-text a {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   text-decoration: underline;
 }
 
@@ -377,7 +377,7 @@
 }
 
 .passkey-setup-info h3 {
-  color: var(--text-main);
+  color: var(--color-text);
   font-size: var(--font-size-xl);
   margin-bottom: var(--space-sm);
 }
@@ -405,7 +405,7 @@
   font-size: var(--font-size-base); /* Smaller than required sections */
   font-weight: 500; /* Lighter weight */
   margin-bottom: var(--space-xs);
-  color: var(--text-main); /* Not purple - less dominant */
+  color: var(--color-text); /* Not purple - less dominant */
 }
 
 .about-optional-header p {
@@ -422,7 +422,7 @@
 
 .identity-selection-label {
   font-weight: 500; /* Lighter than required fields */
-  color: var(--text-main); /* Not purple */
+  color: var(--color-text); /* Not purple */
   margin-bottom: var(--space-xs);
   display: block;
   font-size: var(--font-size-sm);
@@ -447,7 +447,7 @@
   align-items: center; /* Center align radio with text */
   padding: var(--space-xs) var(--space-sm); /* Reduced padding */
   background: var(--card-surface);
-  color: var(--text-main);
+  color: var(--color-text);
   border: 1px solid var(--border-light); /* Thinner border */
   border-radius: var(--border-radius-sm); /* Smaller radius */
   cursor: pointer;
@@ -463,8 +463,8 @@
 
 .identity-option.selected {
   background: rgba(108, 92, 231, 0.1); /* Subtle selection, not full purple */
-  border-color: var(--pryde-purple);
-  color: var(--text-main); /* Keep text dark, not white */
+  border-color: var(--color-brand);
+  color: var(--color-text); /* Keep text dark, not white */
 }
 
 .identity-option input[type="radio"] {
@@ -473,7 +473,7 @@
   width: 16px; /* Smaller than default 20px */
   height: 16px;
   cursor: pointer;
-  accent-color: var(--pryde-purple);
+  accent-color: var(--color-brand);
   flex-shrink: 0;
 }
 
@@ -515,7 +515,7 @@
 
 .btn-skip-optional:hover {
   border-color: var(--pryde-purple-light);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   background: rgba(108, 92, 231, 0.03);
 }
 
@@ -538,7 +538,7 @@
 .btn-unskip {
   background: none;
   border: none;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   text-decoration: underline;
   cursor: pointer;
   font-size: var(--font-size-sm);
@@ -581,7 +581,7 @@
 
 .invite-main-text {
   font-size: var(--font-size-lg);
-  color: var(--text-main);
+  color: var(--color-text);
   margin-bottom: var(--space-md);
   line-height: var(--line-height-relaxed);
 }
@@ -602,7 +602,7 @@
   background: var(--bg-subtle);
   border-radius: var(--border-radius-md);
   font-size: var(--font-size-sm);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 .invite-value-icon {
@@ -680,17 +680,17 @@
 
 [data-theme="dark"] .auth-title,
 [data-theme="dark"] .auth-subtitle {
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .form-label {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 [data-theme="dark"] .form-input {
   background: var(--bg-surface);
   border-color: var(--border-subtle);
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .form-input::placeholder {
@@ -698,7 +698,7 @@
 }
 
 [data-theme="dark"] .auth-link {
-  color: var(--accent-primary);
+  color: var(--color-brand);
 }
 
 [data-theme="dark"] .error-message,

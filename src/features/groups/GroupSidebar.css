@@ -19,7 +19,7 @@
 .sidebar-section h3 {
   margin: 0 0 0.75rem;
   font-size: 1rem;
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
 }
 
 .about-text {
@@ -45,7 +45,7 @@
 }
 
 .meta-value {
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
 }
 
 .rules-list {
@@ -157,7 +157,7 @@
   background: var(--bg-tertiary, #252525);
   border: 1px solid var(--border-color, #333);
   border-radius: 8px;
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
   cursor: pointer;
   transition: background 0.2s;
 }

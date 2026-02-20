@@ -10,7 +10,7 @@
 
 /* Default focus ring for all interactive elements */
 :focus-visible {
-  outline: 2px solid var(--pryde-purple, #6C5CE7);
+  outline: 2px solid var(--color-brand);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -19,9 +19,9 @@
 button:focus-visible,
 a:focus-visible,
 [role="button"]:focus-visible {
-  outline: 2px solid var(--pryde-purple, #6C5CE7);
+  outline: 2px solid var(--color-brand);
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.15);
+  box-shadow: 0 0 0 4px var(--color-brand-muted);
 }
 
 /* Form inputs already have focus styles - enhance */
@@ -29,8 +29,8 @@ input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
   outline: none;
-  border-color: var(--pryde-purple, #6C5CE7);
-  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px var(--color-brand-muted);
 }
 
 /* Dark mode focus adjustments */
@@ -59,7 +59,7 @@ select:focus-visible {
   top: -100px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--pryde-purple, #6C5CE7);
+  background: var(--color-brand);
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
@@ -280,7 +280,7 @@ textarea:disabled,
 
 .error-message,
 .validation-error {
-  color: var(--danger, #D93636);
+  color: var(--color-danger);
   font-weight: 500;
 }
 

@@ -549,13 +549,13 @@ html {
 
 /* Softer badge colors in Quiet Mode (no urgency red) */
 [data-quiet="true"] .notification-badge {
-  background: var(--accent-primary, #7c5cff) !important;
+  background: var(--color-brand) !important;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1) !important;
 }
 
 /* Soften unread indicator dot */
 [data-quiet="true"] .unread-dot {
-  background: var(--accent-primary, #7c5cff) !important;
+  background: var(--color-brand) !important;
   opacity: 0.8;
 }
 
@@ -697,7 +697,7 @@ html {
   border: 1px dashed var(--border-light);
   border-radius: 0.5rem;
   padding: 0.5rem 1rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   font-size: 0.875rem;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -705,7 +705,7 @@ html {
 
 [data-quiet="true"] .btn-more-options:hover {
   background: var(--color-surface-active, rgba(255, 255, 255, 0.1));
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 /* Cleaner post actions bar in quiet mode */

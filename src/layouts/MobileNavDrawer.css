@@ -87,7 +87,7 @@
 
 .mobile-nav-username {
   font-weight: 600;
-  color: var(--text-primary, #1a1a1a);
+  color: var(--color-text);
 }
 
 .mobile-nav-view-profile {
@@ -126,7 +126,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  color: var(--text-primary, #1a1a1a);
+  color: var(--color-text);
   text-decoration: none;
   border: none;
   background: transparent;
@@ -226,11 +226,11 @@
 }
 
 [data-theme="dark"] .mobile-nav-username {
-  color: var(--text-primary, #f0f0f0);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .mobile-nav-item {
-  color: var(--text-primary, #f0f0f0);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .mobile-nav-item:hover {

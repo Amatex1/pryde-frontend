@@ -48,15 +48,15 @@
 
 /* Rainbow: Simplified to purple (primary brand color) */
 .badge-rainbow {
-  background: var(--pryde-purple, #6B46C1);
+  background: var(--color-brand);
   color: white;
-  border-color: var(--pryde-purple, #6B46C1);
+  border-color: var(--color-brand);
 }
 
 .badge-purple {
-  background: var(--pryde-purple, #6B46C1);
+  background: var(--color-brand);
   color: white;
-  border-color: var(--pryde-purple, #6B46C1);
+  border-color: var(--color-brand);
 }
 
 /* Gold: Flat, muted */

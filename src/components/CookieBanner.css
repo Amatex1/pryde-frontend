@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   background: var(--gradient-primary);
-  color: var(--text-inverse);
+  color: var(--color-text-inverse);
   padding: 1rem 2rem;
   box-shadow: var(--shadow-medium);
   z-index: var(--z-cookie-banner, 440);
@@ -50,7 +50,7 @@
 .cookie-learn-more {
   background: transparent;
   border: none;
-  color: var(--text-inverse);
+  color: var(--color-text-inverse);
   text-decoration: underline;
   font-weight: 600;
   font-size: 0.95rem;
@@ -65,7 +65,7 @@
 
 .cookie-acknowledge-btn {
   background: var(--bg-surface);
-  color: var(--accent-primary);
+  color: var(--color-brand);
   border: none;
   padding: 0.6rem 1.5rem;
   border-radius: 8px;

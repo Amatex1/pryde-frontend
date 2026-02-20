@@ -40,7 +40,7 @@
 .nav-link,
 .navbar-link {
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   border: none;
   box-shadow: none;
   transition: color 0.15s ease, background 0.15s ease;
@@ -50,7 +50,7 @@
 .nav-link:hover,
 .navbar-link:hover {
   background: var(--bg-secondary);
-  color: var(--text-primary);
+  color: var(--color-text);
   box-shadow: none; /* No hover glow */
 }
 
@@ -58,7 +58,7 @@
 .navbar-item.active,
 .nav-link.active,
 .navbar-link.active {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   font-weight: 500;
 }
@@ -76,7 +76,7 @@
 .notification-badge,
 .nav-badge,
 .unread-badge {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   border: 2px solid var(--bg-card);
   box-shadow: none; /* No glow */
@@ -96,7 +96,7 @@
 
 .navbar-search:focus,
 .search-bar:focus {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: none; /* No focus glow */
   outline: none;
 }
@@ -128,7 +128,7 @@
 
 .dropdown-item {
   background: transparent;
-  color: var(--text-primary);
+  color: var(--color-text);
   border: none;
   transition: background 0.15s ease;
 }

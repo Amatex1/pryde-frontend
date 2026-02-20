@@ -79,7 +79,7 @@
 }
 
 .comment-sheet-input-form .comment-submit-btn {
-  background: var(--accent-primary);
+  background: var(--color-brand);
   color: white;
   border: none;
   border-radius: 50%;
@@ -110,7 +110,7 @@
   border-radius: 16px;
   border: 1px solid var(--border-subtle);
   background: var(--bg-subtle);
-  color: var(--text-primary);
+  color: var(--color-text);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -163,7 +163,7 @@
   margin-bottom: 8px;
   background: var(--bg-subtle);
   border-radius: 8px;
-  border: 1px solid var(--accent-primary);
+  border: 1px solid var(--color-brand);
 }
 
 .comment-sheet-reply-form .reply-input-header {
@@ -172,7 +172,7 @@
   justify-content: space-between;
   margin-bottom: 8px;
   font-size: 12px;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 .comment-sheet-reply-form .btn-cancel-reply-small {
@@ -180,7 +180,7 @@
   border: none;
   font-size: 16px;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   padding: 4px;
 }
 
@@ -200,7 +200,7 @@
 }
 
 .comment-sheet-reply-form .comment-submit-btn {
-  background: var(--accent-primary);
+  background: var(--color-brand);
   color: white;
   border: none;
   border-radius: 50%;

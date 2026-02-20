@@ -35,14 +35,14 @@
 
 .email-verification-text h3 {
   margin: 0 0 0.5rem 0;
-  color: var(--text-main);
+  color: var(--color-text);
   font-size: 1.1rem;
   font-weight: 600;
 }
 
 .email-verification-text p {
   margin: 0;
-  color: var(--text-main);
+  color: var(--color-text);
   line-height: 1.5;
 }
 
@@ -70,7 +70,7 @@
 }
 
 .btn-resend {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
 }
 
@@ -87,7 +87,7 @@
 
 .btn-dismiss {
   background: rgba(255, 255, 255, 0.2);
-  color: var(--text-main);
+  color: var(--color-text);
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 

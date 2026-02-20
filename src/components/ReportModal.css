@@ -88,7 +88,7 @@
 
 .report-form label {
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--color-text);
   font-size: 0.95rem;
 }
 
@@ -97,7 +97,7 @@
   border-radius: 10px;
   border: 2px solid var(--border-subtle);
   font-size: 1rem;
-  color: var(--text-main);
+  color: var(--color-text);
   background: var(--bg);
   transition: all 0.3s ease;
   font-family: inherit;
@@ -130,7 +130,7 @@
 .report-info p {
   margin: 0.5rem 0;
   font-size: 0.9rem;
-  color: var(--text-main);
+  color: var(--color-text);
   font-weight: 500;
 }
 
@@ -157,7 +157,7 @@
 
 .btn-cancel {
   background: var(--bg);
-  color: var(--text-main);
+  color: var(--color-text);
   border: 2px solid var(--border-subtle);
 }
 

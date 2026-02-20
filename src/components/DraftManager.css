@@ -20,7 +20,7 @@
 .draft-manager-header h3 {
   margin: 0;
   font-size: 1.5rem;
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .close-btn {
@@ -41,7 +41,7 @@
 
 .close-btn:hover {
   background: var(--bg-hover);
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .draft-loading,
@@ -80,13 +80,13 @@
 }
 
 .draft-item:hover {
-  border-color: var(--accent-primary);
+  border-color: var(--color-brand);
   box-shadow: var(--shadow-soft);
 }
 
 .draft-type-badge {
-  background: var(--accent-primary);
-  color: var(--text-inverse);
+  background: var(--color-brand);
+  color: var(--color-text-inverse);
   padding: 4px 10px;
   border-radius: 12px;
   font-size: 0.75rem;
@@ -102,7 +102,7 @@
 
 .draft-preview {
   margin: 0 0 8px 0;
-  color: var(--text-primary);
+  color: var(--color-text);
   font-size: 0.95rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -134,8 +134,8 @@
 }
 
 .restore-btn {
-  background: var(--accent-primary);
-  color: var(--text-inverse);
+  background: var(--color-brand);
+  color: var(--color-text-inverse);
 }
 
 .restore-btn:hover {
@@ -151,7 +151,7 @@
 
 .delete-btn:hover {
   background: var(--color-danger);
-  color: var(--text-inverse);
+  color: var(--color-text-inverse);
   border-color: var(--color-danger);
 }
 

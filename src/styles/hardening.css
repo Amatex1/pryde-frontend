@@ -168,7 +168,7 @@ button:active,
 [data-theme="dark"] select,
 [data-theme="dark"] option {
   background-color: var(--bg-card, #1A1B30);
-  color: var(--text-primary, #F8F7FF);
+  color: var(--color-text);
   border-color: var(--border-subtle, #262842);
 }
 
@@ -188,7 +188,7 @@ button:active,
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-primary, #6C5CE7);
+  background: var(--color-brand);
 }
 
 /* ========================================
@@ -280,7 +280,7 @@ button:active,
   position: sticky;
   top: 0;
   z-index: 2;
-  background: var(--accent-primary, #6C5CE7);
+  background: var(--color-brand);
 }
 
 /* ========================================

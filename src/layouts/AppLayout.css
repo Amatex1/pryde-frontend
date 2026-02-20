@@ -71,7 +71,7 @@
 
 /* Active state */
 .mobile-nav a.active {
-  color: var(--accent, #6C5CE7);
+  color: var(--accent, var(--color-brand));
 }
 
 .mobile-nav a.active small {
@@ -99,7 +99,7 @@
   height: 16px;
   padding: 0 4px;
   border-radius: 999px;
-  background: var(--accent, #6C5CE7);
+  background: var(--accent, var(--color-brand));
   color: #fff;
   font-size: 10px;
   line-height: 16px;
@@ -149,7 +149,7 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: var(--accent, #6C5CE7);
+  background: var(--accent, var(--color-brand));
   color: #ffffff;
   font-size: 32px;
   font-weight: 300;
@@ -223,7 +223,7 @@
   font-size: 24px;
   padding: 8px;
   cursor: pointer;
-  color: var(--text-primary, #2b2b2b);
+  color: var(--color-text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -240,12 +240,12 @@
   text-align: center;
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-primary, #2b2b2b);
+  color: var(--color-text);
   margin: 0;
 }
 
 .mobile-composer-post {
-  background: var(--accent, #6C5CE7);
+  background: var(--accent, var(--color-brand));
   color: #ffffff;
   border: none;
   padding: 8px 16px;
@@ -279,7 +279,7 @@
   background: transparent;
   font-size: 16px;
   line-height: 1.5;
-  color: var(--text-primary, #2b2b2b);
+  color: var(--color-text);
   font-family: inherit;
   padding: 0;
   margin-bottom: 16px;
@@ -334,7 +334,7 @@
   border: 1px solid var(--border-subtle, #e0e0e0);
   background: var(--surface-primary, #ffffff);
   font-size: 13px;
-  color: var(--text-primary, #2b2b2b);
+  color: var(--color-text);
   cursor: pointer;
 }
 
@@ -395,7 +395,7 @@
 [data-theme="dark"] .mobile-composer-title,
 [data-theme="dark"] .mobile-composer-close,
 [data-theme="dark"] .mobile-post-input {
-  color: var(--text-primary, #f7f7f7);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .mobile-composer-close:hover,
@@ -407,7 +407,7 @@
 [data-theme="dark"] .mobile-privacy-selector {
   background: var(--surface-secondary, #3a3a3a);
   border-color: var(--border-subtle, #4a4a4a);
-  color: var(--text-primary, #f7f7f7);
+  color: var(--color-text);
 }
 
 /* ========================================

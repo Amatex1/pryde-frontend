@@ -16,7 +16,7 @@
 .dark-mode-toggle:hover {
   transform: scale(1.1) rotate(20deg);
   box-shadow: var(--shadow-medium);
-  border-color: var(--accent-primary);
+  border-color: var(--color-brand);
 }
 
 .dark-mode-toggle:active {

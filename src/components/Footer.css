@@ -4,7 +4,7 @@
   background: var(--gradient-soft);
   backdrop-filter: blur(10px);
   border-top: 2px solid var(--accent-muted);
-  color: var(--text-main);
+  color: var(--color-text);
   padding: 2rem 2rem 1.5rem;
   margin-top: 4rem;
 }
@@ -40,7 +40,7 @@
 .footer-logo {
   font-size: 1.8rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--pryde-purple) 0%, var(--electric-blue) 100%);
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--electric-blue) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -63,7 +63,7 @@
 }
 
 .footer-links-container a {
-  color: var(--text-main);
+  color: var(--color-text);
   text-decoration: none;
   font-size: 0.9rem;
   transition: color 0.3s ease;
@@ -71,7 +71,7 @@
 }
 
 .footer-links-container a:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   opacity: 1;
 }
 

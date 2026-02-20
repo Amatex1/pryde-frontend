@@ -813,7 +813,7 @@
 
   /* Dark mode: proper dark background */
   html[data-theme="dark"] .settings-section {
-    background: linear-gradient(135deg, rgba(108, 92, 231, 0.15) 0%, rgba(108, 92, 231, 0.05) 100%) !important;
+    background: linear-gradient(135deg, var(--color-brand-muted) 0%, rgba(108, 92, 231, 0.05) 100%) !important;
     border-color: rgba(108, 92, 231, 0.3) !important;
   }
 
@@ -917,7 +917,7 @@
     padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
     border-radius: 20px 20px 0 0 !important;
     background: var(--bg-card, #1A1B30) !important;
-    border-top: 2px solid var(--pryde-purple) !important;
+    border-top: 2px solid var(--color-brand) !important;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3) !important;
     z-index: 1500 !important; /* Above mobile nav (200) and modals (1001) */
     animation: slideUpReply 0.25s ease-out;
@@ -985,7 +985,7 @@
     overflow-x: hidden !important;
     overflow-y: visible !important;
     padding-right: 0 !important;
-    border-left: 2px solid var(--pryde-purple, #6c5ce7) !important;
+    border-left: 2px solid var(--color-brand) !important;
   }
 
   .comment.reply {

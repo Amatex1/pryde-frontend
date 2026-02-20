@@ -10,7 +10,7 @@
 
 /* Unified focus ring - calm, not harsh */
 :focus-visible {
-  outline: 2px solid var(--color-primary, #6C5CE7);
+  outline: 2px solid var(--color-primary, var(--color-brand));
   outline-offset: 2px;
 }
 
@@ -84,7 +84,7 @@ textarea:focus,
 select:focus,
 .pryde-input:focus,
 .pryde-textarea:focus {
-  border-color: var(--color-primary, #6C5CE7);
+  border-color: var(--color-primary, var(--color-brand));
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.12);
   outline: none;
 }
@@ -92,7 +92,7 @@ select:focus,
 /* Upload Progress Indicator */
 .upload-progress {
   font-size: 13px;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   margin-top: 6px;
   display: flex;
   align-items: center;
@@ -177,7 +177,7 @@ select:focus,
 }
 
 .pryde-btn:hover:not(:disabled) {
-  background: var(--color-primary-hover);
+  background: var(--color-brand-hover);
   box-shadow: 0 4px 12px rgba(88, 71, 201, 0.25);
 }
 
@@ -225,7 +225,7 @@ select:focus,
 
 .pryde-btn-ghost {
   background: transparent;
-  color: var(--text-main);
+  color: var(--color-text);
   border-color: var(--border-medium);
 }
 
@@ -251,7 +251,7 @@ select:focus,
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   background: var(--bg-card);
-  color: var(--text-main);
+  color: var(--color-text);
   font-size: 14px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -272,7 +272,7 @@ select:focus,
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   background: var(--bg-card);
-  color: var(--text-main);
+  color: var(--color-text);
   font-size: 14px;
   font-family: inherit;
   resize: vertical;
@@ -565,7 +565,7 @@ select:focus,
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-primary-soft, rgba(108, 92, 231, 0.15));
+  background: var(--color-primary-soft, var(--color-brand-muted));
   color: var(--color-primary);
   font-weight: var(--weight-semibold, 600);
   font-size: 14px;
@@ -590,7 +590,7 @@ select:focus,
 .comment-author {
   font-weight: 600;
   margin-right: 6px;
-  color: var(--text-main);
+  color: var(--color-text);
   text-decoration: none;
 }
 
@@ -629,7 +629,7 @@ select:focus,
   font-size: inherit;
   font-weight: var(--weight-medium, 500);
   opacity: 0.85;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 .comment-actions button:hover {
@@ -678,7 +678,7 @@ select:focus,
   gap: 4px;
   font-weight: 600;
   font-size: 13px;
-  color: var(--text-main);
+  color: var(--color-text);
   text-decoration: none;
   flex-shrink: 0;
 }

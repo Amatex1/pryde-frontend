@@ -107,14 +107,14 @@
   border: 1px solid var(--border-light);
   border-radius: 12px;
   background: var(--background-light);
-  color: var(--text-main);
+  color: var(--color-text);
   font-size: 14px;
   transition: all 0.3s ease;
 }
 
 .search-input:focus {
   outline: none;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
@@ -177,7 +177,7 @@
 }
 
 .friend-avatar .avatar-placeholder {
-  background: linear-gradient(135deg, var(--pryde-purple), var(--electric-blue));
+  background: linear-gradient(135deg, var(--color-brand), var(--electric-blue));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -213,7 +213,7 @@
 }
 
 .friend-name {
-  color: var(--text-main);
+  color: var(--color-text);
   font-weight: 600;
   font-size: 14px;
 }

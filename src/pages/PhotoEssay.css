@@ -21,7 +21,7 @@
 
 .photo-essay-header h1 {
   margin: 0 0 10px 0;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-size: 2rem;
 }
 
@@ -44,7 +44,7 @@
   display: block;
   margin-bottom: 10px;
   font-weight: bold;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .input-field,
@@ -61,7 +61,7 @@
 .input-field:focus,
 .select-field:focus {
   outline: none;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
@@ -139,7 +139,7 @@
 
 .caption-input:focus {
   outline: none;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 .form-actions {
@@ -161,7 +161,7 @@
 
 .btn-secondary {
   background: var(--border-light);
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .btn-secondary:hover {
@@ -171,9 +171,9 @@
 .btn-drafts {
   padding: 12px 30px;
   border-radius: 8px;
-  border: 2px solid var(--pryde-purple);
+  border: 2px solid var(--color-brand);
   background: var(--card-surface);
-  color: var(--text-main);
+  color: var(--color-text);
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -181,12 +181,12 @@
 
 .btn-drafts:hover {
   background: var(--soft-lavender);
-  color: var(--pryde-purple);
-  border-color: var(--pryde-purple);
+  color: var(--color-brand);
+  border-color: var(--color-brand);
 }
 
 [data-theme="dark"] .btn-drafts {
-  background: rgba(108, 92, 231, 0.15);
+  background: var(--color-brand-muted);
   color: #c5c7d7;
   border-color: rgba(108, 92, 231, 0.5);
 }
@@ -194,7 +194,7 @@
 [data-theme="dark"] .btn-drafts:hover {
   background: rgba(108, 92, 231, 0.25);
   color: #e8e9f0;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 .btn-primary:disabled {

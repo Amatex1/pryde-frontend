@@ -5,7 +5,7 @@
 
 :root {
   /* BASE ACCENTS */
-  --accent-primary: #6C5CE7;
+  --accent-primary: var(--color-brand);
   --accent-hover: #7F6FF2;
 
   /* QUIET MODE ACCENTS */

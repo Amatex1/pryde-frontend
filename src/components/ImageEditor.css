@@ -29,7 +29,7 @@
 }
 
 .crop-area {
-  border: 2px solid var(--pryde-purple, #8b5cf6) !important;
+  border: 2px solid var(--color-brand) !important;
   border-radius: 8px;
   box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4);
 }
@@ -105,7 +105,7 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--pryde-purple, #8b5cf6);
+  background: var(--color-brand);
   cursor: pointer;
   border: 2px solid white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -115,7 +115,7 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--pryde-purple, #8b5cf6);
+  background: var(--color-brand);
   cursor: pointer;
   border: 2px solid white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -123,7 +123,7 @@
 
 .zoom-value {
   font-weight: 600;
-  color: var(--text-primary, #333);
+  color: var(--color-text);
   min-width: 35px;
   text-align: right;
 }

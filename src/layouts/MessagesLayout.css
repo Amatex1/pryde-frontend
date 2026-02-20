@@ -79,7 +79,7 @@
 
 .empty-state-content h3 {
   margin: 0 0 0.5rem;
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
 }
 
 .empty-state-content p {

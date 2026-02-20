@@ -11,7 +11,7 @@
 
 .longform-header h1 {
   font-size: 2.5rem;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   margin-bottom: 0.5rem;
 }
 
@@ -29,10 +29,10 @@
 
 .btn-drafts {
   padding: 0.75rem 1.5rem;
-  border: 2px solid var(--pryde-purple);
+  border: 2px solid var(--color-brand);
   border-radius: 8px;
   background: var(--card-surface);
-  color: var(--text-main);
+  color: var(--color-text);
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -41,12 +41,12 @@
 
 .btn-drafts:hover {
   background: var(--soft-lavender);
-  color: var(--pryde-purple);
-  border-color: var(--pryde-purple);
+  color: var(--color-brand);
+  border-color: var(--color-brand);
 }
 
 [data-theme="dark"] .btn-drafts {
-  background: rgba(108, 92, 231, 0.15);
+  background: var(--color-brand-muted);
   color: #c5c7d7;
   border-color: rgba(108, 92, 231, 0.5);
 }
@@ -54,7 +54,7 @@
 [data-theme="dark"] .btn-drafts:hover {
   background: rgba(108, 92, 231, 0.25);
   color: #e8e9f0;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 .btn-create-longform {
@@ -83,7 +83,7 @@
   margin-bottom: 1rem;
   font-family: inherit;
   background: var(--bg-input, var(--card-surface, white));
-  color: var(--text-main, inherit);
+  color: var(--color-text);
 }
 
 .longform-title-input {
@@ -116,7 +116,7 @@
   border-radius: 8px;
   font-size: 0.9rem;
   background: var(--bg-input, var(--card-surface, white));
-  color: var(--text-main, inherit);
+  color: var(--color-text);
 }
 
 .btn-submit-longform {
@@ -153,7 +153,7 @@
 
 .longform-card-header h3 {
   font-size: 1.5rem;
-  color: var(--text-main);
+  color: var(--color-text);
   flex: 1;
 }
 
@@ -165,7 +165,7 @@
 }
 
 .longform-preview {
-  color: var(--text-main);
+  color: var(--color-text);
   line-height: 1.8;
   margin-bottom: 1.5rem;
   font-size: 1.05rem;

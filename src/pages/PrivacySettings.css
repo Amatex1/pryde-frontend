@@ -12,7 +12,7 @@
 .privacy-settings-container h1 {
   font-size: 28px;
   font-weight: 700;
-  background: linear-gradient(135deg, #6C5CE7 0%, #0984E3 100%);
+  background: linear-gradient(135deg, var(--color-brand) 0%, #0984E3 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -33,7 +33,7 @@
 .back-button {
   background: transparent;
   border: none;
-  color: #6C5CE7;
+  color: var(--color-brand);
   font-size: 16px;
   cursor: pointer;
   padding: 8px 0;
@@ -52,7 +52,7 @@
 .privacy-title {
   font-size: 32px;
   font-weight: 700;
-  background: linear-gradient(135deg, #6C5CE7 0%, #0984E3 100%);
+  background: linear-gradient(135deg, var(--color-brand) 0%, #0984E3 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -82,7 +82,7 @@
 .privacy-section h2 {
   font-size: 18px;
   font-weight: 600;
-  color: var(--color-primary, #6C5CE7);
+  color: var(--color-primary, var(--color-brand));
   margin: 0 0 16px 0;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--border-subtle, #E0E0E0);
@@ -111,7 +111,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 15px;
-  color: var(--text-main, #2B2B2B);
+  color: var(--color-text);
 }
 
 .setting-group label:hover {
@@ -123,7 +123,7 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #6C5CE7;
+  accent-color: var(--color-brand);
   flex-shrink: 0;
 }
 
@@ -166,12 +166,12 @@
 }
 
 .setting-item select:hover {
-  border-color: #6C5CE7;
+  border-color: var(--color-brand);
 }
 
 .setting-item select:focus {
   outline: none;
-  border-color: #6C5CE7;
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
@@ -187,7 +187,7 @@
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #6C5CE7;
+  accent-color: var(--color-brand);
 }
 
 .setting-description {
@@ -259,7 +259,7 @@
 
 .unblock-button {
   padding: 8px 16px;
-  background: linear-gradient(135deg, #6C5CE7 0%, #0984E3 100%);
+  background: linear-gradient(135deg, var(--color-brand) 0%, #0984E3 100%);
   color: white;
   border: none;
   border-radius: 6px;
@@ -282,7 +282,7 @@
 
 .btn-primary {
   padding: 14px 32px;
-  background: linear-gradient(135deg, #6C5CE7 0%, #0984E3 100%);
+  background: linear-gradient(135deg, var(--color-brand) 0%, #0984E3 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -379,7 +379,7 @@
 }
 
 [data-theme="dark"] .setting-item select:hover {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 /* ========================================
@@ -403,7 +403,7 @@
 }
 
 .privacy-link-button {
-  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-hover) 100%);
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--accent-hover) 100%);
   color: #fff;
   padding: 0.75rem 1.5rem;
   border-radius: 50px;
@@ -420,7 +420,7 @@
 }
 
 .guarantees-button {
-  background: linear-gradient(135deg, #9B59B6 0%, var(--accent-primary) 100%);
+  background: linear-gradient(135deg, #9B59B6 0%, var(--color-brand) 100%);
   box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);
 }
 
@@ -440,7 +440,7 @@
 /* Dark mode - darker gradient backgrounds */
 [data-theme="dark"] .trust-safety-card,
 [data-theme="midnight"] .trust-safety-card {
-  background: linear-gradient(135deg, rgba(108, 92, 231, 0.15) 0%, rgba(9, 132, 227, 0.10) 100%);
+  background: linear-gradient(135deg, var(--color-brand-muted) 0%, rgba(9, 132, 227, 0.10) 100%);
 }
 
 [data-theme="dark"] .guarantees-card,

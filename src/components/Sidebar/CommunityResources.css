@@ -57,7 +57,7 @@
 .community-resources-link {
   display: block;
   font-size: 13px;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   text-decoration: none;
   padding: 6px 0;
   line-height: 1.45;
@@ -65,11 +65,11 @@
 }
 
 .community-resources-link:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .community-resources-link:focus {
-  outline: 2px solid var(--pryde-purple);
+  outline: 2px solid var(--color-brand);
   outline-offset: 2px;
   border-radius: 2px;
 }
@@ -110,7 +110,7 @@
 }
 
 [data-theme="dark"] .community-resources-link {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   opacity: 0.85;
 }
 

@@ -86,7 +86,7 @@
 
 .settings-modal h2 {
   margin: 0 0 1.5rem 0;
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
 }
 
 .settings-modal .form-group {
@@ -108,7 +108,7 @@
   background: var(--input-bg, #16162a);
   border: 1px solid var(--border-color, #333);
   border-radius: 8px;
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
   font-size: 1rem;
 }
 
@@ -136,7 +136,7 @@
   padding: 0.75rem 1.5rem;
   background: transparent;
   border: 1px solid var(--border-color, #333);
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.2s;

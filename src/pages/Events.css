@@ -60,7 +60,7 @@
   border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
   background: var(--bg-card);
-  color: var(--text-main);
+  color: var(--color-text);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -68,7 +68,7 @@
 }
 
 .filter-select:hover {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 .events-grid {
@@ -121,7 +121,7 @@
 
 .event-badge.category {
   background: var(--soft-lavender);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .event-badge.type {
@@ -132,7 +132,7 @@
 .event-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--color-text);
   margin-bottom: 0.75rem;
 }
 
@@ -157,7 +157,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--text-main);
+  color: var(--color-text);
   font-size: 0.9rem;
 }
 
@@ -201,7 +201,7 @@
   align-items: center;
   gap: 0.5rem;
   text-decoration: none;
-  color: var(--text-main);
+  color: var(--color-text);
   font-weight: 600;
 }
 
@@ -216,7 +216,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   display: flex;
   align-items: center;
@@ -236,14 +236,14 @@
   border-radius: 12px;
   border: 2px solid var(--border-light);
   background: var(--card-surface);
-  color: var(--text-main);
+  color: var(--color-text);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .btn-rsvp:hover {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   background: var(--soft-lavender);
 }
 
@@ -253,8 +253,8 @@
 }
 
 .btn-rsvp.active {
-  border-color: var(--pryde-purple);
-  background: var(--pryde-purple);
+  border-color: var(--color-brand);
+  background: var(--color-brand);
   color: white;
 }
 
@@ -334,7 +334,7 @@
 .modal-header h2 {
   margin: 0;
   font-size: 1.25rem;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .modal-header .btn-close {
@@ -363,7 +363,7 @@
 .form-group label {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .form-group input,
@@ -373,7 +373,7 @@
   border: 1px solid var(--border-light, #ddd);
   border-radius: var(--radius-md, 8px);
   background: var(--bg-light, #f9f9f9);
-  color: var(--text-main);
+  color: var(--color-text);
   font-size: 0.9rem;
   transition: border-color 0.2s ease;
 }
@@ -382,7 +382,7 @@
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: var(--pryde-purple, #6c5ce7);
+  border-color: var(--color-brand);
 }
 
 .form-row {
@@ -405,7 +405,7 @@
   background: var(--bg-muted, #f0f0f0);
   border: none;
   border-radius: var(--radius-md, 8px);
-  color: var(--text-main);
+  color: var(--color-text);
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s ease;
@@ -417,7 +417,7 @@
 
 .btn-submit {
   padding: 0.625rem 1.25rem;
-  background: var(--pryde-purple, #6c5ce7);
+  background: var(--color-brand);
   border: none;
   border-radius: var(--radius-md, 8px);
   color: white;

@@ -17,13 +17,13 @@
 
 .session-message.success {
   background: rgba(76, 175, 80, 0.1);
-  color: var(--text-main);
+  color: var(--color-text);
   border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
 .session-message.error {
   background: rgba(244, 67, 54, 0.1);
-  color: var(--text-main);
+  color: var(--color-text);
   border: 1px solid rgba(244, 67, 54, 0.3);
 }
 
@@ -49,7 +49,7 @@
 
 .btn-ghost:hover {
   background: var(--bg-light);
-  color: var(--text-main);
+  color: var(--color-text);
   border-color: var(--text-muted);
 }
 
@@ -83,7 +83,7 @@
   border-radius: 10px;
   padding: 16px;
   transition: all 0.2s ease;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .session-card:hover {
@@ -93,7 +93,7 @@
 
 .session-card.current-session {
   background: var(--card-surface);
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   border-width: 2px;
 }
 
@@ -124,11 +124,11 @@
 }
 
 .session-device strong {
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .current-badge {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   padding: 2px 8px;
   border-radius: 12px;
@@ -175,7 +175,7 @@
 }
 
 .session-expand-btn:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 /* Expanded details */

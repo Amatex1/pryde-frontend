@@ -119,7 +119,7 @@
 
 .crop-btn.cancel {
   background: var(--bg-secondary, #2d2d44);
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
 }
 
 .crop-btn.cancel:hover {

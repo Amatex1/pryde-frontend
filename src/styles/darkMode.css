@@ -60,7 +60,7 @@
 [data-theme="dark"] textarea,
 [data-theme="dark"] select {
   background: rgba(22, 33, 62, 0.6);
-  color: var(--text-main);
+  color: var(--color-text);
   border-color: var(--border-light);
 }
 
@@ -85,7 +85,7 @@
 
 /* Buttons */
 [data-theme="dark"] button {
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .btn-primary {
@@ -107,7 +107,7 @@
 
 [data-theme="dark"] .modal-content {
   background: var(--card-surface);
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 /* Scrollbar for dark mode */
@@ -120,7 +120,7 @@
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
 }
 
 /* Hover effects */
@@ -135,13 +135,13 @@
 /* Profile badges */
 [data-theme="dark"] .badge {
   background: rgba(108, 92, 231, 0.3);
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 /* Trending section */
 [data-theme="dark"] .trending-item {
   background: var(--card-surface);
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .trending-item:hover {
@@ -171,7 +171,7 @@
 [data-theme="dark"] .no-bookmarks h2,
 [data-theme="dark"] .emoji-picker-header h4,
 [data-theme="dark"] .privacy-title {
-  color: var(--text-main) !important;
+  color: var(--color-text) !important;
 }
 
 /* Override all hardcoded #616161 (muted text) */
@@ -197,7 +197,7 @@
 }
 
 [data-theme="dark"] .bookmark-card:hover {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 /* Privacy Settings */
@@ -217,7 +217,7 @@
 
 [data-theme="dark"] .setting-item select {
   background: rgba(22, 33, 62, 0.6);
-  color: var(--text-main);
+  color: var(--color-text);
   border-color: var(--border-light);
 }
 
@@ -243,7 +243,7 @@
 /* Two Factor Setup */
 [data-theme="dark"] .modal-close:hover {
   background: rgba(108, 92, 231, 0.2);
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .qr-code-container {
@@ -260,7 +260,7 @@
 /* Legal Pages */
 [data-theme="dark"] .legal-container {
   background: var(--background-light);
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .legal-content h1,
@@ -268,7 +268,7 @@
 [data-theme="dark"] .legal-content h3,
 [data-theme="dark"] .legal-content p,
 [data-theme="dark"] .legal-content li {
-  color: var(--text-main) !important;
+  color: var(--color-text) !important;
 }
 
 /* Footer */
@@ -285,7 +285,7 @@
 }
 
 [data-theme="dark"] .footer-section a:hover {
-  color: var(--pryde-purple) !important;
+  color: var(--color-brand) !important;
 }
 
 /* Admin Page */
@@ -301,11 +301,11 @@
 /* Admin Activity Page */
 [data-theme="dark"] .activity-container {
   background: var(--background-light);
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .activity-section h3 {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 [data-theme="dark"] .activity-item {
@@ -314,11 +314,11 @@
 }
 
 [data-theme="dark"] .activity-user {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 [data-theme="dark"] .activity-content {
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .activity-date {
@@ -334,7 +334,7 @@
 
 [data-theme="dark"] .users-table td,
 [data-theme="dark"] .blocks-table td {
-  color: var(--text-main);
+  color: var(--color-text);
   border-bottom-color: var(--border-light);
 }
 
@@ -346,7 +346,7 @@
 /* Admin Report Cards */
 [data-theme="dark"] .report-card {
   background: var(--card-surface);
-  border-left-color: var(--pryde-purple);
+  border-left-color: var(--color-brand);
 }
 
 [data-theme="dark"] .stat-card {
@@ -390,23 +390,23 @@
 
 /* Security Settings - 2FA Warning Box */
 [data-theme="dark"] .security-status-card {
-  background: rgba(108, 92, 231, 0.15) !important;
-  border: 1px solid var(--pryde-purple) !important;
+  background: var(--color-brand-muted) !important;
+  border: 1px solid var(--color-brand) !important;
 }
 
 [data-theme="dark"] .security-status-card strong,
 [data-theme="dark"] .security-status-card p {
-  color: var(--text-main) !important;
+  color: var(--color-text) !important;
 }
 
 /* Two-Factor Setup Modal */
 [data-theme="dark"] .modal-content {
   background: var(--card-surface) !important;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .modal-title {
-  color: var(--text-main) !important;
+  color: var(--color-text) !important;
 }
 
 [data-theme="dark"] .modal-close {
@@ -415,7 +415,7 @@
 
 [data-theme="dark"] .modal-close:hover {
   background: rgba(108, 92, 231, 0.2) !important;
-  color: var(--text-main) !important;
+  color: var(--color-text) !important;
 }
 
 [data-theme="dark"] .qr-code-container {
@@ -429,7 +429,7 @@
 
 [data-theme="dark"] .backup-codes-container > div > div {
   background: var(--card-surface) !important;
-  color: var(--pryde-purple) !important;
+  color: var(--color-brand) !important;
 }
 
 [data-theme="dark"] .conversation-list {
@@ -493,12 +493,12 @@
 [data-theme="dark"] .session-card {
   background: var(--card-surface);
   border-color: #444;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .session-card.current-session {
-  background: linear-gradient(135deg, rgba(108, 92, 231, 0.15) 0%, var(--card-surface) 100%);
-  border-color: var(--pryde-purple);
+  background: linear-gradient(135deg, var(--color-brand-muted) 0%, var(--card-surface) 100%);
+  border-color: var(--color-brand);
 }
 
 [data-theme="dark"] .session-details {
@@ -513,11 +513,11 @@
 [data-theme="dark"] .account-management-card {
   background: var(--card-surface);
   border-color: #444;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .account-management-card h3 {
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .account-management-card p {
@@ -539,13 +539,13 @@
 /* Backup codes dark mode */
 [data-theme="dark"] .backup-codes-container {
   background: var(--card-surface);
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 [data-theme="dark"] .backup-code {
   background: rgba(108, 92, 231, 0.1);
-  color: var(--pryde-purple);
-  border-color: var(--pryde-purple);
+  color: var(--color-brand);
+  border-color: var(--color-brand);
 }
 
 /* Comment deleted state dark mode */

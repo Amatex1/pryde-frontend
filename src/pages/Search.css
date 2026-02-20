@@ -31,7 +31,7 @@
   min-width: 40px;
   border: none;
   background: transparent;
-  color: var(--text-main);
+  color: var(--color-text);
   cursor: pointer;
   border-radius: 50%;
   transition: background 0.2s;
@@ -64,7 +64,7 @@
   border: none;
   background: transparent;
   font-size: 1rem;
-  color: var(--text-main);
+  color: var(--color-text);
   outline: none;
 }
 
@@ -164,7 +164,7 @@
 
 .hashtag-name {
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .user-avatar img {
@@ -182,7 +182,7 @@
 
 .user-name {
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -203,12 +203,12 @@
 .post-author {
   font-weight: 600;
   font-size: 0.875rem;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .post-content {
   font-size: 0.875rem;
-  color: var(--text-main);
+  color: var(--color-text);
   line-height: 1.4;
   margin: 0;
   display: -webkit-box;

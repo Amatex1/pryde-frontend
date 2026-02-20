@@ -329,7 +329,7 @@
 
 [data-theme="light"] .navbar .nav-link:hover,
 [data-theme="light"] .navbar .nav-button:hover {
-  color: #6C5CE7 !important;
+  color: var(--color-brand) !important;
 }
 
 /* Light + Quiet mode - slightly softer dark text */

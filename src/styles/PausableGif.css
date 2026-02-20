@@ -91,7 +91,7 @@
 
 /* Accessibility: Focus state */
 .pausable-gif-container:focus-visible {
-  outline: 2px solid var(--primary-color, #6C5CE7);
+  outline: 2px solid var(--primary-color, var(--color-brand));
   outline-offset: 2px;
   border-radius: 12px;
 }

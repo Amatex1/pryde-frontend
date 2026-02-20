@@ -19,7 +19,7 @@
 
 .tag-feed-header h1 {
   font-size: 2rem;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   margin-bottom: 0.5rem;
 }
 
@@ -32,7 +32,7 @@
 .tag-feed-stats {
   padding-top: 1rem;
   border-top: 1px solid var(--border-light);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-weight: 600;
 }
 
@@ -45,7 +45,7 @@
 }
 
 .section-title {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   margin-bottom: 1rem;
   font-size: 1.3rem;
   font-weight: 600;
@@ -57,7 +57,7 @@
   border: 2px solid var(--border-light);
   border-radius: 12px;
   background: var(--bg-light);
-  color: var(--text-main);
+  color: var(--color-text);
   font-size: 1rem;
   resize: vertical;
   min-height: 100px;
@@ -68,7 +68,7 @@
 
 .post-input:focus {
   outline: none;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
@@ -126,7 +126,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--primary, #6c5ce7), var(--secondary, #a29bfe));
+  background: linear-gradient(135deg, var(--primary, var(--color-brand)), var(--secondary, #a29bfe));
   flex-shrink: 0;
 }
 
@@ -151,7 +151,7 @@
 
 .author-name {
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .verified-badge {
@@ -160,14 +160,14 @@
   justify-content: center;
   width: 1.1rem; /* Reduced from 1.25rem */
   height: 1.1rem; /* Reduced from 1.25rem */
-  background: linear-gradient(135deg, var(--pryde-purple) 0%, var(--electric-blue) 100%);
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--electric-blue) 100%);
   color: white;
   border-radius: 50%;
   font-size: 0.6rem; /* Reduced from 0.65rem */
   font-weight: 900;
   flex-shrink: 0;
   box-shadow:
-    0 0 0 1px rgba(108, 92, 231, 0.15), /* Reduced glow */
+    0 0 0 1px var(--color-brand-muted), /* Reduced glow */
     0 1px 4px rgba(108, 92, 231, 0.2); /* Reduced glow */
   position: relative;
   margin-left: 0.25rem; /* Reduced from 0.3rem */
@@ -191,7 +191,7 @@
 }
 
 [data-theme="dark"] .verified-badge {
-  background: linear-gradient(135deg, var(--electric-blue) 0%, var(--pryde-purple) 100%);
+  background: linear-gradient(135deg, var(--electric-blue) 0%, var(--color-brand) 100%);
   box-shadow:
     0 0 0 2px rgba(9, 132, 227, 0.2),
     0 2px 8px rgba(9, 132, 227, 0.3);
@@ -210,7 +210,7 @@
 
 .post-content p {
   line-height: 1.6;
-  color: var(--text-main);
+  color: var(--color-text);
   margin-bottom: 1rem;
 }
 
@@ -244,12 +244,12 @@
   font-size: 0.9rem;
   transition: all 0.3s ease;
   text-decoration: none;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .btn-action:hover {
   background: var(--soft-lavender);
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 .btn-action.liked {
@@ -272,12 +272,12 @@
   border-radius: 16px;
   font-size: 0.85rem;
   text-decoration: none;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   transition: all 0.3s ease;
 }
 
 .post-tag:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
 }
 
@@ -311,7 +311,7 @@
 
 .tag-migration-stub h1 {
   font-size: 2rem;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   margin-bottom: 0.5rem;
 }
 
@@ -331,13 +331,13 @@
 
 .migration-stub-title {
   font-size: 1.25rem;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   margin-bottom: 0.75rem;
   font-weight: 600;
 }
 
 .migration-stub-message {
-  color: var(--text-main);
+  color: var(--color-text);
   margin-bottom: 1rem;
   line-height: 1.6;
   font-size: 1rem;
@@ -377,7 +377,7 @@
   border-radius: 12px;
   margin-bottom: 1.5rem;
   background: linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(162, 155, 254, 0.1));
-  border: 2px solid var(--pryde-purple);
+  border: 2px solid var(--color-brand);
 }
 
 .migration-banner-icon {
@@ -391,7 +391,7 @@
 
 .migration-banner-content h3 {
   margin: 0 0 0.25rem 0;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-size: 1.1rem;
 }
 

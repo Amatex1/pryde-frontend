@@ -127,15 +127,15 @@
 [data-theme="light"] .nav-link:hover,
 [data-theme="light"] .navbar-link:hover,
 [data-theme="light"] .navbar-item:hover {
-  color: var(--color-brand, #6C5CE7) !important;
+  color: var(--color-brand) !important;
   background: var(--bg-hover, rgba(108, 92, 231, 0.08)) !important;
 }
 
 [data-theme="light"] .nav-link.active,
 [data-theme="light"] .navbar-link.active,
 [data-theme="light"] .navbar-item.active {
-  background: var(--accent-muted, rgba(108, 92, 231, 0.15)) !important;
-  color: var(--color-brand, #6C5CE7) !important;
+  background: var(--accent-muted, var(--color-brand-muted)) !important;
+  color: var(--color-brand) !important;
 }
 
 /* Light mode search bar */
@@ -220,7 +220,7 @@
 .poll-option-button,
 .poll-option-result {
   background: rgba(108, 92, 231, 0.04) !important;
-  border: 1px solid rgba(108, 92, 231, 0.15) !important;
+  border: 1px solid var(--color-brand-muted) !important;
   box-shadow: none !important;
 }
 

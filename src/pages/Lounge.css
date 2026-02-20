@@ -49,7 +49,7 @@
 .lounge-title {
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
-  color: var(--text-main);
+  color: var(--color-text);
   margin: 0 0 var(--space-2) 0;
   background: var(--gradient-primary);
   -webkit-background-clip: text;
@@ -212,7 +212,7 @@
 
 .lounge-message-sender {
   font-weight: var(--font-weight-semibold);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   cursor: pointer;
   transition: color 0.2s;
 }
@@ -240,7 +240,7 @@
 }
 
 .lounge-message-text {
-  color: var(--text-main);
+  color: var(--color-text);
   line-height: var(--line-height-normal);
   word-wrap: break-word;
   white-space: pre-wrap;
@@ -258,14 +258,14 @@
   border: 1px solid var(--border-light);
   border-radius: 12px;
   font-size: var(--font-size-xs);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   cursor: pointer;
   transition: all 0.2s;
   font-weight: var(--font-weight-semibold);
 }
 
 .lounge-action-btn:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   transform: translateY(-1px);
 }
@@ -315,7 +315,7 @@
 
 .btn-lounge-menu:hover {
   background: var(--bg-hover, rgba(255, 255, 255, 0.15));
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
 }
 
 .lounge-menu-dropdown {
@@ -340,7 +340,7 @@
   padding: 0.5rem 1rem;
   background: none;
   border: none;
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
   font-size: var(--font-size-sm);
   cursor: pointer;
   text-align: left;
@@ -390,7 +390,7 @@
 
 .delete-modal h3 {
   margin: 0 0 0.5rem 0;
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
   font-size: var(--font-size-xl);
 }
 
@@ -431,7 +431,7 @@
 
 .btn-delete-for-me {
   background: var(--bg-tertiary, rgba(255, 255, 255, 0.1));
-  color: var(--text-primary, #fff);
+  color: var(--color-text);
 }
 
 .btn-delete-for-me:hover {
@@ -484,7 +484,7 @@
   border-radius: 12px;
   font-size: var(--font-size-sm);
   background: var(--soft-lavender);
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .lounge-cw-close {
@@ -527,7 +527,7 @@
   background: var(--soft-lavender);
   border: 2px solid var(--border-light);
   border-radius: 12px;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-weight: var(--font-weight-bold);
   cursor: pointer;
   transition: all 0.2s;
@@ -538,7 +538,7 @@
 }
 
 .lounge-cw-btn:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   transform: translateY(-2px);
 }
@@ -631,13 +631,13 @@
   border-radius: 16px;
   font-size: var(--font-size-base);
   background: var(--bg-light);
-  color: var(--text-main);
+  color: var(--color-text);
   transition: border-color 0.2s;
 }
 
 .lounge-input:focus {
   outline: none;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 .lounge-input:disabled {
@@ -647,7 +647,7 @@
 
 .lounge-send-btn {
   padding: 0.875rem 2rem;
-  background: linear-gradient(135deg, var(--pryde-purple), var(--electric-blue));
+  background: linear-gradient(135deg, var(--color-brand), var(--electric-blue));
   border: none;
   border-radius: 16px;
   color: white;
@@ -711,15 +711,15 @@
 
 /* Dark mode - CW and GIF buttons */
 [data-theme="dark"] .lounge-cw-btn {
-  background: rgba(108, 92, 231, 0.15);
+  background: var(--color-brand-muted);
   border-color: rgba(108, 92, 231, 0.3);
   color: var(--electric-blue);
 }
 
 [data-theme="dark"] .lounge-cw-btn:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 [data-theme="dark"] .lounge-gif-btn {
@@ -910,7 +910,7 @@
 .modal-header h2 {
   margin: 0;
   font-size: var(--font-size-xl);
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .modal-close {
@@ -925,7 +925,7 @@
 }
 
 .modal-close:hover {
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .modal-body {
@@ -1004,7 +1004,7 @@
 
 .online-user-name {
   font-weight: var(--font-weight-semibold);
-  color: var(--text-main);
+  color: var(--color-text);
   margin-bottom: 0.25rem;
   display: flex;
   align-items: center;
@@ -1034,7 +1034,7 @@
 }
 
 .role-badge.role-admin {
-  background: linear-gradient(135deg, var(--pryde-purple) 0%, var(--electric-blue) 100%);
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--electric-blue) 100%);
   color: white;
 }
 
@@ -1087,7 +1087,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   animation: typing-bounce 1.4s infinite;
 }
 

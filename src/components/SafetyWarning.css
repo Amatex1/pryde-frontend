@@ -64,7 +64,7 @@
 
 .safety-warning-message {
   font-size: 1.1rem;
-  color: var(--text-main);
+  color: var(--color-text);
   margin-bottom: 1.5rem;
   line-height: 1.6;
   font-weight: 600;
@@ -80,7 +80,7 @@
 
 .safety-recommendations h3 {
   margin-top: 0;
-  color: var(--text-main);
+  color: var(--color-text);
   font-size: 1.1rem;
 }
 
@@ -91,7 +91,7 @@
 
 .safety-recommendations li {
   margin: 0.75rem 0;
-  color: var(--text-main);
+  color: var(--color-text);
   font-size: 1rem;
   line-height: 1.5;
 }
@@ -100,12 +100,12 @@
   background: var(--soft-lavender);
   padding: 1rem;
   border-radius: 8px;
-  border-left: 4px solid var(--pryde-purple);
+  border-left: 4px solid var(--color-brand);
 }
 
 .safety-warning-notice p {
   margin: 0;
-  color: var(--text-main);
+  color: var(--color-text);
   line-height: 1.6;
 }
 
@@ -148,7 +148,7 @@
 
 .btn-dismiss-warning {
   background: var(--border-light);
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .btn-dismiss-warning:hover {

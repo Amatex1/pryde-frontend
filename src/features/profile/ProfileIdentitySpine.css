@@ -32,7 +32,7 @@
 .pis-display-name {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--color-text);
   margin: 0;
   display: inline-flex;
   align-items: center;
@@ -50,7 +50,7 @@
 }
 
 .pis-role-icon.role-founder {
-  color: var(--accent-primary, #6C5CE7);
+  color: var(--color-brand);
 }
 
 .pis-role-icon.role-admin,
@@ -64,7 +64,7 @@
 
 .pis-username {
   font-size: 1.1rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   margin: 0;
   font-weight: 500;
   grid-column: 2;
@@ -99,14 +99,14 @@
 }
 
 .pis-role-sublabel.role-founder {
-  color: var(--accent-primary, #6C5CE7);
+  color: var(--color-brand);
   background: rgba(108, 92, 231, 0.08);
   border: 1px solid rgba(108, 92, 231, 0.2);
 }
 
 .pis-role-sublabel.role-admin,
 .pis-role-sublabel.role-moderator {
-  color: var(--text-primary);
+  color: var(--color-text);
   background: var(--bg-subtle, #F4F5FA);
   border: 1px solid var(--border-subtle, #E2E4EC);
 }
@@ -137,7 +137,7 @@
   border-radius: 20px;
   background: var(--bg-subtle, #F4F5FA);
   border: 1px solid var(--border-subtle, #E2E4EC);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
@@ -146,7 +146,7 @@
 [data-theme="dark"] .pis-public-badges .user-badge {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.08);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 .pis-public-badges .user-badge-icon {
@@ -171,7 +171,7 @@
 .pis-trait-pill {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   background: var(--bg-subtle, #F4F5FA);
   border: 1px solid var(--border-subtle, #E2E4EC);
   padding: 0.375rem 0.75rem;
@@ -181,7 +181,7 @@
 [data-theme="dark"] .pis-trait-pill {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.08);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 /* ────────────────────────────────────────
@@ -191,7 +191,7 @@
 .pis-bio {
   font-size: 1rem;
   line-height: 1.6;
-  color: var(--text-primary);
+  color: var(--color-text);
   margin: 0.5rem 0 0 0;
   max-width: 600px; /* Readability limit */
   white-space: pre-wrap;
@@ -230,12 +230,12 @@
 .pis-stat-value {
   font-size: 1.125rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .pis-stat-label {
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   font-weight: 500;
 }
 
