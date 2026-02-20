@@ -3,7 +3,7 @@
 .app-footer {
   background: var(--gradient-soft);
   backdrop-filter: blur(10px);
-  border-top: 2px solid var(--accent-muted);
+  border-top: var(--border-width-strong) solid var(--accent-muted);
   color: var(--text-main);
   padding: 2rem 2rem 1.5rem;
   margin-top: 4rem;
@@ -30,7 +30,7 @@
   height: 50px;
   width: auto;
   margin-bottom: 0.5rem;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .footer-logo-img:hover {
@@ -66,7 +66,7 @@
   color: var(--text-main);
   text-decoration: none;
   font-size: 0.9rem;
-  transition: color 0.3s ease;
+  transition: color var(--transition-normal);
   opacity: 0.85;
 }
 

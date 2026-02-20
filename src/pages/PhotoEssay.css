@@ -16,7 +16,7 @@
   text-align: center;
   padding: 30px;
   margin-bottom: 30px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 .photo-essay-header h1 {
@@ -33,7 +33,7 @@
 
 .photo-essay-form {
   padding: 30px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 .form-group {
@@ -51,11 +51,11 @@
 .select-field {
   width: 100%;
   padding: 12px;
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
+  border: var(--border-width-default) solid var(--border-light);
+  border-radius: var(--radius-sm);
   font-size: 1rem;
   background: white;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .input-field:focus,
@@ -72,10 +72,10 @@
 .upload-button {
   display: inline-block;
   padding: 12px 24px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-weight: bold;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .upload-button:hover {
@@ -92,7 +92,7 @@
 
 .photo-item {
   position: relative;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 10px;
   overflow: hidden;
 }
@@ -101,7 +101,7 @@
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   margin-bottom: 10px;
 }
 
@@ -120,7 +120,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .remove-photo-btn:hover {
@@ -131,7 +131,7 @@
 .caption-input {
   width: 100%;
   padding: 8px;
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
   border-radius: 6px;
   font-size: 0.9rem;
   background: white;
@@ -152,11 +152,11 @@
 .btn-secondary,
 .btn-primary {
   padding: 12px 30px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: none;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .btn-secondary {
@@ -170,13 +170,13 @@
 
 .btn-drafts {
   padding: 12px 30px;
-  border-radius: 8px;
-  border: 2px solid var(--pryde-purple);
+  border-radius: var(--radius-sm);
+  border: var(--border-width-strong) solid var(--pryde-purple);
   background: var(--card-surface);
   color: var(--text-main);
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .btn-drafts:hover {

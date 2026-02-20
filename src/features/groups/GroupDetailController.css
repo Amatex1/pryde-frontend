@@ -76,7 +76,7 @@
 
 .settings-modal {
   background: var(--card-bg, #1a1a2e);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 2rem;
   width: 100%;
   max-width: 500px;
@@ -106,8 +106,8 @@
   width: 100%;
   padding: 0.75rem;
   background: var(--input-bg, #16162a);
-  border: 1px solid var(--border-color, #333);
-  border-radius: 8px;
+  border: var(--border-width-default) solid var(--border-color, #333);
+  border-radius: var(--radius-sm);
   color: var(--text-primary, #fff);
   font-size: 1rem;
 }
@@ -135,9 +135,9 @@
 .modal-buttons .btn-cancel {
   padding: 0.75rem 1.5rem;
   background: transparent;
-  border: 1px solid var(--border-color, #333);
+  border: var(--border-width-default) solid var(--border-color, #333);
   color: var(--text-primary, #fff);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -151,7 +151,7 @@
   background: var(--accent-color, #7c3aed);
   border: none;
   color: #fff;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: opacity 0.2s;
 }

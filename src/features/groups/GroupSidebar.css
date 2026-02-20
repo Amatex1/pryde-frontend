@@ -13,7 +13,7 @@
 
 .sidebar-section {
   padding: 1rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 .sidebar-section h3 {
@@ -66,7 +66,7 @@
 }
 
 .leader-item:not(:last-child) {
-  border-bottom: 1px solid var(--border-color, #333);
+  border-bottom: var(--border-width-default) solid var(--border-color, #333);
 }
 
 .leader-avatar {
@@ -116,7 +116,7 @@
 .member-count {
   background: var(--bg-tertiary, #252525);
   padding: 0.25rem 0.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-size: 0.75rem;
 }
 
@@ -155,8 +155,8 @@
   width: 100%;
   padding: 0.5rem;
   background: var(--bg-tertiary, #252525);
-  border: 1px solid var(--border-color, #333);
-  border-radius: 8px;
+  border: var(--border-width-default) solid var(--border-color, #333);
+  border-radius: var(--radius-sm);
   color: var(--text-primary, #fff);
   cursor: pointer;
   transition: background 0.2s;

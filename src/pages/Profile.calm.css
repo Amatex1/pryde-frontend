@@ -17,8 +17,8 @@
 
 .profile-header {
   background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
+  border: var(--border-width-default) solid var(--border-light);
+  border-radius: var(--radius-md);
   box-shadow: none; /* Remove all shadows */
   overflow: visible; /* Allow avatar to overlap naturally */
 }
@@ -135,7 +135,7 @@
 
 .profile-badges .badge {
   background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
   padding: 0.25rem 0.75rem;
   border-radius: 6px;
   font-size: 0.875rem;
@@ -167,7 +167,7 @@
   justify-content: center;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
 }
 
 [data-theme="dark"] .profile-stats {
@@ -181,7 +181,7 @@
   gap: 0.25rem;
   text-decoration: none;
   color: inherit;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--transition-fast);
 }
 
 .stat-item:hover {
@@ -213,14 +213,14 @@
 .profile-action-buttons button,
 .profile-action-buttons .btn {
   background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
   padding: 0.625rem 1.25rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 0.9375rem;
   font-weight: 500;
   color: var(--text-primary);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
   box-shadow: none; /* No glow */
 }
 
@@ -259,8 +259,8 @@
 
 .sidebar-card {
   background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
+  border: var(--border-width-default) solid var(--border-light);
+  border-radius: var(--radius-md);
   padding: 1rem;
   box-shadow: none; /* Remove all shadows */
 }
@@ -286,7 +286,7 @@
 
 .interest-tag {
   background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
   padding: 0.375rem 0.75rem;
   border-radius: 6px;
   font-size: 0.875rem;

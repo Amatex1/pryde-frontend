@@ -12,7 +12,7 @@
 .groups-list-header {
   text-align: center;
   padding: 2rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   margin-bottom: 1.5rem;
 }
 
@@ -45,7 +45,7 @@
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow var(--transition-normal);
   /* Fixed dimensions to prevent layout shift */
   min-width: 160px;
   height: 44px;
@@ -63,7 +63,7 @@
   margin-bottom: 1.5rem;
   padding: 0.75rem 1rem;
   background: var(--bg-secondary);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
 .sort-controls label {
@@ -74,8 +74,8 @@
 
 .sort-select {
   padding: 0.5rem 1rem;
-  border: 2px solid var(--border-light);
-  border-radius: 8px;
+  border: var(--border-width-strong) solid var(--border-light);
+  border-radius: var(--radius-sm);
   background: var(--bg-primary);
   color: var(--text-primary);
   font-size: var(--font-size-base);
@@ -98,9 +98,9 @@
 /* Phase 5B: Fixed card dimensions to prevent layout shift */
 .group-card {
   padding: 1.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow var(--transition-normal);
   /* Reserve minimum height to prevent layout shift */
   min-height: 200px;
   display: flex;
@@ -137,7 +137,7 @@
   background: var(--soft-lavender);
   color: var(--pryde-purple);
   padding: 0.25rem 0.75rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   height: 26px;
@@ -150,7 +150,7 @@
   background: linear-gradient(135deg, #ffd700, #ffb347);
   color: #333;
   padding: 0.25rem 0.75rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   height: 26px;
@@ -180,7 +180,7 @@
   justify-content: space-between;
   align-items: center;
   padding-top: 0.75rem;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
   min-height: 32px;
   margin-top: auto; /* Push to bottom of card */
 }
@@ -212,10 +212,10 @@
   width: 100%;
   margin-top: 1rem;
   padding: 0.75rem 1rem;
-  border: 2px solid var(--pryde-purple);
+  border: var(--border-width-strong) solid var(--pryde-purple);
   background: transparent;
   color: var(--pryde-purple);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
@@ -255,7 +255,7 @@
   gap: 0.5rem;
   margin-top: 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
   /* Phase 5B: Fixed height for action row */
   min-height: 44px;
   align-items: center;
@@ -266,7 +266,7 @@
 .btn-delete-group {
   padding: 0.5rem 0.75rem;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: var(--font-size-base);
   transition: background 0.2s ease;
@@ -291,7 +291,7 @@
 .empty-state {
   text-align: center;
   padding: 3rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 .empty-state p {
@@ -315,7 +315,7 @@
   background: linear-gradient(135deg, #f39c12, #e67e22);
   color: white;
   padding: 0.25rem 0.75rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
 }
@@ -345,7 +345,7 @@
   width: 100%;
   max-width: 500px;
   padding: 2rem;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
 }
 
 .create-group-modal h2 {
@@ -376,8 +376,8 @@
 .form-select {
   width: 100%;
   padding: 0.75rem;
-  border: 2px solid var(--border-light);
-  border-radius: 8px;
+  border: var(--border-width-strong) solid var(--border-light);
+  border-radius: var(--radius-sm);
   font-size: var(--font-size-base);
   transition: border-color 0.2s ease;
   background: var(--bg-primary);
@@ -424,9 +424,9 @@
 
 .btn-cancel {
   padding: 0.75rem 1.5rem;
-  border: 2px solid var(--border-light);
+  border: var(--border-width-strong) solid var(--border-light);
   background: transparent;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: var(--font-size-base);
   cursor: pointer;
   color: var(--text-primary);
@@ -442,7 +442,7 @@
   background: linear-gradient(135deg, var(--pryde-purple), var(--pryde-pink));
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
@@ -551,7 +551,7 @@
 
   .groups-list-header {
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
   }
 
   .groups-list-header h1 {
@@ -569,7 +569,7 @@
 
   .group-card {
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
   }
 
   .group-card-name {

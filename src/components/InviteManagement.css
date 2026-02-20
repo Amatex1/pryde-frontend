@@ -65,7 +65,7 @@
 .invite-note-input input {
   width: 100%;
   padding: var(--space-sm);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   border-radius: var(--border-radius-md);
   font-size: var(--font-size-sm);
   background: var(--bg-card);
@@ -96,7 +96,7 @@
 
 .invite-item {
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   border-radius: var(--border-radius-md);
   padding: var(--space-md);
   margin-bottom: var(--space-sm);

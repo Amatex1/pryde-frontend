@@ -16,7 +16,7 @@
   right: 0;
   height: 60px;
   background: var(--surface-1, #ffffff);
-  border-bottom: 1px solid var(--border-light, #e0e0e0);
+  border-bottom: var(--border-width-default) solid var(--border-light, #e0e0e0);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -28,7 +28,7 @@
   width: 120px;
   height: 32px;
   background: var(--skeleton-bg, #e0e0e0);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   animation: pulse 1.5s ease-in-out infinite;
 }
 
@@ -82,13 +82,13 @@
 .feed-skeleton-sidebar-item {
   height: 40px;
   background: var(--skeleton-bg, #e0e0e0);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   animation: pulse 1.5s ease-in-out infinite;
 }
 
 .feed-skeleton-sidebar-card {
   background: var(--surface-1, #ffffff);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 1rem;
   margin-bottom: 1rem;
 }
@@ -112,7 +112,7 @@
 /* Composer Skeleton */
 .feed-skeleton-composer {
   background: var(--surface-1, #ffffff);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 1.5rem;
   display: flex;
   gap: 1rem;
@@ -139,7 +139,7 @@
 /* Post Skeleton */
 .feed-skeleton-post {
   background: var(--surface-1, #ffffff);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 1.5rem;
 }
 
@@ -199,7 +199,7 @@
   display: flex;
   gap: 2rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-light, #e0e0e0);
+  border-top: var(--border-width-default) solid var(--border-light, #e0e0e0);
 }
 
 .feed-skeleton-post-action {

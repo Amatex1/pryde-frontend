@@ -14,7 +14,7 @@
   align-items: center;
   gap: var(--space-2);
   cursor: pointer;
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
   background: transparent;
   color: var(--color-text);
 }
@@ -46,7 +46,7 @@
   width: 20rem;
   max-height: 28rem;
   background: var(--card-surface);
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   z-index: 1000;
@@ -61,7 +61,7 @@
 
 .messages-dropdown-header {
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: var(--border-width-default) solid var(--border-light);
   background: var(--pryde-purple);
 }
 
@@ -97,7 +97,7 @@
   padding: 0.75rem 1rem;
   cursor: pointer;
   transition: background 0.2s ease;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: var(--border-width-default) solid var(--border-light);
 }
 
 .messages-dropdown-item:hover {
@@ -184,7 +184,7 @@
   font-weight: 600;
   font-size: 0.875rem;
   text-decoration: none;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
   transition: background 0.2s ease;
 }
 

@@ -38,7 +38,8 @@ import {
   setCurrentUser,
   clearAllTokens,
   logout as authLogout,
-  isManualLogout
+  isManualLogout,
+  clearManualLogoutFlag
 } from '../utils/auth';
 import { refreshAccessToken } from '../utils/tokenRefresh'; // 🔐 Global single-flight refresh
 import { listenForAuthEvents, closeAuthSync, broadcastLogin, broadcastLogout } from '../utils/authSync';
@@ -281,6 +282,10 @@ export function AuthProvider({ children }) {
 
     logger.debug('[AuthContext] 🔑 Processing login...');
 
+    // Clear logout flags so page reloads don't skip silent refresh
+    clearManualLogoutFlag();
+    localStorage.removeItem('forceLogout');
+
     // Store access token (from JSON body)
     const tokenToStore = token || accessToken;
     if (tokenToStore) {
@@ -521,38 +526,9 @@ export function AuthProvider({ children }) {
     };
   }, [refreshUser, clearUser]);
 
-  // 🔥 PROACTIVE TOKEN REFRESH - Refresh token every 10 minutes while authenticated
-  // This prevents session expiration during long idle periods (e.g., overnight)
-  // NOTE: Visibility change refresh is handled by authLifecycle.js with socket coordination
-  useEffect(() => {
-    if (authStatus !== AUTH_STATES.AUTHENTICATED) return;
-
-    const REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
-    let refreshTimer = null;
-
-    const proactiveRefresh = async () => {
-      try {
-        logger.debug('[AuthContext] ⏰ Proactive token refresh...');
-        const success = await attemptSilentRefresh();
-        if (!success) {
-          logger.warn('[AuthContext] Proactive refresh failed - will retry on next interval');
-        }
-      } catch (err) {
-        logger.warn('[AuthContext] Proactive refresh error:', err.message);
-      }
-    };
-
-    // Start the refresh timer
-    refreshTimer = setInterval(proactiveRefresh, REFRESH_INTERVAL);
-
-    // 🔥 REMOVED: Visibility change handler
-    // Now handled by authLifecycle.js with proper socket coordination
-    // to prevent 401 errors on tab switch (socket waits for token refresh)
-
-    return () => {
-      if (refreshTimer) clearInterval(refreshTimer);
-    };
-  }, [authStatus, attemptSilentRefresh]);
+  // 🔥 PROACTIVE TOKEN REFRESH is handled exclusively by authLifecycle.js
+  // authLifecycle.js runs a 10-minute interval + visibility change + window focus + online events
+  // Having a second interval here causes duplicate rotations and MongoDB write races
 
   const value = {
     // Core state

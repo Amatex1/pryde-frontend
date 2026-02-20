@@ -312,7 +312,7 @@ button:disabled, .btn:disabled {
 /* Secondary button */
 .btn-secondary {
   background: transparent;
-  border: 2px solid var(--color-primary, #6C5CE7);
+  border: var(--border-width-strong) solid var(--color-primary, #6C5CE7);
   color: var(--color-primary, #6C5CE7);
 }
 
@@ -326,7 +326,7 @@ button:disabled, .btn:disabled {
 
 .card {
   background: var(--bg-card, white);
-  border: 1px solid var(--border-subtle, #E2E4EC);
+  border: var(--border-width-default) solid var(--border-subtle, #E2E4EC);
   border-radius: var(--border-radius-lg);
   padding: var(--space-md);
   margin-bottom: var(--space-md);
@@ -349,7 +349,7 @@ input, textarea, select {
   line-height: var(--line-height-base);
   padding: var(--space-sm) var(--space-md);
   min-height: var(--button-height-mobile);
-  border: 1px solid var(--border-subtle, #E2E4EC);
+  border: var(--border-width-default) solid var(--border-subtle, #E2E4EC);
   border-radius: var(--border-radius-md);
   background: var(--bg-card, white);
   color: var(--text-main, #1E1E26);
@@ -395,7 +395,7 @@ input:focus, textarea:focus, select:focus {
 [data-theme="dark"] .menu,
 [data-theme="dark"] .select-menu {
   background-color: var(--surface-elevated);
-  border: 1px solid var(--surface-border);
+  border: var(--border-width-default) solid var(--surface-border);
   color: var(--text-primary);
 }
 
@@ -543,7 +543,7 @@ button,
   /* Keep comfortable touch targets on mobile */
   min-height: var(--button-height-mobile);
   padding: 0 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 13px;
 }
 

@@ -122,7 +122,7 @@
   .profile-card,
   .notification-card,
   .event-card {
-    border-radius: 10px; /* Soft corners - post-card uses !important override at 600px */
+    border-radius: var(--input-radius); /* Soft corners - post-card uses !important override at 600px */
     padding: 10px 12px !important; /* More compact for mobile */
     margin-bottom: 8px !important; /* Tighter spacing */
   }
@@ -616,7 +616,7 @@
     z-index: 99999 !important;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
     background: var(--card-surface) !important;
-    animation: slideUp 0.3s ease;
+    animation: slideUp var(--transition-normal);
     display: flex !important;
     flex-wrap: wrap !important;
     gap: 0.75rem !important;
@@ -800,7 +800,7 @@
   /* 🔒 DARK MODE FIX: Use CSS variables instead of hardcoded light colors */
   .settings-section {
     background: var(--bg-card, var(--card-surface)) !important;
-    border: 1px solid var(--border-subtle, rgba(127, 127, 127, 0.15)) !important;
+    border: var(--border-width-default) solid var(--border-subtle, rgba(127, 127, 127, 0.15)) !important;
     padding: 20px !important;
     border-radius: 12px !important;
     margin-bottom: 20px !important;
@@ -917,7 +917,7 @@
     padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
     border-radius: 20px 20px 0 0 !important;
     background: var(--bg-card, #1A1B30) !important;
-    border-top: 2px solid var(--pryde-purple) !important;
+    border-top: var(--border-width-strong) solid var(--pryde-purple) !important;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3) !important;
     z-index: 1500 !important; /* Above mobile nav (200) and modals (1001) */
     animation: slideUpReply 0.25s ease-out;
@@ -985,7 +985,7 @@
     overflow-x: hidden !important;
     overflow-y: visible !important;
     padding-right: 0 !important;
-    border-left: 2px solid var(--pryde-purple, #6c5ce7) !important;
+    border-left: var(--border-width-strong) solid var(--pryde-purple, #6c5ce7) !important;
   }
 
   .comment.reply {
@@ -1419,7 +1419,7 @@
   .sidebar,
   .post-card,
   .header {
-    transition: all 0.3s ease;
+    transition: all var(--transition-normal);
   }
 }
 
@@ -1428,6 +1428,6 @@
   .sidebar,
   .post-card,
   .header {
-    transition: all 0.3s ease;
+    transition: all var(--transition-normal);
   }
 }

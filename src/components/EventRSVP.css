@@ -14,8 +14,8 @@
   justify-content: center;
   gap: 8px;
   padding: 10px 16px;
-  border-radius: 8px;
-  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  border: var(--border-width-strong) solid var(--border-color);
   background: var(--bg-primary);
   color: var(--text-primary);
   font-size: 0.9rem;
@@ -76,7 +76,7 @@
 .rsvp-count {
   background: color-mix(in srgb, var(--text-inverse) 30%, transparent);
   padding: 2px 8px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-size: 0.8rem;
   font-weight: 700;
   margin-left: 4px;

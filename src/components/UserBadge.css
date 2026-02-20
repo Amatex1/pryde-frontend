@@ -16,8 +16,8 @@
   font-weight: 500;
   white-space: nowrap;
   vertical-align: middle;
-  transition: opacity 0.15s ease, background 0.15s ease;
-  border: 1px solid transparent;
+  transition: opacity var(--transition-fast), background var(--transition-fast);
+  border: var(--border-width-default) solid transparent;
 }
 
 .user-badge:hover {

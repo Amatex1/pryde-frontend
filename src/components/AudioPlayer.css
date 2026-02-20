@@ -3,7 +3,7 @@
   align-items: center;
   gap: 12px;
   background: var(--bg-card);
-  border: 1px solid var(--border-default);
+  border: var(--border-width-default) solid var(--border-default);
   border-radius: 20px;
   padding: 10px 16px;
   max-width: 350px;
@@ -61,7 +61,7 @@
   width: 14px;
   height: 14px;
   background: var(--text-inverse);
-  border: 2px solid var(--accent-primary);
+  border: var(--border-width-strong) solid var(--accent-primary);
   border-radius: 50%;
   box-shadow: var(--shadow-soft);
   transition: left 0.1s linear;

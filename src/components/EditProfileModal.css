@@ -1,12 +1,12 @@
 .edit-profile-modal {
   background: var(--bg-card);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   max-width: 800px;
   width: 95%;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  animation: slideUp 0.3s ease;
+  animation: slideUp var(--transition-normal);
 }
 
 .edit-profile-header {
@@ -14,7 +14,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: var(--border-width-default) solid var(--border-subtle);
   flex-shrink: 0;
 }
 
@@ -43,7 +43,7 @@
 .form-section {
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: var(--border-width-default) solid var(--border-subtle);
 }
 
 .form-section:last-child {
@@ -100,13 +100,13 @@
 .form-group textarea {
   width: 100%;
   padding: 0.75rem;
-  border: 2px solid var(--border-subtle);
-  border-radius: 8px;
+  border: var(--border-width-strong) solid var(--border-subtle);
+  border-radius: var(--radius-sm);
   background: var(--bg);
   color: var(--text-main);
   font-size: 0.95rem;
   font-family: inherit;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .form-group input:focus,
@@ -157,10 +157,10 @@
   position: relative;
   width: 100%;
   height: 200px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   background: var(--bg-tertiary, #1a1a2e);
-  border: 2px solid var(--border-subtle);
+  border: var(--border-width-strong) solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -263,12 +263,12 @@
 .photo-change-btn {
   width: 100%;
   padding: 0.625rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   background: var(--bg-secondary, #2d2d44);
   color: var(--text-primary, #fff);
   margin-top: 0.75rem;
@@ -349,8 +349,8 @@
   width: 100%;
   padding: 0.5rem;
   font-size: 0.9rem;
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-sm);
   background: var(--bg);
   color: var(--text-main);
   cursor: pointer;
@@ -374,8 +374,8 @@
   align-items: center;
   padding: 0.75rem;
   background: var(--bg);
-  border-radius: 8px;
-  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  border: var(--border-width-default) solid var(--border-subtle);
 }
 
 .social-link-info {
@@ -410,8 +410,8 @@
 
 .add-social-link input {
   padding: 0.75rem;
-  border: 2px solid var(--border-subtle);
-  border-radius: 8px;
+  border: var(--border-width-strong) solid var(--border-subtle);
+  border-radius: var(--radius-sm);
   background: var(--bg);
   color: var(--text-main);
   font-size: 0.9rem;
@@ -471,8 +471,8 @@
 .add-tag input {
   flex: 1;
   padding: 0.75rem;
-  border: 2px solid var(--border-subtle);
-  border-radius: 8px;
+  border: var(--border-width-strong) solid var(--border-subtle);
+  border-radius: var(--radius-sm);
   background: var(--bg);
   color: var(--text-main);
   font-size: 0.9rem;
@@ -496,10 +496,10 @@
   gap: 0.5rem;
   padding: 0.75rem;
   background: var(--bg);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 2px solid var(--border-subtle);
+  border: var(--border-width-strong) solid var(--border-subtle);
   color: var(--text-main);
 }
 
@@ -530,10 +530,10 @@
   gap: 0.75rem;
   padding: 0.75rem;
   background: var(--bg);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 2px solid var(--border-subtle);
+  border: var(--border-width-strong) solid var(--border-subtle);
   color: var(--text-main);
 }
 
@@ -591,10 +591,10 @@
 .btn-remove {
   padding: 0.75rem 1.25rem;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   font-size: 0.9rem;
 }
 
@@ -607,11 +607,11 @@
 .btn-add-compact {
   padding: 0.75rem 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-weight: 700;
   font-size: 1.2rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   background: var(--gradient-primary);
   color: white;
   white-space: nowrap;
@@ -631,8 +631,8 @@
 .interest-dropdown {
   flex: 1;
   padding: 0.75rem;
-  border: 2px solid var(--border-subtle);
-  border-radius: 8px;
+  border: var(--border-width-strong) solid var(--border-subtle);
+  border-radius: var(--radius-sm);
   background: var(--bg);
   color: var(--text-main);
   font-size: 0.9rem;
@@ -667,17 +667,17 @@
   justify-content: flex-end;
   gap: 1rem;
   padding: 1.5rem;
-  border-top: 1px solid var(--border-subtle);
+  border-top: var(--border-width-default) solid var(--border-subtle);
   flex-shrink: 0;
 }
 
 .btn-cancel,
 .btn-save {
   padding: 0.875rem 1.75rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   font-size: 1rem;
   min-width: 120px;
   text-align: center;
@@ -685,7 +685,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid transparent;
+  border: var(--border-width-strong) solid transparent;
 }
 
 .btn-cancel {
@@ -991,12 +991,12 @@
 
 .safety-guides.faded .guide {
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity var(--transition-normal);
 }
 
 .safety-guides:not(.faded) .guide {
   opacity: 0.4;
-  transition: opacity 0.3s ease;
+  transition: opacity var(--transition-normal);
 }
 
 /* Unified Save Footer */
@@ -1004,7 +1004,7 @@
   position: sticky;
   bottom: 0;
   background: var(--bg-card);
-  border-top: 1px solid var(--border-subtle);
+  border-top: var(--border-width-default) solid var(--border-subtle);
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
 }
 

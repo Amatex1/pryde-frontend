@@ -5,13 +5,13 @@
   min-width: 300px;
   max-width: 500px;
   padding: 1rem 1.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   gap: 0.75rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   z-index: 10000;
-  animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s;
+  animation: slideIn var(--transition-normal), fadeOut var(--transition-normal) 2.7s;
   backdrop-filter: blur(10px);
 }
 
@@ -115,7 +115,7 @@
 .toast-quiet {
   background: rgba(30, 30, 40, 0.85);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: var(--border-width-default) solid rgba(255, 255, 255, 0.08);
   color: #F5F6FA;
   box-shadow: none;
   animation: quietFadeIn 0.4s ease, quietFadeOut 0.4s ease 4.1s forwards;

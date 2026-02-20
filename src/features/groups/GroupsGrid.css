@@ -11,7 +11,7 @@
 .groups-grid-empty {
   padding: 3rem;
   text-align: center;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 .groups-grid-empty p {
@@ -21,7 +21,7 @@
 
 .group-card {
   padding: 1.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
 }

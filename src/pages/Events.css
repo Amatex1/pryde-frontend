@@ -39,7 +39,7 @@
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
   box-shadow: var(--shadow-medium);
 }
 
@@ -58,13 +58,13 @@
 .filter-select {
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   background: var(--bg-card);
   color: var(--text-main);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
 }
 
 .filter-select:hover {
@@ -79,10 +79,10 @@
 
 .event-card {
   background: var(--card-surface);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(108, 92, 231, 0.1);
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .event-card:hover {
@@ -114,7 +114,7 @@
 
 .event-badge {
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 0.875rem;
   font-weight: 600;
 }
@@ -181,7 +181,7 @@
   margin-bottom: 1rem;
   padding: 0.75rem;
   background: var(--background-light);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
 .event-stats span {
@@ -193,7 +193,7 @@
 .event-creator {
   margin-bottom: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: var(--border-width-default) solid var(--border-light);
 }
 
 .creator-link {
@@ -233,13 +233,13 @@
 .btn-interested {
   flex: 1;
   padding: 0.75rem;
-  border-radius: 12px;
-  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
+  border: var(--border-width-strong) solid var(--border-light);
   background: var(--card-surface);
   color: var(--text-main);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .btn-rsvp:hover {
@@ -328,7 +328,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--border-subtle, #eee);
+  border-bottom: var(--border-width-default) solid var(--border-subtle, #eee);
 }
 
 .modal-header h2 {
@@ -370,7 +370,7 @@
 .form-group textarea,
 .form-group select {
   padding: 0.75rem;
-  border: 1px solid var(--border-light, #ddd);
+  border: var(--border-width-default) solid var(--border-light, #ddd);
   border-radius: var(--radius-md, 8px);
   background: var(--bg-light, #f9f9f9);
   color: var(--text-main);
@@ -397,7 +397,7 @@
   gap: 0.75rem;
   margin-top: 0.5rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-subtle, #eee);
+  border-top: var(--border-width-default) solid var(--border-subtle, #eee);
 }
 
 .btn-cancel {

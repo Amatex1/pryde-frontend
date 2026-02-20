@@ -66,7 +66,7 @@
 .passkey-name-input input {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 2px solid var(--border-light);
+  border: var(--border-width-strong) solid var(--border-light);
   border-radius: 0.5rem;
   font-size: 1rem;
   background: var(--bg-light);
@@ -99,7 +99,7 @@
 .btn-secondary {
   background: var(--bg-light);
   color: var(--text-main);
-  border: 2px solid var(--border-light);
+  border: var(--border-width-strong) solid var(--border-light);
 }
 
 .btn-secondary:hover:not(:disabled) {
@@ -113,7 +113,7 @@
 
 .error-message {
   background: rgba(255, 107, 107, 0.1);
-  border: 2px solid #ff6b6b;
+  border: var(--border-width-strong) solid #ff6b6b;
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
   color: #ff6b6b;

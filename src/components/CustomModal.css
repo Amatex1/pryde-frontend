@@ -8,20 +8,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10000;
+  z-index: calc(var(--z-modal) + 1);
   animation: fadeIn 0.2s ease-in-out;
   backdrop-filter: blur(4px);
 }
 
 .custom-modal-content {
   background: var(--bg-card);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   padding: 2rem;
   max-width: 500px;
   width: 90%;
   box-shadow: var(--shadow-strong);
   animation: slideUp 0.3s ease-out;
-  border: 2px solid var(--accent-primary);
+  border: var(--border-width-strong) solid var(--accent-primary);
 }
 
 .custom-modal-title {
@@ -43,13 +43,13 @@
 .custom-modal-input {
   width: 100%;
   padding: 0.875rem 1rem;
-  border-radius: 12px;
-  border: 2px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  border: var(--border-width-strong) solid var(--border-subtle);
   background: var(--bg-surface);
   color: var(--text-primary);
   font-size: 1rem;
   margin-bottom: 1.5rem;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   box-sizing: border-box;
 }
 
@@ -67,17 +67,17 @@
 
 .custom-modal-btn {
   padding: 0.875rem 2rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   min-width: 120px;
   height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid transparent;
+  border: var(--border-width-strong) solid transparent;
 }
 
 .custom-modal-btn-primary {

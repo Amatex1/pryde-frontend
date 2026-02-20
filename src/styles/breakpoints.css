@@ -360,7 +360,7 @@
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   .responsive-container {
-    border: 2px solid currentColor;
+    border: var(--border-width-strong) solid currentColor;
   }
 }
 

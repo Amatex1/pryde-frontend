@@ -9,7 +9,7 @@
 .emoji-picker-popover .emoji-picker-content {
   position: fixed;
   background: var(--bg-card, #ffffff);
-  border: 1px solid var(--border-color, #e0e0e0);
+  border: var(--border-width-default) solid var(--border-color, #e0e0e0);
   border-radius: 24px;
   padding: 8px 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
@@ -71,7 +71,7 @@
   justify-content: center;
   padding-bottom: 12px;
   margin-bottom: 12px;
-  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  border-bottom: var(--border-width-default) solid var(--border-color, #e0e0e0);
   position: relative;
 }
 
@@ -127,9 +127,9 @@
   font-size: 24px;
   background: transparent;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: transform 0.15s ease, background-color 0.15s ease;
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
 }
 
 .pryde-emoji-button:hover {

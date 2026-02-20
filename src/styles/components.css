@@ -30,7 +30,7 @@ button:not(.emoji-button):not(.reaction-btn) {
   border-radius: var(--radius-md, 12px);
 
   /* Unified hover state */
-  transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+  transition: background var(--transition-fast), border-color var(--transition-fast), opacity var(--transition-fast);
 }
 
 /* Menu standards - reduced shadow, softer borders, proper z-index */
@@ -42,7 +42,7 @@ button:not(.emoji-button):not(.reaction-btn) {
   position: absolute; /* Ensure dropdowns can escape parent containers */
   z-index: var(--z-dropdown, 100); /* Use z-index system */
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   border-radius: var(--radius-md, 12px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -76,7 +76,7 @@ select,
   min-height: 44px;
 
   /* Calm focus ring */
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 input:focus,
@@ -140,7 +140,7 @@ select:focus,
 .pryde-card {
   background: var(--bg-card);
   border-radius: var(--radius-card);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   padding: var(--space-4) 18px;
   box-shadow: var(--shadow-soft);
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
@@ -166,13 +166,13 @@ select:focus,
   gap: var(--space-2);
   padding: var(--space-2) 14px;
   border-radius: var(--radius-pill);
-  border: 1px solid transparent;
+  border: var(--border-width-default) solid transparent;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   background: var(--color-primary-dark);  /* WCAG AAA: 7.1:1 contrast */
   color: #fff;
-  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+  transition: background var(--transition-fast), box-shadow var(--transition-fast), transform 0.05s ease;
   white-space: nowrap;
 }
 
@@ -209,8 +209,8 @@ select:focus,
 }
 
 .pryde-btn-danger:hover:not(:disabled) {
-  background: #c22e2e;  /* Slightly darker on hover */
-  box-shadow: 0 4px 12px rgba(217, 54, 54, 0.3);
+  background: var(--color-danger);
+  box-shadow: 0 4px 12px var(--color-danger-soft);
 }
 
 .pryde-btn-success {
@@ -248,12 +248,12 @@ select:focus,
 .pryde-input {
   width: 100%;
   padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   border-radius: var(--radius-md);
   background: var(--bg-card);
   color: var(--text-main);
   font-size: 14px;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .pryde-input:focus {
@@ -269,7 +269,7 @@ select:focus,
 .pryde-textarea {
   width: 100%;
   padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   border-radius: var(--radius-md);
   background: var(--bg-card);
   color: var(--text-main);
@@ -277,7 +277,7 @@ select:focus,
   font-family: inherit;
   resize: vertical;
   min-height: 100px;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .pryde-textarea:focus {
@@ -336,7 +336,7 @@ select:focus,
     max-width: 1200px;
     padding: 10px 16px;
     background: rgba(15,18,32,0.92);
-    border: 1px solid rgba(255,255,255,0.08);
+    border: var(--border-width-default) solid rgba(255,255,255,0.08);
     border-radius: 14px;
   }
 
@@ -534,7 +534,7 @@ select:focus,
   width: auto;
   max-width: 520px;
   padding: 6px 10px;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   background: var(--comment-bg, rgba(255,255,255,0.08));
   white-space: normal;
   word-break: normal;
@@ -650,7 +650,7 @@ select:focus,
 .comment-menu-container {
   position: relative;
   opacity: 0;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--transition-fast);
   flex-shrink: 0;
 }
 
@@ -792,7 +792,7 @@ body[data-density="cozy"] .comment-row {
   width: auto;
   max-width: 520px;
   padding: 6px 10px;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   background: var(--comment-bg, rgba(255, 255, 255, 0.08));
 }
 

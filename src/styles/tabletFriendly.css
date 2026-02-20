@@ -28,7 +28,7 @@
   .post-card {
     padding: 20px;
     margin-bottom: 16px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
   }
 
   /* Sidebar: Sticky positioning */
@@ -94,7 +94,7 @@
     max-width: 90vw;
     max-height: 85vh;
     max-height: 85dvh;
-    border-radius: 16px;
+    border-radius: var(--radius-lg);
   }
 
   /* ==================== FORMS ==================== */
@@ -118,14 +118,14 @@
   }
 
   .conversation-list {
-    border-right: 1px solid var(--border-color);
+    border-right: var(--border-width-default) solid var(--border-color);
     overflow-y: auto;
   }
 
   /* ==================== IMAGES ==================== */
 
   .post-image {
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     max-height: 500px;
     object-fit: cover;
   }

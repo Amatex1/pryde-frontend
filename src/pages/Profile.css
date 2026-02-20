@@ -45,7 +45,7 @@
   padding: var(--space-4) 18px !important;
   border-radius: var(--radius-card) !important;
   background: var(--bg-card) !important;
-  border: 1px solid var(--border-subtle) !important;
+  border: var(--border-width-default) solid var(--border-subtle) !important;
   box-shadow: var(--shadow-soft) !important;
   transition: box-shadow 0.2s ease, border-color 0.2s ease !important;
   min-width: 0 !important;
@@ -110,7 +110,7 @@
   font-weight: var(--font-weight-medium);
   cursor: pointer;
   text-decoration: none;
-  transition: color 0.15s ease, text-decoration 0.15s ease;
+  transition: color var(--transition-fast), text-decoration var(--transition-fast);
 }
 
 .profile-page .see-more-toggle:hover,
@@ -191,7 +191,7 @@
   height: 100% !important;
   object-fit: cover !important;
   cursor: pointer !important;
-  transition: transform 0.3s ease !important;
+  transition: transform var(--transition-normal) !important;
 }
 
 .profile-page .post-media-item img:hover,
@@ -340,7 +340,7 @@ div.profile-layout,
 /* Edit Cover Button */
 .btn-edit-cover {
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: none;
   background: rgba(255, 255, 255, 0.95);
   color: var(--text-primary);
@@ -370,7 +370,7 @@ div.profile-layout,
 /* Edit Profile Button */
 .btn-edit-profile-cover {
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: none;
   background: rgba(255, 255, 255, 0.95);
   color: var(--text-primary);
@@ -403,7 +403,7 @@ div.profile-layout,
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 2px solid var(--bg-card);
+  border: var(--border-width-strong) solid var(--bg-card);
   background: var(--pryde-purple);
   color: white;
   font-size: var(--font-size-sm);
@@ -439,7 +439,7 @@ div.profile-layout,
 /* Profile Card - Stability */
 .profile-card {
   padding: 16px;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   background: transparent;
   box-shadow: none;
   display: flex;
@@ -530,15 +530,15 @@ div.profile-layout,
 
 .btn-profile-upload {
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  border: 2px solid var(--pryde-purple);
+  border: var(--border-width-strong) solid var(--pryde-purple);
   color: var(--pryde-purple);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-sm);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   box-shadow: 0 2px 8px rgba(108, 92, 231, 0.15);
   white-space: nowrap;
 }
@@ -570,7 +570,7 @@ div.profile-layout,
   text-align: center;
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-sm);
-  border-bottom: 2px solid var(--pryde-purple);
+  border-bottom: var(--border-width-strong) solid var(--pryde-purple);
 }
 
 .cover-placeholder {
@@ -699,7 +699,7 @@ div.profile-layout,
     0 1px 4px rgba(108, 92, 231, 0.2); /* Reduced glow */
   position: relative;
   margin-left: 0.25rem; /* Reduced from 0.35rem */
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .verified-badge::before {
@@ -776,7 +776,7 @@ div.profile-layout,
   color: var(--text-secondary);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
 }
 
 [data-theme="dark"] .profile-identity-pills .badge {
@@ -791,7 +791,7 @@ div.profile-layout,
   color: var(--pryde-purple);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
-  border: 1px solid var(--pryde-purple);
+  border: var(--border-width-default) solid var(--pryde-purple);
 }
 
 /* 6. Bio */
@@ -813,7 +813,7 @@ div.profile-layout,
 .social-links {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
 }
 
 .social-title {
@@ -834,11 +834,11 @@ div.profile-layout,
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   text-decoration: none;
   background: var(--soft-lavender);
   color: var(--text-main);
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .social-link-item:hover {
@@ -855,13 +855,13 @@ div.profile-layout,
 .social-platform {
   font-weight: var(--font-weight-semibold);
   color: var(--pryde-purple);
-  transition: color 0.3s ease;
+  transition: color var(--transition-normal);
 }
 
 .social-icon {
   color: var(--text-muted);
   font-size: var(--font-size-xl);
-  transition: color 0.3s ease;
+  transition: color var(--transition-normal);
 }
 
 .meta-item {
@@ -882,7 +882,7 @@ div.profile-layout,
   gap: 12px;
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid var(--border-subtle);
+  border-top: var(--border-width-default) solid var(--border-subtle);
   grid-column: 2;
   grid-row: 1 / -1;
   align-self: start;
@@ -944,7 +944,7 @@ div.profile-layout,
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 2px solid var(--border-light);
+  border: var(--border-width-strong) solid var(--border-light);
   background: var(--card-surface);
   color: var(--text-main);
   font-size: var(--font-size-2xl);
@@ -953,7 +953,7 @@ div.profile-layout,
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   line-height: var(--line-height-tight);
   padding: 0;
 }
@@ -995,8 +995,8 @@ div.profile-layout,
   top: calc(100% + 0.5rem);
   right: 0;
   background: var(--card-surface);
-  border: 2px solid var(--border-light);
-  border-radius: 12px;
+  border: var(--border-width-strong) solid var(--border-light);
+  border-radius: var(--radius-md);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   min-width: 180px;
   z-index: 100;
@@ -1068,13 +1068,13 @@ div.profile-layout,
 .btn-unfriend,
 .btn-cancel-request {
   padding: 0.75rem 1.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: none;
   background: var(--gradient-primary);
   color: white;
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   font-size: var(--font-size-base);
 }
 
@@ -1092,13 +1092,13 @@ div.profile-layout,
 
 .btn-notes-to-self {
   padding: 0.75rem 1.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: none;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   font-size: var(--font-size-base);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
@@ -1117,14 +1117,14 @@ div.profile-layout,
 .btn-unfriend {
   background: var(--soft-lavender);
   color: var(--pryde-purple);
-  border: 2px solid var(--pryde-purple);
+  border: var(--border-width-strong) solid var(--pryde-purple);
   box-shadow: 0 4px 12px rgba(108, 92, 231, 0.15);
 }
 
 .btn-cancel-request {
   background: var(--soft-lavender);
   color: #e74c3c;
-  border: 2px solid #e74c3c;
+  border: var(--border-width-strong) solid #e74c3c;
   box-shadow: 0 4px 12px rgba(231, 76, 60, 0.15);
 }
 
@@ -1175,10 +1175,10 @@ div.profile-layout,
   padding: 0.375rem 0.625rem;
   background: var(--bg-secondary);
   color: var(--text-secondary);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-normal);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
 }
 
 /* Looking For */
@@ -1193,7 +1193,7 @@ div.profile-layout,
   align-items: center;
   padding: 0.5rem;
   background: var(--background-light);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: var(--font-size-sm);
   color: var(--text-main);
 }
@@ -1312,7 +1312,7 @@ div.profile-layout,
   align-items: center;
   padding: 0.75rem;
   background: var(--pryde-purple);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   text-decoration: none;
   color: #ffffff;
   transition: all 0.2s ease;
@@ -1337,7 +1337,7 @@ div.profile-layout,
   display: block;
   padding: 0.75rem;
   background: var(--pryde-purple);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   color: #ffffff;
   text-decoration: none;
   word-break: break-all;
@@ -1369,18 +1369,18 @@ div.profile-layout,
 .btn-unblock,
 .btn-report-user {
   padding: 0.6rem 1.2rem;
-  border-radius: 10px;
+  border-radius: var(--input-radius);
   border: none;
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   font-size: var(--font-size-sm);
 }
 
 .btn-block {
   background: rgba(255, 107, 107, 0.1);
   color: var(--error);
-  border: 2px solid var(--error);
+  border: var(--border-width-strong) solid var(--error);
 }
 
 .btn-block:hover {
@@ -1392,7 +1392,7 @@ div.profile-layout,
 .btn-unblock {
   background: rgba(76, 175, 80, 0.1);
   color: #4caf50;
-  border: 2px solid #4caf50;
+  border: var(--border-width-strong) solid #4caf50;
 }
 
 .btn-unblock:hover {
@@ -1404,7 +1404,7 @@ div.profile-layout,
 .btn-report-user {
   background: rgba(255, 165, 0, 0.1);
   color: #ff8c00;
-  border: 2px solid #ff8c00;
+  border: var(--border-width-strong) solid #ff8c00;
 }
 
 .btn-report-user:hover {
@@ -1593,15 +1593,15 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   width: 100%;
   max-width: 100%;
   padding: 1rem;
-  border: 2px solid var(--border-light);
-  border-radius: 12px;
+  border: var(--border-width-strong) solid var(--border-light);
+  border-radius: var(--radius-md);
   background: var(--background-light);
   color: var(--text-main);
   font-size: var(--font-size-base);
   resize: vertical;
   min-height: 100px;
   font-family: inherit;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   box-sizing: border-box;
 }
 
@@ -1624,7 +1624,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .media-preview-item {
   position: relative;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   aspect-ratio: 1;
 }
@@ -1666,8 +1666,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .cw-input {
   width: 100%;
   padding: 0.75rem;
-  border: 2px solid var(--border-light);
-  border-radius: 12px;
+  border: var(--border-width-strong) solid var(--border-light);
+  border-radius: var(--radius-md);
   background: var(--background-light);
   color: var(--text-main);
   font-size: var(--font-size-sm);
@@ -1708,8 +1708,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   line-height: var(--line-height-tight);
-  border-radius: 10px;
-  border: 1px solid var(--border-subtle);
+  border-radius: var(--input-radius);
+  border: var(--border-width-default) solid var(--border-subtle);
   background: transparent;
   color: var(--text-main);
   cursor: pointer;
@@ -1729,7 +1729,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .profile-page .btn-media-upload {
   background: transparent;
   color: var(--text-main);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
 }
 
 .profile-page .btn-media-upload:hover {
@@ -1771,7 +1771,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 /* Content Warning button */
 .profile-page .btn-content-warning {
   background: transparent;
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
 }
 
 .profile-page .btn-content-warning:hover {
@@ -1791,8 +1791,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   min-height: 36px;
   max-height: 36px;
   padding: 0 12px;
-  border: 1px solid var(--border-subtle);
-  border-radius: 10px;
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--input-radius);
   background: transparent;
   color: var(--text-main);
   font-size: var(--font-size-sm);
@@ -1817,7 +1817,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   background: linear-gradient(135deg, #FFD700, #FFA500);
   color: #1a1a1a;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--input-radius);
   cursor: pointer;
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-sm);
@@ -1890,7 +1890,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   padding: var(--space-4) 18px;
   border-radius: var(--radius-card);
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   box-shadow: var(--shadow-soft);
   margin-bottom: var(--space-4);
   min-width: 0;
@@ -1999,7 +1999,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: transform var(--transition-normal);
 }
 
 .friend-item:hover {
@@ -2017,7 +2017,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   font-weight: bold;
   color: var(--dark-bg);
   overflow: hidden;
-  border: 2px solid var(--gold);
+  border: var(--border-width-strong) solid var(--gold);
 }
 
 .friend-avatar img {
@@ -2129,7 +2129,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   padding: var(--space-4) 18px;
   border-radius: var(--radius-card);
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   box-shadow: var(--shadow-soft);
   transition: all 0.2s ease;
   min-width: 0;
@@ -2174,7 +2174,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   display: flex;
   gap: var(--space-2);
   padding-top: var(--space-4);
-  border-top: 1px solid var(--border-subtle);
+  border-top: var(--border-width-default) solid var(--border-subtle);
   overflow: visible;
   position: relative;
 }
@@ -2189,12 +2189,12 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .profile-page .action-btn,
 .profile-page .post-actions .action-btn {
   padding: var(--action-btn-padding-mobile);
-  border-radius: 10px;
+  border-radius: var(--input-radius);
   border: none;
   background: var(--bg-subtle);
   color: #2d2f3e;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2340,7 +2340,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   top: -3.5rem;
   left: 0;
   background: var(--card-surface);
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
   border-radius: 3.125rem;
   padding: 0.5rem 0.75rem;
   display: flex;
@@ -2377,7 +2377,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .profile-page .post-comments {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -2405,7 +2405,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   gap: 4px;
   margin-top: 8px;
   position: relative;
-  border-left: 2px solid var(--pryde-purple, #6c5ce7);  /* Purple thread line */
+  border-left: var(--border-width-strong) solid var(--pryde-purple, #6c5ce7);  /* Purple thread line */
 }
 
 .profile-page .comment.reply {
@@ -2505,7 +2505,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   font-size: var(--font-size-sm);
   font-style: italic;
   cursor: pointer;
-  transition: color 0.15s ease;
+  transition: color var(--transition-fast);
 }
 
 .profile-page .edited-indicator-btn:hover {
@@ -2626,7 +2626,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   top: -3.5rem;
   left: 0;
   background: var(--card-surface);
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
   border-radius: 3.125rem;
   padding: 0.5rem 0.75rem;
   display: flex;
@@ -2761,8 +2761,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .profile-page .comment-edit-input {
   padding: 0.5rem;
-  border: 2px solid var(--pryde-purple);
-  border-radius: 8px;
+  border: var(--border-width-strong) solid var(--pryde-purple);
+  border-radius: var(--radius-sm);
   background: var(--card-surface);
   color: var(--text-main);
   font-size: var(--font-size-sm);
@@ -2815,8 +2815,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .reply-input {
   padding: 0.5rem;
-  border: 2px solid var(--pryde-purple);
-  border-radius: 8px;
+  border: var(--border-width-strong) solid var(--pryde-purple);
+  border-radius: var(--radius-sm);
   background: var(--card-surface);
   color: var(--text-main);
   font-size: var(--font-size-sm);
@@ -3026,7 +3026,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
   .comment-replies {
     padding-left: 10px;
-    border-left: 2px solid var(--pryde-purple);
+    border-left: var(--border-width-strong) solid var(--pryde-purple);
   }
 
   .comment.reply {
@@ -3051,14 +3051,14 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .reply-input-box {
     margin-left: 0;
     padding: 0.75rem;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     background: rgba(108, 92, 231, 0.08);
   }
 
   .reply-input {
     padding: 0.75rem;
     font-size: var(--font-size-base);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     min-height: 44px;
   }
 
@@ -3073,7 +3073,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     flex: 1;
     padding: 0.75rem 1.25rem;
     font-size: var(--font-size-base);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     min-height: 44px;
   }
 
@@ -3180,7 +3180,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
   .create-post {
     padding: 1.5rem;
-    border-radius: 16px;
+    border-radius: var(--radius-lg);
   }
 
   .post-actions-bar {
@@ -3265,7 +3265,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
   .create-post {
     padding: 1rem;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
   }
 
   .post-actions-bar {
@@ -3285,7 +3285,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     text-align: left;
     padding: 0.75rem;
     background: var(--soft-lavender);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
   }
 
   .friends-grid {
@@ -3362,7 +3362,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .profile-header {
-    border-radius: 16px;
+    border-radius: var(--radius-lg);
   }
 
   .friend-actions {
@@ -3379,7 +3379,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
   .comment-replies {
     padding-left: 8px;
-    border-left: 2px solid var(--pryde-purple);
+    border-left: var(--border-width-strong) solid var(--pryde-purple);
   }
 
   .comment.reply {
@@ -3422,8 +3422,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .edit-post-textarea {
   width: 100%;
   padding: 1rem;
-  border-radius: 12px;
-  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
+  border: var(--border-width-strong) solid var(--border-light);
   outline: none;
   font-size: var(--font-size-base);
   color: var(--text-main);
@@ -3435,7 +3435,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   height: auto;
   line-height: var(--line-height-normal);
   box-sizing: border-box;
-  transition: height 120ms ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: height 120ms ease-out, border-color var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 .edit-post-textarea:focus {
@@ -3457,16 +3457,16 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   margin-top: 0.75rem;
   padding: 0.75rem;
   background: var(--background-light);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
 .edit-media-item {
   position: relative;
   width: 80px;
   height: 80px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
-  border: 2px solid var(--border-light);
+  border: var(--border-width-strong) solid var(--border-light);
 }
 
 .edit-media-item img,
@@ -3529,13 +3529,13 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .visibility-select {
   padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 2px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  border: var(--border-width-strong) solid var(--border-light);
   background: var(--background-light);
   color: var(--text-main);
   font-size: var(--font-size-sm);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .visibility-select:focus {
@@ -3558,7 +3558,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .btn-save-edit,
 .btn-cancel-edit {
   padding: 0.5rem 1.5rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: none;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
@@ -3579,7 +3579,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .btn-cancel-edit {
   background: var(--background-light);
   color: var(--text-main);
-  border: 2px solid var(--border-light);
+  border: var(--border-width-strong) solid var(--border-light);
 }
 
 .btn-cancel-edit:hover {
@@ -3625,7 +3625,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .btn-back {
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   padding: 0.5rem 1rem;
   border-radius: var(--radius-button);
   cursor: pointer;
@@ -3652,7 +3652,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   gap: 1rem;
   padding: 1rem;
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   border-radius: var(--radius-card);
   transition: all 0.2s ease;
   text-decoration: none;
@@ -3757,13 +3757,13 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 /* .profile-identity-pills .badge {
   background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
   padding: 0.375rem 0.75rem;
   border-radius: 6px;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-normal);
   color: var(--text-secondary);
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
 }
 
 .profile-identity-pills .badge:hover {
@@ -3810,7 +3810,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 /* Profile header: Cover photo only, no decorative shadows */
 .profile-header {
   position: relative;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   margin-bottom: 0;
   background: transparent;
@@ -3993,7 +3993,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   gap: 2rem;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
   width: 100%;
 }
 
@@ -4007,7 +4007,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   align-items: center;
   gap: 0.25rem;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--transition-fast);
 }
 
 .stat-item:hover {
@@ -4038,14 +4038,14 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .profile-action-buttons button {
   padding: 0.625rem 1.25rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
-  border: 1px solid var(--border-medium);
+  border: var(--border-width-default) solid var(--border-medium);
   background: var(--bg-primary);
   color: var(--text-primary);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
   box-shadow: none; /* No decorative shadows */
 }
 
@@ -4310,7 +4310,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     gap: 1rem; /* Compact spacing */
     margin-top: 8px;
     padding-top: 8px;
-    border-top: 1px solid var(--border-light);
+    border-top: var(--border-width-default) solid var(--border-light);
   }
 
   .profile-identity .profile-card--hybrid .profile-stats .stat-item {

@@ -103,7 +103,7 @@ html[data-galaxy="true"] .modal-content {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: var(--border-width-default) solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
   padding: 1.25rem;
 }

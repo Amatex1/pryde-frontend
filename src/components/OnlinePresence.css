@@ -7,10 +7,10 @@
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   background: rgba(255, 215, 0, 0.1);
   color: var(--text-light);
 }
@@ -47,7 +47,7 @@
   top: calc(100% + 10px);
   right: 0;
   min-width: 280px;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   padding: 1rem;
   z-index: 1000;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -59,7 +59,7 @@
   align-items: center;
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+  border-bottom: var(--border-width-default) solid rgba(255, 215, 0, 0.2);
 }
 
 .dropdown-header h4 {
@@ -80,7 +80,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .btn-close:hover {
@@ -104,12 +104,12 @@
 .search-input {
   width: 100%;
   padding: 10px 15px;
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
+  border: var(--border-width-default) solid var(--border-light);
+  border-radius: var(--radius-md);
   background: var(--background-light);
   color: var(--text-main);
   font-size: 14px;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .search-input:focus {
@@ -150,9 +150,9 @@
   align-items: center;
   gap: 12px;
   padding: 12px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   margin-bottom: 8px;
 }
 
@@ -193,7 +193,7 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  border: 2px solid var(--card-surface);
+  border: var(--border-width-strong) solid var(--card-surface);
 }
 
 .status-dot.online {

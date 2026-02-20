@@ -46,7 +46,7 @@
   animation: emojiPickerEnter 0.2s ease-out;
 
   /* Subtle border for definition */
-  border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
+  border: var(--border-width-default) solid var(--border-subtle, rgba(0, 0, 0, 0.08));
 }
 
 @keyframes emojiPickerEnter {
@@ -66,7 +66,7 @@
   align-items: center;
   margin-bottom: 0.9375rem;
   padding-bottom: 0.625rem;
-  border-bottom: 2px solid var(--border-light);
+  border-bottom: var(--border-width-strong) solid var(--border-light);
 }
 
 .emoji-picker-header h4 {
@@ -105,7 +105,7 @@
 
 .emoji-button {
   background: var(--bg-light);
-  border: 2px solid transparent;
+  border: var(--border-width-strong) solid transparent;
   border-radius: 0.75rem;
   padding: 1.125rem;
   font-size: 2rem;

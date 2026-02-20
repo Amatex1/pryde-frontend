@@ -2,14 +2,14 @@
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  border: 2px solid var(--border-default);
+  border: var(--border-width-strong) solid var(--border-default);
   background: var(--bg-card);
   font-size: 1.5rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   box-shadow: var(--shadow-soft);
 }
 

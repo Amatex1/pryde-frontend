@@ -155,7 +155,7 @@ body {
 .surface,
 .panel {
   background: var(--bg-card);
-  border: 1px solid var(--border-soft);
+  border: var(--border-width-default) solid var(--border-soft);
   box-shadow: var(--shadow-card);
 }
 

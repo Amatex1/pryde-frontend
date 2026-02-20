@@ -31,7 +31,7 @@
   padding: var(--space-8);
   border-radius: var(--radius-card);
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   box-shadow: var(--shadow-medium);
 }
 
@@ -55,13 +55,13 @@
 
 .message.success {
   background: var(--color-success-soft);
-  border: 1px solid var(--color-success);
+  border: var(--border-width-default) solid var(--color-success);
   color: var(--color-success);
 }
 
 .message.error {
   background: var(--color-danger-soft);
-  border: 1px solid var(--color-danger);
+  border: var(--border-width-default) solid var(--color-danger);
   color: var(--color-danger);
 }
 
@@ -99,7 +99,7 @@
   color: var(--text-main);
   font-size: var(--font-size-sm);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
 }
 
 .file-input:hover {
@@ -122,14 +122,14 @@
 
 .btn-save {
   padding: 1rem 2rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: none;
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   background: var(--gradient-primary);
   color: white;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   align-self: flex-start;
 }
 
@@ -156,7 +156,7 @@
   justify-content: space-between;
   padding: 1.5rem;
   background: var(--soft-lavender);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   gap: 1rem;
 }
 
@@ -242,8 +242,8 @@
   align-items: center;
   padding: 16px;
   background: var(--card-surface);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
+  border: var(--border-width-default) solid var(--border-light);
+  border-radius: var(--radius-md);
   margin-bottom: 12px;
   gap: 16px;
 }
@@ -287,7 +287,7 @@
 .quiet-mode-subtoggle-section {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
 }
 
 .subtoggle-header {
@@ -299,7 +299,7 @@
 
 .notification-item.subtoggle {
   background: var(--card-surface);
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
   margin-left: 1rem;
   padding: 1rem 1.25rem;
 }
@@ -331,14 +331,14 @@
 
 .btn-test {
   padding: 0.875rem 1.5rem;
-  border-radius: 12px;
-  border: 2px solid var(--pryde-purple);
+  border-radius: var(--radius-md);
+  border: var(--border-width-strong) solid var(--pryde-purple);
   background: var(--soft-lavender);
   color: var(--pryde-purple);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   align-self: flex-start;
 }
 
@@ -386,12 +386,12 @@
 
 .btn-remove {
   padding: 0.875rem 1.25rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: none;
   background: rgba(255, 107, 107, 0.15);
   color: var(--error);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   font-size: var(--font-size-xl);
   line-height: var(--line-height-tight);
   flex-shrink: 0;
@@ -405,12 +405,12 @@
 
 .btn-add-link {
   padding: 0.875rem 1.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: 2px dashed var(--pryde-purple);
   background: var(--soft-lavender);
   color: var(--pryde-purple);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   font-weight: var(--font-weight-semibold);
   width: 100%;
 }
@@ -512,7 +512,7 @@
 
   .settings-card {
     padding: 1.5rem;
-    border-radius: 16px;
+    border-radius: var(--radius-lg);
   }
 
   .settings-title {
@@ -543,7 +543,7 @@
 
 /* Account Management Section */
 .danger-zone {
-  border-top: 2px solid var(--border-light);
+  border-top: var(--border-width-strong) solid var(--border-light);
   padding-top: 2.5rem;
   margin-top: 3rem;
 }
@@ -559,10 +559,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--card-surface);
-  border: 1px solid var(--border-light);
-  transition: all 0.3s ease;
+  border: var(--border-width-default) solid var(--border-light);
+  transition: all var(--transition-normal);
 }
 
 .action-item:hover {
@@ -613,11 +613,11 @@
 .btn-delete-account,
 .btn-install-app {
   padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: none;
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   white-space: nowrap;
 }
 
@@ -644,7 +644,7 @@
 .btn-deactivate {
   background: var(--soft-lavender);
   color: var(--pryde-purple);
-  border: 1px solid var(--pryde-purple);
+  border: var(--border-width-default) solid var(--pryde-purple);
 }
 
 .btn-deactivate:hover {
@@ -656,7 +656,7 @@
 .btn-delete-account {
   background: rgba(255, 107, 107, 0.1);
   color: var(--error);
-  border: 1px solid var(--error);
+  border: var(--border-width-default) solid var(--error);
 }
 
 .btn-delete-account:hover {
@@ -669,13 +669,13 @@
 /* Danger button for 2FA disable */
 .btn-danger {
   padding: 0.75rem 1.5rem;
-  border-radius: 12px;
-  border: 1px solid #ff6b6b;
+  border-radius: var(--radius-md);
+  border: var(--border-width-default) solid #ff6b6b;
   background: rgba(255, 107, 107, 0.1);
   color: #ff6b6b;
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   white-space: nowrap;
 }
 
@@ -699,11 +699,11 @@
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
   background: var(--background-light);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   text-decoration: none;
   color: var(--text-main);
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
+  transition: all var(--transition-normal);
+  border: var(--border-width-strong) solid transparent;
 }
 
 .legal-link:hover {
@@ -726,7 +726,7 @@
   align-items: center;
   justify-content: center;
   background: var(--soft-lavender);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 .legal-info h3 {
@@ -745,7 +745,7 @@
 .legal-arrow {
   font-size: var(--font-size-2xl);
   color: var(--pryde-purple);
-  transition: transform 0.3s ease;
+  transition: transform var(--transition-normal);
 }
 
 .legal-link:hover .legal-arrow {
@@ -769,7 +769,7 @@
 .security-settings-link {
   background: linear-gradient(135deg, #EDEAFF 0%, #F7F7F7 100%);
   padding: 20px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   margin-bottom: 20px;
 }
 
@@ -871,8 +871,8 @@
 /* Verification Request Styles */
 .verification-info {
   background: linear-gradient(135deg, rgba(108, 92, 231, 0.05) 0%, rgba(9, 132, 227, 0.05) 100%);
-  border: 2px solid var(--soft-lavender);
-  border-radius: 16px;
+  border: var(--border-width-strong) solid var(--soft-lavender);
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
 }
 
@@ -884,13 +884,13 @@
 
 .btn-verification {
   padding: 1rem 2rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: none;
   background: var(--pryde-purple);
   color: white;
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
   font-size: var(--font-size-base);
 }
@@ -906,8 +906,8 @@
   gap: 1.5rem;
   align-items: flex-start;
   background: rgba(255, 193, 7, 0.1);
-  border: 2px solid rgba(255, 193, 7, 0.3);
-  border-radius: 12px;
+  border: var(--border-width-strong) solid rgba(255, 193, 7, 0.3);
+  border-radius: var(--radius-md);
   padding: 1.5rem;
 }
 
@@ -950,8 +950,8 @@
   gap: 1.5rem;
   align-items: flex-start;
   background: rgba(9, 132, 227, 0.1);
-  border: 2px solid rgba(9, 132, 227, 0.3);
-  border-radius: 12px;
+  border: var(--border-width-strong) solid rgba(9, 132, 227, 0.3);
+  border-radius: var(--radius-md);
   padding: 1.5rem;
 }
 
@@ -1008,8 +1008,8 @@
   gap: 0.75rem;
   padding: 1rem 1.25rem;
   background: var(--card-surface);
-  border: 2px solid var(--border-light);
-  border-radius: 12px;
+  border: var(--border-width-strong) solid var(--border-light);
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: border-color 0.2s ease, background 0.2s ease;
 }

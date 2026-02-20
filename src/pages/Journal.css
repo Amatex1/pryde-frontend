@@ -35,14 +35,14 @@
 
 .btn-drafts {
   padding: var(--space-3) var(--space-4);
-  border: 2px solid var(--pryde-purple);
+  border: var(--border-width-strong) solid var(--pryde-purple);
   border-radius: var(--radius-pill);
   background: var(--card-surface);
   color: var(--text-main);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
 }
 
 .btn-drafts:hover {
@@ -70,14 +70,14 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
 }
 
 .journal-create-form {
   background: var(--bg-card);
   padding: var(--space-6);
   border-radius: var(--radius-card);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   box-shadow: var(--shadow-soft);
   margin-bottom: var(--space-6);
 }
@@ -86,14 +86,14 @@
 .journal-body-input {
   width: 100%;
   padding: var(--space-4);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   border-radius: var(--radius-md);
   font-size: 14px;
   margin-bottom: var(--space-4);
   font-family: inherit;
   background: var(--bg-card);
   color: var(--text-main);
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
 }
 
 .journal-title-input:focus,
@@ -124,8 +124,8 @@
 .journal-visibility-select,
 .journal-mood-select {
   padding: 0.5rem 1rem;
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border: var(--border-width-default) solid var(--border-subtle);
+  border-radius: var(--radius-sm);
   font-size: 0.9rem;
   background: var(--bg-card);
   color: var(--text-main);
@@ -134,7 +134,7 @@
 .btn-submit-journal {
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 1rem;
   cursor: pointer;
   margin-left: auto;
@@ -149,8 +149,8 @@
 .journal-card {
   background: var(--card-surface, white);
   padding: 1.5rem;
-  border-radius: 12px;
-  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  border: var(--border-width-default) solid var(--border-subtle);
 }
 
 .journal-card-header {
@@ -181,7 +181,7 @@
   gap: 1rem;
   align-items: center;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
 }
 
 .journal-visibility,
@@ -243,7 +243,7 @@
   padding: 0.5rem 1rem;
   background: transparent;
   color: var(--text-muted);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.9rem;

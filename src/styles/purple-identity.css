@@ -71,7 +71,7 @@
 [data-theme="dark"] .navbar-search,
 [data-theme="dark"] .search-bar {
   background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border: var(--border-width-default) solid rgba(255, 255, 255, 0.2) !important;
   color: white !important;
 }
 
@@ -96,7 +96,7 @@
 [data-theme="light"] .app-header,
 [data-theme="light"] .top-nav {
   background: var(--color-surface, #FFFFFF) !important;
-  border-bottom: 1px solid var(--color-border, #E5E7EB) !important;
+  border-bottom: var(--border-width-default) solid var(--color-border, #E5E7EB) !important;
   color: var(--color-text, #1E1E26) !important;
 }
 
@@ -142,7 +142,7 @@
 [data-theme="light"] .navbar-search,
 [data-theme="light"] .search-bar {
   background: var(--color-surface-muted, #F5F5F5) !important;
-  border: 1px solid var(--color-border, #E5E7EB) !important;
+  border: var(--border-width-default) solid var(--color-border, #E5E7EB) !important;
   color: var(--color-text, #1E1E26) !important;
 }
 
@@ -184,7 +184,7 @@
 .feed-post,
 .post-container {
   background: var(--color-surface) !important;
-  border: 1px solid var(--border-post, var(--border-default)) !important;
+  border: var(--border-width-default) solid var(--border-post, var(--border-default)) !important;
 }
 
 /* Composer: Match posts exactly */
@@ -192,7 +192,7 @@
 .create-post,
 .post-composer {
   background: var(--color-surface) !important;
-  border: 1px solid var(--border-post, var(--border-default)) !important;
+  border: var(--border-width-default) solid var(--border-post, var(--border-default)) !important;
 }
 
 /* Remove any hardcoded backgrounds */
@@ -220,7 +220,7 @@
 .poll-option-button,
 .poll-option-result {
   background: rgba(108, 92, 231, 0.04) !important;
-  border: 1px solid rgba(108, 92, 231, 0.15) !important;
+  border: var(--border-width-default) solid rgba(108, 92, 231, 0.15) !important;
   box-shadow: none !important;
 }
 
@@ -249,7 +249,7 @@
 /* Divider between post content and comments */
 .comments-section,
 .post-comments {
-  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-top: var(--border-width-default) solid rgba(255, 255, 255, 0.06) !important;
   margin-top: 16px !important;
   padding-top: 16px !important;
 }
@@ -263,7 +263,7 @@
 .comment-input-box,
 .reply-input-box {
   background: transparent !important;
-  border: 1px solid var(--border-post) !important;
+  border: var(--border-width-default) solid var(--border-post) !important;
   border-radius: 12px !important;
   padding: 12px !important;
 }
@@ -272,7 +272,7 @@
 .comment-input,
 .reply-input {
   background: var(--color-surface) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border: var(--border-width-default) solid rgba(0, 0, 0, 0.08) !important;
   border-radius: 10px !important;
 }
 

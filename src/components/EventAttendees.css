@@ -33,7 +33,7 @@
   display: flex;
   gap: 8px;
   margin-bottom: 20px;
-  border-bottom: 2px solid var(--border-color);
+  border-bottom: var(--border-width-strong) solid var(--border-color);
 }
 
 .attendees-tab {
@@ -75,7 +75,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   text-decoration: none;
   transition: all 0.2s;
 }

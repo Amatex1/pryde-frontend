@@ -16,7 +16,7 @@
 .empty-feed {
   padding: 2rem;
   text-align: center;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 .non-member-prompt p,
@@ -28,14 +28,14 @@
 
 .group-composer {
   padding: 1rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 .group-composer textarea {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid var(--border-color, #333);
-  border-radius: 8px;
+  border: var(--border-width-default) solid var(--border-color, #333);
+  border-radius: var(--radius-sm);
   background: var(--bg-tertiary, #252525);
   color: var(--text-primary, #fff);
   resize: vertical;
@@ -59,7 +59,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
 .btn-remove-media {
@@ -94,7 +94,7 @@
 
 .group-post {
   padding: 1rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 .group-post.locked {
@@ -122,7 +122,7 @@
 
 .post-image {
   max-width: 100%;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
 .post-actions {
@@ -130,14 +130,14 @@
   gap: 0.5rem;
   margin-top: 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid var(--border-color, #333);
+  border-top: var(--border-width-default) solid var(--border-color, #333);
 }
 
 .post-edit-form textarea {
   width: 100%;
   padding: 0.5rem;
-  border: 1px solid var(--border-color, #333);
-  border-radius: 8px;
+  border: var(--border-width-default) solid var(--border-color, #333);
+  border-radius: var(--radius-sm);
   background: var(--bg-tertiary, #252525);
   color: var(--text-primary, #fff);
 }

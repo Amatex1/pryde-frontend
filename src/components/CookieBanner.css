@@ -68,7 +68,7 @@
   color: var(--accent-primary);
   border: none;
   padding: 0.6rem 1.5rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;

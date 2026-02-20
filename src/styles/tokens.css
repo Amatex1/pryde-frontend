@@ -18,6 +18,26 @@
   --border-post: 1px solid rgba(255, 255, 255, 0.08);
 
   /* ========================================
+     RADIUS SCALE (single source of truth)
+     ======================================== */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* ========================================
+     BORDER WIDTHS
+     ======================================== */
+  --border-width-default: 1px;
+  --border-width-strong: 2px;
+
+  /* ========================================
+     TRANSITIONS
+     ======================================== */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+
+  /* ========================================
      NEUTRAL COLOR SYSTEM
      UI chrome uses ONLY these colors
      ======================================== */
@@ -210,7 +230,7 @@
 .btn-secondary {
   background: transparent;
   color: var(--color-text);
-  border: 1px solid var(--color-border-strong);
+  border: var(--border-width-default) solid var(--color-border-strong);
   border-radius: var(--input-radius);
   padding: var(--space-3) var(--space-5);
   font-weight: var(--font-weight-medium);

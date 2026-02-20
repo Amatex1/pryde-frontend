@@ -20,7 +20,7 @@
 .app-header,
 .top-nav {
   background: var(--bg-card);
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: var(--border-width-default) solid var(--border-light);
   box-shadow: none; /* Remove all shadows */
   backdrop-filter: none; /* Remove blur effects */
 }
@@ -43,7 +43,7 @@
   color: var(--text-secondary);
   border: none;
   box-shadow: none;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition: color var(--transition-fast), background var(--transition-fast);
 }
 
 .navbar-item:hover,
@@ -78,7 +78,7 @@
 .unread-badge {
   background: var(--pryde-purple);
   color: white;
-  border: 2px solid var(--bg-card);
+  border: var(--border-width-strong) solid var(--bg-card);
   box-shadow: none; /* No glow */
 }
 
@@ -89,9 +89,9 @@
 .navbar-search,
 .search-bar {
   background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
   box-shadow: none;
-  transition: border-color 0.15s ease;
+  transition: border-color var(--transition-fast);
 }
 
 .navbar-search:focus,
@@ -114,8 +114,8 @@
 .navbar-dropdown,
 .dropdown-menu {
   background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
+  border: var(--border-width-default) solid var(--border-light);
+  border-radius: var(--radius-sm);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle depth only */
 }
 
@@ -130,7 +130,7 @@
   background: transparent;
   color: var(--text-primary);
   border: none;
-  transition: background 0.15s ease;
+  transition: background var(--transition-fast);
 }
 
 .dropdown-item:hover {
@@ -147,7 +147,7 @@
 
 .mobile-nav {
   background: var(--bg-card);
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
   box-shadow: none;
 }
 

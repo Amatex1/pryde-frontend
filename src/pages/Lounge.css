@@ -37,7 +37,7 @@
   padding: var(--space-4);
   background: var(--bg-card);
   border-radius: var(--radius-card);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   box-shadow: var(--shadow-soft);
   margin-bottom: var(--space-4);
 }
@@ -100,7 +100,7 @@
 .lounge-error {
   padding: var(--space-4);
   background: var(--color-danger-soft);
-  border: 1px solid var(--color-danger);
+  border: var(--border-width-default) solid var(--color-danger);
   border-radius: var(--radius-md);
   color: var(--color-danger);
   margin-bottom: var(--space-4);
@@ -118,7 +118,7 @@
   padding: var(--space-4);
   background: var(--bg-card);
   border-radius: var(--radius-card);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   box-shadow: var(--shadow-soft);
   margin-bottom: var(--space-4);
   display: flex;
@@ -146,7 +146,7 @@
   display: flex;
   gap: 0.75rem;
   padding: 1rem;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   transition: background 0.2s;
   position: relative;
   overflow: visible;
@@ -184,7 +184,7 @@
   object-fit: cover;
   cursor: pointer;
   flex-shrink: 0;
-  border: 2px solid var(--border-light);
+  border: var(--border-width-strong) solid var(--border-light);
   transition: transform 0.2s;
 }
 
@@ -231,8 +231,8 @@
   display: inline-block;
   padding: 0.25rem 0.5rem;
   background: #fef3c7;
-  border: 1px solid #fbbf24;
-  border-radius: 8px;
+  border: var(--border-width-default) solid #fbbf24;
+  border-radius: var(--radius-sm);
   font-size: var(--font-size-xs);
   color: #92400e;
   margin-bottom: 0.5rem;
@@ -255,8 +255,8 @@
 .lounge-action-btn {
   padding: 0.25rem 0.75rem;
   background: var(--soft-lavender);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
+  border: var(--border-width-default) solid var(--border-light);
+  border-radius: var(--radius-md);
   font-size: var(--font-size-xs);
   color: var(--pryde-purple);
   cursor: pointer;
@@ -323,8 +323,8 @@
   top: 100%;
   right: 0;
   background: var(--bg-card, #1E293B);
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
-  border-radius: 8px;
+  border: var(--border-width-default) solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-sm);
   padding: 0.5rem 0;
   min-width: 160px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -380,8 +380,8 @@
 
 .delete-modal {
   background: var(--bg-card, #1E293B);
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
-  border-radius: 12px;
+  border: var(--border-width-default) solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-md);
   padding: 1.5rem;
   max-width: 350px;
   width: 90%;
@@ -409,7 +409,7 @@
 .delete-modal-actions button {
   width: 100%;
   padding: 0.75rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: none;
   font-size: var(--font-size-base);
   cursor: pointer;
@@ -441,7 +441,7 @@
 .delete-modal .btn-cancel {
   background: transparent;
   color: var(--text-muted, #64748B);
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border: var(--border-width-default) solid var(--border-color, rgba(255, 255, 255, 0.1));
 }
 
 .delete-modal .btn-cancel:hover {
@@ -465,7 +465,7 @@
 .lounge-input-container {
   background: var(--card-surface);
   border-radius: 24px;
-  border: 2px solid var(--border-light);
+  border: var(--border-width-strong) solid var(--border-light);
   padding: 1rem;
   margin-bottom: 1rem;
 }
@@ -480,8 +480,8 @@
 .lounge-cw-field {
   flex: 1;
   padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
+  border: var(--border-width-default) solid var(--border-light);
+  border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   background: var(--soft-lavender);
   color: var(--text-main);
@@ -490,8 +490,8 @@
 .lounge-cw-close {
   padding: 0.5rem;
   background: #fee;
-  border: 1px solid #fcc;
-  border-radius: 8px;
+  border: var(--border-width-default) solid #fcc;
+  border-radius: var(--radius-sm);
   color: #c33;
   cursor: pointer;
   font-weight: bold;
@@ -525,8 +525,8 @@
 .lounge-cw-btn {
   padding: 0.75rem 1rem;
   background: var(--soft-lavender);
-  border: 2px solid var(--border-light);
-  border-radius: 12px;
+  border: var(--border-width-strong) solid var(--border-light);
+  border-radius: var(--radius-md);
   color: var(--pryde-purple);
   font-weight: var(--font-weight-bold);
   cursor: pointer;
@@ -546,8 +546,8 @@
 .lounge-gif-btn {
   padding: 0.75rem 1rem;
   background: var(--bg);
-  border: 2px solid var(--border-subtle);
-  border-radius: 12px;
+  border: var(--border-width-strong) solid var(--border-subtle);
+  border-radius: var(--radius-md);
   color: var(--color-primary);
   font-weight: var(--font-weight-bold);
   cursor: pointer;
@@ -568,14 +568,14 @@
   position: relative;
   max-width: 300px;
   margin-bottom: 0.75rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 
 .lounge-gif-preview img {
   width: 100%;
   display: block;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 .lounge-gif-remove {
@@ -604,7 +604,7 @@
 .lounge-message-gif {
   margin-top: 0.5rem;
   max-width: 300px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   display: block;
   clear: both;
@@ -617,7 +617,7 @@
   width: 100%;
   height: auto;
   display: block;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   max-height: 250px;
   /* Ensure image doesn't extend beyond its container */
   position: relative;
@@ -627,8 +627,8 @@
 .lounge-input {
   flex: 1;
   padding: 0.875rem 1rem;
-  border: 2px solid var(--border-light);
-  border-radius: 16px;
+  border: var(--border-width-strong) solid var(--border-light);
+  border-radius: var(--radius-lg);
   font-size: var(--font-size-base);
   background: var(--bg-light);
   color: var(--text-main);
@@ -649,7 +649,7 @@
   padding: 0.875rem 2rem;
   background: linear-gradient(135deg, var(--pryde-purple), var(--electric-blue));
   border: none;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   color: white;
   font-weight: var(--font-weight-bold);
   cursor: pointer;
@@ -752,7 +752,7 @@
   .lounge-header {
     padding: 0.75rem;
     margin-bottom: 0.75rem;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
   }
 
   .lounge-title {
@@ -764,7 +764,7 @@
   }
 
   .lounge-messages {
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     padding: 0.5rem;
     margin-bottom: 0.5rem;
     /* Add padding for fixed composer at bottom */
@@ -786,7 +786,7 @@
      ======================================== */
 
   .lounge-input-container {
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     padding: 0.5rem;
     /* Position just above the navbar with safe area */
     margin-bottom: calc(var(--mobile-nav-height, 64px) + env(safe-area-inset-bottom, 0px) + 8px);
@@ -814,7 +814,7 @@
     line-height: var(--line-height-normal);
     min-height: 44px;
     max-height: 120px;
-    border-radius: 10px;
+    border-radius: var(--input-radius);
     border-width: 1px;
     flex: none;
   }
@@ -833,7 +833,7 @@
     padding: 0 12px;
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-semibold);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     height: 34px;
     min-height: 34px;
     border-width: 1px;
@@ -855,7 +855,7 @@
     padding: 0 16px;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     height: 34px;
     min-height: 34px;
   }
@@ -890,7 +890,7 @@
 
 .online-users-modal {
   background: var(--card-surface);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   max-width: 500px;
   width: 100%;
   max-height: 80vh;
@@ -904,7 +904,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: var(--border-width-default) solid var(--border-light);
 }
 
 .modal-header h2 {
@@ -953,7 +953,7 @@
   gap: 1rem;
   padding: 0.75rem;
   background: var(--bg-light);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   transition: background 0.2s ease;
 }
 
@@ -993,7 +993,7 @@
   width: 12px;
   height: 12px;
   background: var(--color-success);
-  border: 2px solid var(--card-surface);
+  border: var(--border-width-strong) solid var(--card-surface);
   border-radius: 50%;
 }
 
@@ -1021,7 +1021,7 @@
   display: inline-flex;
   align-items: center;
   padding: 0.125rem 0.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
@@ -1048,7 +1048,7 @@
   background: var(--gradient-primary);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-sm);
   cursor: pointer;
@@ -1073,7 +1073,7 @@
   margin: var(--space-2) 0;
   background: var(--bg-card);
   border-radius: var(--radius-card);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   animation: fadeIn 0.2s ease;
 }
 
@@ -1131,7 +1131,7 @@
 
 [data-theme="dark"] .online-users-modal {
   background: #1a1a2e !important;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: var(--border-width-default) solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
@@ -1158,7 +1158,7 @@
 
 [data-theme="dark"] .online-user-item {
   background: rgba(108, 92, 231, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: var(--border-width-default) solid rgba(255, 255, 255, 0.05);
 }
 
 [data-theme="dark"] .online-user-item:hover {
@@ -1199,7 +1199,7 @@
   border-radius: 50%;
   object-fit: cover;
   cursor: pointer;
-  border: 2px solid var(--border-light);
+  border: var(--border-width-strong) solid var(--border-light);
   transition: transform 0.2s;
 }
 
@@ -1219,7 +1219,7 @@
   font-size: var(--font-size-base);
   border-radius: 50%;
   cursor: pointer;
-  border: 2px solid var(--border-light);
+  border: var(--border-width-strong) solid var(--border-light);
   transition: transform 0.2s;
 }
 

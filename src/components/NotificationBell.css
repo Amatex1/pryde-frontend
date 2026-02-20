@@ -7,14 +7,14 @@
   width: 2.8125rem;
   height: 2.8125rem;
   border-radius: 50%;
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
   background: #5a4bd8;
   font-size: 1.5rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   box-shadow: 0 0.125rem 0.5rem #6c5ce71a;
 }
 
@@ -56,11 +56,11 @@
   min-width: 280px;
   max-height: min(500px, 70vh);
   background: var(--card-surface);
-  border: 2px solid var(--border-light);
+  border: var(--border-width-strong) solid var(--border-light);
   border-radius: 1rem;
   box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.15);
   z-index: 2100;
-  animation: dropdownSlideIn 0.3s ease;
+  animation: dropdownSlideIn var(--transition-normal);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -79,7 +79,7 @@
 
 .notification-header {
   padding: 1rem 1.25rem;
-  border-bottom: 2px solid var(--border-light);
+  border-bottom: var(--border-width-strong) solid var(--border-light);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -139,7 +139,7 @@
 
 .notification-item {
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: var(--border-width-default) solid var(--border-light);
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;

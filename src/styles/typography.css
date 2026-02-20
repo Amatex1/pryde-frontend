@@ -223,10 +223,10 @@ body:not([data-density]) {
 
 .density-toggle button {
   padding: 6px 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: var(--font-size-sm);
   background: transparent;
-  border: 1px solid currentColor;
+  border: var(--border-width-default) solid currentColor;
   opacity: 0.7;
   cursor: pointer;
   transition: opacity 180ms ease, font-weight 180ms ease;

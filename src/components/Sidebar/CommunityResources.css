@@ -61,7 +61,7 @@
   text-decoration: none;
   padding: 6px 0;
   line-height: 1.45;
-  transition: color 0.15s ease;
+  transition: color var(--transition-fast);
 }
 
 .community-resources-link:hover {

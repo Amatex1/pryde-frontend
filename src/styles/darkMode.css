@@ -310,7 +310,7 @@
 
 [data-theme="dark"] .activity-item {
   background: var(--card-surface);
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
 }
 
 [data-theme="dark"] .activity-user {
@@ -351,7 +351,7 @@
 
 [data-theme="dark"] .stat-card {
   background: var(--card-surface);
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
 }
 
 /* Feed Page */
@@ -391,7 +391,7 @@
 /* Security Settings - 2FA Warning Box */
 [data-theme="dark"] .security-status-card {
   background: rgba(108, 92, 231, 0.15) !important;
-  border: 1px solid var(--pryde-purple) !important;
+  border: var(--border-width-default) solid var(--pryde-purple) !important;
 }
 
 [data-theme="dark"] .security-status-card strong,
@@ -528,7 +528,7 @@
 [data-theme="dark"] .btn-danger {
   background: rgba(255, 107, 107, 0.15);
   /* color: #ff6b6b; */
-  border: 1px solid #ff6b6b;
+  border: var(--border-width-default) solid #ff6b6b;
 }
 
 [data-theme="dark"] .btn-danger:hover {

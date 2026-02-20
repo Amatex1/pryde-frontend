@@ -43,7 +43,7 @@
 .legal-content,
 .support-content {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: var(--border-width-default) solid var(--color-border);
   border-radius: var(--card-radius);
   padding: var(--space-8);
 }
@@ -67,7 +67,7 @@
   margin-bottom: var(--space-6);
   color: var(--color-text);
   padding-bottom: var(--space-4);
-  border-bottom: 2px solid var(--color-border);
+  border-bottom: var(--border-width-strong) solid var(--color-border);
 }
 
 @media (max-width: 767px) {
@@ -131,7 +131,7 @@
 .support-page a {
   color: var(--color-brand);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
+  border-bottom: var(--border-width-default) solid transparent;
   transition: border-color 0.2s ease;
 }
 
@@ -150,7 +150,7 @@
   gap: var(--space-4);
   margin-bottom: var(--space-6);
   padding-bottom: var(--space-4);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: var(--border-width-default) solid var(--color-border);
   flex-wrap: wrap;
 }
 
@@ -234,7 +234,7 @@
 .legal-toc,
 .support-toc {
   background: var(--color-surface-muted);
-  border: 1px solid var(--color-border);
+  border: var(--border-width-default) solid var(--color-border);
   border-radius: var(--card-radius);
   padding: var(--space-5);
   margin-bottom: var(--space-6);
@@ -298,7 +298,7 @@
 .contact-form-textarea {
   width: 100%;
   padding: var(--space-3);
-  border: 1px solid var(--color-border);
+  border: var(--border-width-default) solid var(--color-border);
   border-radius: var(--input-radius);
   background: var(--color-surface);
   color: var(--color-text);
@@ -350,7 +350,7 @@
   margin-top: var(--space-8);
   padding: var(--space-3) var(--space-5);
   background: var(--color-surface-muted);
-  border: 1px solid var(--color-border);
+  border: var(--border-width-default) solid var(--color-border);
   border-radius: var(--button-radius);
   color: var(--color-text);
   text-decoration: none;

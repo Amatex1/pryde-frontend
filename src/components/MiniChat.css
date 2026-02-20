@@ -10,7 +10,7 @@
   display: flex;
   flex-direction: column;
   z-index: 1002; /* Higher than mobile sidebar toggle */
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .mini-chat-header {
@@ -62,7 +62,7 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  border: 2px solid white;
+  border: var(--border-width-strong) solid white;
 }
 
 .status-dot.online {
@@ -106,7 +106,7 @@
   align-items: center;
   justify-content: center;
   font-size: 18px;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .mini-chat-controls button:hover {
@@ -160,8 +160,8 @@
 .message-date-header span {
   padding: 4px 12px;
   background: var(--background-light);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
+  border: var(--border-width-default) solid var(--border-light);
+  border-radius: var(--radius-md);
   font-size: 11px;
   font-weight: 600;
   color: var(--text-muted);
@@ -228,7 +228,7 @@
 
 .message-content {
   padding: 10px 14px;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   font-size: 14px;
   word-wrap: break-word;
   max-width: none !important;
@@ -264,7 +264,7 @@
 
 .mini-chat-input {
   padding: 12px;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
   display: flex;
   gap: 8px;
   background: var(--card-surface);
@@ -273,7 +273,7 @@
 .mini-chat-input input {
   flex: 1;
   padding: 10px 14px;
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
   border-radius: 20px;
   background: var(--background-light);
   color: var(--text-main);
@@ -294,7 +294,7 @@
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .mini-chat-input button:hover:not(:disabled) {
@@ -322,7 +322,7 @@
   padding: 0 16px;
   cursor: pointer;
   z-index: 1002; /* Higher than mobile sidebar toggle */
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .mini-chat-minimized:hover {
@@ -375,7 +375,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .btn-close-mini:hover {

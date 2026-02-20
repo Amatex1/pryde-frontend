@@ -33,7 +33,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 12px;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: var(--border-width-default) solid var(--border-subtle);
 }
 
 .sheet-title {
@@ -60,7 +60,7 @@
 .comment-sheet-input-form {
   padding-bottom: 12px;
   margin-bottom: 8px;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: var(--border-width-default) solid var(--border-subtle);
 }
 
 .comment-sheet-input-form .comment-input-wrapper {
@@ -73,7 +73,7 @@
   flex: 1;
   padding: 8px 12px;
   border-radius: 20px;
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   background: var(--bg-subtle);
   font-size: 14px;
 }
@@ -107,8 +107,8 @@
 .comment-sheet-input-form .btn-gif,
 .comment-sheet-reply-form .btn-gif {
   padding: 4px 10px;
-  border-radius: 16px;
-  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  border: var(--border-width-default) solid var(--border-subtle);
   background: var(--bg-subtle);
   color: var(--text-primary);
   font-size: 12px;
@@ -128,7 +128,7 @@
   position: relative;
   margin-top: 8px;
   max-width: 200px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
 }
 
@@ -162,8 +162,8 @@
   padding: 12px;
   margin-bottom: 8px;
   background: var(--bg-subtle);
-  border-radius: 8px;
-  border: 1px solid var(--accent-primary);
+  border-radius: var(--radius-sm);
+  border: var(--border-width-default) solid var(--accent-primary);
 }
 
 .comment-sheet-reply-form .reply-input-header {
@@ -194,7 +194,7 @@
   flex: 1;
   padding: 8px 12px;
   border-radius: 20px;
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-default) solid var(--border-subtle);
   background: var(--bg-primary);
   font-size: 14px;
 }

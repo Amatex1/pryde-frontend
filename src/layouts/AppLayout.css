@@ -27,7 +27,7 @@
   grid-template-columns: repeat(5, 1fr);
 
   /* Visual styling */
-  border-top: 1px solid var(--border-subtle, #e0e0e0);
+  border-top: var(--border-width-default) solid var(--border-subtle, #e0e0e0);
   background: var(--surface-primary, #ffffff);
 
   /* Safe area for notched devices */
@@ -48,7 +48,7 @@
   color: var(--text-secondary, #616161);
   gap: 2px;
   padding: 6px 4px;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
   -webkit-tap-highlight-color: transparent;
   position: relative;
 }
@@ -98,7 +98,7 @@
   min-width: 16px;
   height: 16px;
   padding: 0 4px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--accent, #6C5CE7);
   color: #fff;
   font-size: 10px;
@@ -188,7 +188,7 @@
   z-index: 200; /* Above FAB (100) and scroll-to-top (99), below modals (1000+) */
   display: flex;
   flex-direction: column;
-  animation: slideUp 0.3s ease;
+  animation: slideUp var(--transition-normal);
 }
 
 @keyframes slideUp {
@@ -209,7 +209,7 @@
   padding: 0 12px;
   /* Push below safe area on notched devices */
   padding-top: env(safe-area-inset-top, 0);
-  border-bottom: 1px solid var(--border-subtle, #e0e0e0);
+  border-bottom: var(--border-width-default) solid var(--border-subtle, #e0e0e0);
   background: var(--surface-primary, #ffffff);
   position: sticky;
   top: 0;
@@ -227,8 +227,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  transition: background-color 0.15s ease;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -253,7 +253,7 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -299,7 +299,7 @@
   gap: 12px;
   align-items: center;
   padding: 12px 0;
-  border-top: 1px solid var(--border-subtle, #e0e0e0);
+  border-top: var(--border-width-default) solid var(--border-subtle, #e0e0e0);
   margin-top: 16px;
 }
 
@@ -310,8 +310,8 @@
   font-size: 24px;
   padding: 8px;
   cursor: pointer;
-  border-radius: 8px;
-  transition: background-color 0.15s ease;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast);
   -webkit-tap-highlight-color: transparent;
   display: flex;
   align-items: center;
@@ -330,8 +330,8 @@
 .mobile-privacy-selector {
   margin-left: auto;
   padding: 6px 12px;
-  border-radius: 16px;
-  border: 1px solid var(--border-subtle, #e0e0e0);
+  border-radius: var(--radius-lg);
+  border: var(--border-width-default) solid var(--border-subtle, #e0e0e0);
   background: var(--surface-primary, #ffffff);
   font-size: 13px;
   color: var(--text-primary, #2b2b2b);
@@ -348,7 +348,7 @@
 
 .feed-mobile .feed-tabs {
   margin: 0 8px 8px 8px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 .feed-mobile .posts-list {
@@ -359,7 +359,7 @@
 }
 
 .feed-mobile .post-card {
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 12px;
   margin: 0;
 }

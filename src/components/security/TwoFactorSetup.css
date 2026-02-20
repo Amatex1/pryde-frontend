@@ -14,7 +14,7 @@
 
 .modal-content {
   background: white;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 30px;
   max-width: 500px;
   width: 90%;
@@ -72,8 +72,8 @@
 .qr-code-container {
   background: white;
   padding: 20px;
-  border-radius: 8px;
-  border: 2px solid #E0E0E0;
+  border-radius: var(--radius-sm);
+  border: var(--border-width-strong) solid #E0E0E0;
   margin: 15px 0;
 }
 

@@ -13,13 +13,13 @@
 
 .gif-picker {
   background: var(--bg-card);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   width: min(600px, 90vw);
   max-height: 80vh;
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-strong);
-  animation: slideUp 0.3s ease;
+  animation: slideUp var(--transition-normal);
 }
 
 @keyframes fadeIn {
@@ -43,7 +43,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  border-bottom: 2px solid var(--border-subtle);
+  border-bottom: var(--border-width-strong) solid var(--border-subtle);
 }
 
 .gif-picker-header h4 {
@@ -79,14 +79,14 @@
   display: flex;
   gap: 0.5rem;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: var(--border-width-default) solid var(--border-subtle);
 }
 
 .gif-search-input {
   flex: 1;
   padding: 0.75rem 1rem;
-  border: 2px solid var(--border-subtle);
-  border-radius: 12px;
+  border: var(--border-width-strong) solid var(--border-subtle);
+  border-radius: var(--radius-md);
   background: var(--bg);
   color: var(--text-main);
   font-size: 1rem;
@@ -104,7 +104,7 @@
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-size: 1.25rem;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -119,7 +119,7 @@
   gap: 0.5rem;
   padding: 1rem 1.5rem;
   overflow-x: auto;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: var(--border-width-default) solid var(--border-subtle);
   scrollbar-width: thin;
 }
 
@@ -135,7 +135,7 @@
 .gif-category-btn {
   padding: 0.5rem 1rem;
   border-radius: 20px;
-  border: 2px solid var(--border-subtle);
+  border: var(--border-width-strong) solid var(--border-subtle);
   background: var(--bg);
   color: var(--text-main);
   font-size: 0.875rem;
@@ -177,7 +177,7 @@
 
 .gif-item {
   aspect-ratio: 1;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -207,7 +207,7 @@
 
 .gif-picker-footer {
   padding: 0.75rem 1.5rem;
-  border-top: 1px solid var(--border-subtle);
+  border-top: var(--border-width-default) solid var(--border-subtle);
   text-align: center;
   font-size: 0.75rem;
   color: var(--text-muted);

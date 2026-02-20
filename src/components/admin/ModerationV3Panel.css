@@ -28,7 +28,7 @@
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1rem;
-  border-bottom: 2px solid var(--border-color, #ddd);
+  border-bottom: var(--border-width-strong) solid var(--border-color, #ddd);
   padding-bottom: 0.5rem;
 }
 
@@ -55,7 +55,7 @@
 }
 .refresh-btn {
   padding: 0.5rem 1rem;
-  border: 1px solid var(--border-color, #ddd);
+  border: var(--border-width-default) solid var(--border-color, #ddd);
   background: white;
   border-radius: 4px;
   cursor: pointer;
@@ -65,8 +65,8 @@
 
 /* Event Card */
 .event-card {
-  border: 1px solid var(--border-color, #ddd);
-  border-radius: 8px;
+  border: var(--border-width-default) solid var(--border-color, #ddd);
+  border-radius: var(--radius-sm);
   padding: 1rem;
   background: var(--card-bg, white);
 }
@@ -115,14 +115,14 @@
 /* Simulate Section */
 .simulate-section { max-width: 600px; }
 .sim-note { color: #666; font-size: 0.9rem; margin-bottom: 1rem; }
-.sim-input { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color, #ddd); border-radius: 4px; resize: vertical; }
+.sim-input { width: 100%; padding: 0.75rem; border: var(--border-width-default) solid var(--border-color, #ddd); border-radius: 4px; resize: vertical; }
 .sim-btn { margin-top: 1rem; padding: 0.75rem 1.5rem; background: #17a2b8; color: white; border: none; border-radius: 4px; cursor: pointer; }
 .sim-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-.sim-result { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color, #ddd); }
+.sim-result { margin-top: 1.5rem; padding-top: 1rem; border-top: var(--border-width-default) solid var(--border-color, #ddd); }
 
 /* Mode Section */
 .mode-section { max-width: 400px; }
-.mode-display { display: flex; align-items: center; gap: 1rem; padding: 1.5rem; border-radius: 8px; margin: 1rem 0; }
+.mode-display { display: flex; align-items: center; gap: 1rem; padding: 1.5rem; border-radius: var(--radius-sm); margin: 1rem 0; }
 .mode-display.live { background: #d4edda; }
 .mode-display.shadow { background: #fff3cd; }
 .mode-icon { font-size: 2rem; }
@@ -133,7 +133,7 @@
 .mode-toggle-btn.shadow { background: #28a745; color: white; }
 .mode-stats { margin-top: 2rem; }
 .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 0.5rem; }
-.stat-item { text-align: center; padding: 1rem; background: var(--card-bg, #f8f9fa); border-radius: 8px; }
+.stat-item { text-align: center; padding: 1rem; background: var(--card-bg, #f8f9fa); border-radius: var(--radius-sm); }
 .stat-value { display: block; font-size: 1.5rem; font-weight: 700; }
 .stat-label { font-size: 0.85rem; color: #666; }
 
@@ -155,8 +155,8 @@
 /* V4: Observation Banner */
 .v4-observe-banner {
   background: linear-gradient(135deg, #fff3cd, #ffeeba);
-  border: 1px solid #ffc107;
-  border-radius: 8px;
+  border: var(--border-width-default) solid #ffc107;
+  border-radius: var(--radius-sm);
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   color: #856404;
@@ -177,7 +177,7 @@
   align-items: center;
   padding: 1rem;
   background: var(--card-bg, #f8f9fa);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   margin-bottom: 1rem;
 }
 .current-phase .phase-number {
@@ -199,8 +199,8 @@
 /* V4: Read-Only Notice */
 .v4-read-only-notice {
   background: #e7f3ff;
-  border: 1px solid #b8daff;
-  border-radius: 8px;
+  border: var(--border-width-default) solid #b8daff;
+  border-radius: var(--radius-sm);
   padding: 1rem;
   margin-bottom: 1rem;
 }
@@ -220,8 +220,8 @@
   flex-direction: column;
   align-items: center;
   padding: 0.75rem;
-  border-radius: 8px;
-  border: 2px solid #ddd;
+  border-radius: var(--radius-sm);
+  border: var(--border-width-strong) solid #ddd;
   transition: all 0.2s;
 }
 .action-item.enabled {
@@ -250,8 +250,8 @@
   align-items: center;
   gap: 1rem;
   padding: 0.75rem;
-  border-radius: 8px;
-  border: 1px solid #ddd;
+  border-radius: var(--radius-sm);
+  border: var(--border-width-default) solid #ddd;
   background: #f8f9fa;
 }
 .phase-item.current {
@@ -281,7 +281,7 @@
 /* V4: Rollout Guidance */
 .rollout-guidance {
   background: #f0f7ff;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   padding: 1rem;
 }
 .rollout-guidance h4 { margin-bottom: 0.5rem; }
@@ -299,7 +299,7 @@
 .mode-rollout-summary {
   background: #f8f9fa;
   padding: 0.75rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   margin-bottom: 1rem;
 }
 .mode-rollout-summary p { margin: 0.25rem 0; font-size: 0.9rem; }
@@ -308,8 +308,8 @@
 /* V5: Observation Guidance */
 .v5-observation-guidance {
   background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-  border: 1px solid #90caf9;
-  border-radius: 12px;
+  border: var(--border-width-default) solid #90caf9;
+  border-radius: var(--radius-md);
   padding: 1rem 1.25rem;
   margin-bottom: 1rem;
 }
@@ -350,8 +350,8 @@
 /* V5: Read-Only Banner */
 .v5-read-only-banner {
   background: #e7f3ff;
-  border: 1px solid #b8daff;
-  border-radius: 8px;
+  border: var(--border-width-default) solid #b8daff;
+  border-radius: var(--radius-sm);
   padding: 1rem;
   margin: 1rem 0;
   text-align: center;
@@ -611,7 +611,7 @@
   margin-top: 0.75rem;
   padding: 0.6rem 0.75rem;
   background: #f3eeff;
-  border: 1px solid #d0b8ff;
+  border: var(--border-width-default) solid #d0b8ff;
   border-radius: 6px;
   font-size: 0.85rem;
 }

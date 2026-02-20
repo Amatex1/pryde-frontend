@@ -39,7 +39,7 @@
   background-image: none !important;
   border-radius: 14px;
   box-shadow: none !important;
-  border: 1px solid var(--border-soft);
+  border: var(--border-width-default) solid var(--border-soft);
 }
 
 /* Kill decorative gradients everywhere by default */
@@ -61,7 +61,7 @@
   );
   backdrop-filter: blur(8px);
   box-shadow: none;
-  border-bottom: 1px solid var(--border-soft);
+  border-bottom: var(--border-width-default) solid var(--border-soft);
 }
 
 /* Reduce header noise */

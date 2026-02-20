@@ -1,7 +1,7 @@
 .email-verification-banner {
   background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 152, 0, 0.15));
-  border: 2px solid rgba(255, 193, 7, 0.4);
-  border-radius: 16px;
+  border: var(--border-width-strong) solid rgba(255, 193, 7, 0.4);
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
   margin: 1rem 0;
   animation: slideDown 0.3s ease-out;
@@ -61,7 +61,7 @@
 .btn-resend,
 .btn-dismiss {
   padding: 0.75rem 1.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: none;
   font-weight: 600;
   cursor: pointer;
@@ -88,7 +88,7 @@
 .btn-dismiss {
   background: rgba(255, 255, 255, 0.2);
   color: var(--text-main);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: var(--border-width-default) solid rgba(0, 0, 0, 0.1);
 }
 
 .btn-dismiss:hover {

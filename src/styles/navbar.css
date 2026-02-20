@@ -6,7 +6,7 @@
 .navbar {
   height: var(--navbar-height);
   background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: var(--border-width-default) solid var(--color-border);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -89,7 +89,7 @@
 .navbar-search input {
   width: 100%;
   padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-border);
+  border: var(--border-width-default) solid var(--color-border);
   border-radius: var(--input-radius);
   background: var(--color-surface-muted);
   color: var(--color-text);
@@ -186,7 +186,7 @@
   height: 8px;
   background: var(--color-danger);
   border-radius: 50%;
-  border: 2px solid var(--color-surface);
+  border: var(--border-width-strong) solid var(--color-surface);
 }
 
 /* ========================================
@@ -245,7 +245,7 @@
   height: 36px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--color-border);
+  border: var(--border-width-strong) solid var(--color-border);
 }
 
 .navbar-profile-name {

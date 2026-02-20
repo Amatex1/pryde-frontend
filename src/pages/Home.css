@@ -185,7 +185,7 @@
   font-weight: 500;
   text-decoration: none;
   transition: all 0.2s ease;
-  border: 1px solid var(--color-border-strong);
+  border: var(--border-width-default) solid var(--color-border-strong);
   cursor: pointer;
 }
 
@@ -265,7 +265,7 @@
 
 .why-card {
   background: var(--color-surface);
-  border: 1px solid rgba(108, 92, 231, 0.15);
+  border: var(--border-width-default) solid rgba(108, 92, 231, 0.15);
   border-radius: 20px;
   padding: 32px 26px;
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
@@ -281,7 +281,7 @@
   background: rgba(18, 16, 38, 0.55);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(108, 92, 231, 0.22);
+  border: var(--border-width-default) solid rgba(108, 92, 231, 0.22);
 }
 
 [data-galaxy="true"] .why-card:hover {
@@ -326,16 +326,16 @@
 .home-trust {
   padding: 36px 24px;
   background: var(--color-surface);
-  border-top: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
+  border-top: var(--border-width-default) solid var(--color-border);
+  border-bottom: var(--border-width-default) solid var(--color-border);
 }
 
 [data-galaxy="true"] .home-trust {
   background: rgba(12, 10, 28, 0.68);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: var(--border-width-default) solid rgba(255, 255, 255, 0.07);
+  border-bottom: var(--border-width-default) solid rgba(255, 255, 255, 0.07);
 }
 
 .trust-inner {

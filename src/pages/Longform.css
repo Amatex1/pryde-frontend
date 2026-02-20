@@ -29,14 +29,14 @@
 
 .btn-drafts {
   padding: 0.75rem 1.5rem;
-  border: 2px solid var(--pryde-purple);
-  border-radius: 8px;
+  border: var(--border-width-strong) solid var(--pryde-purple);
+  border-radius: var(--radius-sm);
   background: var(--card-surface);
   color: var(--text-main);
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .btn-drafts:hover {
@@ -60,16 +60,16 @@
 .btn-create-longform {
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .longform-create-form {
   background: var(--card-surface, white);
   padding: 2rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   margin-bottom: 2rem;
 }
 
@@ -77,8 +77,8 @@
 .longform-body-input {
   width: 100%;
   padding: 1rem;
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
+  border: var(--border-width-default) solid var(--border-light);
+  border-radius: var(--radius-sm);
   font-size: 1rem;
   margin-bottom: 1rem;
   font-family: inherit;
@@ -112,8 +112,8 @@
 
 .longform-visibility-select {
   padding: 0.5rem 1rem;
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
+  border: var(--border-width-default) solid var(--border-light);
+  border-radius: var(--radius-sm);
   font-size: 0.9rem;
   background: var(--bg-input, var(--card-surface, white));
   color: var(--text-main, inherit);
@@ -122,7 +122,7 @@
 .btn-submit-longform {
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 1rem;
   cursor: pointer;
 }
@@ -136,8 +136,8 @@
 .longform-card {
   background: var(--card-surface, white);
   padding: 2rem;
-  border-radius: 12px;
-  transition: transform 0.3s ease;
+  border-radius: var(--radius-md);
+  transition: transform var(--transition-normal);
 }
 
 .longform-card:hover {
@@ -176,7 +176,7 @@
   gap: 1rem;
   align-items: center;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
 }
 
 .longform-read-time,

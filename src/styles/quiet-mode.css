@@ -178,7 +178,7 @@ html {
   .surface {
     border-radius: 14px;
     box-shadow: none;
-    border: 1px solid rgba(255,255,255,0.06);
+    border: var(--border-width-default) solid rgba(255,255,255,0.06);
   }
 
   /* Messages */
@@ -189,7 +189,7 @@ html {
   .message-bubble {
     max-width: 82%;
     padding: 10px 14px;
-    border-radius: 16px;
+    border-radius: var(--radius-lg);
   }
 
   /* Groups */
@@ -428,7 +428,7 @@ html {
 [data-quiet-visuals="true"] .card,
 [data-quiet-visuals="true"] .panel {
   box-shadow: none;
-  border: 1px solid var(--border-subtle, rgba(127, 127, 127, 0.15));
+  border: var(--border-width-default) solid var(--border-subtle, rgba(127, 127, 127, 0.15));
 }
 
 /* Disable decorative motion */
@@ -575,7 +575,7 @@ html {
 }
 
 [data-quiet-visuals="true"] .notification-item {
-  transition: background-color 0.15s ease !important;
+  transition: background-color var(--transition-fast) !important;
 }
 
 /* ==================================================
@@ -595,7 +595,7 @@ html {
 
 /* End of feed message - clearer stopping point */
 [data-quiet="true"] .end-of-feed {
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
   padding-top: var(--space-4, 1.5rem);
   margin-top: var(--space-4, 1.5rem);
 }

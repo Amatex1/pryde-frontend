@@ -62,7 +62,7 @@ select:focus-visible {
   background: var(--pryde-purple, #6C5CE7);
   color: white;
   padding: 12px 24px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-weight: 600;
   z-index: 10000;
   text-decoration: none;
@@ -369,7 +369,7 @@ textarea:disabled,
     background: var(--surface-1, var(--bg-card, #ffffff));
     padding-top: 12px;
     margin-top: 12px;
-    border-top: 1px solid var(--border-light, #e5e5e5);
+    border-top: var(--border-width-default) solid var(--border-light, #e5e5e5);
     /* Ensure actions are always reachable above safe area */
     padding-bottom: env(safe-area-inset-bottom, 0);
   }
@@ -456,7 +456,7 @@ textarea:disabled {
 
   button,
   .btn {
-    border: 2px solid currentColor;
+    border: var(--border-width-strong) solid currentColor;
   }
 
   a {

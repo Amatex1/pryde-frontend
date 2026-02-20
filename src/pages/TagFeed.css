@@ -7,7 +7,7 @@
 .tag-feed-header {
   /* Glossy background applied via .glossy class */
   padding: 2rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   text-align: center;
   margin-bottom: 2rem;
 }
@@ -31,7 +31,7 @@
 
 .tag-feed-stats {
   padding-top: 1rem;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
   color: var(--pryde-purple);
   font-weight: 600;
 }
@@ -54,15 +54,15 @@
 .post-input {
   width: 100%;
   padding: 1rem;
-  border: 2px solid var(--border-light);
-  border-radius: 12px;
+  border: var(--border-width-strong) solid var(--border-light);
+  border-radius: var(--radius-md);
   background: var(--bg-light);
   color: var(--text-main);
   font-size: 1rem;
   resize: vertical;
   min-height: 100px;
   font-family: inherit;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   margin-bottom: 1rem;
 }
 
@@ -74,14 +74,14 @@
 
 .btn-post {
   padding: 0.75rem 2rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: none;
   background: var(--gradient-primary);
   color: white;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .btn-post:hover:not(:disabled) {
@@ -103,7 +103,7 @@
 .post-card {
   background: white;
   padding: 1.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 .post-header {
@@ -171,7 +171,7 @@
     0 1px 4px rgba(108, 92, 231, 0.2); /* Reduced glow */
   position: relative;
   margin-left: 0.25rem; /* Reduced from 0.3rem */
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .verified-badge::before {
@@ -223,7 +223,7 @@
 
 .post-images img {
   width: 100%;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   object-fit: cover;
 }
 
@@ -231,18 +231,18 @@
   display: flex;
   gap: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
   margin-top: 1rem;
 }
 
 .btn-action {
   padding: 0.5rem 1rem;
   background: transparent;
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.9rem;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   text-decoration: none;
   color: var(--text-main);
 }
@@ -263,17 +263,17 @@
   gap: 0.5rem;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
 }
 
 .post-tag {
   padding: 0.25rem 0.75rem;
   background: var(--soft-lavender);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   font-size: 0.85rem;
   text-decoration: none;
   color: var(--pryde-purple);
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .post-tag:hover {
@@ -299,7 +299,7 @@
 .tag-migration-stub {
   text-align: center;
   padding: 3rem 2rem;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   max-width: 500px;
   margin: 0 auto;
 }
@@ -353,12 +353,12 @@
 .btn-go-to-feed {
   display: inline-block;
   padding: 0.875rem 2rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--gradient-primary);
   color: white;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   font-size: 1rem;
 }
 
@@ -374,10 +374,10 @@
   align-items: center;
   gap: 1rem;
   padding: 1.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   margin-bottom: 1.5rem;
   background: linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(162, 155, 254, 0.1));
-  border: 2px solid var(--pryde-purple);
+  border: var(--border-width-strong) solid var(--pryde-purple);
 }
 
 .migration-banner-icon {

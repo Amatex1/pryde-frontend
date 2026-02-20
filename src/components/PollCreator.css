@@ -1,7 +1,7 @@
 .poll-creator {
   background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border: var(--border-width-default) solid var(--border-color);
+  border-radius: var(--radius-md);
   padding: 20px;
   margin: 15px 0;
 }
@@ -59,12 +59,12 @@
 .poll-field select {
   width: 100%;
   padding: 10px 12px;
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
+  border: var(--border-width-strong) solid var(--border-color);
+  border-radius: var(--radius-sm);
   background: var(--bg-primary);
   color: var(--text-primary);
   font-size: 0.95rem;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .poll-field input[type="text"]:focus,
@@ -95,14 +95,14 @@
 
 .remove-option-btn {
   background: transparent;
-  border: 2px solid var(--border-default);
+  border: var(--border-width-strong) solid var(--border-default);
   color: var(--text-muted);
   width: 36px;
   height: 36px;
   border-radius: 6px;
   font-size: 1.5rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -122,12 +122,12 @@
   border: 2px dashed var(--border-color);
   color: var(--pryde-purple);
   padding: 12px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   width: 100%;
   cursor: pointer;
   font-weight: 600;
   font-size: 0.95rem;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
 }
@@ -160,7 +160,7 @@
   flex-direction: column;
   gap: 12px;
   padding-top: 10px;
-  border-top: 1px solid var(--border-color);
+  border-top: var(--border-width-default) solid var(--border-color);
 }
 
 .poll-checkbox {

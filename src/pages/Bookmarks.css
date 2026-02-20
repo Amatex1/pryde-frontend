@@ -34,7 +34,7 @@
   text-align: center;
   padding: 60px 20px;
   background: linear-gradient(135deg, #EDEAFF 0%, #F7F7F7 100%);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   margin-top: 20px;
 }
 
@@ -62,10 +62,10 @@
 
 .bookmark-card {
   background: var(--bg-card)FFF;
-  border: 1px solid #E0E0E0;
-  border-radius: 12px;
+  border: var(--border-width-default) solid #E0E0E0;
+  border-radius: var(--radius-md);
   padding: 20px;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   cursor: pointer;
 }
 
@@ -95,7 +95,7 @@
   height: 48px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #EDEAFF;
+  border: var(--border-width-strong) solid #EDEAFF;
 }
 
 .author-info {
@@ -120,7 +120,7 @@
   font-size: 1.3rem;
   cursor: pointer;
   padding: 8px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   transition: all 0.2s ease;
 }
 
@@ -149,7 +149,7 @@
 
 .post-image {
   width: 100%;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   object-fit: cover;
   max-height: 200px;
 }
@@ -159,7 +159,7 @@
   justify-content: space-between;
   align-items: center;
   padding-top: 12px;
-  border-top: 1px solid #E0E0E0;
+  border-top: var(--border-width-default) solid #E0E0E0;
 }
 
 .post-date {

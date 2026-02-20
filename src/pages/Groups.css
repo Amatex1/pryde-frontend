@@ -18,7 +18,7 @@
 .group-header {
   position: relative;
   padding: 2rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   text-align: center;
   margin-bottom: 2rem;
   /* Reserve minimum height to prevent layout shift */
@@ -144,7 +144,7 @@
   align-items: center;
   gap: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
   color: var(--pryde-purple);
   font-weight: var(--font-weight-semibold);
   /* Fixed height for stats row */
@@ -154,7 +154,7 @@
 .visibility-badge {
   background: var(--soft-lavender);
   padding: 0.25rem 0.75rem;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   font-size: var(--font-size-sm);
 }
 
@@ -175,14 +175,14 @@
 /* Phase 5B: Fixed button dimensions - consistent sizing */
 .btn-join {
   padding: 0.75rem 2rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: none;
   background: var(--gradient-primary);
   color: white;
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-base);
   cursor: pointer;
-  transition: background 0.3s ease, box-shadow 0.3s ease;
+  transition: background var(--transition-normal), box-shadow var(--transition-normal);
   /* Fixed dimensions to prevent layout shift */
   min-width: 140px;
   height: 44px;
@@ -199,13 +199,13 @@
 
 .btn-leave {
   padding: 0.5rem 1.5rem;
-  border-radius: 8px;
-  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  border: var(--border-width-default) solid var(--border-light);
   background: transparent;
   color: var(--text-muted);
   font-size: var(--font-size-sm);
   cursor: pointer;
-  transition: border-color 0.3s ease, color 0.3s ease;
+  transition: border-color var(--transition-normal), color var(--transition-normal);
   /* Fixed dimensions */
   min-width: 120px;
   height: 40px;
@@ -224,8 +224,8 @@
 /* Phase 5A: Pending request button */
 .btn-pending {
   padding: 0.75rem 2rem;
-  border-radius: 12px;
-  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  border: var(--border-width-default) solid var(--border-light);
   background: var(--bg-secondary);
   color: var(--text-muted);
   font-weight: var(--font-weight-semibold);
@@ -246,7 +246,7 @@
   padding: 0.5rem 1rem;
   background: linear-gradient(135deg, #ffd700, #ffb347);
   color: #333;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-sm);
   height: 40px;
@@ -257,7 +257,7 @@
   display: inline-flex;
   align-items: center;
   padding: 0.4rem 0.8rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-weight: var(--font-weight-medium);
   font-size: var(--font-size-sm);
   /* Fixed height to match other action items */
@@ -267,19 +267,19 @@
 .role-badge.member {
   background: linear-gradient(135deg, rgba(108, 92, 231, 0.15), rgba(108, 92, 231, 0.25));
   color: var(--pryde-purple);
-  border: 1px solid rgba(108, 92, 231, 0.3);
+  border: var(--border-width-default) solid rgba(108, 92, 231, 0.3);
 }
 
 .role-badge.moderator {
   background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(39, 174, 96, 0.25));
   color: #27ae60;
-  border: 1px solid rgba(46, 204, 113, 0.3);
+  border: var(--border-width-default) solid rgba(46, 204, 113, 0.3);
 }
 
 .join-prompt {
   text-align: center;
   padding: 2rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   margin-bottom: 2rem;
 }
 
@@ -307,15 +307,15 @@
 .group-composer .post-input {
   width: 100%;
   padding: 1rem;
-  border: 2px solid var(--border-light);
-  border-radius: 12px;
+  border: var(--border-width-strong) solid var(--border-light);
+  border-radius: var(--radius-md);
   background: var(--bg-light);
   color: var(--text-main);
   font-size: var(--font-size-base);
   resize: vertical;
   min-height: 60px;
   font-family: inherit;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   margin-bottom: 1rem;
 }
 
@@ -332,14 +332,14 @@
 
 .group-composer .btn-post {
   padding: 0.75rem 2rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: none;
   background: var(--gradient-primary);
   color: white;
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-base);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .group-composer .btn-post:hover:not(:disabled) {
@@ -367,7 +367,7 @@
 /* Post-card stacking context (inherits from Feed.css, add overrides here) */
 .group-posts .post-card {
   padding: 1.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   position: relative;
   overflow: visible; /* REQUIRED: Prevents header clipping */
 }
@@ -398,7 +398,7 @@
 .btn-unlock-post {
   padding: 0.4rem 0.6rem;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: var(--font-size-sm);
   transition: all 0.2s ease;
@@ -443,7 +443,7 @@
 
 .post-media-image {
   width: 100%;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   max-height: 400px;
   object-fit: cover;
 }
@@ -458,7 +458,7 @@
 
 .media-preview-item {
   position: relative;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
   aspect-ratio: 1;
 }
@@ -501,7 +501,7 @@
 .btn-add-image {
   padding: 0.6rem 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--bg-secondary);
   cursor: pointer;
   font-size: var(--font-size-xl);
@@ -522,7 +522,7 @@
 .edit-post-modal {
   background: var(--bg-card);
   padding: 2rem;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   width: 90%;
   max-width: 500px;
   max-height: 80vh;
@@ -537,8 +537,8 @@
 .edit-post-modal textarea {
   width: 100%;
   padding: 1rem;
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
+  border: var(--border-width-default) solid var(--border-light);
+  border-radius: var(--radius-sm);
   font-family: inherit;
   font-size: var(--font-size-base);
   resize: vertical;
@@ -574,8 +574,8 @@
 
 .btn-cancel {
   padding: 0.75rem 1.5rem;
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
+  border: var(--border-width-default) solid var(--border-light);
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
@@ -589,7 +589,7 @@
 .btn-submit {
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--gradient-primary);
   color: white;
   font-weight: var(--font-weight-semibold);
@@ -611,7 +611,7 @@
 .empty-state {
   text-align: center;
   padding: 3rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 .empty-state p {
@@ -632,8 +632,8 @@
 
 .btn-manage-members {
   padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 1px solid var(--pryde-purple);
+  border-radius: var(--radius-sm);
+  border: var(--border-width-default) solid var(--pryde-purple);
   background: transparent;
   color: var(--pryde-purple);
   font-size: var(--font-size-sm);
@@ -649,7 +649,7 @@
 .member-modal {
   background: var(--bg-card);
   padding: 0;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   width: 90%;
   max-width: 450px;
   max-height: 70vh;
@@ -663,7 +663,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: var(--border-width-default) solid var(--border-light);
 }
 
 .member-modal .modal-header h2 {
@@ -703,7 +703,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   transition: background 0.2s ease;
 }
 
@@ -853,8 +853,8 @@
 
 .btn-mod-log {
   padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  border: var(--border-width-default) solid var(--border-light);
   background: transparent;
   font-size: var(--font-size-sm);
   cursor: pointer;
@@ -869,7 +869,7 @@
 .mod-log-modal {
   background: var(--bg-card);
   padding: 0;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   width: 90%;
   max-width: 500px;
   max-height: 80vh;
@@ -897,7 +897,7 @@
   flex-wrap: wrap;
   gap: 0.5rem;
   padding: 0.75rem;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: var(--border-width-default) solid var(--border-light);
   align-items: center;
 }
 
@@ -950,7 +950,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
   background: transparent;
   font-size: var(--font-size-lg);
   cursor: pointer;
@@ -966,7 +966,7 @@
 .notification-settings-modal {
   background: var(--bg-card);
   padding: 0;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   width: 90%;
   max-width: 400px;
   overflow: hidden;
@@ -977,7 +977,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: var(--border-width-default) solid var(--border-light);
 }
 
 .notification-settings-modal .modal-header h2 {
@@ -1008,7 +1008,7 @@
   align-items: flex-start;
   gap: 0.75rem;
   padding: 0.75rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   margin-bottom: 0.5rem;
   transition: background 0.2s ease;
@@ -1057,7 +1057,7 @@
 .settings-note {
   margin: 1.25rem 0 0 0;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
   color: var(--text-muted);
   font-size: var(--font-size-sm);
   line-height: var(--line-height-normal);
@@ -1175,7 +1175,7 @@
 
   .group-header {
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
   }
 
   .group-header h1 {
@@ -1194,7 +1194,7 @@
 
   .group-composer {
     padding: 1rem;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
   }
 
   .group-posts .post-card {
@@ -1218,7 +1218,7 @@
   gap: 0.5rem;
   padding: 0.75rem 0;
   margin-top: 0.5rem;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
 }
 
 .post-actions-bar .action-btn {
@@ -1230,7 +1230,7 @@
   background: transparent;
   color: var(--text-muted);
   font-size: var(--font-size-sm);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -1243,7 +1243,7 @@
 .post-comments {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -1251,7 +1251,7 @@
 
 .comment-input-box {
   padding: 1rem;
-  border-top: 1px solid var(--border-light);
+  border-top: var(--border-width-default) solid var(--border-light);
   margin-top: 0.5rem;
 }
 
@@ -1265,12 +1265,12 @@
   flex: 1;
   padding: 0.75rem 1rem;
   border-radius: 20px;
-  border: 1px solid var(--border-light);
+  border: var(--border-width-default) solid var(--border-light);
   outline: none;
   font-size: var(--font-size-sm);
   color: var(--text-main);
   background: var(--background-light);
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .comment-input:focus {
@@ -1295,8 +1295,8 @@
 
 .btn-gif {
   padding: 0.375rem 0.75rem;
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
+  border: var(--border-width-default) solid var(--border-light);
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--text-muted);
   font-size: var(--font-size-xs);
@@ -1319,7 +1319,7 @@
 
 .comment-gif-preview img {
   width: 100%;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
 .btn-remove-gif {
@@ -1348,7 +1348,7 @@
   padding: 12px 16px;
   background: rgba(108, 92, 231, 0.05);
   border-left: 3px solid var(--pryde-purple);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
 }
 
 .reply-input-wrapper {
@@ -1362,8 +1362,8 @@
   flex: 1;
   height: 36px;
   padding: 0 12px;
-  border-radius: 999px;
-  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  border: var(--border-width-default) solid var(--border-light);
   font-size: var(--font-size-sm);
   color: var(--text-main);
   background: var(--card-surface);
@@ -1378,7 +1378,7 @@
 .reply-submit-btn {
   height: 32px;
   padding: 0 12px;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   border: none;
   background: var(--pryde-purple);
   color: white;
@@ -1434,7 +1434,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s ease;
+  transition: background var(--transition-fast);
   flex-shrink: 0;
 }
 
@@ -1457,8 +1457,8 @@
   margin-top: 0.5rem;
   min-width: 11rem;
   background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border: var(--border-width-default) solid #e5e7eb;
+  border-radius: var(--radius-sm);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
   overflow: hidden;
@@ -1485,7 +1485,7 @@
   cursor: pointer;
   width: 100%;
   text-align: left;
-  transition: background 0.15s ease;
+  transition: background var(--transition-fast);
 }
 
 .dropdown-item:hover {

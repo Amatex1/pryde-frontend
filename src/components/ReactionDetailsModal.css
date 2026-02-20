@@ -29,7 +29,7 @@
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-strong);
-  animation: slideUp 0.3s ease;
+  animation: slideUp var(--transition-normal);
 }
 
 @keyframes slideUp {
@@ -45,7 +45,7 @@
 
 .reaction-modal-header {
   padding: 1.25rem 1.5rem;
-  border-bottom: 2px solid var(--border-subtle);
+  border-bottom: var(--border-width-strong) solid var(--border-subtle);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -85,7 +85,7 @@
   display: flex;
   gap: 0.5rem;
   padding: 1rem 1.5rem;
-  border-bottom: 2px solid var(--border-subtle);
+  border-bottom: var(--border-width-strong) solid var(--border-subtle);
   overflow-x: auto;
   flex-shrink: 0;
 }
@@ -102,7 +102,7 @@
 .reaction-tab {
   padding: 0.5rem 1rem;
   border-radius: 1.5rem;
-  border: 2px solid var(--border-subtle);
+  border: var(--border-width-strong) solid var(--border-subtle);
   background: var(--bg);
   color: var(--text-main);
   font-size: 0.9rem;

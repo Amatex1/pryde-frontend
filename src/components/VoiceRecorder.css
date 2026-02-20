@@ -20,8 +20,8 @@
 
 .voice-recorder {
   background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border: var(--border-width-default) solid var(--border-color);
+  border-radius: var(--radius-md);
   padding: 16px;
   display: flex;
   align-items: center;
@@ -92,7 +92,7 @@
 
 .recording-controls button {
   padding: 8px 14px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: none;
   font-size: 0.9rem;
   font-weight: 600;
@@ -125,7 +125,7 @@
 .cancel-btn {
   background: transparent;
   color: var(--text-muted);
-  border: 1px solid var(--border-color);
+  border: var(--border-width-default) solid var(--border-color);
 }
 
 .cancel-btn:hover {

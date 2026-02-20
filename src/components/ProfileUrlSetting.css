@@ -1,7 +1,7 @@
 .profile-url-setting {
   padding: 20px;
   background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   margin-bottom: 20px;
 }
 
@@ -21,8 +21,8 @@
   align-items: center;
   gap: 4px;
   background: var(--bg-primary);
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
+  border: var(--border-width-strong) solid var(--border-color);
+  border-radius: var(--radius-sm);
   padding: 8px 12px;
   transition: border-color 0.2s ease;
 }
@@ -114,7 +114,7 @@
   padding: 10px 20px;
   font-size: 0.9rem;
   background: transparent;
-  border: 1px solid var(--border-color);
+  border: var(--border-width-default) solid var(--border-color);
   color: var(--text-secondary);
 }
 

@@ -28,7 +28,7 @@
   color: var(--text-muted, #666);
   cursor: pointer;
   position: relative;
-  transition: background 0.15s ease;
+  transition: background var(--transition-fast);
 }
 
 .badge-overflow-indicator:hover,
@@ -50,7 +50,7 @@
   
   padding: 0.5rem;
   background: var(--bg-primary, #fff);
-  border: 1px solid var(--border-light, #e0e0e0);
+  border: var(--border-width-default) solid var(--border-light, #e0e0e0);
   border-radius: 0.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   

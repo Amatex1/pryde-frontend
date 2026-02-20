@@ -124,7 +124,7 @@
   .nav-item.active {
     background: rgba(255, 255, 255, 0.15) !important;
     color: white !important;
-    border-bottom: 2px solid white !important;
+    border-bottom: var(--border-width-strong) solid white !important;
   }
 
   /* Primary CTA: White on purple */
