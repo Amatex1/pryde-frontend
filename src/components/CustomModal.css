@@ -16,39 +16,39 @@
 .custom-modal-content {
   background: var(--bg-card);
   border-radius: 16px;
-  padding: 2rem;
+  padding: var(--space-6);
   max-width: 500px;
   width: 90%;
   box-shadow: var(--shadow-strong);
   animation: slideUp 0.3s ease-out;
-  border: 2px solid var(--accent-primary);
+  border: var(--border-width-strong) solid var(--accent-primary);
 }
 
 .custom-modal-title {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--accent-primary);
-  margin: 0 0 1rem 0;
+  margin: 0 0 var(--space-4) 0;
   text-align: center;
 }
 
 .custom-modal-message {
   font-size: 1rem;
   color: var(--text-primary);
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-5);
   line-height: 1.6;
   text-align: center;
 }
 
 .custom-modal-input {
   width: 100%;
-  padding: 0.875rem 1rem;
+  padding: var(--space-4) var(--space-4);
   border-radius: 12px;
-  border: 2px solid var(--border-subtle);
+  border: var(--border-width-strong) solid var(--color-border-subtle);
   background: var(--bg-surface);
   color: var(--text-primary);
   font-size: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-5);
   transition: all 0.3s ease;
   box-sizing: border-box;
 }
@@ -61,12 +61,12 @@
 
 .custom-modal-actions {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-4);
   justify-content: center;
 }
 
 .custom-modal-btn {
-  padding: 0.875rem 2rem;
+  padding: var(--space-3) var(--space-6);
   border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
@@ -77,7 +77,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid transparent;
+  border: var(--border-width-strong) solid transparent;
 }
 
 .custom-modal-btn-primary {
@@ -129,7 +129,7 @@
 /* Responsive */
 @media (max-width: 768px) {
   .custom-modal-content {
-    padding: 1.5rem;
+    padding: var(--space-5);
     width: 95%;
   }
 

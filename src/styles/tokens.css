@@ -17,6 +17,10 @@
   /* THE ONE TRUE BORDER - Only for post cards */
   --border-post: 1px solid rgba(255, 255, 255, 0.08);
 
+  /* Border widths */
+  --border-width-default: 1px;
+  --border-width-strong: 2px;
+
   /* ========================================
      NEUTRAL COLOR SYSTEM
      UI chrome uses ONLY these colors
