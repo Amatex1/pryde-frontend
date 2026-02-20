@@ -11,7 +11,7 @@ export const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
   (isProduction ? '/api' : `${BACKEND_URL}/api`);
 
-export const API_AUTH_URL = isProduction ? `${API_DOMAIN}/api` : `${BACKEND_URL}/api`;
+export const API_AUTH_URL = `${BACKEND_URL}/api`;
 
 export const SOCKET_URL =
   import.meta.env.VITE_SOCKET_URL || (isProduction ? API_DOMAIN : BACKEND_URL);

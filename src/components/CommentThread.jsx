@@ -142,6 +142,7 @@ const CommentThread = ({
                       value={editCommentText}
                       onChange={(e) => handleEditComment(comment._id, e.target.value)}
                       className="comment-edit-input"
+                      enterKeyHint="enter"
                       autoFocus
                     />
                     <div className="comment-edit-actions">
@@ -315,6 +316,7 @@ const CommentThread = ({
                               value={editCommentText}
                               onChange={(e) => handleEditComment(reply._id, e.target.value)}
                               className="comment-edit-input"
+                              enterKeyHint="enter"
                               autoFocus
                             />
                             <div className="comment-edit-actions">

@@ -2486,6 +2486,7 @@ function Profile() {
                               onKeyDown={(e) => handleEditPostKeyDown(e, post._id)}
                               className="edit-post-textarea"
                               placeholder="What's on your mind?"
+                              enterKeyHint="enter"
                               autoFocus
                             />
                             {/* Show existing media with delete buttons */}

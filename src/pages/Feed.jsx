@@ -1812,13 +1812,18 @@ function Feed() {
   }, [posts.length]); // Only run when posts are loaded
 
   const handleEditComment = useCallback((commentId, content) => {
-    setEditingCommentId(commentId);
+    // If already editing this comment, just update the text (typing/backspace)
+    if (editingCommentId === commentId) {
+      setEditCommentText(content);
+      return;
+    }
 
-    // Try to restore draft first, otherwise use original content
+    // Initialize the edit (clicked Edit button) - restore draft if available
+    setEditingCommentId(commentId);
     const draftKey = `edit-comment-${commentId}`;
     const localDraft = loadDraft(draftKey);
     setEditCommentText(localDraft || content);
-  }, []);
+  }, [editingCommentId]);
 
   // Auto-save comment edit draft
   useEffect(() => {

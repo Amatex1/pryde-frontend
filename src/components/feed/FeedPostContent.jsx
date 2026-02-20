@@ -61,6 +61,7 @@ const FeedPostContent = memo(function FeedPostContent({
             }}
             onKeyDown={(e) => onEditPostKeyDown(e, post._id)}
             className="post-edit-textarea"
+            enterKeyHint="enter"
             autoFocus
           />
           {/* Show existing media with delete buttons */}
