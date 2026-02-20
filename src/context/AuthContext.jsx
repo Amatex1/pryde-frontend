@@ -51,6 +51,7 @@ import {
   markUnauthenticated as markAuthStatusUnauthenticated
 } from '../state/authStatus';
 import { initializeSocket, disconnectSocket, disconnectSocketForLogout } from '../utils/socket';
+import { applyUserTheme } from '../utils/themeManager';
 
 const AuthContext = createContext(null);
 
@@ -240,6 +241,10 @@ export function AuthProvider({ children }) {
           logger.warn('[AuthContext] Socket initialization failed:', socketErr);
         }
 
+        // 🎨 THEME PERSISTENCE: Apply user's theme from backend settings
+        // This ensures theme persists across page refresh and devices
+        applyUserTheme(userData);
+
         return { authenticated: true, user: userData };
       } else {
         throw new Error('Invalid user data received');
@@ -339,6 +344,10 @@ export function AuthProvider({ children }) {
 
     // Broadcast login to other tabs
     broadcastLogin();
+
+    // 🎨 THEME PERSISTENCE: Apply user's theme from backend settings
+    // This ensures theme persists across login and devices
+    applyUserTheme(userData);
 
     // 🔍 AUTH VERIFICATION DIAGNOSTIC - Log login complete
     if (process.env.NODE_ENV === 'development') {
