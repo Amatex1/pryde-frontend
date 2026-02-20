@@ -362,19 +362,39 @@ export const toggleGalaxyMode = () => {
  * @param {Object} user - User object with privacy settings
  */
 export const applyUserTheme = (user) => {
-  if (!user) return;
+  console.log('[ThemeManager] applyUserTheme called with user:', user ? { 
+    hasPrivacySettings: !!user.privacySettings, 
+    privacySettings: user.privacySettings 
+  } : 'null');
+
+  if (!user) {
+    console.log('[ThemeManager] applyUserTheme: user is null, returning');
+    return;
+  }
 
   const settings = user.privacySettings;
-  if (!settings) return;
+  if (!settings) {
+    console.log('[ThemeManager] applyUserTheme: privacySettings is missing, returning');
+    return;
+  }
+
+  console.log('[ThemeManager] applyUserTheme: settings found:', settings);
 
   // THEME PERSISTENCE: Restore theme and galaxy from backend so Safari/cross-device
   // doesn't reset to defaults when localStorage is cleared
   if (settings.theme === 'light' || settings.theme === 'dark') {
+    console.log('[ThemeManager] applyUserTheme: Applying theme:', settings.theme);
     setTheme(settings.theme);
     localStorage.setItem('darkMode', settings.theme === 'dark' ? 'true' : 'false');
+  } else {
+    console.log('[ThemeManager] applyUserTheme: No theme in settings, settings.theme =', settings.theme);
   }
+  
   if (typeof settings.galaxyMode === 'boolean') {
+    console.log('[ThemeManager] applyUserTheme: Applying galaxyMode:', settings.galaxyMode);
     setGalaxyMode(settings.galaxyMode);
+  } else {
+    console.log('[ThemeManager] applyUserTheme: No galaxyMode in settings, settings.galaxyMode =', settings.galaxyMode, 'typeof:', typeof settings.galaxyMode);
   }
 
   // Apply quiet mode if user has it enabled

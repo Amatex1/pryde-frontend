@@ -317,13 +317,27 @@ export function AuthProvider({ children }) {
     sessionStorage.setItem('authReady', 'true');
     setError(null);
 
-    // Fetch CSRF token after login
+    // Fetch CSRF token after login AND get full user data with privacySettings
     try {
       logger.debug('[AuthContext] 🛡️ Fetching CSRF token after login...');
-      await api.get('/auth/me');
+      const meResponse = await api.get('/auth/me');
       logger.debug('[AuthContext] ✅ CSRF token obtained');
+      
+      // Update userData with full data from /auth/me (includes privacySettings)
+      const fullUserData = meResponse.data;
+      if (fullUserData && fullUserData._id) {
+        setUser(fullUserData);
+        setCurrentUser(fullUserData);
+        
+        // 🎨 THEME PERSISTENCE: Apply user's theme from backend settings
+        // This ensures theme persists across login and devices
+        applyUserTheme(fullUserData);
+      }
     } catch (csrfErr) {
       logger.warn('[AuthContext] ⚠️ CSRF token fetch failed (non-blocking):', csrfErr.message);
+      
+      // Still try to apply theme from login response userData
+      applyUserTheme(userData);
     }
 
     // 🔐 CRITICAL: Set isAuthReady AFTER CSRF token fetch (before socket init)
