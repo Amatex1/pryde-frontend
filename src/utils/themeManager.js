@@ -367,6 +367,16 @@ export const applyUserTheme = (user) => {
   const settings = user.privacySettings;
   if (!settings) return;
 
+  // THEME PERSISTENCE: Restore theme and galaxy from backend so Safari/cross-device
+  // doesn't reset to defaults when localStorage is cleared
+  if (settings.theme === 'light' || settings.theme === 'dark') {
+    setTheme(settings.theme);
+    localStorage.setItem('darkMode', settings.theme === 'dark' ? 'true' : 'false');
+  }
+  if (typeof settings.galaxyMode === 'boolean') {
+    setGalaxyMode(settings.galaxyMode);
+  }
+
   // Apply quiet mode if user has it enabled
   if (settings.quietModeEnabled) {
     setQuietMode(true);
