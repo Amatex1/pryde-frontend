@@ -155,36 +155,24 @@
 }
 
 /* ── REPLY CLUSTER — indented surface + gradient thread line ─────────── */
+/*
+ * .reply-cluster is added alongside .comment-replies in ReplyCluster.jsx.
+ * Layout/surface styles live on .comment-replies; the thread line is
+ * authored on .reply-cluster so it can be targeted precisely per the spec.
+ */
 
 .comments-v2 .comment-replies {
-  margin-left: 10px;
+  margin-left: 18px;
   margin-top: 10px;
   padding: 10px 10px 10px 18px;
   background: var(--color-surface-muted, #F4F5FA);
   border-radius: 12px;
-  /* Remove the old solid purple left border */
+  /* Remove the legacy solid purple left border */
   border-left: none !important;
   display: flex;
   flex-direction: column;
   gap: 8px;
   position: relative;
-}
-
-/* 2px gradient thread line */
-.comments-v2 .comment-replies::before {
-  content: '';
-  position: absolute;
-  left: 5px;
-  top: 12px;
-  bottom: 12px;
-  width: 2px;
-  background: linear-gradient(
-    to bottom,
-    var(--color-brand, #6C5CE7) 0%,
-    transparent 100%
-  );
-  border-radius: 2px;
-  pointer-events: none;
 }
 
 [data-theme="dark"] .comments-v2 .comment-replies {
@@ -201,6 +189,52 @@
   width: 26px;
   height: 26px;
   font-size: 11px;
+}
+
+/*
+ * Thread line — 2px, 4-stop gradient, breathing space top/bottom 8px.
+ * Uses .reply-cluster (the semantic class) rather than .comment-replies
+ * so the line only appears on reply containers, never on top-level cards.
+ *
+ * Token map:
+ *   var(--color-brand, #6C5CE7)  →  Pryde's primary accent
+ *   Fallback rgba values are identical in value so behaviour is consistent
+ *   even if tokens fail to load.
+ */
+.comments-v2 .reply-cluster {
+  /* position:relative already set via .comment-replies above */
+}
+
+.comments-v2 .reply-cluster::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  border-radius: 2px;
+  background: linear-gradient(
+    to bottom,
+    rgba(108, 92, 231, 0.70) 0%,    /* brand at 70% — strong anchor  */
+    rgba(108, 92, 231, 0.30) 40%,   /* mid fade                       */
+    rgba(108, 92, 231, 0.10) 75%,   /* near-transparent               */
+    transparent                100%  /* fully dissolves at the bottom  */
+  );
+  pointer-events: none;
+}
+
+/*
+ * Dark mode: the surface is darker so we boost opacity slightly so the
+ * line stays readable without being garish.
+ */
+[data-theme="dark"] .comments-v2 .reply-cluster::before {
+  background: linear-gradient(
+    to bottom,
+    rgba(108, 92, 231, 0.85) 0%,
+    rgba(108, 92, 231, 0.45) 40%,
+    rgba(108, 92, 231, 0.15) 75%,
+    transparent                100%
+  );
 }
 
 /* ── REACTION PILL ────────────────────────────────────────────────────── */
@@ -445,14 +479,15 @@
   }
 
   .comments-v2 .comment-replies {
-    margin-left: 6px;
+    margin-left: 10px;
     padding: 8px 8px 8px 14px;
   }
 
-  .comments-v2 .comment-replies::before {
+  /* Thread line: keep same breathing space on mobile, shift left with padding */
+  .comments-v2 .reply-cluster::before {
     left: 4px;
-    top: 10px;
-    bottom: 10px;
+    top: 8px;
+    bottom: 8px;
   }
 
   .comments-v2 .comment-actions {

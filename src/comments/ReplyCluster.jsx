@@ -58,7 +58,7 @@ export default function ReplyCluster({ comment, replies }) {
   if (!replies.length) return null;
 
   return (
-    <div className="comment-replies">
+    <div className="comment-replies reply-cluster">
       {replies.slice(0, MAX_INLINE_REPLIES).map((reply) => {
         const isEditingReply = editingCommentId === reply._id;
         const isOwnReply = reply.authorId?._id === currentUser?._id || reply.authorId === currentUser?._id;
