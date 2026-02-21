@@ -5,7 +5,7 @@ import { setupAuthLifecycle, cleanupAuthLifecycle } from './utils/authLifecycle'
 import { resetLogoutFlag, onNewMessage, disconnectSocketForLogout } from './utils/socket';
 import { playNotificationSound } from './utils/notifications';
 import './utils/socketDiagnostics'; // Load diagnostics tool
-import { initializeQuietMode } from './utils/quietMode';
+import { applyUserTheme } from './utils/themeManager';
 import { preloadCriticalResources, preloadFeedData } from './utils/resourcePreloader';
 import { checkForUpdate } from './utils/versionCheck';
 import { API_AUTH_URL } from './config/api';
@@ -301,8 +301,9 @@ function AppContent() {
     // 🔐 BOOT GUARD: Wait for auth to be fully ready before executing protected behavior
     if (!isAuthReady || !isAuthenticated || !user) return;
 
-    // Initialize quiet mode with user settings
-    initializeQuietMode(user);
+    // Apply all user theme preferences (theme, galaxy, quiet mode, cursor) from backend
+    // This ensures preferences persist across devices and survive localStorage clearing
+    applyUserTheme(user);
 
     // Reset logout flag to allow socket reconnection
     resetLogoutFlag();
