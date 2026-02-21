@@ -1,7 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import './PhotoViewer.css';
 
 function PhotoViewer({ imageUrl, onClose }) {
+  const [imgError, setImgError] = useState(false);
+
   // Close on Escape key
   useEffect(() => {
     const handleEscape = (e) => {
@@ -28,12 +30,23 @@ function PhotoViewer({ imageUrl, onClose }) {
         <button className="photo-viewer-close" onClick={onClose}>
           ✕
         </button>
-        <img 
-          src={imageUrl} 
-          alt="Full size" 
-          className="photo-viewer-image"
-          onClick={(e) => e.stopPropagation()}
-        />
+        {imgError ? (
+          <div className="photo-viewer-error">
+            <span className="photo-viewer-error-icon">🖼️</span>
+            <p>Image unavailable</p>
+          </div>
+        ) : (
+          <img
+            src={imageUrl}
+            alt="Full size"
+            className="photo-viewer-image"
+            onClick={(e) => e.stopPropagation()}
+            onError={(e) => {
+              e.stopPropagation();
+              setImgError(true);
+            }}
+          />
+        )}
       </div>
     </div>
   );

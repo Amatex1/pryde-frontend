@@ -48,6 +48,13 @@ import { initWebVitals } from './utils/webVitals'
 window.addEventListener(
   'error',
   (event) => {
+    // Skip resource load errors on media elements (img, video, audio).
+    // These are handled at the component level with onError handlers.
+    if (event.target instanceof HTMLImageElement ||
+        event.target instanceof HTMLVideoElement ||
+        event.target instanceof HTMLAudioElement) {
+      return;
+    }
     console.error('[GlobalError]', event?.message || event)
   },
   true

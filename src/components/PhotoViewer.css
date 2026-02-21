@@ -79,6 +79,28 @@
   transform: rotate(90deg);
 }
 
+/* Error fallback */
+.photo-viewer-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 48px;
+}
+
+.photo-viewer-error-icon {
+  font-size: 48px;
+  opacity: 0.4;
+}
+
+.photo-viewer-error p {
+  margin: 0;
+  font-size: 14px;
+  letter-spacing: 0.03em;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .photo-viewer-close {
