@@ -24,6 +24,7 @@ export default function CommentItem({ comment }) {
   const {
     commentReplies,
     showReplies,
+    replyingToComment,
     editingCommentId,
     editCommentText,
     handleEditComment,
@@ -55,9 +56,11 @@ export default function CommentItem({ comment }) {
   const isEditing = editingCommentId === comment._id;
   const isOwnComment = comment.authorId?._id === currentUser?._id || comment.authorId === currentUser?._id;
   const replies = commentReplies[comment._id] || [];
+  // Phase 4: highlight the card border when the user is replying to this thread
+  const isBeingRepliedTo = replyingToComment?.commentId === comment._id;
 
   return (
-    <div className="comment-thread">
+    <div className="comment-thread" data-replying={isBeingRepliedTo ? 'true' : undefined}>
       <div
         className="comment-row"
         ref={(el) => { commentRefs.current[comment._id] = el; }}

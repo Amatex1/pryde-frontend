@@ -1,0 +1,462 @@
+/* ==========================================================================
+   Pryde Comment v2 — Visual Blueprint (Phase 4)
+
+   Scope: .comments-v2 root wrapper (applied by CommentList.jsx).
+   This file ONLY affects the Phase 3 modular components; the legacy
+   CommentThread.jsx used in Profile / Groups / FeedStream is untouched.
+
+   Design token references use src/styles/tokens.css variables wherever
+   possible so light/dark/quiet themes are inherited automatically.
+   ========================================================================== */
+
+/* ── BASE LAYOUT: comment-lane and comment-bubble ─────────────────────── */
+/* These classes were introduced in Phase 3 and have no base styles yet.   */
+
+.comments-v2 .comment-lane {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.comments-v2 .comment-bubble {
+  background: transparent;
+  border-radius: 0;
+  max-width: 100%;
+}
+
+/* Author link inline in the bubble */
+.comments-v2 .comment-bubble .comment-author {
+  display: inline;
+  margin-right: 5px;
+  margin-bottom: 0;
+}
+
+.comments-v2 .comment-bubble .comment-text {
+  display: inline;
+}
+
+/* Author link for replies (sits next to avatar, before the lane) */
+.comments-v2 .comment-author-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-right: 6px;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.comments-v2 .comment-author-inline:hover .author-name {
+  color: var(--color-brand);
+  text-decoration: underline;
+}
+
+/* ── TOP-LEVEL COMMENT CARD ───────────────────────────────────────────── */
+
+.comments-v2 .comment-thread {
+  background: var(--color-surface-elevated, #FFFFFF);
+  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 8px;
+}
+
+.comments-v2 .comment-thread:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Parent highlight when this comment is being replied to */
+.comments-v2 .comment-thread[data-replying="true"] {
+  border-color: var(--color-brand, #6C5CE7);
+  box-shadow:
+    0 0 0 2px var(--color-brand-muted, rgba(108, 92, 231, 0.15)),
+    var(--shadow-sm);
+}
+
+/* Dark mode card surface */
+[data-theme="dark"] .comments-v2 .comment-thread {
+  background: var(--color-surface-elevated, #2F2F3A);
+  border-color: var(--color-border, rgba(255, 255, 255, 0.08));
+}
+
+/* ── COMMENT ROW (avatar + lane + menu) ──────────────────────────────── */
+
+.comments-v2 .comment-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Reset the global 40px !important indent — the reply cluster handles it */
+.comments-v2 .comment-row.reply {
+  padding-left: 0 !important;
+}
+
+/* ── AUTHOR NAME ─────────────────────────────────────────────────────── */
+
+.comments-v2 .comment-author {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 1px;
+}
+
+.comments-v2 .comment-author .author-name {
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.comments-v2 .comment-author:hover .author-name {
+  color: var(--color-brand);
+  text-decoration: underline;
+}
+
+/* ── COMMENT TEXT ────────────────────────────────────────────────────── */
+
+.comments-v2 .comment-text {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--color-text);
+  background: none;
+  border-radius: 0;
+  display: inline;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+[data-theme="dark"] .comments-v2 .comment-text {
+  background: none;
+}
+
+/* ── EDITED INDICATOR ────────────────────────────────────────────────── */
+
+.comments-v2 .edited-indicator {
+  font-size: 11px;
+  color: var(--color-meta);
+  font-style: italic;
+  opacity: 0.8;
+  margin-left: 3px;
+}
+
+/* ── REPLY CLUSTER — indented surface + gradient thread line ─────────── */
+
+.comments-v2 .comment-replies {
+  margin-left: 10px;
+  margin-top: 10px;
+  padding: 10px 10px 10px 18px;
+  background: var(--color-surface-muted, #F4F5FA);
+  border-radius: 12px;
+  /* Remove the old solid purple left border */
+  border-left: none !important;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+/* 2px gradient thread line */
+.comments-v2 .comment-replies::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 12px;
+  bottom: 12px;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    var(--color-brand, #6C5CE7) 0%,
+    transparent 100%
+  );
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+[data-theme="dark"] .comments-v2 .comment-replies {
+  background: var(--color-surface-muted, #25252F);
+}
+
+/* Reply cluster inner rows — no extra indentation */
+.comments-v2 .comment-replies .comment-row {
+  padding-left: 0 !important;
+}
+
+/* Reply avatar smaller than top-level */
+.comments-v2 .comment-replies .comment-avatar {
+  width: 26px;
+  height: 26px;
+  font-size: 11px;
+}
+
+/* ── REACTION PILL ────────────────────────────────────────────────────── */
+/* Wraps the emoji button + count into a rounded translucent pill.        */
+
+.comments-v2 .reaction-button-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--color-brand-muted, rgba(108, 92, 231, 0.1));
+  border-radius: 999px;
+  padding: 2px 8px 2px 4px;
+  transition: box-shadow 0.2s ease, background 0.2s ease;
+  cursor: pointer;
+}
+
+/* Hover glow */
+.comments-v2 .reaction-button-container:hover {
+  background: var(--color-brand-muted, rgba(108, 92, 231, 0.15));
+  box-shadow:
+    0 0 0 2px var(--color-brand-muted, rgba(108, 92, 231, 0.2)),
+    0 2px 8px rgba(108, 92, 231, 0.18);
+}
+
+/* Active/reacted highlight */
+.comments-v2 .reaction-button-container:has(.has-reaction) {
+  background: var(--color-brand-muted, rgba(108, 92, 231, 0.18));
+  box-shadow: 0 0 0 1.5px var(--color-brand, #6C5CE7);
+}
+
+/* Inner emoji button — tighten within the pill */
+.comments-v2 .reaction-button {
+  font-size: 14px;
+  min-width: 20px;
+  min-height: 20px;
+  padding: 0;
+  background: none !important;
+  opacity: 1;
+}
+
+.comments-v2 .reaction-button:hover {
+  background: none !important;
+  transform: scale(1.2);
+}
+
+/* Reaction count inside pill */
+.comments-v2 .reaction-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  min-width: auto;
+  padding: 0;
+}
+
+/* ── META ROW (comment-actions) ──────────────────────────────────────── */
+
+.comments-v2 .comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  margin-left: 0;
+  opacity: 1;           /* Always visible in v2 (not dim by default) */
+  flex-wrap: wrap;
+}
+
+/* Action buttons */
+.comments-v2 .comment-actions .comment-action-btn {
+  color: var(--color-meta, #9CA0B3);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.comments-v2 .comment-actions .comment-action-btn:hover {
+  color: var(--color-brand, #6C5CE7);
+  text-decoration: none;
+}
+
+/* Dot separators — insert before Reply and before timestamp */
+.comments-v2 .comment-actions .comment-action-btn.reply-btn::before,
+.comments-v2 .comment-actions .comment-time::before {
+  content: '·';
+  margin-right: 8px;
+  color: var(--color-meta, #9CA0B3);
+  font-weight: 400;
+  font-size: 13px;
+}
+
+/* Timestamp */
+.comments-v2 .comment-time {
+  font-size: 11px;
+  color: var(--color-meta, #9CA0B3);
+  white-space: nowrap;
+  margin-left: 0;
+  font-weight: 400;
+}
+
+/* ── VIEW REPLIES BUTTON ──────────────────────────────────────────────── */
+
+.comments-v2 .view-replies-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-brand, #6C5CE7);
+  font-size: 12px;
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 0;
+  transition: color 0.15s ease;
+  text-decoration: none;
+}
+
+.comments-v2 .view-replies-btn:hover {
+  color: var(--color-brand-hover, #5a4bd8);
+  text-decoration: underline;
+}
+
+/* ── THREE-DOT MENU (desktop hover-reveal) ───────────────────────────── */
+
+.comments-v2 .comment-menu-btn {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.comments-v2 .comment-row:hover .comment-menu-btn,
+.comments-v2 .comment-row:focus-within .comment-menu-btn {
+  opacity: 1;
+}
+
+/* Always reachable on touch/mobile */
+@media (max-width: 768px) {
+  .comments-v2 .comment-menu-btn {
+    opacity: 0.45;
+  }
+}
+
+/* ── COMMENT MENU DROPDOWN ───────────────────────────────────────────── */
+
+.comments-v2 .comment-menu {
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+/* ── EDIT BOX ─────────────────────────────────────────────────────────── */
+
+.comments-v2 .comment-edit-input {
+  border-radius: 10px;
+  border: 1.5px solid var(--color-brand, #6C5CE7);
+  background: var(--color-surface-elevated, #fff);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.comments-v2 .comment-edit-input:focus {
+  outline: none;
+  border-color: var(--color-brand, #6C5CE7);
+  box-shadow: 0 0 0 3px var(--color-brand-muted, rgba(108, 92, 231, 0.15));
+}
+
+[data-theme="dark"] .comments-v2 .comment-edit-input {
+  background: var(--color-surface, #2A2A35);
+}
+
+/* ── SOFT DELETE ──────────────────────────────────────────────────────── */
+
+.comments-v2 .comment-deleted {
+  font-style: italic;
+  color: var(--color-meta, #9CA0B3);
+  padding: 10px 14px;
+  background: transparent;
+  border-radius: 10px;
+  border: 1px dashed var(--color-border, rgba(0, 0, 0, 0.08));
+  gap: 6px;
+}
+
+.comments-v2 .comment-deleted .deleted-icon {
+  opacity: 0.35;
+  font-size: 14px;
+}
+
+.comments-v2 .comment-deleted .deleted-text {
+  font-size: 13px;
+}
+
+/* ── REPLY EDITOR — SMOOTH ENTRANCE ──────────────────────────────────── */
+
+@keyframes cv2-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.comments-v2 .reply-input-box {
+  animation: cv2-slide-in 0.18s ease-out;
+  border-radius: 12px;
+  border: 1.5px solid var(--color-brand, #6C5CE7) !important;
+  background: var(--color-surface-elevated, #fff);
+  box-shadow:
+    0 0 0 3px var(--color-brand-muted, rgba(108, 92, 231, 0.12)),
+    var(--shadow-sm);
+}
+
+[data-theme="dark"] .comments-v2 .reply-input-box {
+  background: var(--color-surface-elevated, #2F2F3A);
+}
+
+/* ── INPUT — COMMENT FORM ─────────────────────────────────────────────── */
+
+.comments-v2 .comment-input-box {
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+/* ── POST-COMMENTS SECTION SPACING ───────────────────────────────────── */
+
+.comments-v2 .post-comments {
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border, rgba(0, 0, 0, 0.06));
+  margin-top: 8px;
+}
+
+/* ── MOBILE LAYOUT ────────────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .comments-v2 .comment-thread {
+    border-radius: 12px;
+    padding: 12px 12px;
+  }
+
+  .comments-v2 .comment-replies {
+    margin-left: 6px;
+    padding: 8px 8px 8px 14px;
+  }
+
+  .comments-v2 .comment-replies::before {
+    left: 4px;
+    top: 10px;
+    bottom: 10px;
+  }
+
+  .comments-v2 .comment-actions {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+}

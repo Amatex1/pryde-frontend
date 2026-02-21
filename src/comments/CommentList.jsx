@@ -11,12 +11,16 @@
  * Slice:
  *   Inline: last 3 top-level comments (matching FeedPostComments original)
  *   Sheet:  all top-level comments
+ *
+ * Phase 4: wraps everything in .comments-v2 so the visual-upgrade stylesheet
+ * (comments-v2.css) can scope styles without touching CommentThread.jsx (legacy).
  */
 import { memo } from 'react';
 import { useCommentScope } from './CommentScopeContext';
 import { useComments } from '../context/CommentContext';
 import CommentItem from './CommentItem';
 import CommentInput from './CommentInput';
+import './comments-v2.css';
 
 const CommentList = memo(function CommentList() {
   const { postId, isFullSheet } = useCommentScope();
@@ -30,7 +34,7 @@ const CommentList = memo(function CommentList() {
   const displayComments = isFullSheet ? topLevelComments : topLevelComments.slice(-3);
 
   return (
-    <>
+    <div className="comments-v2">
       {/* Sheet: input forms above the thread list */}
       {isFullSheet && <CommentInput />}
 
@@ -44,7 +48,7 @@ const CommentList = memo(function CommentList() {
 
       {/* Inline: input forms below the thread list */}
       {!isFullSheet && <CommentInput />}
-    </>
+    </div>
   );
 });
 
