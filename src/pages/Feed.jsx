@@ -32,6 +32,7 @@ import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useUnreadMessages } from '../hooks/useUnreadMessages'; // ✅ Use singleton hook
 import { useToast } from '../hooks/useToast';
 import { useAuth } from '../context/AuthContext'; // ✅ Use auth context (single source of truth)
+import { CommentProvider, useComments } from '../context/CommentContext';
 import api, { getCsrfToken } from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import { getSocket, setupSocketListeners } from '../utils/socketHelpers';
@@ -53,11 +54,20 @@ import './Feed.css';
 import './Feed.calm.css'; // PHASE C: Calm mode overrides
 import './Mobile.calm.css'; // PHASE D: Mobile-first calm mode
 
-function Feed() {
+// ─────────────────────────────────────────────────────────────────────────────
+// FeedContent — inner consumer component.
+// Receives the single useModal() instance and shared state from the outer Feed
+// wrapper, then pulls all comment state/handlers from CommentContext.
+// ─────────────────────────────────────────────────────────────────────────────
+function FeedContent({
+  modalState, closeModal, showAlert, showConfirm,
+  currentUser,
+  posts, setPosts,
+  showGifPicker, setShowGifPicker,
+}) {
   const [searchParams] = useSearchParams();
-  const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const { onlineUsers, isUserOnline } = useOnlineUsers();
-  const { authReady, isAuthenticated, user: currentUser } = useAuth(); // ✅ Single source of truth for auth
+  const { authReady, isAuthenticated } = useAuth();
   const { toasts, showToast, removeToast } = useToast();
 
   // Get menu handler from AppLayout outlet context
@@ -65,36 +75,57 @@ function Feed() {
   const { onMenuOpen } = outletContext;
   const isMobile = useMediaQuery('(max-width: 768px)');
 
-  // 🚀 LCP OPTIMIZATION: Use preloaded cached posts for instant first paint
-  const cachedPosts = getCachedPosts();
-  const initialPosts = cachedPosts?.posts || [];
-  const [posts, setPosts] = useState(initialPosts);
+  // ── Comment state and handlers from CommentContext ──────────────────────
+  const {
+    postComments,       setPostComments,
+    commentReplies,     setCommentReplies,
+    showReplies,        setShowReplies,
+    commentText,        setCommentText,
+    commentGif,         setCommentGif,
+    replyText,          setReplyText,
+    replyGif,           setReplyGif,
+    replyingToComment,  setReplyingToComment,
+    editingCommentId,
+    editCommentText,
+    showCommentBox,     setShowCommentBox,
+    commentSheetOpen,   setCommentSheetOpen,
+    commentModalOpen,   setCommentModalOpen,
+    openCommentDropdownId, setOpenCommentDropdownId,
+    showReactionPicker, setShowReactionPicker,
+    fetchCommentsForPost,
+    fetchRepliesForComment,
+    toggleReplies,
+    handleCommentReaction,
+    toggleCommentBox,
+    handleCommentSubmit,
+    handleCommentChange,
+    handleEditComment,
+    handleSaveEditComment,
+    handleCancelEditComment,
+    handleDeleteComment,
+    handleReplyToComment,
+    handleSubmitReply,
+    handleCancelReply,
+    handleCommentGifSelect,
+    handleReplyTextChange,
+    handleReplyGifSelect,
+  } = useComments();
+
+  // 🚀 LCP OPTIMIZATION: initialPosts are already hydrated via the outer Feed wrapper
   const [newPost, setNewPost] = useState('');
   const [loading, setLoading] = useState(false);
   // If we have cached posts, skip skeleton and show content immediately
-  const [fetchingPosts, setFetchingPosts] = useState(initialPosts.length === 0);
+  const [fetchingPosts, setFetchingPosts] = useState(posts.length === 0);
   const [selectedMedia, setSelectedMedia] = useState([]);
   const [uploadingMedia, setUploadingMedia] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [reportModal, setReportModal] = useState({ isOpen: false, type: '', contentId: null, userId: null });
   const [blockedUsers, setBlockedUsers] = useState([]);
   const [photoViewerImage, setPhotoViewerImage] = useState(null);
-  const [showCommentBox, setShowCommentBox] = useState({});
-  const [commentText, setCommentText] = useState({});
-  const [commentGif, setCommentGif] = useState({});
-  const [showGifPicker, setShowGifPicker] = useState(null);
   const [selectedPostGif, setSelectedPostGif] = useState(null); // GIF for main post creation
-  const [commentModalOpen, setCommentModalOpen] = useState(null); // Track which post's comment modal is open
-  const [commentSheetOpen, setCommentSheetOpen] = useState(null); // Mobile-only full comment sheet (stores postId)
-  const [editingCommentId, setEditingCommentId] = useState(null);
-  const [editCommentText, setEditCommentText] = useState('');
-  const [replyingToComment, setReplyingToComment] = useState(null);
-  const [replyText, setReplyText] = useState('');
-  const [replyGif, setReplyGif] = useState(null);
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [editingPostId, setEditingPostId] = useState(null);
   const [editPostText, setEditPostText] = useState('');
-  const [openCommentDropdownId, setOpenCommentDropdownId] = useState(null);
   const [postVisibility, setPostVisibility] = useState('followers');
   const defaultPostVisibilityRef = useRef('followers'); // Stores user's default from settings
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
@@ -104,10 +135,7 @@ function Feed() {
   const [showContentWarning, setShowContentWarning] = useState(false);
   const [revealedPosts, setRevealedPosts] = useState({});
   const [expandedPosts, setExpandedPosts] = useState({}); // Track which posts have expanded text ("See more")
-  const [showReplies, setShowReplies] = useState({}); // Track which comments have replies visible
-  const [showReactionPicker, setShowReactionPicker] = useState(null); // Track which comment shows reaction picker
-  const [postComments, setPostComments] = useState({}); // Store comments by postId { postId: [comments] }
-  const [commentReplies, setCommentReplies] = useState({}); // Store replies by commentId { commentId: [replies] }
+  // showReplies, showReactionPicker, postComments, commentReplies → now in CommentContext
   const [editPostVisibility, setEditPostVisibility] = useState('followers');
   const [editHiddenFromUsers, setEditHiddenFromUsers] = useState([]);
   const [editSharedWithUsers, setEditSharedWithUsers] = useState([]);
@@ -166,7 +194,7 @@ function Feed() {
   const reactionPickerTimeoutRef = useRef(null);
   const [pullDistance, setPullDistance] = useState(0);
 
-  // currentUser is now from useAuth() above - no direct localStorage call
+  // currentUser comes from the outer Feed wrapper as a prop
   const postRefs = useRef({});
   const commentRefs = useRef({});
   const listenersSetUpRef = useRef(false);
@@ -298,39 +326,7 @@ function Feed() {
     });
   }, [posts, postComments]);
 
-  // Scroll lock when mobile comment sheet is open
-  useEffect(() => {
-    if (commentSheetOpen) {
-      // Save current scroll position
-      const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.left = '0';
-      document.body.style.right = '0';
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
-    } else {
-      // Restore scroll position
-      const scrollY = document.body.style.top;
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-      document.body.style.right = '';
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
-      }
-    }
-    return () => {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-      document.body.style.right = '';
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
-    };
-  }, [commentSheetOpen]);
+  // Scroll lock when mobile comment sheet is open → moved to CommentContext
 
   // Memoize the URL params to prevent unnecessary effect runs
   const targetPostId = useMemo(() => searchParams.get('post'), [searchParams]);
@@ -622,159 +618,8 @@ function Feed() {
       BATCH_DELAY
     );
 
-    // Keyed batcher for comment reactions - only keep latest per commentId
-    const commentReactionBatcher = createKeyedBatcher(
-      (eventsMap) => {
-        logger.debug(`⚡ Batched ${eventsMap.size} comment reactions`);
-        const updatedComments = Array.from(eventsMap.values()).map(d => d.comment);
-
-        setPostComments(prev => {
-          const updated = { ...prev };
-          Object.keys(updated).forEach(postId => {
-            updated[postId] = updated[postId].map(c => {
-              const match = updatedComments.find(uc => uc._id === c._id);
-              return match || c;
-            });
-          });
-          return updated;
-        });
-
-        setCommentReplies(prev => {
-          const updated = { ...prev };
-          Object.keys(updated).forEach(parentId => {
-            updated[parentId] = updated[parentId].map(c => {
-              const match = updatedComments.find(uc => uc._id === c._id);
-              return match || c;
-            });
-          });
-          return updated;
-        });
-      },
-      (data) => data.comment._id,
-      BATCH_DELAY
-    );
-
-    // Event batcher for new comments
-    const commentAddedBatcher = createEventBatcher(
-      (events) => {
-        logger.debug(`⚡ Batched ${events.length} new comments`);
-        const replies = events.filter(e => e.comment.parentCommentId);
-        const topLevel = events.filter(e => !e.comment.parentCommentId);
-
-        if (replies.length > 0) {
-          setCommentReplies(prev => {
-            const updated = { ...prev };
-            replies.forEach(({ comment }) => {
-              const existing = updated[comment.parentCommentId] || [];
-              if (!existing.some(c => c._id === comment._id)) {
-                updated[comment.parentCommentId] = [...existing, comment];
-              }
-            });
-            return updated;
-          });
-        }
-
-        if (topLevel.length > 0) {
-          setPostComments(prev => {
-            const updated = { ...prev };
-            topLevel.forEach(({ comment, postId }) => {
-              const existing = updated[postId] || [];
-              if (!existing.some(c => c._id === comment._id)) {
-                updated[postId] = [...existing, comment];
-              }
-            });
-            return updated;
-          });
-
-          // Update comment counts
-          const countsByPost = {};
-          topLevel.forEach(({ postId }) => {
-            countsByPost[postId] = (countsByPost[postId] || 0) + 1;
-          });
-          setPosts(prevPosts =>
-            prevPosts.map(p => {
-              if (countsByPost[p._id]) {
-                return { ...p, commentCount: (p.commentCount || 0) + countsByPost[p._id] };
-              }
-              return p;
-            })
-          );
-        }
-      },
-      BATCH_DELAY
-    );
-
-    // Keyed batcher for comment updates - only keep latest per commentId
-    const commentUpdatedBatcher = createKeyedBatcher(
-      (eventsMap) => {
-        logger.debug(`⚡ Batched ${eventsMap.size} comment updates`);
-        const updatedComments = Array.from(eventsMap.values()).map(d => d.comment);
-
-        setPostComments(prev => {
-          const updated = { ...prev };
-          Object.keys(updated).forEach(postId => {
-            updated[postId] = updated[postId].map(c => {
-              const match = updatedComments.find(uc => uc._id === c._id);
-              return match || c;
-            });
-          });
-          return updated;
-        });
-
-        setCommentReplies(prev => {
-          const updated = { ...prev };
-          Object.keys(updated).forEach(parentId => {
-            updated[parentId] = updated[parentId].map(c => {
-              const match = updatedComments.find(uc => uc._id === c._id);
-              return match || c;
-            });
-          });
-          return updated;
-        });
-      },
-      (data) => data.comment._id,
-      BATCH_DELAY
-    );
-
-    // Event batcher for comment deletions
-    const commentDeletedBatcher = createEventBatcher(
-      (events) => {
-        logger.debug(`⚡ Batched ${events.length} comment deletions`);
-        const deletedIds = new Set(events.map(e => e.commentId));
-        const countsByPost = {};
-        events.forEach(({ postId }) => {
-          countsByPost[postId] = (countsByPost[postId] || 0) + 1;
-        });
-
-        setPostComments(prev => {
-          const updated = { ...prev };
-          Object.keys(updated).forEach(postId => {
-            updated[postId] = updated[postId].filter(c => !deletedIds.has(c._id));
-          });
-          return updated;
-        });
-
-        setCommentReplies(prev => {
-          const updated = { ...prev };
-          Object.keys(updated).forEach(parentId => {
-            updated[parentId] = updated[parentId].filter(c => !deletedIds.has(c._id));
-          });
-          // Also remove if it was a parent
-          deletedIds.forEach(id => delete updated[id]);
-          return updated;
-        });
-
-        setPosts(prevPosts =>
-          prevPosts.map(p => {
-            if (countsByPost[p._id]) {
-              return { ...p, commentCount: Math.max(0, (p.commentCount || 0) - countsByPost[p._id]) };
-            }
-            return p;
-          })
-        );
-      },
-      BATCH_DELAY
-    );
+    // Comment batchers (commentReactionBatcher, commentAddedBatcher,
+    // commentUpdatedBatcher, commentDeletedBatcher) → moved to CommentContext
 
     // Event batcher for new posts
     const postCreatedBatcher = createEventBatcher(
@@ -819,13 +664,9 @@ function Feed() {
       BATCH_DELAY
     );
 
-    // Store batchers for cleanup
+    // Store post batchers for cleanup (comment batchers are in CommentContext)
     socketBatchersRef.current = {
       postReactionBatcher,
-      commentReactionBatcher,
-      commentAddedBatcher,
-      commentUpdatedBatcher,
-      commentDeletedBatcher,
       postCreatedBatcher,
       postUpdatedBatcher,
       postDeletedBatcher,
@@ -844,37 +685,8 @@ function Feed() {
         socket.on('post_reaction_added', handlePostReaction);
         cleanupFunctions.push(() => socket.off('post_reaction_added', handlePostReaction));
 
-        // Listen for real-time comment reactions
-        const handleCommentReactionRT = (data) => {
-          logger.debug('💜 Real-time comment reaction received:', data);
-          commentReactionBatcher.add(data);
-        };
-        socket.on('comment_reaction_added', handleCommentReactionRT);
-        cleanupFunctions.push(() => socket.off('comment_reaction_added', handleCommentReactionRT));
-
-        // Listen for real-time comments
-        const handleCommentAddedRT = (data) => {
-          logger.debug('💬 Real-time comment received:', data);
-          commentAddedBatcher.add(data);
-        };
-        socket.on('comment_added', handleCommentAddedRT);
-        cleanupFunctions.push(() => socket.off('comment_added', handleCommentAddedRT));
-
-        // Listen for comment updates
-        const handleCommentUpdatedRT = (data) => {
-          logger.debug('✏️ Real-time comment update received:', data);
-          commentUpdatedBatcher.add(data);
-        };
-        socket.on('comment_updated', handleCommentUpdatedRT);
-        cleanupFunctions.push(() => socket.off('comment_updated', handleCommentUpdatedRT));
-
-        // Listen for comment deletions
-        const handleCommentDeletedRT = (data) => {
-          logger.debug('🗑️ Real-time comment deletion received:', data);
-          commentDeletedBatcher.add(data);
-        };
-        socket.on('comment_deleted', handleCommentDeletedRT);
-        cleanupFunctions.push(() => socket.off('comment_deleted', handleCommentDeletedRT));
+        // Comment socket listeners (comment_reaction_added, comment_added,
+        // comment_updated, comment_deleted) → moved to CommentContext
 
         // ✅ Listen for new posts
         const handlePostCreatedRT = (data) => {
@@ -1548,257 +1360,13 @@ function Feed() {
     }
   }, [currentUser?.id, getUserReactionEmoji]);
 
-  // Fetch comments for a post
-  const fetchCommentsForPost = useCallback(async (postId) => {
-    try {
-      logger.debug(`📥 Fetching comments for post: ${postId}`);
-      const response = await api.get(`/posts/${postId}/comments`);
-      const comments = response.data || [];
-      logger.debug(`✅ Fetched ${comments.length} comments for post ${postId}`);
-      setPostComments(prev => ({
-        ...prev,
-        [postId]: comments
-      }));
+  // fetchCommentsForPost, fetchRepliesForComment, toggleReplies,
+  // handleCommentReaction, toggleCommentBox, handleCommentSubmit,
+  // handleCommentChange → moved to CommentContext
 
-      // Auto-fetch and show replies for comments that have them
-      const commentsWithReplies = comments.filter(c => c.replyCount > 0);
-      if (commentsWithReplies.length > 0) {
-        // Fetch all replies in parallel
-        const replyPromises = commentsWithReplies.map(async (comment) => {
-          try {
-            const replyResponse = await api.get(`/comments/${comment._id}/replies`);
-            return { commentId: comment._id, replies: replyResponse.data || [] };
-          } catch (err) {
-            logger.error(`Failed to fetch replies for comment ${comment._id}:`, err);
-            return { commentId: comment._id, replies: [] };
-          }
-        });
-
-        const replyResults = await Promise.all(replyPromises);
-
-        // Batch update replies state
-        setCommentReplies(prev => {
-          const updated = { ...prev };
-          replyResults.forEach(({ commentId, replies }) => {
-            updated[commentId] = replies;
-          });
-          return updated;
-        });
-
-        // Auto-show all replies
-        setShowReplies(prev => {
-          const updated = { ...prev };
-          commentsWithReplies.forEach(comment => {
-            updated[comment._id] = true;
-          });
-          return updated;
-        });
-      }
-    } catch (error) {
-      logger.error('❌ Failed to fetch comments:', error);
-    }
-  }, []);
-
-  // Fetch replies for a comment
-  const fetchRepliesForComment = useCallback(async (commentId) => {
-    try {
-      const response = await api.get(`/comments/${commentId}/replies`);
-      setCommentReplies(prev => ({
-        ...prev,
-        [commentId]: response.data
-      }));
-    } catch (error) {
-      logger.error('Failed to fetch replies:', error);
-    }
-  }, []);
-
-  // Toggle replies visibility and fetch if needed
-  const toggleReplies = useCallback(async (commentId) => {
-    setShowReplies(prev => {
-      const isCurrentlyShown = prev[commentId];
-      // Fetch replies if showing and not already loaded
-      if (!isCurrentlyShown) {
-        setCommentReplies(cr => {
-          if (!cr[commentId]) {
-            fetchRepliesForComment(commentId);
-          }
-          return cr;
-        });
-      }
-      return { ...prev, [commentId]: !isCurrentlyShown };
-    });
-  }, [fetchRepliesForComment]);
-
-  const handleCommentReaction = useCallback(async (commentId, emoji) => {
-    // Save original state for rollback
-    const originalPostComments = { ...postComments };
-    const originalCommentReplies = { ...commentReplies };
-
-    try {
-      // Optimistic update
-      const updateCommentReaction = (comment) => {
-        if (comment._id !== commentId) return comment;
-
-        const reactions = { ...comment.reactions };
-        const currentUserId = currentUser?.id;
-
-        // Remove user from all emoji arrays
-        Object.keys(reactions).forEach(key => {
-          reactions[key] = reactions[key].filter(uid => uid !== currentUserId);
-        });
-
-        // Add user to selected emoji array (or remove if clicking same emoji)
-        const hadThisReaction = comment.reactions?.[emoji]?.includes(currentUserId);
-        if (!hadThisReaction) {
-          if (!reactions[emoji]) reactions[emoji] = [];
-          reactions[emoji].push(currentUserId);
-        }
-
-        return { ...comment, reactions };
-      };
-
-      // Update in postComments
-      setPostComments(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(postId => {
-          updated[postId] = updated[postId].map(updateCommentReaction);
-        });
-        return updated;
-      });
-
-      // Update in commentReplies
-      setCommentReplies(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(parentId => {
-          updated[parentId] = updated[parentId].map(updateCommentReaction);
-        });
-        return updated;
-      });
-
-      // Make API call
-      const response = await api.post(`/comments/${commentId}/react`, { emoji });
-
-      // Update with server response (source of truth)
-      const serverComment = response.data;
-      setPostComments(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(postId => {
-          updated[postId] = updated[postId].map(c =>
-            c._id === commentId ? serverComment : c
-          );
-        });
-        return updated;
-      });
-
-      setCommentReplies(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(parentId => {
-          updated[parentId] = updated[parentId].map(c =>
-            c._id === commentId ? serverComment : c
-          );
-        });
-        return updated;
-      });
-
-      setShowReactionPicker(null);
-    } catch (error) {
-      logger.error('Failed to react to comment:', error);
-      // Rollback optimistic update on error
-      setPostComments(originalPostComments);
-      setCommentReplies(originalCommentReplies);
-      showAlert('Failed to add reaction. Please try again.', 'Reaction Failed');
-    }
-  }, [postComments, commentReplies, currentUser?.id, showAlert]);
-
-  const toggleCommentBox = useCallback(async (postId) => {
-    // Detect mobile using 600px breakpoint (matches CommentSheet design contract)
-    const isMobileSheet = window.matchMedia("(max-width: 600px)").matches;
-
-    console.log('🔍 toggleCommentBox - isMobileSheet:', isMobileSheet, 'width:', window.innerWidth);
-
-    // On mobile, open CommentSheet for full discussion
-    if (isMobileSheet) {
-      console.log('🔍 Opening CommentSheet for post:', postId);
-      setCommentSheetOpen(postId);
-      // Fetch comments if not already loaded
-      setPostComments(prev => {
-        if (!prev[postId]) {
-          fetchCommentsForPost(postId);
-        }
-        return prev;
-      });
-      return;
-    }
-
-    // Desktop: use inline comment box
-    setShowCommentBox(prev => {
-      const isCurrentlyShown = prev[postId];
-      // Fetch comments if opening and not already loaded
-      if (!isCurrentlyShown) {
-        setPostComments(p => {
-          if (!p[postId]) {
-            fetchCommentsForPost(postId);
-          }
-          return p;
-        });
-      }
-      return { ...prev, [postId]: !isCurrentlyShown };
-    });
-  }, [fetchCommentsForPost]);
-
-  const handleCommentSubmit = useCallback(async (postId, e) => {
-    e.preventDefault();
-
-    // Block submission if GIF picker is open
-    if (showGifPicker !== null) {
-      return;
-    }
-
-    const content = commentText[postId];
-    const gifUrl = commentGif[postId];
-
-    // Either content or GIF must be provided
-    if ((!content || !content.trim()) && !gifUrl) return;
-
-    try {
-      // Convert emoji shortcuts before posting
-      const contentWithEmojis = content ? convertEmojiShortcuts(content) : '';
-
-      logger.debug('💬 Submitting comment:', { postId, content: contentWithEmojis, gifUrl });
-
-      const response = await api.post(`/posts/${postId}/comments`, {
-        content: contentWithEmojis,
-        gifUrl: gifUrl || null,
-        parentCommentId: null // Top-level comment
-      });
-
-      logger.debug('✅ Comment created:', response.data);
-
-      // Socket event will add the comment to state - no optimistic update needed
-      // This prevents duplicate comments from appearing
-
-      // Clear localStorage draft
-      const draftKey = `comment-${postId}`;
-      clearDraft(draftKey);
-
-      setCommentText(prev => ({ ...prev, [postId]: '' }));
-      setCommentGif(prev => ({ ...prev, [postId]: null }));
-    } catch (error) {
-      logger.error('❌ Failed to create comment:', error);
-      logger.error('Error details:', error.response?.data);
-      showAlert('This didn\'t post properly. You can try again in a moment.', 'Reply issue');
-    }
-  }, [showGifPicker, commentText, commentGif, showAlert]);
-
-  const handleCommentChange = useCallback((postId, value) => {
-    setCommentText(prev => ({ ...prev, [postId]: value }));
-
-    // Auto-save comment draft
-    if (value) {
-      const draftKey = `comment-${postId}`;
-      saveDraft(draftKey, value);
-    }
-  }, []);
+  // Restore comment drafts on mount — stays here because it needs `posts`
+  // and calls setCommentText from CommentContext
+  // (placed after useComments() destructure above)
 
   // Restore comment drafts on mount
   useEffect(() => {
@@ -1811,83 +1379,7 @@ function Feed() {
     });
   }, [posts.length]); // Only run when posts are loaded
 
-  const handleEditComment = useCallback((commentId, content) => {
-    // If already editing this comment, just update the text (typing/backspace)
-    if (editingCommentId === commentId) {
-      setEditCommentText(content);
-      return;
-    }
-
-    // Initialize the edit (clicked Edit button) - restore draft if available
-    setEditingCommentId(commentId);
-    const draftKey = `edit-comment-${commentId}`;
-    const localDraft = loadDraft(draftKey);
-    setEditCommentText(localDraft || content);
-  }, [editingCommentId]);
-
-  // Auto-save comment edit draft
-  useEffect(() => {
-    if (editingCommentId && editCommentText) {
-      const draftKey = `edit-comment-${editingCommentId}`;
-      saveDraft(draftKey, editCommentText);
-    }
-  }, [editCommentText, editingCommentId]);
-
-  const handleSaveEditComment = useCallback(async (commentId) => {
-    if (!editCommentText.trim()) return;
-
-    try {
-      const response = await api.put(`/comments/${commentId}`, {
-        content: editCommentText
-      });
-
-      const updatedComment = response.data;
-
-      // Update in postComments
-      setPostComments(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(postId => {
-          updated[postId] = updated[postId].map(c =>
-            c._id === commentId ? updatedComment : c
-          );
-        });
-        return updated;
-      });
-
-      // Update in commentReplies
-      setCommentReplies(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(parentId => {
-          updated[parentId] = updated[parentId].map(c =>
-            c._id === commentId ? updatedComment : c
-          );
-        });
-        return updated;
-      });
-
-      // Clear localStorage draft
-      const draftKey = `edit-comment-${commentId}`;
-      clearDraft(draftKey);
-
-      setEditingCommentId(null);
-      setEditCommentText('');
-    } catch (error) {
-      logger.error('Failed to edit comment:', error);
-      showAlert('This didn\'t save properly. You can try again in a moment.', 'Edit issue');
-    }
-  }, [editCommentText, showAlert]);
-
-  const handleCancelEditComment = useCallback(() => {
-    setEditingCommentId(prev => {
-      if (prev) {
-        const draftKey = `edit-comment-${prev}`;
-        clearDraft(draftKey);
-      }
-      return null;
-    });
-
-    setEditCommentText('');
-  }, []);
+  // handleEditComment, handleSaveEditComment, handleCancelEditComment → moved to CommentContext
 
   const toggleDropdown = useCallback((postId) => {
     setOpenDropdownId(prev => prev === postId ? null : postId);
@@ -2037,100 +1529,8 @@ function Feed() {
     }
   }, [handleSaveEditPost, handleCancelEditPost]);
 
-  const handleDeleteComment = useCallback(async (postId, commentId, isReply = false) => {
-    const confirmed = await showConfirm('Are you sure you want to delete this comment?', 'Delete Comment', 'Delete', 'Cancel');
-    if (!confirmed) return;
-
-    try {
-      await api.delete(`/comments/${commentId}`);
-
-      if (isReply) {
-        // Remove from commentReplies
-        setCommentReplies(prev => {
-          const updated = { ...prev };
-          Object.keys(updated).forEach(parentId => {
-            updated[parentId] = updated[parentId].filter(c => c._id !== commentId);
-          });
-          return updated;
-        });
-      } else {
-        // Remove from postComments (and all its replies will be deleted by backend)
-        setPostComments(prev => ({
-          ...prev,
-          [postId]: (prev[postId] || []).filter(c => c._id !== commentId)
-        }));
-
-        // Remove replies from state
-        setCommentReplies(prev => {
-          const updated = { ...prev };
-          delete updated[commentId];
-          return updated;
-        });
-      }
-
-      // Update post comment count
-      setPosts(prev => prev.map(p =>
-        p._id === postId
-          ? { ...p, commentCount: Math.max(0, (p.commentCount || 0) - 1) }
-          : p
-      ));
-    } catch (error) {
-      logger.error('Failed to delete comment:', error);
-      showAlert('This didn\'t delete properly. You can try again in a moment.', 'Delete issue');
-    }
-  }, [showConfirm, showAlert]);
-
-  const handleReplyToComment = useCallback((postId, commentId) => {
-    setReplyingToComment({ postId, commentId });
-    setReplyText('');
-  }, []);
-
-  const handleSubmitReply = useCallback(async (e) => {
-    e.preventDefault();
-
-    // Block submission if GIF picker is open
-    if (showGifPicker !== null) {
-      return;
-    }
-
-    // Either text or GIF must be provided
-    if ((!replyText || !replyText.trim()) && !replyGif) return;
-    if (!replyingToComment) return;
-
-    try {
-      const { postId, commentId } = replyingToComment;
-      // Convert emoji shortcuts before posting
-      const contentWithEmojis = replyText ? convertEmojiShortcuts(replyText) : '';
-
-      await api.post(`/posts/${postId}/comments`, {
-        content: contentWithEmojis,
-        gifUrl: replyGif || null,
-        parentCommentId: commentId // This makes it a reply
-      });
-
-      // Socket event will add the reply to state - no optimistic update needed
-      // This prevents duplicate replies from appearing
-
-      setReplyingToComment(null);
-      setReplyText('');
-      setReplyGif(null);
-
-      // Auto-show replies after adding one
-      setShowReplies(prev => ({
-        ...prev,
-        [commentId]: true
-      }));
-    } catch (error) {
-      logger.error('Failed to reply to comment:', error);
-      showAlert('This didn\'t post properly. You can try again in a moment.', 'Reply issue');
-    }
-  }, [showGifPicker, replyText, replyGif, replyingToComment, showAlert]);
-
-  const handleCancelReply = useCallback(() => {
-    setReplyingToComment(null);
-    setReplyText('');
-    setReplyGif(null);
-  }, []);
+  // handleDeleteComment, handleReplyToComment, handleSubmitReply, handleCancelReply
+  // → moved to CommentContext
 
   const handleBookmark = useCallback(async (postId) => {
     setBookmarkedPosts(prev => {
@@ -2240,17 +1640,16 @@ function Feed() {
     );
   }, []);
 
-  const handleCommentGifSelect = useCallback((postId, gifUrl) => {
-    setCommentGif(prev => ({ ...prev, [postId]: gifUrl }));
-  }, []);
+  // handleCommentGifSelect, handleReplyTextChange, handleReplyGifSelect
+  // → moved to CommentContext (accessed via useComments())
 
   const handleToggleGifPicker = useCallback((pickerId) => {
     setShowGifPicker(pickerId);
-  }, []);
+  }, [setShowGifPicker]);
 
   const handleSetShowReactionPicker = useCallback((value) => {
     setShowReactionPicker(value);
-  }, []);
+  }, [setShowReactionPicker]);
 
   const handleSetReactionDetailsModal = useCallback((value) => {
     setReactionDetailsModal(value);
@@ -2258,14 +1657,6 @@ function Feed() {
 
   const handleSetReportModal = useCallback((value) => {
     setReportModal(value);
-  }, []);
-
-  const handleReplyTextChange = useCallback((value) => {
-    setReplyText(value);
-  }, []);
-
-  const handleReplyGifSelect = useCallback((gifUrl) => {
-    setReplyGif(gifUrl);
   }, []);
 
   return (
@@ -3004,6 +2395,50 @@ function Feed() {
         />
       ))}
     </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Feed — outer wrapper (Phase 1: Context Extraction)
+//
+// Holds the single useModal() instance so it can be shared between
+// CommentProvider and FeedContent without creating two separate modal states.
+// Also holds `posts` and `showGifPicker` so they can be passed to
+// CommentProvider as props while remaining accessible in FeedContent.
+// ─────────────────────────────────────────────────────────────────────────────
+function Feed() {
+  const { modalState, closeModal, showAlert, showConfirm } = useModal();
+  const { user: currentUser } = useAuth();
+
+  // 🚀 LCP OPTIMIZATION: Use preloaded cached posts for instant first paint
+  const cachedPosts = getCachedPosts();
+  const initialPosts = cachedPosts?.posts || [];
+  const [posts, setPosts] = useState(initialPosts);
+
+  // showGifPicker lives here so CommentProvider can read it (to block
+  // comment/reply submission) and FeedContent can update it (for all pickers).
+  const [showGifPicker, setShowGifPicker] = useState(null);
+
+  return (
+    <CommentProvider
+      setPosts={setPosts}
+      showAlert={showAlert}
+      showConfirm={showConfirm}
+      currentUser={currentUser}
+      showGifPicker={showGifPicker}
+    >
+      <FeedContent
+        modalState={modalState}
+        closeModal={closeModal}
+        showAlert={showAlert}
+        showConfirm={showConfirm}
+        currentUser={currentUser}
+        posts={posts}
+        setPosts={setPosts}
+        showGifPicker={showGifPicker}
+        setShowGifPicker={setShowGifPicker}
+      />
+    </CommentProvider>
   );
 }
 
