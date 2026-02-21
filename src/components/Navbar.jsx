@@ -62,9 +62,16 @@ function Navbar({ onMenuClick }) {
     }
   };
 
-  const toggleGalaxyMode = () => {
+  const toggleGalaxyMode = async () => {
     const newValue = toggleGalaxyModeManager();
     setGalaxyMode(newValue);
+
+    // Sync with backend so preference persists across refresh/devices
+    try {
+      await api.patch('/users/me/settings', { galaxyMode: newValue });
+    } catch (error) {
+      console.error('Failed to sync galaxy mode:', error);
+    }
   };
 
   // Sync quiet mode from user data (only on mount)
