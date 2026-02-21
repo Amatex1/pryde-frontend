@@ -8,8 +8,12 @@ import './Home.css';
 function Home() {
   const isAuth = isAuthenticated();
 
-  // Apply Galaxy layer on homepage only (visual layer — does not touch data-theme)
+  // Apply Galaxy layer on homepage only if user hasn't explicitly disabled it
+  // Respects user's saved preference — galaxy is the default but not forced on those who opted out
   useEffect(() => {
+    const savedGalaxy = localStorage.getItem('galaxyMode');
+    if (savedGalaxy === 'false') return; // User explicitly disabled galaxy — respect their choice
+
     const wasGalaxy = document.documentElement.getAttribute('data-galaxy') === 'true';
     document.documentElement.setAttribute('data-galaxy', 'true');
 
