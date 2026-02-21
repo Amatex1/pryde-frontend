@@ -49,7 +49,7 @@ export default function ProfileController() {
   // Get menu handler from AppLayout outlet context
   const { onMenuOpen } = useOutletContext() || {};
   const { user: currentUser } = useAuth(); // Use centralized auth context
-  const { modalState, closeModal, showAlert, showConfirm } = useModal();
+  const { modalState, closeModal, showConfirm } = useModal();
   const { toasts, showToast, removeToast } = useToast();
 
   // Core data state
@@ -429,7 +429,7 @@ export default function ProfileController() {
       {photoViewerImage && (
         <Suspense fallback={<div className="modal-loading">Loading...</div>}>
           <PhotoViewer
-            image={photoViewerImage}
+            imageUrl={photoViewerImage}
             onClose={() => setPhotoViewerImage(null)}
           />
         </Suspense>
