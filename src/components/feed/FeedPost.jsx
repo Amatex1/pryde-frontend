@@ -4,25 +4,35 @@ import PostHeader from '../PostHeader';
 import PinnedPostBadge from '../PinnedPostBadge';
 import FeedPostContent from './FeedPostContent';
 import FeedPostActions from './FeedPostActions';
-import FeedPostComments from './FeedPostComments';
 import FeedPostDropdown from './FeedPostDropdown';
+import CommentProvider from '../../comments/CommentProvider';
+import CommentList from '../../comments/CommentList';
 import { getImageUrl } from '../../utils/imageUrl';
 import { getDisplayName } from '../../utils/getDisplayName';
 
 /**
- * FeedPost - A single post card in the feed
- * 
- * This component is memoized for performance optimization.
- * All handler props should be stable (wrapped in useCallback in parent).
+ * FeedPost — a single post card in the feed.
+ *
+ * Phase 3: the comment section is now rendered via the modular
+ * /src/comments/ components (CommentProvider + CommentList) which pull
+ * all comment state directly from CommentContext and CommentScopeContext.
+ * This removes ~34 comment-related props that were previously drilled from
+ * FeedContent → FeedPost → FeedPostComments → CommentThread.
+ *
+ * Remaining comment-related props (4):
+ *   onToggleCommentBox     — FeedPostActions' comment button handler
+ *   onToggleGifPicker      — forwarded to per-post CommentProvider
+ *   onSetReactionDetailsModal — forwarded to per-post CommentProvider
+ *   onSetReportModal          — forwarded to per-post CommentProvider
  */
 const FeedPost = memo(forwardRef(function FeedPost({
   // Post data
   post,
   postIndex,
-  
+
   // Current user
   currentUser,
-  
+
   // UI state
   isFirstPost,
   shouldEagerLoad,
@@ -36,22 +46,8 @@ const FeedPost = memo(forwardRef(function FeedPost({
   revealedPosts,
   autoHideContentWarnings,
   bookmarkedPosts,
-  postComments,
-  commentReplies,
-  showReplies,
-  showCommentBox,
-  commentText,
-  commentGif,
-  showGifPicker,
-  replyingToComment,
-  replyText,
-  replyGif,
-  editingCommentId,
-  editCommentText,
-  showReactionPicker,
-  commentRefs,
-  
-  // Handlers - Post actions
+
+  // Handlers — post actions
   onToggleDropdown,
   onPinPost,
   onEditPost,
@@ -60,54 +56,35 @@ const FeedPost = memo(forwardRef(function FeedPost({
   onBookmark,
   onReactionChange,
   onReactionCountClick,
-  
-  // Handlers - Post editing
+
+  // Handlers — post editing
   onEditPostTextChange,
   onEditPostVisibilityChange,
   onRemoveEditMedia,
   onSaveEditPost,
   onCancelEditPost,
   onEditPostKeyDown,
-  
-  // Handlers - Content
+
+  // Handlers — content
   onExpandPost,
   onRevealPost,
   onPhotoClick,
   onPollVote,
-  
-  // Handlers - Comments
+
+  // Handler — comment box toggle (used by FeedPostActions)
   onToggleCommentBox,
-  onCommentChange,
-  onCommentSubmit,
-  onCommentGifSelect,
+
+  // Handlers forwarded to per-post CommentProvider
   onToggleGifPicker,
-  
-  // Handlers - Comment actions
-  onEditComment,
-  onSaveEditComment,
-  onCancelEditComment,
-  onDeleteComment,
-  onCommentReaction,
-  onToggleReplies,
-  onReplyToComment,
-  onSetShowReactionPicker,
   onSetReactionDetailsModal,
   onSetReportModal,
-  
-  // Handlers - Replies
-  onReplyTextChange,
-  onReplyGifSelect,
-  onSubmitReply,
-  onCancelReply,
-  
-  // Utilities
+
+  // Utility — post-level reaction emoji lookup (used by FeedPostActions)
   getUserReactionEmoji,
 }, ref) {
-  // Check if this is a system post (from pryde_prompts account)
   const isSystemPost = post.isSystemPost || post.author?.isSystemAccount;
   const isOwnPost = post.author?._id === currentUser?.id || post.author?._id === currentUser?._id;
   const isBookmarked = bookmarkedPosts.includes(post._id);
-  const comments = postComments[post._id] || [];
   const isEditing = editingPostId === post._id;
   const isDropdownOpen = openDropdownId === post._id;
 
@@ -199,44 +176,15 @@ const FeedPost = memo(forwardRef(function FeedPost({
         </div>
       )}
 
-      {/* Comments Section */}
-      <FeedPostComments
-        post={post}
-        currentUser={currentUser}
-        comments={comments}
-        commentReplies={commentReplies}
-        showReplies={showReplies}
-        showCommentBox={showCommentBox}
-        commentText={commentText}
-        commentGif={commentGif}
-        showGifPicker={showGifPicker}
-        replyingToComment={replyingToComment}
-        replyText={replyText}
-        replyGif={replyGif}
-        editingCommentId={editingCommentId}
-        editCommentText={editCommentText}
-        showReactionPicker={showReactionPicker}
-        commentRefs={commentRefs}
-        onEditComment={onEditComment}
-        onSaveEditComment={onSaveEditComment}
-        onCancelEditComment={onCancelEditComment}
-        onDeleteComment={onDeleteComment}
-        onCommentReaction={onCommentReaction}
-        onToggleReplies={onToggleReplies}
-        onReplyToComment={onReplyToComment}
-        onSetShowReactionPicker={onSetShowReactionPicker}
-        onSetReactionDetailsModal={onSetReactionDetailsModal}
-        onSetReportModal={onSetReportModal}
-        onReplyTextChange={onReplyTextChange}
-        onReplyGifSelect={onReplyGifSelect}
-        onSubmitReply={onSubmitReply}
-        onCancelReply={onCancelReply}
-        onCommentChange={onCommentChange}
-        onCommentGifSelect={onCommentGifSelect}
-        onCommentSubmit={onCommentSubmit}
+      {/* Comments Section — modular, context-driven */}
+      <CommentProvider
+        postId={post._id}
         onToggleGifPicker={onToggleGifPicker}
-        getUserReactionEmoji={getUserReactionEmoji}
-      />
+        setReactionDetailsModal={onSetReactionDetailsModal}
+        setReportModal={onSetReportModal}
+      >
+        <CommentList />
+      </CommentProvider>
     </div>
   );
 }));
@@ -244,4 +192,3 @@ const FeedPost = memo(forwardRef(function FeedPost({
 FeedPost.displayName = 'FeedPost';
 
 export default FeedPost;
-

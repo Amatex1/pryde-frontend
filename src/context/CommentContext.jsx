@@ -28,7 +28,7 @@
  *   - Changes are limited to CommentContext.jsx only
  */
 
-import { useState, useEffect, useCallback, useRef, useMemo, createContext, useContext } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo, createContext, useContext, } from 'react';
 import api from '../utils/api';
 import { setupSocketListeners } from '../utils/socketHelpers';
 import { createEventBatcher, createKeyedBatcher } from '../utils/socketBatcher';
@@ -100,6 +100,12 @@ export function CommentProvider({
   // ── Internal refs ─────────────────────────────────────────────────────────
   const socketBatchersRef = useRef(null);
   const listenersSetUpRef = useRef(false);
+
+  // ── Shared comment DOM ref (Phase 3: moved from FeedContent) ──────────────
+  // All per-post CommentProvider instances write into this single ref so that
+  // FeedContent's URL-navigation logic can find any comment's DOM node by ID
+  // regardless of which post it belongs to.
+  const commentRefs = useRef({});
 
   // ─────────────────────────────────────────────────────────────────────────
   // Effect: Scroll lock when mobile comment sheet is open
@@ -769,6 +775,14 @@ export function CommentProvider({
     commentsById,      setCommentsById,
     commentsByPost,    setCommentsByPost,
     repliesByParent,   setRepliesByParent,
+
+    // ── Phase 3 additions ───────────────────────────────────────────────────
+    // commentRefs: shared DOM ref for all comment nodes across all posts;
+    //   per-post CommentProvider reads this instead of creating its own.
+    // showGifPicker: exposed so per-post CommentProvider can read it directly
+    //   from context (avoiding an extra prop through FeedPost).
+    commentRefs,
+    showGifPicker,
 
     // ── Other state (unchanged from Phase 1)
     showReplies,       setShowReplies,

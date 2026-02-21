@@ -10,8 +10,9 @@ import ReactionDetailsModal from '../components/ReactionDetailsModal';
 import FormattedText from '../components/FormattedText';
 import PostSkeleton from '../components/PostSkeleton';
 import OptimizedImage from '../components/OptimizedImage';
-import CommentThread from '../components/CommentThread';
 import CommentSheet from '../components/comments/CommentSheet';
+import PostCommentScope from '../comments/CommentProvider';
+import CommentList from '../comments/CommentList';
 import ReactionButton from '../components/ReactionButton';
 import GifPicker from '../components/GifPicker';
 import PollCreator from '../components/PollCreator';
@@ -76,39 +77,23 @@ function FeedContent({
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   // ── Comment state and handlers from CommentContext ──────────────────────
+  // Phase 3: most comment state/handlers are consumed directly by the new
+  // /src/comments/ components via useComments() + useCommentScope().
+  // FeedContent only needs what it uses in its own JSX (commentModal, CommentSheet
+  // input, draft restore, and the post-reaction setShowReactionPicker call).
   const {
-    postComments,       setPostComments,
-    commentReplies,     setCommentReplies,
-    showReplies,        setShowReplies,
     commentText,        setCommentText,
     commentGif,         setCommentGif,
-    replyText,          setReplyText,
-    replyGif,           setReplyGif,
     replyingToComment,  setReplyingToComment,
-    editingCommentId,
-    editCommentText,
-    showCommentBox,     setShowCommentBox,
+    showReactionPicker, setShowReactionPicker,
     commentSheetOpen,   setCommentSheetOpen,
     commentModalOpen,   setCommentModalOpen,
     openCommentDropdownId, setOpenCommentDropdownId,
-    showReactionPicker, setShowReactionPicker,
-    fetchCommentsForPost,
-    fetchRepliesForComment,
-    toggleReplies,
-    handleCommentReaction,
+    showCommentBox,
     toggleCommentBox,
     handleCommentSubmit,
     handleCommentChange,
-    handleEditComment,
-    handleSaveEditComment,
-    handleCancelEditComment,
-    handleDeleteComment,
-    handleReplyToComment,
-    handleSubmitReply,
-    handleCancelReply,
-    handleCommentGifSelect,
-    handleReplyTextChange,
-    handleReplyGifSelect,
+    commentRefs,        // Phase 3: moved from FeedContent's own useRef
   } = useComments();
 
   // 🚀 LCP OPTIMIZATION: initialPosts are already hydrated via the outer Feed wrapper
@@ -196,7 +181,7 @@ function FeedContent({
 
   // currentUser comes from the outer Feed wrapper as a prop
   const postRefs = useRef({});
-  const commentRefs = useRef({});
+  // commentRefs now comes from CommentContext (moved in Phase 3)
   const listenersSetUpRef = useRef(false);
   const autoSaveTimerRef = useRef(null); // Auto-save timer
   const scrollHandledRef = useRef(false); // Track if we've already scrolled to a post from URL params
@@ -1821,20 +1806,6 @@ function FeedContent({
                       revealedPosts={revealedPosts}
                       autoHideContentWarnings={autoHideContentWarnings}
                       bookmarkedPosts={bookmarkedPosts}
-                      postComments={postComments}
-                      commentReplies={commentReplies}
-                      showReplies={showReplies}
-                      showCommentBox={showCommentBox}
-                      commentText={commentText}
-                      commentGif={commentGif}
-                      showGifPicker={showGifPicker}
-                      replyingToComment={replyingToComment}
-                      replyText={replyText}
-                      replyGif={replyGif}
-                      editingCommentId={editingCommentId}
-                      editCommentText={editCommentText}
-                      showReactionPicker={showReactionPicker}
-                      commentRefs={commentRefs}
                       onToggleDropdown={toggleDropdown}
                       onPinPost={handlePinPost}
                       onEditPost={handleEditPost}
@@ -1854,24 +1825,9 @@ function FeedContent({
                       onPhotoClick={handlePhotoClick}
                       onPollVote={handlePollVote}
                       onToggleCommentBox={toggleCommentBox}
-                      onCommentChange={handleCommentChange}
-                      onCommentSubmit={handleCommentSubmit}
-                      onCommentGifSelect={handleCommentGifSelect}
                       onToggleGifPicker={handleToggleGifPicker}
-                      onEditComment={handleEditComment}
-                      onSaveEditComment={handleSaveEditComment}
-                      onCancelEditComment={handleCancelEditComment}
-                      onDeleteComment={handleDeleteComment}
-                      onCommentReaction={handleCommentReaction}
-                      onToggleReplies={toggleReplies}
-                      onReplyToComment={handleReplyToComment}
-                      onSetShowReactionPicker={handleSetShowReactionPicker}
                       onSetReactionDetailsModal={handleSetReactionDetailsModal}
                       onSetReportModal={handleSetReportModal}
-                      onReplyTextChange={handleReplyTextChange}
-                      onReplyGifSelect={handleReplyGifSelect}
-                      onSubmitReply={handleSubmitReply}
-                      onCancelReply={handleCancelReply}
                       getUserReactionEmoji={getUserReactionEmoji}
                     />
                   );
@@ -2212,175 +2168,16 @@ function FeedContent({
       {/* Mobile Comment Sheet - Full Discussion */}
       {commentSheetOpen && (
         <CommentSheet onClose={() => { setCommentSheetOpen(null); setReplyingToComment(null); }}>
-          {/* Comment Input at Top */}
-          <form
-            onSubmit={(e) => {
-              handleCommentSubmit(commentSheetOpen, e);
-            }}
-            className="comment-sheet-input-form"
+          {/* Phase 3: replaced ~100 lines of inline JSX with modular components */}
+          <PostCommentScope
+            postId={commentSheetOpen}
+            onToggleGifPicker={handleToggleGifPicker}
+            setReactionDetailsModal={setReactionDetailsModal}
+            setReportModal={setReportModal}
+            isFullSheet
           >
-            <div className="comment-input-wrapper">
-              <div className="comment-user-avatar">
-                {currentUser?.profilePhoto ? (
-                  <OptimizedImage
-                    src={getImageUrl(currentUser.profilePhoto)}
-                    alt="You"
-                    className="avatar-image"
-                    imageSize="avatar"
-                  />
-                ) : (
-                  <span>{currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                )}
-              </div>
-              <input
-                type="text"
-                value={commentText[commentSheetOpen] || ''}
-                onChange={(e) => handleCommentChange(commentSheetOpen, e.target.value)}
-                placeholder="Add a comment..."
-                className="comment-input"
-              />
-              <button
-                type="button"
-                onClick={() => setShowGifPicker(showGifPicker === `sheet-comment-${commentSheetOpen}` ? null : `sheet-comment-${commentSheetOpen}`)}
-                className="btn-gif"
-                title="Add GIF"
-              >
-                GIF
-              </button>
-              <button
-                type="submit"
-                className="comment-submit-btn"
-                disabled={!commentText[commentSheetOpen]?.trim() && !commentGif[commentSheetOpen]}
-              >
-                ➤
-              </button>
-            </div>
-            {/* GIF Preview */}
-            {commentGif[commentSheetOpen] && (
-              <div className="comment-gif-preview">
-                <img src={commentGif[commentSheetOpen]} alt="Selected GIF" />
-                <button
-                  type="button"
-                  className="btn-remove-gif"
-                  onClick={() => setCommentGif(prev => ({ ...prev, [commentSheetOpen]: null }))}
-                >
-                  ✕
-                </button>
-              </div>
-            )}
-            {/* GIF Picker */}
-            {showGifPicker === `sheet-comment-${commentSheetOpen}` && (
-              <GifPicker
-                onGifSelect={(gifUrl) => {
-                  setCommentGif(prev => ({ ...prev, [commentSheetOpen]: gifUrl }));
-                  setShowGifPicker(null);
-                }}
-                onClose={() => setShowGifPicker(null)}
-              />
-            )}
-          </form>
-
-          {/* Reply Input Box - Shown when replying to a comment in the sheet */}
-          {replyingToComment?.postId === commentSheetOpen && (
-            <form onSubmit={handleSubmitReply} className="comment-sheet-reply-form">
-              <div className="reply-input-header">
-                <span>Replying to comment</span>
-                <button type="button" onClick={handleCancelReply} className="btn-cancel-reply-small">✕</button>
-              </div>
-              <div className="comment-input-wrapper">
-                <div className="comment-user-avatar">
-                  {currentUser?.profilePhoto ? (
-                    <OptimizedImage
-                      src={getImageUrl(currentUser.profilePhoto)}
-                      alt="You"
-                      className="avatar-image"
-                      imageSize="avatar"
-                    />
-                  ) : (
-                    <span>{currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                  )}
-                </div>
-                <input
-                  type="text"
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  placeholder={replyGif ? "Caption, if you'd like" : "Write a reply..."}
-                  className="comment-input"
-                  autoFocus
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowGifPicker(showGifPicker === `sheet-reply-${replyingToComment.commentId}` ? null : `sheet-reply-${replyingToComment.commentId}`)}
-                  className="btn-gif"
-                  title="Add GIF"
-                >
-                  GIF
-                </button>
-                <button
-                  type="submit"
-                  className="comment-submit-btn"
-                  disabled={!replyText?.trim() && !replyGif}
-                >
-                  ➤
-                </button>
-              </div>
-              {/* Reply GIF Preview */}
-              {replyGif && (
-                <div className="comment-gif-preview">
-                  <img src={replyGif} alt="Selected GIF" />
-                  <button
-                    type="button"
-                    className="btn-remove-gif"
-                    onClick={() => setReplyGif(null)}
-                  >
-                    ✕
-                  </button>
-                </div>
-              )}
-              {/* Reply GIF Picker */}
-              {showGifPicker === `sheet-reply-${replyingToComment.commentId}` && (
-                <GifPicker
-                  onGifSelect={(gifUrl) => {
-                    setReplyGif(gifUrl);
-                    setShowGifPicker(null);
-                  }}
-                  onClose={() => setShowGifPicker(null)}
-                />
-              )}
-            </form>
-          )}
-
-          {/* All Comments with Full Replies */}
-          <div className="comment-sheet-threads">
-            {postComments[commentSheetOpen] && postComments[commentSheetOpen]
-              .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)
-              .map((comment) => (
-                <CommentThread
-                  key={comment._id}
-                  comment={comment}
-                  replies={commentReplies[comment._id] || []}
-                  currentUser={currentUser}
-                  postId={commentSheetOpen}
-                  showReplies={showReplies}
-                  editingCommentId={editingCommentId}
-                  editCommentText={editCommentText}
-                  showReactionPicker={showReactionPicker}
-                  commentRefs={commentRefs}
-                  getUserReactionEmoji={getUserReactionEmoji}
-                  handleEditComment={handleEditComment}
-                  handleSaveEditComment={handleSaveEditComment}
-                  handleCancelEditComment={handleCancelEditComment}
-                  handleDeleteComment={handleDeleteComment}
-                  handleCommentReaction={handleCommentReaction}
-                  toggleReplies={toggleReplies}
-                  handleReplyToComment={handleReplyToComment}
-                  setShowReactionPicker={setShowReactionPicker}
-                  setReactionDetailsModal={setReactionDetailsModal}
-                  setReportModal={setReportModal}
-                  isFullSheet={true}
-                />
-              ))}
-          </div>
+            <CommentList />
+          </PostCommentScope>
         </CommentSheet>
       )}
 
