@@ -89,3 +89,54 @@
 .push-prompt-btn.secondary:hover:not(:disabled) {
   background: var(--bg-hover, rgba(255, 255, 255, 0.12));
 }
+
+/* ============================================
+   iOS Install Guide Styles
+   ============================================ */
+
+.push-prompt--ios {
+  gap: 12px;
+}
+
+.ios-install-steps {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ios-install-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+  line-height: 1.45;
+}
+
+.ios-install-steps li strong {
+  color: var(--text-primary, #fff);
+  font-weight: 600;
+}
+
+.ios-step-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--accent-color, #7c6aff);
+  border-radius: 8px;
+  color: #fff;
+  margin-top: 1px;
+}
+
+/* On iOS the prompt sits above the Safari toolbar — add extra bottom padding */
+@supports (-webkit-touch-callout: none) {
+  .push-prompt-overlay {
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  }
+}

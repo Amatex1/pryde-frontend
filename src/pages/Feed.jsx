@@ -172,6 +172,7 @@ function Feed() {
   const listenersSetUpRef = useRef(false);
   const autoSaveTimerRef = useRef(null); // Auto-save timer
   const scrollHandledRef = useRef(false); // Track if we've already scrolled to a post from URL params
+  const scrollLockYRef = useRef(null); // Saves window.scrollY before body scroll-lock so it survives effect cleanup
 
   // ⚡ PHASE 2C: Socket event batchers for performance
   // These batch multiple socket events within 100ms to reduce React re-renders
@@ -301,26 +302,25 @@ function Feed() {
   // Scroll lock when mobile comment sheet is open
   useEffect(() => {
     if (commentSheetOpen) {
-      // Save current scroll position
-      const scrollY = window.scrollY;
+      // Save scroll position in a ref so it survives effect cleanup
+      scrollLockYRef.current = window.scrollY;
       document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
+      document.body.style.top = `-${scrollLockYRef.current}px`;
       document.body.style.left = '0';
       document.body.style.right = '0';
       document.body.style.overflow = 'hidden';
       document.documentElement.style.overflow = 'hidden';
-    } else {
-      // Restore scroll position
-      const scrollY = document.body.style.top;
+    } else if (scrollLockYRef.current !== null) {
+      // Restore scroll position from the ref (body.style.top is already cleared by cleanup)
+      const y = scrollLockYRef.current;
+      scrollLockYRef.current = null;
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.left = '';
       document.body.style.right = '';
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
-      }
+      window.scrollTo(0, y);
     }
     return () => {
       document.body.style.position = '';
