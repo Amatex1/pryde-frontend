@@ -533,7 +533,7 @@ export function AuthProvider({ children }) {
         const currentPath = window.location.pathname;
         const publicPaths = ['/login', '/register', '/', '/forgot-password', '/reset-password'];
         if (!publicPaths.includes(currentPath) && !currentPath.startsWith('/terms') && !currentPath.startsWith('/privacy')) {
-          window.location.href = '/login';
+          window.location.replace('/login');
         }
       }
     });

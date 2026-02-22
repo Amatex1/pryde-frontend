@@ -460,7 +460,7 @@ export const connectSocket = (userId, authState = null) => {
             }
 
             // Redirect to login
-            window.location.href = '/login';
+            window.location.replace('/login');
         });
 
         // Log transport upgrades

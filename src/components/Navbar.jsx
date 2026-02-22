@@ -137,26 +137,45 @@ function Navbar({ onMenuClick }) {
         <GlobalSearch variant="compact" />
       </div>
 
-        {/* Mobile Hamburger Menu - Only render on non-desktop */}
+        {/* Mobile right group: Messages + Notifications + Hamburger */}
         {!isDesktop && (
-          <button
-            className="mobile-hamburger-btn"
-            onPointerUp={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              // Use external handler if provided, otherwise toggle internal state
-              if (isExternallyControlled) {
-                onMenuClick();
-              } else {
-                setShowMobileMenu(prev => !prev);
-              }
-            }}
-            aria-label="Open menu"
-            aria-expanded={false}
-            aria-controls="mobile-menu"
-          >
-            <span aria-hidden="true">☰</span>
-          </button>
+          <div className="navbar-mobile-right">
+            {/* Quick-access: Messages with unread badge */}
+            <Link
+              to="/messages"
+              className="navbar-mobile-icon-btn"
+              aria-label={totalUnread > 0 ? `Messages, ${totalUnread} unread` : 'Messages'}
+            >
+              <span className="navbar-mobile-icon" aria-hidden="true">💬</span>
+              {totalUnread > 0 && (
+                <span className="navbar-mobile-badge" aria-hidden="true">
+                  {totalUnread > 9 ? '9+' : totalUnread}
+                </span>
+              )}
+            </Link>
+
+            {/* Quick-access: Notification bell (reuses existing component with its live badge) */}
+            <NotificationBell />
+
+            {/* Hamburger — opens side drawer */}
+            <button
+              className="mobile-hamburger-btn"
+              onPointerUp={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (isExternallyControlled) {
+                  onMenuClick();
+                } else {
+                  setShowMobileMenu(prev => !prev);
+                }
+              }}
+              aria-label="Open menu"
+              aria-expanded={false}
+              aria-controls="mobile-menu"
+            >
+              <span aria-hidden="true">☰</span>
+            </button>
+          </div>
         )}
 
         {/* Mobile Menu Overlay - Only render when using internal state (legacy) */}

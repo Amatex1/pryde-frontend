@@ -384,12 +384,73 @@
   line-height: 1;
   transition: all 0.15s ease;
   z-index: calc(var(--z-modal, 1001) + 100); /* Above mobile menu drawer */
-  margin-left: auto;
   flex-shrink: 0;
   position: relative;
   -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
   touch-action: manipulation; /* Prevent double-tap zoom */
   user-select: none;
+  /* margin-left: auto removed — parent .navbar-mobile-right handles alignment */
+}
+
+/* ========================================
+   MOBILE RIGHT GROUP
+   Messages icon + Notification bell + Hamburger
+   ======================================== */
+
+.navbar-mobile-right {
+  display: none; /* hidden on desktop */
+  align-items: center;
+  gap: 2px;
+  margin-left: auto; /* push entire group to the right */
+  flex-shrink: 0;
+}
+
+.navbar-mobile-icon-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-main);
+  text-decoration: none;
+  transition: background 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  flex-shrink: 0;
+}
+
+.navbar-mobile-icon-btn:hover {
+  background: var(--bg-hover);
+}
+
+.navbar-mobile-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.navbar-mobile-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--color-danger, #e53e3e);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  border: 2px solid var(--bg-card);
+  line-height: 1;
+  pointer-events: none;
 }
 
 .mobile-hamburger-btn span {
@@ -653,8 +714,14 @@
   }
 }
 
-/* Mobile & Tablet - Show hamburger menu up to 1023px (matches MobileNavDrawer visibility) */
+/* Mobile & Tablet - Show mobile group up to 1023px (matches MobileNavDrawer visibility) */
 @media (max-width: 1023px) {
+  /* Show the mobile right group (messages + bell + hamburger) */
+  .navbar-mobile-right {
+    display: flex;
+  }
+
+  /* Show the hamburger inside the group */
   .mobile-hamburger-btn {
     display: flex;
   }
@@ -667,7 +734,12 @@
     display: flex;
   }
 
-  /* Hide desktop navbar items on mobile/tablet, show only hamburger */
+  /* Hide desktop navbar-actions (dropdowns + profile trigger) on mobile */
+  .navbar-actions {
+    display: none !important;
+  }
+
+  /* Legacy: hide any stray navbar-user children (safety net) */
   .navbar-user > *:not(.mobile-hamburger-btn) {
     display: none !important;
   }

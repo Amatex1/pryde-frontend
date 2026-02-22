@@ -250,11 +250,16 @@ export const logout = async () => {
 
   console.log('🎉 Logout complete - redirecting to login');
 
-  // Reset logout flag before redirect
-  isLoggingOut = false;
+  // NOTE: Do NOT reset isLoggingOut here. Keeping it true until the page
+  // actually navigates prevents any last-moment Axios 401 interceptors
+  // (which aren't cancelled by abortAllRequests) from firing and
+  // calling logout() a second time, which would cause a double-redirect.
+  // The flag resets naturally on page reload since it's module-level state.
 
-  // Immediately redirect to login to prevent flash of protected content
-  window.location.href = '/login';
+  // Use replace() instead of href assignment to:
+  // 1. Prevent the browser's bfcache from flashing the old feed page on mobile
+  // 2. Remove the feed from history so the Back button doesn't return to it
+  window.location.replace('/login');
 };
 
 export const isManualLogout = () => {

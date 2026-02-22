@@ -282,11 +282,11 @@ api.interceptors.response.use(
 
         // Only redirect if not already on login/register page
         if (currentPath !== '/login' && currentPath !== '/register') {
-          // Only add expired=true if it was NOT a manual logout
+          // Use replace() to prevent bfcache flash and remove auth'd page from history
           if (wasManualLogout) {
-            window.location.href = '/login';
+            window.location.replace('/login');
           } else {
-            window.location.href = '/login?expired=true';
+            window.location.replace('/login?expired=true');
           }
         }
 
