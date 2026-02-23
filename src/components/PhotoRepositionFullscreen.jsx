@@ -57,13 +57,25 @@ export default function PhotoRepositionInline({
     setZoom(1);
   }, []);
 
-  // Non-destructive: save position metadata, not a new blob
+  // Non-destructive: convert croppedArea percentages → background-position percentages
   const handleSave = useCallback(() => {
-    onSave({ x: crop.x, y: crop.y, scale: zoom });
-  }, [crop, zoom, onSave]);
+    let bgX = 50, bgY = 50;
+    if (croppedAreaPct) {
+      bgX = croppedAreaPct.width >= 100
+        ? 50
+        : Math.max(0, Math.min(100, croppedAreaPct.x / (100 - croppedAreaPct.width) * 100));
+      bgY = croppedAreaPct.height >= 100
+        ? 50
+        : Math.max(0, Math.min(100, croppedAreaPct.y / (100 - croppedAreaPct.height) * 100));
+    }
+    onSave({ bgX, bgY, scale: zoom });
+  }, [croppedAreaPct, zoom, onSave]);
 
-  // No-op — we don't need pixel crop data anymore
-  const noop = useCallback(() => {}, []);
+  // Capture croppedArea percentages for accurate background-position save
+  const [croppedAreaPct, setCroppedAreaPct] = useState(null);
+  const handleCropComplete = useCallback((croppedArea) => {
+    setCroppedAreaPct(croppedArea);
+  }, []);
 
   // cropSize fills the container exactly (cover); avatar uses 1:1 aspect
   const cropperSizeProps = cropSize
@@ -96,7 +108,7 @@ export default function PhotoRepositionInline({
           cropShape={type === "avatar" ? "round" : "rect"}
           showGrid={false}
           onCropChange={handleCropChange}
-          onCropComplete={noop}
+          onCropComplete={handleCropComplete}
           onZoomChange={handleZoomChange}
           style={{
             containerStyle: { backgroundColor: "rgba(0, 0, 0, 0.35)" },

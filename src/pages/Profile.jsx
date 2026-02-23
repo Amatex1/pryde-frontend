@@ -1694,14 +1694,12 @@ function Profile() {
                     style={{
                       backgroundImage: `url(${getImageUrl(user.coverPhoto)})`,
                       backgroundSize: 'cover',
-                      backgroundPosition: 'center',
+                      backgroundPosition: user.coverPhotoPosition?.bgX != null
+                        ? `${user.coverPhotoPosition.bgX}% ${user.coverPhotoPosition.bgY}%`
+                        : 'center',
                       width: '100%',
                       height: '100%',
                       opacity: 0.92,
-                      transform: user.coverPhotoPosition
-                        ? `translate(${user.coverPhotoPosition.x}px, ${user.coverPhotoPosition.y}px) scale(${user.coverPhotoPosition.scale || 1})`
-                        : 'none',
-                      transformOrigin: 'center',
                       cursor: 'pointer'
                     }}
                   />
@@ -1778,15 +1776,11 @@ function Profile() {
                 style={{
                   backgroundImage: `url(${getImageUrl(user.profilePhoto)})`,
                   backgroundSize: 'cover',
-                  backgroundPosition: 'center',
+                  backgroundPosition: user.profilePhotoPosition?.bgX != null
+                    ? `${user.profilePhotoPosition.bgX}% ${user.profilePhotoPosition.bgY}%`
+                    : 'center',
                   width: '100%',
                   height: '100%',
-                  transform: user.profilePhotoPosition &&
-                    (user.profilePhotoPosition.x !== 50 || user.profilePhotoPosition.y !== 50) &&
-                    (user.profilePhotoPosition.x !== 0 || user.profilePhotoPosition.y !== 0 || (user.profilePhotoPosition.scale && user.profilePhotoPosition.scale !== 1))
-                    ? `translate(${user.profilePhotoPosition.x}px, ${user.profilePhotoPosition.y}px) scale(${user.profilePhotoPosition.scale || 1})`
-                    : 'none',
-                  transformOrigin: 'center',
                   cursor: 'pointer'
                 }}
               />
