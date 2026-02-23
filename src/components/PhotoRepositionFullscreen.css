@@ -29,9 +29,8 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  height: 280px;
-  min-height: 0;
-  flex: 1;
+  flex: 1 1 280px;
+  min-height: 200px;
 }
 
 /* ── Transient zoom badge ── */
