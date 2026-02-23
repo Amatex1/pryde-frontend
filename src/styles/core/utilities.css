@@ -1,0 +1,778 @@
+/**
+ * ========================================
+ * CORE UTILITIES
+ * Consolidated from:
+ *   - hover-utilities.css   (touch-safe hover states)
+ *   - cursors.css           (custom cursor system)
+ *   - responsive-modals.css (responsive modal system)
+ *   - hardening.css         (global hardening pass)
+ * ========================================
+ */
+
+/* ════════════════════════════════════════════
+   SOURCE: hover-utilities.css
+   HOVER UTILITIES
+   Touch-safe hover styles
+   ════════════════════════════════════════════ */
+
+/* ========================================
+   HOVER DETECTION UTILITIES
+   ======================================== */
+
+/* Only apply hover effects on devices that support hover */
+@media (hover: hover) and (pointer: fine) {
+  /* Standard button hover */
+  .btn-hover:hover:not(:disabled),
+  .pryde-btn:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+  }
+
+  /* Card hover effects */
+  .card-hover:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+
+  /* Interactive element hover */
+  .interactive:hover {
+    background-color: var(--bg-hover, rgba(108, 92, 231, 0.08));
+  }
+
+  /* Icon button hover */
+  .icon-btn:hover:not(:disabled) {
+    background-color: var(--bg-hover, rgba(108, 92, 231, 0.08));
+    transform: scale(1.05);
+  }
+
+  /* Link hover */
+  .link-hover:hover {
+    color: var(--accent-hover, #5a4bd8);
+    text-decoration: underline;
+  }
+}
+
+/* ========================================
+   TOUCH DEVICE ALTERNATIVES
+   ======================================== */
+
+/* On touch devices, use :active instead of :hover */
+@media (hover: none) {
+  /* Active state for touch feedback */
+  .btn-hover:active:not(:disabled),
+  .pryde-btn:active:not(:disabled) {
+    filter: brightness(0.95);
+    transform: scale(0.98);
+  }
+
+  /* Card active state */
+  .card-hover:active {
+    background-color: var(--bg-hover, rgba(108, 92, 231, 0.04));
+  }
+
+  /* Interactive active state */
+  .interactive:active {
+    background-color: var(--bg-hover, rgba(108, 92, 231, 0.08));
+  }
+
+  /* Icon button active */
+  .icon-btn:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+}
+
+/* ========================================
+   GLOBAL TOUCH-ACTION CONSISTENCY
+   ======================================== */
+
+/* Standard touch behavior for all interactive elements */
+button,
+a,
+[role="button"],
+.clickable,
+.interactive {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Disable tap highlight on iOS */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+/* ════════════════════════════════════════════
+   SOURCE: cursors.css
+   CURSOR CUSTOMIZATION STYLES
+   Optional, accessibility-safe cursor styles
+   ════════════════════════════════════════════ */
+
+/*
+   Principles:
+   - Default is system cursor (no overrides)
+   - Custom cursors apply only to content areas
+   - Forms, inputs, buttons retain standard behavior
+   - Respects prefers-reduced-motion
+   - All options work at 200% zoom
+*/
+
+/* =========================================
+   BASE: Ensure interactive elements always
+   use appropriate system cursors
+   ========================================= */
+
+/* Always use pointer for interactive elements regardless of custom cursor */
+[data-cursor] a,
+[data-cursor] button,
+[data-cursor] [role="button"],
+[data-cursor] .btn,
+[data-cursor] .button,
+[data-cursor] input[type="submit"],
+[data-cursor] input[type="button"],
+[data-cursor] .clickable,
+[data-cursor] .nav-link,
+[data-cursor] .dropdown-item,
+[data-cursor] .toggle-switch,
+[data-cursor] .reaction-button,
+[data-cursor] .post-action,
+[data-cursor] .icon-button {
+  cursor: pointer !important;
+}
+
+/* Always use text cursor for text inputs */
+[data-cursor] input[type="text"],
+[data-cursor] input[type="email"],
+[data-cursor] input[type="password"],
+[data-cursor] input[type="search"],
+[data-cursor] input[type="url"],
+[data-cursor] input[type="tel"],
+[data-cursor] input[type="number"],
+[data-cursor] textarea,
+[data-cursor] [contenteditable="true"],
+[data-cursor] .text-input,
+[data-cursor] .editor-content {
+  cursor: text !important;
+}
+
+/* =========================================
+   SOFT-ROUNDED CURSOR
+   ========================================= */
+
+[data-cursor="soft-rounded"] {
+  cursor: url('/cursors/soft-rounded.svg') 4 3, auto;
+}
+
+[data-cursor="soft-rounded"] .page-container,
+[data-cursor="soft-rounded"] .app-container,
+[data-cursor="soft-rounded"] main {
+  cursor: url('/cursors/soft-rounded.svg') 4 3, auto;
+}
+
+/* =========================================
+   CALM-DOT CURSOR
+   ========================================= */
+
+[data-cursor="calm-dot"] {
+  cursor: url('/cursors/calm-dot.svg') 8 8, auto;
+}
+
+[data-cursor="calm-dot"] .page-container,
+[data-cursor="calm-dot"] .app-container,
+[data-cursor="calm-dot"] main {
+  cursor: url('/cursors/calm-dot.svg') 8 8, auto;
+}
+
+/* =========================================
+   HIGH-CONTRAST CURSOR
+   ========================================= */
+
+[data-cursor="high-contrast"] {
+  cursor: url('/cursors/high-contrast.svg') 5 4, auto;
+}
+
+[data-cursor="high-contrast"] .page-container,
+[data-cursor="high-contrast"] .app-container,
+[data-cursor="high-contrast"] main {
+  cursor: url('/cursors/high-contrast.svg') 5 4, auto;
+}
+
+/* High-contrast cursor for interactive elements */
+[data-cursor="high-contrast"] a:hover,
+[data-cursor="high-contrast"] button:hover,
+[data-cursor="high-contrast"] [role="button"]:hover {
+  cursor: pointer !important;
+}
+
+/* =========================================
+   REDUCED-MOTION CURSOR
+   ========================================= */
+
+[data-cursor="reduced-motion"],
+[data-cursor="reduced-motion"] * {
+  cursor: auto;
+}
+
+/* Disable cursor-related transitions */
+[data-cursor="reduced-motion"] *,
+[data-cursor="reduced-motion"] *::before,
+[data-cursor="reduced-motion"] *::after {
+  transition-property: none !important;
+}
+
+/* =========================================
+   ACCESSIBILITY: prefers-reduced-motion
+   ========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  [data-cursor],
+  [data-cursor] .page-container,
+  [data-cursor] .app-container,
+  [data-cursor] main {
+    cursor: auto !important;
+  }
+}
+
+/* =========================================
+   ACCESSIBILITY: prefers-contrast
+   ========================================= */
+
+@media (prefers-contrast: more) {
+  [data-cursor="soft-rounded"],
+  [data-cursor="calm-dot"] {
+    cursor: url('/cursors/high-contrast.svg') 5 4, auto;
+  }
+}
+
+
+/* ════════════════════════════════════════════
+   SOURCE: responsive-modals.css
+   RESPONSIVE MODAL SYSTEM
+   Optimized for mobile, tablet, and desktop
+   ════════════════════════════════════════════ */
+
+/* ============================================
+   BASE MODAL STYLES
+   ============================================ */
+
+/* Modal overlay - covers entire screen */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Base modal styles */
+.modal {
+  background: var(--bg-primary, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+}
+
+/* Modal header */
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  background: var(--bg-primary, #ffffff);
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: none;
+  background: transparent;
+}
+
+.modal-close:hover {
+  background: var(--hover-bg, #f3f4f6);
+}
+
+/* Modal body - scrollable content */
+.modal-body {
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Modal footer */
+.modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  background: var(--bg-primary, #ffffff);
+}
+
+/* ==================== MOBILE (≤768px) ==================== */
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal {
+    width: 100vw;
+    max-width: 100vw;
+    height: 95vh;
+    height: 95dvh;
+    max-height: 95vh;
+    max-height: 95dvh;
+    border-radius: 16px 16px 0 0;
+    animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes modalSlideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .modal-fullscreen {
+    height: 100vh;
+    height: 100dvh;
+    border-radius: 0;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .modal-footer button {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .modal-close {
+    width: 44px;
+    height: 44px;
+  }
+
+  .modal-body {
+    padding: 16px;
+  }
+}
+
+/* ==================== TABLET (769px - 1280px) ==================== */
+@media (min-width: 769px) and (max-width: 1280px) {
+  .modal {
+    width: 600px;
+    max-width: 90vw;
+    max-height: 85vh;
+    max-height: 85dvh;
+    border-radius: 16px;
+    animation: modalScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes modalScaleIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1280px) and (orientation: landscape) {
+  .modal {
+    width: 700px;
+    max-height: 80vh;
+    max-height: 80dvh;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1280px) and (orientation: portrait) {
+  .modal {
+    max-height: 90vh;
+    max-height: 90dvh;
+  }
+}
+
+/* ==================== DESKTOP (≥1281px) ==================== */
+@media (min-width: 1281px) {
+  .modal {
+    width: 700px;
+    max-width: 80vw;
+    max-height: 80vh;
+    max-height: 80dvh;
+    border-radius: 16px;
+    animation: modalScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .modal-large { width: 900px; }
+  .modal-small { width: 500px; }
+  .modal-xl { width: 1200px; max-width: 90vw; }
+}
+
+/* ==================== PWA-SPECIFIC STYLES ==================== */
+@media (display-mode: standalone) {
+  .modal-header {
+    padding-top: max(16px, env(safe-area-inset-top));
+  }
+
+  .modal-footer {
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+
+  .modal-fullscreen {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* ==================== ACCESSIBILITY ==================== */
+.modal:focus { outline: none; }
+
+.modal-close:focus-visible {
+  outline: 2px solid var(--primary-color, #7c3aed);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal, .modal-overlay {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+
+/* ════════════════════════════════════════════
+   SOURCE: hardening.css
+   GLOBAL HARDENING PASS
+   Prevent layout overflow, hydration shifts,
+   dark mode consistency, quiet mode consistency
+   ════════════════════════════════════════════ */
+
+/* ========================================
+   PART 1: GLOBAL LAYOUT STABILITY
+   Prevent flex/grid children from breaking containers
+   ======================================== */
+
+/* Flex and grid children should shrink to fit */
+.flex,
+.grid,
+[class*="flex"],
+[class*="grid"] {
+  min-width: 0;
+}
+
+/* All major containers must respect boundaries */
+.page-container,
+.card,
+.panel,
+.surface,
+.modal-content,
+.drawer-content {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Prevent any element from causing horizontal scroll */
+.feed-main,
+.profile-content,
+.messages-container,
+.settings-container,
+.admin-container,
+.groups-container {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* ========================================
+   PART 2: TABLE & DENSE UI RULES
+   All tables must be wrapped for horizontal scroll
+   ======================================== */
+
+/* Generic table wrapper utility class */
+.table-wrapper {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* All tables should have minimum widths to prevent squishing */
+.table-wrapper table,
+table.data-table {
+  min-width: 800px;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/* Table cells should not wrap unexpectedly */
+.table-wrapper th,
+.table-wrapper td,
+table.data-table th,
+table.data-table td {
+  white-space: nowrap;
+  vertical-align: middle;
+  padding: 0.75rem 1rem;
+}
+
+/* Allow text wrapping in specific content columns */
+.table-wrapper td.wrap-text,
+table.data-table td.wrap-text {
+  white-space: normal;
+  max-width: 300px;
+}
+
+/* ========================================
+   PART 3: HYDRATION SHIFT PREVENTION
+   Reserve final geometry for interactive elements
+   ======================================== */
+
+/* Buttons must have stable dimensions */
+button,
+.btn,
+[class*="btn-"] {
+  min-height: 36px;
+  padding: 0 14px;
+  box-sizing: border-box;
+}
+
+/* Small buttons retain minimum */
+.btn-sm,
+.btn-small {
+  min-height: 28px;
+  padding: 0 10px;
+}
+
+/* Large buttons */
+.btn-lg,
+.btn-large {
+  min-height: 44px;
+  padding: 0 20px;
+}
+
+/* Interactive elements should not change border width on state */
+button:hover,
+button:focus,
+button:active,
+.btn:hover,
+.btn:focus,
+.btn:active {
+  border-width: inherit;
+}
+
+/* Visibility utility - use instead of conditional rendering */
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+/* Skeleton placeholders should match final size */
+.skeleton {
+  min-height: 1em;
+  min-width: 100px;
+  background: var(--bg-hover);
+  border-radius: var(--radius-sm, 4px);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+/* ========================================
+   PART 4: DARK MODE HARDENING
+   ======================================== */
+
+/* Set color-scheme for browser-native elements */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* Force form elements to respect dark mode */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select,
+[data-theme="dark"] option {
+  background-color: var(--bg-card, #1A1B30);
+  color: var(--text-primary, #F8F7FF);
+  border-color: var(--border-subtle, #262842);
+}
+
+/* Placeholder text in dark mode */
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--text-muted, #9FA1C0);
+}
+
+/* Scrollbar dark mode */
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--bg-surface, #15162A);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--border-default, #33355A);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary, #6C5CE7);
+}
+
+/* ========================================
+   PART 5: QUIET MODE ENFORCEMENT
+   ======================================== */
+
+/* Quiet mode spacing overrides (already in quiet-mode.css but reinforced) */
+[data-quiet="true"] {
+  /* Spacing - slightly more generous */
+  --space-2: 10px;
+  --space-3: 16px;
+  --space-4: 22px;
+  --space-5: 30px;
+
+  /* Motion - faster, less noticeable */
+  --motion-fast: 120ms;
+  --motion-normal: 180ms;
+
+  /* De-emphasis */
+  --opacity-muted: 0.55;
+}
+
+/* Disable ALL decorative motion classes */
+[data-quiet="true"] .pulse,
+[data-quiet="true"] .bounce,
+[data-quiet="true"] .shake,
+[data-quiet="true"] .wiggle,
+[data-quiet="true"] .spin,
+[data-quiet="true"] .float,
+[data-quiet="true"] .glow {
+  animation: none !important;
+}
+
+/* Quiet mode: Hide metrics if enabled */
+[data-quiet="true"][data-hide-metrics="true"] .metrics,
+[data-quiet="true"][data-hide-metrics="true"] .post-metrics,
+[data-quiet="true"][data-hide-metrics="true"] .like-count,
+[data-quiet="true"][data-hide-metrics="true"] .share-count,
+[data-quiet="true"][data-hide-metrics="true"] .view-count {
+  display: none !important;
+}
+
+/* Quiet mode: Hide badges if enabled */
+[data-quiet="true"][data-hide-badges="true"] .badge,
+[data-quiet="true"][data-hide-badges="true"] .notification-badge,
+[data-quiet="true"][data-hide-badges="true"] .unread-badge {
+  display: none !important;
+}
+
+/* ========================================
+   PART 6: ADMIN UI SAFETY NET
+   ======================================== */
+
+.admin-container {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.admin-card,
+.admin-panel {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Desktop: Tables need min-width to prevent squishing */
+@media (min-width: 769px) {
+  .admin-table,
+  .users-table,
+  .blocks-table {
+    min-width: 1100px;
+  }
+}
+
+/* Mobile: Remove min-width for card layout */
+@media (max-width: 768px) {
+  .admin-table,
+  .users-table,
+  .blocks-table {
+    min-width: 0 !important; /* Allow card layout */
+  }
+}
+
+/* Admin tables sticky header */
+.admin-table thead th,
+.users-table thead th,
+.blocks-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--accent-primary, #6C5CE7);
+}
+
+/* ========================================
+   RESPONSIVE SAFETY VALVES
+   ======================================== */
+
+/* Tablet: Allow horizontal scroll for data tables */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .admin-container,
+  .users-list,
+  .blocks-list {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Mobile: Card-based layouts */
+@media (max-width: 768px) {
+  /* Reduce minimum widths for mobile */
+  .table-wrapper table,
+  table.data-table {
+    min-width: 600px;
+  }
+
+  /* Ensure modals don't overflow */
+  .modal-content {
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 64px); /* Fallback */
+    max-height: calc(100dvh - 64px);
+    overflow-y: auto;
+  }
+}

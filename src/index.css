@@ -7,20 +7,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
-/* FOUNDATION: Design tokens (colors, spacing, typography) */
-@import './styles/tokens.css';              /* NEW: Platform-grade design tokens */
-@import './styles/typography.css';          /* Global typography system */
+/* FOUNDATION: tokens, typography, layout, theme — now in core/ via main.jsx */
 
 /* BASE STYLES */
-@import './styles/responsiveBase.css';      /* Responsive foundation */
-@import './styles/globalTheme.css';         /* Global theming system */
-@import './styles/variables.css';           /* Legacy variables (to be migrated) */
 @import './styles/design-system.css';       /* Design system */
-@import './styles/theme.css';               /* Brand colors */
 
-/* LAYOUT SYSTEM */
-@import './styles/layout.css';              /* UPDATED: Platform-grade layout system */
-@import './styles/professional-layout.css'; /* Professional layout pass */
+/* LAYOUT SYSTEM — consolidated into core/layout.css */
 
 /* COMPONENTS */
 @import './styles/components.css';          /* Reusable components */
@@ -28,7 +20,7 @@
 
 /* UTILITIES */
 @import './styles/accessibility.css';       /* Accessibility */
-@import './styles/hardening.css';           /* Hardening pass */
+/* hardening.css — consolidated into core/utilities.css */
 
 /* CALM MODE: Platform-grade transformation (PHASE A-F) */
 @import './components/Navbar.calm.css';     /* Quiet chrome */

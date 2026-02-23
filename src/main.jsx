@@ -14,22 +14,13 @@ import App from './App.jsx'
    Global Styles (Order Matters)
    ================================ */
 import './index.css'
-import './styles/z-index.css'
+import './styles/core/z-index.css'     /* Layer system: base → overlays → notifications → critical */
+import './styles/core/layout.css'      /* Page structure, containers, sidebar, PWA shell */
+import './styles/core/theme.css'       /* Tokens, typography, dark mode, quiet mode, purple identity */
+import './styles/core/mobile.css'      /* Mobile + tablet responsive overrides */
+import './styles/core/utilities.css'   /* Hover guards, cursors, modals, hardening */
 import './styles/breakpoints.css'
-import './styles/pwa-app-shell.css'
-import './styles/darkMode.css'
-import './styles/quiet-mode.css'
-import './styles/mobileFriendly.css'
-import './styles/tabletFriendly.css'
-import './styles/typography-tokens.css' /* Single source of truth for typography */
-import './styles/typography.css'
-import './styles/mobile-brand.css'
-import './styles/purple-identity.css'
-import './styles/sidebar.css'
 import './styles/navbar.css'
-import './styles/cursors.css'
-import './styles/responsive-modals.css'
-import './styles/hover-utilities.css'
 import './styles/pwa-native-feel.css'
 import './styles/themes/galaxy-layer.css' /* Galaxy visual layer - must load LAST to override all backgrounds */
 

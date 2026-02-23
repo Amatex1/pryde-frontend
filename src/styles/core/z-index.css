@@ -1,11 +1,18 @@
 /**
+ * ========================================
+ * CORE Z-INDEX SYSTEM
+ * Consolidated from: z-index.css
+ * ========================================
+ */
+
+/**
  * Z-Index Layering System
- * 
+ *
  * Centralized z-index values for consistent layering across the app.
  * Use these CSS variables instead of arbitrary z-index values.
- * 
+ *
  * LAYER STRUCTURE (lowest to highest):
- * 
+ *
  * Layer 0: Base content (0-10)
  * Layer 1: Floating UI elements (100-199) - tooltips, dropdowns
  * Layer 2: Sticky elements (200-299) - headers, footers
@@ -84,13 +91,12 @@
 /* ========================================
    MIGRATION GUIDE
    ========================================
-   
+
    Replace these old values:
-   
+
    z-index: 9999    → var(--z-loading-gate) or var(--z-cookie-banner)
    z-index: 99999   → var(--z-modal) or var(--z-media-viewer)
    z-index: 999998  → var(--z-debug-overlay)
    z-index: 999997  → var(--z-offline-banner)
-   
-   ======================================== */
 
+   ======================================== */
