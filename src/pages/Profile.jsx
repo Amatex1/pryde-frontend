@@ -123,6 +123,8 @@ function Profile() {
   
   // Inline photo reposition editor state
   const [editingType, setEditingType] = useState(null); // "cover" | "avatar" | null
+  const [coverAspect, setCoverAspect] = useState(null); // computed when entering cover edit
+  const coverRef = useRef(null);
   const editTextareaRef = useRef(null);
   const isMountedRef = useRef(true); // Track if component is mounted to prevent race conditions
   // Phase 5B: Removed windowWidth state - use CSS media queries instead to prevent resize jitter
@@ -1391,7 +1393,14 @@ function Profile() {
   };
 
   // Inline photo reposition handlers
-  const handleEditCover = () => setEditingType("cover");
+  const handleEditCover = () => {
+    if (coverRef.current) {
+      const w = coverRef.current.offsetWidth;
+      const h = window.innerWidth >= 1025 ? 300 : 200;
+      setCoverAspect(w / h);
+    }
+    setEditingType("cover");
+  };
   const handleEditAvatar = () => setEditingType("avatar");
 
   const handleSavePosition = async (newPosition) => {
@@ -1628,6 +1637,30 @@ function Profile() {
       <Navbar onMenuClick={onMenuOpen} />
 
       <div className="profile-container">
+        {/* ── Avatar reposition modal (fixed overlay, independent of cover area) ── */}
+        {editingType === "avatar" && (
+          <div
+            className="avatar-reposition-modal-backdrop"
+            onClick={() => setEditingType(null)}
+          >
+            <div
+              className="avatar-reposition-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="avatar-reposition-modal-header">
+                Reposition Profile Photo
+              </div>
+              <PhotoRepositionInline
+                type="avatar"
+                imageUrl={getImageUrl(user.profilePhoto)}
+                initialPosition={user.profilePhotoPosition || { x: 0, y: 0, scale: 1 }}
+                onCancel={() => setEditingType(null)}
+                onSave={handleSavePosition}
+              />
+            </div>
+          </div>
+        )}
+
         {/*
           PROFILE HEADER CANON
           Cover = atmosphere
@@ -1637,21 +1670,14 @@ function Profile() {
         */}
         <div className="profile-header fade-in">
           {/* Cover Photo - Atmosphere */}
-          <div className={`profile-cover${editingType ? ' profile-cover--editing' : ''}`}>
-            {editingType ? (
-              /* ── Inline photo editor (cover OR avatar) ── */
+          <div ref={coverRef} className={`profile-cover${editingType === "cover" ? ' profile-cover--editing' : ''}`}>
+            {editingType === "cover" ? (
+              /* ── Inline cover photo editor ── */
               <PhotoRepositionInline
-                type={editingType}
-                imageUrl={
-                  editingType === "cover"
-                    ? getImageUrl(user.coverPhoto)
-                    : getImageUrl(user.profilePhoto)
-                }
-                initialPosition={
-                  editingType === "cover"
-                    ? (user.coverPhotoPosition || { x: 0, y: 0, scale: 1 })
-                    : (user.profilePhotoPosition || { x: 0, y: 0, scale: 1 })
-                }
+                type="cover"
+                aspect={coverAspect}
+                imageUrl={getImageUrl(user.coverPhoto)}
+                initialPosition={user.coverPhotoPosition || { x: 0, y: 0, scale: 1 }}
                 onCancel={() => setEditingType(null)}
                 onSave={handleSavePosition}
               />
@@ -1740,7 +1766,7 @@ function Profile() {
               During cover edit: avatar has z-index:100 which sits above the crop canvas (z-index:20)
               and blocks touch/pointer events on that portion of the crop area on mobile.
               During avatar edit: editor replaces the avatar visually in the cover area. */}
-          <div className={`profile-avatar profile-avatar--overlay${editingType ? ' profile-avatar--editing-hidden' : ''}`}>
+          <div className={`profile-avatar profile-avatar--overlay${editingType === "cover" ? ' profile-avatar--editing-hidden' : ''}`}>
             {user.profilePhoto ? (
               <div
                 className="profile-avatar-image"

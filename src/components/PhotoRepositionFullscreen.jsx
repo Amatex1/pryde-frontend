@@ -1,137 +1,89 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import Cropper from "react-easy-crop";
 import "./PhotoRepositionFullscreen.css";
 
-// Helper function to create an image from URL
-const createImage = (url) =>
-  new Promise((resolve, reject) => {
-    const image = new Image();
-    image.addEventListener("load", () => resolve(image));
-    image.addEventListener("error", (error) => reject(error));
-    image.setAttribute("crossOrigin", "anonymous");
-    image.src = url;
-  });
-
-// Helper function to get cropped image as blob
-async function getCroppedImg(imageSrc, pixelCrop, format = "image/jpeg", quality = 0.9) {
-  const image = await createImage(imageSrc);
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-
-  if (!ctx) {
-    return null;
-  }
-
-  // Set canvas size to the crop size
-  canvas.width = pixelCrop.width;
-  canvas.height = pixelCrop.height;
-
-  // Draw the cropped portion of the image
-  ctx.drawImage(
-    image,
-    pixelCrop.x,
-    pixelCrop.y,
-    pixelCrop.width,
-    pixelCrop.height,
-    0,
-    0,
-    pixelCrop.width,
-    pixelCrop.height
-  );
-
-  // Return as blob
-  return new Promise((resolve) => {
-    canvas.toBlob(
-      (blob) => {
-        if (blob) {
-          resolve(blob);
-        } else {
-          resolve(null);
-        }
-      },
-      format,
-      quality
-    );
-  });
-}
-
 export default function PhotoRepositionInline({
-  type, // "cover" | "avatar"
+  type,                                        // "cover" | "avatar"
   imageUrl,
+  aspect,                                      // passed from parent (cover computes from container dims)
   initialPosition = { x: 0, y: 0, scale: 1 },
   onSave,
-  onCancel
+  onCancel,
 }) {
-  // Convert position to crop area for react-easy-crop
-  // The initial position represents how the image is offset/scaled
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  // Treat the legacy backend sentinel (50, 50) as "no saved position"
+  const isLegacyDefault =
+    initialPosition.x === 50 && initialPosition.y === 50;
 
-  // Handle crop complete - store the cropped area in pixels
-  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
-    setCroppedAreaPixels(croppedAreaPixels);
+  const [crop, setCrop] = useState(
+    isLegacyDefault
+      ? { x: 0, y: 0 }
+      : { x: initialPosition.x || 0, y: initialPosition.y || 0 }
+  );
+  const [zoom, setZoom] = useState(initialPosition.scale || 1);
+
+  // ── Transient zoom badge ──────────────────────────────────────────────────
+  const [showZoomBadge, setShowZoomBadge] = useState(false);
+  const badgeTimerRef = useRef(null);
+
+  const triggerZoomBadge = useCallback(() => {
+    setShowZoomBadge(true);
+    clearTimeout(badgeTimerRef.current);
+    badgeTimerRef.current = setTimeout(() => setShowZoomBadge(false), 1400);
   }, []);
 
-  // Handle zoom slider change
-  const handleZoomChange = useCallback((value) => {
-    setZoom(value);
-  }, []);
+  useEffect(() => () => clearTimeout(badgeTimerRef.current), []);
 
-  // Handle crop change (when user drags)
-  const handleCropChange = useCallback((crop) => {
-    setCrop(crop);
-  }, []);
+  // ── Handlers ──────────────────────────────────────────────────────────────
+  const handleCropChange = useCallback((c) => setCrop(c), []);
 
-  // Handle reset
+  // react-easy-crop fires onZoomChange on pinch/scroll — badge shows then
+  const handleZoomChange = useCallback(
+    (value) => {
+      const clamped = Math.min(3, Math.max(1, value));
+      setZoom(clamped);
+      triggerZoomBadge();
+    },
+    [triggerZoomBadge]
+  );
+
+  // +/- buttons increment by 0.15x per tap
+  const stepZoom = useCallback(
+    (delta) => handleZoomChange(zoom + delta),
+    [zoom, handleZoomChange]
+  );
+
   const handleReset = useCallback(() => {
     setCrop({ x: 0, y: 0 });
     setZoom(1);
   }, []);
 
-  // Handle save - crop the image and return the blob
-  const handleSave = useCallback(async () => {
-    try {
-      if (!croppedAreaPixels) {
-        // If no crop area, try to get full image
-        const blob = await getCroppedImg(imageUrl, {
-          x: 0,
-          y: 0,
-          width: 800,
-          height: type === "avatar" ? 800 : 400
-        });
-        if (blob) {
-          onSave(blob);
-        }
-        return;
-      }
+  // Non-destructive: save position metadata, not a new blob
+  const handleSave = useCallback(() => {
+    onSave({ x: crop.x, y: crop.y, scale: zoom });
+  }, [crop, zoom, onSave]);
 
-      // Get the cropped image as a blob
-      const blob = await getCroppedImg(imageUrl, croppedAreaPixels);
-      if (blob) {
-        onSave(blob);
-      }
-    } catch (error) {
-      console.error("Error cropping image:", error);
-    }
-  }, [croppedAreaPixels, imageUrl, type, onSave]);
+  // No-op — we don't need pixel crop data anymore
+  const noop = useCallback(() => {}, []);
 
-  // Calculate aspect ratio based on type
-  // For avatar: square (1:1)
-  // For cover: wider aspect (16:9 or similar)
-  const aspectRatio = type === "avatar" ? 1 : 16 / 9;
-
-  // Zoom percentage for display
+  const aspectRatio = aspect ?? (type === "avatar" ? 1 : 16 / 9);
   const zoomPercent = Math.round(zoom * 100);
+
+  const hintText =
+    type === "avatar"
+      ? "Drag to reposition · Pinch or scroll to zoom"
+      : "Drag to reposition · Scroll to zoom";
 
   return (
     <div className={`photo-editor-inline ${type}`}>
-      {/* Crop area — height is controlled by CSS (.photo-editor-crop-container.cover / .avatar).
-          Inline height/minHeight removed: "height:100%" resolved to 0 on mobile because
-          the parent chain contains height:auto elements, collapsing the crop canvas. */}
-      <div
-        className={`photo-editor-crop-container ${type}`}
-      >
+      {/* ── Crop canvas ───────────────────────────────────────────────────── */}
+      <div className={`photo-editor-crop-container ${type}`}>
+        {/* Transient zoom badge — fades out automatically */}
+        {showZoomBadge && (
+          <div className="zoom-badge" aria-live="polite">
+            {zoomPercent}%
+          </div>
+        )}
+
         <Cropper
           image={imageUrl}
           crop={crop}
@@ -140,42 +92,46 @@ export default function PhotoRepositionInline({
           cropShape={type === "avatar" ? "round" : "rect"}
           showGrid={false}
           onCropChange={handleCropChange}
-          onCropComplete={onCropComplete}
+          onCropComplete={noop}
           onZoomChange={handleZoomChange}
           style={{
-            containerStyle: {
-              backgroundColor: "rgba(0, 0, 0, 0.3)"
-            },
+            containerStyle: { backgroundColor: "rgba(0, 0, 0, 0.35)" },
             cropAreaStyle: {
-              border: type === "avatar" 
-                ? "3px solid rgba(255, 255, 255, 0.9)" 
-                : "2px solid rgba(255, 255, 255, 0.8)",
-              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.4)"
-            }
+              border:
+                type === "avatar"
+                  ? "3px solid rgba(255, 255, 255, 0.9)"
+                  : "2px solid rgba(255, 255, 255, 0.8)",
+              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.4)",
+            },
           }}
         />
       </div>
 
-      {/* Controls bar */}
+      {/* ── Controls bar ─────────────────────────────────────────────────── */}
       <div className="photo-editor-inline-controls">
-        {type === "avatar" && (
-          <span className="photo-editor-inline-hint-bar">
-            Drag to reposition • Pinch/scroll to zoom
-          </span>
-        )}
+        <span className="photo-editor-inline-hint-bar">{hintText}</span>
+
+        {/* +/− zoom buttons */}
         <div className="photo-editor-inline-zoom">
-          <span className="zoom-label">🔍 {zoomPercent}%</span>
-          <input
-            type="range"
-            min={1}
-            max={3}
-            step={0.01}
-            value={zoom}
-            onChange={(e) => handleZoomChange(Number(e.target.value))}
-            className="zoom-slider"
-            aria-label="Zoom"
-          />
+          <button
+            className="pe-zoom-btn"
+            onClick={() => stepZoom(-0.15)}
+            disabled={zoom <= 1}
+            aria-label="Zoom out"
+          >
+            −
+          </button>
+          <span className="zoom-level">{zoomPercent}%</span>
+          <button
+            className="pe-zoom-btn"
+            onClick={() => stepZoom(0.15)}
+            disabled={zoom >= 3}
+            aria-label="Zoom in"
+          >
+            +
+          </button>
         </div>
+
         <div className="photo-editor-inline-buttons">
           <button onClick={handleReset} className="pe-btn pe-btn--secondary">
             Reset
