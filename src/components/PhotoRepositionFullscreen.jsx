@@ -5,7 +5,7 @@ import "./PhotoRepositionFullscreen.css";
 export default function PhotoRepositionInline({
   type,                                        // "cover" | "avatar"
   imageUrl,
-  aspect,                                      // passed from parent (cover computes from container dims)
+  cropSize,      // { width, height } — for cover; makes the box fill the container exactly
   initialPosition = { x: 0, y: 0, scale: 1 },
   onSave,
   onCancel,
@@ -65,7 +65,11 @@ export default function PhotoRepositionInline({
   // No-op — we don't need pixel crop data anymore
   const noop = useCallback(() => {}, []);
 
-  const aspectRatio = aspect ?? (type === "avatar" ? 1 : 16 / 9);
+  // cropSize fills the container exactly (cover); avatar uses 1:1 aspect
+  const cropperSizeProps = cropSize
+    ? { cropSize }
+    : { aspect: 1 };
+
   const zoomPercent = Math.round(zoom * 100);
 
   const hintText =
@@ -88,7 +92,7 @@ export default function PhotoRepositionInline({
           image={imageUrl}
           crop={crop}
           zoom={zoom}
-          aspect={aspectRatio}
+          {...cropperSizeProps}
           cropShape={type === "avatar" ? "round" : "rect"}
           showGrid={false}
           onCropChange={handleCropChange}

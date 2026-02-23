@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ReportModal from '../components/ReportModal';
@@ -123,7 +124,7 @@ function Profile() {
   
   // Inline photo reposition editor state
   const [editingType, setEditingType] = useState(null); // "cover" | "avatar" | null
-  const [coverAspect, setCoverAspect] = useState(null); // computed when entering cover edit
+  const [coverCropSize, setCoverCropSize] = useState(null); // { width, height } computed on enter
   const coverRef = useRef(null);
   const editTextareaRef = useRef(null);
   const isMountedRef = useRef(true); // Track if component is mounted to prevent race conditions
@@ -1395,9 +1396,10 @@ function Profile() {
   // Inline photo reposition handlers
   const handleEditCover = () => {
     if (coverRef.current) {
+      // Use the crop-container's explicit CSS heights (220px mobile / 300px desktop)
       const w = coverRef.current.offsetWidth;
-      const h = window.innerWidth >= 1025 ? 300 : 200;
-      setCoverAspect(w / h);
+      const h = window.innerWidth >= 1025 ? 300 : 220;
+      setCoverCropSize({ width: w, height: h });
     }
     setEditingType("cover");
   };
@@ -1637,8 +1639,9 @@ function Profile() {
       <Navbar onMenuClick={onMenuOpen} />
 
       <div className="profile-container">
-        {/* ── Avatar reposition modal (fixed overlay, independent of cover area) ── */}
-        {editingType === "avatar" && (
+        {/* ── Avatar reposition modal — rendered via portal so position:fixed escapes
+             any parent transform (e.g. fade-in) that would otherwise capture it ── */}
+        {editingType === "avatar" && createPortal(
           <div
             className="avatar-reposition-modal-backdrop"
             onClick={() => setEditingType(null)}
@@ -1658,7 +1661,8 @@ function Profile() {
                 onSave={handleSavePosition}
               />
             </div>
-          </div>
+          </div>,
+          document.body
         )}
 
         {/*
@@ -1675,7 +1679,7 @@ function Profile() {
               /* ── Inline cover photo editor ── */
               <PhotoRepositionInline
                 type="cover"
-                aspect={coverAspect}
+                cropSize={coverCropSize}
                 imageUrl={getImageUrl(user.coverPhoto)}
                 initialPosition={user.coverPhotoPosition || { x: 0, y: 0, scale: 1 }}
                 onCancel={() => setEditingType(null)}
