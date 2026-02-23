@@ -8,9 +8,8 @@ export default function CommentSheet({ children, onClose }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="comment-sheet-header">
-          <button className="sheet-close-btn" onClick={onClose}>⬇</button>
           <span className="sheet-title">Comments</span>
-          <button className="sheet-close-btn" onClick={onClose}>✕</button>
+          <button className="sheet-close-btn" onClick={onClose} aria-label="Close comments">✕</button>
         </div>
 
         <div className="comment-sheet-content">

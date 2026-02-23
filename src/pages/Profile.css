@@ -4563,3 +4563,62 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
     display: none;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   MOBILE QUALITY-OF-LIFE IMPROVEMENTS
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Icon-only cover/profile edit buttons at ≤420px ── */
+@media (max-width: 420px) {
+  .btn-edit-cover .btn-label,
+  .btn-edit-profile-cover .btn-label {
+    display: none;
+  }
+
+  /* Tighten padding now that label is gone */
+  .btn-edit-cover,
+  .btn-edit-profile-cover {
+    padding: 8px 10px;
+    min-width: 36px;
+  }
+
+  /* Slightly smaller gap between the two icon buttons */
+  .profile-header-actions {
+    gap: 6px;
+  }
+}
+
+/* ── Safe-area padding for notch/home-indicator devices ── */
+@media (max-width: 768px) {
+  /* Stick buttons above the home indicator when cover is at the bottom */
+  .profile-header-actions {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Comment input at the bottom of a post should clear the home indicator */
+  .comment-input-box {
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* ── Identity pills: prevent overflow on narrow screens ── */
+@media (max-width: 480px) {
+  .profile-identity-pills {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .profile-identity-pills .badge {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* ── Avatar z-index guard: ensure avatar always clears the cover edit buttons ── */
+@media (max-width: 768px) {
+  .profile-avatar.profile-avatar--overlay {
+    z-index: 15;
+  }
+}

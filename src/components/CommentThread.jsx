@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import OptimizedImage from './OptimizedImage';
 import ReactionButton from './ReactionButton';
@@ -10,30 +10,8 @@ import '../pages/Feed.css';
 
 /**
  * CommentThread Component
- * 
+ *
  * Renders a single comment with its replies (one level of nesting only).
- * 
- * Props:
- * - comment: Comment object with authorId populated
- * - replies: Array of reply objects (comments with parentCommentId === comment._id)
- * - currentUser: Current logged-in user object
- * - postId: ID of the post this comment belongs to
- * - showReplies: Object tracking which comments have replies visible
- * - editingCommentId: ID of comment currently being edited
- * - editCommentText: Text content of comment being edited
- * - showReactionPicker: ID of comment showing reaction picker
- * - commentRefs: Ref object for scrolling to comments
- * - getUserReactionEmoji: Function to get user's selected emoji from reactions object
- * - handleEditComment: Function to start editing a comment
- * - handleSaveEditComment: Function to save edited comment
- * - handleCancelEditComment: Function to cancel editing
- * - handleDeleteComment: Function to delete a comment
- * - handleCommentReaction: Function to add/remove reaction
- * - toggleReplies: Function to toggle reply visibility (lazy load)
- * - handleReplyToComment: Function to start replying to a comment
- * - setShowReactionPicker: Function to show/hide reaction picker
- * - setReactionDetailsModal: Function to show reaction details modal
- * - setReportModal: Function to show report modal
  */
 const CommentThread = ({
   comment,
@@ -56,49 +34,70 @@ const CommentThread = ({
   setShowReactionPicker,
   setReactionDetailsModal,
   setReportModal,
-  isFullSheet = false // When true, show all replies (used in CommentSheet)
+  isFullSheet = false,
 }) => {
-  // Reaction picker timeout ref
   const reactionPickerTimeoutRef = useRef(null);
 
-  // Inline preview limit: on mobile (≤600px) and NOT in full sheet, limit to 2 replies
-  const isMobileInline = !isFullSheet && typeof window !== 'undefined' && window.matchMedia("(max-width: 600px)").matches;
+  // ── Resize-aware mobile detection ─────────────────────────────────────────
+  // Using state + matchMedia listener so the limit updates on orientation change
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 600px)').matches;
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mql = window.matchMedia('(max-width: 600px)');
+    const handler = (e) => setIsMobile(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
+
+  const isMobileInline = !isFullSheet && isMobile;
   const MAX_INLINE_REPLIES = isMobileInline ? 2 : Infinity;
 
-  // Menu state for 3-dot context menu
+  // ── 3-dot menu state ──────────────────────────────────────────────────────
   const [openMenuId, setOpenMenuId] = useState(null);
 
-  // Close menu when clicking outside any comment-menu-container
-  // Using closest() instead of a ref because menuRef would point to the last
-  // rendered container (a reply), causing clicks on other menus to falsely
-  // register as "outside" and close the menu before the click event fires.
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!event.target.closest('.comment-menu-container')) {
         setOpenMenuId(null);
       }
     };
-
     if (openMenuId) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [openMenuId]);
 
-  // Only render if comment has no parent (top-level comment)
+  // ── Enter key submits edit (Shift+Enter = newline) ────────────────────────
+  const handleEditKeyDown = useCallback(
+    (e, commentId) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSaveEditComment(commentId);
+      }
+    },
+    [handleSaveEditComment]
+  );
+
+  // Only render top-level comments (no parentCommentId)
   if (comment.parentCommentId !== null && comment.parentCommentId !== undefined) {
     return null;
   }
 
   const isEditing = editingCommentId === comment._id;
-  const isOwnComment = comment.authorId?._id === currentUser?._id || comment.authorId === currentUser?._id;
-  const userReactionEmoji = getUserReactionEmoji(comment.reactions);
+  const isOwnComment =
+    comment.authorId?._id === currentUser?._id ||
+    comment.authorId === currentUser?._id;
 
   return (
     <div key={comment._id} className="comment-thread">
+      {/* ── Top-level comment row ─────────────────────────────────────────── */}
       <div
         className="comment-row"
-        ref={(el) => commentRefs.current[comment._id] = el}
+        ref={(el) => (commentRefs.current[comment._id] = el)}
       >
         {comment.isDeleted ? (
           <div className="comment-deleted">
@@ -125,7 +124,7 @@ const CommentThread = ({
               )}
             </Link>
 
-            {/* Lane: bubble + actions (contract spec) */}
+            {/* Lane: bubble + actions */}
             <div className="comment-lane">
               <div className="comment-bubble">
                 <Link
@@ -133,18 +132,22 @@ const CommentThread = ({
                   className="comment-author"
                   style={{ textDecoration: 'none' }}
                 >
-                  <span className="author-name">{comment.authorId?.displayName || comment.authorId?.username}</span>
+                  <span className="author-name">
+                    {comment.authorId?.displayName || comment.authorId?.username}
+                  </span>
                   {comment.authorId?.badges?.length > 0 && (
                     <TieredBadgeDisplay badges={comment.authorId.badges} context="card" />
                   )}
                 </Link>
+
                 {isEditing ? (
                   <div className="comment-edit-box">
                     <textarea
                       value={editCommentText}
                       onChange={(e) => handleEditComment(comment._id, e.target.value)}
+                      onKeyDown={(e) => handleEditKeyDown(e, comment._id)}
                       className="comment-edit-input"
-                      enterKeyHint="enter"
+                      enterKeyHint="send"
                       autoFocus
                     />
                     <div className="comment-edit-actions">
@@ -167,6 +170,7 @@ const CommentThread = ({
                     <FormattedText text={comment.content} />
                   </span>
                 )}
+
                 {comment.gifUrl && (
                   <div className="comment-gif">
                     <PausableGif src={comment.gifUrl} alt="GIF" />
@@ -174,17 +178,19 @@ const CommentThread = ({
                 )}
               </div>
 
-              {/* Inline actions (Facebook-style) */}
+              {/* Inline actions */}
               <div className="comment-actions">
                 <ReactionButton
                   targetType="comment"
                   targetId={comment._id}
                   currentUserId={currentUser?.id}
-                  onCountClick={() => setReactionDetailsModal({
-                    isOpen: true,
-                    targetType: 'comment',
-                    targetId: comment._id
-                  })}
+                  onCountClick={() =>
+                    setReactionDetailsModal({
+                      isOpen: true,
+                      targetType: 'comment',
+                      targetId: comment._id,
+                    })
+                  }
                 />
                 <button
                   className="comment-action-btn"
@@ -193,15 +199,25 @@ const CommentThread = ({
                   Reply
                 </button>
                 <span className="comment-time">
-                  {new Date(comment.createdAt).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, month: 'short', day: 'numeric' })}
-                  {comment.isEdited && <span className="edited-indicator"> (edited)</span>}
+                  {new Date(comment.createdAt).toLocaleString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true,
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                  {comment.isEdited && (
+                    <span className="edited-indicator"> (edited)</span>
+                  )}
                 </span>
                 {comment.replyCount > 0 && (
                   <button
                     className="comment-action-btn view-replies-btn"
                     onClick={() => toggleReplies(comment._id)}
                   >
-                    {showReplies[comment._id] ? '▲' : '▼'} {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}
+                    {showReplies[comment._id] ? '▲' : '▼'}{' '}
+                    {comment.replyCount}{' '}
+                    {comment.replyCount === 1 ? 'reply' : 'replies'}
                   </button>
                 )}
               </div>
@@ -211,7 +227,9 @@ const CommentThread = ({
             <div className="comment-menu-container">
               <button
                 className="comment-menu-btn"
-                onClick={() => setOpenMenuId(openMenuId === comment._id ? null : comment._id)}
+                onClick={() =>
+                  setOpenMenuId(openMenuId === comment._id ? null : comment._id)
+                }
                 aria-label="Comment options"
               >
                 <svg viewBox="0 0 16 16" fill="currentColor">
@@ -245,7 +263,12 @@ const CommentThread = ({
                   ) : (
                     <button
                       onClick={() => {
-                        setReportModal({ isOpen: true, type: 'comment', contentId: comment._id, userId: comment.authorId?._id });
+                        setReportModal({
+                          isOpen: true,
+                          type: 'comment',
+                          contentId: comment._id,
+                          userId: comment.authorId?._id,
+                        });
                         setOpenMenuId(null);
                       }}
                     >
@@ -259,18 +282,20 @@ const CommentThread = ({
         )}
       </div>
 
-      {/* Replies Section - Only render if replies are visible */}
+      {/* ── Replies ───────────────────────────────────────────────────────── */}
       {showReplies[comment._id] && replies.length > 0 && (
         <div className="comment-replies">
           {replies.slice(0, MAX_INLINE_REPLIES).map((reply) => {
             const isEditingReply = editingCommentId === reply._id;
-            const isOwnReply = reply.authorId?._id === currentUser?._id || reply.authorId === currentUser?._id;
+            const isOwnReply =
+              reply.authorId?._id === currentUser?._id ||
+              reply.authorId === currentUser?._id;
 
             return (
               <div
                 key={reply._id}
                 className="comment-row reply"
-                ref={(el) => commentRefs.current[reply._id] = el}
+                ref={(el) => (commentRefs.current[reply._id] = el)}
               >
                 {reply.isDeleted ? (
                   <div className="comment-deleted">
@@ -293,32 +318,43 @@ const CommentThread = ({
                           className="avatar-image"
                         />
                       ) : (
-                        <span>{reply.authorId?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
+                        <span>
+                          {reply.authorId?.displayName?.charAt(0).toUpperCase() || 'U'}
+                        </span>
                       )}
                     </Link>
 
-                    {/* Author name - inline with avatar */}
-                    <Link
-                      to={`/profile/${reply.authorId?.username}`}
-                      className="comment-author-inline"
-                      style={{ textDecoration: 'none' }}
-                    >
-                      <span className="author-name">{reply.authorId?.displayName || reply.authorId?.username}</span>
-                      {reply.authorId?.badges?.length > 0 && (
-                        <TieredBadgeDisplay badges={reply.authorId.badges} context="card" />
-                      )}
-                    </Link>
-
-                    {/* Lane: bubble + actions */}
+                    {/* Lane — author is now INSIDE the bubble (no more peer flex item),
+                        giving the lane the full remaining width */}
                     <div className="comment-lane">
                       <div className="comment-bubble">
+                        {/* Author header — same pattern as top-level comments */}
+                        <Link
+                          to={`/profile/${reply.authorId?.username}`}
+                          className="comment-author"
+                          style={{ textDecoration: 'none' }}
+                        >
+                          <span className="author-name">
+                            {reply.authorId?.displayName || reply.authorId?.username}
+                          </span>
+                          {reply.authorId?.badges?.length > 0 && (
+                            <TieredBadgeDisplay
+                              badges={reply.authorId.badges}
+                              context="card"
+                            />
+                          )}
+                        </Link>
+
                         {isEditingReply ? (
                           <div className="comment-edit-box">
                             <textarea
                               value={editCommentText}
-                              onChange={(e) => handleEditComment(reply._id, e.target.value)}
+                              onChange={(e) =>
+                                handleEditComment(reply._id, e.target.value)
+                              }
+                              onKeyDown={(e) => handleEditKeyDown(e, reply._id)}
                               className="comment-edit-input"
-                              enterKeyHint="enter"
+                              enterKeyHint="send"
                               autoFocus
                             />
                             <div className="comment-edit-actions">
@@ -341,6 +377,7 @@ const CommentThread = ({
                             <FormattedText text={reply.content} />
                           </span>
                         )}
+
                         {reply.gifUrl && (
                           <div className="comment-gif">
                             <PausableGif src={reply.gifUrl} alt="GIF" />
@@ -348,17 +385,19 @@ const CommentThread = ({
                         )}
                       </div>
 
-                      {/* Inline actions (Facebook-style) */}
+                      {/* Inline actions */}
                       <div className="comment-actions">
                         <ReactionButton
                           targetType="comment"
                           targetId={reply._id}
                           currentUserId={currentUser?.id}
-                          onCountClick={() => setReactionDetailsModal({
-                            isOpen: true,
-                            targetType: 'comment',
-                            targetId: reply._id
-                          })}
+                          onCountClick={() =>
+                            setReactionDetailsModal({
+                              isOpen: true,
+                              targetType: 'comment',
+                              targetId: reply._id,
+                            })
+                          }
                         />
                         <button
                           className="comment-action-btn reply-btn"
@@ -367,8 +406,16 @@ const CommentThread = ({
                           Reply
                         </button>
                         <span className="comment-time">
-                          {new Date(reply.createdAt).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, month: 'short', day: 'numeric' })}
-                          {reply.isEdited && <span className="edited-indicator"> (edited)</span>}
+                          {new Date(reply.createdAt).toLocaleString('en-US', {
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true,
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                          {reply.isEdited && (
+                            <span className="edited-indicator"> (edited)</span>
+                          )}
                         </span>
                       </div>
                     </div>
@@ -377,7 +424,11 @@ const CommentThread = ({
                     <div className="comment-menu-container">
                       <button
                         className="comment-menu-btn"
-                        onClick={() => setOpenMenuId(openMenuId === reply._id ? null : reply._id)}
+                        onClick={() =>
+                          setOpenMenuId(
+                            openMenuId === reply._id ? null : reply._id
+                          )
+                        }
                         aria-label="Reply options"
                       >
                         <svg viewBox="0 0 16 16" fill="currentColor">
@@ -411,7 +462,12 @@ const CommentThread = ({
                           ) : (
                             <button
                               onClick={() => {
-                                setReportModal({ isOpen: true, type: 'comment', contentId: reply._id, userId: reply.authorId?._id });
+                                setReportModal({
+                                  isOpen: true,
+                                  type: 'comment',
+                                  contentId: reply._id,
+                                  userId: reply.authorId?._id,
+                                });
                                 setOpenMenuId(null);
                               }}
                             >
@@ -433,4 +489,3 @@ const CommentThread = ({
 };
 
 export default CommentThread;
-

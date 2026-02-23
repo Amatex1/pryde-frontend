@@ -5544,3 +5544,69 @@ select.privacy-selector:focus {
     display: inline !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   MOBILE QUALITY-OF-LIFE IMPROVEMENTS
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── 44px minimum tap targets for all post action buttons ── */
+@media (max-width: 768px) {
+  .post-actions-bar button,
+  .post-actions-bar label,
+  .comment-action-btn,
+  .comment-menu-btn,
+  .post-menu-btn,
+  .view-replies-btn {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Reply/comment submit buttons */
+  .reply-submit-btn,
+  .comment-submit-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Safe-area padding so the reply composer clears the home indicator */
+  .reply-input-box,
+  .reply-composer,
+  .comment-sheet-input-form {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* ── Reaction picker: use dvh to stay visible above keyboard ── */
+@media (max-width: 768px) {
+  .reaction-picker {
+    max-height: 50dvh;
+    overflow-y: auto;
+  }
+
+  /* Ensure picker doesn't go below the safe-area bottom */
+  .profile-page .reaction-picker {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
+  }
+}
+
+/* ── Post card inner padding at 375px ── */
+@media (max-width: 375px) {
+  .post-content,
+  .post-header,
+  .post-actions-bar,
+  .post-comments {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  /* Comment action buttons fit in 375px without truncation */
+  .comment-action-btn {
+    font-size: var(--font-size-xs);
+    padding: 4px 6px;
+    min-height: 36px;
+    min-width: 36px;
+  }
+}

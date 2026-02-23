@@ -1716,14 +1716,14 @@ function Profile() {
                       onClick={handleEditCover}
                       title="Edit cover photo"
                     >
-                      📷 Edit Cover
+                      📷 <span className="btn-label">Edit Cover</span>
                     </button>
                     <button
                       className="btn-edit-profile-cover"
                       onClick={() => setEditProfileModal(true)}
                       title="Edit Profile"
                     >
-                      ✏️ Edit Profile
+                      ✏️ <span className="btn-label">Edit Profile</span>
                     </button>
                   </div>
                 )}

@@ -28,25 +28,37 @@
 
 /* Header */
 .comment-sheet-header {
-  height: 48px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px;
+  padding: 0 16px;
   border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
 }
 
 .sheet-title {
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 16px;
 }
 
 .sheet-close-btn {
-  background: none;
+  background: rgba(255, 255, 255, 0.08);
   border: none;
-  font-size: 18px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
   cursor: pointer;
-  padding: 8px;
   color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.sheet-close-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
 }
 
 /* Content */

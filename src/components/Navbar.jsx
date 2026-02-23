@@ -30,6 +30,7 @@ function Navbar({ onMenuClick }) {
   const [showDropdown, setShowDropdown] = useState(false);
   // Internal mobile menu state - only used if onMenuClick is not provided
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [quietMode, setQuietMode] = useState(() => getQuietMode());
   const [galaxyMode, setGalaxyMode] = useState(() => getGalaxyMode());
   const dropdownRef = useRef(null);
@@ -156,6 +157,15 @@ function Navbar({ onMenuClick }) {
 
             {/* Quick-access: Notification bell (reuses existing component with its live badge) */}
             <NotificationBell />
+
+            {/* Search icon — opens full-width search overlay */}
+            <button
+              className="navbar-mobile-icon-btn"
+              onClick={() => setShowMobileSearch(true)}
+              aria-label="Search"
+            >
+              <span className="navbar-mobile-icon" aria-hidden="true">🔍</span>
+            </button>
 
             {/* Hamburger — opens side drawer */}
             <button
@@ -460,6 +470,30 @@ function Navbar({ onMenuClick }) {
           </div>
           </div>
         )}
+
+      {/* ── Mobile search overlay ─────────────────────────────────────────
+           Renders on top of everything when the 🔍 icon is tapped.
+           GlobalSearch is already on the page but hidden by CSS on mobile;
+           here we show it in a dedicated slide-down overlay instead.        ── */}
+      {showMobileSearch && !isDesktop && (
+        <div
+          className="mobile-search-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowMobileSearch(false);
+          }}
+        >
+          <div className="mobile-search-bar">
+            <GlobalSearch variant="compact" />
+            <button
+              className="mobile-search-close"
+              onClick={() => setShowMobileSearch(false)}
+              aria-label="Close search"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
