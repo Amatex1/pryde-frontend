@@ -633,16 +633,6 @@ function App() {
     // Initialize offline manager
     initOfflineManager();
 
-    // Pre-warm backend (non-blocking) - use direct backend URL
-    fetch(API_AUTH_URL.replace('/api', '') + '/api/health', {
-      credentials: 'include',
-      signal: AbortSignal.timeout(5000)
-    }).then(() => {
-      logger.debug('🔥 Backend pre-warmed successfully');
-    }).catch(() => {
-      logger.debug('Backend pre-warm failed (non-critical)');
-    });
-
     // Run PWA safety checks
     runPWASafetyChecks();
   }, []);
