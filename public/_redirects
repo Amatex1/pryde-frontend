@@ -1,6 +1,0 @@
-# Cloudflare Pages SPA Routing
-# Cloudflare automatically serves existing static files
-# This catch-all only applies to routes that don't match a file
-
-/*  /index.html  200!
-

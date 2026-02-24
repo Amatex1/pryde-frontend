@@ -4,8 +4,7 @@
    ======================================== */
 
 /* GLOBAL FONTS: Inter (UI) + IBM Plex Sans (Brand Headers) */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+/* Loaded via <link> in index.html for faster parallel fetching (avoids @import render-blocking cascade) */
 
 /* FOUNDATION: tokens, typography, layout, theme — now in core/ via main.jsx */
 

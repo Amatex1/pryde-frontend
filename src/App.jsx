@@ -81,10 +81,13 @@ const lazyWithReload = (importFn) => {
   });
 };
 
-// Lazy load ALL pages with cache-mismatch protection
-const Home = lazyWithReload(() => import('./pages/Home'));
-const Login = lazyWithReload(() => import('./pages/Login'));
-const Register = lazyWithReload(() => import('./pages/Register'));
+// Eagerly loaded entry pages — these are the first routes any visitor hits,
+// so they must be in the main bundle to avoid a lazy-load waterfall on initial paint
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+
+// Lazy load remaining pages with cache-mismatch protection
 const InviteRequired = lazyWithReload(() => import('./pages/InviteRequired')); // Phase 7B
 const Welcome = lazyWithReload(() => import('./pages/Welcome')); // Calm onboarding: soft landing page
 const TourIntro = lazyWithReload(() => import('./pages/TourIntro')); // Calm onboarding: tour opt-in gate
