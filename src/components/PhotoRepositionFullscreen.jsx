@@ -57,6 +57,12 @@ export default function PhotoRepositionInline({
     setZoom(1);
   }, []);
 
+  // Capture croppedArea percentages for accurate background-position save
+  const [croppedAreaPct, setCroppedAreaPct] = useState(null);
+  const handleCropComplete = useCallback((croppedArea) => {
+    setCroppedAreaPct(croppedArea);
+  }, []);
+
   // Non-destructive: convert croppedArea percentages → background-position percentages
   const handleSave = useCallback(() => {
     let bgX = 50, bgY = 50;
@@ -70,12 +76,6 @@ export default function PhotoRepositionInline({
     }
     onSave({ bgX, bgY, scale: zoom });
   }, [croppedAreaPct, zoom, onSave]);
-
-  // Capture croppedArea percentages for accurate background-position save
-  const [croppedAreaPct, setCroppedAreaPct] = useState(null);
-  const handleCropComplete = useCallback((croppedArea) => {
-    setCroppedAreaPct(croppedArea);
-  }, []);
 
   // cropSize fills the container exactly (cover); avatar uses 1:1 aspect
   const cropperSizeProps = cropSize
