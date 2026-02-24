@@ -44,6 +44,5 @@ Disallow: /hashtag/
 Disallow: /tags/
 Disallow: /photo-essay
 
-# Sitemap: not yet generated — add once a sitemap.xml is created
-# Sitemap: https://prydeapp.com/sitemap.xml
+Sitemap: https://prydeapp.com/sitemap.xml
 

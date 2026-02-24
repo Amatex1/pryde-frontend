@@ -22,10 +22,10 @@
 - Click **Environment** tab
 - Add variables there
 
-#### **Production (Cloudflare Pages):**
-- Add secrets as **Environment Variables** in Cloudflare Dashboard
-- Go to: https://dash.cloudflare.com
-- Select your project → **Settings** → **Environment Variables**
+#### **Production (Vercel — frontend):**
+- Add public vars in Vercel Dashboard → Project → Settings → Environment Variables
+- Only `VITE_` prefixed variables are safe to add here (they are bundled into the client)
+- Never add secret keys here — Vercel frontend env vars are visible in the browser bundle
 
 ---
 

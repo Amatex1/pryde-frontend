@@ -14,81 +14,79 @@ Use this checklist to ensure a smooth deployment of Pryde Social.
 - [ ] Code pushed to GitHub repository
 
 ### Frontend Preparation
-- [ ] Domain name configured and pointing to SiteGround
-- [ ] SiteGround cPanel access confirmed
-- [ ] Backend URL known (will get from Render)
+- [ ] Domain name configured and pointing to Vercel
+- [ ] Vercel project connected to GitHub repository
+- [ ] Backend URL known (from Render dashboard)
 
-## Backend Deployment (Render.com)
+## Backend Deployment (Render)
 
 ### Setup
-- [ ] Render.com account created
-- [ ] New Web Service created
+- [ ] Render account created
+- [ ] New Web Service created (Standard plan — $7/mo)
 - [ ] GitHub repository connected
 - [ ] Service configured:
   - [ ] Name: pryde-backend
-  - [ ] Build Command: `cd server && npm install`
+  - [ ] Build Command: `node scripts/update-version.js && cd server && npm install`
   - [ ] Start Command: `cd server && npm start`
   - [ ] Environment: Node
+  - [ ] Region: Oregon
 
-### Environment Variables
+### Environment Variables (set in Render Dashboard → Environment tab)
 - [ ] `NODE_ENV` = `production`
 - [ ] `PORT` = `10000`
 - [ ] `MONGO_URL` = MongoDB connection string
 - [ ] `MONGODB_URI` = MongoDB connection string (same as above)
 - [ ] `JWT_SECRET` = Generated JWT secret
+- [ ] `JWT_REFRESH_SECRET` = Generated JWT refresh secret
+- [ ] `CSRF_SECRET` = Generated CSRF secret
+- [ ] `MESSAGE_ENCRYPTION_KEY` = Generated encryption key
 - [ ] `BASE_URL` = Render service URL (e.g., https://pryde-backend.onrender.com)
 - [ ] `FRONTEND_URL` = Your domain (e.g., https://prydeapp.com)
 - [ ] `VAPID_PUBLIC_KEY` = Generated VAPID public key
 - [ ] `VAPID_PRIVATE_KEY` = Generated VAPID private key
+- [ ] `RESEND_API_KEY` = Resend.com API key
 
 ### Verification
 - [ ] Deployment completed successfully
 - [ ] No errors in Render logs
-- [ ] Health check endpoint works: `https://your-app.onrender.com/api/health`
-- [ ] Root endpoint works: `https://your-app.onrender.com/`
+- [ ] Health check endpoint works: `https://pryde-backend.onrender.com/api/health`
 - [ ] Backend URL saved for frontend configuration
 
-## Frontend Deployment (SiteGround)
+## Frontend Deployment (Vercel)
 
-### Build
-- [ ] `.env.production` updated with backend URL:
-  ```
-  VITE_API_URL=https://your-backend.onrender.com/api
-  VITE_SOCKET_URL=https://your-backend.onrender.com
-  ```
-- [ ] Build command run: `npm run build`
-- [ ] Build completed successfully
-- [ ] `dist` folder created with files
+### Setup
+- [ ] Vercel account created (free tier)
+- [ ] Project imported from GitHub
+- [ ] Framework preset: Vite
+- [ ] Build command: `npm run build`
+- [ ] Output directory: `dist`
 
-### Upload
-- [ ] Logged into SiteGround cPanel
-- [ ] Navigated to File Manager
-- [ ] Opened `public_html` directory
-- [ ] Backed up existing files (if any)
-- [ ] Deleted old files from `public_html`
-- [ ] Uploaded all files from `dist` folder:
-  - [ ] `index.html`
-  - [ ] `.htaccess`
-  - [ ] `assets` folder (complete)
-  - [ ] Any other files in `dist`
-- [ ] File permissions verified (644 for files, 755 for folders)
+### Environment Variables (set in Vercel Dashboard → Settings → Environment Variables)
+- [ ] `VITE_HCAPTCHA_SITE_KEY` = hCaptcha site key
+- [ ] `VITE_VAPID_PUBLIC_KEY` = VAPID public key (same as backend)
+- [ ] `VITE_API_DOMAIN` = Custom backend domain if using one (e.g., https://api.prydeapp.com)
 
-### SSL Configuration
-- [ ] SSL certificate installed (Let's Encrypt)
-- [ ] Force HTTPS enabled
-- [ ] HTTPS redirect working
+### Custom Domain
+- [ ] Domain added in Vercel Dashboard → Domains
+- [ ] DNS records updated (CNAME or A record pointing to Vercel)
+- [ ] SSL certificate auto-provisioned by Vercel
+- [ ] HTTPS redirect confirmed working
+
+### Verification
+- [ ] Deployment completed successfully (check Vercel dashboard)
+- [ ] No build errors in Vercel logs
+- [ ] Site loads at custom domain
+- [ ] No console errors (F12 → Console)
 
 ## Post-Deployment Testing
 
 ### Backend Tests
-- [ ] Health endpoint: `curl https://your-backend.onrender.com/api/health`
-- [ ] Status endpoint: `curl https://your-backend.onrender.com/api/status`
+- [ ] Health endpoint: `curl https://pryde-backend.onrender.com/api/health`
 - [ ] No errors in Render logs
 - [ ] Database connection successful (check logs)
 
 ### Frontend Tests
-- [ ] Website loads: `https://your-domain.com`
-- [ ] No console errors (F12 → Console)
+- [ ] Website loads: `https://prydeapp.com`
 - [ ] Login page loads
 - [ ] Register page loads
 - [ ] Navigation works
@@ -109,11 +107,11 @@ Use this checklist to ensure a smooth deployment of Pryde Social.
 ### Cross-Browser Testing
 - [ ] Chrome/Edge
 - [ ] Firefox
-- [ ] Safari (if available)
-- [ ] Mobile browsers
+- [ ] Safari (iOS)
+- [ ] Mobile browsers (Android Chrome)
 
 ### Performance
-- [ ] Page load time acceptable
+- [ ] Page load time acceptable (check Vercel Speed Insights)
 - [ ] Images load properly
 - [ ] No broken links
 - [ ] Mobile responsive
@@ -121,54 +119,45 @@ Use this checklist to ensure a smooth deployment of Pryde Social.
 ## Security Checklist
 
 ### Backend
+- [ ] All secrets set in Render environment variables (not in code)
 - [ ] JWT_SECRET is strong and unique
-- [ ] Environment variables not exposed in code
-- [ ] CORS properly configured
-- [ ] HTTPS enabled
+- [ ] CORS configured for prydeapp.com only
+- [ ] HTTPS enforced
 - [ ] Database credentials secure
 - [ ] No sensitive data in logs
 
 ### Frontend
-- [ ] HTTPS enabled
-- [ ] No API keys in client code
-- [ ] Security headers configured (.htaccess)
+- [ ] HTTPS enforced (automatic on Vercel)
+- [ ] No API keys in client-side code
+- [ ] Security headers verified in vercel.json (HSTS, CSP, Referrer-Policy etc.)
 - [ ] XSS protection enabled
 
 ## Monitoring Setup
 
-### Backend
+### Backend (Render)
 - [ ] Render dashboard bookmarked
-- [ ] Email notifications enabled
-- [ ] Health check configured
+- [ ] Email notifications enabled in Render account settings
+- [ ] Health check path configured: `/api/health`
 - [ ] Log monitoring set up
 
-### Frontend
-- [ ] Error tracking set up (optional)
-- [ ] Analytics configured (optional)
-- [ ] Uptime monitoring (optional)
-
-## Documentation
-
-- [ ] Backend URL documented
-- [ ] Frontend URL documented
-- [ ] Environment variables documented
-- [ ] Deployment process documented
-- [ ] Team members have access
+### Frontend (Vercel)
+- [ ] Vercel Analytics enabled (Project Settings → Analytics)
+- [ ] Vercel Speed Insights enabled (Project Settings → Speed Insights)
+- [ ] Deployment notifications enabled
 
 ## Rollback Plan
 
-- [ ] Previous version backed up
-- [ ] Rollback procedure documented
-- [ ] Database backup created
+- [ ] Previous working deployment identified in Vercel dashboard (instant rollback available)
+- [ ] Previous Render deploy available for rollback
+- [ ] Database backup created before major changes
 - [ ] Emergency contacts listed
 
 ## Final Verification
 
 - [ ] All features working as expected
-- [ ] No critical errors
+- [ ] No critical errors in logs
 - [ ] Performance acceptable
-- [ ] Security measures in place
-- [ ] Team notified of deployment
+- [ ] Security measures confirmed
 - [ ] Documentation updated
 
 ---
@@ -183,17 +172,14 @@ Use this checklist to ensure a smooth deployment of Pryde Social.
 
 **Deployed By**: _______________
 
-**Issues Encountered**: 
-_______________________________________________
+**Issues Encountered**:
 _______________________________________________
 _______________________________________________
 
-**Resolution**: 
-_______________________________________________
+**Resolution**:
 _______________________________________________
 _______________________________________________
 
 ---
 
 ✅ **Deployment Complete!**
-
