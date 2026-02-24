@@ -395,37 +395,65 @@ function Settings() {
   };
 
   const handleDeleteAccount = async () => {
+    // Step 1 — explain what will happen (30-day recovery window)
     const confirmed = await showConfirm(
-      '⚠️ WARNING: This action is PERMANENT and CANNOT be undone!\n\n' +
-      'This will permanently delete:\n' +
+      '⚠️ Are you sure you want to delete your account?\n\n' +
+      'Your account will be scheduled for deletion. You have 30 days to change your mind by logging in again.\n\n' +
+      'After 30 days, the following will be permanently removed:\n' +
       '• Your profile and all personal information\n' +
       '• All your posts and comments\n' +
-      '• All your messages\n' +
-      '• All your friend connections\n' +
-      '• Everything associated with your account\n\n' +
-      'Type "DELETE" in the next prompt to confirm.',
-      'Delete Account Permanently?',
+      '• All your friend connections\n\n' +
+      'You will receive a confirmation email to verify this request.',
+      'Delete Account?',
       'Continue',
       'Cancel'
     );
 
     if (!confirmed) return;
 
-    const confirmation = await showPrompt('Type DELETE to confirm account deletion:', 'Confirm Deletion', 'Type DELETE');
+    // Step 2 — password confirmation
+    const password = await showPrompt(
+      'Enter your password to confirm account deletion:',
+      'Confirm with Password',
+      'Your password'
+    );
 
-    if (confirmation !== 'DELETE') {
-      showAlert('Account deletion cancelled. You must type DELETE exactly to confirm.', 'Cancelled');
+    if (!password) {
+      showAlert('Account deletion cancelled.', 'Cancelled');
       return;
     }
 
     try {
-      await api.delete('/users/account');
-      logout();
-      navigate('/');
-      showAlert('Your account has been permanently deleted.', 'Account Deleted');
+      await api.post('/users/account/delete-request', { password });
+      showAlert(
+        'A confirmation email has been sent to your email address.\n\n' +
+        'Click the link in the email to confirm your deletion request.\n\n' +
+        'You have 30 days to cancel by logging in again.',
+        'Check Your Email'
+      );
     } catch (error) {
       logger.error('Delete account error:', error);
-      setMessage('Failed to delete account');
+      const msg = error.response?.data?.message || 'Failed to request account deletion. Please try again.';
+      showAlert(msg, 'Error');
+    }
+  };
+
+  const handleCancelDeletion = async () => {
+    const confirmed = await showConfirm(
+      'Cancel your account deletion request?\n\nYour account will be fully restored.',
+      'Cancel Deletion?',
+      'Yes, keep my account',
+      'No'
+    );
+    if (!confirmed) return;
+
+    try {
+      await api.post('/users/account/cancel-deletion');
+      await refreshUser();
+      showAlert('Your account deletion has been cancelled. Welcome back!', 'Account Restored');
+    } catch (error) {
+      logger.error('Cancel deletion error:', error);
+      showAlert('Could not cancel deletion. Please contact support.', 'Error');
     }
   };
 
@@ -881,19 +909,46 @@ function Settings() {
                 </button>
               </div>
 
-              <div className="action-item danger">
-                <div className="action-info">
-                  <h3>🗑️ Delete Account</h3>
-                  <p className="danger-text">Permanently delete your account and all associated data. This action cannot be undone!</p>
+              {currentUser?.isDeleted ? (
+                <div className="action-item danger">
+                  <div className="action-info">
+                    <h3>⏳ Deletion Pending</h3>
+                    <p className="danger-text">
+                      Your account is scheduled for permanent deletion on{' '}
+                      <strong>
+                        {currentUser.deletionScheduledFor
+                          ? new Date(currentUser.deletionScheduledFor).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })
+                          : 'soon'}
+                      </strong>.
+                      Log in or cancel below to keep your account.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCancelDeletion}
+                    className="btn-deactivate"
+                  >
+                    Cancel Deletion
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleDeleteAccount}
-                  className="btn-delete-account"
-                >
-                  Delete Account
-                </button>
-              </div>
+              ) : (
+                <div className="action-item danger">
+                  <div className="action-info">
+                    <h3>🗑️ Delete Account</h3>
+                    <p className="danger-text">
+                      Schedule your account for deletion. You have 30 days to change your mind.
+                      After that, your profile, posts, and data will be permanently removed.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleDeleteAccount}
+                    className="btn-delete-account"
+                  >
+                    Delete Account
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 

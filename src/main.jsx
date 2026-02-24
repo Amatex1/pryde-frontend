@@ -6,6 +6,13 @@
 import { setupDevConsole } from './utils/devConsole'
 setupDevConsole()
 
+/* ================================
+   SENTRY — init before React
+   Only runs in production with DSN
+   ================================ */
+import { initSentry } from './utils/sentry'
+initSentry()
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'

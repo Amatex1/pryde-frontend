@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import logger from '../utils/logger';
+import { captureException } from '../utils/sentry';
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -29,8 +30,8 @@ class ErrorBoundary extends Component {
       errorInfo
     });
 
-    // Log to error reporting service (if you have one)
-    // Example: logErrorToService(error, errorInfo);
+    // Report to Sentry (production only, no PII)
+    captureException(error, { component: 'ErrorBoundary' });
   }
 
   handleRetry = () => {
