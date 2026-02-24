@@ -4,6 +4,7 @@
  */
 
 import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals';
+import { hasAnalyticsConsent } from '../components/CookieBanner';
 
 /**
  * Report Web Vitals to analytics
@@ -34,8 +35,8 @@ export function sendToAnalytics({ name, delta, value, id, rating }) {
     });
   }
 
-  // Send to analytics in production
-  if (import.meta.env.PROD) {
+  // Send to analytics in production (only if user consented)
+  if (import.meta.env.PROD && hasAnalyticsConsent()) {
     // Google Analytics 4 - wrapped in try/catch to prevent adblock errors
     try {
       if (window.gtag) {
