@@ -209,7 +209,7 @@ html {
 }
 
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-normal); /* 400 */
   line-height: var(--line-height-body); /* 1.55 - comfortable reading */
@@ -347,12 +347,13 @@ button:disabled, .btn:disabled {
 
 /* Primary button */
 .btn-primary {
-  background: var(--color-primary, #6C5CE7);
+  background: var(--gradient-brand, linear-gradient(135deg, #6C5CE7, #0984E3));
   color: white;
+  border: none;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--color-primary-hover, #5a4bd8);
+  filter: brightness(1.05);
   transform: translateY(-1px);
 }
 
@@ -365,6 +366,22 @@ button:disabled, .btn:disabled {
 
 .btn-secondary:hover:not(:disabled) {
   background: var(--color-primary-soft, #EDEAFF);
+}
+
+/* ========================================
+   TYPOGRAPHY HIERARCHY
+   Usernames + section headings use Inter
+   medium weight + subtle tracking for polish.
+   Body stays at 400 — no global weight bumps.
+   ======================================== */
+.username,
+.display-name,
+.author-name,
+.section-heading,
+.sidebar-title,
+.card-title {
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }
 
 /* ========================================

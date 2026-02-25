@@ -203,19 +203,19 @@
   box-shadow: none;
 }
 
-/* Rule 2: Only primary CTAs get brand color */
+/* Rule 2: Only primary CTAs get brand gradient */
 .btn-primary {
-  background: var(--color-brand);
+  background: var(--gradient-brand, linear-gradient(135deg, #6C5CE7, #0984E3));
   color: var(--color-text-inverse);
   border: none;
   border-radius: var(--input-radius);
   padding: var(--space-3) var(--space-5);
   font-weight: var(--font-weight-semibold);
-  transition: background 0.2s ease;
+  transition: filter 0.2s ease;
 }
 
 .btn-primary:hover {
-  background: var(--color-brand-hover);
+  filter: brightness(1.05);
 }
 
 /* Rule 3: Secondary buttons are subtle */
@@ -254,8 +254,8 @@
      FONT FAMILIES
      ======================================== */
 
-  /* Primary UI font - system stack for performance */
-  --font-family-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Primary UI font — Inter with system fallbacks */
+  --font-family-ui: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* Brand font - for marketing/hero sections (requires font loading) */
   --font-family-brand: "IBM Plex Sans", var(--font-family-ui);
@@ -936,7 +936,7 @@ body[data-env="development"] a:not([data-link="structural"]) > section {
    ======================================== */
 
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 15px;
   line-height: 1.5;
   color: var(--text-main);
