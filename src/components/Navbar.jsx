@@ -210,7 +210,7 @@ function Navbar({ onMenuClick }) {
         >
           <div className="mobile-menu-header">
             <div className="mobile-menu-user">
-              <div className="mobile-menu-avatar" aria-hidden="true">
+              <div className="mobile-menu-avatar avatar-ring avatar-ring--self" aria-hidden="true">
                 {user?.profilePhoto ? (
                   <img src={getImageUrl(user.profilePhoto)} alt="" />
                 ) : (
@@ -354,7 +354,7 @@ function Navbar({ onMenuClick }) {
                 aria-expanded={showDropdown}
                 aria-haspopup="true"
               >
-                <div className="user-avatar">
+                <div className="user-avatar avatar-ring avatar-ring--self">
                   {user?.profilePhoto ? (
                     <img src={getImageUrl(user.profilePhoto)} alt={user?.username || 'User'} />
                   ) : (

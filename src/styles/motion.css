@@ -9,24 +9,24 @@
    - Easing: --ease-standard only (cubic-bezier(0.4, 0, 0.2, 1))
    - Properties: transform + opacity ONLY  (GPU-accelerated)
    - No bounce, no overshoot, no elastic effects
-   - No scroll event listeners — IntersectionObserver only
+   - No scroll event listeners
    - Respects prefers-reduced-motion at all layers
    ==================================================================== */
 
 
 /* ------------------------------------------------------------------ */
 /* 1. REACTION ANIMATION                                                */
-/*    Toggle ON:  scale 1 → 1.12 → 1.0 with soft brand glow           */
+/*    Toggle ON:  scale 1 → 1.15 → 1.0 with soft brand glow           */
 /*    Toggle OFF: colour/opacity fade only — no scale                  */
 /* ------------------------------------------------------------------ */
 
 @keyframes pryde-react-on {
   0%   { transform: scale(1);    filter: drop-shadow(0 0 0px   rgba(108, 92, 231, 0)); }
-  45%  { transform: scale(1.12); filter: drop-shadow(0 0 6px   rgba(108, 92, 231, 0.4)); }
+  45%  { transform: scale(1.15); filter: drop-shadow(0 0 7px   rgba(108, 92, 231, 0.45)); }
   100% { transform: scale(1);    filter: drop-shadow(0 0 0px   rgba(108, 92, 231, 0)); }
 }
 
-/* Applied transiently in JS for 180ms when user adds a reaction */
+/* Applied transiently in JS for 200ms when user adds a reaction */
 .reaction-button.reacting {
   animation: pryde-react-on var(--duration-enter, 180ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)) both;
   pointer-events: none; /* prevent double-trigger during animation */
@@ -44,8 +44,8 @@
 .reaction-button:not(.has-reaction):not(.reacting) {
   filter: none;
   transition:
-    opacity   var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)),
-    filter    var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)),
+    opacity    var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)),
+    filter     var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)),
     background var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
@@ -57,13 +57,13 @@
 /* ------------------------------------------------------------------ */
 
 /*
-  Usage pattern:
-    Wrap the <img> or avatar element in a container:
+  Usage:
     <div class="avatar-ring [avatar-ring--self | avatar-ring--active]">
       <img class="avatar-image" ... />
     </div>
 
-  The 2px padding creates the ring gap. No pseudo-elements needed.
+  The 2px padding IS the ring — no pseudo-elements needed.
+  Inner child automatically gets border-radius: 50% via child selector.
 */
 
 .avatar-ring {
@@ -73,11 +73,9 @@
   box-shadow: 0 0 10px rgba(108, 92, 231, 0.18);
   display: inline-flex;
   flex-shrink: 0;
-  /* Smooth glow transitions */
   transition: box-shadow var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
-/* Direct child gets border-radius to sit inside the ring cleanly */
 .avatar-ring > img,
 .avatar-ring > .avatar-image,
 .avatar-ring > .avatar-fallback,
@@ -86,63 +84,84 @@
   border-radius: 50%;
 }
 
-/* Variant: current logged-in user — slightly stronger identity glow */
+/* Current logged-in user — slightly stronger identity glow */
 .avatar-ring--self {
   box-shadow: 0 0 14px rgba(108, 92, 231, 0.30);
 }
 
-/* Variant: recently active or unread DM indicator */
+/* Recently active / unread DM indicator */
 .avatar-ring--active {
   box-shadow: 0 0 10px rgba(9, 132, 227, 0.24);
 }
 
-/* Hover refinement on interactive avatar rings */
+/* Interactive avatar rings */
 .avatar-ring:is(a, button):hover {
   box-shadow: 0 0 16px rgba(108, 92, 231, 0.35);
+}
+
+/* ── Navbar-specific overrides ───────────────────────────────────── */
+/* .user-avatar and .mobile-menu-avatar have their own solid borders; */
+/* replace them with the gradient ring (padding provides the gap).   */
+.user-avatar.avatar-ring {
+  border: none; /* gradient padding IS the ring */
+}
+
+.mobile-menu-avatar.avatar-ring {
+  border: none;
+  /* Override the default white box-shadow with brand glow */
+  box-shadow: 0 0 14px rgba(108, 92, 231, 0.32);
 }
 
 
 /* ------------------------------------------------------------------ */
 /* 3. FEED POST STAGGER ENTRY                                           */
-/*    Each post: opacity 0 + translateY(8px) → natural position        */
-/*    Triggered by IntersectionObserver (motionSystem.js)              */
-/*    Runs ONCE per element — observer.unobserve() after first entry   */
-/*    No re-animation on scroll-back                                    */
+/*    CSS animation — no IntersectionObserver, no JS.                  */
+/*    Compatible with content-visibility: auto on .post-card.          */
+/*                                                                      */
+/*    animation-fill-mode: backwards = element starts at opacity:0     */
+/*    during delay, so staggered posts are hidden until their turn.    */
+/*                                                                      */
+/*    Scoped to .post-card.fade-in — does NOT affect:                  */
+/*      .auth-card.fade-in, .messages-layout.fade-in,                  */
+/*      .profile-header.fade-in, .sidebar-card.fade-in                 */
 /* ------------------------------------------------------------------ */
 
-/*
-  The `.fade-in` class is on all `.post-card` elements.
-  Scoping to `.post-card.fade-in` leaves other `.fade-in` usages
-  (auth-card, messages-layout, profile-header) completely unaffected.
-*/
+@keyframes pryde-post-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 .post-card.fade-in {
-  opacity: 0;
-  transform: translateY(8px);
-  transition:
-    opacity    var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)) var(--stagger-delay, 0ms),
-    transform  var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)) var(--stagger-delay, 0ms);
-  will-change: transform, opacity;
+  animation:
+    pryde-post-enter
+    var(--duration-standard, 160ms)
+    var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1))
+    var(--stagger-delay, 0ms)
+    backwards;      /* element is at `from` state during delay */
 }
 
-/* State: IntersectionObserver has observed this element entering viewport */
-.post-card.fade-in.is-entered {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* State: animation fully complete — release compositing layer */
-.post-card.fade-in.motion-done {
-  will-change: auto;
-  /* Explicitly unset transition to avoid re-triggering on future class changes */
-  transition: none;
-}
+/* ── Stagger delays: first 8 posts in .posts-list cascade in ──────── */
+/* Posts 9+ use --stagger-delay default (0ms) — animate immediately   */
+.posts-list > .post-card.fade-in:nth-child(1)  { --stagger-delay:   0ms; }
+.posts-list > .post-card.fade-in:nth-child(2)  { --stagger-delay:  40ms; }
+.posts-list > .post-card.fade-in:nth-child(3)  { --stagger-delay:  80ms; }
+.posts-list > .post-card.fade-in:nth-child(4)  { --stagger-delay: 120ms; }
+.posts-list > .post-card.fade-in:nth-child(5)  { --stagger-delay: 160ms; }
+.posts-list > .post-card.fade-in:nth-child(6)  { --stagger-delay: 200ms; }
+.posts-list > .post-card.fade-in:nth-child(7)  { --stagger-delay: 240ms; }
+.posts-list > .post-card.fade-in:nth-child(8)  { --stagger-delay: 280ms; }
 
 
 /* ------------------------------------------------------------------ */
 /* 4. SKELETON → CONTENT CROSSFADE                                      */
-/*    Content fades in over 200ms. No layout shift.                    */
-/*    Applied to the posts container when skeleton is replaced.        */
+/*    Keyframe kept as utility — applied selectively, not to           */
+/*    .posts-list directly (to avoid double-opacity with post cards)   */
 /* ------------------------------------------------------------------ */
 
 @keyframes pryde-content-enter {
@@ -150,50 +169,32 @@
   to   { opacity: 1; }
 }
 
-/*
-  The posts-list container fades in when it first appears.
-  Since .post-card.fade-in items start at opacity:0 and stagger in,
-  the container animation is a belt-and-suspenders for the overall area.
-*/
-.posts-list {
-  animation: pryde-content-enter var(--duration-crossfade, 200ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)) both;
-}
-
-/* PostSkeleton exit: when React replaces skeleton, it unmounts.
-   We ensure the incoming content (posts-list) has a smooth entrance above.
-   The shimmer animation on skeleton items stops naturally on unmount. */
-
 
 /* ------------------------------------------------------------------ */
 /* 5. BRAND GRADIENT UTILITIES                                          */
-/*    Use --gradient-brand from design-system.css.                     */
-/*    Consistent across: CTAs, active tabs, rings, highlight accents.  */
 /* ------------------------------------------------------------------ */
 
-/* Apply brand gradient as background */
 .gradient-brand {
   background: var(--gradient-brand, linear-gradient(135deg, #6C5CE7, #0984E3));
 }
 
-/* Apply brand gradient to text */
 .gradient-brand-text {
   background: var(--gradient-brand, linear-gradient(135deg, #6C5CE7, #0984E3));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  color: transparent; /* fallback */
+  color: transparent;
 }
 
 
 /* ------------------------------------------------------------------ */
 /* 6. PREFERS-REDUCED-MOTION OVERRIDES                                  */
-/*    All motion disabled. Opacity only — for state feedback.          */
-/*    Full keyboard usability preserved.                                */
+/*    All motion disabled. State changes are instant.                   */
 /* ------------------------------------------------------------------ */
 
 @media (prefers-reduced-motion: reduce) {
 
-  /* Reaction: no scale animation, instant state change */
+  /* Reaction: instant, no scale */
   .reaction-button.reacting {
     animation: none;
     opacity: 1;
@@ -205,7 +206,7 @@
     transition: opacity var(--duration-quick, 120ms) linear;
   }
 
-  /* Avatar ring: gradient ring stays visible, glow removed */
+  /* Avatar ring: ring stays, glow removed */
   .avatar-ring,
   .avatar-ring--self,
   .avatar-ring--active {
@@ -213,25 +214,22 @@
     transition: none;
   }
 
-  /* Feed stagger: immediately visible, no translateY, no delay */
+  /* Feed stagger: posts immediately visible, no translate */
   .post-card.fade-in {
-    opacity: 1;
-    transform: none;
-    transition: none;
-    will-change: auto;
-  }
-
-  .post-card.fade-in.is-entered {
-    opacity: 1;
-    transform: none;
-  }
-
-  .post-card.fade-in.motion-done {
-    transition: none;
-  }
-
-  /* Content entrance: instant */
-  .posts-list {
     animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Remove stagger delays */
+  .posts-list > .post-card.fade-in:nth-child(1),
+  .posts-list > .post-card.fade-in:nth-child(2),
+  .posts-list > .post-card.fade-in:nth-child(3),
+  .posts-list > .post-card.fade-in:nth-child(4),
+  .posts-list > .post-card.fade-in:nth-child(5),
+  .posts-list > .post-card.fade-in:nth-child(6),
+  .posts-list > .post-card.fade-in:nth-child(7),
+  .posts-list > .post-card.fade-in:nth-child(8) {
+    --stagger-delay: 0ms;
   }
 }
