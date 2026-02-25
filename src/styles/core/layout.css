@@ -541,6 +541,8 @@ body,
 /* Remove "nervous centering" */
 .feed-column {
   max-width: none;
+  position: relative;
+  z-index: 1; /* Renders above ambient lighting layer */
 }
 
 /* ---------- 2️⃣ CARDS: Flat & Matte ---------- */

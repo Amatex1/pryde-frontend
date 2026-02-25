@@ -16,6 +16,7 @@
   height: auto;
   /* min-height: 0 removed - was causing avatar border-radius and GIF overlap issues */
   width: 100%;
+  position: relative; /* Containing block for ambient ::before */
 
   /* SCROLL FIX: No internal scroll, browser scrolls */
   overflow: visible;
@@ -73,4 +74,33 @@
     padding-left: 0;
     padding-right: 0;
   }
+}
+
+
+/* ===============================
+   AMBIENT LIGHTING LAYER
+   Static radial glow centered above feed column.
+   Feels like a soft ceiling light — no animation,
+   no scroll listeners, no JS.
+   pointer-events: none ensures zero interaction cost.
+   =============================== */
+
+.page-viewport::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+
+  background: radial-gradient(
+    var(--ambient-radial-size, 1000px) circle at center 180px,
+    rgba(var(--ambient-radial-color, 108, 92, 231), var(--ambient-radial-opacity, 0.12)),
+    transparent 65%
+  );
+}
+
+/* Feed content must render above the ambient layer */
+.page-container {
+  position: relative;
+  z-index: 1;
 }

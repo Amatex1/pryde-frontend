@@ -166,6 +166,31 @@ Noise hides real problems.
      avatar rings, highlight accents.
      ======================================== */
   --gradient-brand: linear-gradient(135deg, #6C5CE7, #0984E3);
+
+  /* ========================================
+     AMBIENT LIGHTING TOKENS
+     Static radial glow behind feed column.
+     Only --ambient-radial-opacity varies per theme.
+     ======================================== */
+  --ambient-radial-size:    1000px;
+  --ambient-radial-opacity: 0.12;
+  --ambient-radial-color:   108, 92, 231; /* brand purple, RGB */
+}
+
+/* Dark: slightly stronger glow on deep backgrounds */
+:root[data-theme="dark"] {
+  --ambient-radial-opacity: 0.15;
+}
+
+/* Quiet mode: receded atmosphere */
+:root[data-quiet="true"],
+:root[data-quiet-mode="true"] {
+  --ambient-radial-opacity: 0.08;
+}
+
+/* Galaxy: theme has its own dramatic layer */
+html[data-galaxy="true"] {
+  --ambient-radial-opacity: 0.10;
 }
 
 /* ========================================
