@@ -1090,6 +1090,23 @@
   color: var(--text-main);
 }
 
+.cw-custom-input {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border: 1.5px solid var(--electric-blue);
+  border-radius: 10px;
+  font-size: var(--font-size-sm);
+  background: var(--card-surface);
+  color: var(--text-main);
+  outline: none;
+}
+
+.cw-custom-input:focus {
+  border-color: var(--pryde-purple);
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+}
+
 /* Poll Button - Calm, available tool */
 .post-actions-bar .btn-poll,
 button.btn-poll {

@@ -1872,7 +1872,7 @@ function Profile() {
                 <div className="profile-meta">
                   {user.website && (
                     <a href={sanitizeURL(user.website)} target="_blank" rel="noopener noreferrer" className="meta-item">
-                      <ChevronRight size={12} strokeWidth={1.75} aria-hidden="true" /> {sanitizeText(user.website)}
+                      <ChevronRight size={14} strokeWidth={1.75} aria-hidden="true" /> {sanitizeText(user.website)}
                     </a>
                   )}
                 </div>
@@ -2100,7 +2100,7 @@ function Profile() {
                   whiteSpace: 'nowrap'
                 }}
               >
-                <FileText size={15} strokeWidth={1.75} aria-hidden="true" /> Posts
+                <FileText size={16} strokeWidth={1.75} aria-hidden="true" /> Posts
               </button>
               <button
                 className={`tab-button ${activeTab === 'journals' ? 'active' : ''}`}
@@ -2154,7 +2154,7 @@ function Profile() {
                   whiteSpace: 'nowrap'
                 }}
               >
-                <Image size={15} strokeWidth={1.75} aria-hidden="true" /> Photo Essays
+                <Image size={16} strokeWidth={1.75} aria-hidden="true" /> Photo Essays
               </button>
             </div>
 
@@ -2226,8 +2226,20 @@ function Profile() {
                         <option value="Discrimination">Discrimination</option>
                         <option value="Medical Content">Medical Content</option>
                         <option value="Flashing Lights">Flashing Lights</option>
-                        <option value="Other">Other</option>
+                        <option value="Spoilers">Spoilers</option>
+                        <option value="Other">Other (describe below)</option>
                       </select>
+                      {(['Other'].includes(contentWarning) || (contentWarning && !['', 'Mental Health', 'Violence', 'Sexual Content', 'Substance Use', 'Self-Harm', 'Death/Grief', 'Eating Disorders', 'Abuse', 'Discrimination', 'Medical Content', 'Flashing Lights', 'Spoilers', 'Other'].includes(contentWarning))) && (
+                        <input
+                          type="text"
+                          className="cw-custom-input"
+                          placeholder="Describe the content warning..."
+                          value={contentWarning === 'Other' ? '' : contentWarning}
+                          onChange={(e) => setContentWarning(e.target.value || 'Other')}
+                          maxLength={100}
+                          autoFocus
+                        />
+                      )}
                     </div>
                   )}
 
@@ -2289,7 +2301,7 @@ function Profile() {
                       onClick={() => setShowContentWarning(!showContentWarning)}
                       title="Add content warning"
                     >
-                      ⚠️ CW
+                      <AlertTriangle size={14} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Content Warning</span>
                     </button>
 
                     <label className="hide-metrics-checkbox" title="Hide likes, comments, and shares count">
@@ -2850,9 +2862,9 @@ function Profile() {
                         <div>
                           <h3 style={{ margin: '0 0 10px 0', color: 'var(--pryde-purple)' }}>{journal.title || 'Untitled Entry'}</h3>
                           <div style={{ display: 'flex', gap: '10px', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                            <span><Calendar size={12} strokeWidth={1.75} aria-hidden="true" /> {new Date(journal.createdAt).toLocaleDateString()}</span>
-                            {journal.mood && <span><Smile size={12} strokeWidth={1.75} aria-hidden="true" /> {journal.mood}</span>}
-                            <span><Lock size={12} strokeWidth={1.75} aria-hidden="true" /> {journal.visibility}</span>
+                            <span><Calendar size={14} strokeWidth={1.75} aria-hidden="true" /> {new Date(journal.createdAt).toLocaleDateString()}</span>
+                            {journal.mood && <span><Smile size={14} strokeWidth={1.75} aria-hidden="true" /> {journal.mood}</span>}
+                            <span><Lock size={14} strokeWidth={1.75} aria-hidden="true" /> {journal.visibility}</span>
                           </div>
                         </div>
                       </div>
@@ -2887,9 +2899,9 @@ function Profile() {
                       )}
                       <h2 style={{ margin: '0 0 10px 0', color: 'var(--pryde-purple)' }}>{longform.title}</h2>
                       <div style={{ display: 'flex', gap: '10px', fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '15px' }}>
-                        <span><Calendar size={12} strokeWidth={1.75} aria-hidden="true" /> {new Date(longform.createdAt).toLocaleDateString()}</span>
+                        <span><Calendar size={14} strokeWidth={1.75} aria-hidden="true" /> {new Date(longform.createdAt).toLocaleDateString()}</span>
                         {longform.readTime && <span>⏱️ {longform.readTime} min read</span>}
-                        <span><Lock size={12} strokeWidth={1.75} aria-hidden="true" /> {longform.visibility}</span>
+                        <span><Lock size={14} strokeWidth={1.75} aria-hidden="true" /> {longform.visibility}</span>
                       </div>
                       <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>{longform.body.substring(0, 300)}...</p>
                       <Link to={`/longform/${longform._id}`} style={{ color: 'var(--pryde-purple)', fontWeight: 'bold', textDecoration: 'none' }}>
@@ -2930,8 +2942,8 @@ function Profile() {
                         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>+{essay.photos.length - 4} more photos</p>
                       )}
                       <div style={{ display: 'flex', gap: '10px', fontSize: '0.9rem', color: 'var(--text-muted)', marginTop: '10px' }}>
-                        <span><Calendar size={12} strokeWidth={1.75} aria-hidden="true" /> {new Date(essay.createdAt).toLocaleDateString()}</span>
-                        <span><Lock size={12} strokeWidth={1.75} aria-hidden="true" /> {essay.visibility}</span>
+                        <span><Calendar size={14} strokeWidth={1.75} aria-hidden="true" /> {new Date(essay.createdAt).toLocaleDateString()}</span>
+                        <span><Lock size={14} strokeWidth={1.75} aria-hidden="true" /> {essay.visibility}</span>
                       </div>
                     </div>
                   ))

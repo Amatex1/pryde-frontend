@@ -97,9 +97,21 @@ export default function MessageInput({
             <option value="Abuse">Abuse</option>
             <option value="Discrimination">Discrimination</option>
             <option value="Medical Content">Medical Content</option>
+            <option value="Flashing Lights">Flashing Lights</option>
             <option value="Spoilers">Spoilers</option>
-            <option value="Other">Other</option>
+            <option value="Other">Other (describe below)</option>
           </select>
+          {(['Other'].includes(contentWarning) || (contentWarning && !['', 'Mental Health', 'Violence', 'Sexual Content', 'Substance Use', 'Self-Harm', 'Death/Grief', 'Eating Disorders', 'Abuse', 'Discrimination', 'Medical Content', 'Flashing Lights', 'Spoilers', 'Other'].includes(contentWarning))) && (
+            <input
+              type="text"
+              className="cw-custom-input"
+              placeholder="Describe the content warning..."
+              value={contentWarning === 'Other' ? '' : contentWarning}
+              onChange={(e) => setContentWarning(e.target.value || 'Other')}
+              maxLength={100}
+              autoFocus
+            />
+          )}
         </div>
       )}
 

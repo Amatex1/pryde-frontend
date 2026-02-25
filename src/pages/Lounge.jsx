@@ -736,7 +736,7 @@ function Lounge() {
 
                         {msg.contentWarning && (
                           <div className="lounge-message-cw">
-                            CW: {msg.contentWarning}
+                            Content Warning: {msg.contentWarning}
                           </div>
                         )}
 

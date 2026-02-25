@@ -106,8 +106,8 @@ export default function ThreadList({
                             <div className="conv-username">{getUsername(otherUser)}</div>
                           )}
                           <div className="conv-last-message">
-                            {mutedConversations.includes(conv._id) && <BellOff size={12} strokeWidth={1.75} aria-hidden="true" style={{marginRight:'4px'}} />}
-                            {conv.lastMessage?.voiceNote?.url ? <><Mic size={12} strokeWidth={1.75} aria-hidden="true" /> Voice note</> : (conv.lastMessage?.content || 'No messages')}
+                            {mutedConversations.includes(conv._id) && <BellOff size={14} strokeWidth={1.75} aria-hidden="true" style={{marginRight:'4px'}} />}
+                            {conv.lastMessage?.voiceNote?.url ? <><Mic size={14} strokeWidth={1.75} aria-hidden="true" /> Voice note</> : (conv.lastMessage?.content || 'No messages')}
                           </div>
                         </div>
                         {conv.unread > 0 && <div className="unread-badge">{conv.unread}</div>}

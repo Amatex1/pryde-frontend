@@ -76,7 +76,8 @@ const FeedComposer = memo(function FeedComposer({
     { value: 'Discrimination', label: 'Discrimination' },
     { value: 'Medical Content', label: 'Medical Content' },
     { value: 'Flashing Lights', label: 'Flashing Lights' },
-    { value: 'Other', label: 'Other' },
+    { value: 'Spoilers', label: 'Spoilers' },
+    { value: 'Other', label: 'Other (describe below)' },
   ];
 
   // Shared media preview component
@@ -107,12 +108,15 @@ const FeedComposer = memo(function FeedComposer({
   // Shared content warning selector
   const renderContentWarning = (idPrefix = '') => {
     if (!showContentWarning) return null;
+    const knownValues = contentWarningOptions.map(o => o.value);
+    const isCustom = contentWarning && !knownValues.includes(contentWarning);
+    const selectValue = isCustom ? 'Other' : contentWarning;
     return (
       <div className="content-warning-input">
         <select
           id={`${idPrefix}content-warning-select`}
           name={`${idPrefix}contentWarning`}
-          value={contentWarning}
+          value={selectValue}
           onChange={(e) => onSetContentWarning(e.target.value)}
           className={`cw-input ${!isMobile ? 'glossy' : ''}`}
         >
@@ -120,6 +124,17 @@ const FeedComposer = memo(function FeedComposer({
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
         </select>
+        {(selectValue === 'Other' || isCustom) && (
+          <input
+            type="text"
+            className="cw-custom-input"
+            placeholder="Describe the content warning..."
+            value={isCustom ? contentWarning : ''}
+            onChange={(e) => onSetContentWarning(e.target.value || 'Other')}
+            maxLength={100}
+            autoFocus
+          />
+        )}
       </div>
     );
   };
@@ -219,7 +234,7 @@ const FeedComposer = memo(function FeedComposer({
                 onClick={() => onSetShowContentWarning(!showContentWarning)}
                 title="Add content warning"
               >
-                <AlertTriangle size={14} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> CW</span>
+                <AlertTriangle size={14} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Content Warning</span>
               </button>
 
               <label className="hide-metrics-checkbox" title="Hide likes, comments, and shares count">
