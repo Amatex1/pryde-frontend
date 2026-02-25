@@ -1,5 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
+import {
+  Menu, Search, MessageCircle, Bell,
+  Home, Users, BookOpen, BookText, Image, Sparkles,
+  Bookmark, Calendar, ShieldCheck, Settings, Leaf,
+  Telescope, Palette, User, LogOut,
+  ChevronUp, ChevronDown, Check, X,
+} from 'lucide-react';
 import { useMediaQuery } from 'react-responsive';
 import { logout } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
@@ -147,7 +154,7 @@ function Navbar({ onMenuClick }) {
               className="navbar-mobile-icon-btn"
               aria-label={totalUnread > 0 ? `Messages, ${totalUnread} unread` : 'Messages'}
             >
-              <span className="navbar-mobile-icon" aria-hidden="true">💬</span>
+              <MessageCircle size={20} strokeWidth={1.75} aria-hidden="true" className="navbar-mobile-icon" />
               {totalUnread > 0 && (
                 <span className="navbar-mobile-badge" aria-hidden="true">
                   {totalUnread > 9 ? '9+' : totalUnread}
@@ -164,7 +171,7 @@ function Navbar({ onMenuClick }) {
               onClick={() => setShowMobileSearch(true)}
               aria-label="Search"
             >
-              <span className="navbar-mobile-icon" aria-hidden="true">🔍</span>
+              <Search size={20} strokeWidth={1.75} aria-hidden="true" className="navbar-mobile-icon" />
             </button>
 
             {/* Hamburger — opens side drawer */}
@@ -183,7 +190,7 @@ function Navbar({ onMenuClick }) {
               aria-expanded={false}
               aria-controls="mobile-menu"
             >
-              <span aria-hidden="true">☰</span>
+              <Menu size={20} strokeWidth={1.75} aria-hidden="true" />
             </button>
           </div>
         )}
@@ -228,7 +235,7 @@ function Navbar({ onMenuClick }) {
 
           <div className="mobile-menu-items" role="menuitem">
             <Link to="/feed" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon" aria-hidden="true">🏠</span>
+              <Home size={18} strokeWidth={1.75} aria-hidden="true" className="mobile-menu-icon" />
               <span>Feed</span>
             </Link>
 
@@ -237,53 +244,53 @@ function Navbar({ onMenuClick }) {
                ========================================= */}
             <div className="mobile-menu-section-header">Explore Pryde</div>
             <Link to="/groups" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon" aria-hidden="true">👥</span>
+              <Users size={18} strokeWidth={1.75} aria-hidden="true" className="mobile-menu-icon" />
               <span>Groups</span>
             </Link>
             <Link to="/journal" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon" aria-hidden="true">📔</span>
+              <BookOpen size={18} strokeWidth={1.75} aria-hidden="true" className="mobile-menu-icon" />
               <span>Journal</span>
             </Link>
             <Link to="/longform" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon" aria-hidden="true">📖</span>
+              <BookText size={18} strokeWidth={1.75} aria-hidden="true" className="mobile-menu-icon" />
               <span>Stories</span>
             </Link>
             <Link to="/photo-essay" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon" aria-hidden="true">📸</span>
+              <Image size={18} strokeWidth={1.75} aria-hidden="true" className="mobile-menu-icon" />
               <span>Photos</span>
             </Link>
             <Link to="/lounge" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon" aria-hidden="true">✨</span>
+              <Sparkles size={18} strokeWidth={1.75} aria-hidden="true" className="mobile-menu-icon" />
               <span>Lounge</span>
             </Link>
             <Link to="/messages" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon" aria-hidden="true">💬</span>
+              <MessageCircle size={18} strokeWidth={1.75} aria-hidden="true" className="mobile-menu-icon" />
               <span>Messages</span>
               {totalUnread > 0 && (
                 <span className="mobile-menu-badge" aria-label={`${totalUnread} unread messages`}>{totalUnread}</span>
               )}
             </Link>
             <Link to="/notifications" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon" aria-hidden="true">🔔</span>
+              <Bell size={18} strokeWidth={1.75} aria-hidden="true" className="mobile-menu-icon" />
               <span>Notifications</span>
             </Link>
             <Link to="/bookmarks" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon" aria-hidden="true">🔖</span>
+              <Bookmark size={18} strokeWidth={1.75} aria-hidden="true" className="mobile-menu-icon" />
               <span>Bookmarks</span>
             </Link>
             <Link to="/events" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon" aria-hidden="true">📅</span>
+              <Calendar size={18} strokeWidth={1.75} aria-hidden="true" className="mobile-menu-icon" />
               <span>Events</span>
             </Link>
             {user?.role && ['moderator', 'admin', 'super_admin'].includes(user.role) && (
               <Link to="/admin" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-                <span className="mobile-menu-icon" aria-hidden="true">🛡️</span>
+                <ShieldCheck size={18} strokeWidth={1.75} aria-hidden="true" className="mobile-menu-icon" />
                 <span>Admin Panel</span>
               </Link>
             )}
             <div className="mobile-menu-divider" role="separator" aria-hidden="true"></div>
             <Link to="/settings" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon" aria-hidden="true">⚙️</span>
+              <Settings size={18} strokeWidth={1.75} aria-hidden="true" className="mobile-menu-icon" />
               <span>Settings</span>
             </Link>
             <button
@@ -292,14 +299,14 @@ function Navbar({ onMenuClick }) {
               aria-label={`${quietMode ? 'Disable' : 'Enable'} quiet mode - peaceful browsing with softer colors`}
               aria-pressed={quietMode}
             >
-              <span className="mobile-menu-icon" aria-hidden="true">🍃</span>
+              <Leaf size={18} strokeWidth={1.75} aria-hidden="true" className="mobile-menu-icon" />
               <div className="mobile-menu-item-content">
                 <span className="mobile-menu-item-title">Quiet Mode</span>
                 <span className="mobile-menu-item-description">
                   Peaceful browsing with softer colors
                 </span>
               </div>
-              {quietMode && <span className="mode-indicator" aria-hidden="true">✓</span>}
+              {quietMode && <Check size={14} strokeWidth={2} aria-hidden="true" className="mode-indicator" />}
             </button>
             <button
               className="mobile-menu-item"
@@ -307,17 +314,17 @@ function Navbar({ onMenuClick }) {
               aria-label={`${galaxyMode ? 'Disable' : 'Enable'} galaxy mode - immersive galaxy background`}
               aria-pressed={galaxyMode}
             >
-              <span className="mobile-menu-icon" aria-hidden="true">🌌</span>
+              <Telescope size={18} strokeWidth={1.75} aria-hidden="true" className="mobile-menu-icon" />
               <div className="mobile-menu-item-content">
                 <span className="mobile-menu-item-title">Galaxy Mode</span>
                 <span className="mobile-menu-item-description">
                   Immersive galaxy background
                 </span>
               </div>
-              {galaxyMode && <span className="mode-indicator" aria-hidden="true">✓</span>}
+              {galaxyMode && <Check size={14} strokeWidth={2} aria-hidden="true" className="mode-indicator" />}
             </button>
             <Link to="/settings" className="mobile-menu-item" onClick={() => setShowMobileMenu(false)}>
-              <span className="mobile-menu-icon" aria-hidden="true">🎨</span>
+              <Palette size={18} strokeWidth={1.75} aria-hidden="true" className="mobile-menu-icon" />
               <div className="mobile-menu-item-content">
                 <span className="mobile-menu-item-title">Appearance</span>
                 <span className="mobile-menu-item-description">
@@ -331,7 +338,7 @@ function Navbar({ onMenuClick }) {
               className="mobile-menu-item mobile-menu-logout"
               aria-label="Logout from Pryde Social"
             >
-              <span className="mobile-menu-icon" aria-hidden="true">🚪</span>
+              <LogOut size={18} strokeWidth={1.75} aria-hidden="true" className="mobile-menu-icon" />
               <span>Logout</span>
             </button>
           </div>
@@ -362,7 +369,9 @@ function Navbar({ onMenuClick }) {
                   )}
                 </div>
               <span className="user-name">{user?.displayName || user?.username}</span>
-              <span className="dropdown-arrow" aria-hidden="true">{showDropdown ? '▲' : '▼'}</span>
+              {showDropdown
+                ? <ChevronUp size={14} strokeWidth={2} aria-hidden="true" className="dropdown-arrow" />
+                : <ChevronDown size={14} strokeWidth={2} aria-hidden="true" className="dropdown-arrow" />}
             </button>
 
             {showDropdown && (
@@ -378,7 +387,7 @@ function Navbar({ onMenuClick }) {
                 role="menuitem"
                 aria-label="View my profile"
               >
-                <span className="dropdown-icon" aria-hidden="true">👤</span>
+                <User size={16} strokeWidth={1.75} aria-hidden="true" className="dropdown-icon" />
                 <span>My Profile</span>
               </Link>
               <Link
@@ -388,7 +397,7 @@ function Navbar({ onMenuClick }) {
                 role="menuitem"
                 aria-label="View bookmarks"
               >
-                <span className="dropdown-icon" aria-hidden="true">🔖</span>
+                <Bookmark size={16} strokeWidth={1.75} aria-hidden="true" className="dropdown-icon" />
                 <span>Bookmarks</span>
               </Link>
               <Link
@@ -398,7 +407,7 @@ function Navbar({ onMenuClick }) {
                 role="menuitem"
                 aria-label="View events"
               >
-                <span className="dropdown-icon" aria-hidden="true">📅</span>
+                <Calendar size={16} strokeWidth={1.75} aria-hidden="true" className="dropdown-icon" />
                 <span>Events</span>
               </Link>
               <Link
@@ -408,7 +417,7 @@ function Navbar({ onMenuClick }) {
                 role="menuitem"
                 aria-label="Open settings"
               >
-                <span className="dropdown-icon" aria-hidden="true">⚙️</span>
+                <Settings size={16} strokeWidth={1.75} aria-hidden="true" className="dropdown-icon" />
                 <span>Settings</span>
               </Link>
               {user?.role && ['moderator', 'admin', 'super_admin'].includes(user.role) && (
@@ -419,7 +428,7 @@ function Navbar({ onMenuClick }) {
                   role="menuitem"
                   aria-label="Open admin panel"
                 >
-                  <span className="dropdown-icon" aria-hidden="true">🛡️</span>
+                  <ShieldCheck size={16} strokeWidth={1.75} aria-hidden="true" className="dropdown-icon" />
                   <span>Admin Panel</span>
                 </Link>
               )}
@@ -430,9 +439,9 @@ function Navbar({ onMenuClick }) {
                 aria-checked={quietMode}
                 aria-label={`${quietMode ? 'Disable' : 'Enable'} quiet mode - peaceful browsing with softer colors`}
               >
-                <span className="quiet-mode-icon" aria-hidden="true">🍃</span>
+                <Leaf size={16} strokeWidth={1.75} aria-hidden="true" className="quiet-mode-icon" />
                 <span>Quiet Mode</span>
-                {quietMode && <span className="mode-indicator" aria-hidden="true">✓</span>}
+                {quietMode && <Check size={14} strokeWidth={2} aria-hidden="true" className="mode-indicator" />}
               </button>
               <button
                 className="dropdown-item dropdown-galaxy-mode"
@@ -441,9 +450,9 @@ function Navbar({ onMenuClick }) {
                 aria-checked={galaxyMode}
                 aria-label={`${galaxyMode ? 'Disable' : 'Enable'} galaxy mode - immersive galaxy background`}
               >
-                <span className="galaxy-mode-icon" aria-hidden="true">🌌</span>
+                <Telescope size={16} strokeWidth={1.75} aria-hidden="true" className="galaxy-mode-icon" />
                 <span>Galaxy Mode</span>
-                {galaxyMode && <span className="mode-indicator" aria-hidden="true">✓</span>}
+                {galaxyMode && <Check size={14} strokeWidth={2} aria-hidden="true" className="mode-indicator" />}
               </button>
               <Link
                 to="/settings"
@@ -452,7 +461,7 @@ function Navbar({ onMenuClick }) {
                 role="menuitem"
                 aria-label="Appearance settings"
               >
-                <span className="dropdown-icon" aria-hidden="true">🎨</span>
+                <Palette size={16} strokeWidth={1.75} aria-hidden="true" className="dropdown-icon" />
                 <span>Appearance</span>
               </Link>
               <div className="dropdown-divider" role="separator"></div>
@@ -462,7 +471,7 @@ function Navbar({ onMenuClick }) {
                 role="menuitem"
                 aria-label="Logout from Pryde Social"
               >
-                <span className="dropdown-icon" aria-hidden="true">🚪</span>
+                <LogOut size={16} strokeWidth={1.75} aria-hidden="true" className="dropdown-icon" />
                 <span>Logout</span>
               </button>
               </div>
@@ -489,7 +498,7 @@ function Navbar({ onMenuClick }) {
               onClick={() => setShowMobileSearch(false)}
               aria-label="Close search"
             >
-              ✕
+              <X size={18} strokeWidth={1.75} aria-hidden="true" />
             </button>
           </div>
         </div>

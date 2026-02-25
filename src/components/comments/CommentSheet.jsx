@@ -1,3 +1,4 @@
+import { X } from 'lucide-react';
 import "./CommentSheet.css";
 
 export default function CommentSheet({ children, onClose }) {
@@ -9,7 +10,7 @@ export default function CommentSheet({ children, onClose }) {
       >
         <div className="comment-sheet-header">
           <span className="sheet-title">Comments</span>
-          <button className="sheet-close-btn" onClick={onClose} aria-label="Close comments">✕</button>
+          <button className="sheet-close-btn" onClick={onClose} aria-label="Close comments"><X size={18} strokeWidth={1.75} aria-hidden="true" /></button>
         </div>
 
         <div className="comment-sheet-content">

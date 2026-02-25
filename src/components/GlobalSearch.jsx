@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Loader } from 'lucide-react';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import { quietCopy } from '../config/uiCopy';
@@ -96,7 +97,7 @@ function GlobalSearch({ variant = 'default' }) {
           autoComplete="off"
           aria-label="Search users and posts"
         />
-        {loading && <span className="search-loading">⏳</span>}
+        {loading && <Loader size={16} strokeWidth={1.75} className="search-loading" aria-hidden="true" />}
       </div>
 
       {showResults && (

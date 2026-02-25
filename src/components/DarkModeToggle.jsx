@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Sun, Moon } from 'lucide-react';
 import { getTheme, toggleTheme } from '../utils/themeManager';
 import './DarkModeToggle.css';
 
@@ -13,7 +14,9 @@ function DarkModeToggle({ asIcon = false, onClick }) {
 
   // If used as icon only (in dropdown), just return the icon
   if (asIcon) {
-    return <span className="dark-mode-icon">{isDark ? '☀️' : '🌙'}</span>;
+    return isDark
+      ? <Sun size={18} strokeWidth={1.75} className="dark-mode-icon" aria-hidden="true" />
+      : <Moon size={18} strokeWidth={1.75} className="dark-mode-icon" aria-hidden="true" />;
   }
 
   return (
@@ -21,8 +24,11 @@ function DarkModeToggle({ asIcon = false, onClick }) {
       className="dark-mode-toggle"
       onClick={toggleDarkMode}
       title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+      aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
     >
-      {isDark ? '☀️' : '🌙'}
+      {isDark
+        ? <Sun size={18} strokeWidth={1.75} aria-hidden="true" />
+        : <Moon size={18} strokeWidth={1.75} aria-hidden="true" />}
     </button>
   );
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { X } from 'lucide-react';
 import { getImageUrl } from '../utils/imageUrl';
 import api from '../utils/api';
 import './ReactionDetailsModal.css';
@@ -62,7 +63,7 @@ function ReactionDetailsModal({ targetType, targetId, onClose }) {
       <div className="reaction-modal" onClick={(e) => e.stopPropagation()}>
         <div className="reaction-modal-header">
           <h3>Reactions</h3>
-          <button className="modal-close-btn" onClick={onClose}>✕</button>
+          <button className="modal-close-btn" onClick={onClose} aria-label="Close"><X size={18} strokeWidth={1.75} aria-hidden="true" /></button>
         </div>
 
         {loading ? (

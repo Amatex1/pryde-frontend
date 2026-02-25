@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Bell, Heart, MessageCircle, UserPlus, UserCheck,
+  AtSign, Repeat2, Smile, FileText,
+} from 'lucide-react';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import { getCurrentUser } from '../utils/auth';
@@ -237,17 +241,18 @@ const NotificationBell = memo(() => {
   };
 
   const getNotificationIcon = (type) => {
+    const props = { size: 16, strokeWidth: 1.75, 'aria-hidden': true };
     switch (type) {
-      case 'like': return '❤️';
-      case 'comment': return '💬';
-      case 'friend_request': return '👥';
-      case 'friend_accept': return '✅';
-      case 'mention': return '@';
-      case 'share': return '🔄';
-      case 'reaction': return '😊';
-      case 'group_post': return '📝';
-      case 'group_mention': return '💬';
-      default: return '🔔';
+      case 'like':           return <Heart {...props} />;
+      case 'comment':        return <MessageCircle {...props} />;
+      case 'friend_request': return <UserPlus {...props} />;
+      case 'friend_accept':  return <UserCheck {...props} />;
+      case 'mention':        return <AtSign {...props} />;
+      case 'share':          return <Repeat2 {...props} />;
+      case 'reaction':       return <Smile {...props} />;
+      case 'group_post':     return <FileText {...props} />;
+      case 'group_mention':  return <AtSign {...props} />;
+      default:               return <Bell {...props} />;
     }
   };
 
@@ -311,7 +316,7 @@ const NotificationBell = memo(() => {
         onClick={() => setShowDropdown(!showDropdown)}
         aria-label="Notifications"
       >
-        🔔
+        <Bell size={20} strokeWidth={1.75} aria-hidden="true" />
         {unreadCount > 0 && (
           <span className="notification-badge">
             {unreadCount > 99 ? '99+' : unreadCount}
@@ -333,7 +338,7 @@ const NotificationBell = memo(() => {
           <div className="notification-list">
             {notifications.length === 0 ? (
               <div className="no-notifications">
-                <span className="no-notif-icon">🔔</span>
+                <Bell size={32} strokeWidth={1.5} className="no-notif-icon" aria-hidden="true" />
                 <p>No notifications yet</p>
               </div>
             ) : (

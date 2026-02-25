@@ -14,15 +14,19 @@
  * - Receives open/onClose props from AppLayout
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import {
+  X, Home, Users, BookOpen, BookText, Image, Sparkles,
+  MessageCircle, Bell, Bookmark, Calendar, Search,
+  ShieldCheck, Settings, Leaf, Telescope, Palette, LogOut, Check,
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useUnreadMessages } from '../hooks/useUnreadMessages';
 import { getImageUrl } from '../utils/imageUrl';
 import { logout } from '../utils/auth';
 import api from '../utils/api';
 import { getQuietMode, setQuietMode as setQuietModeManager, getGalaxyMode, toggleGalaxyMode as toggleGalaxyModeManager } from '../utils/themeManager';
-import { useState } from 'react';
 import './MobileNavDrawer.css';
 
 export default function MobileNavDrawer({ open, onClose }) {
@@ -129,41 +133,41 @@ export default function MobileNavDrawer({ open, onClose }) {
             onClick={onClose}
             aria-label="Close menu"
           >
-            ✕
+            <X size={18} strokeWidth={1.75} aria-hidden="true" />
           </button>
         </div>
 
         {/* Navigation Items */}
         <nav className="mobile-nav-items" role="navigation">
           <Link to="/feed" className="mobile-nav-item" onClick={handleLinkClick}>
-            <span className="mobile-nav-icon" aria-hidden="true">🏠</span>
+            <Home size={18} strokeWidth={1.75} className="mobile-nav-icon" aria-hidden="true" />
             <span>Feed</span>
           </Link>
 
           <div className="mobile-nav-section-header">Explore Pryde</div>
           
           <Link to="/groups" className="mobile-nav-item" onClick={handleLinkClick}>
-            <span className="mobile-nav-icon" aria-hidden="true">👥</span>
+            <Users size={18} strokeWidth={1.75} className="mobile-nav-icon" aria-hidden="true" />
             <span>Groups</span>
           </Link>
           <Link to="/journal" className="mobile-nav-item" onClick={handleLinkClick}>
-            <span className="mobile-nav-icon" aria-hidden="true">📔</span>
+            <BookOpen size={18} strokeWidth={1.75} className="mobile-nav-icon" aria-hidden="true" />
             <span>Journal</span>
           </Link>
           <Link to="/longform" className="mobile-nav-item" onClick={handleLinkClick}>
-            <span className="mobile-nav-icon" aria-hidden="true">📖</span>
+            <BookText size={18} strokeWidth={1.75} className="mobile-nav-icon" aria-hidden="true" />
             <span>Stories</span>
           </Link>
           <Link to="/photo-essay" className="mobile-nav-item" onClick={handleLinkClick}>
-            <span className="mobile-nav-icon" aria-hidden="true">📸</span>
+            <Image size={18} strokeWidth={1.75} className="mobile-nav-icon" aria-hidden="true" />
             <span>Photos</span>
           </Link>
           <Link to="/lounge" className="mobile-nav-item" onClick={handleLinkClick}>
-            <span className="mobile-nav-icon" aria-hidden="true">✨</span>
+            <Sparkles size={18} strokeWidth={1.75} className="mobile-nav-icon" aria-hidden="true" />
             <span>Lounge</span>
           </Link>
           <Link to="/messages" className="mobile-nav-item" onClick={handleLinkClick}>
-            <span className="mobile-nav-icon" aria-hidden="true">💬</span>
+            <MessageCircle size={18} strokeWidth={1.75} className="mobile-nav-icon" aria-hidden="true" />
             <span>Messages</span>
             {totalUnread > 0 && (
               <span className="mobile-nav-badge" aria-label={`${totalUnread} unread messages`}>
@@ -172,25 +176,25 @@ export default function MobileNavDrawer({ open, onClose }) {
             )}
           </Link>
           <Link to="/notifications" className="mobile-nav-item" onClick={handleLinkClick}>
-            <span className="mobile-nav-icon" aria-hidden="true">🔔</span>
+            <Bell size={18} strokeWidth={1.75} className="mobile-nav-icon" aria-hidden="true" />
             <span>Notifications</span>
           </Link>
           <Link to="/bookmarks" className="mobile-nav-item" onClick={handleLinkClick}>
-            <span className="mobile-nav-icon" aria-hidden="true">🔖</span>
+            <Bookmark size={18} strokeWidth={1.75} className="mobile-nav-icon" aria-hidden="true" />
             <span>Bookmarks</span>
           </Link>
           <Link to="/events" className="mobile-nav-item" onClick={handleLinkClick}>
-            <span className="mobile-nav-icon" aria-hidden="true">📅</span>
+            <Calendar size={18} strokeWidth={1.75} className="mobile-nav-icon" aria-hidden="true" />
             <span>Events</span>
           </Link>
           <Link to="/search" className="mobile-nav-item" onClick={handleLinkClick}>
-            <span className="mobile-nav-icon" aria-hidden="true">🔍</span>
+            <Search size={18} strokeWidth={1.75} className="mobile-nav-icon" aria-hidden="true" />
             <span>Find Followers</span>
           </Link>
 
           {user?.role && ['moderator', 'admin', 'super_admin'].includes(user.role) && (
             <Link to="/admin" className="mobile-nav-item" onClick={handleLinkClick}>
-              <span className="mobile-nav-icon" aria-hidden="true">🛡️</span>
+              <ShieldCheck size={18} strokeWidth={1.75} className="mobile-nav-icon" aria-hidden="true" />
               <span>Admin Panel</span>
             </Link>
           )}
@@ -198,7 +202,7 @@ export default function MobileNavDrawer({ open, onClose }) {
           <div className="mobile-nav-divider" role="separator" aria-hidden="true" />
 
           <Link to="/settings" className="mobile-nav-item" onClick={handleLinkClick}>
-            <span className="mobile-nav-icon" aria-hidden="true">⚙️</span>
+            <Settings size={18} strokeWidth={1.75} className="mobile-nav-icon" aria-hidden="true" />
             <span>Settings</span>
           </Link>
 
@@ -208,14 +212,14 @@ export default function MobileNavDrawer({ open, onClose }) {
             aria-label={`${quietMode ? 'Disable' : 'Enable'} quiet mode`}
             aria-pressed={quietMode}
           >
-            <span className="mobile-nav-icon" aria-hidden="true">🍃</span>
+            <Leaf size={18} strokeWidth={1.75} className="mobile-nav-icon" aria-hidden="true" />
             <div className="mobile-nav-item-content">
               <span className="mobile-nav-item-title">Quiet Mode</span>
               <span className="mobile-nav-item-description">
                 Peaceful browsing with softer colors
               </span>
             </div>
-            {quietMode && <span className="mode-indicator" aria-hidden="true">✓</span>}
+            {quietMode && <Check size={14} strokeWidth={2} className="mode-indicator" aria-hidden="true" />}
           </button>
 
           <button
@@ -224,18 +228,18 @@ export default function MobileNavDrawer({ open, onClose }) {
             aria-label={`${galaxyMode ? 'Disable' : 'Enable'} galaxy mode - immersive galaxy background`}
             aria-pressed={galaxyMode}
           >
-            <span className="mobile-nav-icon" aria-hidden="true">🌌</span>
+            <Telescope size={18} strokeWidth={1.75} className="mobile-nav-icon" aria-hidden="true" />
             <div className="mobile-nav-item-content">
               <span className="mobile-nav-item-title">Galaxy Mode</span>
               <span className="mobile-nav-item-description">
                 Immersive galaxy background
               </span>
             </div>
-            {galaxyMode && <span className="mode-indicator" aria-hidden="true">✓</span>}
+            {galaxyMode && <Check size={14} strokeWidth={2} className="mode-indicator" aria-hidden="true" />}
           </button>
 
           <Link to="/settings" className="mobile-nav-item" onClick={handleLinkClick}>
-            <span className="mobile-nav-icon" aria-hidden="true">🎨</span>
+            <Palette size={18} strokeWidth={1.75} className="mobile-nav-icon" aria-hidden="true" />
             <div className="mobile-nav-item-content">
               <span className="mobile-nav-item-title">Appearance</span>
               <span className="mobile-nav-item-description">
@@ -251,7 +255,7 @@ export default function MobileNavDrawer({ open, onClose }) {
             className="mobile-nav-item mobile-nav-logout"
             aria-label="Logout from Pryde Social"
           >
-            <span className="mobile-nav-icon" aria-hidden="true">🚪</span>
+            <LogOut size={18} strokeWidth={1.75} className="mobile-nav-icon" aria-hidden="true" />
             <span>Logout</span>
           </button>
         </nav>

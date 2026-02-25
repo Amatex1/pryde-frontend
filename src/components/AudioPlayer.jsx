@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { Play, Pause } from 'lucide-react';
 import './AudioPlayer.css';
 
 const AudioPlayer = ({ url, duration }) => {
@@ -65,7 +66,9 @@ const AudioPlayer = ({ url, duration }) => {
       <audio ref={audioRef} src={url} preload="metadata" />
       
       <button className="play-pause-btn" onClick={togglePlayPause}>
-        {isPlaying ? '⏸' : '▶'}
+        {isPlaying
+          ? <Pause size={18} strokeWidth={1.75} aria-hidden="true" />
+          : <Play size={18} strokeWidth={1.75} aria-hidden="true" />}
       </button>
 
       <div className="audio-info">
