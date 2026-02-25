@@ -41,6 +41,7 @@
 html {
   width: 100%;
   max-width: 100vw;
+  scroll-behavior: smooth;
   /* Note: overflow-x: hidden removed from html - it blocks scrolling on iOS */
 }
 
@@ -162,6 +163,10 @@ button {
    ======================================== */
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
