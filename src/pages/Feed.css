@@ -1700,6 +1700,36 @@ html:not([data-theme]) .post-actions {
   background: rgba(155, 142, 247, 0.15);
 }
 
+/* ========================================
+   ICON-ONLY POST ACTION BUTTONS
+   Text reveals on hover / focus-visible
+   ======================================== */
+
+/* Collapse the gap so icon sits tight when text is hidden */
+.soft-actions .action-btn {
+  gap: 0;
+}
+
+.soft-actions .action-btn .action-text {
+  display: inline-block;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  white-space: nowrap;
+  margin-left: 0;
+  transition:
+    max-width var(--duration-quick, 120ms) var(--ease-standard, ease),
+    opacity var(--duration-quick, 120ms) var(--ease-standard, ease),
+    margin-left var(--duration-quick, 120ms) var(--ease-standard, ease);
+}
+
+.soft-actions .action-btn:hover .action-text,
+.soft-actions .action-btn:focus-visible .action-text {
+  max-width: 8rem;
+  opacity: 1;
+  margin-left: 5px;
+}
+
 .reaction-count-btn {
   background: none;
   border: none;
