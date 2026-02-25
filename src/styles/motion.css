@@ -1,0 +1,237 @@
+/* ====================================================================
+   PRYDE MOTION SYSTEM v1
+   ====================================================================
+   Philosophy: Calm luxury social lounge.
+   Motion is subtle, premium, intentional.
+
+   Constraints:
+   - Max duration: 200ms   |  Default: 160–180ms
+   - Easing: --ease-standard only (cubic-bezier(0.4, 0, 0.2, 1))
+   - Properties: transform + opacity ONLY  (GPU-accelerated)
+   - No bounce, no overshoot, no elastic effects
+   - No scroll event listeners — IntersectionObserver only
+   - Respects prefers-reduced-motion at all layers
+   ==================================================================== */
+
+
+/* ------------------------------------------------------------------ */
+/* 1. REACTION ANIMATION                                                */
+/*    Toggle ON:  scale 1 → 1.12 → 1.0 with soft brand glow           */
+/*    Toggle OFF: colour/opacity fade only — no scale                  */
+/* ------------------------------------------------------------------ */
+
+@keyframes pryde-react-on {
+  0%   { transform: scale(1);    filter: drop-shadow(0 0 0px   rgba(108, 92, 231, 0)); }
+  45%  { transform: scale(1.12); filter: drop-shadow(0 0 6px   rgba(108, 92, 231, 0.4)); }
+  100% { transform: scale(1);    filter: drop-shadow(0 0 0px   rgba(108, 92, 231, 0)); }
+}
+
+/* Applied transiently in JS for 180ms when user adds a reaction */
+.reaction-button.reacting {
+  animation: pryde-react-on var(--duration-enter, 180ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)) both;
+  pointer-events: none; /* prevent double-trigger during animation */
+}
+
+/* Persistent state: user has an active reaction */
+.reaction-button.has-reaction {
+  filter: drop-shadow(0 0 4px rgba(108, 92, 231, 0.22));
+  transition:
+    opacity  var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)),
+    filter   var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Toggle OFF state: simple fade, no scale */
+.reaction-button:not(.has-reaction):not(.reacting) {
+  filter: none;
+  transition:
+    opacity   var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)),
+    filter    var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)),
+    background var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+
+/* ------------------------------------------------------------------ */
+/* 2. AVATAR GRADIENT RING SYSTEM                                       */
+/*    2px ring, 135° brand gradient, very subtle outer glow.           */
+/*    Token-driven, reusable. Not flashy — elegant.                    */
+/* ------------------------------------------------------------------ */
+
+/*
+  Usage pattern:
+    Wrap the <img> or avatar element in a container:
+    <div class="avatar-ring [avatar-ring--self | avatar-ring--active]">
+      <img class="avatar-image" ... />
+    </div>
+
+  The 2px padding creates the ring gap. No pseudo-elements needed.
+*/
+
+.avatar-ring {
+  padding: 2px;
+  background: var(--gradient-brand, linear-gradient(135deg, #6C5CE7, #0984E3));
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(108, 92, 231, 0.18);
+  display: inline-flex;
+  flex-shrink: 0;
+  /* Smooth glow transitions */
+  transition: box-shadow var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Direct child gets border-radius to sit inside the ring cleanly */
+.avatar-ring > img,
+.avatar-ring > .avatar-image,
+.avatar-ring > .avatar-fallback,
+.avatar-ring > div {
+  display: block;
+  border-radius: 50%;
+}
+
+/* Variant: current logged-in user — slightly stronger identity glow */
+.avatar-ring--self {
+  box-shadow: 0 0 14px rgba(108, 92, 231, 0.30);
+}
+
+/* Variant: recently active or unread DM indicator */
+.avatar-ring--active {
+  box-shadow: 0 0 10px rgba(9, 132, 227, 0.24);
+}
+
+/* Hover refinement on interactive avatar rings */
+.avatar-ring:is(a, button):hover {
+  box-shadow: 0 0 16px rgba(108, 92, 231, 0.35);
+}
+
+
+/* ------------------------------------------------------------------ */
+/* 3. FEED POST STAGGER ENTRY                                           */
+/*    Each post: opacity 0 + translateY(8px) → natural position        */
+/*    Triggered by IntersectionObserver (motionSystem.js)              */
+/*    Runs ONCE per element — observer.unobserve() after first entry   */
+/*    No re-animation on scroll-back                                    */
+/* ------------------------------------------------------------------ */
+
+/*
+  The `.fade-in` class is on all `.post-card` elements.
+  Scoping to `.post-card.fade-in` leaves other `.fade-in` usages
+  (auth-card, messages-layout, profile-header) completely unaffected.
+*/
+
+.post-card.fade-in {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity    var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)) var(--stagger-delay, 0ms),
+    transform  var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)) var(--stagger-delay, 0ms);
+  will-change: transform, opacity;
+}
+
+/* State: IntersectionObserver has observed this element entering viewport */
+.post-card.fade-in.is-entered {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* State: animation fully complete — release compositing layer */
+.post-card.fade-in.motion-done {
+  will-change: auto;
+  /* Explicitly unset transition to avoid re-triggering on future class changes */
+  transition: none;
+}
+
+
+/* ------------------------------------------------------------------ */
+/* 4. SKELETON → CONTENT CROSSFADE                                      */
+/*    Content fades in over 200ms. No layout shift.                    */
+/*    Applied to the posts container when skeleton is replaced.        */
+/* ------------------------------------------------------------------ */
+
+@keyframes pryde-content-enter {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/*
+  The posts-list container fades in when it first appears.
+  Since .post-card.fade-in items start at opacity:0 and stagger in,
+  the container animation is a belt-and-suspenders for the overall area.
+*/
+.posts-list {
+  animation: pryde-content-enter var(--duration-crossfade, 200ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+
+/* PostSkeleton exit: when React replaces skeleton, it unmounts.
+   We ensure the incoming content (posts-list) has a smooth entrance above.
+   The shimmer animation on skeleton items stops naturally on unmount. */
+
+
+/* ------------------------------------------------------------------ */
+/* 5. BRAND GRADIENT UTILITIES                                          */
+/*    Use --gradient-brand from design-system.css.                     */
+/*    Consistent across: CTAs, active tabs, rings, highlight accents.  */
+/* ------------------------------------------------------------------ */
+
+/* Apply brand gradient as background */
+.gradient-brand {
+  background: var(--gradient-brand, linear-gradient(135deg, #6C5CE7, #0984E3));
+}
+
+/* Apply brand gradient to text */
+.gradient-brand-text {
+  background: var(--gradient-brand, linear-gradient(135deg, #6C5CE7, #0984E3));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent; /* fallback */
+}
+
+
+/* ------------------------------------------------------------------ */
+/* 6. PREFERS-REDUCED-MOTION OVERRIDES                                  */
+/*    All motion disabled. Opacity only — for state feedback.          */
+/*    Full keyboard usability preserved.                                */
+/* ------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  /* Reaction: no scale animation, instant state change */
+  .reaction-button.reacting {
+    animation: none;
+    opacity: 1;
+    filter: none;
+  }
+
+  .reaction-button.has-reaction,
+  .reaction-button:not(.has-reaction):not(.reacting) {
+    transition: opacity var(--duration-quick, 120ms) linear;
+  }
+
+  /* Avatar ring: gradient ring stays visible, glow removed */
+  .avatar-ring,
+  .avatar-ring--self,
+  .avatar-ring--active {
+    box-shadow: none;
+    transition: none;
+  }
+
+  /* Feed stagger: immediately visible, no translateY, no delay */
+  .post-card.fade-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+
+  .post-card.fade-in.is-entered {
+    opacity: 1;
+    transform: none;
+  }
+
+  .post-card.fade-in.motion-done {
+    transition: none;
+  }
+
+  /* Content entrance: instant */
+  .posts-list {
+    animation: none;
+  }
+}

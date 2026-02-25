@@ -88,12 +88,26 @@
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: 200% 0;
+  0%   { background-position:  200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Reduced motion: replace shimmer with a soft pulse */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-avatar,
+  .skeleton-name,
+  .skeleton-username,
+  .skeleton-text,
+  .skeleton-button {
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+    background: var(--color-surface-muted, #f0f0f0);
+    background-size: unset;
   }
-  100% {
-    background-position: -200% 0;
-  }
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1;   }
+  50%       { opacity: 0.5; }
 }
 
 /* Dark mode - proper dark skeleton colors */

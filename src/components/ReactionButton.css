@@ -14,7 +14,11 @@
   cursor: pointer;
   padding: var(--space-1);
   border-radius: var(--radius-sm);
-  transition: all 0.2s ease;
+  /* Specific properties only — avoids animating layout-triggering props */
+  transition:
+    opacity    var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)),
+    background var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)),
+    transform  var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -37,6 +41,7 @@
 .reaction-button.has-reaction {
   opacity: 1;
   background: var(--bg-subtle);
+  /* filter/glow provided by motion.css .reaction-button.has-reaction */
 }
 
 [data-theme="dark"] .reaction-button:hover {

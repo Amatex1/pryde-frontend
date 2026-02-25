@@ -33,9 +33,11 @@ const ReactionButton = ({
   const [isInitialized, setIsInitialized] = useState(!!initialUserReaction);
   const [anchorRect, setAnchorRect] = useState(null);
   const [pickerMode, setPickerMode] = useState('desktop');
+  const [isReacting, setIsReacting] = useState(false);
 
   const buttonRef = useRef(null);
   const hoverTimeoutRef = useRef(null);
+  const reactTimerRef = useRef(null);
 
   // Fetch reactions on mount
   useEffect(() => {
@@ -145,7 +147,7 @@ const ReactionButton = ({
     try {
       // Update UI optimistically
       const newReactions = { ...reactions };
-      
+
       // Remove old reaction count
       if (previousUserReaction && newReactions[previousUserReaction]) {
         newReactions[previousUserReaction]--;
@@ -156,12 +158,17 @@ const ReactionButton = ({
 
       // Add new reaction count (or remove if same emoji)
       if (emoji === previousUserReaction) {
-        // Toggle off
+        // Toggle off — no scale animation
         setUserReaction(null);
       } else {
-        // Add or update
+        // Add or change reaction → trigger enter animation
         newReactions[emoji] = (newReactions[emoji] || 0) + 1;
         setUserReaction(emoji);
+
+        // Transient animation class: added for duration then cleared
+        if (reactTimerRef.current) clearTimeout(reactTimerRef.current);
+        setIsReacting(true);
+        reactTimerRef.current = setTimeout(() => setIsReacting(false), 200);
       }
 
       setReactions(newReactions);
@@ -228,12 +235,11 @@ const ReactionButton = ({
     }
   };
 
-  // Clean up hover timeout on unmount
+  // Clean up timers on unmount
   useEffect(() => {
     return () => {
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-      }
+      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+      if (reactTimerRef.current) clearTimeout(reactTimerRef.current);
     };
   }, []);
 
@@ -255,7 +261,7 @@ const ReactionButton = ({
     <div className="reaction-button-container">
       <button
         ref={buttonRef}
-        className={`reaction-button ${userReaction ? 'has-reaction' : ''}`}
+        className={`reaction-button ${userReaction ? 'has-reaction' : ''} ${isReacting ? 'reacting' : ''}`.trim()}
         onClick={handleClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}

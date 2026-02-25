@@ -144,6 +144,28 @@ Noise hides real problems.
   --z-modal-backdrop: 1000;
   --z-modal: 1001;
   --z-toast: 2000;
+
+  /* ========================================
+     MOTION TOKENS (Pryde Motion System v1)
+     Single source of truth for all animation
+     timing. Calm luxury — no bounce.
+     ======================================== */
+  --ease-standard:  cubic-bezier(0.4, 0, 0.2, 1); /* Material You standard */
+  --ease-enter:     cubic-bezier(0.0, 0, 0.2, 1); /* Decelerating (element arriving) */
+  --ease-exit:      cubic-bezier(0.4, 0, 1,   1); /* Accelerating (element leaving) */
+
+  --duration-quick:    120ms; /* Micro feedback (button press) */
+  --duration-standard: 160ms; /* Default transition */
+  --duration-enter:    180ms; /* Elements entering the scene */
+  --duration-exit:     140ms; /* Elements leaving the scene */
+  --duration-crossfade: 200ms; /* Skeleton → content */
+
+  /* ========================================
+     BRAND GRADIENT — single source of truth
+     Used on: CTAs, active indicators,
+     avatar rings, highlight accents.
+     ======================================== */
+  --gradient-brand: linear-gradient(135deg, #6C5CE7, #0984E3);
 }
 
 /* ========================================
