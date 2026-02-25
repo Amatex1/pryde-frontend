@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { MoreVertical, Pin, PinOff, Pencil, Trash2, Flag } from 'lucide-react';
 
 /**
  * FeedPostDropdown - Dropdown menu for post actions (pin, edit, delete, report)
@@ -24,8 +25,9 @@ const FeedPostDropdown = memo(function FeedPostDropdown({
         className="btn-dropdown"
         onClick={() => onToggleDropdown(postId)}
         title="More options"
+        aria-label="More options"
       >
-        ⋮
+        <MoreVertical size={18} strokeWidth={1.75} aria-hidden="true" />
       </button>
       {isDropdownOpen && (
         <div className="dropdown-menu">
@@ -35,19 +37,22 @@ const FeedPostDropdown = memo(function FeedPostDropdown({
                 className="dropdown-item"
                 onClick={() => onPinPost(postId, isPinned)}
               >
-                📌 {isPinned ? 'Unpin' : 'Pin to Profile'}
+                {isPinned
+                  ? <><PinOff size={14} strokeWidth={1.75} aria-hidden="true" /> Unpin</>
+                  : <><Pin size={14} strokeWidth={1.75} aria-hidden="true" /> Pin to Profile</>
+                }
               </button>
               <button
                 className="dropdown-item"
                 onClick={() => onEditPost(post)}
               >
-                ✏️ Edit
+                <Pencil size={14} strokeWidth={1.75} aria-hidden="true" /> Edit
               </button>
               <button
                 className="dropdown-item delete"
                 onClick={() => onDeletePost(postId)}
               >
-                🗑️ Delete
+                <Trash2 size={14} strokeWidth={1.75} aria-hidden="true" /> Delete
               </button>
             </>
           ) : (
@@ -55,7 +60,7 @@ const FeedPostDropdown = memo(function FeedPostDropdown({
               className="dropdown-item report"
               onClick={() => onReportPost(postId, authorId)}
             >
-              🚩 Report
+              <Flag size={14} strokeWidth={1.75} aria-hidden="true" /> Report
             </button>
           )}
         </div>

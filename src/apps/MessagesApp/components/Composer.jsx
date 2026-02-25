@@ -4,6 +4,7 @@
  */
 
 import React, { lazy, Suspense } from 'react';
+import { X, Mic, AlertTriangle, ArrowUp, Video } from 'lucide-react';
 import { getImageUrl } from '../../../utils/imageUrl';
 import { getDisplayName } from '../../../utils/getDisplayName';
 
@@ -73,7 +74,7 @@ export default function Composer({
             <div className="reply-preview-label">Replying to {getDisplayName(replyingTo.sender)}</div>
             <div className="reply-preview-text">{replyingTo.content}</div>
           </div>
-          <button type="button" className="btn-cancel-reply" onClick={onCancelReply}>✕</button>
+          <button type="button" className="btn-cancel-reply" onClick={onCancelReply} aria-label="Cancel"><X size={14} strokeWidth={1.75} aria-hidden="true" /></button>
         </div>
       )}
       {selectedFile && (
@@ -81,10 +82,10 @@ export default function Composer({
           <div className="file-preview-content">
             {selectedFile.type.startsWith('image/') ? (
               <img src={getImageUrl(selectedFile.url)} alt="Preview" className="file-preview-image" />
-            ) : (<div className="file-preview-icon">🎥</div>)}
+            ) : (<div className="file-preview-icon"><Video size={20} strokeWidth={1.75} aria-hidden="true" /></div>)}
             <span className="file-preview-name">{selectedFile.name}</span>
           </div>
-          <button type="button" className="btn-cancel-reply" onClick={onRemoveFile}>✕</button>
+          <button type="button" className="btn-cancel-reply" onClick={onRemoveFile} aria-label="Remove file"><X size={14} strokeWidth={1.75} aria-hidden="true" /></button>
         </div>
       )}
       {selectedGif && (
@@ -92,7 +93,7 @@ export default function Composer({
           <div className="file-preview-content">
             <img src={selectedGif} alt="Selected GIF" className="file-preview-image" />
           </div>
-          <button type="button" className="btn-cancel-reply" onClick={onRemoveGif}>✕</button>
+          <button type="button" className="btn-cancel-reply" onClick={onRemoveGif} aria-label="Remove GIF"><X size={14} strokeWidth={1.75} aria-hidden="true" /></button>
         </div>
       )}
       <div className="message-composer calm-composer">
@@ -119,10 +120,10 @@ export default function Composer({
           />
           <div className="composer-trailing-actions">
             <button type="button" className={`composer-action-btn ${showGifPicker ? 'active' : ''}`} onClick={onToggleGifPicker} disabled={!selectedChat || selectedFile || selectedGif || isRecipientUnavailable} title="GIF">GIF</button>
-            <button type="button" className="composer-action-btn" onClick={onToggleVoiceRecorder} disabled={!selectedChat || selectedFile || selectedGif || isRecipientUnavailable} title="Voice note">🎤</button>
-            <button type="button" className={`composer-action-btn ${showContentWarning ? 'active' : ''}`} onClick={onToggleContentWarning} disabled={!selectedChat || isRecipientUnavailable} title="Content warning">⚠️</button>
+            <button type="button" className="composer-action-btn" onClick={onToggleVoiceRecorder} disabled={!selectedChat || selectedFile || selectedGif || isRecipientUnavailable} title="Voice note" aria-label="Voice note"><Mic size={16} strokeWidth={1.75} aria-hidden="true" /></button>
+            <button type="button" className={`composer-action-btn ${showContentWarning ? 'active' : ''}`} onClick={onToggleContentWarning} disabled={!selectedChat || isRecipientUnavailable} title="Content warning" aria-label="Content warning"><AlertTriangle size={16} strokeWidth={1.75} aria-hidden="true" /></button>
           </div>
-          <button type="submit" className="send-btn" disabled={!selectedChat || uploadingFile || isRecipientUnavailable || (!message.trim() && !selectedFile && !selectedGif)} aria-label="Send">↑</button>
+          <button type="submit" className="send-btn" disabled={!selectedChat || uploadingFile || isRecipientUnavailable || (!message.trim() && !selectedFile && !selectedGif)} aria-label="Send"><ArrowUp size={18} strokeWidth={2} aria-hidden="true" /></button>
         </div>
         {showGifPicker && (
           <div className="composer-gif-picker-container">

@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { X, User, Ban, Flag } from 'lucide-react';
 import { getImageUrl } from '../../../utils/imageUrl';
 import { getDisplayName, getDisplayNameInitial } from '../../../utils/getDisplayName';
 import SharedMedia from './SharedMedia';
@@ -38,7 +39,7 @@ export default function InfoPanel({
         <>
           {/* Mobile close button */}
           <button className="info-close-btn" onClick={onClose} aria-label="Close info panel">
-            ✕
+            <X size={18} strokeWidth={1.75} aria-hidden="true" />
           </button>
           <div className="info-header">
             <div className="info-avatar">
@@ -65,21 +66,21 @@ export default function InfoPanel({
                 className="info-action-btn"
                 onClick={handleViewProfile}
               >
-                👤 View Profile
+                <User size={14} strokeWidth={1.75} aria-hidden="true" /> View Profile
               </button>
               <button
                 type="button"
                 className="info-action-btn info-action-btn--danger"
                 onClick={() => onBlockUser?.(selectedChat)}
               >
-                🚫 Block User
+                <Ban size={14} strokeWidth={1.75} aria-hidden="true" /> Block User
               </button>
               <button
                 type="button"
                 className="info-action-btn info-action-btn--danger"
                 onClick={() => onReportUser?.(selectedUser?._id)}
               >
-                🚩 Report User
+                <Flag size={14} strokeWidth={1.75} aria-hidden="true" /> Report User
               </button>
             </div>
           )}

@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { MessageCircle, Bookmark } from 'lucide-react';
 import ReactionButton from '../ReactionButton';
 
 /**
@@ -36,7 +37,7 @@ const FeedPostActions = memo(function FeedPostActions({
         aria-label={`Reply to post${!post.hideMetrics ? ` (${post.commentCount || 0} replies)` : ''}`}
         title="Reply to this post"
       >
-        <span>💬</span>
+        <MessageCircle size={16} strokeWidth={1.75} aria-hidden="true" />
         <span className="action-text">
           Reply {!post.hideMetrics && `(${post.commentCount || 0})`}
         </span>
@@ -47,7 +48,7 @@ const FeedPostActions = memo(function FeedPostActions({
         title={isBookmarked ? 'Remove save' : 'Keep this for later'}
         aria-label={isBookmarked ? 'Remove save from post' : 'Save post'}
       >
-        <span>🔖</span>
+        <Bookmark size={16} strokeWidth={1.75} aria-hidden="true" />
         <span className="action-text">{isBookmarked ? 'Saved' : 'Save'}</span>
       </button>
     </div>

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { X, Search } from 'lucide-react';
 import './GifPicker.css';
 
 const GifPicker = ({ onGifSelect, onClose }) => {
@@ -147,7 +148,7 @@ const GifPicker = ({ onGifSelect, onClose }) => {
       <div className="gif-picker" ref={pickerRef}>
         <div className="gif-picker-header">
           <h4>Choose a GIF</h4>
-          <button type="button" className="gif-picker-close" onClick={onClose}>✕</button>
+          <button type="button" className="gif-picker-close" onClick={onClose} aria-label="Close"><X size={18} strokeWidth={1.75} aria-hidden="true" /></button>
         </div>
 
         {/* Separate form to prevent bubbling to parent post form */}
@@ -168,7 +169,7 @@ const GifPicker = ({ onGifSelect, onClose }) => {
             className="gif-search-btn"
             onClick={(e) => e.stopPropagation()}
           >
-            🔍
+            <Search size={16} strokeWidth={1.75} aria-hidden="true" />
           </button>
         </form>
 

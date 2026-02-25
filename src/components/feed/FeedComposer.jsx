@@ -1,4 +1,8 @@
 import { memo } from 'react';
+import {
+  X, Plus, Upload, Camera, BarChart2, AlertTriangle,
+  VolumeX, FileText, Globe, Users, Lock,
+} from 'lucide-react';
 import GifPicker from '../GifPicker';
 import PollCreator from '../PollCreator';
 import DraftManager from '../DraftManager';
@@ -92,7 +96,7 @@ const FeedComposer = memo(function FeedComposer({
               className="remove-media"
               onClick={() => onRemoveMedia(index)}
             >
-              ✕
+              <X size={14} strokeWidth={1.75} aria-hidden="true" />
             </button>
           </div>
         ))}
@@ -176,7 +180,7 @@ const FeedComposer = memo(function FeedComposer({
               className="btn-more-options"
               onClick={() => onSetShowAdvancedOptions(true)}
             >
-              ➕ More posting options
+              <Plus size={14} strokeWidth={1.75} aria-hidden="true" /> More posting options
             </button>
           )}
 
@@ -194,7 +198,10 @@ const FeedComposer = memo(function FeedComposer({
                   disabled={uploadingMedia || selectedMedia.length >= 3}
                   style={{ display: 'none' }}
                 />
-                {uploadingMedia ? `⏳ Uploading... ${uploadProgress}%` : '📷 Add Photos/Videos'}
+                {uploadingMedia
+                  ? <><Upload size={14} strokeWidth={1.75} aria-hidden="true" /> Uploading... {uploadProgress}%</>
+                  : <><Camera size={14} strokeWidth={1.75} aria-hidden="true" /> Add Photos/Videos</>
+                }
               </label>
 
               <button
@@ -203,7 +210,7 @@ const FeedComposer = memo(function FeedComposer({
                 onClick={() => onSetShowPollCreator(!showPollCreator)}
                 title="Add poll"
               >
-                📊 Poll
+                <BarChart2 size={14} strokeWidth={1.75} aria-hidden="true" /> Poll
               </button>
 
               <button
@@ -212,7 +219,7 @@ const FeedComposer = memo(function FeedComposer({
                 onClick={() => onSetShowContentWarning(!showContentWarning)}
                 title="Add content warning"
               >
-                ⚠️ CW
+                <AlertTriangle size={14} strokeWidth={1.75} aria-hidden="true" /> CW
               </button>
 
               <label className="hide-metrics-checkbox" title="Hide likes, comments, and shares count">
@@ -223,7 +230,7 @@ const FeedComposer = memo(function FeedComposer({
                   checked={hideMetrics}
                   onChange={(e) => onSetHideMetrics(e.target.checked)}
                 />
-                <span>🔇 Hide Metrics</span>
+                <span><VolumeX size={14} strokeWidth={1.75} aria-hidden="true" /> Hide Metrics</span>
               </label>
             </>
           )}
@@ -237,15 +244,15 @@ const FeedComposer = memo(function FeedComposer({
             className="privacy-selector glossy"
             aria-label="Select post privacy"
           >
-            <option value="public">🌍 Public</option>
-            <option value="followers">👥 Connections</option>
-            <option value="private">🔒 Private</option>
+            <option value="public">Public</option>
+            <option value="followers">Connections</option>
+            <option value="private">Private</option>
           </select>
 
           {/* Draft save status indicator */}
           {draftSaveStatus && (
             <span className="draft-save-status">
-              {draftSaveStatus === 'saving' ? '💾 Saving draft...' : '✅ Draft saved'}
+              {draftSaveStatus === 'saving' ? 'Saving draft...' : 'Draft saved'}
             </span>
           )}
 
@@ -255,7 +262,7 @@ const FeedComposer = memo(function FeedComposer({
             onClick={() => onSetShowDraftManager(true)}
             title="View saved drafts"
           >
-            📝 Drafts
+            <FileText size={14} strokeWidth={1.75} aria-hidden="true" /> Drafts
           </button>
 
           <button
@@ -269,7 +276,7 @@ const FeedComposer = memo(function FeedComposer({
           </button>
 
           <button type="submit" disabled={loading || uploadingMedia} className="btn-post glossy-gold">
-            {loading ? 'Publishing...' : 'Publish ✨'}
+            {loading ? 'Publishing...' : 'Publish'}
           </button>
         </div>
 
@@ -282,7 +289,7 @@ const FeedComposer = memo(function FeedComposer({
               className="btn-remove-gif"
               onClick={() => onSetSelectedPostGif(null)}
             >
-              ✕
+              <X size={14} strokeWidth={1.75} aria-hidden="true" />
             </button>
           </div>
         )}
@@ -375,7 +382,7 @@ const FeedComposer = memo(function FeedComposer({
                   disabled={uploadingMedia || selectedMedia.length >= 3}
                   style={{ display: 'none' }}
                 />
-                📷
+                <Camera size={20} strokeWidth={1.75} aria-hidden="true" />
               </label>
 
               <button

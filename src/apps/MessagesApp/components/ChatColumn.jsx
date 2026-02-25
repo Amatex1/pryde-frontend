@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { ArrowLeft, StickyNote, User, Bell, BellOff, Info } from 'lucide-react';
 import MessageList from './MessageList';
 import Composer from './Composer';
 import { getImageUrl } from '../../../utils/imageUrl';
@@ -77,7 +78,7 @@ export default function ChatColumn({
     <section className="messages-app__chat">
       {selectedChat && (
         <header className="messages-app__chat-header">
-          <button className="mobile-back-btn" onClick={onBack} aria-label="Back">←</button>
+          <button className="mobile-back-btn" onClick={onBack} aria-label="Back"><ArrowLeft size={20} strokeWidth={1.75} aria-hidden="true" /></button>
           <div className="chat-user">
             <div className="chat-avatar">
               {selectedChatType === 'group' ? (
@@ -85,9 +86,9 @@ export default function ChatColumn({
               ) : isSelfChat ? (
                 selectedUser?.profilePhoto ? (
                   <img src={getImageUrl(selectedUser.profilePhoto)} alt="Notes to self" />
-                ) : (<span>📝</span>)
+                ) : (<span><StickyNote size={18} strokeWidth={1.75} aria-hidden="true" /></span>)
               ) : selectedUser?.isDeleted ? (
-                <span>👤</span>
+                <span><User size={18} strokeWidth={1.75} aria-hidden="true" /></span>
               ) : selectedUser?.profilePhoto ? (
                 <img src={getImageUrl(selectedUser.profilePhoto)} alt={getDisplayName(selectedUser)} />
               ) : (<span>{getDisplayNameInitial(selectedUser)}</span>)}
@@ -96,14 +97,14 @@ export default function ChatColumn({
               <div className="chat-user-name">
                 <span className="display-name">
                   {selectedChatType === 'group' ? (selectedGroup?.name || 'Group Chat')
-                    : isSelfChat ? '📝 Notes to self'
+                    : isSelfChat ? 'Notes to self'
                     : selectedUser?.isDeleted ? 'Unknown User'
                     : getDisplayName(selectedUser)}
                 </span>
                 {selectedChatType !== 'group' && !isSelfChat && !selectedUser?.isDeleted && getUsername(selectedUser) && (
                   <span className="username">{getUsername(selectedUser)}</span>
                 )}
-                {mutedConversations.includes(selectedChat) && <span className="muted-indicator">🔕</span>}
+                {mutedConversations.includes(selectedChat) && <span className="muted-indicator"><BellOff size={14} strokeWidth={1.75} aria-hidden="true" /></span>}
               </div>
               {selectedChatType !== 'group' && !isSelfChat && selectedUser?.isActive === false && !selectedUser?.isDeleted && (
                 <div className="chat-user-subtitle">Account deactivated</div>
@@ -121,14 +122,16 @@ export default function ChatColumn({
               onClick={() => mutedConversations.includes(selectedChat) ? onUnmute(selectedChat, selectedChatType === 'group') : onMute(selectedChat, selectedChatType === 'group')}
               title={mutedConversations.includes(selectedChat) ? 'Unmute' : 'Mute'}
             >
-              {mutedConversations.includes(selectedChat) ? '🔔' : '🔕'}
+              {mutedConversations.includes(selectedChat)
+                ? <Bell size={18} strokeWidth={1.75} aria-hidden="true" />
+                : <BellOff size={18} strokeWidth={1.75} aria-hidden="true" />}
             </button>
             <button
               className="btn-chat-info"
               onClick={onToggleInfoPanel}
               title="View info"
             >
-              ℹ️
+              <Info size={18} strokeWidth={1.75} aria-hidden="true" />
             </button>
           </div>
         </header>

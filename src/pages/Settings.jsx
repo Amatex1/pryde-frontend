@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Settings as SettingsIcon } from 'lucide-react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import CustomModal from '../components/CustomModal';
@@ -481,7 +482,7 @@ function Settings() {
         <Navbar onMenuClick={onMenuOpen} />
         <div className="settings-container">
           <div className="settings-card glossy fade-in">
-            <h1 className="settings-title text-shadow">⚙️ Settings</h1>
+            <h1 className="settings-title text-shadow"><SettingsIcon size={22} strokeWidth={1.75} aria-hidden="true" /> Settings</h1>
             <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
               Loading settings...
             </p>

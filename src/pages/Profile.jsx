@@ -1,5 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import {
+  Camera, Pencil, Flag, UserPlus, Clock, UserCheck, MessageCircle, Lock,
+  X, Upload, FileText, Globe, Users, Trash2, Check, ChevronRight,
+  Calendar, Smile, Search, Image, Send, Plus, BarChart2, AlertTriangle, VolumeX,
+} from 'lucide-react';
 import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ReportModal from '../components/ReportModal';
@@ -1714,14 +1719,14 @@ function Profile() {
                       onClick={handleEditCover}
                       title="Edit cover photo"
                     >
-                      📷 <span className="btn-label">Edit Cover</span>
+                      <Camera size={16} strokeWidth={1.75} aria-hidden="true" /> <span className="btn-label">Edit Cover</span>
                     </button>
                     <button
                       className="btn-edit-profile-cover"
                       onClick={() => setEditProfileModal(true)}
                       title="Edit Profile"
                     >
-                      ✏️ <span className="btn-label">Edit Profile</span>
+                      <Pencil size={16} strokeWidth={1.75} aria-hidden="true" /> <span className="btn-label">Edit Profile</span>
                     </button>
                   </div>
                 )}
@@ -1742,18 +1747,18 @@ function Profile() {
                 <div className="actions-dropdown-menu">
                   {isBlocked ? (
                     <button className="dropdown-item" onClick={() => { handleUnblockUser(); setShowActionsMenu(false); }}>
-                      🔓 Unblock User
+                      <Lock size={14} strokeWidth={1.75} aria-hidden="true" /> Unblock User
                     </button>
                   ) : (
                     <button className="dropdown-item" onClick={() => { handleBlockUser(); setShowActionsMenu(false); }}>
-                      🚫 Block User
+                      <Lock size={14} strokeWidth={1.75} aria-hidden="true" /> Block User
                     </button>
                   )}
                   <button
                     className="dropdown-item dropdown-item-danger"
                     onClick={() => { setReportModal({ isOpen: true, type: 'user', contentId: null, userId: user?._id }); setShowActionsMenu(false); }}
                   >
-                    🚩 Report User
+                    <Flag size={14} strokeWidth={1.75} aria-hidden="true" /> Report User
                   </button>
                 </div>
               )}
@@ -1793,8 +1798,9 @@ function Profile() {
                 className="btn-edit-avatar"
                 onClick={handleEditAvatar}
                 title="Edit profile photo"
+                aria-label="Edit profile photo"
               >
-                ✏️
+                <Camera size={16} strokeWidth={1.75} aria-hidden="true" />
               </button>
             )}
           </div>
@@ -1866,7 +1872,7 @@ function Profile() {
                 <div className="profile-meta">
                   {user.website && (
                     <a href={sanitizeURL(user.website)} target="_blank" rel="noopener noreferrer" className="meta-item">
-                      🔗 {sanitizeText(user.website)}
+                      <ChevronRight size={12} strokeWidth={1.75} aria-hidden="true" /> {sanitizeText(user.website)}
                     </a>
                   )}
                 </div>
@@ -1897,7 +1903,7 @@ function Profile() {
                     className="btn-notes-to-self"
                     onClick={handleMessage}
                   >
-                    📝 Notes to self
+                    <FileText size={16} strokeWidth={1.75} aria-hidden="true" /> Notes to self
                   </button>
                   <span className="notes-helper-text">Private notes only visible to you</span>
                 </div>
@@ -1909,17 +1915,17 @@ function Profile() {
                     {/* New Follow System Buttons */}
                     {followStatus === 'none' && (
                       <button className="btn-add-friend" onClick={handleFollow}>
-                        ➕ Follow
+                        <UserPlus size={16} strokeWidth={1.75} aria-hidden="true" /> Follow
                       </button>
                     )}
                     {followStatus === 'pending' && (
                       <button className="btn-cancel-request" onClick={handleCancelFollowRequest}>
-                        ⏳ Pending
+                        <Clock size={16} strokeWidth={1.75} aria-hidden="true" /> Pending
                       </button>
                     )}
                     {followStatus === 'following' && (
                       <button className="btn-unfriend" onClick={handleUnfollow}>
-                        ✓ Following
+                        <UserCheck size={16} strokeWidth={1.75} aria-hidden="true" /> Following
                       </button>
                     )}
 
@@ -1929,7 +1935,7 @@ function Profile() {
                         className="btn-message"
                         onClick={handleMessage}
                       >
-                        💬 Message
+                        <MessageCircle size={16} strokeWidth={1.75} aria-hidden="true" /> Message
                       </button>
                     )}
                     {permissionsChecked && !canSendMessage && followStatus !== 'following' && (
@@ -1939,7 +1945,7 @@ function Profile() {
                         style={{ opacity: 0.6, cursor: 'not-allowed' }}
                         title="You must be following to message this user"
                       >
-                        🔒 Message
+                        <Lock size={16} strokeWidth={1.75} aria-hidden="true" /> Message
                       </button>
                     )}
                   </div>
@@ -1971,15 +1977,15 @@ function Profile() {
               {/* Looking For */}
               {user.lookingFor && user.lookingFor.length > 0 && (
                 <div className="profile-rail-section">
-                  <h3 className="profile-rail-section-title">🔍 Looking For</h3>
+                  <h3 className="profile-rail-section-title"><Search size={14} strokeWidth={1.75} aria-hidden="true" /> Looking For</h3>
                   <div className="looking-for-grid">
                     {user.lookingFor.map((item, index) => (
                       <div key={index} className="looking-for-item">
                         <span className="looking-for-icon">
-                          {item === 'friends' && '👥'}
-                          {item === 'support' && '🤝'}
-                          {item === 'community' && '🌈'}
-                          {item === 'networking' && '💼'}
+                          {item === 'friends' && <Users size={14} strokeWidth={1.75} aria-hidden="true" />}
+                          {item === 'support' && <MessageCircle size={14} strokeWidth={1.75} aria-hidden="true" />}
+                          {item === 'community' && <Globe size={14} strokeWidth={1.75} aria-hidden="true" />}
+                          {item === 'networking' && <UserPlus size={14} strokeWidth={1.75} aria-hidden="true" />}
                         </span>
                         <span className="looking-for-label">
                           {item === 'friends' && 'Friends'}
@@ -1997,7 +2003,7 @@ function Profile() {
               {/* Social Links */}
               {user.socialLinks && user.socialLinks.length > 0 && (
                 <div className="profile-rail-section">
-                  <h3 className="profile-rail-section-title">🔗 Social Links</h3>
+                  <h3 className="profile-rail-section-title">Social Links</h3>
                   <div className="social-links-inline">
                     {user.socialLinks.map((link, index) => (
                       <a
@@ -2007,19 +2013,8 @@ function Profile() {
                         rel="noopener noreferrer"
                         className="social-link-item"
                       >
-                        <span className="social-platform-icon">
-                          {link.platform === 'Twitter' && '🐦'}
-                          {link.platform === 'Instagram' && '📷'}
-                          {link.platform === 'Facebook' && '📘'}
-                          {link.platform === 'LinkedIn' && '💼'}
-                          {link.platform === 'GitHub' && '💻'}
-                          {link.platform === 'YouTube' && '📺'}
-                          {link.platform === 'TikTok' && '🎵'}
-                          {link.platform === 'Website' && '🌐'}
-                          {!['Twitter', 'Instagram', 'Facebook', 'LinkedIn', 'GitHub', 'YouTube', 'TikTok', 'Website'].includes(link.platform) && '🔗'}
-                        </span>
                         <span className="social-platform-label">{link.platform}</span>
-                        <span className="social-external-arrow">↗</span>
+                        <ChevronRight size={14} strokeWidth={1.75} className="social-external-arrow" aria-hidden="true" />
                       </a>
                     ))}
                   </div>
@@ -2049,14 +2044,14 @@ function Profile() {
               {/* Looking For */}
               {user.lookingFor && user.lookingFor.length > 0 && (
                 <div className="sidebar-card glossy fade-in">
-                  <h3 className="sidebar-title">🔍 Looking For</h3>
+                  <h3 className="sidebar-title"><Search size={14} strokeWidth={1.75} aria-hidden="true" /> Looking For</h3>
                   <div className="looking-for-list">
                     {user.lookingFor.map((item, index) => (
                       <span key={index} className="looking-for-item">
-                        {item === 'friends' && '👥 Friends'}
-                        {item === 'support' && '🤝 Support'}
-                        {item === 'community' && '🌈 Community'}
-                        {item === 'networking' && '💼 Networking'}
+                        {item === 'friends' && 'Friends'}
+                        {item === 'support' && 'Support'}
+                        {item === 'community' && 'Community'}
+                        {item === 'networking' && 'Networking'}
                       </span>
                     ))}
                   </div>
@@ -2066,7 +2061,7 @@ function Profile() {
               {/* Social Links */}
               {user.socialLinks && user.socialLinks.length > 0 && (
                 <div className="sidebar-card glossy fade-in">
-                  <h3 className="sidebar-title">🔗 Social Links</h3>
+                  <h3 className="sidebar-title">Social Links</h3>
                   <div className="social-links-list">
                     {user.socialLinks.map((link, index) => (
                       <a
@@ -2077,7 +2072,7 @@ function Profile() {
                         className="social-link"
                       >
                         <strong>{link.platform}</strong>
-                        <span className="link-arrow">→</span>
+                        <ChevronRight size={14} strokeWidth={1.75} className="link-arrow" aria-hidden="true" />
                       </a>
                     ))}
                   </div>
@@ -2105,7 +2100,7 @@ function Profile() {
                   whiteSpace: 'nowrap'
                 }}
               >
-                📝 Posts
+                <FileText size={15} strokeWidth={1.75} aria-hidden="true" /> Posts
               </button>
               <button
                 className={`tab-button ${activeTab === 'journals' ? 'active' : ''}`}
@@ -2159,14 +2154,14 @@ function Profile() {
                   whiteSpace: 'nowrap'
                 }}
               >
-                📸 Photo Essays
+                <Image size={15} strokeWidth={1.75} aria-hidden="true" /> Photo Essays
               </button>
             </div>
 
             {/* Create Post Section */}
             {isOwnProfile && activeTab === 'posts' && (
               <div className="create-post glossy fade-in">
-                <h2 className="section-title">✨ Share a thought...</h2>
+                <h2 className="section-title">Share a thought...</h2>
                 <form onSubmit={handlePostSubmit}>
                   <textarea
                     id="profile-new-post"
@@ -2203,7 +2198,7 @@ function Profile() {
                             className="remove-media"
                             onClick={() => removeMedia(index)}
                           >
-                            ✕
+                            <X size={14} strokeWidth={1.75} aria-hidden="true" />
                           </button>
                         </div>
                       ))}
@@ -2246,9 +2241,9 @@ function Profile() {
                       className="privacy-selector glossy"
                       aria-label="Select post privacy"
                     >
-                      <option value="public">🌍 Public</option>
-                      <option value="followers">👥 Connections</option>
-                      <option value="private">🔒 Private</option>
+                      <option value="public">Public</option>
+                      <option value="followers">Connections</option>
+                      <option value="private">Private</option>
                     </select>
 
                     {/* GIF button - moved to second position */}
@@ -2273,7 +2268,10 @@ function Profile() {
                         disabled={uploadingMedia || selectedMedia.length >= 3}
                         style={{ display: 'none' }}
                       />
-                      {uploadingMedia ? `⏳ Uploading... ${uploadProgress}%` : '📷 Add Photos/Videos'}
+                      {uploadingMedia
+                        ? <><Upload size={14} strokeWidth={1.75} aria-hidden="true" /> Uploading... {uploadProgress}%</>
+                        : <><Camera size={14} strokeWidth={1.75} aria-hidden="true" /> Add Photos/Videos</>
+                      }
                     </label>
 
                     <button
@@ -2308,7 +2306,7 @@ function Profile() {
                     {/* Draft save status indicator */}
                     {draftSaveStatus && (
                       <span className="draft-save-status">
-                        {draftSaveStatus === 'saving' ? '💾 Saving draft...' : '✅ Draft saved'}
+                        {draftSaveStatus === 'saving' ? 'Saving draft...' : 'Draft saved'}
                       </span>
                     )}
 
@@ -2318,11 +2316,11 @@ function Profile() {
                       onClick={() => setShowDraftManager(true)}
                       title="View saved drafts"
                     >
-                      📝 Drafts
+                      <FileText size={14} strokeWidth={1.75} aria-hidden="true" /> Drafts
                     </button>
 
                     <button type="submit" disabled={postLoading || uploadingMedia} className="btn-post glossy-gold">
-                      {postLoading ? 'Publishing...' : 'Publish ✨'}
+                      {postLoading ? 'Publishing...' : 'Publish'}
                     </button>
                   </div>
 
@@ -2343,7 +2341,7 @@ function Profile() {
                         className="btn-remove-gif"
                         onClick={() => setSelectedPostGif(null)}
                       >
-                        ✕
+                        <X size={14} strokeWidth={1.75} aria-hidden="true" />
                       </button>
                     </div>
                   )}
@@ -2465,7 +2463,7 @@ function Profile() {
                                     className="dropdown-item"
                                     onClick={() => handleEditPost(post)}
                                   >
-                                    ✏️ Edit
+                                    <Pencil size={14} strokeWidth={1.75} aria-hidden="true" /> Edit
                                   </button>
                                   <button
                                     className="dropdown-item delete"
@@ -2474,7 +2472,7 @@ function Profile() {
                                       setOpenDropdownId(null);
                                     }}
                                   >
-                                    🗑️ Delete
+                                    <Trash2 size={14} strokeWidth={1.75} aria-hidden="true" /> Delete
                                   </button>
                                 </>
                               ) : (
@@ -2485,7 +2483,7 @@ function Profile() {
                                     setOpenDropdownId(null);
                                   }}
                                 >
-                                  🚩 Report
+                                  <Flag size={14} strokeWidth={1.75} aria-hidden="true" /> Report
                                 </button>
                               )}
                             </div>
@@ -2529,7 +2527,7 @@ function Profile() {
                                       onClick={() => handleRemoveEditMedia(media.url)}
                                       title="Remove this media"
                                     >
-                                      ✕
+                                      <X size={14} strokeWidth={1.75} aria-hidden="true" />
                                     </button>
                                   </div>
                                 ))}
@@ -2544,16 +2542,16 @@ function Profile() {
                                 onChange={(e) => setEditPostVisibility(e.target.value)}
                                 className="visibility-select"
                               >
-                                <option value="public">🌍 Public</option>
-                                <option value="followers">👥 Connections</option>
-                                <option value="private">🔒 Private</option>
+                                <option value="public">Public</option>
+                                <option value="followers">Connections</option>
+                                <option value="private">Private</option>
                               </select>
                               <div className="edit-post-buttons">
                                 <button
                                   onClick={() => handleSaveEditPost(post._id)}
                                   className="btn-save-edit"
                                 >
-                                  💾 Save
+                                  <Check size={14} strokeWidth={2} aria-hidden="true" /> Save
                                 </button>
                                 <button
                                   onClick={handleCancelEditPost}
@@ -2663,7 +2661,7 @@ function Profile() {
                           onClick={() => toggleCommentBox(post._id)}
                           aria-label={`Comment on post${!post.hideMetrics ? ` (${post.commentCount || 0} comments)` : ''}`}
                         >
-                          <span className="action-emoji">💬</span>
+                          <MessageCircle size={16} strokeWidth={1.75} className="action-emoji" aria-hidden="true" />
                           <span className="action-text">
                             Comment {!post.hideMetrics && `(${post.commentCount || 0})`}
                           </span>
@@ -2675,7 +2673,7 @@ function Profile() {
                           onClick={() => handleShare(post)}
                           aria-label={`Share post${!post.hideMetrics ? ` (${post.shares?.length || 0} shares)` : ''}`}
                         >
-                          <span className="action-emoji">🔗</span>
+                          <ChevronRight size={16} strokeWidth={1.75} className="action-emoji" aria-hidden="true" />
                           <span className="action-text">
                             Share {!post.hideMetrics && `(${post.shares?.length || 0})`}
                           </span>
@@ -2755,7 +2753,7 @@ function Profile() {
                                 className="btn-remove-gif"
                                 onClick={() => setReplyGif(null)}
                               >
-                                ✕
+                                <X size={14} strokeWidth={1.75} aria-hidden="true" />
                               </button>
                             </div>
                           )}
@@ -2804,7 +2802,7 @@ function Profile() {
                               className="comment-submit-btn"
                               disabled={!commentText[post._id]?.trim() && !commentGif[post._id]}
                             >
-                              ➤
+                              <Send size={14} strokeWidth={1.75} aria-hidden="true" />
                             </button>
                           </div>
                           {commentGif[post._id] && (
@@ -2815,7 +2813,7 @@ function Profile() {
                                 className="btn-remove-gif"
                                 onClick={() => setCommentGif(prev => ({ ...prev, [post._id]: null }))}
                               >
-                                ✕
+                                <X size={14} strokeWidth={1.75} aria-hidden="true" />
                               </button>
                             </div>
                           )}
@@ -2852,9 +2850,9 @@ function Profile() {
                         <div>
                           <h3 style={{ margin: '0 0 10px 0', color: 'var(--pryde-purple)' }}>{journal.title || 'Untitled Entry'}</h3>
                           <div style={{ display: 'flex', gap: '10px', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                            <span>📅 {new Date(journal.createdAt).toLocaleDateString()}</span>
-                            {journal.mood && <span>😊 {journal.mood}</span>}
-                            <span>🔒 {journal.visibility}</span>
+                            <span><Calendar size={12} strokeWidth={1.75} aria-hidden="true" /> {new Date(journal.createdAt).toLocaleDateString()}</span>
+                            {journal.mood && <span><Smile size={12} strokeWidth={1.75} aria-hidden="true" /> {journal.mood}</span>}
+                            <span><Lock size={12} strokeWidth={1.75} aria-hidden="true" /> {journal.visibility}</span>
                           </div>
                         </div>
                       </div>
@@ -2889,13 +2887,13 @@ function Profile() {
                       )}
                       <h2 style={{ margin: '0 0 10px 0', color: 'var(--pryde-purple)' }}>{longform.title}</h2>
                       <div style={{ display: 'flex', gap: '10px', fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '15px' }}>
-                        <span>📅 {new Date(longform.createdAt).toLocaleDateString()}</span>
+                        <span><Calendar size={12} strokeWidth={1.75} aria-hidden="true" /> {new Date(longform.createdAt).toLocaleDateString()}</span>
                         {longform.readTime && <span>⏱️ {longform.readTime} min read</span>}
-                        <span>🔒 {longform.visibility}</span>
+                        <span><Lock size={12} strokeWidth={1.75} aria-hidden="true" /> {longform.visibility}</span>
                       </div>
                       <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>{longform.body.substring(0, 300)}...</p>
                       <Link to={`/longform/${longform._id}`} style={{ color: 'var(--pryde-purple)', fontWeight: 'bold', textDecoration: 'none' }}>
-                        Read more →
+                        Read more <ChevronRight size={14} strokeWidth={1.75} aria-hidden="true" />
                       </Link>
                     </div>
                   ))
@@ -2932,8 +2930,8 @@ function Profile() {
                         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>+{essay.photos.length - 4} more photos</p>
                       )}
                       <div style={{ display: 'flex', gap: '10px', fontSize: '0.9rem', color: 'var(--text-muted)', marginTop: '10px' }}>
-                        <span>📅 {new Date(essay.createdAt).toLocaleDateString()}</span>
-                        <span>🔒 {essay.visibility}</span>
+                        <span><Calendar size={12} strokeWidth={1.75} aria-hidden="true" /> {new Date(essay.createdAt).toLocaleDateString()}</span>
+                        <span><Lock size={12} strokeWidth={1.75} aria-hidden="true" /> {essay.visibility}</span>
                       </div>
                     </div>
                   ))
@@ -3099,7 +3097,7 @@ function Profile() {
                 className="comment-submit-btn"
                 disabled={!commentText[commentSheetOpen]?.trim() && !commentGif[commentSheetOpen]}
               >
-                ➤
+                <Send size={14} strokeWidth={1.75} aria-hidden="true" />
               </button>
             </div>
             {/* GIF Preview */}
@@ -3111,7 +3109,7 @@ function Profile() {
                   className="btn-remove-gif"
                   onClick={() => setCommentGif(prev => ({ ...prev, [commentSheetOpen]: null }))}
                 >
-                  ✕
+                  <X size={14} strokeWidth={1.75} aria-hidden="true" />
                 </button>
               </div>
             )}
@@ -3132,7 +3130,7 @@ function Profile() {
             <form onSubmit={handleSubmitReply} className="comment-sheet-reply-form">
               <div className="reply-input-header">
                 <span>Replying to comment</span>
-                <button type="button" onClick={handleCancelReply} className="btn-cancel-reply-small">✕</button>
+                <button type="button" onClick={handleCancelReply} className="btn-cancel-reply-small" aria-label="Cancel reply"><X size={14} strokeWidth={1.75} aria-hidden="true" /></button>
               </div>
               <div className="comment-input-wrapper">
                 <div className="comment-user-avatar">
@@ -3167,7 +3165,7 @@ function Profile() {
                   className="comment-submit-btn"
                   disabled={!replyText?.trim() && !replyGif}
                 >
-                  ➤
+                  <Send size={14} strokeWidth={1.75} aria-hidden="true" />
                 </button>
               </div>
               {/* Reply GIF Preview */}
@@ -3179,7 +3177,7 @@ function Profile() {
                     className="btn-remove-gif"
                     onClick={() => setReplyGif(null)}
                   >
-                    ✕
+                    <X size={14} strokeWidth={1.75} aria-hidden="true" />
                   </button>
                 </div>
               )}

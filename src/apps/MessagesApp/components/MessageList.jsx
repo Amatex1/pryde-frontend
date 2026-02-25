@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { MessageCircle, Trash2, Check, X, Smile, Pencil, Reply, MoreVertical, ChevronDown } from 'lucide-react';
 import TypingIndicator from '../../../components/TypingIndicator';
 import { getImageUrl } from '../../../utils/imageUrl';
 import { getDisplayName, getDisplayNameInitial } from '../../../utils/getDisplayName';
@@ -55,7 +56,7 @@ export default function MessageList({
               <div className="loading-messages">Loading messages...</div>
             ) : messages.length === 0 ? (
               <div className="empty-chat-state">
-                <div className="empty-chat-icon">💬</div>
+                <div className="empty-chat-icon"><MessageCircle size={40} strokeWidth={1.5} aria-hidden="true" /></div>
                 <p className="empty-title">No messages yet</p>
                 <p className="empty-chat-hint">Start a calm conversation</p>
               </div>
@@ -88,15 +89,15 @@ export default function MessageList({
                             <div className="message-content">
                             {msg.isDeleted ? (
                               <div className="message-bubble message-deleted">
-                                <span className="deleted-icon">🗑️</span>
+                                <span className="deleted-icon"><Trash2 size={14} strokeWidth={1.75} aria-hidden="true" /></span>
                                 <span className="deleted-text">This message was deleted</span>
                               </div>
                             ) : isEditing ? (
                               <div className="message-edit-box">
                                 <input type="text" value={editMessageText} onChange={(e) => onEditMessageTextChange(e.target.value)} className="message-edit-input" autoFocus />
                                 <div className="message-edit-actions">
-                                  <button onClick={() => onSaveEdit(msg._id)} className="btn-save-edit">✓</button>
-                                  <button onClick={onCancelEdit} className="btn-cancel-edit">✕</button>
+                                  <button onClick={() => onSaveEdit(msg._id)} className="btn-save-edit" aria-label="Save"><Check size={14} strokeWidth={2} aria-hidden="true" /></button>
+                                  <button onClick={onCancelEdit} className="btn-cancel-edit" aria-label="Cancel"><X size={14} strokeWidth={1.75} aria-hidden="true" /></button>
                                 </div>
                               </div>
                             ) : (
@@ -155,19 +156,19 @@ export default function MessageList({
                                   </div>
                                 )}
                                 <div className="message-actions-menu">
-                                  <button className="btn-message-menu" onClick={() => setOpenMessageMenu(openMessageMenu === msg._id ? null : msg._id)} title="More actions">⋮</button>
+                                  <button className="btn-message-menu" onClick={() => setOpenMessageMenu(openMessageMenu === msg._id ? null : msg._id)} title="More actions" aria-label="More actions"><MoreVertical size={16} strokeWidth={1.75} aria-hidden="true" /></button>
                                   {openMessageMenu === msg._id && (
                                     <div className="message-menu-dropdown">
-                                      <button onClick={() => { onReply(msg); setOpenMessageMenu(null); }} className="menu-item">↩️ Reply</button>
-                                      <button onClick={() => { onReact(msg._id); setOpenMessageMenu(null); }} className="menu-item">😊 React</button>
+                                      <button onClick={() => { onReply(msg); setOpenMessageMenu(null); }} className="menu-item"><Reply size={14} strokeWidth={1.75} aria-hidden="true" /> Reply</button>
+                                      <button onClick={() => { onReact(msg._id); setOpenMessageMenu(null); }} className="menu-item"><Smile size={14} strokeWidth={1.75} aria-hidden="true" /> React</button>
                                       {group.isCurrentUser && (
                                         <>
-                                          <button onClick={() => { onEdit(msg._id, msg.content); setOpenMessageMenu(null); }} className="menu-item">✏️ Edit</button>
-                                          <button onClick={() => { onDelete(msg._id, true); setOpenMessageMenu(null); }} className="menu-item menu-item-danger">🗑️ Delete</button>
+                                          <button onClick={() => { onEdit(msg._id, msg.content); setOpenMessageMenu(null); }} className="menu-item"><Pencil size={14} strokeWidth={1.75} aria-hidden="true" /> Edit</button>
+                                          <button onClick={() => { onDelete(msg._id, true); setOpenMessageMenu(null); }} className="menu-item menu-item-danger"><Trash2 size={14} strokeWidth={1.75} aria-hidden="true" /> Delete</button>
                                         </>
                                       )}
                                       {!group.isCurrentUser && (
-                                        <button onClick={() => { onDelete(msg._id, false); setOpenMessageMenu(null); }} className="menu-item menu-item-danger">🗑️ Delete for me</button>
+                                        <button onClick={() => { onDelete(msg._id, false); setOpenMessageMenu(null); }} className="menu-item menu-item-danger"><Trash2 size={14} strokeWidth={1.75} aria-hidden="true" /> Delete for me</button>
                                       )}
                                     </div>
                                   )}
@@ -207,7 +208,7 @@ export default function MessageList({
           onClick={onDismissIndicator}
           type="button"
         >
-          ↓ New messages
+          <ChevronDown size={14} strokeWidth={2} aria-hidden="true" /> New messages
         </button>
       )}
     </div>

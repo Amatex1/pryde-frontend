@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { X } from 'lucide-react';
 import OptimizedImage from '../OptimizedImage';
 import FormattedText from '../FormattedText';
 import Poll from '../Poll';
@@ -80,7 +81,7 @@ const FeedPostContent = memo(function FeedPostContent({
                     onClick={() => onRemoveEditMedia(media.url)}
                     title="Remove this media"
                   >
-                    ✕
+                    <X size={14} strokeWidth={1.75} aria-hidden="true" />
                   </button>
                 </div>
               ))}
@@ -95,9 +96,9 @@ const FeedPostContent = memo(function FeedPostContent({
               onChange={(e) => onEditPostVisibilityChange(e.target.value)}
               aria-label="Edit post privacy"
             >
-              <option value="public">🌍 Public</option>
-              <option value="followers">👥 Connections</option>
-              <option value="private">🔒 Private</option>
+              <option value="public">Public</option>
+              <option value="followers">Connections</option>
+              <option value="private">Private</option>
             </select>
           </div>
           <div className="post-edit-actions">

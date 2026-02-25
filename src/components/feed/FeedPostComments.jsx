@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { X, Send } from 'lucide-react';
 import CommentThread from '../CommentThread';
 import GifPicker from '../GifPicker';
 import OptimizedImage from '../OptimizedImage';
@@ -135,7 +136,7 @@ const FeedPostComments = memo(function FeedPostComments({
               className="reply-submit-btn"
               disabled={!replyText.trim() && !replyGif}
             >
-              ➤
+              <Send size={14} strokeWidth={1.75} aria-hidden="true" />
             </button>
           </div>
           {replyGif && (
@@ -146,7 +147,7 @@ const FeedPostComments = memo(function FeedPostComments({
                 className="btn-remove-gif"
                 onClick={() => onReplyGifSelect(null)}
               >
-                ✕
+                <X size={14} strokeWidth={1.75} aria-hidden="true" />
               </button>
             </div>
           )}
@@ -200,7 +201,7 @@ const FeedPostComments = memo(function FeedPostComments({
               className="comment-submit-btn"
               disabled={!commentText[post._id]?.trim() && !commentGif[post._id]}
             >
-              ➤
+              <Send size={14} strokeWidth={1.75} aria-hidden="true" />
             </button>
           </div>
           {commentGif[post._id] && (
@@ -211,7 +212,7 @@ const FeedPostComments = memo(function FeedPostComments({
                 className="btn-remove-gif"
                 onClick={() => onCommentGifSelect(post._id, null)}
               >
-                ✕
+                <X size={14} strokeWidth={1.75} aria-hidden="true" />
               </button>
             </div>
           )}
