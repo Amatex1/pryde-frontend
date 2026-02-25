@@ -92,11 +92,12 @@
   pointer-events: none;
   z-index: 0;
 
-  background: radial-gradient(
-    var(--ambient-radial-size, 1000px) circle at center 180px,
-    rgba(var(--ambient-radial-color, 108, 92, 231), var(--ambient-radial-opacity, 0.12)),
-    transparent 65%
-  );
+  background:
+    radial-gradient(
+      700px circle at center 260px,
+      rgba(255, 255, 255, 0.06),
+      transparent 60%
+    );
 }
 
 /* Feed content must render above the ambient layer */
