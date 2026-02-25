@@ -1276,6 +1276,49 @@ button.btn-drafts:hover {
   border-color: var(--pryde-purple) !important;
 }
 
+/* ========================================
+   COMPOSER TOOLBAR — ICON-ONLY WITH HOVER LABEL
+   Text reveals on hover / focus-visible
+   ======================================== */
+
+/* Override min-width so buttons collapse to icon size when text is hidden */
+.post-actions-bar .btn-content-warning,
+button.btn-content-warning {
+  min-width: auto !important;
+}
+
+/* Hidden label — revealed on hover */
+.btn-media-upload .composer-label,
+.btn-poll .composer-label,
+.btn-content-warning .composer-label,
+.hide-metrics-checkbox .composer-label,
+.btn-drafts .composer-label {
+  display: inline-block;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  white-space: nowrap;
+  margin-left: 0;
+  transition:
+    max-width var(--duration-quick, 120ms) var(--ease-standard, ease),
+    opacity var(--duration-quick, 120ms) var(--ease-standard, ease),
+    margin-left var(--duration-quick, 120ms) var(--ease-standard, ease);
+}
+
+.btn-media-upload:hover .composer-label,
+.btn-poll:hover .composer-label,
+.btn-content-warning:hover .composer-label,
+.hide-metrics-checkbox:hover .composer-label,
+.btn-drafts:hover .composer-label,
+.btn-media-upload:focus-visible .composer-label,
+.btn-poll:focus-visible .composer-label,
+.btn-content-warning:focus-visible .composer-label,
+.btn-drafts:focus-visible .composer-label {
+  max-width: 12rem;
+  opacity: 1;
+  margin-left: 4px;
+}
+
 /* Hide Metrics Checkbox - Use design system variables */
 .post-actions-bar .hide-metrics-checkbox,
 label.hide-metrics-checkbox,
@@ -1861,6 +1904,7 @@ html:not([data-theme]) .post-actions {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;  /* Reduced from var(--space-2) for tighter spacing */
+  align-items: flex-end;
 }
 
 /* ========================================

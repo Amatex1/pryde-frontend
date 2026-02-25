@@ -199,8 +199,8 @@ const FeedComposer = memo(function FeedComposer({
                   style={{ display: 'none' }}
                 />
                 {uploadingMedia
-                  ? <><Upload size={14} strokeWidth={1.75} aria-hidden="true" /> Uploading... {uploadProgress}%</>
-                  : <><Camera size={14} strokeWidth={1.75} aria-hidden="true" /> Add Photos/Videos</>
+                  ? <><Upload size={14} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Uploading... {uploadProgress}%</span></>
+                  : <><Camera size={14} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Add Photos/Videos</span></>
                 }
               </label>
 
@@ -210,7 +210,7 @@ const FeedComposer = memo(function FeedComposer({
                 onClick={() => onSetShowPollCreator(!showPollCreator)}
                 title="Add poll"
               >
-                <BarChart2 size={14} strokeWidth={1.75} aria-hidden="true" /> Poll
+                <BarChart2 size={14} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Poll</span>
               </button>
 
               <button
@@ -219,7 +219,7 @@ const FeedComposer = memo(function FeedComposer({
                 onClick={() => onSetShowContentWarning(!showContentWarning)}
                 title="Add content warning"
               >
-                <AlertTriangle size={14} strokeWidth={1.75} aria-hidden="true" /> CW
+                <AlertTriangle size={14} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> CW</span>
               </button>
 
               <label className="hide-metrics-checkbox" title="Hide likes, comments, and shares count">
@@ -230,7 +230,7 @@ const FeedComposer = memo(function FeedComposer({
                   checked={hideMetrics}
                   onChange={(e) => onSetHideMetrics(e.target.checked)}
                 />
-                <span><VolumeX size={14} strokeWidth={1.75} aria-hidden="true" /> Hide Metrics</span>
+                <span><VolumeX size={14} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Hide Metrics</span></span>
               </label>
             </>
           )}
@@ -262,7 +262,7 @@ const FeedComposer = memo(function FeedComposer({
             onClick={() => onSetShowDraftManager(true)}
             title="View saved drafts"
           >
-            <FileText size={14} strokeWidth={1.75} aria-hidden="true" /> Drafts
+            <FileText size={14} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Drafts</span>
           </button>
 
           <button
