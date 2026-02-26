@@ -381,26 +381,24 @@
 
 .mobile-hamburger-btn {
   display: none;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-md);
   border: none;
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-  font-size: var(--font-size-2xl);
+  background: transparent;
+  color: var(--text-main);
   cursor: pointer;
   align-items: center;
   justify-content: center;
   text-align: center;
   line-height: 1;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease;
   z-index: calc(var(--z-modal, 1001) + 100); /* Above mobile menu drawer */
   flex-shrink: 0;
   position: relative;
-  -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
-  touch-action: manipulation; /* Prevent double-tap zoom */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
   user-select: none;
-  /* margin-left: auto removed — parent .navbar-mobile-right handles alignment */
 }
 
 /* ========================================
@@ -444,6 +442,15 @@
   line-height: 1;
 }
 
+/* Explicit SVG dimensions — override `svg { height: auto }` in index.css */
+.navbar-mobile-icon-btn svg,
+.mobile-hamburger-btn svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  flex-shrink: 0;
+}
+
 .navbar-mobile-badge {
   position: absolute;
   top: 4px;
@@ -473,8 +480,7 @@
 }
 
 .mobile-hamburger-btn:hover {
-  background: var(--color-primary);
-  color: white;
+  background: var(--bg-hover);
 }
 
 .mobile-hamburger-btn:active {

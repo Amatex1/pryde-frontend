@@ -200,7 +200,7 @@ const FeedComposer = memo(function FeedComposer({
         {renderContentWarning()}
         {renderPollCreator()}
 
-        <div className="post-actions-bar">
+        <div className="composer-actions">
           {/* QUIET MODE: Show "More Options" button to reveal advanced options */}
           {isQuietMode && !showAdvancedOptions && (
             <button
@@ -216,7 +216,7 @@ const FeedComposer = memo(function FeedComposer({
           {(!isQuietMode || showAdvancedOptions) && (
             <>
               <label
-                className="btn-media-upload"
+                className="icon-btn media-btn tap-target pressable"
                 data-tooltip={uploadingMedia ? `Uploading... ${uploadProgress}%` : 'Add Photos / Videos'}
                 aria-label={uploadingMedia ? `Uploading... ${uploadProgress}%` : 'Add Photos / Videos'}
               >
@@ -238,7 +238,7 @@ const FeedComposer = memo(function FeedComposer({
 
               <button
                 type="button"
-                className={`btn-poll ${showPollCreator ? 'active' : ''}`}
+                className={`icon-btn poll-btn tap-target pressable${showPollCreator ? ' active' : ''}`}
                 onClick={() => onSetShowPollCreator(!showPollCreator)}
                 aria-label="Add poll"
                 data-tooltip="Poll"
@@ -248,7 +248,7 @@ const FeedComposer = memo(function FeedComposer({
 
               <button
                 type="button"
-                className={`btn-content-warning ${showContentWarning ? 'active' : ''}`}
+                className={`icon-btn cw-btn tap-target pressable${showContentWarning ? ' active' : ''}`}
                 onClick={() => onSetShowContentWarning(!showContentWarning)}
                 aria-label="Add content warning"
                 data-tooltip="Content Warning"
@@ -279,7 +279,7 @@ const FeedComposer = memo(function FeedComposer({
             name="postPrivacy"
             value={postVisibility}
             onChange={(e) => onSetPostVisibility(e.target.value)}
-            className="privacy-selector glossy"
+            className="privacy-selector"
             aria-label="Select post privacy"
           >
             <option value="public">Public</option>
@@ -296,7 +296,7 @@ const FeedComposer = memo(function FeedComposer({
 
           <button
             type="button"
-            className="btn-drafts"
+            className="icon-btn draft-btn tap-target pressable"
             onClick={() => onSetShowDraftManager(true)}
             aria-label="View saved drafts"
             data-tooltip="Drafts"
@@ -306,7 +306,7 @@ const FeedComposer = memo(function FeedComposer({
 
           <button
             type="button"
-            className="btn-gif"
+            className="icon-btn gif-btn tap-target pressable"
             onClick={() => onSetShowGifPicker(showGifPicker === 'main-post' ? null : 'main-post')}
             disabled={selectedPostGif !== null}
             title="Add GIF"
@@ -314,7 +314,7 @@ const FeedComposer = memo(function FeedComposer({
             GIF
           </button>
 
-          <button type="submit" disabled={loading || uploadingMedia} className="btn-post glossy-gold">
+          <button type="submit" disabled={loading || uploadingMedia} className="btn-post composer-submit tap-target pressable">
             {loading ? 'Publishing...' : 'Publish'}
           </button>
         </div>

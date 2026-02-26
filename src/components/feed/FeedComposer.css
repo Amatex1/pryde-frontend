@@ -1,38 +1,49 @@
 /**
- * FeedComposer.css — Composer vertical rhythm
+ * FeedComposer.css — Desktop composer action bar layout authority
+ *
+ * Single source of truth for ordering, sizing, and alignment.
+ * Mobile composer is untouched (uses .mobile-composer-actions in AppLayout.css).
  */
-
-/* ────────────────────────────────────────
-   COMPOSER ACTIONS ROW
-   Icon buttons below the textarea: GIF, Poll, CW, media, etc.
-   ──────────────────────────────────────── */
 
 .composer-actions {
   display: flex;
   align-items: center;
   gap: var(--space-3);
+  flex-wrap: wrap;
 }
 
 .composer-actions > * {
   flex-shrink: 0;
 }
 
-/* Push submit button to the far right */
-.composer-actions .composer-submit {
+/* ── Explicit order control ─────────────────────────────────── */
+.draft-btn     { order: 1; }
+.gif-btn       { order: 2; }
+.media-btn     { order: 3; }
+.poll-btn      { order: 4; }
+.cw-btn        { order: 5; }
+
+.privacy-selector { order: 8; }
+
+.composer-submit {
+  order: 10;
   margin-left: auto;
 }
 
-.composer-actions .btn-primary {
-  height: 40px;
-}
-
+/* ── Normalize sizes ────────────────────────────────────────── */
 .composer-actions .icon-btn {
-  height: 40px;
   width: 40px;
+  height: 40px;
 }
 
-@media (max-width: 768px) {
+.composer-actions .btn-post {
+  height: 40px;
+  padding-inline: var(--space-4);
+}
+
+/* ── Tighter gap on smaller viewports ───────────────────────── */
+@media (max-width: 1024px) {
   .composer-actions {
-    gap: 2px;
+    gap: var(--space-2);
   }
 }

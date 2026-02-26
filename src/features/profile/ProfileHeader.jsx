@@ -67,19 +67,21 @@ export default function ProfileHeader({
           <div className="cover-placeholder shimmer"></div>
         )}
         {isOwnProfile && (
-          <button
-            className="btn-edit-profile-cover"
-            onClick={onEditProfile}
-            title="Edit Profile"
-          >
-            ✏️ Edit Profile
-          </button>
+          <div className="profile-cover-actions">
+            <button
+              className="icon-btn edit-cover-btn tap-target pressable"
+              onClick={onEditProfile}
+              aria-label="Edit profile"
+            >
+              ✏️
+            </button>
+          </div>
         )}
       </div>
 
       {/* Profile Info */}
       <div className="profile-info">
-        <div className="profile-avatar">
+        <div className="profile-avatar-wrapper">
           {user.profilePhoto ? (
             <OptimizedImage
               src={getImageUrl(user.profilePhoto)}
