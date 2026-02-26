@@ -1412,17 +1412,22 @@ function Profile() {
 
   const handleSavePosition = async (newPosition) => {
     try {
-      await api.put("/users/profile", {
+      const response = await api.put("/users/profile", {
         ...(editingType === "cover"
           ? { coverPhotoPosition: newPosition }
           : { profilePhotoPosition: newPosition })
       });
-      setUser(prev => ({
-        ...prev,
-        ...(editingType === "cover"
-          ? { coverPhotoPosition: newPosition }
-          : { profilePhotoPosition: newPosition })
-      }));
+      // Use the backend's returned user to keep local state in sync with DB
+      if (response.data?.user) {
+        setUser(response.data.user);
+      } else {
+        setUser(prev => ({
+          ...prev,
+          ...(editingType === "cover"
+            ? { coverPhotoPosition: newPosition }
+            : { profilePhotoPosition: newPosition })
+        }));
+      }
       showToast('Photo position saved!', 'success');
     } catch (error) {
       logger.error('Failed to save photo position:', error);
