@@ -560,7 +560,6 @@ table.data-table td.wrap-text {
 button,
 .btn,
 [class*="btn-"] {
-  min-height: 36px;
   padding: 0 14px;
   box-sizing: border-box;
 }
