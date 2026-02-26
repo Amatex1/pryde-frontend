@@ -40,7 +40,6 @@ function Admin() {
   const [moderationSettings, setModerationSettings] = useState(null);
   const [moderationHistory, setModerationHistory] = useState([]);
   const [broadcastMessage, setBroadcastMessage] = useState('');
-  const [broadcastLink, setBroadcastLink] = useState('');
   const [broadcastSending, setBroadcastSending] = useState(false);
   const [broadcastResult, setBroadcastResult] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -514,12 +513,10 @@ function Admin() {
     setBroadcastResult(null);
     try {
       const response = await api.post('/admin/broadcast', {
-        message: broadcastMessage.trim(),
-        link: broadcastLink.trim() || '/feed'
+        message: broadcastMessage.trim()
       });
       setBroadcastResult({ success: true, notified: response.data.notified });
       setBroadcastMessage('');
-      setBroadcastLink('');
     } catch (error) {
       console.error('Broadcast error:', error);
       setBroadcastResult({ success: false, error: error.response?.data?.message || 'Failed to send announcement' });
@@ -802,26 +799,10 @@ function Admin() {
                   </div>
                 </div>
 
-                <div className="broadcast-field">
-                  <label htmlFor="broadcast-link" className="broadcast-label">
-                    Link (optional)
-                  </label>
-                  <input
-                    id="broadcast-link"
-                    type="text"
-                    className="broadcast-input"
-                    placeholder="/feed  or  /groups/community-news"
-                    value={broadcastLink}
-                    onChange={(e) => setBroadcastLink(e.target.value)}
-                    disabled={broadcastSending}
-                  />
-                  <p className="broadcast-hint">Where users will go when they click the notification. Defaults to /feed.</p>
-                </div>
-
                 {broadcastResult && (
                   <div className={`broadcast-result ${broadcastResult.success ? 'broadcast-result--success' : 'broadcast-result--error'}`}>
                     {broadcastResult.success
-                      ? `Announcement delivered to ${broadcastResult.notified} users.`
+                      ? `Announcement post created and delivered to ${broadcastResult.notified} users.`
                       : `Error: ${broadcastResult.error}`}
                   </div>
                 )}
@@ -838,7 +819,8 @@ function Admin() {
               <div className="broadcast-info-box">
                 <strong>How it works:</strong>
                 <ul>
-                  <li>All active users receive a notification in their bell immediately.</li>
+                  <li>A public post is created in the timeline and all active users receive a bell notification and mobile push notification immediately.</li>
+                  <li>Clicking the notification takes users directly to the announcement post.</li>
                   <li>You can also include <code>@everyone</code> in any post you create — it will trigger the same broadcast automatically.</li>
                   <li>Only Super Admins can use this feature.</li>
                 </ul>
