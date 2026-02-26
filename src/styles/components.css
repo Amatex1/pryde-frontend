@@ -8,6 +8,82 @@
    ======================================== */
 @import url('./postHeader.css');
 
+/* ========================================
+   SCREEN READER ONLY — accessibility utility
+   Visually hidden but readable by screen readers
+   ======================================== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ========================================
+   TOOLTIP — [data-tooltip] attribute
+   Floating label on hover/focus, icon-only buttons
+   ======================================== */
+[data-tooltip] {
+  position: relative;
+}
+
+/* Tooltip arrow */
+[data-tooltip]::before {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 3px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(15, 14, 28, 0.92);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-quick, 120ms) ease;
+  z-index: 9999;
+}
+
+/* Tooltip label */
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 13px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 14, 28, 0.92);
+  color: #f0eeff;
+  padding: 4px 9px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--duration-quick, 120ms) ease;
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-tooltip]:hover::before,
+[data-tooltip]:hover::after,
+[data-tooltip]:focus-visible::before,
+[data-tooltip]:focus-visible::after {
+  opacity: 1;
+}
+
+/* Never show tooltips on touch-primary devices */
+@media (hover: none) {
+  [data-tooltip]::before,
+  [data-tooltip]::after {
+    display: none;
+  }
+}
+
 /* Unified focus ring - calm, not harsh */
 :focus-visible {
   outline: 2px solid var(--color-primary, #6C5CE7);

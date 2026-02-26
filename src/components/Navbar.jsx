@@ -153,6 +153,7 @@ function Navbar({ onMenuClick }) {
               to="/messages"
               className="navbar-mobile-icon-btn"
               aria-label={totalUnread > 0 ? `Messages, ${totalUnread} unread` : 'Messages'}
+              data-tooltip="Messages"
             >
               <MessageCircle size={20} strokeWidth={1.75} aria-hidden="true" className="navbar-mobile-icon" />
               {totalUnread > 0 && (
@@ -170,6 +171,7 @@ function Navbar({ onMenuClick }) {
               className="navbar-mobile-icon-btn"
               onClick={() => setShowMobileSearch(true)}
               aria-label="Search"
+              data-tooltip="Search"
             >
               <Search size={20} strokeWidth={1.75} aria-hidden="true" className="navbar-mobile-icon" />
             </button>
@@ -189,6 +191,7 @@ function Navbar({ onMenuClick }) {
               aria-label="Open menu"
               aria-expanded={false}
               aria-controls="mobile-menu"
+              data-tooltip="Menu"
             >
               <Menu size={20} strokeWidth={1.75} aria-hidden="true" />
             </button>

@@ -315,6 +315,7 @@ const NotificationBell = memo(() => {
         className="bell-button"
         onClick={() => setShowDropdown(!showDropdown)}
         aria-label="Notifications"
+        data-tooltip="Notifications"
       >
         <Bell size={20} strokeWidth={1.75} aria-hidden="true" />
         {unreadCount > 0 && (

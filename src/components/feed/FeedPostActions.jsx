@@ -35,7 +35,7 @@ const FeedPostActions = memo(function FeedPostActions({
         className="action-btn subtle"
         onClick={() => onToggleCommentBox(post._id)}
         aria-label={`Reply to post${!post.hideMetrics ? ` (${post.commentCount || 0} replies)` : ''}`}
-        title="Reply to this post"
+        data-tooltip={!post.hideMetrics ? `Reply (${post.commentCount || 0})` : 'Reply'}
       >
         <MessageCircle size={16} strokeWidth={1.75} aria-hidden="true" />
         <span className="action-text">
@@ -45,8 +45,8 @@ const FeedPostActions = memo(function FeedPostActions({
       <button
         className={`action-btn ghost ${isBookmarked ? 'bookmarked' : ''}`}
         onClick={() => onBookmark(post._id)}
-        title={isBookmarked ? 'Remove save' : 'Keep this for later'}
         aria-label={isBookmarked ? 'Remove save from post' : 'Save post'}
+        data-tooltip={isBookmarked ? 'Saved' : 'Save'}
       >
         <Bookmark size={16} strokeWidth={1.75} aria-hidden="true" />
         <span className="action-text">{isBookmarked ? 'Saved' : 'Save'}</span>

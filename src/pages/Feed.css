@@ -1294,46 +1294,26 @@ button.btn-drafts:hover {
 }
 
 /* ========================================
-   COMPOSER TOOLBAR — ICON-ONLY WITH HOVER LABEL
-   Text reveals on hover / focus-visible
+   COMPOSER TOOLBAR — icon-only, tooltip via [data-tooltip]
    ======================================== */
 
-/* Override min-width so buttons collapse to icon size when text is hidden */
+/* Prevent content-warning button from stretching */
 .post-actions-bar .btn-content-warning,
 button.btn-content-warning {
   min-width: auto !important;
 }
 
-/* Hidden label — revealed on hover */
-.btn-media-upload .composer-label,
-.btn-poll .composer-label,
-.btn-content-warning .composer-label,
-.hide-metrics-checkbox .composer-label,
-.btn-drafts .composer-label {
-  display: inline-block;
-  max-width: 0;
+/* composer-label: screen-reader accessible, visually hidden */
+.composer-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
   overflow: hidden;
-  opacity: 0;
+  clip: rect(0, 0, 0, 0);
   white-space: nowrap;
-  margin-left: 0;
-  transition:
-    max-width var(--duration-quick, 120ms) var(--ease-standard, ease),
-    opacity var(--duration-quick, 120ms) var(--ease-standard, ease),
-    margin-left var(--duration-quick, 120ms) var(--ease-standard, ease);
-}
-
-.btn-media-upload:hover .composer-label,
-.btn-poll:hover .composer-label,
-.btn-content-warning:hover .composer-label,
-.hide-metrics-checkbox:hover .composer-label,
-.btn-drafts:hover .composer-label,
-.btn-media-upload:focus-visible .composer-label,
-.btn-poll:focus-visible .composer-label,
-.btn-content-warning:focus-visible .composer-label,
-.btn-drafts:focus-visible .composer-label {
-  max-width: 12rem;
-  opacity: 1;
-  margin-left: 4px;
+  border: 0;
 }
 
 /* Hide Metrics Checkbox - Use design system variables */
@@ -1761,33 +1741,20 @@ html:not([data-theme]) .post-actions {
 }
 
 /* ========================================
-   ICON-ONLY POST ACTION BUTTONS
-   Text reveals on hover / focus-visible
+   POST ACTION BUTTONS — icon-only, tooltip via [data-tooltip]
    ======================================== */
 
-/* Collapse the gap so icon sits tight when text is hidden */
-.soft-actions .action-btn {
-  gap: 0;
-}
-
-.soft-actions .action-btn .action-text {
-  display: inline-block;
-  max-width: 0;
+/* action-text: screen-reader accessible, visually hidden */
+.action-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
   overflow: hidden;
-  opacity: 0;
+  clip: rect(0, 0, 0, 0);
   white-space: nowrap;
-  margin-left: 0;
-  transition:
-    max-width var(--duration-quick, 120ms) var(--ease-standard, ease),
-    opacity var(--duration-quick, 120ms) var(--ease-standard, ease),
-    margin-left var(--duration-quick, 120ms) var(--ease-standard, ease);
-}
-
-.soft-actions .action-btn:hover .action-text,
-.soft-actions .action-btn:focus-visible .action-text {
-  max-width: 8rem;
-  opacity: 1;
-  margin-left: 5px;
+  border: 0;
 }
 
 .reaction-count-btn {
@@ -3549,48 +3516,7 @@ html:not([data-theme]) .post-actions {
     flex-shrink: 0 !important;
   }
 
-  /* Hide action text on mobile - AGGRESSIVE */
-  .action-btn .action-text,
-  .action-text {
-    display: none !important;
-    visibility: hidden !important;
-    width: 0 !important;
-    height: 0 !important;
-    opacity: 0 !important;
-    position: absolute !important;
-    overflow: hidden !important;
-    font-size: 0 !important;
-    line-height: 0 !important;
-    clip: rect(0, 0, 0, 0) !important;
-    white-space: nowrap !important;
-  }
-
-  /* Samsung Internet specific - more aggressive */
-  @supports (-webkit-appearance: none) {
-    .action-btn span:not(:first-child),
-    .action-btn .action-text {
-      display: none !important;
-      visibility: hidden !important;
-      width: 0 !important;
-      height: 0 !important;
-      opacity: 0 !important;
-      position: absolute !important;
-      left: -9999px !important;
-    }
-  }
-
-  /* Force icon-only display - hide all text spans */
-  .action-btn > span:nth-child(2),
-  .action-btn > span:nth-child(3),
-  .action-btn > span:last-child {
-    display: none !important;
-    visibility: hidden !important;
-    width: 0 !important;
-    height: 0 !important;
-    opacity: 0 !important;
-    position: absolute !important;
-    left: -9999px !important;
-  }
+  /* action-text is sr-only globally — no mobile override needed */
 
   .post-action-btn {
     flex: 1;

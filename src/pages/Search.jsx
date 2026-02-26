@@ -92,7 +92,7 @@ function Search() {
     <div className="search-page">
       <div className="search-header">
         <button className="back-btn" onClick={() => navigate(-1)} aria-label="Go back">
-          <ArrowLeft size={24} />
+          <ArrowLeft size={20} strokeWidth={1.75} />
         </button>
         <div className="search-input-container">
           <SearchIcon size={20} className="search-icon" />

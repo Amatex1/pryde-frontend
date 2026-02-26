@@ -2211,45 +2211,17 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   line-height: var(--line-height-tight);
 }
 
-/* Hide text on mobile */
-.profile-page .action-btn .action-text,
-.profile-page .post-actions .action-btn .action-text {
-  display: none;
-}
+/* action-text: sr-only globally (see components.css .action-text rule) */
 
-/* DESKTOP: Icon-only; text reveals on hover */
+/* DESKTOP: icon-only buttons — auto width, tooltip via [data-tooltip] */
 @media (min-width: 769px) {
   .profile-page .action-btn,
   .profile-page .post-actions .action-btn {
     padding: var(--action-btn-padding-desktop);
     border-radius: var(--radius-pill);
-    gap: 0;
     font-size: var(--font-size-sm);
     min-width: auto;
-    flex: 0 0 auto; /* Auto width on desktop */
-  }
-
-  .profile-page .action-btn .action-text,
-  .profile-page .post-actions .action-btn .action-text {
-    display: inline-block;
-    max-width: 0;
-    overflow: hidden;
-    opacity: 0;
-    white-space: nowrap;
-    margin-left: 0;
-    transition:
-      max-width var(--duration-quick, 120ms) var(--ease-standard, ease),
-      opacity var(--duration-quick, 120ms) var(--ease-standard, ease),
-      margin-left var(--duration-quick, 120ms) var(--ease-standard, ease);
-  }
-
-  .profile-page .action-btn:hover .action-text,
-  .profile-page .post-actions .action-btn:hover .action-text,
-  .profile-page .action-btn:focus-visible .action-text,
-  .profile-page .post-actions .action-btn:focus-visible .action-text {
-    max-width: 8rem;
-    opacity: 1;
-    margin-left: 5px;
+    flex: 0 0 auto;
   }
 }
 

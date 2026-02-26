@@ -2304,12 +2304,17 @@ function Profile() {
                       type="button"
                       className={`btn-content-warning ${showContentWarning ? 'active' : ''}`}
                       onClick={() => setShowContentWarning(!showContentWarning)}
-                      title="Add content warning"
+                      aria-label="Add content warning"
+                      data-tooltip="Content Warning"
                     >
-                      <AlertTriangle size={14} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Content Warning</span>
+                      <AlertTriangle size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Content Warning</span>
                     </button>
 
-                    <label className="hide-metrics-checkbox" title="Hide likes, comments, and shares count">
+                    <label
+                      className="hide-metrics-checkbox"
+                      data-tooltip="Hide Metrics"
+                      aria-label="Hide likes, comments, and shares count"
+                    >
                       <input
                         id="profile-hide-metrics-checkbox"
                         name="hideMetrics"
@@ -2331,9 +2336,10 @@ function Profile() {
                       type="button"
                       className="btn-drafts"
                       onClick={() => setShowDraftManager(true)}
-                      title="View saved drafts"
+                      aria-label="View saved drafts"
+                      data-tooltip="Drafts"
                     >
-                      <FileText size={14} strokeWidth={1.75} aria-hidden="true" /> Drafts
+                      <FileText size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Drafts</span>
                     </button>
 
                     <button type="submit" disabled={postLoading || uploadingMedia} className="btn-post glossy-gold">
@@ -2677,6 +2683,7 @@ function Profile() {
                           className="action-btn"
                           onClick={() => toggleCommentBox(post._id)}
                           aria-label={`Comment on post${!post.hideMetrics ? ` (${post.commentCount || 0} comments)` : ''}`}
+                          data-tooltip={!post.hideMetrics ? `Comment (${post.commentCount || 0})` : 'Comment'}
                         >
                           <MessageCircle size={16} strokeWidth={1.75} className="action-emoji" aria-hidden="true" />
                           <span className="action-text">

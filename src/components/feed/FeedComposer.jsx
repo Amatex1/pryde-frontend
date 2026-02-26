@@ -202,7 +202,11 @@ const FeedComposer = memo(function FeedComposer({
           {/* Advanced options - hidden by default in quiet mode */}
           {(!isQuietMode || showAdvancedOptions) && (
             <>
-              <label className="btn-media-upload">
+              <label
+                className="btn-media-upload"
+                data-tooltip={uploadingMedia ? `Uploading... ${uploadProgress}%` : 'Add Photos / Videos'}
+                aria-label={uploadingMedia ? `Uploading... ${uploadProgress}%` : 'Add Photos / Videos'}
+              >
                 <input
                   id="media-upload-input"
                   name="mediaUpload"
@@ -214,8 +218,8 @@ const FeedComposer = memo(function FeedComposer({
                   style={{ display: 'none' }}
                 />
                 {uploadingMedia
-                  ? <><Upload size={14} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Uploading... {uploadProgress}%</span></>
-                  : <><Camera size={14} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Add Photos/Videos</span></>
+                  ? <><Upload size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Uploading... {uploadProgress}%</span></>
+                  : <><Camera size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Add Photos/Videos</span></>
                 }
               </label>
 
@@ -223,21 +227,27 @@ const FeedComposer = memo(function FeedComposer({
                 type="button"
                 className={`btn-poll ${showPollCreator ? 'active' : ''}`}
                 onClick={() => onSetShowPollCreator(!showPollCreator)}
-                title="Add poll"
+                aria-label="Add poll"
+                data-tooltip="Poll"
               >
-                <BarChart2 size={14} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Poll</span>
+                <BarChart2 size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Poll</span>
               </button>
 
               <button
                 type="button"
                 className={`btn-content-warning ${showContentWarning ? 'active' : ''}`}
                 onClick={() => onSetShowContentWarning(!showContentWarning)}
-                title="Add content warning"
+                aria-label="Add content warning"
+                data-tooltip="Content Warning"
               >
-                <AlertTriangle size={14} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Content Warning</span>
+                <AlertTriangle size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Content Warning</span>
               </button>
 
-              <label className="hide-metrics-checkbox" title="Hide likes, comments, and shares count">
+              <label
+                className="hide-metrics-checkbox"
+                data-tooltip="Hide Metrics"
+                aria-label="Hide likes, comments, and shares count"
+              >
                 <input
                   id="hide-metrics-checkbox"
                   name="hideMetrics"
@@ -245,7 +255,7 @@ const FeedComposer = memo(function FeedComposer({
                   checked={hideMetrics}
                   onChange={(e) => onSetHideMetrics(e.target.checked)}
                 />
-                <span><VolumeX size={14} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Hide Metrics</span></span>
+                <span><VolumeX size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Hide Metrics</span></span>
               </label>
             </>
           )}
@@ -275,9 +285,10 @@ const FeedComposer = memo(function FeedComposer({
             type="button"
             className="btn-drafts"
             onClick={() => onSetShowDraftManager(true)}
-            title="View saved drafts"
+            aria-label="View saved drafts"
+            data-tooltip="Drafts"
           >
-            <FileText size={14} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Drafts</span>
+            <FileText size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Drafts</span>
           </button>
 
           <button
