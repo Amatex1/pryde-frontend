@@ -1321,3 +1321,20 @@
 .mobile-search-close:hover {
   background: rgba(255, 255, 255, 0.20);
 }
+
+/* ========================================
+   MOBILE NAVBAR ICON NORMALIZATION
+   ======================================== */
+
+@media (max-width: 768px) {
+  .navbar button,
+  .navbar .icon-btn {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .navbar svg {
+    width: 22px !important;
+    height: 22px !important;
+  }
+}

@@ -39,7 +39,7 @@ const FeedPostActions = memo(function FeedPostActions({
         aria-label={`Reply to post${!post.hideMetrics ? ` (${post.commentCount || 0} replies)` : ''}`}
         data-tooltip={!post.hideMetrics ? `Reply (${post.commentCount || 0})` : 'Reply'}
       >
-        <MessageCircle {...LUCIDE_DEFAULTS} size={16} aria-hidden="true" />
+        <MessageCircle {...LUCIDE_DEFAULTS} size={20} aria-hidden="true" />
         <span className="action-text">
           Reply {!post.hideMetrics && `(${post.commentCount || 0})`}
         </span>
@@ -50,7 +50,7 @@ const FeedPostActions = memo(function FeedPostActions({
         aria-label={isBookmarked ? 'Remove save from post' : 'Save post'}
         data-tooltip={isBookmarked ? 'Saved' : 'Save'}
       >
-        <Bookmark {...LUCIDE_DEFAULTS} size={16} aria-hidden="true" />
+        <Bookmark {...LUCIDE_DEFAULTS} size={20} aria-hidden="true" />
         <span className="action-text">{isBookmarked ? 'Saved' : 'Save'}</span>
       </button>
     </div>

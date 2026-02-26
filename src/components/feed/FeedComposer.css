@@ -47,3 +47,25 @@
     gap: var(--space-2);
   }
 }
+
+/* ── Mobile composer icon sizes ─────────────────────────────── */
+@media (max-width: 768px) {
+
+  .mobile-composer-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mobile-composer-actions button,
+  .mobile-composer-actions label {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .mobile-composer-actions svg {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+}

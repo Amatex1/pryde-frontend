@@ -15,7 +15,7 @@
 
 /* COMPONENTS */
 @import './styles/components.css';          /* Reusable components */
-@import './styles/navbar.css';              /* UPDATED: Platform-grade navbar */
+/* styles/navbar.css loaded in main.jsx — not duplicated here */
 
 /* UTILITIES */
 @import './styles/accessibility.css';       /* Accessibility */
@@ -24,8 +24,7 @@
 /* CALM MODE: Platform-grade transformation (PHASE A-F) */
 @import './components/Navbar.calm.css';     /* Quiet chrome */
 @import './pages/Profile.calm.css';         /* Profile layout spine */
-@import './pages/Feed.calm.css';            /* Feed rhythm refactor */
-@import './pages/Mobile.calm.css';          /* Mobile-first calm mode */
+/* Feed.calm.css and Mobile.calm.css loaded per-page, not globally */
 @import './pages/Messages.calm.css';        /* Messages DM experience */
 
 /* ========================================
@@ -268,4 +267,34 @@ button {
 /* iOS scroll containment — allow native swipe-to-refresh only inside feed */
 .feed-scroll-container {
   overscroll-behavior: contain;
+}
+
+/* ============================================
+   MOBILE TAP TARGET + ICON ENFORCEMENT
+   Guarantees minimum 44px tap areas and visible
+   icon sizes on all touch devices.
+   ============================================ */
+
+@media (max-width: 768px) {
+
+  button,
+  .icon-btn,
+  .mobile-btn-action,
+  .mobile-btn-media,
+  .btn-actions-menu,
+  .btn-edit-profile-cover,
+  .mobile-create-post,
+  .mobile-composer-close {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
 }

@@ -6,7 +6,6 @@ import TieredBadgeDisplay from './TieredBadgeDisplay';
 import PausableGif from './PausableGif';
 import FormattedText from './FormattedText';
 import { getImageUrl } from '../utils/imageUrl';
-import '../pages/Feed.css';
 
 /**
  * CommentThread Component
