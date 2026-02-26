@@ -13,6 +13,7 @@ import {
   filterSocialNotifications,
   shouldIncrementBellCount,
 } from '../constants/notificationTypes';
+import { LUCIDE_DEFAULTS } from '../utils/lucideDefaults';
 import './NotificationBell.css';
 
 // PHASE 3b: Track seen notification IDs to prevent duplicate processing
@@ -317,7 +318,7 @@ const NotificationBell = memo(() => {
         aria-label="Notifications"
         data-tooltip="Notifications"
       >
-        <Bell size={20} strokeWidth={1.75} aria-hidden="true" />
+        <Bell {...LUCIDE_DEFAULTS} aria-hidden="true" />
         {unreadCount > 0 && (
           <span className="notification-badge">
             {unreadCount > 99 ? '99+' : unreadCount}

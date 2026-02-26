@@ -26,9 +26,9 @@
   /* ========================================
      LAYER 0: BASE CONTENT (0-10)
      ======================================== */
-  --z-base: 0;
+  --z-base: 1;
   --z-below: -1;
-  --z-above: 1;
+  --z-above: 2;
   --z-raised: 10;
 
   /* ========================================
@@ -36,7 +36,7 @@
      Dropdowns, tooltips, popovers
      ======================================== */
   --z-dropdown: 100;
-  --z-tooltip: 110;
+  --z-tooltip: 200;
   --z-popover: 120;
   --z-emoji-picker: 130;
   --z-reaction-picker: 140;
@@ -55,10 +55,10 @@
      LAYER 3: OVERLAYS (300-399)
      Modals, drawers, sidebars
      ======================================== */
-  --z-overlay: 300;
-  --z-drawer: 310;
-  --z-modal-backdrop: 320;
-  --z-modal: 330;
+  --z-overlay: 500;
+  --z-drawer: 510;
+  --z-modal-backdrop: 520;
+  --z-modal: 1000;
   --z-lightbox: 340;
   --z-media-viewer: 350;
 
@@ -66,8 +66,8 @@
      LAYER 4: NOTIFICATIONS (400-499)
      Toasts, alerts, banners
      ======================================== */
-  --z-toast: 400;
-  --z-alert: 410;
+  --z-toast: 1100;
+  --z-alert: 1110;
   --z-banner: 420;
   --z-update-banner: 430;
   --z-cookie-banner: 440;

@@ -1,6 +1,8 @@
 import { memo } from 'react';
 import { MessageCircle, Bookmark } from 'lucide-react';
+import { LUCIDE_DEFAULTS } from '../../utils/lucideDefaults';
 import ReactionButton from '../ReactionButton';
+import './FeedPostActions.css';
 
 /**
  * FeedPostActions - Renders the action buttons for a post (reaction, reply, bookmark)
@@ -37,7 +39,7 @@ const FeedPostActions = memo(function FeedPostActions({
         aria-label={`Reply to post${!post.hideMetrics ? ` (${post.commentCount || 0} replies)` : ''}`}
         data-tooltip={!post.hideMetrics ? `Reply (${post.commentCount || 0})` : 'Reply'}
       >
-        <MessageCircle size={16} strokeWidth={1.75} aria-hidden="true" />
+        <MessageCircle size={16} {...LUCIDE_DEFAULTS} size={16} aria-hidden="true" />
         <span className="action-text">
           Reply {!post.hideMetrics && `(${post.commentCount || 0})`}
         </span>
@@ -48,7 +50,7 @@ const FeedPostActions = memo(function FeedPostActions({
         aria-label={isBookmarked ? 'Remove save from post' : 'Save post'}
         data-tooltip={isBookmarked ? 'Saved' : 'Save'}
       >
-        <Bookmark size={16} strokeWidth={1.75} aria-hidden="true" />
+        <Bookmark size={16} {...LUCIDE_DEFAULTS} size={16} aria-hidden="true" />
         <span className="action-text">{isBookmarked ? 'Saved' : 'Save'}</span>
       </button>
     </div>

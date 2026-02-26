@@ -188,7 +188,45 @@
 
 
 /* ------------------------------------------------------------------ */
-/* 6. PREFERS-REDUCED-MOTION OVERRIDES                                  */
+/* 6. PRESSABLE — tactile press feedback                                */
+/*    Scale down slightly on :active for physical press feel.           */
+/*    touch devices get stronger feedback (no hover state to delay it)  */
+/* ------------------------------------------------------------------ */
+
+.pressable {
+  transition: transform 120ms ease;
+}
+
+.pressable:active {
+  transform: scale(0.96);
+}
+
+
+/* ------------------------------------------------------------------ */
+/* 7. CONTROLLED MOTION EASING — easing token declarations              */
+/*    --ease-standard is in design-system.css; add decelerate + accel  */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --ease-standard:   cubic-bezier(.2, .8, .2, 1);
+  --ease-decelerate: cubic-bezier(0, 0, .2, 1);
+  --ease-accelerate: cubic-bezier(.4, 0, 1, 1);
+}
+
+/* Intentional base transitions — override freely in component CSS */
+button,
+.card,
+.modal,
+.dropdown {
+  transition:
+    transform  160ms var(--ease-standard),
+    opacity    160ms var(--ease-standard),
+    box-shadow 160ms var(--ease-standard);
+}
+
+
+/* ------------------------------------------------------------------ */
+/* 8. PREFERS-REDUCED-MOTION OVERRIDES                                  */
 /*    All motion disabled. State changes are instant.                   */
 /* ------------------------------------------------------------------ */
 
@@ -231,5 +269,22 @@
   .posts-list > .post-card.fade-in:nth-child(7),
   .posts-list > .post-card.fade-in:nth-child(8) {
     --stagger-delay: 0ms;
+  }
+
+  /* Pressable: no scale on reduced motion */
+  .pressable {
+    transition: none;
+  }
+
+  .pressable:active {
+    transform: none;
+  }
+
+  /* Base transitions: off */
+  button,
+  .card,
+  .modal,
+  .dropdown {
+    transition: none;
   }
 }

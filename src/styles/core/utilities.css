@@ -776,3 +776,77 @@ button:active,
     overflow-y: auto;
   }
 }
+
+
+/* ════════════════════════════════════════════
+   TAP TARGET SYSTEM
+   Minimum 44×44px for WCAG 2.1 SC 2.5.5
+   ════════════════════════════════════════════ */
+
+.tap-target {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (pointer: coarse) {
+  .tap-target {
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  button,
+  .icon-btn,
+  .nav-item,
+  .dropdown-trigger {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+
+/* ════════════════════════════════════════════
+   GLOBAL INTERACTIVE ELEMENT BEHAVIORS
+   Applies tap-target, pressable, and lift-hover
+   to all key interactive element types.
+   ════════════════════════════════════════════ */
+
+/* Pressable: tactile press scale on icon buttons + nav items */
+.icon-btn,
+.nav-item,
+.dropdown-trigger {
+  transition: transform 120ms var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.icon-btn:active,
+.nav-item:active,
+.dropdown-trigger:active {
+  transform: scale(0.96);
+}
+
+/* Lift-hover: desktop elevation on icon buttons */
+@media (hover: hover) {
+  .icon-btn:hover,
+  .nav-item:hover {
+    transform: translateY(-1px);
+  }
+}
+
+/* Reduced motion: no transforms */
+@media (prefers-reduced-motion: reduce) {
+  .icon-btn,
+  .nav-item,
+  .dropdown-trigger {
+    transition: none;
+  }
+
+  .icon-btn:active,
+  .nav-item:active,
+  .dropdown-trigger:active,
+  .icon-btn:hover,
+  .nav-item:hover {
+    transform: none;
+  }
+}

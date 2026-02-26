@@ -659,3 +659,21 @@
 [data-theme="dark"] .sim-action-badge.sim-orange { background: #3a2c00; color: #f2c94c; }
 [data-theme="dark"] .sim-action-badge.sim-red    { background: #3a0f12; color: #eb5757; }
 [data-theme="dark"] .sim-action-badge.sim-gray   { background: #2d2f3e; color: #9FA1C0; }
+
+/* ────────────────────────────────────────
+   ADMIN USER ROW — Responsive grid layout
+   ──────────────────────────────────────── */
+.admin-user-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  padding: 12px;
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .admin-user-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}

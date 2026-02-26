@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 import {
   X, Plus, Upload, Camera, BarChart2, AlertTriangle,
   VolumeX, FileText, Globe, Users, Lock,
@@ -7,6 +7,7 @@ import GifPicker from '../GifPicker';
 import PollCreator from '../PollCreator';
 import DraftManager from '../DraftManager';
 import { getImageUrl } from '../../utils/imageUrl';
+import './FeedComposer.css';
 
 /**
  * FeedComposer - Post creation component for both desktop and mobile
@@ -62,6 +63,18 @@ const FeedComposer = memo(function FeedComposer({
   onSetShowMobileComposer,
   onSetShowAdvancedOptions,
 }) {
+  // Lock body scroll while mobile composer is open (prevents background scroll on iOS)
+  useEffect(() => {
+    if (showMobileComposer) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showMobileComposer]);
+
   // Shared content warning options
   const contentWarningOptions = [
     { value: '', label: 'Select a content warning...' },

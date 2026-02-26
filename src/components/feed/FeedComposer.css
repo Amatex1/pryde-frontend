@@ -1,0 +1,38 @@
+/**
+ * FeedComposer.css — Composer vertical rhythm
+ */
+
+/* ────────────────────────────────────────
+   COMPOSER ACTIONS ROW
+   Icon buttons below the textarea: GIF, Poll, CW, media, etc.
+   ──────────────────────────────────────── */
+
+.composer-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.composer-actions > * {
+  flex-shrink: 0;
+}
+
+/* Push submit button to the far right */
+.composer-actions .composer-submit {
+  margin-left: auto;
+}
+
+.composer-actions .btn-primary {
+  height: 40px;
+}
+
+.composer-actions .icon-btn {
+  height: 40px;
+  width: 40px;
+}
+
+@media (max-width: 768px) {
+  .composer-actions {
+    gap: 2px;
+  }
+}

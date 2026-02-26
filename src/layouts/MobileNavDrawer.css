@@ -249,3 +249,11 @@
   background: var(--border-color, #333);
 }
 
+/* Ensure mobile-only triggers never appear on desktop */
+@media (min-width: 1024px) {
+  .admin-mobile-toggle,
+  .mobile-hamburger-btn {
+    display: none;
+  }
+}
+

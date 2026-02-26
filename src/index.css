@@ -42,6 +42,7 @@ html {
   width: 100%;
   max-width: 100vw;
   scroll-behavior: smooth;
+  overscroll-behavior: none;
   /* Note: overflow-x: hidden removed from html - it blocks scrolling on iOS */
 }
 
@@ -262,4 +263,9 @@ button {
   max-width: 100vw;
   left: 50%;
   transform: translateX(-50%);
+}
+
+/* iOS scroll containment — allow native swipe-to-refresh only inside feed */
+.feed-scroll-container {
+  overscroll-behavior: contain;
 }

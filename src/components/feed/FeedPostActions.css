@@ -1,0 +1,23 @@
+/**
+ * FeedPostActions.css
+ * Mobile-specific layout for post action buttons
+ */
+
+@media (max-width: 768px) {
+  .post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .post-actions button {
+    flex: 1;
+    height: 44px;
+  }
+
+  .post-actions svg {
+    width: 20px;
+    height: 20px;
+  }
+}

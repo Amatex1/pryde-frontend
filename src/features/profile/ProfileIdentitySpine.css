@@ -11,6 +11,14 @@
  * - Stats are muted
  */
 
+/* ────────────────────────────────────────
+   UPDATE BUTTON OVERLAP FIX
+   Clears the save/update button that floats above the identity block
+   ──────────────────────────────────────── */
+.profile-identity-spine {
+  padding-top: 72px;
+}
+
 .profile-identity-spine {
   display: grid;
   grid-template-columns: max-content auto;

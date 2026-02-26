@@ -1006,3 +1006,53 @@ body[data-density="cozy"] .comment-row {
 .comment-row.reply .comment-actions {
   margin-top: 1px;
 }
+
+/* ========================================
+   ICON BUTTON HIT-AREA SYSTEM
+   Unified 44px touch target for all icon-only buttons
+   Use class="icon-btn" on any button that is icon-only
+   ======================================== */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md, 12px);
+  cursor: pointer;
+  transition: background var(--duration-standard, 160ms) ease;
+}
+
+.icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 768px) {
+  .icon-btn {
+    width: 48px;
+    height: 48px;
+  }
+
+  .icon-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* ========================================
+   MICRO HOVER LIFT
+   Desktop-only card / button elevation on hover
+   ======================================== */
+@media (hover: hover) {
+  .lift-hover {
+    transition:
+      transform var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)),
+      box-shadow var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1));
+  }
+
+  .lift-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+}

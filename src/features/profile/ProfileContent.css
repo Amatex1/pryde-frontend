@@ -13,3 +13,26 @@
 
 /* Post cards inherit from existing Profile.css and Feed.css */
 
+/* ────────────────────────────────────────
+   PROFILE STATS — MOBILE TYPOGRAPHY
+   Compact label sizing for small screens
+   ──────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* New profile (ProfileIdentitySpine) */
+  .pis-stat-value {
+    font-size: 0.9375rem;
+    letter-spacing: 0.5px;
+  }
+
+  .pis-stat-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+  }
+
+  /* Legacy profile (Profile.jsx) */
+  .profile-stats span {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+}
+

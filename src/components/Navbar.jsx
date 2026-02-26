@@ -20,6 +20,7 @@ import { getQuietMode, setQuietMode as setQuietModeManager, getGalaxyMode, toggl
 import prydeLogo from '../assets/pryde-logo.png';
 import { useAuth } from '../context/AuthContext';
 import { useUnreadMessages } from '../hooks/useUnreadMessages'; // ✅ Use singleton hook
+import { LUCIDE_DEFAULTS } from '../utils/lucideDefaults';
 import './Navbar.css';
 
 /**
@@ -40,6 +41,7 @@ function Navbar({ onMenuClick }) {
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [quietMode, setQuietMode] = useState(() => getQuietMode());
   const [galaxyMode, setGalaxyMode] = useState(() => getGalaxyMode());
+  const [scrolled, setScrolled] = useState(false);
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
@@ -121,8 +123,15 @@ function Navbar({ onMenuClick }) {
     prefetchOnIdle(['/messages', '/profile', '/lounge']);
   }, []);
 
+  // Glass navbar: activate backdrop blur after scrolling past 10px
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
-    <nav className="navbar glossy" role="navigation" aria-label="Main navigation">
+    <nav className={`navbar glossy${scrolled ? ' navbar-glass' : ''}`} role="navigation" aria-label="Main navigation">
       {/* Left: Logo/Brand */}
       <div className="navbar-logo">
         <Link to="/feed" className="navbar-brand" aria-label="Pryde Social - Go to feed">
