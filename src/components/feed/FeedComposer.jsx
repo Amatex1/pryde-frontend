@@ -394,11 +394,14 @@ const FeedComposer = memo(function FeedComposer({
             />
 
             {renderMediaPreview()}
-            {renderContentWarning('mobile-')}
-            {renderPollCreator()}
 
+            {/* Toolbar — always visible at bottom of content area */}
             <div className="mobile-composer-actions">
-              <label className="mobile-btn-media">
+              <label
+                className="mobile-btn-media"
+                aria-label={uploadingMedia ? `Uploading... ${uploadProgress}%` : 'Add Photos / Videos'}
+                data-tooltip={uploadingMedia ? `Uploading... ${uploadProgress}%` : 'Add Photos / Videos'}
+              >
                 <input
                   id="mobile-media-upload-input"
                   name="mobileMediaUpload"
@@ -409,25 +412,56 @@ const FeedComposer = memo(function FeedComposer({
                   disabled={uploadingMedia || selectedMedia.length >= 3}
                   style={{ display: 'none' }}
                 />
-                <Camera size={20} strokeWidth={1.75} aria-hidden="true" />
+                {uploadingMedia
+                  ? <Upload size={20} strokeWidth={1.75} aria-hidden="true" />
+                  : <Camera size={20} strokeWidth={1.75} aria-hidden="true" />}
               </label>
 
               <button
                 type="button"
                 className={`mobile-btn-action ${showPollCreator ? 'active' : ''}`}
                 onClick={() => onSetShowPollCreator(!showPollCreator)}
-                title="Add poll"
+                aria-label="Add poll"
+                data-tooltip="Poll"
               >
-                📊
+                <BarChart2 size={20} strokeWidth={1.75} aria-hidden="true" />
               </button>
 
               <button
                 type="button"
                 className={`mobile-btn-action ${showContentWarning ? 'active' : ''}`}
                 onClick={() => onSetShowContentWarning(!showContentWarning)}
-                title="Add content warning"
+                aria-label="Add content warning"
+                data-tooltip="Content Warning"
               >
-                ⚠️
+                <AlertTriangle size={20} strokeWidth={1.75} aria-hidden="true" />
+              </button>
+
+              <label
+                className="mobile-btn-action"
+                data-tooltip="Hide Metrics"
+                aria-label="Hide likes, comments, and shares count"
+              >
+                <input
+                  id="mobile-hide-metrics-checkbox"
+                  name="mobileHideMetrics"
+                  type="checkbox"
+                  checked={hideMetrics}
+                  onChange={(e) => onSetHideMetrics(e.target.checked)}
+                  style={{ display: 'none' }}
+                />
+                <VolumeX size={20} strokeWidth={1.75} aria-hidden="true"
+                  style={{ opacity: hideMetrics ? 1 : 0.5 }} />
+              </label>
+
+              <button
+                type="button"
+                className="mobile-btn-action"
+                onClick={() => onSetShowDraftManager(true)}
+                aria-label="View saved drafts"
+                data-tooltip="Drafts"
+              >
+                <FileText size={20} strokeWidth={1.75} aria-hidden="true" />
               </button>
 
               <select
@@ -443,6 +477,10 @@ const FeedComposer = memo(function FeedComposer({
                 <option value="private">🔒 Private</option>
               </select>
             </div>
+
+            {/* CW and Poll expand below toolbar so they're visible where user looks */}
+            {renderContentWarning('mobile-')}
+            {renderPollCreator()}
           </form>
         </div>
       </div>

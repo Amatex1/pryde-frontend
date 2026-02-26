@@ -3505,16 +3505,10 @@ html:not([data-theme]) .post-actions {
     min-width: 0 !important;
     min-height: 44px !important;
     white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: clip !important;
+    overflow: visible !important; /* Allow tooltip pseudo-elements to escape */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-  }
-
-  .action-btn span:first-child {
-    font-size: 24px !important; /* Show only emoji */
-    flex-shrink: 0 !important;
   }
 
   /* action-text is sr-only globally — no mobile override needed */

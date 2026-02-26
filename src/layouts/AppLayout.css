@@ -307,7 +307,6 @@
 .mobile-btn-action {
   background: none;
   border: none;
-  font-size: 24px;
   padding: 8px;
   cursor: pointer;
   border-radius: 8px;
@@ -316,6 +315,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative; /* Needed for [data-tooltip] pseudo-elements */
+  min-width: 36px;
+  min-height: 36px;
+  color: var(--text-main, #1a1a2e);
 }
 
 .mobile-btn-media:hover,
@@ -325,6 +328,7 @@
 
 .mobile-btn-action.active {
   background-color: var(--accent-light, rgba(108, 92, 231, 0.1));
+  color: var(--pryde-purple, #6C5CE7);
 }
 
 .mobile-privacy-selector {

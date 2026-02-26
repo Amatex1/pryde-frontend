@@ -207,5 +207,51 @@
   }
 }
 
+/* ========================================
+   MOBILE — COMPACT POLL LAYOUT
+   ======================================== */
+@media (max-width: 600px) {
+  .poll-creator {
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 10px;
+  }
+
+  .poll-field {
+    margin-bottom: 12px;
+  }
+
+  .poll-hint {
+    margin-bottom: 12px;
+    font-size: 0.8rem;
+  }
+
+  .poll-field input[type="text"],
+  .poll-field select {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+
+  .poll-header h4 {
+    font-size: 1rem;
+  }
+
+  .add-option-btn {
+    padding: 9px;
+    font-size: 0.9rem;
+  }
+
+  .remove-option-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+  }
+
+  .poll-settings {
+    gap: 8px;
+    padding-top: 8px;
+  }
+}
+
 
 
