@@ -361,6 +361,7 @@ const FeedComposer = memo(function FeedComposer({
               onSetIsTyping(false);
             }}
             aria-label="Close composer"
+            data-tooltip="Close"
           >
             ✕
           </button>

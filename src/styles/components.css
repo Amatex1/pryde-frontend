@@ -32,26 +32,26 @@
   position: relative;
 }
 
-/* Tooltip arrow */
+/* Tooltip arrow — points up toward the button */
 [data-tooltip]::before {
   content: '';
   position: absolute;
-  bottom: calc(100% + 3px);
+  top: calc(100% + 1px);
   left: 50%;
   transform: translateX(-50%);
   border: 5px solid transparent;
-  border-top-color: rgba(15, 14, 28, 0.92);
+  border-bottom-color: rgba(15, 14, 28, 0.92);
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--duration-quick, 120ms) ease;
-  z-index: 9999;
+  z-index: 10000;
 }
 
-/* Tooltip label */
+/* Tooltip label — appears below the button */
 [data-tooltip]::after {
   content: attr(data-tooltip);
   position: absolute;
-  bottom: calc(100% + 13px);
+  top: calc(100% + 11px);
   left: 50%;
   transform: translateX(-50%);
   background: rgba(15, 14, 28, 0.92);
@@ -65,7 +65,7 @@
   pointer-events: none;
   opacity: 0;
   transition: opacity var(--duration-quick, 120ms) ease;
-  z-index: 9999;
+  z-index: 10000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 

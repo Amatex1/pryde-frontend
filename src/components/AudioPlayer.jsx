@@ -65,7 +65,12 @@ const AudioPlayer = ({ url, duration }) => {
     <div className="audio-player">
       <audio ref={audioRef} src={url} preload="metadata" />
       
-      <button className="play-pause-btn" onClick={togglePlayPause}>
+      <button
+        className="play-pause-btn"
+        onClick={togglePlayPause}
+        aria-label={isPlaying ? 'Pause' : 'Play'}
+        data-tooltip={isPlaying ? 'Pause' : 'Play'}
+      >
         {isPlaying
           ? <Pause size={18} strokeWidth={1.75} aria-hidden="true" />
           : <Play size={18} strokeWidth={1.75} aria-hidden="true" />}

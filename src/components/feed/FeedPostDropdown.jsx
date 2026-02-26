@@ -24,8 +24,8 @@ const FeedPostDropdown = memo(function FeedPostDropdown({
       <button
         className="btn-dropdown"
         onClick={() => onToggleDropdown(postId)}
-        title="More options"
         aria-label="More options"
+        data-tooltip="Options"
       >
         <MoreVertical size={18} strokeWidth={1.75} aria-hidden="true" />
       </button>

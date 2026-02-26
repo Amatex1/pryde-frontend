@@ -500,6 +500,7 @@ function Navbar({ onMenuClick }) {
               className="mobile-search-close"
               onClick={() => setShowMobileSearch(false)}
               aria-label="Close search"
+              data-tooltip="Close"
             >
               <X size={18} strokeWidth={1.75} aria-hidden="true" />
             </button>

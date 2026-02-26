@@ -23,8 +23,8 @@ function DarkModeToggle({ asIcon = false, onClick }) {
     <button
       className="dark-mode-toggle"
       onClick={toggleDarkMode}
-      title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
       aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+      data-tooltip={isDark ? 'Light Mode' : 'Dark Mode'}
     >
       {isDark
         ? <Sun size={18} strokeWidth={1.75} aria-hidden="true" />

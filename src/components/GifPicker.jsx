@@ -148,7 +148,7 @@ const GifPicker = ({ onGifSelect, onClose }) => {
       <div className="gif-picker" ref={pickerRef}>
         <div className="gif-picker-header">
           <h4>Choose a GIF</h4>
-          <button type="button" className="gif-picker-close" onClick={onClose} aria-label="Close"><X size={18} strokeWidth={1.75} aria-hidden="true" /></button>
+          <button type="button" className="gif-picker-close" onClick={onClose} aria-label="Close" data-tooltip="Close"><X size={18} strokeWidth={1.75} aria-hidden="true" /></button>
         </div>
 
         {/* Separate form to prevent bubbling to parent post form */}

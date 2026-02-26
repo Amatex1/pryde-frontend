@@ -1321,6 +1321,7 @@ button.btn-content-warning {
 label.hide-metrics-checkbox,
 .hide-metrics-checkbox {
   all: unset !important; /* Reset ALL browser defaults */
+  position: relative !important; /* Restore for [data-tooltip] pseudo-elements */
   cursor: pointer !important;
   display: inline-flex !important;
   align-items: center !important;
