@@ -81,10 +81,13 @@ export default function MobileNavDrawer({ open, onClose }) {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [open, onClose]);
 
-  // Trap focus when open
+  // Manage focus: pull into drawer when open, release when closed
   useEffect(() => {
-    if (open && drawerRef.current) {
-      drawerRef.current.focus();
+    if (open) {
+      drawerRef.current?.focus();
+    } else {
+      const focused = drawerRef.current?.querySelector(':focus');
+      if (focused) focused.blur();
     }
   }, [open]);
 
