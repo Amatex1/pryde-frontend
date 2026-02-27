@@ -36,6 +36,15 @@
   height: 40px;
 }
 
+/* Pin icon SVG size — survives all:unset and font-size cascade in Feed.css */
+.composer-actions .icon-btn svg,
+.composer-actions label svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  flex-shrink: 0;
+}
+
 .composer-actions .btn-post {
   height: 40px;
   padding-inline: var(--space-4);
