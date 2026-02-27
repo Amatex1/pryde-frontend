@@ -442,11 +442,9 @@
   line-height: 1;
 }
 
-/* Explicit SVG dimensions — override `svg { height: auto }` in index.css */
+/* SVG layout only — size is controlled by the Lucide size prop */
 .navbar-mobile-icon-btn svg,
 .mobile-hamburger-btn svg {
-  width: 22px;
-  height: 22px;
   display: block;
   flex-shrink: 0;
 }
@@ -912,8 +910,7 @@
   }
 
   .messages-button svg {
-    width: 20px;
-    height: 20px;
+    display: block;
   }
 
   .user-profile-trigger {
