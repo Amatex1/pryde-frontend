@@ -1788,18 +1788,12 @@
    ═══════════════════════════════════════════════════════ */
 
 /* ── 1. Global Icon Authority ─────────────────────────── */
-@media (max-width: 768px) {
-
-  svg {
-    width: 22px;
-    height: 22px;
-  }
-
-  svg path {
-    stroke-width: 2;
-  }
-
-}
+/* REMOVED: broad svg { width/height } rule was overriding intentionally
+   small contextual icons (size={14} in menus, size={16} in composer).
+   Icon sizing is handled via the size prop at the component level
+   (LUCIDE_DEFAULTS: size:22, strokeWidth:2) and targeted CSS in
+   Navbar.css (.navbar-mobile-icon-btn svg) and
+   AppLayout.css (.mobile-nav a .nav-icon svg). */
 
 /* ── 2. Global Tap Target Authority ──────────────────── */
 @media (max-width: 768px) {
