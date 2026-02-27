@@ -1873,4 +1873,14 @@
     height: 56px;
   }
 
+  /* Contain composer action bar — landscape width can exceed 768px so the
+     max-width:768px overflow-x:auto rules don't fire. Force containment here. */
+  .post-actions-bar {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
 }
