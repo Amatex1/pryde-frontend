@@ -324,9 +324,17 @@
   align-items: center;
   justify-content: center;
   position: relative; /* Needed for [data-tooltip] pseudo-elements */
-  min-width: 36px;
-  min-height: 36px;
+  min-width: 44px;
+  min-height: 44px;
   color: var(--text-main, #1a1a2e);
+}
+
+.mobile-btn-media svg,
+.mobile-btn-action svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+  flex-shrink: 0;
 }
 
 .mobile-btn-media:hover,

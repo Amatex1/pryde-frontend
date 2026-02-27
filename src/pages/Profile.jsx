@@ -1724,14 +1724,14 @@ function Profile() {
                       onClick={handleEditCover}
                       title="Edit cover photo"
                     >
-                      <Camera size={16} strokeWidth={1.75} aria-hidden="true" /> <span className="btn-label">Edit Cover</span>
+                      <Camera size={20} strokeWidth={1.75} aria-hidden="true" /> <span className="btn-label">Edit Cover</span>
                     </button>
                     <button
                       className="btn-edit-profile-cover"
                       onClick={() => setEditProfileModal(true)}
                       title="Edit Profile"
                     >
-                      <Pencil size={16} strokeWidth={1.75} aria-hidden="true" /> <span className="btn-label">Edit Profile</span>
+                      <Pencil size={20} strokeWidth={1.75} aria-hidden="true" /> <span className="btn-label">Edit Profile</span>
                     </button>
                   </div>
                 )}
@@ -1805,7 +1805,7 @@ function Profile() {
                 title="Edit profile photo"
                 aria-label="Edit profile photo"
               >
-                <Camera size={16} strokeWidth={1.75} aria-hidden="true" />
+                <Camera size={20} strokeWidth={1.75} aria-hidden="true" />
               </button>
             )}
           </div>
@@ -1908,7 +1908,7 @@ function Profile() {
                     className="btn-notes-to-self"
                     onClick={handleMessage}
                   >
-                    <FileText size={16} strokeWidth={1.75} aria-hidden="true" /> Notes to self
+                    <FileText size={20} strokeWidth={1.75} aria-hidden="true" /> Notes to self
                   </button>
                   <span className="notes-helper-text">Private notes only visible to you</span>
                 </div>
@@ -1920,17 +1920,17 @@ function Profile() {
                     {/* New Follow System Buttons */}
                     {followStatus === 'none' && (
                       <button className="btn-add-friend" onClick={handleFollow}>
-                        <UserPlus size={16} strokeWidth={1.75} aria-hidden="true" /> Follow
+                        <UserPlus size={20} strokeWidth={1.75} aria-hidden="true" /> Follow
                       </button>
                     )}
                     {followStatus === 'pending' && (
                       <button className="btn-cancel-request" onClick={handleCancelFollowRequest}>
-                        <Clock size={16} strokeWidth={1.75} aria-hidden="true" /> Pending
+                        <Clock size={20} strokeWidth={1.75} aria-hidden="true" /> Pending
                       </button>
                     )}
                     {followStatus === 'following' && (
                       <button className="btn-unfriend" onClick={handleUnfollow}>
-                        <UserCheck size={16} strokeWidth={1.75} aria-hidden="true" /> Following
+                        <UserCheck size={20} strokeWidth={1.75} aria-hidden="true" /> Following
                       </button>
                     )}
 
@@ -1940,7 +1940,7 @@ function Profile() {
                         className="btn-message"
                         onClick={handleMessage}
                       >
-                        <MessageCircle size={16} strokeWidth={1.75} aria-hidden="true" /> Message
+                        <MessageCircle size={20} strokeWidth={1.75} aria-hidden="true" /> Message
                       </button>
                     )}
                     {permissionsChecked && !canSendMessage && followStatus !== 'following' && (
@@ -1950,7 +1950,7 @@ function Profile() {
                         style={{ opacity: 0.6, cursor: 'not-allowed' }}
                         title="You must be following to message this user"
                       >
-                        <Lock size={16} strokeWidth={1.75} aria-hidden="true" /> Message
+                        <Lock size={20} strokeWidth={1.75} aria-hidden="true" /> Message
                       </button>
                     )}
                   </div>
@@ -2105,7 +2105,7 @@ function Profile() {
                   whiteSpace: 'nowrap'
                 }}
               >
-                <FileText size={16} strokeWidth={1.75} aria-hidden="true" /> Posts
+                <FileText size={20} strokeWidth={1.75} aria-hidden="true" /> Posts
               </button>
               <button
                 className={`tab-button ${activeTab === 'journals' ? 'active' : ''}`}
