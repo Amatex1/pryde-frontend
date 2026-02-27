@@ -2,11 +2,7 @@
   position: relative;
 }
 
-.notification-bell svg,
-.bell-button svg {
-  width: 22px;
-  height: 22px;
-}
+/* SVG size controlled by Lucide size prop (LUCIDE_DEFAULTS: 24px) */
 
 .bell-button {
   position: relative;

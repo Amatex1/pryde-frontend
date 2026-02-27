@@ -402,10 +402,11 @@ html, body {
 }
 
 /* Responsive images/media */
-img, video, iframe, svg {
+img, video, iframe {
   max-width: 100%;
   height: auto;
 }
+/* SVG excluded: Lucide sets width/height attributes; height:auto would override them */
 
 /* Touch target minimum sizes */
 @media (max-width: 768px) {

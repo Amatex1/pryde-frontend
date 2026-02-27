@@ -78,11 +78,11 @@ img,
 video,
 iframe,
 embed,
-object,
-svg {
+object {
   max-width: 100%;
   height: auto;
 }
+/* SVG excluded: Lucide sets width/height attributes; height:auto would override them */
 
 /* Prevent pre/code blocks from scrolling horizontally */
 pre {
