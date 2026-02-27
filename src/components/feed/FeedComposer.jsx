@@ -489,9 +489,9 @@ const FeedComposer = memo(function FeedComposer({
                 className="mobile-privacy-selector"
                 aria-label="Select post privacy"
               >
-                <option value="public">🌍 Public</option>
-                <option value="followers">👥 Connections</option>
-                <option value="private">🔒 Private</option>
+                <option value="public">Public</option>
+                <option value="followers">Connections</option>
+                <option value="private">Private</option>
               </select>
             </div>
 
