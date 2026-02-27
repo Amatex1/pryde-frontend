@@ -136,7 +136,7 @@ export default function MobileNavDrawer({ open, onClose }) {
             onClick={onClose}
             aria-label="Close menu"
           >
-            <X size={18} strokeWidth={1.75} aria-hidden="true" />
+            <X size={22} strokeWidth={2} aria-hidden="true" />
           </button>
         </div>
 

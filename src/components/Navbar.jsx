@@ -511,7 +511,7 @@ function Navbar({ onMenuClick }) {
               aria-label="Close search"
               data-tooltip="Close"
             >
-              <X size={18} strokeWidth={1.75} aria-hidden="true" />
+              <X size={22} strokeWidth={2} aria-hidden="true" />
             </button>
           </div>
         </div>

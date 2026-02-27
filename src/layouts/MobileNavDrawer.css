@@ -97,17 +97,23 @@
 }
 
 .mobile-nav-close-btn {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border: none;
   background: transparent;
-  font-size: 20px;
   cursor: pointer;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-secondary, #666);
+}
+
+.mobile-nav-close-btn svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+  flex-shrink: 0;
 }
 
 .mobile-nav-close-btn:hover {

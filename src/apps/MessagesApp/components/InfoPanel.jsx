@@ -39,7 +39,7 @@ export default function InfoPanel({
         <>
           {/* Mobile close button */}
           <button className="info-close-btn" onClick={onClose} aria-label="Close info panel">
-            <X size={18} strokeWidth={1.75} aria-hidden="true" />
+            <X size={22} strokeWidth={2} aria-hidden="true" />
           </button>
           <div className="info-header">
             <div className="info-avatar">
