@@ -381,8 +381,8 @@
 
 .mobile-hamburger-btn {
   display: none;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-md);
   border: none;
   background: transparent;
@@ -419,8 +419,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-md);
   background: transparent;
   border: none;
@@ -445,8 +445,8 @@
 /* Explicit SVG dimensions — override `svg { height: auto }` in index.css */
 .navbar-mobile-icon-btn svg,
 .mobile-hamburger-btn svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   display: block;
   flex-shrink: 0;
 }

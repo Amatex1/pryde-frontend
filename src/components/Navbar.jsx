@@ -164,7 +164,7 @@ function Navbar({ onMenuClick }) {
               aria-label={totalUnread > 0 ? `Messages, ${totalUnread} unread` : 'Messages'}
               data-tooltip="Messages"
             >
-              <MessageCircle size={20} strokeWidth={1.75} aria-hidden="true" className="navbar-mobile-icon" />
+              <MessageCircle {...LUCIDE_DEFAULTS} aria-hidden="true" className="navbar-mobile-icon" />
               {totalUnread > 0 && (
                 <span className="navbar-mobile-badge" aria-hidden="true">
                   {totalUnread > 9 ? '9+' : totalUnread}
@@ -182,7 +182,7 @@ function Navbar({ onMenuClick }) {
               aria-label="Search"
               data-tooltip="Search"
             >
-              <Search size={20} strokeWidth={1.75} aria-hidden="true" className="navbar-mobile-icon" />
+              <Search {...LUCIDE_DEFAULTS} aria-hidden="true" className="navbar-mobile-icon" />
             </button>
 
             {/* Hamburger — opens side drawer */}
@@ -202,7 +202,7 @@ function Navbar({ onMenuClick }) {
               aria-controls="mobile-menu"
               data-tooltip="Menu"
             >
-              <Menu size={20} strokeWidth={1.75} aria-hidden="true" />
+              <Menu {...LUCIDE_DEFAULTS} aria-hidden="true" />
             </button>
           </div>
         )}
