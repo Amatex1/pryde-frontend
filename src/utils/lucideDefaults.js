@@ -9,6 +9,6 @@
  */
 
 export const LUCIDE_DEFAULTS = {
-  strokeWidth: 2,
-  size: 22,
+  size: 24,
+  strokeWidth: 2.2,
 };
