@@ -85,6 +85,8 @@ function Profile() {
   const [photoEssays, setPhotoEssays] = useState([]);
   const [reportModal, setReportModal] = useState({ isOpen: false, type: '', contentId: null, userId: null });
   const [photoViewerImage, setPhotoViewerImage] = useState(null);
+  const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
+  const [avatarMenuPos, setAvatarMenuPos] = useState(null);
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
   const [newPost, setNewPost] = useState('');
@@ -126,6 +128,8 @@ function Profile() {
   const [editingType, setEditingType] = useState(null); // "cover" | "avatar" | null
   const [coverCropSize, setCoverCropSize] = useState(null); // { width, height } computed on enter
   const coverRef = useRef(null);
+  const avatarRef = useRef(null);
+  const avatarMenuRef = useRef(null);
   const editTextareaRef = useRef(null);
   const isMountedRef = useRef(true); // Track if component is mounted to prevent race conditions
   // Phase 5B: Removed windowWidth state - use CSS media queries instead to prevent resize jitter
@@ -1374,6 +1378,19 @@ function Profile() {
   };
   const handleEditAvatar = () => setEditingType("avatar");
 
+  const handleAvatarClick = () => {
+    if (avatarMenuOpen) {
+      setAvatarMenuOpen(false);
+      setAvatarMenuPos(null);
+      return;
+    }
+    if (avatarRef.current) {
+      const rect = avatarRef.current.getBoundingClientRect();
+      setAvatarMenuPos({ top: rect.bottom + 8, left: rect.left + rect.width / 2 });
+    }
+    setAvatarMenuOpen(true);
+  };
+
   const handleSavePosition = async (newPosition) => {
     try {
       const response = await api.put("/users/profile", {
@@ -1552,6 +1569,38 @@ function Profile() {
       <Navbar onMenuClick={onMenuOpen} />
 
       <div className="profile-container">
+        {/* ── Avatar action menu — portal so it escapes overflow:hidden on the avatar ── */}
+        {isOwnProfile && avatarMenuOpen && avatarMenuPos && createPortal(
+          <>
+            {/* Invisible backdrop — click outside closes the menu */}
+            <div
+              style={{ position: 'fixed', inset: 0, zIndex: 9998 }}
+              onClick={() => { setAvatarMenuOpen(false); setAvatarMenuPos(null); }}
+            />
+            <div
+              className="avatar-action-menu"
+              ref={avatarMenuRef}
+              style={{ top: avatarMenuPos.top, left: avatarMenuPos.left }}
+            >
+              {user.profilePhoto && (
+                <button
+                  className="avatar-action-item"
+                  onClick={() => { setAvatarMenuOpen(false); setAvatarMenuPos(null); setPhotoViewerImage(getImageUrl(user.profilePhoto)); }}
+                >
+                  View profile pic
+                </button>
+              )}
+              <button
+                className="avatar-action-item"
+                onClick={() => { setAvatarMenuOpen(false); setAvatarMenuPos(null); handleEditAvatar(); }}
+              >
+                Edit profile pic
+              </button>
+            </div>
+          </>,
+          document.body
+        )}
+
         {/* ── Avatar reposition modal — rendered via portal so position:fixed escapes
              any parent transform (e.g. fade-in) that would otherwise capture it ── */}
         {editingType === "avatar" && createPortal(
@@ -1681,11 +1730,14 @@ function Profile() {
               During cover edit: avatar has z-index:100 which sits above the crop canvas (z-index:20)
               and blocks touch/pointer events on that portion of the crop area on mobile.
               During avatar edit: editor replaces the avatar visually in the cover area. */}
-          <div className={`profile-avatar profile-avatar--overlay${editingType === "cover" ? ' profile-avatar--editing-hidden' : ''}`}>
+          <div
+            ref={avatarRef}
+            className={`profile-avatar profile-avatar--overlay${editingType === "cover" ? ' profile-avatar--editing-hidden' : ''}`}
+          >
             {user.profilePhoto ? (
               <div
                 className="profile-avatar-image"
-                onClick={() => setPhotoViewerImage(getImageUrl(user.profilePhoto))}
+                onClick={isOwnProfile ? handleAvatarClick : () => setPhotoViewerImage(getImageUrl(user.profilePhoto))}
                 style={{
                   backgroundImage: `url(${getImageUrl(user.profilePhoto)})`,
                   backgroundSize: 'cover',
@@ -1698,18 +1750,12 @@ function Profile() {
                 }}
               />
             ) : (
-              <span>{user.displayName?.charAt(0).toUpperCase()}</span>
-            )}
-            {/* Edit avatar button - appears on hover */}
-            {isOwnProfile && user.profilePhoto && (
-              <button
-                className="btn-edit-avatar"
-                onClick={handleEditAvatar}
-                title="Edit profile photo"
-                aria-label="Edit profile photo"
+              <span
+                onClick={isOwnProfile ? handleEditAvatar : undefined}
+                style={isOwnProfile ? { cursor: 'pointer' } : undefined}
               >
-                <Camera size={20} strokeWidth={1.75} aria-hidden="true" />
-              </button>
+                {user.displayName?.charAt(0).toUpperCase()}
+              </span>
             )}
           </div>
 
