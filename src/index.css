@@ -271,30 +271,5 @@ button {
 
 /* ============================================
    MOBILE TAP TARGET + ICON ENFORCEMENT
-   Guarantees minimum 44px tap areas and visible
-   icon sizes on all touch devices.
+   Moved to styles/core/mobile.css (Mobile UI Authority section).
    ============================================ */
-
-@media (max-width: 768px) {
-
-  button,
-  .icon-btn,
-  .mobile-btn-action,
-  .mobile-btn-media,
-  .btn-actions-menu,
-  .btn-edit-profile-cover,
-  .mobile-create-post,
-  .mobile-composer-close {
-    min-width: 44px !important;
-    min-height: 44px !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  svg {
-    width: 20px !important;
-    height: 20px !important;
-  }
-
-}

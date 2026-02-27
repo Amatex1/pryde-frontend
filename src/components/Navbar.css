@@ -1324,17 +1324,5 @@
 
 /* ========================================
    MOBILE NAVBAR ICON NORMALIZATION
+   Moved to styles/core/mobile.css (Mobile UI Authority section).
    ======================================== */
-
-@media (max-width: 768px) {
-  .navbar button,
-  .navbar .icon-btn {
-    width: 44px !important;
-    height: 44px !important;
-  }
-
-  .navbar svg {
-    width: 22px !important;
-    height: 22px !important;
-  }
-}

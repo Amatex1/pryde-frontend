@@ -1775,3 +1775,76 @@
     padding-right: 12px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE UI AUTHORITY
+   Single source of truth for:
+     - Icon sizing
+     - Tap target minimums
+     - Navbar button dimensions
+     - Composer action layout
+   Loaded via main.jsx (after all other CSS) — overrides
+   all scattered mobile rules.
+   ═══════════════════════════════════════════════════════ */
+
+/* ── 1. Global Icon Authority ─────────────────────────── */
+@media (max-width: 768px) {
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  svg path {
+    stroke-width: 2;
+  }
+
+}
+
+/* ── 2. Global Tap Target Authority ──────────────────── */
+@media (max-width: 768px) {
+
+  button,
+  .icon-btn,
+  .mobile-btn-action,
+  .mobile-btn-media,
+  .navbar button,
+  .btn-actions-menu {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+}
+
+/* ── 3. Navbar Mobile Lock ──────────────────────────────── */
+@media (max-width: 768px) {
+
+  .navbar button {
+    width: 44px;
+    height: 44px;
+  }
+
+}
+
+/* ── 4. Mobile Composer Stabilization ────────────────── */
+@media (max-width: 768px) {
+
+  .mobile-composer-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .mobile-composer-actions button,
+  .mobile-composer-actions label {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+  }
+
+}
