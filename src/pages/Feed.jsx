@@ -99,7 +99,6 @@ function Feed() {
   const defaultPostVisibilityRef = useRef('followers'); // Stores user's default from settings
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [hiddenFromUsers, setHiddenFromUsers] = useState([]);
-  const [sharedWithUsers, setSharedWithUsers] = useState([]);
   const [contentWarning, setContentWarning] = useState('');
   const [showContentWarning, setShowContentWarning] = useState(false);
   const [revealedPosts, setRevealedPosts] = useState({});
@@ -110,7 +109,6 @@ function Feed() {
   const [commentReplies, setCommentReplies] = useState({}); // Store replies by commentId { commentId: [replies] }
   const [editPostVisibility, setEditPostVisibility] = useState('followers');
   const [editHiddenFromUsers, setEditHiddenFromUsers] = useState([]);
-  const [editSharedWithUsers, setEditSharedWithUsers] = useState([]);
   const [editPostMedia, setEditPostMedia] = useState([]); // Current media for post being edited
   const [deletedMedia, setDeletedMedia] = useState([]); // Track media marked for deletion
   const [friends, setFriends] = useState([]);
@@ -1401,9 +1399,6 @@ function Feed() {
       //   if (hiddenFromUsers.length > 0) {
       //     postData.hiddenFrom = hiddenFromUsers;
       //   }
-      //   if (sharedWithUsers.length > 0) {
-      //     postData.sharedWith = sharedWithUsers;
-      //   }
       // }
 
       const response = await api.post('/posts', postData);
@@ -1429,7 +1424,6 @@ function Feed() {
       setSelectedPostGif(null); // Clear GIF
       setPostVisibility(defaultPostVisibilityRef.current); // Reset to user's default, not hardcoded
       setHiddenFromUsers([]);
-      setSharedWithUsers([]);
       setContentWarning('');
       setShowContentWarning(false);
       setPoll(null);
@@ -1904,7 +1898,6 @@ function Feed() {
       setEditPostText(localDraft.content || post.content);
       setEditPostVisibility(localDraft.visibility || post.visibility || 'followers');
       setEditHiddenFromUsers(localDraft.hiddenFrom || post.hiddenFrom?.map(u => u._id || u) || []);
-      setEditSharedWithUsers(localDraft.sharedWith || post.sharedWith?.map(u => u._id || u) || []);
       // Restore media from draft if available, otherwise from post
       setEditPostMedia(localDraft.media || post.media || []);
       setDeletedMedia(localDraft.deletedMedia || []);
@@ -1912,7 +1905,6 @@ function Feed() {
       setEditPostText(post.content);
       setEditPostVisibility(post.visibility || 'followers');
       setEditHiddenFromUsers(post.hiddenFrom?.map(u => u._id || u) || []);
-      setEditSharedWithUsers(post.sharedWith?.map(u => u._id || u) || []);
       // Load existing media for editing
       setEditPostMedia(post.media || []);
       setDeletedMedia([]);
@@ -1946,13 +1938,12 @@ function Feed() {
         content: editPostText,
         visibility: editPostVisibility,
         hiddenFrom: editHiddenFromUsers,
-        sharedWith: editSharedWithUsers,
         media: editPostMedia,
         deletedMedia: deletedMedia
       };
       saveDraft(draftKey, draftData);
     }
-  }, [editPostText, editPostVisibility, editHiddenFromUsers, editSharedWithUsers, editingPostId, editPostMedia, deletedMedia]);
+  }, [editPostText, editPostVisibility, editHiddenFromUsers, editingPostId, editPostMedia, deletedMedia]);
 
   const handleSaveEditPost = useCallback(async (postId) => {
     // Allow saving if there's content OR media remaining
@@ -1975,13 +1966,9 @@ function Feed() {
         if (editHiddenFromUsers.length > 0) {
           updateData.hiddenFrom = editHiddenFromUsers;
         }
-        if (editSharedWithUsers.length > 0) {
-          updateData.sharedWith = editSharedWithUsers;
-        }
       } else {
         // Clear custom privacy if not using custom visibility
         updateData.hiddenFrom = [];
-        updateData.sharedWith = [];
       }
 
       const response = await api.put(`/posts/${postId}`, updateData);
@@ -1995,7 +1982,6 @@ function Feed() {
       setEditPostText('');
       setEditPostVisibility('followers');
       setEditHiddenFromUsers([]);
-      setEditSharedWithUsers([]);
       setEditPostMedia([]);
       setDeletedMedia([]);
       showAlert('Post updated successfully!', 'Success');
@@ -2003,7 +1989,7 @@ function Feed() {
       logger.error('Failed to edit post:', error);
       showAlert('This didn\'t save properly. You can try again in a moment.', 'Edit issue');
     }
-  }, [editPostText, editPostMedia, editPostVisibility, deletedMedia, editHiddenFromUsers, editSharedWithUsers, showAlert]);
+  }, [editPostText, editPostMedia, editPostVisibility, deletedMedia, editHiddenFromUsers, showAlert]);
 
   const handleCancelEditPost = useCallback(() => {
     setEditingPostId(prev => {
@@ -2017,7 +2003,6 @@ function Feed() {
     setEditPostText('');
     setEditPostVisibility('followers');
     setEditHiddenFromUsers([]);
-    setEditSharedWithUsers([]);
     setEditPostMedia([]);
     setDeletedMedia([]);
   }, []);
@@ -2622,7 +2607,6 @@ function Feed() {
                         onChange={(e) => {
                           if (e.target.checked) {
                             setHiddenFromUsers([...hiddenFromUsers, friend._id]);
-                            setSharedWithUsers(sharedWithUsers.filter(id => id !== friend._id));
                           } else {
                             setHiddenFromUsers(hiddenFromUsers.filter(id => id !== friend._id));
                           }
@@ -2648,53 +2632,11 @@ function Feed() {
                 </div>
               </div>
 
-              <div className="privacy-divider">OR</div>
-
-              <div className="privacy-section">
-                <h3>Share with specific friends only</h3>
-                <p className="privacy-description">Only selected friends will see this post</p>
-                <div className="friends-checklist">
-                  {friends.map(friend => (
-                    <label key={friend._id} className="friend-checkbox-item">
-                      <input
-                        id={`share-with-${friend._id}`}
-                        name={`shareWith-${friend._id}`}
-                        type="checkbox"
-                        checked={sharedWithUsers.includes(friend._id)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSharedWithUsers([...sharedWithUsers, friend._id]);
-                            setHiddenFromUsers(hiddenFromUsers.filter(id => id !== friend._id));
-                          } else {
-                            setSharedWithUsers(sharedWithUsers.filter(id => id !== friend._id));
-                          }
-                        }}
-                      />
-                      <div className="friend-info">
-                        <div className="friend-avatar-small">
-                          {friend.profilePhoto ? (
-                            <OptimizedImage
-                              src={getImageUrl(friend.profilePhoto)}
-                              alt={getDisplayName(friend)}
-                              className="avatar-image"
-                              imageSize="avatar"
-                            />
-                          ) : (
-                            <span>{getDisplayName(friend).charAt(0).toUpperCase()}</span>
-                          )}
-                        </div>
-                        <span>{getDisplayName(friend)}</span>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </div>
             </div>
 
             <div className="modal-footer">
               <button className="btn-secondary" onClick={() => {
                 setHiddenFromUsers([]);
-                setSharedWithUsers([]);
                 setShowPrivacyModal(false);
               }}>
                 Clear All

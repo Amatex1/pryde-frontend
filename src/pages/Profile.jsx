@@ -75,9 +75,6 @@ function Profile() {
   const [postComments, setPostComments] = useState({}); // Store comments by postId { postId: [comments] }
   const [commentReplies, setCommentReplies] = useState({}); // Store replies by commentId { commentId: [replies] }
   const [editProfileModal, setEditProfileModal] = useState(false);
-  const [friendStatus, setFriendStatus] = useState(null); // null, 'friends', 'pending_sent', 'pending_received', 'none'
-  const [friendRequestId, setFriendRequestId] = useState(null);
-  // New follow system states
   const [followStatus, setFollowStatus] = useState(null); // null, 'following', 'pending', 'none'
   const [followRequestId, setFollowRequestId] = useState(null);
   const [isPrivateAccount, setIsPrivateAccount] = useState(false);
@@ -113,10 +110,8 @@ function Profile() {
   const { toasts, showToast, removeToast } = useToast();
   const actionsMenuRef = useRef(null);
   const isOwnProfile = currentUser?.username === id;
-  const [canSendFriendRequest, setCanSendFriendRequest] = useState(true);
   const [canSendMessage, setCanSendMessage] = useState(false);
   const [permissionsChecked, setPermissionsChecked] = useState(false); // Hide buttons until permissions are determined
-  const [showUnfriendModal, setShowUnfriendModal] = useState(false);
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [editingPostId, setEditingPostId] = useState(null);
   const [editPostText, setEditPostText] = useState('');
@@ -150,32 +145,19 @@ function Profile() {
   const updatePrivacyPermissions = useCallback((targetUser) => {
     if (!targetUser) return;
 
-    // Check if user can send friend requests
-    const friendRequestSetting = targetUser.privacySettings?.whoCanSendFriendRequests || 'everyone';
-    if (friendRequestSetting === 'no-one') {
-      setCanSendFriendRequest(false);
-    } else if (friendRequestSetting === 'friends-of-friends') {
-      // This would require checking mutual friends - for now, we'll allow it
-      // The backend will validate this when the request is sent
-      setCanSendFriendRequest(true);
-    } else {
-      setCanSendFriendRequest(true);
-    }
-
     // Check if user can send messages
     const messageSetting = targetUser.privacySettings?.whoCanMessage || 'followers';
     if (messageSetting === 'no-one') {
       setCanSendMessage(false);
     } else if (messageSetting === 'friends' || messageSetting === 'followers') {
-      // Can only message if following (or friends for backward compatibility)
-      setCanSendMessage(followStatus === 'following' || friendStatus === 'friends');
+      setCanSendMessage(followStatus === 'following');
     } else if (messageSetting === 'everyone') {
       setCanSendMessage(true);
     }
 
     // Mark permissions as checked so buttons can render
     setPermissionsChecked(true);
-  }, [followStatus, friendStatus]);
+  }, [followStatus]);
 
   const fetchPrivacySettings = async () => {
     try {
@@ -283,43 +265,6 @@ function Profile() {
     });
   }, []);
 
-  const checkFriendStatus = async () => {
-    try {
-      // Check if already friends
-      const friendsResponse = await api.get('/friends');
-      const isFriend = friendsResponse.data.some(friend => friend._id === id);
-
-      if (isFriend) {
-        setFriendStatus('friends');
-        return;
-      }
-
-      // Check for pending requests (received)
-      const pendingResponse = await api.get('/friends/requests/pending');
-      const receivedRequest = pendingResponse.data.find(req => req.sender._id === id);
-
-      if (receivedRequest) {
-        setFriendStatus('pending_received');
-        setFriendRequestId(receivedRequest._id);
-        return;
-      }
-
-      // Check for sent requests
-      const sentResponse = await api.get('/friends/requests/sent');
-      const sentRequest = sentResponse.data.find(req => req.receiver._id === id);
-
-      if (sentRequest) {
-        setFriendStatus('pending_sent');
-        setFriendRequestId(sentRequest._id); // Store request ID for cancellation
-        return;
-      }
-
-      setFriendStatus('none');
-    } catch (error) {
-      logger.error('Failed to check friend status:', error);
-      setFriendStatus('none');
-    }
-  };
 
   const checkFollowStatus = async () => {
     try {
@@ -385,10 +330,8 @@ function Profile() {
 
     if (!isOwnProfile) {
       fetchPromises.push(
-        checkFriendStatus(),
         checkFollowStatus(),
         checkBlockStatus()
-        // Note: Privacy permissions are now checked when user data loads (no extra API call)
       );
     }
 
@@ -546,13 +489,13 @@ function Profile() {
     }
   }, [activeTab, id]);
 
-  // Update message permission when user data or friend/follow status changes
+  // Update message permission when user data or follow status changes
   // Uses already-fetched user data - no extra API call needed!
   useEffect(() => {
     if (!isOwnProfile && user) {
       updatePrivacyPermissions(user);
     }
-  }, [isOwnProfile, user, followStatus, friendStatus, updatePrivacyPermissions]);
+  }, [isOwnProfile, user, followStatus, updatePrivacyPermissions]);
 
   // Phase 5B: Removed resize listener - use CSS media queries for responsive layout
   // This prevents resize jitter and unnecessary re-renders
@@ -652,11 +595,6 @@ function Profile() {
       }));
 
       setShowReactionPicker(null); // Hide picker after reaction
-
-      // Force a small delay to ensure state update completes
-      setTimeout(() => {
-        console.log('🔍 Profile - State update complete');
-      }, 100);
     } catch (error) {
       logger.error('Failed to react to post:', error);
     }
@@ -1466,67 +1404,6 @@ function Profile() {
       showToast('Failed to save photo position. Please try again.', 'error');
     }
     setEditingType(null);
-  };
-
-  const handleAddFriend = async () => {
-    try {
-      if (!user?._id) {
-        showToast('User not loaded yet', 'error');
-        return;
-      }
-      await api.post(`/friends/request/${user._id}`);
-      setFriendStatus('pending_sent');
-      showToast('Friend request sent! 🎉', 'success');
-    } catch (error) {
-      showToast(error.response?.data?.message || 'Failed to send friend request', 'error');
-    }
-  };
-
-  const handleAcceptFriend = async () => {
-    try {
-      await api.post(`/friends/accept/${friendRequestId}`);
-      setFriendStatus('friends');
-      // Update friend count immediately without full refetch
-      setUser(prev => prev ? { ...prev, friendCount: (prev.friendCount || 0) + 1 } : prev);
-      setFriendRequestId(null);
-      showToast('Friend request accepted! 🎉', 'success');
-    } catch (error) {
-      showToast(error.response?.data?.message || 'Failed to accept friend request', 'error');
-    }
-  };
-
-  const handleCancelRequest = async () => {
-    try {
-      await api.delete(`/friends/request/${friendRequestId}`);
-      setFriendStatus('none');
-      setFriendRequestId(null);
-      showToast('Friend request cancelled', 'success');
-    } catch (error) {
-      showToast(error.response?.data?.message || 'Failed to cancel friend request', 'error');
-    }
-  };
-
-  const handleRemoveFriend = async () => {
-    setShowUnfriendModal(true);
-  };
-
-  const confirmUnfriend = async () => {
-    try {
-      if (!user?._id) {
-        showToast('User not loaded yet', 'error');
-        setShowUnfriendModal(false);
-        return;
-      }
-      await api.delete(`/friends/${user._id}`);
-      setFriendStatus('none');
-      // Update friend count immediately without full refetch
-      setUser(prev => prev ? { ...prev, friendCount: Math.max(0, (prev.friendCount || 0) - 1) } : prev);
-      showToast('Friend removed', 'success');
-      setShowUnfriendModal(false);
-    } catch (error) {
-      showToast(error.response?.data?.message || 'Failed to remove friend', 'error');
-      setShowUnfriendModal(false);
-    }
   };
 
   const handleMessage = () => {
@@ -3048,56 +2925,6 @@ function Profile() {
         user={user}
         onUpdate={handleProfileUpdate}
       />
-
-      {/* Unfriend Confirmation Modal */}
-      {showUnfriendModal && (
-        <CustomModal
-          isOpen={showUnfriendModal}
-          onClose={() => setShowUnfriendModal(false)}
-          title="Unfriend User"
-        >
-          <div style={{ padding: '1rem' }}>
-            <p style={{ marginBottom: '1.5rem', fontSize: '1rem', lineHeight: '1.6' }}>
-              Are you sure you want to unfriend <strong>{user?.displayName || user?.username}</strong>?
-            </p>
-            <p style={{ marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-              You will need to send a new friend request to connect again.
-            </p>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-              <button
-                onClick={() => setShowUnfriendModal(false)}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  borderRadius: '12px',
-                  border: '2px solid var(--border-light)',
-                  background: 'transparent',
-                  color: 'var(--text-main)',
-                  cursor: 'pointer',
-                  fontWeight: '600',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmUnfriend}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  borderRadius: '12px',
-                  border: 'none',
-                  background: '#e74c3c',
-                  color: 'white',
-                  cursor: 'pointer',
-                  fontWeight: '600',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                Unfriend
-              </button>
-            </div>
-          </div>
-        </CustomModal>
-      )}
 
       {reactionDetailsModal.isOpen && (
         <ReactionDetailsModal
