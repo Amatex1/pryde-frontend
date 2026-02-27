@@ -231,8 +231,8 @@ const FeedComposer = memo(function FeedComposer({
                   style={{ display: 'none' }}
                 />
                 {uploadingMedia
-                  ? <><Upload size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Uploading... {uploadProgress}%</span></>
-                  : <><Camera size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Add Photos/Videos</span></>
+                  ? <><Upload size={20} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Uploading... {uploadProgress}%</span></>
+                  : <><Camera size={20} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Add Photos/Videos</span></>
                 }
               </label>
 
@@ -243,7 +243,7 @@ const FeedComposer = memo(function FeedComposer({
                 aria-label="Add poll"
                 data-tooltip="Poll"
               >
-                <BarChart2 size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Poll</span>
+                <BarChart2 size={20} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Poll</span>
               </button>
 
               <button
@@ -253,7 +253,7 @@ const FeedComposer = memo(function FeedComposer({
                 aria-label="Add content warning"
                 data-tooltip="Content Warning"
               >
-                <AlertTriangle size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Content Warning</span>
+                <AlertTriangle size={20} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Content Warning</span>
               </button>
 
               <label
@@ -301,7 +301,7 @@ const FeedComposer = memo(function FeedComposer({
             aria-label="View saved drafts"
             data-tooltip="Drafts"
           >
-            <FileText size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Drafts</span>
+            <FileText size={20} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Drafts</span>
           </button>
 
           <button

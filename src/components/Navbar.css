@@ -449,6 +449,28 @@
   flex-shrink: 0;
 }
 
+/* Bell button: strip desktop circle styling when in mobile nav group */
+.navbar-mobile-right .notification-bell .bell-button {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--text-main);
+}
+
+.navbar-mobile-right .notification-bell .bell-button:hover {
+  background: var(--bg-hover);
+  transform: none;
+  box-shadow: none;
+}
+
+.navbar-mobile-right .notification-bell .bell-button svg {
+  display: block;
+  flex-shrink: 0;
+}
+
 .navbar-mobile-badge {
   position: absolute;
   top: 4px;
