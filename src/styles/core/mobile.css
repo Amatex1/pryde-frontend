@@ -1873,10 +1873,4 @@
     height: 56px;
   }
 
-  /* Remove constrained height on sidebar in landscape */
-  .create-post-sidebar {
-    max-height: none;
-    overflow-y: visible;
-  }
-
 }
