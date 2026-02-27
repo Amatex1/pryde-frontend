@@ -40,6 +40,7 @@ import './styles/motion.css'               /* Pryde Motion System v1 - animation
 import { initializeTheme, initTextDensity } from './utils/themeManager'
 import { initWebVitals } from './utils/webVitals'
 import { initMotionSystem } from './utils/motionSystem'
+import { initOrientationLock } from './utils/orientationLock'
 
 /* ================================
    Global Error Logging (PASSIVE)
@@ -102,3 +103,4 @@ initWebVitals()
    they are added to the DOM by React.
    ================================ */
 initMotionSystem()
+initOrientationLock()
