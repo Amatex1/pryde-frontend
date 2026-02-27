@@ -83,7 +83,7 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
   useEffect(() => {
     // Guard: Don't fetch if not authenticated
     if (!currentUserId) {
-      console.log('⏸️ MiniChat: Skipping fetch - not authenticated');
+      console.log('[Pryde] MiniChat: Skipping fetch - not authenticated');
       setIsLoading(false);
       return;
     }
@@ -107,7 +107,7 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
       try {
         setIsLoading(true);
         const response = await api.get(`/messages/${friendId}`);
-        console.log('📥 Fetched messages for', friendId, ':', response.data.length);
+        console.log('[Pryde] Fetched messages for', friendId, ':', response.data.length);
         setMessages(response.data);
       } catch (error) {
         console.error('Error fetching messages:', error);
@@ -138,7 +138,7 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
 
     const handleUserOnline = (data) => {
       if (data.userId === friendId) {
-        console.log('✅ Friend came online:', friendId);
+        console.log('[Pryde] Friend came online:', friendId);
         setIsOnline(true);
         setLastSeen(null); // Clear lastSeen when user comes online
       }
@@ -146,7 +146,7 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
 
     const handleUserOffline = (data) => {
       if (data.userId === friendId) {
-        console.log('❌ Friend went offline:', friendId);
+        console.log('[Pryde] Friend went offline:', friendId);
         setIsOnline(false);
         // Fetch updated lastSeen from server
         api.get(`/users/${friendId}`).then(response => {
@@ -159,7 +159,7 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
 
     const handleOnlineUsers = (users) => {
       const friendIsOnline = users.includes(friendId);
-      console.log('📋 Online users list received. Friend online:', friendIsOnline);
+      console.log('[Pryde] Online users list received. Friend online:', friendIsOnline);
       setIsOnline(friendIsOnline);
       if (friendIsOnline) {
         setLastSeen(null); // Clear lastSeen if friend is online
@@ -220,7 +220,7 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
           type="button"
           className="btn-close-mini"
           onClick={(e) => {
-            console.log('🔴 Close button clicked (minimized)');
+            console.log('[Pryde] Close button clicked (minimized)');
             e.preventDefault();
             e.stopPropagation();
             onClose();
@@ -257,7 +257,7 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
           <button
             type="button"
             onClick={(e) => {
-              console.log('➖ Minimize button clicked');
+              console.log('[Pryde] Minimize button clicked');
               e.preventDefault();
               e.stopPropagation();
               onMinimize();
@@ -269,7 +269,7 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
           <button
             type="button"
             onClick={(e) => {
-              console.log('🔴 Close button clicked (expanded)');
+              console.log('[Pryde] Close button clicked (expanded)');
               e.preventDefault();
               e.stopPropagation();
               onClose();

@@ -26,7 +26,6 @@ import ReactionButton from '../components/ReactionButton';
 import PinnedPostBadge from '../components/PinnedPostBadge';
 import TieredBadgeDisplay from '../components/TieredBadgeDisplay';
 import PostHeader from '../components/PostHeader';
-// DEPRECATED: EditHistoryModal import removed 2025-12-26
 import Poll from '../components/Poll';
 import GifPicker from '../components/GifPicker';
 import PollCreator from '../components/PollCreator';
@@ -576,19 +575,14 @@ function Profile() {
   const handlePostReaction = async (postId, emoji) => {
     try {
       const response = await api.post(`/posts/${postId}/react`, { emoji });
-      console.log('🔍 Profile - Reaction response:', response.data);
-      console.log('🔍 Profile - Updated reactions:', response.data.reactions);
+      console.log('[Pryde] Profile - Reaction response:', response.data);
+      console.log('[Pryde] Profile - Updated reactions:', response.data.reactions);
 
-      // Force a new array reference to trigger re-render
-      // Create completely new objects to ensure React detects the change
       setPosts((prevPosts) => prevPosts.map(p => {
         if (p._id === postId) {
-          // Create a deep copy with new references
           return {
             ...response.data,
             reactions: [...(response.data.reactions || [])],
-            // Force timestamp update to trigger re-render
-            _reactUpdateTimestamp: Date.now()
           };
         }
         return p;
@@ -793,8 +787,8 @@ function Profile() {
 
       // Dev mode warning
       if (import.meta.env.DEV) {
-        console.warn('⚠️ Temporary media removed in UI but still exists server-side');
-        console.warn('⚠️ This media will reappear after refresh');
+        console.warn('[Pryde] Temporary media removed in UI but still exists server-side');
+        console.warn('[Pryde] This media will reappear after refresh');
       }
 
       // Still remove from UI to not block the user, but warn

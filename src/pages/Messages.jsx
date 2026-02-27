@@ -136,11 +136,11 @@ function Messages() {
    * @param {string} tempId - The temp ID to rollback
    */
   const rollbackOptimisticMessage = useCallback((tempId) => {
-    console.warn(`⏰ Optimistic message timeout - rolling back: ${tempId}`);
+    console.warn(`[Pryde] Optimistic message timeout - rolling back: ${tempId}`);
     setMessages((prev) => {
       const hasMessage = prev.some(msg => msg._id === tempId);
       if (hasMessage) {
-        console.warn(`🔄 Removing unconfirmed optimistic message: ${tempId}`);
+        console.warn(`[Pryde] Removing unconfirmed optimistic message: ${tempId}`);
         return prev.filter(msg => msg._id !== tempId);
       }
       return prev;
@@ -161,7 +161,7 @@ function Messages() {
     if (timeout) {
       clearTimeout(timeout);
       optimisticTimeoutsRef.current.delete(tempId);
-      console.log(`✅ Cleared rollback timeout for: ${tempId}`);
+      console.log(`[Pryde] Cleared rollback timeout for: ${tempId}`);
     }
   }, []);
 
@@ -171,7 +171,7 @@ function Messages() {
    * @param {number} timeoutMs - Timeout in milliseconds (default 15 seconds)
    */
   const scheduleOptimisticRollback = useCallback((tempId, timeoutMs = 15000) => {
-    console.log(`⏱️ Scheduling rollback for ${tempId} in ${timeoutMs}ms`);
+    console.log(`[Pryde] Scheduling rollback for ${tempId} in ${timeoutMs}ms`);
     const timeout = setTimeout(() => {
       rollbackOptimisticMessage(tempId);
     }, timeoutMs);
@@ -647,7 +647,7 @@ function Messages() {
       // Listen for new messages
       const cleanupNewMessage = onNewMessage((newMessage) => {
         // 🔥 PROD DEBUG: Always log message:new events
-        console.warn('📨 [Messages.jsx] Received message:new event:', {
+        console.warn('[Pryde] [Messages.jsx] Received message:new event:', {
           messageId: newMessage?._id,
           senderId: newMessage?.sender?._id,
           recipientId: newMessage?.recipient?._id,
@@ -665,19 +665,19 @@ function Messages() {
 
         // Only add message if we're the recipient AND the sender is the selected chat
         if (isRecipient && isSenderInSelectedChat) {
-          console.warn('✅ [Messages.jsx] Message is for selected chat, adding to messages');
+          console.warn('[Pryde] [Messages.jsx] Message is for selected chat, adding to messages');
           logger.debug('✅ Message is for selected chat (we are recipient), adding to messages');
           setMessages((prev) => {
             // Prevent duplicates - check if message already exists
             if (prev.some(msg => msg._id === newMessage._id)) {
-              console.warn('⚠️ [Messages.jsx] Message already exists, skipping');
+              console.warn('[Pryde] [Messages.jsx] Message already exists, skipping');
               logger.debug('⚠️ Message already exists, skipping');
               return prev;
             }
             return [...prev, newMessage];
           });
         } else {
-          console.warn('⏭️ [Messages.jsx] Skipping message:new (not recipient or wrong chat)', {
+          console.warn('[Pryde] [Messages.jsx] Skipping message:new (not recipient or wrong chat)', {
             isRecipient,
             isSenderInSelectedChat,
             currentUserId: currentUser?._id,
@@ -715,7 +715,7 @@ function Messages() {
       // Listen for sent message confirmation (message:sent - Phase R unified)
       const cleanupMessageSent = onMessageSent((sentMessage) => {
         // 🔥 TEMP DEBUG - always log to console
-        console.log('✅ [Messages.jsx] Received message:sent event:', sentMessage);
+        console.log('[Pryde] [Messages.jsx] Received message:sent event:', sentMessage);
         logger.debug('✅ Received message:sent event:', sentMessage);
 
         // 🔥 CRITICAL: Clear the rollback timeout - message confirmed!
@@ -746,7 +746,7 @@ function Messages() {
 
             if (optimisticIndex !== -1) {
               logger.debug('🔄 Replacing optimistic message with confirmed message');
-              console.log('🔄 Replacing optimistic message:', {
+              console.log('[Pryde] Replacing optimistic message:', {
                 tempId: sentMessage._tempId,
                 optimisticId: prev[optimisticIndex]._id,
                 newMessageId: sentMessage._id
@@ -767,7 +767,7 @@ function Messages() {
             // No optimistic message found - check for duplicates and add
             if (prev.some(msg => msg._id === sentMessage._id)) {
               logger.debug('⚠️ Message already exists, skipping');
-              console.log('⚠️ Duplicate message detected, skipping:', sentMessage._id);
+              console.log('[Pryde] Duplicate message detected, skipping:', sentMessage._id);
               return prev;
             }
             return [...prev, sentMessage];
@@ -831,7 +831,7 @@ function Messages() {
       // 🔥 CRITICAL: Listen for message errors
       const handleMessageError = (error) => {
         logger.error('❌ Message error received:', error);
-        console.error('❌ Message error:', error);
+        console.error('[Pryde] Message error:', error);
         alert(`Message error: ${error.message || 'Unknown error'}`);
       };
       socket.on('message:error', handleMessageError);
@@ -863,7 +863,7 @@ function Messages() {
   const handleSendMessage = async (e, voiceNote = null) => {
     if (e) e.preventDefault();
     if ((!message.trim() && !selectedFile && !selectedGif && !voiceNote) || !selectedChat) {
-      console.log('❌ Early return - missing content or selectedChat');
+      console.log('[Pryde] Early return - missing content or selectedChat');
       return;
     }
 
@@ -890,7 +890,7 @@ function Messages() {
       _isOptimistic: true // Flag for reconciliation
     };
 
-    console.log('📤 Sending message (optimistic UI):', {
+    console.log('[Pryde] Sending message (optimistic UI):', {
       tempId,
       recipientId: selectedChat,
       content: messageContent,
@@ -913,7 +913,7 @@ function Messages() {
         // Check if socket is connected
         const socket = getSocket();
         const socketConnected = socket && isSocketConnected();
-        console.log('🔌 Socket check:', { socket: !!socket, connected: socketConnected, socketId: socket?.id });
+        console.log('[Pryde] Socket check:', { socket: !!socket, connected: socketConnected, socketId: socket?.id });
 
         // OPTIMISTIC UI: Add message immediately before server confirms
         setMessages((prev) => [...prev, optimisticMessage]);
@@ -925,7 +925,7 @@ function Messages() {
 
         if (socketConnected) {
           // ✅ PREFERRED: Send via Socket.IO for real-time delivery
-          console.log('🔌 Sending via Socket.IO', {
+          console.log('[Pryde] Sending via Socket.IO', {
             socketId: socket.id,
             tempId,
             recipientId: selectedChat,
@@ -942,7 +942,7 @@ function Messages() {
               _tempId: tempId // Send tempId for reconciliation
             };
 
-            console.log('📤 [SEND] Calling socketSendMessage with payload:', {
+            console.log('[Pryde] [SEND] Calling socketSendMessage with payload:', {
               recipientId: selectedChat,
               hasContent: !!messageContent,
               contentLength: messageContent?.length,
@@ -956,26 +956,26 @@ function Messages() {
             // 🔥 ENHANCED: Use ACK callback for immediate confirmation
             // Note: ACK is optional - message:sent event is the primary confirmation
             socketSendMessage(messagePayload, (ackResponse) => {
-              console.log('📨 [ACK] Response received:', ackResponse);
+              console.log('[Pryde] [ACK] Response received:', ackResponse);
               if (ackResponse?.success) {
-                console.log('✅ Message ACK success:', ackResponse);
+                console.log('[Pryde] Message ACK success:', ackResponse);
                 // Clear the rollback timeout - message confirmed!
                 clearOptimisticTimeout(tempId);
               } else if (ackResponse?.queued) {
                 // Message queued - don't rollback, wait for actual send
-                console.log('📬 Message queued, waiting for send:', ackResponse);
+                console.log('[Pryde] Message queued, waiting for send:', ackResponse);
                 // Keep the optimistic message and rollback timeout active
               } else {
                 // 🔥 CRITICAL FIX: Do NOT immediately rollback on ACK error/null
                 // The message:sent event will arrive and handle confirmation
                 // Only log the issue for debugging
-                console.warn('⚠️ ACK not successful, waiting for message:sent event:', ackResponse);
+                console.warn('[Pryde] ACK not successful, waiting for message:sent event:', ackResponse);
                 // Let the 15-second rollback timeout handle true failures
               }
             });
-            console.log('✅ socketSendMessage called successfully');
+            console.log('[Pryde] socketSendMessage called successfully');
           } catch (error) {
-            console.error('❌ Error sending message via socket:', error);
+            console.error('[Pryde] Error sending message via socket:', error);
             console.error('Error details:', {
               name: error.name,
               message: error.message,
@@ -989,7 +989,7 @@ function Messages() {
           }
         } else {
           // 🔥 FALLBACK: Use REST API if socket not connected
-          console.warn('⚠️ Socket not connected, falling back to REST API');
+          console.warn('[Pryde] Socket not connected, falling back to REST API');
 
           try {
             const response = await api.post('/messages', {
@@ -1007,9 +1007,9 @@ function Messages() {
             setMessages((prev) =>
               prev.map(m => m._id === tempId ? response.data : m)
             );
-            console.log('✅ Message sent via REST API');
+            console.log('[Pryde] Message sent via REST API');
           } catch (error) {
-            console.error('❌ Error sending message via REST API:', error);
+            console.error('[Pryde] Error sending message via REST API:', error);
             // ROLLBACK: Remove optimistic message on error (immediate)
             clearOptimisticTimeout(tempId);
             setMessages((prev) => prev.filter(m => m._id !== tempId));

@@ -16,8 +16,8 @@ const warnNonPersistedEntity = (action, draftId) => {
   if (import.meta.env.DEV) {
     // Defer logging to not block UI
     setTimeout(() => {
-      console.warn(`⚠️ Attempted ${action} on non-persisted entity.`);
-      console.warn(`📍 Draft ID: ${draftId}`);
+      console.warn(`[Pryde] Attempted ${action} on non-persisted entity.`);
+      console.warn(`[Pryde] Draft ID: ${draftId}`);
       console.warn('This action will fail on refresh.');
     }, 0);
   }
@@ -30,9 +30,9 @@ const measureClickHandler = (startTime, handlerName) => {
   if (import.meta.env.DEV) {
     const duration = performance.now() - startTime;
     if (duration > CLICK_HANDLER_BUDGET_MS) {
-      console.warn(`⚠️ Click handler exceeded performance budget (${Math.round(duration)}ms)`);
-      console.warn(`📍 Handler: ${handlerName}`);
-      console.warn(`📋 Budget: ${CLICK_HANDLER_BUDGET_MS}ms`);
+      console.warn(`[Pryde] Click handler exceeded performance budget (${Math.round(duration)}ms)`);
+      console.warn(`[Pryde] Handler: ${handlerName}`);
+      console.warn(`[Pryde] Budget: ${CLICK_HANDLER_BUDGET_MS}ms`);
     }
   }
 };
@@ -80,7 +80,7 @@ const DraftManager = ({ draftType, onRestoreDraft, onClose }) => {
       // Defer non-critical logging
       if (import.meta.env.DEV) {
         setTimeout(() => {
-          console.log(`✅ Draft ${draftId} deleted successfully`);
+          console.log(`[Pryde] Draft ${draftId} deleted successfully`);
         }, 0);
       }
     } catch (error) {
@@ -89,7 +89,7 @@ const DraftManager = ({ draftType, onRestoreDraft, onClose }) => {
         // Defer dev warnings to background
         if (import.meta.env.DEV) {
           setTimeout(() => {
-            console.warn(`⚠️ DELETE 404: Draft ${draftId} not found on server (ghost entity)`);
+            console.warn(`[Pryde] DELETE 404: Draft ${draftId} not found on server (ghost entity)`);
             console.warn('Draft was already removed from UI optimistically.');
           }, 0);
         }
@@ -142,7 +142,7 @@ const DraftManager = ({ draftType, onRestoreDraft, onClose }) => {
       warnNonPersistedEntity('DELETE', draftId);
       // Defer the console.warn
       setTimeout(() => {
-        console.warn('⚠️ Draft not found in fetched drafts - may be a ghost entity');
+        console.warn('[Pryde] Draft not found in fetched drafts - may be a ghost entity');
       }, 0);
     }
 

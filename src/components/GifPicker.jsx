@@ -15,7 +15,7 @@ const GifPicker = ({ onGifSelect, onClose }) => {
 
   // 🔒 SECURITY: Warn if API key is not configured
   if (!GIPHY_API_KEY && process.env.NODE_ENV === 'development') {
-    console.warn('⚠️ VITE_GIPHY_API_KEY is not configured. GIF picker will not work.');
+    console.warn('[Pryde] VITE_GIPHY_API_KEY is not configured. GIF picker will not work.');
   }
 
   const categories = [

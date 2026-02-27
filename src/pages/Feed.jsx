@@ -23,7 +23,6 @@ import FeedPost from '../components/feed/FeedPost';
 import FeedComposer from '../components/feed/FeedComposer';
 import CommunityBanner from '../components/CommunityBanner';
 import { useBadges } from '../hooks/useBadges';
-// DEPRECATED: EditHistoryModal import removed 2025-12-26
 import DraftManager from '../components/DraftManager';
 import Toast from '../components/Toast';
 import { useModal } from '../hooks/useModal';
@@ -530,9 +529,9 @@ function Feed() {
       // localStorage media URLs may reference deleted files
       if (localDraft.media && localDraft.media.length > 0) {
         if (import.meta.env.DEV) {
-          console.warn('⚠️ Local draft had media but it was NOT restored');
-          console.warn('⚠️ Media should only be loaded from backend drafts to prevent ghost media');
-          console.warn('⚠️ The media may have been deleted or never persisted properly');
+          console.warn('[Pryde] Local draft had media but it was NOT restored');
+          console.warn('[Pryde] Media should only be loaded from backend drafts to prevent ghost media');
+          console.warn('[Pryde] The media may have been deleted or never persisted properly');
         }
         // Clear media from localStorage draft to prevent future confusion
         saveDraft('feed-create-post', { ...localDraft, media: [] });
@@ -1167,8 +1166,8 @@ function Feed() {
 
           // Dev mode warning
           if (import.meta.env.DEV) {
-            console.warn('⚠️ Temporary media removed in UI but still exists server-side');
-            console.warn('⚠️ This media will reappear after refresh');
+            console.warn('[Pryde] Temporary media removed in UI but still exists server-side');
+            console.warn('[Pryde] This media will reappear after refresh');
           }
 
           // Don't show error to user for non-critical failures (404 means already deleted)
@@ -1260,7 +1259,7 @@ function Feed() {
 
       // DEV-MODE WARNING: Draft creation failed
       if (import.meta.env.DEV) {
-        console.warn('⚠️ Draft creation failed - draft only exists locally');
+        console.warn('[Pryde] Draft creation failed - draft only exists locally');
         console.warn('Dependent actions (delete, edit) will fail on this draft.');
       }
 
@@ -1293,7 +1292,7 @@ function Feed() {
     // CRITICAL: Only restore drafts that have a valid _id (confirmed by backend)
     if (!draft._id) {
       if (import.meta.env.DEV) {
-        console.warn('⚠️ Attempted to restore draft without valid ID');
+        console.warn('[Pryde] Attempted to restore draft without valid ID');
         console.warn('This draft was never confirmed by the backend.');
       }
       return;
@@ -1307,12 +1306,12 @@ function Feed() {
     setSelectedMedia(draftMedia);
 
     if (import.meta.env.DEV && draftMedia.length > 0) {
-      console.log(`📷 Restored ${draftMedia.length} media item(s) from backend draft`);
+      console.log(`[Pryde] Restored ${draftMedia.length} media item(s) from backend draft`);
       // Verify media has tempMediaId for proper tracking
       const missingIds = draftMedia.filter(m => !m.tempMediaId);
       if (missingIds.length > 0) {
-        console.warn('⚠️ Some media missing tempMediaId - may be legacy uploads');
-        console.warn('⚠️ Deletion may fall back to URL-based cleanup');
+        console.warn('[Pryde] Some media missing tempMediaId - may be legacy uploads');
+        console.warn('[Pryde] Deletion may fall back to URL-based cleanup');
       }
     }
 
@@ -1332,7 +1331,7 @@ function Feed() {
     if (!draftId) {
       if (import.meta.env.DEV) {
         setTimeout(() => {
-          console.warn('⚠️ Attempted DELETE on draft with no ID (ghost entity)');
+          console.warn('[Pryde] Attempted DELETE on draft with no ID (ghost entity)');
           console.warn('This action would fail. Skipping.');
         }, 0);
       }
@@ -1344,13 +1343,13 @@ function Feed() {
       try {
         await api.delete(`/drafts/${draftId}`);
         if (import.meta.env.DEV) {
-          console.log(`✅ Draft ${draftId} deleted after successful post`);
+          console.log(`[Pryde] Draft ${draftId} deleted after successful post`);
         }
       } catch (error) {
         // Handle 404 gracefully - draft may have already been deleted
         if (error.response?.status === 404) {
           if (import.meta.env.DEV) {
-            console.warn(`⚠️ DELETE 404: Draft ${draftId} not found on server`);
+            console.warn(`[Pryde] DELETE 404: Draft ${draftId} not found on server`);
             console.warn('Draft may have been already deleted or never persisted.');
           }
           return;
@@ -1505,9 +1504,9 @@ function Feed() {
   const handlePostReaction = useCallback(async (postId, emoji) => {
     try {
       const response = await api.post(`/posts/${postId}/react`, { emoji });
-      console.log('🔍 Reaction response:', response.data);
-      console.log('🔍 Updated reactions:', response.data.reactions);
-      console.log('🔍 Current user ID:', currentUser?.id);
+      console.log('[Pryde] Reaction response:', response.data);
+      console.log('[Pryde] Updated reactions:', response.data.reactions);
+      console.log('[Pryde] Current user ID:', currentUser?.id);
 
       // Force a new array reference to trigger re-render
       // Create completely new objects to ensure React detects the change
@@ -1517,17 +1516,15 @@ function Feed() {
             // Create a deep copy with new references
             const updatedPost = {
               ...response.data,
-              reactions: [...(response.data.reactions || [])],
-              // Force timestamp update to trigger re-render
-              _reactUpdateTimestamp: Date.now()
+              reactions: [...(response.data.reactions || [])]
             };
-            console.log('🔍 Updated post:', updatedPost);
-            console.log('🔍 User reaction emoji:', getUserReactionEmoji(updatedPost.reactions));
+            console.log('[Pryde] Updated post:', updatedPost);
+            console.log('[Pryde] User reaction emoji:', getUserReactionEmoji(updatedPost.reactions));
             return updatedPost;
           }
           return p;
         });
-        console.log('🔍 Updated posts array, post found:', newPosts.some(p => p._id === postId));
+        console.log('[Pryde] Updated posts array, post found:', newPosts.some(p => p._id === postId));
         return newPosts;
       });
 
@@ -1535,7 +1532,7 @@ function Feed() {
 
       // Force a small delay to ensure state update completes
       setTimeout(() => {
-        console.log('🔍 State update complete');
+        console.log('[Pryde] State update complete');
       }, 100);
     } catch (error) {
       logger.error('Failed to react to post:', error);
@@ -1708,11 +1705,11 @@ function Feed() {
     // Detect mobile using 600px breakpoint (matches CommentSheet design contract)
     const isMobileSheet = window.matchMedia("(max-width: 600px)").matches;
 
-    console.log('🔍 toggleCommentBox - isMobileSheet:', isMobileSheet, 'width:', window.innerWidth);
+    console.log('[Pryde] toggleCommentBox - isMobileSheet:', isMobileSheet, 'width:', window.innerWidth);
 
     // On mobile, open CommentSheet for full discussion
     if (isMobileSheet) {
-      console.log('🔍 Opening CommentSheet for post:', postId);
+      console.log('[Pryde] Opening CommentSheet for post:', postId);
       setCommentSheetOpen(postId);
       // Fetch comments if not already loaded
       setPostComments(prev => {
@@ -2670,8 +2667,6 @@ function Feed() {
           onClose={() => setReactionDetailsModal({ isOpen: false, targetType: null, targetId: null })}
         />
       )}
-
-      {/* DEPRECATED: EditHistoryModal removed 2025-12-26 */}
 
       {/* Comment Modal for Mobile */}
       {commentModalOpen && (

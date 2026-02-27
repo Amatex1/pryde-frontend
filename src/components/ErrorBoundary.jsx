@@ -21,9 +21,9 @@ class ErrorBoundary extends Component {
   componentDidCatch(error, errorInfo) {
     // Log error details
     logger.error('ErrorBoundary caught an error:', error, errorInfo);
-    console.error('🔴 ERROR BOUNDARY CAUGHT:', error);
-    console.error('🔴 ERROR INFO:', errorInfo);
-    console.error('🔴 ERROR STACK:', error.stack);
+    console.error('[Pryde] ERROR BOUNDARY CAUGHT:', error);
+    console.error('[Pryde] ERROR INFO:', errorInfo);
+    console.error('[Pryde] ERROR STACK:', error.stack);
 
     this.setState({
       error,
@@ -121,8 +121,8 @@ class ErrorBoundary extends Component {
                 style={{
                   padding: '0.75rem 1.5rem',
                   borderRadius: '12px',
-                  border: '2px solid #6C5CE7',
-                  background: '#6C5CE7',
+                  border: '2px solid var(--accent-primary)',
+                  background: 'var(--accent-primary)',
                   color: 'white',
                   fontSize: '1rem',
                   fontWeight: '600',
@@ -140,21 +140,21 @@ class ErrorBoundary extends Component {
                 style={{
                   padding: '0.75rem 1.5rem',
                   borderRadius: '12px',
-                  border: '2px solid #0984E3',
+                  border: '2px solid var(--accent-secondary)',
                   background: 'transparent',
-                  color: '#0984E3',
+                  color: 'var(--accent-secondary)',
                   fontSize: '1rem',
                   fontWeight: '600',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease'
                 }}
                 onMouseOver={(e) => {
-                  e.target.style.background = '#0984E3';
+                  e.target.style.background = 'var(--accent-secondary)';
                   e.target.style.color = 'white';
                 }}
                 onMouseOut={(e) => {
                   e.target.style.background = 'transparent';
-                  e.target.style.color = '#0984E3';
+                  e.target.style.color = 'var(--accent-secondary)';
                 }}
               >
                 Reload Page

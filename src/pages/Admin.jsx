@@ -80,7 +80,7 @@ function Admin() {
       if (socket) {
         // Listen for new user registrations
         const handleUserCreated = (data) => {
-          console.log('👤 Real-time user created:', data);
+          console.log('[Pryde] Real-time user created:', data);
           if (activeTab === 'users') {
             setUsers((prevUsers) => [data.user, ...prevUsers]);
           }
@@ -97,7 +97,7 @@ function Admin() {
 
         // Listen for user account deactivation
         const handleUserDeactivated = (data) => {
-          console.log('🔒 Real-time user deactivated:', data);
+          console.log('[Pryde] Real-time user deactivated:', data);
           setUsers((prevUsers) =>
             prevUsers.map(u => u._id === data.userId ? { ...u, isActive: false } : u)
           );
@@ -107,7 +107,7 @@ function Admin() {
 
         // Listen for user account reactivation
         const handleUserReactivated = (data) => {
-          console.log('✅ Real-time user reactivated:', data);
+          console.log('[Pryde] Real-time user reactivated:', data);
           setUsers((prevUsers) =>
             prevUsers.map(u => u._id === data.userId ? { ...u, isActive: true } : u)
           );
@@ -117,7 +117,7 @@ function Admin() {
 
         // Listen for user account deletion
         const handleUserDeleted = (data) => {
-          console.log('🗑️ Real-time user deleted:', data);
+          console.log('[Pryde] Real-time user deleted:', data);
           setUsers((prevUsers) => prevUsers.filter(u => u._id !== data.userId));
           // Update stats if on dashboard
           if (activeTab === 'dashboard' && stats) {
@@ -132,7 +132,7 @@ function Admin() {
 
         // Listen for user suspension
         const handleUserSuspended = (data) => {
-          console.log('⏸️ Real-time user suspended:', data);
+          console.log('[Pryde] Real-time user suspended:', data);
           setUsers((prevUsers) =>
             prevUsers.map(u => u._id === data.userId ? { ...u, isSuspended: true } : u)
           );
@@ -142,7 +142,7 @@ function Admin() {
 
         // Listen for user unsuspension
         const handleUserUnsuspended = (data) => {
-          console.log('▶️ Real-time user unsuspended:', data);
+          console.log('[Pryde] Real-time user unsuspended:', data);
           setUsers((prevUsers) =>
             prevUsers.map(u => u._id === data.userId ? { ...u, isSuspended: false } : u)
           );
@@ -152,7 +152,7 @@ function Admin() {
 
         // Listen for user ban
         const handleUserBanned = (data) => {
-          console.log('🚫 Real-time user banned:', data);
+          console.log('[Pryde] Real-time user banned:', data);
           setUsers((prevUsers) =>
             prevUsers.map(u => u._id === data.userId ? { ...u, isBanned: true } : u)
           );
@@ -162,7 +162,7 @@ function Admin() {
 
         // Listen for user unban
         const handleUserUnbanned = (data) => {
-          console.log('✅ Real-time user unbanned:', data);
+          console.log('[Pryde] Real-time user unbanned:', data);
           setUsers((prevUsers) =>
             prevUsers.map(u => u._id === data.userId ? { ...u, isBanned: false } : u)
           );

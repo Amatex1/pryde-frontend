@@ -175,7 +175,7 @@ const PageLoader = () => {
         <div style={{
           width: '50px',
           height: '50px',
-          border: '4px solid #6C5CE7',
+          border: '4px solid var(--accent-primary)',
           borderTop: '4px solid transparent',
           borderRadius: '50%',
           animation: 'spin 1s linear infinite',
@@ -197,8 +197,8 @@ const PageLoader = () => {
               style={{
                 padding: '0.75rem 1.5rem',
                 borderRadius: '12px',
-                border: '2px solid #6C5CE7',
-                background: '#6C5CE7',
+                border: '2px solid var(--accent-primary)',
+                background: 'var(--accent-primary)',
                 color: 'white',
                 fontSize: '1rem',
                 fontWeight: '600',
