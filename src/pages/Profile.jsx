@@ -2,9 +2,10 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Camera, Pencil, Flag, UserPlus, Clock, UserCheck, MessageCircle, Lock,
-  X, Upload, FileText, Globe, Users, Trash2, Check, ChevronRight,
+  X, Upload, FileText, Globe, Users, Trash2, Check, ChevronRight, Bookmark,
   Calendar, Smile, Search, Image, Send, Plus, BarChart2, AlertTriangle, VolumeX,
 } from 'lucide-react';
+import { LUCIDE_DEFAULTS } from '../utils/lucideDefaults';
 import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ReportModal from '../components/ReportModal';
@@ -252,6 +253,36 @@ function Profile() {
     }
   };
 
+  const fetchBookmarks = async () => {
+    try {
+      const response = await api.get('/bookmarks');
+      if (isMountedRef.current) {
+        setBookmarkedPosts(response.data.bookmarks.map(post => post._id));
+      }
+    } catch (error) {
+      logger.error('Failed to fetch bookmarks:', error);
+    }
+  };
+
+  const handleBookmark = useCallback(async (postId) => {
+    setBookmarkedPosts(prev => {
+      const isBookmarked = prev.includes(postId);
+      if (isBookmarked) {
+        api.delete(`/bookmarks/${postId}`).catch(error => {
+          logger.error('Failed to unbookmark post:', error);
+          setBookmarkedPosts(p => [...p, postId]);
+        });
+        return prev.filter(id => id !== postId);
+      } else {
+        api.post(`/bookmarks/${postId}`).catch(error => {
+          logger.error('Failed to bookmark post:', error);
+          setBookmarkedPosts(p => p.filter(id => id !== postId));
+        });
+        return [...prev, postId];
+      }
+    });
+  }, []);
+
   const checkFriendStatus = async () => {
     try {
       // Check if already friends
@@ -344,7 +375,8 @@ function Profile() {
     // Fetch all data in parallel for faster initial load
     const fetchPromises = [
       fetchUserProfile(),
-      fetchUserPosts()
+      fetchUserPosts(),
+      fetchBookmarks(),
     ];
 
     if (isOwnProfile) {
@@ -1919,17 +1951,17 @@ function Profile() {
                   <div className="friend-actions">
                     {/* New Follow System Buttons */}
                     {followStatus === 'none' && (
-                      <button className="btn-add-friend" onClick={handleFollow}>
+                      <button className="btn-add-friend" onClick={handleFollow} aria-label="Follow this user" data-tooltip="Follow">
                         <UserPlus size={20} strokeWidth={1.75} aria-hidden="true" /> Follow
                       </button>
                     )}
                     {followStatus === 'pending' && (
-                      <button className="btn-cancel-request" onClick={handleCancelFollowRequest}>
+                      <button className="btn-cancel-request" onClick={handleCancelFollowRequest} aria-label="Cancel follow request" data-tooltip="Cancel request">
                         <Clock size={20} strokeWidth={1.75} aria-hidden="true" /> Pending
                       </button>
                     )}
                     {followStatus === 'following' && (
-                      <button className="btn-unfriend" onClick={handleUnfollow}>
+                      <button className="btn-unfriend" onClick={handleUnfollow} aria-label="Unfollow this user" data-tooltip="Click to unfollow">
                         <UserCheck size={20} strokeWidth={1.75} aria-hidden="true" /> Following
                       </button>
                     )}
@@ -1939,6 +1971,8 @@ function Profile() {
                       <button
                         className="btn-message"
                         onClick={handleMessage}
+                        aria-label="Send a message"
+                        data-tooltip="Message"
                       >
                         <MessageCircle size={20} strokeWidth={1.75} aria-hidden="true" /> Message
                       </button>
@@ -2680,15 +2714,24 @@ function Profile() {
                           })}
                         />
                         <button
-                          className="action-btn"
+                          className="action-btn subtle"
                           onClick={() => toggleCommentBox(post._id)}
-                          aria-label={`Comment on post${!post.hideMetrics ? ` (${post.commentCount || 0} comments)` : ''}`}
-                          data-tooltip={!post.hideMetrics ? `Comment (${post.commentCount || 0})` : 'Comment'}
+                          aria-label={`Reply to post${!post.hideMetrics ? ` (${post.commentCount || 0} replies)` : ''}`}
+                          data-tooltip={!post.hideMetrics ? `Reply (${post.commentCount || 0})` : 'Reply'}
                         >
-                          <MessageCircle size={16} strokeWidth={1.75} className="action-emoji" aria-hidden="true" />
+                          <MessageCircle {...LUCIDE_DEFAULTS} size={20} aria-hidden="true" />
                           <span className="action-text">
-                            Comment {!post.hideMetrics && `(${post.commentCount || 0})`}
+                            Reply {!post.hideMetrics && `(${post.commentCount || 0})`}
                           </span>
+                        </button>
+                        <button
+                          className={`action-btn ghost ${bookmarkedPosts.includes(post._id) ? 'bookmarked' : ''}`}
+                          onClick={() => handleBookmark(post._id)}
+                          aria-label={bookmarkedPosts.includes(post._id) ? 'Remove save from post' : 'Save post'}
+                          data-tooltip={bookmarkedPosts.includes(post._id) ? 'Saved' : 'Save'}
+                        >
+                          <Bookmark {...LUCIDE_DEFAULTS} size={20} aria-hidden="true" />
+                          <span className="action-text">{bookmarkedPosts.includes(post._id) ? 'Saved' : 'Save'}</span>
                         </button>
                         {/* REMOVED: Share button - backend support incomplete (relies on deprecated Friends system) */}
                         {/* TODO: Reimplement when backend is updated to work with Followers system */}

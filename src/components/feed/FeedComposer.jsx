@@ -109,6 +109,8 @@ const FeedComposer = memo(function FeedComposer({
               type="button"
               className="remove-media"
               onClick={() => onRemoveMedia(index)}
+              aria-label="Remove media"
+              title="Remove"
             >
               <X size={14} strokeWidth={1.75} aria-hidden="true" />
             </button>
@@ -327,6 +329,8 @@ const FeedComposer = memo(function FeedComposer({
               type="button"
               className="btn-remove-gif"
               onClick={() => onSetSelectedPostGif(null)}
+              aria-label="Remove GIF"
+              title="Remove GIF"
             >
               <X size={14} strokeWidth={1.75} aria-hidden="true" />
             </button>
