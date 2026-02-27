@@ -94,6 +94,28 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
+/* Mobile - wrap actions to second line, clear the bottom nav */
+@media (max-width: 639px) {
+  .update-banner {
+    flex-wrap: wrap;
+    border-radius: 16px;
+    bottom: calc(64px + 12px); /* above mobile nav bar */
+    padding: 10px 14px;
+    gap: 8px;
+    max-width: calc(100vw - 24px);
+  }
+
+  .update-banner-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .update-banner-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
 /* Desktop - show description */
 @media (min-width: 640px) {
   .update-banner-text p {
