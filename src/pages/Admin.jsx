@@ -1238,20 +1238,13 @@ function UsersTab({ users, badges = [], onSuspend, onBan, onUnsuspend, onUnban, 
                 <td data-label="Full Name">{user.fullName || <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Not provided</span>}</td>
                 <td data-label="Identity">
                   {user.identity ? (
-                    <span style={{
-                      padding: '0.25rem 0.5rem',
-                      borderRadius: '4px',
-                      fontSize: '0.85rem',
-                      background: user.identity === 'LGBTQ+' ? 'var(--pryde-purple)' : 'var(--soft-lavender)',
-                      color: user.identity === 'LGBTQ+' ? 'white' : 'var(--pryde-purple)',
-                      fontWeight: '600'
-                    }}>
+                    <span className={`identity-badge ${user.identity === 'LGBTQ+' ? 'identity-lgbtq' : 'identity-ally'}`}>
                       {user.identity === 'LGBTQ+' ? '🌈 LGBTQ+' : '🤝 Ally'}
                     </span>
                   ) : user.isAlly ? (
-                    <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Ally (legacy)</span>
+                    <span className="identity-muted">Ally (legacy)</span>
                   ) : (
-                    <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Not set</span>
+                    <span className="identity-muted">Not set</span>
                   )}
                 </td>
                 <td data-label="Email">
