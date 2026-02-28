@@ -8,7 +8,6 @@ import PhotoViewer from '../components/PhotoViewer';
 import CustomModal from '../components/CustomModal';
 import ReactionDetailsModal from '../components/ReactionDetailsModal';
 import FormattedText from '../components/FormattedText';
-import PostSkeleton from '../components/PostSkeleton';
 import OptimizedImage from '../components/OptimizedImage';
 import CommentThread from '../components/CommentThread';
 import CommentSheet from '../components/comments/CommentSheet';
@@ -21,6 +20,8 @@ import PostHeader from '../components/PostHeader';
 import PausableGif from '../components/PausableGif';
 import FeedPost from '../components/feed/FeedPost';
 import FeedComposer from '../components/feed/FeedComposer';
+import FeedList from '../components/feed/FeedList';
+import FeedSidebar from '../components/feed/FeedSidebar';
 import CommunityBanner from '../components/CommunityBanner';
 import { useBadges } from '../hooks/useBadges';
 import DraftManager from '../components/DraftManager';
@@ -28,6 +29,7 @@ import Toast from '../components/Toast';
 import { useModal } from '../hooks/useModal';
 import { useOnlineUsers } from '../hooks/useOnlineUsers';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import { useFeedPosts } from '../hooks/useFeedPosts';
 import { useUnreadMessages } from '../hooks/useUnreadMessages'; // ✅ Use singleton hook
 import { useToast } from '../hooks/useToast';
 import { useAuth } from '../context/AuthContext'; // ✅ Use auth context (single source of truth)
@@ -46,8 +48,6 @@ import { quietCopy } from '../config/uiCopy';
 import { getQuietMode } from '../utils/themeManager';
 import PageTitle from '../components/PageTitle';
 import { getCachedPosts } from '../utils/resourcePreloader';
-import CommunityResources from '../components/Sidebar/CommunityResources';
-import SuggestedConnections from '../components/Sidebar/SuggestedConnections';
 import './Feed.css';
 import './Feed.calm.css'; // PHASE C: Calm mode overrides
 import './Mobile.calm.css'; // PHASE D: Mobile-first calm mode
@@ -64,19 +64,36 @@ function Feed() {
   const { onMenuOpen } = outletContext;
   const isMobile = useMediaQuery('(max-width: 768px)');
 
-  // 🚀 LCP OPTIMIZATION: Use preloaded cached posts for instant first paint
-  const cachedPosts = getCachedPosts();
-  const initialPosts = cachedPosts?.posts || [];
-  const [posts, setPosts] = useState(initialPosts);
+  // ── Feed data: posts, pagination, secondary data, pull-to-refresh ─────────
+  const {
+    posts, setPosts,
+    fetchingPosts,
+    hasMore,
+    page, setPage,
+    feedFilter, setFeedFilter,
+    loadedPostIds, setLoadedPostIds,
+    blockedUsers, setBlockedUsers,
+    bookmarkedPosts, setBookmarkedPosts,
+    friends, setFriends,
+    isPulling,
+    pullDistance,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    fetchPosts,
+    loadMorePosts,
+    fetchBlockedUsers,
+    fetchBookmarkedPosts,
+    fetchFriends,
+  } = useFeedPosts();
+
+  // 🚀 LCP OPTIMIZATION: getCachedPosts still used in initial data fetch effect
   const [newPost, setNewPost] = useState('');
   const [loading, setLoading] = useState(false);
-  // If we have cached posts, skip skeleton and show content immediately
-  const [fetchingPosts, setFetchingPosts] = useState(initialPosts.length === 0);
   const [selectedMedia, setSelectedMedia] = useState([]);
   const [uploadingMedia, setUploadingMedia] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [reportModal, setReportModal] = useState({ isOpen: false, type: '', contentId: null, userId: null });
-  const [blockedUsers, setBlockedUsers] = useState([]);
   const [photoViewerImage, setPhotoViewerImage] = useState(null);
   const [showCommentBox, setShowCommentBox] = useState({});
   const [commentText, setCommentText] = useState({});
@@ -110,7 +127,6 @@ function Feed() {
   const [editHiddenFromUsers, setEditHiddenFromUsers] = useState([]);
   const [editPostMedia, setEditPostMedia] = useState([]); // Current media for post being edited
   const [deletedMedia, setDeletedMedia] = useState([]); // Track media marked for deletion
-  const [friends, setFriends] = useState([]);
   const [friendSearchQuery, setFriendSearchQuery] = useState('');
   // REMOVED 2025-12-26: trending state removed (Phase 5)
 
@@ -123,10 +139,8 @@ function Feed() {
     return acc;
   }, {});
 
-  const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [reactionDetailsModal, setReactionDetailsModal] = useState({ isOpen: false, targetType: null, targetId: null });
-  const [feedFilter, setFeedFilter] = useState('followers'); // 'followers', 'public'
   const [poll, setPoll] = useState(null); // Poll data for new post
   const [showPollCreator, setShowPollCreator] = useState(false); // Show/hide poll creator
   // NOTE: EditHistory state removed 2025-12-26 - backend returns 410 Gone
@@ -144,24 +158,14 @@ function Feed() {
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const isQuietMode = getQuietMode();
 
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [loadedPostIds, setLoadedPostIds] = useState(new Set());
-
   // Scroll-to-top state
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   // Ref for edit post textarea auto-resize
   const editPostTextareaRef = useRef(null);
 
-  // Pull-to-refresh state
-  const [pullStartY, setPullStartY] = useState(null);
-  const [isPulling, setIsPulling] = useState(false);
-
   // Reaction picker timeout ref
   const reactionPickerTimeoutRef = useRef(null);
-  const [pullDistance, setPullDistance] = useState(0);
 
   // currentUser is now from useAuth() above - no direct localStorage call
   const postRefs = useRef({});
@@ -185,78 +189,8 @@ function Feed() {
     }
   }, [showGifPicker]);
 
-  // Define all fetch functions BEFORE useEffects that use them
-  const fetchPosts = useCallback(async (pageNum = 1, append = false) => {
-    try {
-      setFetchingPosts(true);
-      const response = await api.get(`/posts?filter=${feedFilter}&page=${pageNum}&limit=20`);
-      const newPosts = response.data.posts || [];
-
-      if (append) {
-        // Prevent duplicates using Set
-        setPosts(prev => {
-          const existingIds = new Set(prev.map(p => p._id));
-          const filteredPosts = newPosts.filter(post => !existingIds.has(post._id));
-          return [...prev, ...filteredPosts];
-        });
-      } else {
-        setPosts(newPosts);
-        setLoadedPostIds(new Set(newPosts.map(p => p._id)));
-      }
-
-      // Update loaded post IDs
-      if (append) {
-        setLoadedPostIds(prev => new Set([...prev, ...newPosts.map(p => p._id)]));
-      }
-
-      // Check if there are more posts
-      setHasMore(newPosts.length === 20);
-    } catch (error) {
-      logger.error('Failed to fetch posts:', error);
-    } finally {
-      setFetchingPosts(false);
-      setIsPulling(false);
-      setPullDistance(0);
-    }
-  }, [feedFilter]); // REMOVED loadedPostIds dependency to prevent infinite loop
-
-  const fetchBlockedUsers = useCallback(async () => {
-    try {
-      const response = await api.get('/blocks');
-      const blockedIds = response.data.map(block => block.blocked._id);
-      setBlockedUsers(blockedIds);
-    } catch (error) {
-      logger.error('Failed to fetch blocked users:', error);
-    }
-  }, []);
-
-  const fetchFriends = useCallback(async () => {
-    try {
-      const response = await api.get('/friends');
-      setFriends(response.data);
-    } catch (error) {
-      logger.error('Failed to fetch friends:', error);
-    }
-  }, []);
-
-  // REMOVED 2025-12-26: Trending hashtags removed (Phase 5)
-  // const fetchTrending = useCallback(async () => {
-  //   try {
-  //     const response = await api.get('/search/trending');
-  //     setTrending(response.data);
-  //   } catch (error) {
-  //     logger.error('Failed to fetch trending:', error);
-  //   }
-  // }, []);
-
-  const fetchBookmarkedPosts = useCallback(async () => {
-    try {
-      const response = await api.get('/bookmarks');
-      setBookmarkedPosts(response.data.bookmarks.map(post => post._id));
-    } catch (error) {
-      logger.error('Failed to fetch bookmarks:', error);
-    }
-  }, []);
+  // fetchPosts, fetchBlockedUsers, fetchFriends, fetchBookmarkedPosts, loadMorePosts
+  // are now provided by useFeedPosts() above.
 
   const fetchPrivacySettings = useCallback(async () => {
     try {
@@ -270,15 +204,6 @@ function Feed() {
       logger.error('Failed to fetch privacy settings:', error);
     }
   }, []);
-
-  // Load more posts (infinite scroll)
-  const loadMorePosts = useCallback(() => {
-    if (hasMore && !fetchingPosts) {
-      const nextPage = page + 1;
-      setPage(nextPage);
-      fetchPosts(nextPage, true);
-    }
-  }, [hasMore, fetchingPosts, page, fetchPosts]);
 
   // Scroll to top
   const scrollToTop = () => {
@@ -416,37 +341,7 @@ function Feed() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [hasMore, fetchingPosts, loadMorePosts]);
 
-  // Pull-to-refresh handlers
-  const handleTouchStart = (e) => {
-    if (window.scrollY === 0) {
-      setPullStartY(e.touches[0].clientY);
-    }
-  };
-
-  const handleTouchMove = (e) => {
-    if (pullStartY !== null && window.scrollY === 0) {
-      const currentY = e.touches[0].clientY;
-      const distance = currentY - pullStartY;
-
-      if (distance > 0) {
-        setIsPulling(true);
-        setPullDistance(Math.min(distance, 100)); // Cap at 100px
-      }
-    }
-  };
-
-  const handleTouchEnd = () => {
-    if (pullDistance > 60) {
-      // Trigger refresh
-      setPage(1);
-      setLoadedPostIds(new Set());
-      fetchPosts(1, false);
-    } else {
-      setIsPulling(false);
-      setPullDistance(0);
-    }
-    setPullStartY(null);
-  };
+  // handleTouchStart, handleTouchMove, handleTouchEnd are now from useFeedPosts().
 
   useEffect(() => {
     // 🔥 AUTH READY GATE: Wait for auth to be ready before fetching data
@@ -562,14 +457,7 @@ function Feed() {
     return () => observer.disconnect();
   }, []);
 
-  // Refetch posts when filter changes
-  useEffect(() => {
-    // Reset pagination and fetch new posts
-    setPage(1);
-    setLoadedPostIds(new Set());
-    fetchPosts(1, false);
-  }, [feedFilter]); // Only depend on feedFilter, not fetchPosts
-
+  // Note: filter-change refetch is handled inside useFeedPosts (feedFilter useEffect).
   // Note: Auto-fetch comments merged into scroll-to-post effect above (lines 224-269)
 
   // Close dropdowns when clicking outside
@@ -2370,199 +2258,83 @@ function Feed() {
             onSetShowAdvancedOptions={setShowAdvancedOptions}
           />
 
-          <div className="posts-list">
-            {/* Only show skeletons on initial load (no posts yet), not during infinite scroll */}
-            {fetchingPosts && posts.length === 0 ? (
-              <>
-                <PostSkeleton />
-                <PostSkeleton />
-                <PostSkeleton />
-              </>
-            ) : posts.length === 0 ? (
-              <div className="empty-state glossy">
-                <p className="empty-state-primary">
-                  {quietMode ? quietCopy.emptyFeed : "There's nothing new right now — and that's okay."}
-                </p>
-                <p className="empty-state-secondary">When people share, you'll see it here.</p>
-                <p className="empty-state-tertiary">Pryde moves at a human pace.</p>
-              </div>
-            ) : (
-              posts
-                .filter(post => !blockedUsers.includes(post.author?._id))
-                .map((post, postIndex) => {
-                  const isFirstPost = postIndex === 0;
-                  const shouldEagerLoad = postIndex < 3;
-
-                  return (
-                    <FeedPost
-                      key={post._id}
-                      ref={(el) => postRefs.current[post._id] = el}
-                      post={post}
-                      postIndex={postIndex}
-                      currentUser={currentUser}
-                      isFirstPost={isFirstPost}
-                      shouldEagerLoad={shouldEagerLoad}
-                      openDropdownId={openDropdownId}
-                      editingPostId={editingPostId}
-                      editPostText={editPostText}
-                      editPostVisibility={editPostVisibility}
-                      editPostMedia={editPostMedia}
-                      editPostTextareaRef={editPostTextareaRef}
-                      expandedPosts={expandedPosts}
-                      revealedPosts={revealedPosts}
-                      autoHideContentWarnings={autoHideContentWarnings}
-                      bookmarkedPosts={bookmarkedPosts}
-                      postComments={postComments}
-                      commentReplies={commentReplies}
-                      showReplies={showReplies}
-                      showCommentBox={showCommentBox}
-                      commentText={commentText}
-                      commentGif={commentGif}
-                      showGifPicker={showGifPicker}
-                      replyingToComment={replyingToComment}
-                      replyText={replyText}
-                      replyGif={replyGif}
-                      editingCommentId={editingCommentId}
-                      editCommentText={editCommentText}
-                      showReactionPicker={showReactionPicker}
-                      commentRefs={commentRefs}
-                      onToggleDropdown={toggleDropdown}
-                      onPinPost={handlePinPost}
-                      onEditPost={handleEditPost}
-                      onDeletePost={handleDeletePost}
-                      onReportPost={handleReportPost}
-                      onBookmark={handleBookmark}
-                      onReactionChange={handlePostReactionChange}
-                      onReactionCountClick={handleReactionCountClick}
-                      onEditPostTextChange={handleEditPostTextChange}
-                      onEditPostVisibilityChange={handleEditPostVisibilityChange}
-                      onRemoveEditMedia={handleRemoveEditMedia}
-                      onSaveEditPost={handleSaveEditPost}
-                      onCancelEditPost={handleCancelEditPost}
-                      onEditPostKeyDown={handleEditPostKeyDown}
-                      onExpandPost={handleExpandPost}
-                      onRevealPost={handleRevealPost}
-                      onPhotoClick={handlePhotoClick}
-                      onPollVote={handlePollVote}
-                      onToggleCommentBox={toggleCommentBox}
-                      onCommentChange={handleCommentChange}
-                      onCommentSubmit={handleCommentSubmit}
-                      onCommentGifSelect={handleCommentGifSelect}
-                      onToggleGifPicker={handleToggleGifPicker}
-                      onEditComment={handleEditComment}
-                      onSaveEditComment={handleSaveEditComment}
-                      onCancelEditComment={handleCancelEditComment}
-                      onDeleteComment={handleDeleteComment}
-                      onCommentReaction={handleCommentReaction}
-                      onToggleReplies={toggleReplies}
-                      onReplyToComment={handleReplyToComment}
-                      onSetShowReactionPicker={handleSetShowReactionPicker}
-                      onSetReactionDetailsModal={handleSetReactionDetailsModal}
-                      onSetReportModal={handleSetReportModal}
-                      onReplyTextChange={handleReplyTextChange}
-                      onReplyGifSelect={handleReplyGifSelect}
-                      onSubmitReply={handleSubmitReply}
-                      onCancelReply={handleCancelReply}
-                      getUserReactionEmoji={getUserReactionEmoji}
-                    />
-                  );
-                })
-              )}
-          </div>
-
-          {/* Loading indicator for infinite scroll */}
-          {fetchingPosts && posts.length > 0 && (
-            <div className="load-more-container">
-              <div className="loading-indicator">Loading more posts...</div>
-            </div>
-          )}
-
-          {/* Load More Button - only show when not currently fetching */}
-          {!fetchingPosts && hasMore && posts.length > 0 && (
-            <div className="load-more-container">
-              <button
-                className="btn-load-more glossy"
-                onClick={loadMorePosts}
-                disabled={fetchingPosts}
-              >
-                Load more
-              </button>
-            </div>
-          )}
-
-          {/* End of Feed Message */}
-          {!fetchingPosts && !hasMore && posts.length > 0 && (
-            <div className="end-of-feed">
-              <p className="end-of-feed-primary">🎉 You're all caught up!</p>
-              <p className="end-of-feed-secondary">Take a break, or check back later.</p>
-            </div>
-          )}
+          <FeedList
+            posts={posts}
+            blockedUsers={blockedUsers}
+            fetchingPosts={fetchingPosts}
+            hasMore={hasMore}
+            quietMode={quietMode}
+            postRefs={postRefs}
+            commentRefs={commentRefs}
+            currentUser={currentUser}
+            openDropdownId={openDropdownId}
+            editingPostId={editingPostId}
+            editPostText={editPostText}
+            editPostVisibility={editPostVisibility}
+            editPostMedia={editPostMedia}
+            editPostTextareaRef={editPostTextareaRef}
+            expandedPosts={expandedPosts}
+            revealedPosts={revealedPosts}
+            autoHideContentWarnings={autoHideContentWarnings}
+            bookmarkedPosts={bookmarkedPosts}
+            postComments={postComments}
+            commentReplies={commentReplies}
+            showReplies={showReplies}
+            showCommentBox={showCommentBox}
+            commentText={commentText}
+            commentGif={commentGif}
+            showGifPicker={showGifPicker}
+            replyingToComment={replyingToComment}
+            replyText={replyText}
+            replyGif={replyGif}
+            editingCommentId={editingCommentId}
+            editCommentText={editCommentText}
+            showReactionPicker={showReactionPicker}
+            onLoadMore={loadMorePosts}
+            onToggleDropdown={toggleDropdown}
+            onPinPost={handlePinPost}
+            onEditPost={handleEditPost}
+            onDeletePost={handleDeletePost}
+            onReportPost={handleReportPost}
+            onBookmark={handleBookmark}
+            onReactionChange={handlePostReactionChange}
+            onReactionCountClick={handleReactionCountClick}
+            onEditPostTextChange={handleEditPostTextChange}
+            onEditPostVisibilityChange={handleEditPostVisibilityChange}
+            onRemoveEditMedia={handleRemoveEditMedia}
+            onSaveEditPost={handleSaveEditPost}
+            onCancelEditPost={handleCancelEditPost}
+            onEditPostKeyDown={handleEditPostKeyDown}
+            onExpandPost={handleExpandPost}
+            onRevealPost={handleRevealPost}
+            onPhotoClick={handlePhotoClick}
+            onPollVote={handlePollVote}
+            onToggleCommentBox={toggleCommentBox}
+            onCommentChange={handleCommentChange}
+            onCommentSubmit={handleCommentSubmit}
+            onCommentGifSelect={handleCommentGifSelect}
+            onToggleGifPicker={handleToggleGifPicker}
+            onEditComment={handleEditComment}
+            onSaveEditComment={handleSaveEditComment}
+            onCancelEditComment={handleCancelEditComment}
+            onDeleteComment={handleDeleteComment}
+            onCommentReaction={handleCommentReaction}
+            onToggleReplies={toggleReplies}
+            onReplyToComment={handleReplyToComment}
+            onSetShowReactionPicker={handleSetShowReactionPicker}
+            onSetReactionDetailsModal={handleSetReactionDetailsModal}
+            onSetReportModal={handleSetReportModal}
+            onReplyTextChange={handleReplyTextChange}
+            onReplyGifSelect={handleReplyGifSelect}
+            onSubmitReply={handleSubmitReply}
+            onCancelReply={handleCancelReply}
+            getUserReactionEmoji={getUserReactionEmoji}
+          />
 
           {/* Mobile FAB + Composer handled by FeedComposer component above */}
         </main>
 
-        <aside className={`feed-sidebar ${showMobileSidebar ? 'mobile-visible' : ''}`}>
-          {/* REMOVED 2025-12-26: Featured Tags / Trending removed (Phase 5) */}
-
-          {/* =========================================
-              Explore Pryde — Feature Discovery
-             ========================================= */}
-          <div className="sidebar-card explore-pryde glossy">
-            <h3 className="sidebar-title">Explore Pryde</h3>
-            <p className="sidebar-subtitle">
-              Take your time. These spaces are here when you need them.
-            </p>
-            <nav className="explore-links">
-              <Link to="/groups" className="explore-link">
-                <strong>👥 Groups</strong>
-                <span>Join shared spaces built around interests, support, and identity.</span>
-              </Link>
-              <Link to="/journal" className="explore-link">
-                <strong>📔 Journal</strong>
-                <span>A quiet place to write — just for you, or gently shared.</span>
-              </Link>
-              <Link to="/longform" className="explore-link">
-                <strong>📖 Stories</strong>
-                <span>Short moments people choose to share, nothing more.</span>
-              </Link>
-              <Link to="/photo-essay" className="explore-link">
-                <strong>📸 Photos</strong>
-                <span>Images, memories, and small glimpses of life.</span>
-              </Link>
-              <Link to="/lounge" className="explore-link">
-                <strong>✨ Lounge</strong>
-                <span>A shared space for open conversation, without urgency.</span>
-              </Link>
-            </nav>
-          </div>
-
-          {/* Need Support */}
-          <div className="sidebar-card support-card glossy">
-            <h3 className="sidebar-title support-title">Need support?</h3>
-            <p className="support-description">
-              If you're going through something, help is available.
-            </p>
-            <Link
-              to="/helplines"
-              className="support-link"
-            >
-              View helplines
-            </Link>
-          </div>
-
-          {/* Subtle divider between support and resources */}
-          <div className="sidebar-divider" aria-hidden="true" />
-
-          {/* Community & Resources - Curated LGBTQ+ links */}
-          <div className="sidebar-card glossy">
-            <CommunityResources />
-          </div>
-
-          {/* Suggested Connections */}
-          <div className="sidebar-card glossy">
-            <SuggestedConnections />
-          </div>
-        </aside>
+        <FeedSidebar showMobileSidebar={showMobileSidebar} />
       </div>
 
       <ReportModal
