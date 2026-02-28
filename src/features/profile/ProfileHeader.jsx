@@ -23,8 +23,9 @@ import './ProfileHeader.css';
 
 export default function ProfileHeader({
   user,
-  userBadges = [], // Full badge objects with visibility applied
+  userBadges = { core: [], visible: [], all: [] },
   isOwnProfile = false,
+  onBadgesUpdated,
   postsCount = 0,
   // Follow/friend state
   followStatus,
@@ -99,7 +100,13 @@ export default function ProfileHeader({
         </div>
 
         {/* NEW: Identity Spine - Calm, vertical layout */}
-        <ProfileIdentitySpine user={user} userBadges={userBadges} postsCount={postsCount} />
+        <ProfileIdentitySpine
+          user={user}
+          userBadges={userBadges}
+          postsCount={postsCount}
+          isOwnProfile={isOwnProfile}
+          onBadgesUpdated={onBadgesUpdated}
+        />
 
         {/* Action Buttons Container */}
         <div className="profile-actions-container">

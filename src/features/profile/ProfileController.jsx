@@ -54,7 +54,7 @@ export default function ProfileController() {
 
   // Core data state
   const [user, setUser] = useState(null);
-  const [userBadges, setUserBadges] = useState([]); // Full badge objects
+  const [userBadges, setUserBadges] = useState({ core: [], visible: [], all: [] });
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingPosts, setLoadingPosts] = useState(true);
@@ -96,13 +96,12 @@ export default function ProfileController() {
           try {
             const badgesResponse = await api.get(`/badges/user/${response.data._id}`);
             if (isMountedRef.current) {
-              setUserBadges(badgesResponse.data || []);
+              setUserBadges(badgesResponse.data || { core: [], visible: [], all: [] });
             }
           } catch (badgeError) {
             logger.error('Failed to fetch user badges:', badgeError);
-            // Non-critical error, continue without badges
             if (isMountedRef.current) {
-              setUserBadges([]);
+              setUserBadges({ core: [], visible: [], all: [] });
             }
           }
         }
@@ -123,6 +122,18 @@ export default function ProfileController() {
       if (isMountedRef.current) setLoading(false);
     }
   }, [id]);
+
+  const refetchBadges = useCallback(async () => {
+    if (!user?._id) return;
+    try {
+      const badgesResponse = await api.get(`/badges/user/${user._id}`);
+      if (isMountedRef.current) {
+        setUserBadges(badgesResponse.data || { core: [], visible: [], all: [] });
+      }
+    } catch (error) {
+      logger.error('Failed to refetch user badges:', error);
+    }
+  }, [user?._id]);
 
   const fetchUserPosts = useCallback(async () => {
     try {
@@ -372,6 +383,7 @@ export default function ProfileController() {
         user={user}
         userBadges={userBadges}
         isOwnProfile={isOwnProfile}
+        onBadgesUpdated={refetchBadges}
         postsCount={posts.length}
         followStatus={followStatus}
         permissionsChecked={permissionsChecked}

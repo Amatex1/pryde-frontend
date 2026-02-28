@@ -1,45 +1,46 @@
 /**
  * ProfileIdentitySpine - Calm, confident, human identity display
  *
- * MISSION: Profiles feel like real people in a real community
- *
  * VERTICAL ORDER:
- * 1. Avatar
- * 2. Display Name + Role Icon
- * 3. Username
- * 4. Role Sublabel (Founder/Admin/Moderator only)
- * 5. Public Badges (up to 3, with labels, soft pills)
+ * 1. Display Name + Role Icon
+ * 2. Username
+ * 3. Role Sublabel (Founder/Admin/Moderator only)
+ * 4. Core badges (CORE_ROLE — always visible, distinct styling)
+ * 5. Visible badges (STATUS/COSMETIC — up to 3, user-controlled)
+ *    + "View all" trigger when more badges exist
  * 6. Pronouns / Gender / Age (neutral pills)
  * 7. Bio (emotional core)
  * 8. Stats (muted, below bio)
- *
- * RULES:
- * - Single vertical column
- * - No floating elements
- * - No side-by-side blocks
- * - Bio is the largest readable block
- * - Stats are muted and below bio
- * - All badges MUST have readable labels (no icon-only badges)
  */
 
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getPrimaryRole, getRoleDisplay, getTier1BadgesForHeader } from '../../utils/roleHelpers';
+import { getPrimaryRole, getRoleDisplay } from '../../utils/roleHelpers';
 import { sanitizeBio } from '../../utils/sanitize';
 import UserBadge from '../../components/UserBadge';
+import BadgeViewAllModal from '../../components/BadgeViewAllModal';
 import './ProfileIdentitySpine.css';
 
-export default function ProfileIdentitySpine({ user, userBadges = [], postsCount }) {
+export default function ProfileIdentitySpine({
+  user,
+  userBadges = { core: [], visible: [], all: [] },
+  postsCount,
+  isOwnProfile = false,
+  onBadgesUpdated,
+}) {
+  const [viewAllOpen, setViewAllOpen] = useState(false);
+
   if (!user) return null;
 
-  // Create a user object with badge objects for role detection
-  const userWithBadges = { ...user, badges: userBadges };
-  const primaryRole = getPrimaryRole(userWithBadges);
+  const { core = [], visible = [], all = [] } = userBadges;
+
+  // Role display uses core badges to detect founder/admin/moderator
+  const userWithCoreBadges = { ...user, badges: core };
+  const primaryRole = getPrimaryRole(userWithCoreBadges);
   const roleDisplay = getRoleDisplay(primaryRole);
-  // Get public badges (STATUS and COSMETIC only, max 3)
-  // userBadges already has visibility settings applied from backend
-  const publicBadges = getTier1BadgesForHeader(userBadges);
-  
-  // Calculate age from birthday
+
+  const hasMoreBadges = all.length > visible.length;
+
   const getAge = () => {
     if (!user.birthday) return null;
     const birthDate = new Date(user.birthday);
@@ -51,9 +52,9 @@ export default function ProfileIdentitySpine({ user, userBadges = [], postsCount
     }
     return age;
   };
-  
+
   const age = getAge();
-  
+
   return (
     <div className="profile-identity-spine">
       {/* 1. Display Name + Role Icon */}
@@ -78,16 +79,34 @@ export default function ProfileIdentitySpine({ user, userBadges = [], postsCount
         </p>
       )}
 
-      {/* 4. Public Badges (up to 3, with labels, soft pills) */}
-      {publicBadges.length > 0 && (
-        <div className="pis-public-badges">
-          {publicBadges.map(badge => (
+      {/* 4. Core badges — always visible, stronger styling */}
+      {core.length > 0 && (
+        <div className="pis-core-badges">
+          {core.map(badge => (
             <UserBadge key={badge.id} badge={badge} showLabel={true} />
           ))}
         </div>
       )}
 
-      {/* 5. Pronouns / Gender / Age (neutral pills, single row) */}
+      {/* 5. Visible badges (STATUS/COSMETIC — up to 3) + view all trigger */}
+      {(visible.length > 0 || hasMoreBadges) && (
+        <div className="pis-public-badges">
+          {visible.map(badge => (
+            <UserBadge key={badge.id} badge={badge} showLabel={true} />
+          ))}
+          {hasMoreBadges && (
+            <button
+              className="pis-view-all-btn"
+              onClick={() => setViewAllOpen(true)}
+              aria-label="View all badges"
+            >
+              +{all.length - visible.length} more
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* 6. Pronouns / Gender / Age */}
       {(user.pronouns || user.gender || age) && (
         <div className="pis-traits">
           {user.pronouns && (
@@ -101,40 +120,44 @@ export default function ProfileIdentitySpine({ user, userBadges = [], postsCount
             </span>
           )}
           {age && (
-            <span className="pis-trait-pill">
-              {age} years old
-            </span>
+            <span className="pis-trait-pill">{age} years old</span>
           )}
         </div>
       )}
 
-      {/* 6. Bio (emotional core - largest readable block) */}
+      {/* 7. Bio */}
       {user.bio && (
         <p className="pis-bio">{sanitizeBio(user.bio)}</p>
       )}
 
-      {/* 7. Stats (muted, horizontal row below bio) */}
+      {/* 8. Stats */}
       <div className="pis-stats">
         <div className="pis-stat-item">
           <span className="pis-stat-value">{postsCount}</span>
           <span className="pis-stat-label">Posts</span>
         </div>
-        <Link
-          to={`/profile/${user.username}/followers`}
-          className="pis-stat-item"
-        >
+        <Link to={`/profile/${user.username}/followers`} className="pis-stat-item">
           <span className="pis-stat-value">{user.followers?.length || 0}</span>
           <span className="pis-stat-label">Followers</span>
         </Link>
-        <Link
-          to={`/profile/${user.username}/following`}
-          className="pis-stat-item"
-        >
+        <Link to={`/profile/${user.username}/following`} className="pis-stat-item">
           <span className="pis-stat-value">{user.following?.length || 0}</span>
           <span className="pis-stat-label">Following</span>
         </Link>
       </div>
+
+      {/* View All Modal */}
+      {viewAllOpen && (
+        <BadgeViewAllModal
+          allBadges={all}
+          isOwnProfile={isOwnProfile}
+          onClose={() => setViewAllOpen(false)}
+          onUpdate={() => {
+            setViewAllOpen(false);
+            onBadgesUpdated?.();
+          }}
+        />
+      )}
     </div>
   );
 }
-
