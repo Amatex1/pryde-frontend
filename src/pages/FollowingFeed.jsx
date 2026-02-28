@@ -3,10 +3,11 @@
  * Slow, calm UX with no algorithmic ranking
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { Pencil, Trash2, Flag, MoreVertical } from 'lucide-react';
 import api from '../utils/api';
-import { getCurrentUser } from '../utils/auth';
+import { useAuth } from '../context/AuthContext';
 import { getImageUrl } from '../utils/imageUrl';
 import PostHeader from '../components/PostHeader';
 import './Feed.css';
@@ -15,19 +16,33 @@ function FollowingFeed() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
-  const currentUser = getCurrentUser();
+  const { user: currentUser } = useAuth();
+
+  // Dropdown / edit state
+  const [openDropdownId, setOpenDropdownId] = useState(null);
+  const [editingPostId, setEditingPostId] = useState(null);
+  const [editPostText, setEditPostText] = useState('');
+  const [editPostVisibility, setEditPostVisibility] = useState('followers');
+  const editTextareaRef = useRef(null);
 
   useEffect(() => {
     fetchFollowingFeed();
   }, []);
 
+  // Auto-resize edit textarea
+  useEffect(() => {
+    if (editTextareaRef.current && editingPostId) {
+      const ta = editTextareaRef.current;
+      ta.style.height = 'auto';
+      ta.style.height = ta.scrollHeight + 'px';
+    }
+  }, [editPostText, editingPostId]);
+
   const fetchFollowingFeed = async (before = null) => {
     try {
       setLoading(true);
       const params = { limit: 20 };
-      if (before) {
-        params.before = before;
-      }
+      if (before) params.before = before;
 
       const response = await api.get('/feed/following', { params });
       const newPosts = response.data;
@@ -56,8 +71,8 @@ function FollowingFeed() {
   const handleLike = async (postId) => {
     try {
       await api.post(`/posts/${postId}/like`);
-      setPosts(posts.map(post => 
-        post._id === postId 
+      setPosts(posts.map(post =>
+        post._id === postId
           ? { ...post, hasLiked: !post.hasLiked }
           : post
       ));
@@ -66,11 +81,63 @@ function FollowingFeed() {
     }
   };
 
+  const toggleDropdown = useCallback((postId) => {
+    setOpenDropdownId(prev => prev === postId ? null : postId);
+  }, []);
+
+  const handleEditPost = useCallback((post) => {
+    setEditingPostId(post._id);
+    setEditPostText(post.content);
+    setEditPostVisibility(post.visibility || 'followers');
+    setOpenDropdownId(null);
+  }, []);
+
+  const handleSaveEditPost = useCallback(async (postId) => {
+    if (!editPostText.trim()) return;
+    try {
+      const response = await api.put(`/posts/${postId}`, {
+        content: editPostText,
+        visibility: editPostVisibility,
+      });
+      setPosts(prev => prev.map(p => p._id === postId ? response.data : p));
+      setEditingPostId(null);
+      setEditPostText('');
+    } catch (error) {
+      console.error('Failed to edit post:', error);
+    }
+  }, [editPostText, editPostVisibility]);
+
+  const handleCancelEditPost = useCallback(() => {
+    setEditingPostId(null);
+    setEditPostText('');
+  }, []);
+
+  const handleEditPostKeyDown = useCallback((e, postId) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      handleSaveEditPost(postId);
+    }
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      handleCancelEditPost();
+    }
+  }, [handleSaveEditPost, handleCancelEditPost]);
+
+  const handleDeletePost = useCallback(async (postId) => {
+    if (!window.confirm('Are you sure you want to delete this post?')) return;
+    try {
+      await api.delete(`/posts/${postId}`);
+      setPosts(prev => prev.filter(p => p._id !== postId));
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+    }
+  }, []);
+
   if (loading && posts.length === 0) {
     return (
       <div className="feed-container">
         <div className="feed-header">
-          <h1>👥 Following Feed</h1>
+          <h1>Following Feed</h1>
           <p className="feed-subtitle">Posts from people you follow</p>
         </div>
         <div className="loading">Loading...</div>
@@ -81,7 +148,7 @@ function FollowingFeed() {
   return (
     <div className="feed-container">
       <div className="feed-header">
-        <h1>👥 Following Feed</h1>
+        <h1>Following Feed</h1>
         <p className="feed-subtitle">Posts from people you follow</p>
       </div>
 
@@ -93,40 +160,91 @@ function FollowingFeed() {
       ) : (
         <>
           <div className="posts-list">
-            {posts.map(post => (
-              <div key={post._id} className="post-card glossy">
-                <PostHeader
-                  author={post.author}
-                  createdAt={post.createdAt}
-                  visibility={post.visibility}
-                  edited={post.edited}
-                />
+            {posts.map(post => {
+              const isOwnPost = post.author?._id === currentUser?.id || post.author?._id === currentUser?._id;
+              const isEditing = editingPostId === post._id;
+              const isDropdownOpen = openDropdownId === post._id;
 
-                <div className="post-content">
-                  <p>{post.content}</p>
-                  {post.media && post.media.length > 0 && (
-                    <div className="post-media">
-                      {post.media.map((item, index) => (
-                        item.type === 'image' ? (
-                          <img key={index} src={getImageUrl(item.url)} alt="Post media" />
-                        ) : (
-                          <video key={index} src={getImageUrl(item.url)} controls />
-                        )
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className="post-actions">
-                  <button 
-                    className={`btn-action ${post.hasLiked ? 'liked' : ''}`}
-                    onClick={() => handleLike(post._id)}
+              return (
+                <div key={post._id} className="post-card glossy fade-in">
+                  <PostHeader
+                    author={post.author}
+                    createdAt={post.createdAt}
+                    visibility={post.visibility}
+                    edited={post.edited}
                   >
-                    {post.hasLiked ? '❤️' : '🤍'} React
-                  </button>
+                    <FollowingFeedDropdown
+                      postId={post._id}
+                      isOwnPost={isOwnPost}
+                      isDropdownOpen={isDropdownOpen}
+                      authorId={post.author?._id}
+                      post={post}
+                      onToggleDropdown={toggleDropdown}
+                      onEditPost={handleEditPost}
+                      onDeletePost={handleDeletePost}
+                    />
+                  </PostHeader>
+
+                  <div className="post-content">
+                    {isEditing ? (
+                      <div className="post-edit-box">
+                        <textarea
+                          ref={editTextareaRef}
+                          value={editPostText}
+                          onChange={(e) => {
+                            setEditPostText(e.target.value);
+                            e.target.style.height = 'auto';
+                            e.target.style.height = e.target.scrollHeight + 'px';
+                          }}
+                          onKeyDown={(e) => handleEditPostKeyDown(e, post._id)}
+                          className="post-edit-textarea"
+                          autoFocus
+                        />
+                        <div className="post-edit-privacy">
+                          <div className="post-edit-privacy-label">Privacy:</div>
+                          <select
+                            value={editPostVisibility}
+                            onChange={(e) => setEditPostVisibility(e.target.value)}
+                          >
+                            <option value="public">Public</option>
+                            <option value="followers">Connections</option>
+                            <option value="private">Private</option>
+                          </select>
+                        </div>
+                        <div className="post-edit-actions">
+                          <button onClick={() => handleSaveEditPost(post._id)} className="btn-save-post">Save</button>
+                          <button onClick={handleCancelEditPost} className="btn-cancel-post">Cancel</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <p>{post.content}</p>
+                        {post.media && post.media.length > 0 && (
+                          <div className="post-media">
+                            {post.media.map((item, index) => (
+                              item.type === 'video' ? (
+                                <video key={index} src={getImageUrl(item.url)} controls />
+                              ) : (
+                                <img key={index} src={getImageUrl(item.url)} alt="Post media" />
+                              )
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+
+                  <div className="post-actions">
+                    <button
+                      className={`btn-action ${post.hasLiked ? 'liked' : ''}`}
+                      onClick={() => handleLike(post._id)}
+                    >
+                      {post.hasLiked ? '❤️' : '🤍'} React
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {hasMore && (
@@ -140,5 +258,60 @@ function FollowingFeed() {
   );
 }
 
-export default FollowingFeed;
+/**
+ * Inline dropdown for FollowingFeed posts.
+ * Handles click-outside closing and shows Edit/Delete for own posts,
+ * Report for others.
+ */
+function FollowingFeedDropdown({ postId, isOwnPost, isDropdownOpen, authorId, post, onToggleDropdown, onEditPost, onDeletePost }) {
+  const containerRef = useRef(null);
 
+  useEffect(() => {
+    if (!isDropdownOpen) return;
+    const handleClickOutside = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        onToggleDropdown(postId);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isDropdownOpen, postId, onToggleDropdown]);
+
+  return (
+    <div className="post-dropdown-container" ref={containerRef}>
+      <button
+        className="btn-dropdown"
+        onClick={() => onToggleDropdown(postId)}
+        aria-label="More options"
+      >
+        <MoreVertical size={18} strokeWidth={1.75} aria-hidden="true" />
+      </button>
+      {isDropdownOpen && (
+        <div className="dropdown-menu">
+          {isOwnPost ? (
+            <>
+              <button
+                className="dropdown-item"
+                onClick={() => onEditPost(post)}
+              >
+                <Pencil size={14} strokeWidth={1.75} aria-hidden="true" /> Edit
+              </button>
+              <button
+                className="dropdown-item delete"
+                onClick={() => onDeletePost(postId)}
+              >
+                <Trash2 size={14} strokeWidth={1.75} aria-hidden="true" /> Delete
+              </button>
+            </>
+          ) : (
+            <button className="dropdown-item report">
+              <Flag size={14} strokeWidth={1.75} aria-hidden="true" /> Report
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default FollowingFeed;

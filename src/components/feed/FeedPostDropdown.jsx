@@ -1,9 +1,9 @@
-import { memo } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { MoreVertical, Pin, PinOff, Pencil, Trash2, Flag } from 'lucide-react';
 
 /**
  * FeedPostDropdown - Dropdown menu for post actions (pin, edit, delete, report)
- * 
+ *
  * This component is memoized for performance optimization.
  */
 const FeedPostDropdown = memo(function FeedPostDropdown({
@@ -19,8 +19,24 @@ const FeedPostDropdown = memo(function FeedPostDropdown({
   onReportPost,
   post, // Full post object needed for onEditPost
 }) {
+  const containerRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (!isDropdownOpen) return;
+
+    const handleClickOutside = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        onToggleDropdown(postId);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isDropdownOpen, postId, onToggleDropdown]);
+
   return (
-    <div className="post-dropdown-container">
+    <div className="post-dropdown-container" ref={containerRef}>
       <button
         className="btn-dropdown"
         onClick={() => onToggleDropdown(postId)}
