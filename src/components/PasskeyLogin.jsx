@@ -12,6 +12,15 @@ function PasskeyLogin({ onSuccess, email }) {
       setLoading(true);
       setError('');
 
+      // Require email so we only look up passkeys for this specific account.
+      // Without an email the backend would trigger a discoverable-credential
+      // flow that surfaces passkeys from OTHER accounts on the same device.
+      if (!email) {
+        setError('Please enter your email address first, then sign in with your passkey.');
+        setLoading(false);
+        return;
+      }
+
       // Step 0: Get CSRF token before attempting passkey login
       // Passkey endpoints require CSRF protection but user isn't logged in yet
       // Make a lightweight GET request to trigger CSRF token generation
@@ -23,9 +32,14 @@ function PasskeyLogin({ onSuccess, email }) {
       }
 
       // Step 1: Start authentication
-      const { data: options } = await api.post('/passkey/login-start', {
-        email: email || undefined
-      });
+      const { data: options } = await api.post('/passkey/login-start', { email });
+
+      // If the backend says this account has no passkeys, stop here.
+      if (options.hasPasskeys === false) {
+        setError('No passkey is set up for this account. Please sign in with your password instead.');
+        setLoading(false);
+        return;
+      }
 
       // Step 2: Prompt user for biometric/PIN
       let credential;
