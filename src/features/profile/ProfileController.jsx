@@ -96,7 +96,12 @@ export default function ProfileController() {
           try {
             const badgesResponse = await api.get(`/badges/user/${response.data._id}`);
             if (isMountedRef.current) {
-              setUserBadges(badgesResponse.data || { core: [], visible: [], all: [] });
+              const data = badgesResponse.data;
+              // Compat: handle old flat-array response from undeployed backend
+              const structured = Array.isArray(data)
+                ? { core: [], visible: data.slice(0, 3), all: data }
+                : (data || { core: [], visible: [], all: [] });
+              setUserBadges(structured);
             }
           } catch (badgeError) {
             logger.error('Failed to fetch user badges:', badgeError);
@@ -128,7 +133,11 @@ export default function ProfileController() {
     try {
       const badgesResponse = await api.get(`/badges/user/${user._id}`);
       if (isMountedRef.current) {
-        setUserBadges(badgesResponse.data || { core: [], visible: [], all: [] });
+        const data = badgesResponse.data;
+        const structured = Array.isArray(data)
+          ? { core: [], visible: data.slice(0, 3), all: data }
+          : (data || { core: [], visible: [], all: [] });
+        setUserBadges(structured);
       }
     } catch (error) {
       logger.error('Failed to refetch user badges:', error);
