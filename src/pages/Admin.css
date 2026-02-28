@@ -12,7 +12,7 @@
 }
 
 .admin-mobile-toggle {
-  display: none;
+  display: none !important; /* Hidden on desktop — only shown via mobile media query */
   position: fixed;
   top: 70px;
   right: 16px;
@@ -508,6 +508,18 @@
   text-overflow: ellipsis;
 }
 
+/* Hide Edit button by default, show on row hover */
+.users-table td[data-label="Email"] .btn-action {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.users-table tbody tr:hover td[data-label="Email"] .btn-action {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 /* Actions column - ensure buttons fit */
 .users-table td[data-label="Actions"] {
   min-width: 180px;
@@ -869,7 +881,7 @@
   }
 
   .admin-mobile-toggle {
-    display: block;
+    display: block !important;
   }
 
   .admin-sidebar {
@@ -1972,6 +1984,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 .badge-preview {

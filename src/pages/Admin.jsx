@@ -1248,13 +1248,13 @@ function UsersTab({ users, badges = [], onSuspend, onBan, onUnsuspend, onUnban, 
                   )}
                 </td>
                 <td data-label="Email">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span>{user.email}</span>
                     <button
                       className="btn-action btn-small"
                       onClick={() => onUpdateEmail(user._id, user.email, user.username)}
                       title="Update email address"
-                      style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                      style={{ fontSize: '0.75rem', padding: '0.15rem 0.4rem' }}
                     >
                       ✏️ Edit
                     </button>
