@@ -32,8 +32,9 @@ export function getPrimaryRole(user) {
   if (!user) return ROLE_TYPES.MEMBER;
 
   // Check for founder badge (highest priority)
-  // Updated to use 'founder' badge ID (not 'pryde_team')
-  if (user.badges?.some(badge => badge.id === 'founder')) {
+  // Supports both legacy 'pryde_founder' and current 'founder' badge IDs
+  const FOUNDER_BADGE_IDS = new Set(['founder', 'pryde_founder']);
+  if (user.badges?.some(badge => FOUNDER_BADGE_IDS.has(badge.id))) {
     return ROLE_TYPES.FOUNDER;
   }
 
