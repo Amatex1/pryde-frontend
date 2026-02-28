@@ -45,6 +45,7 @@ const FeedStream = forwardRef(function FeedStream({
   editPostText,
   openDropdownId,
   revealedPosts = {},
+  autoHideContentWarnings = false,
   
   // Handlers
   onLike,
@@ -101,7 +102,7 @@ const FeedStream = forwardRef(function FeedStream({
         const isLiked = post.hasLiked || false;
         const isBookmarked = bookmarkedPosts.includes(post._id);
         const isRevealed = revealedPosts[post._id];
-        const hasContentWarning = post.contentWarning && !isRevealed;
+        const isContentHidden = post.contentWarning && autoHideContentWarnings && !isRevealed;
 
         return (
           <article
@@ -153,23 +154,30 @@ const FeedStream = forwardRef(function FeedStream({
               {/* Post Actions Dropdown - to be continued in next chunk */}
             </div>
 
-            {/* Post Content - simplified for initial implementation */}
-            {hasContentWarning ? (
-              <div className="content-warning-overlay">
-                <span className="cw-label">Content Warning: {post.contentWarning}</span>
-                <button onClick={() => onRevealPost?.(post._id)} className="btn-reveal">
-                  Show content
-                </button>
-              </div>
-            ) : (
-              <>
+            {/* Post Content */}
+            <div className="post-cw-wrapper">
+              <div className={`post-cw-body${isContentHidden ? ' blurred' : ''}`}>
                 {post.content && (
                   <div className="post-content">
                     <FormattedText text={post.content} />
                   </div>
                 )}
-              </>
-            )}
+              </div>
+              {isContentHidden && (
+                <div className="cw-overlay">
+                  <div className="cw-box">
+                    <div className="cw-title">⚠ This content contains: {post.contentWarning}</div>
+                    <div className="cw-subtext">Viewer discretion advised.</div>
+                    <button
+                      className="btn-reveal-post"
+                      onClick={() => onRevealPost?.(post._id)}
+                    >
+                      Reveal Post
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </article>
         );
       })}

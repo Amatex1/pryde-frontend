@@ -128,21 +128,8 @@ const FeedPostContent = memo(function FeedPostContent({
             />
           ) : (
             <>
-              {isContentHidden ? (
-                <div className="content-warning-overlay">
-                  <div className="cw-header">
-                    <span className="cw-icon">⚠️</span>
-                    <span className="cw-text">Content Warning: {post.contentWarning}</span>
-                  </div>
-                  <button
-                    className="btn-reveal-content"
-                    onClick={() => onRevealPost(post._id)}
-                  >
-                    Show Content
-                  </button>
-                </div>
-              ) : (
-                <>
+              <div className="post-cw-wrapper">
+                <div className={`post-cw-body${isContentHidden ? ' blurred' : ''}`}>
                   {/* Text Content */}
                   {post.content && (
                     <>
@@ -154,7 +141,7 @@ const FeedPostContent = memo(function FeedPostContent({
                         </p>
                       </div>
                       {/* See more toggle - show only for long posts */}
-                      {post.content.length > 280 && (
+                      {!isContentHidden && post.content.length > 280 && (
                         <button
                           type="button"
                           className="see-more-toggle"
@@ -198,8 +185,23 @@ const FeedPostContent = memo(function FeedPostContent({
                       <PausableGif src={post.gifUrl} alt="GIF" loading="lazy" />
                     </div>
                   )}
-                </>
-              )}
+                </div>
+
+                {isContentHidden && (
+                  <div className="cw-overlay">
+                    <div className="cw-box">
+                      <div className="cw-title">⚠ This content contains: {post.contentWarning}</div>
+                      <div className="cw-subtext">Viewer discretion advised.</div>
+                      <button
+                        className="btn-reveal-post"
+                        onClick={() => onRevealPost(post._id)}
+                      >
+                        Reveal Post
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </>
           )}
         </>

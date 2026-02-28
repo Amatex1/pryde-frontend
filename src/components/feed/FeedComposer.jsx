@@ -78,11 +78,13 @@ const FeedComposer = memo(function FeedComposer({
   // Shared content warning options
   const contentWarningOptions = [
     { value: '', label: 'Select a content warning...' },
+    { value: 'Artistic Nudity', label: 'Artistic Nudity' },
+    { value: 'Suggestive (Non-Explicit)', label: 'Suggestive (Non-Explicit)' },
+    { value: 'Sexual Discussion', label: 'Sexual Discussion' },
     { value: 'Mental Health', label: 'Mental Health' },
     { value: 'Violence', label: 'Violence' },
-    { value: 'Sexual Content', label: 'Sexual Content' },
-    { value: 'Substance Use', label: 'Substance Use' },
     { value: 'Self-Harm', label: 'Self-Harm' },
+    { value: 'Substance Use', label: 'Substance Use' },
     { value: 'Death/Grief', label: 'Death/Grief' },
     { value: 'Eating Disorders', label: 'Eating Disorders' },
     { value: 'Abuse', label: 'Abuse' },

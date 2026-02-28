@@ -124,24 +124,39 @@ function CommunityGuidelines() {
         </section>
 
         <section className="legal-section">
-          <h2>4. Adult Content Rules (18+ Only)</h2>
+          <h2>4. Nudity &amp; Mature Content (18+ Only)</h2>
           <p>
-            <strong>Allowed:</strong>
+            Pryde supports artistic expression, body positivity, and authentic LGBTQ+ identity. We believe queer bodies and self-expression deserve space without shame.
+          </p>
+          <p>
+            <strong>Allowed (with Content Warning where appropriate):</strong>
           </p>
           <ul>
-            <li>Artistic nudity and creative expression</li>
-            <li>Educational sexual health content</li>
-            <li>LGBTQ+ expression and celebration</li>
-            <li>Body-positive content</li>
+            <li>Artistic nudity</li>
+            <li>Body-positive photography</li>
+            <li>Performance-based imagery (e.g., dance, stage performance)</li>
+            <li>Non-explicit nudity not intended for sexual arousal</li>
+            <li>Mature discussion about sexuality or sexual health</li>
           </ul>
+          <p>
+            Content containing nudity or sensitive themes must use the appropriate Content Warning (CW) tag. Posts may be blurred for users who choose to hide CW content. Viewers can manually reveal posts if they wish.
+          </p>
           <p>
             <strong>Not Allowed:</strong>
           </p>
           <ul>
-            <li>Explicit sexual content or pornography</li>
-            <li>Non-consensual content of any kind</li>
-            <li>Content involving minors</li>
+            <li>Explicit sexual acts</li>
+            <li>Pornographic or arousal-focused content</li>
+            <li>Bedroom-style self-shot nudes intended for sexual gratification</li>
+            <li>Commercial adult promotion</li>
+            <li>Content involving minors in any sexual context</li>
           </ul>
+          <p>
+            If content appears designed primarily to arouse rather than express, it may be removed.
+          </p>
+          <p>
+            <strong>Profile &amp; Banner Images:</strong> Nudity or suggestive content is not permitted in profile photos or cover banners.
+          </p>
           <p>
             <strong>Important:</strong> You are responsible for ensuring all media you upload involves consenting adults. See our <Link to="/terms" className="legal-link">Terms of Service</Link> for more details.
           </p>
