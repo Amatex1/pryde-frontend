@@ -495,7 +495,7 @@
 
 .users-table td,
 .blocks-table td {
-  padding: 0.875rem 1rem;
+  padding: .875rem 3.3em;
   border-bottom: 1px solid var(--border-subtle);
   color: var(--text-primary);
   white-space: nowrap;
