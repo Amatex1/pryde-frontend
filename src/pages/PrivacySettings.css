@@ -106,16 +106,17 @@
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  background: var(--bg-light, #f8f9fa);
+  background: var(--bg-subtle, rgba(108, 92, 231, 0.04));
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease;
   font-size: 15px;
   color: var(--text-main, #2B2B2B);
+  border: 1px solid var(--border-subtle, #E2E4EC);
 }
 
 .setting-group label:hover {
-  background: var(--bg-hover, #eef0f5);
+  background: var(--bg-hover, rgba(108, 92, 231, 0.07));
 }
 
 .setting-group input[type="radio"],
@@ -130,7 +131,7 @@
 .section-title {
   font-size: 20px;
   font-weight: 600;
-  color: #2B2B2B;
+  color: var(--text-main, #2B2B2B);
   margin: 0 0 20px 0;
   display: flex;
   align-items: center;
@@ -149,18 +150,18 @@
   display: block;
   font-size: 15px;
   font-weight: 500;
-  color: #2B2B2B;
+  color: var(--text-main, #2B2B2B);
   margin-bottom: 8px;
 }
 
 .setting-item select {
   width: 100%;
   padding: 12px 16px;
-  border: 2px solid #E0E0E0;
+  border: 2px solid var(--border-subtle, #E0E0E0);
   border-radius: 8px;
   font-size: 15px;
-  background: white;
-  color: #2B2B2B;
+  background: var(--card-surface, #FFFFFF);
+  color: var(--text-main, #2B2B2B);
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -193,12 +194,12 @@
 .setting-description {
   margin: 8px 0 0 30px;
   font-size: 13px;
-  color: #616161;
+  color: var(--text-muted, #616161);
   font-style: italic;
 }
 
 .no-blocked-users {
-  color: #616161;
+  color: var(--text-muted, #616161);
   font-size: 15px;
   text-align: center;
   padding: 20px;
@@ -215,16 +216,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: white;
+  background: var(--bg-subtle, rgba(108, 92, 231, 0.03));
   padding: 15px;
   border-radius: 8px;
-  border: 1px solid #E0E0E0;
-  transition: all 0.3s ease;
+  border: 1px solid var(--border-subtle, #E0E0E0);
+  transition: background 0.2s ease;
 }
 
 .blocked-user-item:hover {
-  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.1);
-  transform: translateY(-2px);
+  background: var(--bg-hover, rgba(108, 92, 231, 0.06));
 }
 
 .blocked-user-info {
@@ -238,7 +238,7 @@
   height: 45px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #E0E0E0;
+  border: 2px solid var(--border-subtle, #E0E0E0);
 }
 
 .blocked-user-details {
@@ -248,13 +248,186 @@
 
 .blocked-user-name {
   font-weight: 600;
-  color: #2B2B2B;
+  color: var(--text-main, #2B2B2B);
   font-size: 15px;
 }
 
 .blocked-user-username {
   font-size: 13px;
-  color: #616161;
+  color: var(--text-muted, #616161);
+}
+
+/* ========================================
+   BLOCKED USERS SEARCH SECTION
+   Styles for search input, results, and
+   user rows rendered by the JSX
+   ======================================== */
+
+.blocked-users-search {
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.blocked-users-search input[type="text"] {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-subtle, #E0E0E0);
+  border-radius: 8px;
+  font-size: 15px;
+  background: var(--card-surface, #FFFFFF);
+  color: var(--text-main, #2B2B2B);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.blocked-users-search input[type="text"]::placeholder {
+  color: var(--text-muted, #9CA0B3);
+}
+
+.blocked-users-search input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent-primary, #6C5CE7);
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--card-surface, #FFFFFF);
+  border: 1px solid var(--border-subtle, #E0E0E0);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  border-bottom: 1px solid var(--border-subtle, #E0E0E0);
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background: var(--bg-hover, rgba(108, 92, 231, 0.04));
+}
+
+.search-result-item .user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-subtle, #E0E0E0);
+  flex-shrink: 0;
+}
+
+.search-result-item .user-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.search-result-item .user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main, #2B2B2B);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-result-item .user-username {
+  font-size: 13px;
+  color: var(--text-muted, #9CA0B3);
+}
+
+.search-result-item button {
+  padding: 6px 14px;
+  background: linear-gradient(135deg, var(--accent-primary, #6C5CE7) 0%, #0984E3 100%);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+}
+
+.search-result-item button:hover {
+  opacity: 0.85;
+}
+
+/* Blocked user list rows — JSX uses .user-* not .blocked-user-* */
+.blocked-user-item .user-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-subtle, #E0E0E0);
+  flex-shrink: 0;
+}
+
+.blocked-user-item .user-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.blocked-user-item .user-name {
+  font-weight: 600;
+  color: var(--text-main, #2B2B2B);
+  font-size: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.blocked-user-item .user-username {
+  font-size: 13px;
+  color: var(--text-muted, #616161);
+}
+
+.blocked-user-item button {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, var(--accent-primary, #6C5CE7) 0%, #0984E3 100%);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.blocked-user-item button:hover {
+  opacity: 0.85;
+}
+
+.blocked-users-list h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-muted, #616161);
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 12px;
 }
 
 .unblock-button {
@@ -322,7 +495,7 @@
   text-align: center;
   padding: 40px;
   font-size: 18px;
-  color: #616161;
+  color: var(--text-muted, #616161);
 }
 
 @keyframes slideDown {
@@ -367,19 +540,22 @@
 }
 
 /* Dark Mode Support */
-[data-theme="dark"] .setting-item select {
-  background: var(--background-dark);
-  border-color: var(--border-dark);
-  color: var(--text-light);
+[data-theme="dark"] .setting-item select,
+[data-theme="midnight"] .setting-item select {
+  background: var(--card-surface);
+  border-color: var(--border-subtle);
+  color: var(--text-main);
 }
 
-[data-theme="dark"] .setting-item select option {
-  background: var(--background-dark);
-  color: var(--text-light);
+[data-theme="dark"] .setting-item select option,
+[data-theme="midnight"] .setting-item select option {
+  background: var(--bg-page);
+  color: var(--text-main);
 }
 
-[data-theme="dark"] .setting-item select:hover {
-  border-color: var(--pryde-purple);
+[data-theme="dark"] .setting-item select:hover,
+[data-theme="midnight"] .setting-item select:hover {
+  border-color: var(--accent-primary);
 }
 
 /* ========================================

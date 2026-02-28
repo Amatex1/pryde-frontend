@@ -1217,180 +1217,175 @@ function UsersTab({ users, badges = [], onSuspend, onBan, onUnsuspend, onUnban, 
       {users.length === 0 ? (
         <p className="empty-state">No users found</p>
       ) : (
-        <table className="users-table">
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Full Name</th>
-              <th>Identity</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Badges</th>
-              <th>Status</th>
-              <th>Joined</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map(user => (
-              <tr key={user._id}>
-                <td data-label="Username">{user.username}</td>
-                <td data-label="Full Name">{user.fullName || <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Not provided</span>}</td>
-                <td data-label="Identity">
-                  {user.identity ? (
-                    <span style={{
-                      padding: '0.25rem 0.5rem',
-                      borderRadius: '4px',
-                      fontSize: '0.85rem',
-                      background: user.identity === 'LGBTQ+' ? 'var(--pryde-purple)' : 'var(--soft-lavender)',
-                      color: user.identity === 'LGBTQ+' ? 'white' : 'var(--pryde-purple)',
-                      fontWeight: '600'
-                    }}>
-                      {user.identity === 'LGBTQ+' ? '🌈 LGBTQ+' : '🤝 Ally'}
-                    </span>
-                  ) : user.isAlly ? (
-                    <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Ally (legacy)</span>
-                  ) : (
-                    <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Not set</span>
-                  )}
-                </td>
-                <td data-label="Email">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    <span>{user.email}</span>
-                    <button
-                      className="btn-action btn-small"
-                      onClick={() => onUpdateEmail(user._id, user.email, user.username)}
-                      title="Update email address"
-                      style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
-                    >
-                      ✏️ Edit
-                    </button>
-                  </div>
-                </td>
-                <td data-label="Role">
-                  {user.role?.toLowerCase() === 'super_admin' ? (
-                    <span className={`role-badge role-${user.role}`}>
-                      {user.role}
-                    </span>
-                  ) : (
-                    <select
-                      className={`role-select role-${user.role}`}
-                      value={user.role}
-                      onChange={(e) => onChangeRole(user._id, e.target.value)}
-                    >
-                      <option value="user">user</option>
-                      <option value="moderator">moderator</option>
-                      <option value="admin">admin</option>
-                      <option value="super_admin">super_admin</option>
-                    </select>
-                  )}
-                </td>
-                <td data-label="Badges" className="col-badges">
-                  <div className="badge-cell">
-                    {/* Show badge preview (max 2 icons) */}
-                    <div className="badge-preview">
-                      {user.badges && user.badges.length > 0 ? (
-                        <>
-                          {user.badges.slice(0, 2).map(badge => (
-                            <span
-                              key={badge.id}
-                              className="badge-icon-preview"
-                              title={badge.tooltip || badge.label}
-                            >
-                              {badge.icon}
-                            </span>
-                          ))}
-                          {user.badges.length > 2 && (
-                            <span className="badge-count">+{user.badges.length - 2}</span>
-                          )}
-                        </>
-                      ) : (
-                        <span className="no-badges">—</span>
-                      )}
-                    </div>
-                    <button
-                      className="badge-manage-btn"
-                      onClick={() => setBadgeModalUser(user)}
-                      title="Manage badges"
-                    >
-                      Manage
-                    </button>
-                  </div>
-                </td>
-                <td data-label="Status">
-                  {user.isBanned && <span className="status-badge banned">Banned</span>}
-                  {user.isSuspended && <span className="status-badge suspended">Suspended</span>}
-                  {!user.isBanned && !user.isSuspended && user.isActive && <span className="status-badge active">Active</span>}
-                  {!user.isActive && !user.isBanned && <span className="status-badge inactive">Inactive</span>}
-                </td>
-                <td data-label="Joined">{new Date(user.createdAt).toLocaleDateString()}</td>
-                <td data-label="Actions" className="user-actions">
-                  {(() => {
-                    console.log(`User ${user.username}: role="${user.role}", checking super_admin...`);
-                    const isSuperAdmin = user.role?.toLowerCase() === 'super_admin';
-                    console.log(`Is super admin: ${isSuperAdmin}`);
-                    return isSuperAdmin;
-                  })() ? (
-                    <span style={{ color: '#6C5CE7', fontWeight: 'bold' }}>
-                      🛡️ Platform Owner (Protected)
-                    </span>
-                  ) : (
-                    <div className="admin-actions">
-                      <button
-                        className="admin-action-trigger"
-                        onClick={() => toggleActionMenu(user._id)}
-                        title="Actions"
-                      >
-                        ⋯
-                      </button>
-
-                      {openMenuId === user._id && (
-                        <div className="admin-action-menu">
-                          <button onClick={() => {
-                            onSendPasswordReset(user._id, user.email, user.username);
-                            setOpenMenuId(null);
-                          }}>
-                            🔑 Reset Password
-                          </button>
-                          {user.isSuspended ? (
-                            <button onClick={() => {
-                              onUnsuspend(user._id);
-                              setOpenMenuId(null);
-                            }}>
-                              🔓 Unsuspend
-                            </button>
-                          ) : (
-                            <button onClick={() => {
-                              onSuspend(user._id);
-                              setOpenMenuId(null);
-                            }}>
-                              ⏸️ Suspend
-                            </button>
-                          )}
-                          {user.isBanned ? (
-                            <button onClick={() => {
-                              onUnban(user._id);
-                              setOpenMenuId(null);
-                            }}>
-                              ✅ Unban
-                            </button>
-                          ) : (
-                            <button onClick={() => {
-                              onBan(user._id);
-                              setOpenMenuId(null);
-                            }}>
-                              🚫 Ban
-                            </button>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </td>
+        <div className="admin-table-container">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Full Name</th>
+                <th>Identity</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Badges</th>
+                <th>Status</th>
+                <th>Joined</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {users.map(user => (
+                <tr key={user._id}>
+                  <td data-label="Username">{user.username}</td>
+                  <td data-label="Full Name">{user.fullName || <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Not provided</span>}</td>
+                  <td data-label="Identity">
+                    {user.identity ? (
+                      <span className={`identity-badge ${user.identity === 'LGBTQ+' ? 'identity-lgbtq' : 'identity-ally'}`}>
+                        {user.identity === 'LGBTQ+' ? '🌈 LGBTQ+' : '🤝 Ally'}
+                      </span>
+                    ) : user.isAlly ? (
+                      <span className="identity-muted">Ally (legacy)</span>
+                    ) : (
+                      <span className="identity-muted">Not set</span>
+                    )}
+                  </td>
+                  <td data-label="Email">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span>{user.email}</span>
+                      <button
+                        className="btn-action btn-small"
+                        onClick={() => onUpdateEmail(user._id, user.email, user.username)}
+                        title="Update email address"
+                        style={{ fontSize: '0.75rem', padding: '0.15rem 0.4rem' }}
+                      >
+                        ✏️ Edit
+                      </button>
+                    </div>
+                  </td>
+                  <td data-label="Role">
+                    {user.role?.toLowerCase() === 'super_admin' ? (
+                      <span className={`role-badge role-${user.role}`}>
+                        {user.role}
+                      </span>
+                    ) : (
+                      <select
+                        className={`role-select role-${user.role}`}
+                        value={user.role}
+                        onChange={(e) => onChangeRole(user._id, e.target.value)}
+                      >
+                        <option value="user">user</option>
+                        <option value="moderator">moderator</option>
+                        <option value="admin">admin</option>
+                        <option value="super_admin">super_admin</option>
+                      </select>
+                    )}
+                  </td>
+                  <td data-label="Badges" className="col-badges">
+                    <div className="badge-cell">
+                      {/* Show badge preview (max 2 icons) */}
+                      <div className="badge-preview">
+                        {user.badges && user.badges.length > 0 ? (
+                          <>
+                            {user.badges.slice(0, 2).map(badge => (
+                              <span
+                                key={badge.id}
+                                className="badge-icon-preview"
+                                title={badge.tooltip || badge.label}
+                              >
+                                {badge.icon}
+                              </span>
+                            ))}
+                            {user.badges.length > 2 && (
+                              <span className="badge-count">+{user.badges.length - 2}</span>
+                            )}
+                          </>
+                        ) : (
+                          <span className="no-badges">—</span>
+                        )}
+                      </div>
+                      <button
+                        className="badge-manage-btn"
+                        onClick={() => setBadgeModalUser(user)}
+                        title="Manage badges"
+                      >
+                        Manage
+                      </button>
+                    </div>
+                  </td>
+                  <td data-label="Status">
+                    {user.isBanned && <span className="status-badge banned">Banned</span>}
+                    {user.isSuspended && <span className="status-badge suspended">Suspended</span>}
+                    {!user.isBanned && !user.isSuspended && user.isActive && <span className="status-badge active">Active</span>}
+                    {!user.isActive && !user.isBanned && <span className="status-badge inactive">Inactive</span>}
+                  </td>
+                  <td data-label="Joined">{new Date(user.createdAt).toLocaleDateString()}</td>
+                  <td data-label="Actions" className="actions-cell">
+                    {(() => {
+                      console.log(`User ${user.username}: role="${user.role}", checking super_admin...`);
+                      const isSuperAdmin = user.role?.toLowerCase() === 'super_admin';
+                      console.log(`Is super admin: ${isSuperAdmin}`);
+                      return isSuperAdmin;
+                    })() ? (
+                      <span style={{ color: '#6C5CE7', fontWeight: 'bold' }}>
+                        🛡️ Platform Owner (Protected)
+                      </span>
+                    ) : (
+                      <div className="admin-actions">
+                        <button
+                          className="admin-action-trigger"
+                          onClick={() => toggleActionMenu(user._id)}
+                          title="Actions"
+                        >
+                          ⋯
+                        </button>
+
+                        {openMenuId === user._id && (
+                          <div className="admin-action-menu">
+                            <button onClick={() => {
+                              onSendPasswordReset(user._id, user.email, user.username);
+                              setOpenMenuId(null);
+                            }}>
+                              🔑 Reset Password
+                            </button>
+                            {user.isSuspended ? (
+                              <button onClick={() => {
+                                onUnsuspend(user._id);
+                                setOpenMenuId(null);
+                              }}>
+                                🔓 Unsuspend
+                              </button>
+                            ) : (
+                              <button onClick={() => {
+                                onSuspend(user._id);
+                                setOpenMenuId(null);
+                              }}>
+                                ⏸️ Suspend
+                              </button>
+                            )}
+                            {user.isBanned ? (
+                              <button onClick={() => {
+                                onUnban(user._id);
+                                setOpenMenuId(null);
+                              }}>
+                                ✅ Unban
+                              </button>
+                            ) : (
+                              <button onClick={() => {
+                                onBan(user._id);
+                                setOpenMenuId(null);
+                              }}>
+                                🚫 Ban
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {/* Badge Management Modal */}

@@ -12,7 +12,7 @@
 }
 
 .admin-mobile-toggle {
-  display: none;
+  display: none !important; /* Hidden on desktop — only shown via mobile media query */
   position: fixed;
   top: 70px;
   right: 16px;
@@ -55,12 +55,15 @@
 }
 
 .admin-section-title {
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   margin-bottom: 12px;
   color: var(--text-muted);
-  font-weight: 600;
+  font-weight: 700;
+  /* Step 6 — Sidebar section accent */
+  padding-left: 8px;
+  border-left: 2px solid var(--pryde-purple);
 }
 
 .admin-nav-item {
@@ -89,7 +92,7 @@
 }
 
 .admin-content {
-  padding: 24px;
+  padding: 24px 0 24px 24px;
   overflow-y: auto;
 }
 
@@ -132,18 +135,23 @@
 }
 
 .admin-action-trigger {
-  background: transparent;
-  border: none;
-  font-size: 18px;
+  /* Step 7 — Refined action trigger */
+  background: rgba(108, 92, 231, 0.08);
+  border: 1px solid rgba(108, 92, 231, 0.18);
+  font-size: 16px;
   cursor: pointer;
-  padding: 4px 8px;
-  color: var(--text-primary);
-  border-radius: 4px;
-  transition: background 0.15s ease;
+  padding: 4px 10px;
+  color: var(--pryde-purple);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  letter-spacing: 1px;
+  font-weight: 700;
 }
 
 .admin-action-trigger:hover {
-  background: var(--bg-hover);
+  background: rgba(108, 92, 231, 0.18);
+  border-color: rgba(108, 92, 231, 0.4);
+  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.18);
 }
 
 .admin-action-menu {
@@ -249,8 +257,8 @@
 
 .admin-content {
   background: var(--card-surface);
-  border-radius: 12px;
-  padding: 2rem;
+  border-radius: 12px 0 0 12px;
+  padding: 2rem 0 2rem 2rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -414,6 +422,11 @@
   overflow-x: auto;
   overflow-y: visible; /* Allow vertical content to show fully */
   -webkit-overflow-scrolling: touch;
+  /* Step 1 — Elevated container */
+  border-radius: 16px;
+  border: 1px solid rgba(108, 92, 231, 0.14);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  padding-bottom: 0.5rem;
 }
 
 .users-table,
@@ -426,11 +439,12 @@
   /* Remove overflow: hidden - it clips table rows */
 }
 
-/* Desktop: min-width to prevent column squishing */
+/* Desktop: table fills full container width */
 @media (min-width: 769px) {
   .users-table,
   .blocks-table {
-    min-width: 1100px;
+    width: 100%;
+    table-layout: auto;
   }
 }
 
@@ -445,13 +459,16 @@
 .blocks-table thead th {
   position: sticky;
   top: 0;
-  background: var(--accent-primary);
+  /* Step 2 — Gradient header */
+  background: linear-gradient(135deg, rgba(108, 92, 231, 0.95) 0%, rgba(85, 70, 200, 0.95) 100%);
   z-index: 2;
-  padding: 1rem;
+  padding: 0.875rem 1rem;
   text-align: left;
   font-weight: var(--font-weight-semibold);
   white-space: nowrap;
   vertical-align: middle;
+  letter-spacing: 0.03em;
+  font-size: 13px;
 }
 
 /* Border-radius on first/last header cells (since table uses border-collapse: separate) */
@@ -478,11 +495,13 @@
 
 .users-table td,
 .blocks-table td {
-  padding: 1rem;
+  padding: .875rem 3.3em;
   border-bottom: 1px solid var(--border-subtle);
   color: var(--text-primary);
   white-space: nowrap;
   vertical-align: middle;
+  height: 52px;
+  box-sizing: border-box;
 }
 
 /* Email column - truncate long emails */
@@ -490,6 +509,18 @@
   max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Hide Edit button by default, show on row hover */
+.users-table td[data-label="Email"] .btn-action {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.users-table tbody tr:hover td[data-label="Email"] .btn-action {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* Actions column - ensure buttons fit */
@@ -505,7 +536,10 @@
 
 .users-table tbody tr:hover,
 .blocks-table tbody tr:hover {
-  background: var(--bg-hover);
+  /* Step 3 — Row hover with accent bar */
+  background: rgba(108, 92, 231, 0.07);
+  box-shadow: inset 3px 0 0 var(--pryde-purple);
+  transition: all 0.15s ease;
 }
 
 .role-badge {
@@ -608,10 +642,37 @@
   color: var(--error);
 }
 
+/* Step 4 — Identity Badge Classes */
+.identity-badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.identity-lgbtq {
+  background: var(--pryde-purple);
+  color: white;
+}
+
+.identity-ally {
+  background: var(--soft-lavender, rgba(108, 92, 231, 0.15));
+  color: var(--pryde-purple);
+}
+
+.identity-muted {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.82rem;
+}
+
 .user-actions {
   display: flex;
   gap: 0.5rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  align-items: center;
 }
 
 .btn-action {
@@ -772,6 +833,164 @@
 }
 
 /* ========================================
+   STEP 9 — Column Alignment Cleanup
+   Col order: Username | Full Name | Identity | Email | Role | Badges | Status | Joined | Actions
+   ======================================== */
+
+/* Columns 1–4: text-align left */
+.users-table th:nth-child(1), .users-table td:nth-child(1),
+.users-table th:nth-child(2), .users-table td:nth-child(2),
+.users-table th:nth-child(3), .users-table td:nth-child(3),
+.users-table th:nth-child(4), .users-table td:nth-child(4) {
+  text-align: left;
+}
+
+/* Columns 5–7: text-align center */
+.users-table th:nth-child(5), .users-table td:nth-child(5),
+.users-table th:nth-child(6), .users-table td:nth-child(6),
+.users-table th:nth-child(7), .users-table td:nth-child(7) {
+  text-align: center;
+}
+
+/* Columns 8–9: text-align right */
+.users-table th:nth-child(8), .users-table td:nth-child(8),
+.users-table th:nth-child(9), .users-table td:nth-child(9) {
+  text-align: right;
+}
+
+/* ========================================
+   ADMIN USER TABLE — SAAS TABLE LAYOUT
+   Col order: Username | Full Name | Identity | Email | Role | Badges | Status | Joined | Actions
+   ======================================== */
+
+.admin-table-container {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  min-width: 900px;
+}
+
+/* Column widths */
+table.admin-table th:nth-child(1),
+table.admin-table td:nth-child(1) { width: 10%; }   /* Username */
+
+table.admin-table th:nth-child(2),
+table.admin-table td:nth-child(2) { width: 14%; }   /* Full Name */
+
+table.admin-table th:nth-child(3),
+table.admin-table td:nth-child(3) { width: 10%; }   /* Identity */
+
+table.admin-table th:nth-child(4),
+table.admin-table td:nth-child(4) { width: 20%; }   /* Email */
+
+table.admin-table th:nth-child(5),
+table.admin-table td:nth-child(5) { width: 10%; }   /* Role */
+
+table.admin-table th:nth-child(6),
+table.admin-table td:nth-child(6) { width: 8%; }    /* Badges */
+
+table.admin-table th:nth-child(7),
+table.admin-table td:nth-child(7) { width: 8%; }    /* Status */
+
+table.admin-table th:nth-child(8),
+table.admin-table td:nth-child(8) { width: 10%; }   /* Joined */
+
+table.admin-table th:nth-child(9),
+table.admin-table td:nth-child(9) { width: 10%; text-align: right; } /* Actions */
+
+/* Header */
+table.admin-table thead {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+table.admin-table thead tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+table.admin-table th {
+  padding: 16px 18px;
+  text-align: left;
+  vertical-align: middle;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+}
+
+/* Body rows */
+table.admin-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.15s ease;
+}
+
+table.admin-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+table.admin-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+table.admin-table td {
+  padding: 16px 18px;
+  text-align: left;
+  vertical-align: middle;
+  font-size: 14px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Email edit button: hidden until row hover */
+table.admin-table td[data-label="Email"] .btn-action {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+table.admin-table tbody tr:hover td[data-label="Email"] .btn-action {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Actions column */
+.actions-cell {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  overflow: visible;
+}
+
+/* Light theme row dividers */
+[data-theme="light"] table.admin-table thead tr,
+[data-theme="light"] table.admin-table tbody tr {
+  border-bottom-color: var(--border-subtle);
+}
+
+[data-theme="light"] table.admin-table thead {
+  background: rgba(108, 92, 231, 0.05);
+}
+
+[data-theme="light"] table.admin-table th {
+  color: var(--text-secondary, rgba(0, 0, 0, 0.6));
+}
+
+[data-theme="light"] table.admin-table tbody tr:hover {
+  background: rgba(108, 92, 231, 0.03);
+}
+
+/* ========================================
    TABLET RESPONSIVE (769px - 1024px)
    Keep table layout but allow horizontal scroll
    ======================================== */
@@ -798,7 +1017,7 @@
   }
 
   .admin-mobile-toggle {
-    display: block;
+    display: block !important;
   }
 
   .admin-sidebar {
@@ -920,6 +1139,57 @@
   .user-actions {
     flex-direction: column;
     gap: 0.5rem;
+  }
+
+  /* Admin table → card layout on mobile */
+  .admin-table-container {
+    overflow-x: visible;
+  }
+
+  table.admin-table {
+    display: block;
+    min-width: unset;
+  }
+
+  table.admin-table thead {
+    display: none;
+  }
+
+  table.admin-table tbody {
+    display: block;
+  }
+
+  table.admin-table tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 1rem;
+  }
+
+  table.admin-table td {
+    display: block;
+    text-align: left;
+    padding: 0.5rem 0;
+    border: none;
+    white-space: normal;
+    max-width: 100%;
+    overflow: visible;
+    text-overflow: unset;
+    width: unset !important;
+  }
+
+  table.admin-table td::before {
+    content: attr(data-label);
+    font-weight: var(--font-weight-semibold);
+    color: var(--accent-primary);
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .actions-cell {
+    justify-content: flex-start;
   }
 
   .btn-action {
@@ -1894,13 +2164,14 @@
 /* Badge column in users table */
 .col-badges {
   min-width: 120px;
-  max-width: 150px;
 }
 
 .badge-cell {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 .badge-preview {
@@ -1928,19 +2199,24 @@
 }
 
 .badge-manage-btn {
-  padding: 0.25rem 0.5rem;
+  /* Step 8 — Softer outline manage button */
+  padding: 0.25rem 0.6rem;
   font-size: var(--font-size-xs);
-  background: var(--pryde-purple);
-  color: white;
-  border: none;
-  border-radius: 4px;
+  background: rgba(108, 92, 231, 0.1);
+  color: var(--pryde-purple);
+  border: 1px solid rgba(108, 92, 231, 0.25);
+  border-radius: 6px;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+  font-weight: 600;
 }
 
 .badge-manage-btn:hover {
-  background: var(--pryde-purple-dark, #5a4fcf);
+  background: var(--pryde-purple);
+  color: white;
+  border-color: var(--pryde-purple);
+  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.25);
 }
 
 /* Badge Management Modal */
