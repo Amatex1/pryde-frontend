@@ -859,6 +859,138 @@
 }
 
 /* ========================================
+   ADMIN USER TABLE — SAAS TABLE LAYOUT
+   Col order: Username | Full Name | Identity | Email | Role | Badges | Status | Joined | Actions
+   ======================================== */
+
+.admin-table-container {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  min-width: 900px;
+}
+
+/* Column widths */
+table.admin-table th:nth-child(1),
+table.admin-table td:nth-child(1) { width: 10%; }   /* Username */
+
+table.admin-table th:nth-child(2),
+table.admin-table td:nth-child(2) { width: 14%; }   /* Full Name */
+
+table.admin-table th:nth-child(3),
+table.admin-table td:nth-child(3) { width: 10%; }   /* Identity */
+
+table.admin-table th:nth-child(4),
+table.admin-table td:nth-child(4) { width: 20%; }   /* Email */
+
+table.admin-table th:nth-child(5),
+table.admin-table td:nth-child(5) { width: 10%; }   /* Role */
+
+table.admin-table th:nth-child(6),
+table.admin-table td:nth-child(6) { width: 8%; }    /* Badges */
+
+table.admin-table th:nth-child(7),
+table.admin-table td:nth-child(7) { width: 8%; }    /* Status */
+
+table.admin-table th:nth-child(8),
+table.admin-table td:nth-child(8) { width: 10%; }   /* Joined */
+
+table.admin-table th:nth-child(9),
+table.admin-table td:nth-child(9) { width: 10%; text-align: right; } /* Actions */
+
+/* Header */
+table.admin-table thead {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+table.admin-table thead tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+table.admin-table th {
+  padding: 16px 18px;
+  text-align: left;
+  vertical-align: middle;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+}
+
+/* Body rows */
+table.admin-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.15s ease;
+}
+
+table.admin-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+table.admin-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+table.admin-table td {
+  padding: 16px 18px;
+  text-align: left;
+  vertical-align: middle;
+  font-size: 14px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Email edit button: hidden until row hover */
+table.admin-table td[data-label="Email"] .btn-action {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+table.admin-table tbody tr:hover td[data-label="Email"] .btn-action {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Actions column */
+.actions-cell {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  overflow: visible;
+}
+
+/* Light theme row dividers */
+[data-theme="light"] table.admin-table thead tr,
+[data-theme="light"] table.admin-table tbody tr {
+  border-bottom-color: var(--border-subtle);
+}
+
+[data-theme="light"] table.admin-table thead {
+  background: rgba(108, 92, 231, 0.05);
+}
+
+[data-theme="light"] table.admin-table th {
+  color: var(--text-secondary, rgba(0, 0, 0, 0.6));
+}
+
+[data-theme="light"] table.admin-table tbody tr:hover {
+  background: rgba(108, 92, 231, 0.03);
+}
+
+/* ========================================
    TABLET RESPONSIVE (769px - 1024px)
    Keep table layout but allow horizontal scroll
    ======================================== */
@@ -1007,6 +1139,57 @@
   .user-actions {
     flex-direction: column;
     gap: 0.5rem;
+  }
+
+  /* Admin table → card layout on mobile */
+  .admin-table-container {
+    overflow-x: visible;
+  }
+
+  table.admin-table {
+    display: block;
+    min-width: unset;
+  }
+
+  table.admin-table thead {
+    display: none;
+  }
+
+  table.admin-table tbody {
+    display: block;
+  }
+
+  table.admin-table tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 1rem;
+  }
+
+  table.admin-table td {
+    display: block;
+    text-align: left;
+    padding: 0.5rem 0;
+    border: none;
+    white-space: normal;
+    max-width: 100%;
+    overflow: visible;
+    text-overflow: unset;
+    width: unset !important;
+  }
+
+  table.admin-table td::before {
+    content: attr(data-label);
+    font-weight: var(--font-weight-semibold);
+    color: var(--accent-primary);
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .actions-cell {
+    justify-content: flex-start;
   }
 
   .btn-action {
