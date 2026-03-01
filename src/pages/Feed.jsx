@@ -1360,6 +1360,13 @@ function Feed() {
       } else if (error.response?.status === 401) {
         errorMessage = 'Your session has expired. Please log in again.';
       } else if (error.response?.status === 429) {
+        if (error.response?.data?.code === 'ANON_COOLDOWN') {
+          showToast(
+            error.response.data.message || "You've shared a lot anonymously. You can post again soon.",
+            'info'
+          );
+          return;
+        }
         errorMessage = 'Too many posts. Please wait a moment before trying again.';
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
@@ -1371,7 +1378,7 @@ function Feed() {
     } finally {
       setLoading(false);
     }
-  }, [newPost, selectedMedia, poll, selectedPostGif, postVisibility, contentWarning, hideMetrics, currentDraftId, showMobileComposer, showAlert]);
+  }, [newPost, selectedMedia, poll, selectedPostGif, postVisibility, contentWarning, hideMetrics, currentDraftId, showMobileComposer, showAlert, showToast]);
 
   const handleLike = useCallback(async (postId) => {
     try {
@@ -1681,11 +1688,18 @@ function Feed() {
       setCommentText(prev => ({ ...prev, [postId]: '' }));
       setCommentGif(prev => ({ ...prev, [postId]: null }));
     } catch (error) {
+      if (error.response?.status === 429 && error.response?.data?.code === 'ANON_COOLDOWN') {
+        showToast(
+          error.response.data.message || "You've shared a lot anonymously. You can post again soon.",
+          'info'
+        );
+        return;
+      }
       logger.error('❌ Failed to create comment:', error);
       logger.error('Error details:', error.response?.data);
       showAlert('This didn\'t post properly. You can try again in a moment.', 'Reply issue');
     }
-  }, [showGifPicker, commentText, commentGif, showAlert]);
+  }, [showGifPicker, commentText, commentGif, showAlert, showToast]);
 
   const handleCommentChange = useCallback((postId, value) => {
     setCommentText(prev => ({ ...prev, [postId]: value }));
@@ -2011,10 +2025,17 @@ function Feed() {
         [commentId]: true
       }));
     } catch (error) {
+      if (error.response?.status === 429 && error.response?.data?.code === 'ANON_COOLDOWN') {
+        showToast(
+          error.response.data.message || "You've shared a lot anonymously. You can post again soon.",
+          'info'
+        );
+        return;
+      }
       logger.error('Failed to reply to comment:', error);
       showAlert('This didn\'t post properly. You can try again in a moment.', 'Reply issue');
     }
-  }, [showGifPicker, replyText, replyGif, replyingToComment, replyIsAnonymous, showAlert]);
+  }, [showGifPicker, replyText, replyGif, replyingToComment, replyIsAnonymous, showAlert, showToast]);
 
   const handleCancelReply = useCallback(() => {
     setReplyingToComment(null);
