@@ -54,6 +54,18 @@ export default function PushNotificationPrompt() {
     // Standard flow: Android, Desktop, iOS 16.4+ standalone
     if (!('Notification' in window)) return;
     if (!('serviceWorker' in navigator)) return;
+
+    // If permission already granted, silently re-subscribe this device if its
+    // subscription expired (e.g. browser cleared it, or this is a new login on
+    // a device that previously subscribed under a different session).
+    if (Notification.permission === 'granted') {
+      navigator.serviceWorker.ready
+        .then(reg => reg.pushManager.getSubscription())
+        .then(sub => { if (!sub) subscribeToPushNotifications(); })
+        .catch(() => {});
+      return;
+    }
+
     if (Notification.permission !== 'default') return;
     if (localStorage.getItem(STORAGE_KEY)) return;
 

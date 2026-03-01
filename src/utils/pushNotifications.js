@@ -8,20 +8,20 @@ let fcmToken = null;
 /* -------------------------------------------
    CHECK SUBSCRIPTION STATE
 --------------------------------------------*/
+// Returns true only if THIS browser/device has an active push subscription.
+// Uses browser-local PushManager so it's accurate per-device regardless of
+// how many other devices the same account has subscribed.
 export const isPushNotificationSubscribed = async () => {
-  // 🔥 CIRCUIT BREAKER: Don't check push status before auth is ready
-  if (!isAuthReady()) {
-    console.debug('[Push] Skipping status check - auth not ready');
-    return false;
-  }
-
   try {
-    const response = await api.get('/push/status');
-    isSubscribed = response.data.hasSubscription;
-    return isSubscribed;
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.getSubscription();
+      isSubscribed = !!subscription;
+      return isSubscribed;
+    }
+    return false;
   } catch (error) {
-    // Silently fail - push is optional
-    console.debug("Failed to check push notification subscription:", error);
+    console.debug('[Push] Failed to check local subscription:', error);
     return false;
   }
 };
