@@ -12,16 +12,17 @@ import { useNavigate } from 'react-router-dom';
 import ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left';
 import SearchIcon from 'lucide-react/dist/esm/icons/search';
 import X from 'lucide-react/dist/esm/icons/x';
+import Users from 'lucide-react/dist/esm/icons/users';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import './Search.css';
 
 function Search() {
   const [searchQuery, setSearchQuery] = useState('');
-  // PHASE 4C: Removed hashtags from search results
   const [searchResults, setSearchResults] = useState({ users: [], posts: [], groups: [] });
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [error, setError] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,6 +32,7 @@ function Search() {
       } else {
         setSearchResults({ users: [], posts: [], groups: [] });
         setHasSearched(false);
+        setError(false);
       }
     }, 300);
 
@@ -39,28 +41,38 @@ function Search() {
 
   const performSearch = async () => {
     setLoading(true);
+    setError(false);
     try {
-      // Search users and posts from main search endpoint
-      const response = await api.get(`/search?q=${encodeURIComponent(searchQuery)}`);
+      // Fetch users/posts and all groups in parallel
+      const [searchResponse, groupsResponse] = await Promise.allSettled([
+        api.get(`/search?q=${encodeURIComponent(searchQuery)}`),
+        api.get('/groups'),
+      ]);
 
-      // Also search groups by name/description
+      const mainResults = searchResponse.status === 'fulfilled'
+        ? searchResponse.value.data
+        : { users: [], posts: [] };
+
       let groups = [];
-      try {
-        const groupsResponse = await api.get('/groups');
-        const allGroups = groupsResponse.data.groups || groupsResponse.data || [];
+      if (groupsResponse.status === 'fulfilled') {
+        const allGroups = groupsResponse.value.data.groups || groupsResponse.value.data || [];
         const query = searchQuery.toLowerCase();
         groups = allGroups.filter(g =>
           g.name?.toLowerCase().includes(query) ||
           g.description?.toLowerCase().includes(query)
         ).slice(0, 5);
-      } catch (err) {
-        console.error('Group search error:', err);
       }
 
-      setSearchResults({ ...response.data, groups });
+      if (searchResponse.status === 'rejected') {
+        setError(true);
+      }
+
+      setSearchResults({ ...mainResults, groups });
       setHasSearched(true);
-    } catch (error) {
-      console.error('Search error:', error);
+    } catch (err) {
+      console.error('Search error:', err);
+      setError(true);
+      setHasSearched(true);
     } finally {
       setLoading(false);
     }
@@ -78,10 +90,18 @@ function Search() {
     navigate(`/feed?post=${postId}`);
   };
 
+  const handleKeyActivate = (e, callback) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      callback();
+    }
+  };
+
   const clearSearch = () => {
     setSearchQuery('');
     setSearchResults({ users: [], posts: [], groups: [] });
     setHasSearched(false);
+    setError(false);
   };
 
   const hasResults = searchResults.users.length > 0 ||
@@ -95,7 +115,7 @@ function Search() {
           <ArrowLeft size={20} strokeWidth={1.75} />
         </button>
         <div className="search-input-container">
-          <SearchIcon size={20} className="search-icon" />
+          <SearchIcon size={20} className="search-icon" aria-hidden="true" />
           <input
             type="text"
             value={searchQuery}
@@ -104,10 +124,11 @@ function Search() {
             className="search-input"
             autoFocus
             autoComplete="off"
+            aria-label="Search users, posts, and groups"
           />
           {searchQuery && (
             <button className="clear-btn" onClick={clearSearch} aria-label="Clear search">
-              <X size={20} />
+              <X size={16} />
             </button>
           )}
         </div>
@@ -120,7 +141,13 @@ function Search() {
           </div>
         )}
 
-        {!loading && hasSearched && !hasResults && (
+        {!loading && hasSearched && error && (
+          <div className="no-results">
+            <p>Search failed. Please try again.</p>
+          </div>
+        )}
+
+        {!loading && hasSearched && !error && !hasResults && (
           <div className="no-results">
             <p>No results found for "{searchQuery}"</p>
             <p className="no-results-hint">Try searching for users, posts, or groups</p>
@@ -129,9 +156,9 @@ function Search() {
 
         {!hasSearched && !loading && (
           <div className="search-hints">
-            <p>🔍 Search for users by name or username</p>
-            <p>📝 Search posts by content</p>
-            <p>👥 Search groups by name</p>
+            <p>Search for users by name or username</p>
+            <p>Search posts by content</p>
+            <p>Search groups by name</p>
           </div>
         )}
 
@@ -143,12 +170,22 @@ function Search() {
               <div
                 key={group._id}
                 className="result-item group-item"
+                role="button"
+                tabIndex={0}
                 onClick={() => handleGroupClick(group.slug)}
+                onKeyDown={(e) => handleKeyActivate(e, () => handleGroupClick(group.slug))}
+                aria-label={`Group: ${group.name}`}
               >
-                <span className="group-icon">👥</span>
+                <div className="group-icon" aria-hidden="true">
+                  <Users size={20} strokeWidth={1.75} />
+                </div>
                 <div className="group-info">
                   <span className="group-name">{group.name}</span>
-                  <span className="group-description">{group.description?.substring(0, 50)}{group.description?.length > 50 ? '...' : ''}</span>
+                  {group.description && (
+                    <span className="group-description">
+                      {group.description.substring(0, 60)}{group.description.length > 60 ? '...' : ''}
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
@@ -162,11 +199,15 @@ function Search() {
               <div
                 key={user._id}
                 className="result-item user-item"
+                role="button"
+                tabIndex={0}
                 onClick={() => handleUserClick(user.username)}
+                onKeyDown={(e) => handleKeyActivate(e, () => handleUserClick(user.username))}
+                aria-label={`User: ${user.displayName || user.username}`}
               >
-                <div className="user-avatar">
+                <div className="user-avatar" aria-hidden="true">
                   {user.profilePhoto ? (
-                    <img src={getImageUrl(user.profilePhoto)} alt={user.displayName} />
+                    <img src={getImageUrl(user.profilePhoto)} alt="" />
                   ) : (
                     <span>{user.displayName?.charAt(0).toUpperCase() || 'U'}</span>
                   )}
@@ -187,7 +228,11 @@ function Search() {
               <div
                 key={post._id}
                 className="result-item post-item"
+                role="button"
+                tabIndex={0}
                 onClick={() => handlePostClick(post._id)}
+                onKeyDown={(e) => handleKeyActivate(e, () => handlePostClick(post._id))}
+                aria-label={`Post by ${post.author?.displayName || post.author?.username}`}
               >
                 <div className="post-preview">
                   <span className="post-author">
@@ -208,4 +253,3 @@ function Search() {
 }
 
 export default Search;
-

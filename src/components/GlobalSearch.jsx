@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader } from 'lucide-react';
+import Users from 'lucide-react/dist/esm/icons/users';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import { quietCopy } from '../config/uiCopy';
@@ -8,12 +9,13 @@ import './GlobalSearch.css';
 
 function GlobalSearch({ variant = 'default' }) {
   const [searchQuery, setSearchQuery] = useState('');
-  // REMOVED 2025-12-26: hashtags removed (Phase 5)
-  const [searchResults, setSearchResults] = useState({ users: [], posts: [] });
+  const [searchResults, setSearchResults] = useState({ users: [], posts: [], groups: [] });
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [isQuietMode, setIsQuietMode] = useState(false);
   const searchRef = useRef(null);
+  const inputRef = useRef(null);
   const navigate = useNavigate();
 
   // Listen for quiet mode changes
@@ -45,8 +47,9 @@ function GlobalSearch({ variant = 'default' }) {
       if (searchQuery.trim().length > 0) {
         performSearch();
       } else {
-        setSearchResults({ users: [], posts: [] });
+        setSearchResults({ users: [], posts: [], groups: [] });
         setShowResults(false);
+        setError(false);
       }
     }, 300);
 
@@ -55,19 +58,43 @@ function GlobalSearch({ variant = 'default' }) {
 
   const performSearch = async () => {
     setLoading(true);
+    setError(false);
     try {
-      const response = await api.get(`/search?q=${encodeURIComponent(searchQuery)}`);
-      setSearchResults(response.data);
+      // Fetch users/posts and groups in parallel
+      const [searchResponse, groupsResponse] = await Promise.allSettled([
+        api.get(`/search?q=${encodeURIComponent(searchQuery)}`),
+        api.get('/groups'),
+      ]);
+
+      const mainResults = searchResponse.status === 'fulfilled' ? searchResponse.value.data : { users: [], posts: [] };
+
+      let groups = [];
+      if (groupsResponse.status === 'fulfilled') {
+        const allGroups = groupsResponse.value.data.groups || groupsResponse.value.data || [];
+        const query = searchQuery.toLowerCase();
+        groups = allGroups.filter(g =>
+          g.name?.toLowerCase().includes(query) ||
+          g.description?.toLowerCase().includes(query)
+        ).slice(0, 3);
+      }
+
+      if (searchResponse.status === 'rejected') {
+        setError(true);
+      }
+
+      setSearchResults({ ...mainResults, groups });
       setShowResults(true);
-    } catch (error) {
-      console.error('Search error:', error);
+    } catch (err) {
+      console.error('Search error:', err);
+      setError(true);
+      setShowResults(true);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUserClick = (userId) => {
-    navigate(`/profile/${userId}`);
+  const handleUserClick = (username) => {
+    navigate(`/profile/${username}`);
     setShowResults(false);
     setSearchQuery('');
   };
@@ -78,13 +105,28 @@ function GlobalSearch({ variant = 'default' }) {
     setSearchQuery('');
   };
 
+  const handleGroupClick = (slug) => {
+    navigate(`/groups/${slug}`);
+    setShowResults(false);
+    setSearchQuery('');
+  };
+
+  const handleKeyActivate = (e, callback) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      callback();
+    }
+  };
+
   const hasResults = searchResults.users.length > 0 ||
-                     searchResults.posts.length > 0;
+                     searchResults.posts.length > 0 ||
+                     searchResults.groups.length > 0;
 
   return (
     <div className={`global-search ${variant === 'compact' ? 'global-search-compact' : ''}`} ref={searchRef} data-variant={variant}>
       <div className="search-input-wrapper">
         <input
+          ref={inputRef}
           type="text"
           id="global-search-input"
           name="search"
@@ -95,18 +137,49 @@ function GlobalSearch({ variant = 'default' }) {
           className="search-input"
           data-variant={variant}
           autoComplete="off"
-          aria-label="Search users and posts"
+          aria-label="Search users, posts, and groups"
+          aria-expanded={showResults}
+          aria-haspopup="listbox"
         />
         {loading && <Loader size={16} strokeWidth={1.75} className="search-loading" aria-hidden="true" />}
       </div>
 
       {showResults && (
-        <div className="search-results-dropdown">
-          {!hasResults && !loading && (
+        <div className="search-results-dropdown" role="listbox" aria-label="Search results">
+          {error && (
+            <div className="no-search-results search-error">Search failed — please try again</div>
+          )}
+
+          {!error && !hasResults && !loading && (
             <div className="no-search-results">No results found</div>
           )}
 
-          {/* REMOVED 2025-12-26: Hashtag search removed (Phase 5) */}
+          {searchResults.groups.length > 0 && (
+            <div className="search-section">
+              <div className="search-section-title">Groups</div>
+              {searchResults.groups.map((group) => (
+                <div
+                  key={group._id}
+                  className="search-result-item group-item"
+                  role="option"
+                  tabIndex={0}
+                  onClick={() => handleGroupClick(group.slug)}
+                  onKeyDown={(e) => handleKeyActivate(e, () => handleGroupClick(group.slug))}
+                  aria-label={`Group: ${group.name}`}
+                >
+                  <div className="group-icon-circle" aria-hidden="true">
+                    <Users size={18} strokeWidth={1.75} />
+                  </div>
+                  <div className="user-info">
+                    <div className="user-name">{group.name}</div>
+                    {group.description && (
+                      <div className="user-username">{group.description.substring(0, 50)}{group.description.length > 50 ? '...' : ''}</div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           {searchResults.users.length > 0 && (
             <div className="search-section">
@@ -115,13 +188,17 @@ function GlobalSearch({ variant = 'default' }) {
                 <div
                   key={user._id}
                   className="search-result-item user-item"
-                  onClick={() => handleUserClick(user._id)}
+                  role="option"
+                  tabIndex={0}
+                  onClick={() => handleUserClick(user.username)}
+                  onKeyDown={(e) => handleKeyActivate(e, () => handleUserClick(user.username))}
+                  aria-label={`User: ${user.displayName || user.username}`}
                 >
                   <div className="user-avatar-small">
                     {user.profilePhoto ? (
-                      <img src={getImageUrl(user.profilePhoto)} alt={user.displayName} />
+                      <img src={getImageUrl(user.profilePhoto)} alt="" aria-hidden="true" />
                     ) : (
-                      <span>{user.displayName?.charAt(0).toUpperCase()}</span>
+                      <span aria-hidden="true">{user.displayName?.charAt(0).toUpperCase()}</span>
                     )}
                   </div>
                   <div className="user-info">
@@ -140,7 +217,11 @@ function GlobalSearch({ variant = 'default' }) {
                 <div
                   key={post._id}
                   className="search-result-item post-item"
+                  role="option"
+                  tabIndex={0}
                   onClick={() => handlePostClick(post._id)}
+                  onKeyDown={(e) => handleKeyActivate(e, () => handlePostClick(post._id))}
+                  aria-label={`Post by ${post.author?.displayName || post.author?.username}`}
                 >
                   <div className="post-preview">
                     <div className="post-author-small">
@@ -162,4 +243,3 @@ function GlobalSearch({ variant = 'default' }) {
 }
 
 export default GlobalSearch;
-

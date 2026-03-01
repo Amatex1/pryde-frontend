@@ -5,7 +5,7 @@ import {
   Home, Users, BookOpen, BookText, Image, Sparkles,
   Bookmark, Calendar, ShieldCheck, Settings, Leaf,
   Telescope, Palette, User, LogOut,
-  ChevronUp, ChevronDown, Check, X,
+  ChevronUp, ChevronDown, Check,
 } from 'lucide-react';
 import { useMediaQuery } from 'react-responsive';
 import { logout } from '../utils/auth';
@@ -38,7 +38,6 @@ function Navbar({ onMenuClick }) {
   const [showDropdown, setShowDropdown] = useState(false);
   // Internal mobile menu state - only used if onMenuClick is not provided
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [quietMode, setQuietMode] = useState(() => getQuietMode());
   const [galaxyMode, setGalaxyMode] = useState(() => getGalaxyMode());
   const [scrolled, setScrolled] = useState(false);
@@ -175,10 +174,10 @@ function Navbar({ onMenuClick }) {
             {/* Quick-access: Notification bell (reuses existing component with its live badge) */}
             <NotificationBell />
 
-            {/* Search icon — opens full-width search overlay */}
+            {/* Search icon — navigates to full search page */}
             <button
               className="navbar-mobile-icon-btn"
-              onClick={() => setShowMobileSearch(true)}
+              onClick={() => navigate('/search')}
               aria-label="Search"
               data-tooltip="Search"
             >
@@ -492,30 +491,6 @@ function Navbar({ onMenuClick }) {
           </div>
         )}
 
-      {/* ── Mobile search overlay ─────────────────────────────────────────
-           Renders on top of everything when the 🔍 icon is tapped.
-           GlobalSearch is already on the page but hidden by CSS on mobile;
-           here we show it in a dedicated slide-down overlay instead.        ── */}
-      {showMobileSearch && !isDesktop && (
-        <div
-          className="mobile-search-overlay"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setShowMobileSearch(false);
-          }}
-        >
-          <div className="mobile-search-bar">
-            <GlobalSearch variant="compact" />
-            <button
-              className="mobile-search-close"
-              onClick={() => setShowMobileSearch(false)}
-              aria-label="Close search"
-              data-tooltip="Close"
-            >
-              <X size={22} strokeWidth={2} aria-hidden="true" />
-            </button>
-          </div>
-        </div>
-      )}
     </nav>
   );
 }
