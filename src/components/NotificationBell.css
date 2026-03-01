@@ -204,6 +204,31 @@
   margin-top: 0.5rem;
 }
 
+.notification-footer {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border-subtle);
+  padding: 0.5rem 0.75rem;
+}
+
+.notification-view-all {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--pryde-purple);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 0.4rem 0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.notification-view-all:hover {
+  background: rgba(108, 92, 231, 0.08);
+}
+
 @media (max-width: 768px) {
   .notification-dropdown {
     width: min(320px, calc(100% - 2rem));

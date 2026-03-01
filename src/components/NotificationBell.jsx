@@ -362,6 +362,15 @@ const NotificationBell = memo(() => {
               ))
             )}
           </div>
+
+          <div className="notification-footer">
+            <button
+              className="notification-view-all"
+              onClick={() => { setShowDropdown(false); navigate('/notifications'); }}
+            >
+              View all notifications
+            </button>
+          </div>
         </div>
       )}
     </div>
