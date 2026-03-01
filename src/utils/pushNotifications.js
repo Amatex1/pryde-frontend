@@ -116,19 +116,19 @@ export const sendTestNotification = async () => {
   console.log("📨 Sending test notification...");
 
   try {
-    // Send test notification request to backend
-    const response = await api.post('/push/test');
-    
-    if (response.data.success) {
-      console.log("Test notification sent successfully");
-      return true;
-    } else {
-      console.error("Failed to send test notification:", response.data.message);
-      return false;
+    // Get the current device's subscription endpoint so the backend targets this device only
+    let currentEndpoint = null;
+    if ('serviceWorker' in navigator) {
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.getSubscription();
+      currentEndpoint = subscription?.endpoint || null;
     }
+
+    const response = await api.post('/push/test', { endpoint: currentEndpoint });
+    return response.data;
   } catch (error) {
     console.error("Failed to send test notification:", error);
-    return false;
+    return error.response?.data || { success: false };
   }
 };
 

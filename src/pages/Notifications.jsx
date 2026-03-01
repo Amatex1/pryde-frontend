@@ -147,7 +147,13 @@ function Notifications() {
     setTestPushStatus('sending');
     try {
       const result = await sendTestNotification();
-      setTestPushStatus(result?.hasSubscription === false ? 'no-sub' : 'ok');
+      if (result?.hasSubscription === false) {
+        setTestPushStatus('no-sub');
+      } else if (result?.success) {
+        setTestPushStatus('ok');
+      } else {
+        setTestPushStatus('error');
+      }
     } catch {
       setTestPushStatus('error');
     } finally {
