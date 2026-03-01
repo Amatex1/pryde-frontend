@@ -1064,72 +1064,81 @@
 }
 
 .post-dropdown-container .dropdown-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 0.5rem;
-  min-width: 200px;
-  background: var(--bg-card, #ffffff);
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  overflow: visible;
-  white-space: nowrap;
-  padding: 0.25rem 0;
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  left: auto !important;
+  margin-top: 0.5rem !important;
+  min-width: 200px !important;
+  width: max-content !important;
+  background: var(--bg-card, #ffffff) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+  z-index: 1000 !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  padding: 0.25rem 0 !important;
+  /* Force vertical stacking - prevents items escaping to the right */
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 [data-theme="dark"] .post-dropdown-container .dropdown-menu {
-  background: var(--bg-card, #12192F);
-  border-color: var(--border-soft, rgba(255, 255, 255, 0.08));
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  background: var(--bg-card, #12192F) !important;
+  border-color: var(--border-soft, rgba(255, 255, 255, 0.08)) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
 }
 
-.dropdown-item {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: none;
-  background: transparent;
-  color: var(--text-primary, #1E2338);
-  text-align: left;
-  cursor: pointer;
-  font-size: var(--font-size-base);
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+/* Use higher specificity to override .ph-post-header * { padding: 0; margin: 0; } */
+.post-dropdown-container .dropdown-menu .dropdown-item {
+  width: 100% !important;
+  padding: 0.75rem 1rem !important;
+  margin: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--text-primary, #1E2338) !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  font-size: var(--font-size-base) !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  /* Ensure block-level stacking, not inline */
+  flex-shrink: 0 !important;
 }
 
-.dropdown-item:hover {
-  background: var(--soft-lavender);
-  color: var(--pryde-purple);
+.post-dropdown-container .dropdown-menu .dropdown-item:hover {
+  background: var(--soft-lavender) !important;
+  color: var(--pryde-purple) !important;
 }
 
-[data-theme="dark"] .dropdown-item {
-  color: var(--text-primary, #FFFFFF);
+[data-theme="dark"] .post-dropdown-container .dropdown-menu .dropdown-item {
+  color: var(--text-primary, #FFFFFF) !important;
 }
 
-[data-theme="dark"] .dropdown-item:hover {
-  background: var(--bg-hover, rgba(108, 92, 231, 0.08));
-  color: var(--accent-primary, #6D6AF8);
+[data-theme="dark"] .post-dropdown-container .dropdown-menu .dropdown-item:hover {
+  background: var(--bg-hover, rgba(108, 92, 231, 0.08)) !important;
+  color: var(--accent-primary, #6D6AF8) !important;
 }
 
-.dropdown-item.delete {
-  color: var(--color-danger);
+.post-dropdown-container .dropdown-menu .dropdown-item.delete {
+  color: var(--color-danger) !important;
 }
 
-.dropdown-item.delete:hover {
-  background: var(--color-danger-soft);
-  color: var(--color-danger);
+.post-dropdown-container .dropdown-menu .dropdown-item.delete:hover {
+  background: var(--color-danger-soft) !important;
+  color: var(--color-danger) !important;
 }
 
-.dropdown-item.report {
-  color: var(--color-warning);
+.post-dropdown-container .dropdown-menu .dropdown-item.report {
+  color: var(--color-warning) !important;
 }
 
-.dropdown-item.report:hover {
-  background: rgba(255, 193, 7, 0.1);
-  color: var(--color-warning);
+.post-dropdown-container .dropdown-menu .dropdown-item.report:hover {
+  background: rgba(255, 193, 7, 0.1) !important;
+  color: var(--color-warning) !important;
 }
 
 .dropdown-item-danger:hover {
