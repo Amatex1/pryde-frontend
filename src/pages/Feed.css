@@ -4362,18 +4362,18 @@ label.btn-media-upload:disabled {
   transition: opacity 0.2s ease;
 }
 
-/* Multiple images: Can use cover for grid consistency */
+/* Multiple images: CONTAIN, never crop */
 .post-media-grid.double .post-media-item,
 .post-media-grid.multiple .post-media-item {
-  aspect-ratio: 1;
   max-height: 300px;
 }
 
 .post-media-grid.double .post-media-item img,
 .post-media-grid.multiple .post-media-item img {
   width: 100%;
-  height: 100%;
-  object-fit: cover; /* Grid images can crop for consistency */
+  height: auto;
+  max-height: 300px;
+  object-fit: contain; /* NEVER crop - show full image */
   cursor: pointer;
   transition: opacity 0.2s ease;
 }

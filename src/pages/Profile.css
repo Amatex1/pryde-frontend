@@ -173,20 +173,11 @@
   background: var(--bg-subtle) !important;
   border-radius: 8px !important;
   overflow: hidden !important;
-  aspect-ratio: 16 / 9 !important;
 }
 
 .profile-page .post-media-grid.single .post-media-item,
 .post-media-grid.single .post-media-item {
   max-height: 600px !important;
-  aspect-ratio: auto !important;
-}
-
-.profile-page .post-media-grid.double .post-media-item,
-.profile-page .post-media-grid.multiple .post-media-item,
-.post-media-grid.double .post-media-item,
-.post-media-grid.multiple .post-media-item {
-  aspect-ratio: 1 !important;
 }
 
 .profile-page .post-media-item img,
@@ -194,15 +185,15 @@
 .post-media-item img,
 .post-media-item video {
   width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
+  height: auto !important;
+  object-fit: contain !important; /* NEVER crop - show full image */
   cursor: pointer !important;
-  transition: transform 0.3s ease !important;
+  transition: opacity 0.2s ease !important;
 }
 
 .profile-page .post-media-item img:hover,
 .post-media-item img:hover {
-  transform: scale(1.05) !important;
+  opacity: 0.95 !important; /* Subtle feedback only */
 }
 
 .profile-page .post-media-item video,
@@ -2961,9 +2952,6 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   .post-media-grid.multiple {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;
-    height: 100px;
-    font-size: var(--font-size-3xl);
-    margin-top: -50px;
   }
 
   .cover-upload-buttons {

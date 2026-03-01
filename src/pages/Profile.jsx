@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Camera, Pencil, Flag, UserPlus, Clock, UserCheck, MessageCircle, Lock,
-  X, Upload, FileText, Globe, Users, Trash2, Check, ChevronRight, Bookmark,
-  Calendar, Smile, Search, Image, Send, Plus, BarChart2, AlertTriangle, VolumeX,
+  X, FileText, Globe, Users, Check, ChevronRight,
+  Calendar, Smile, Search, Image, Send,
 } from 'lucide-react';
 import { LUCIDE_DEFAULTS } from '../utils/lucideDefaults';
 import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
@@ -24,19 +24,20 @@ import CommentThread from '../components/CommentThread';
 import CommentSheet from '../components/comments/CommentSheet';
 import ReactionButton from '../components/ReactionButton';
 import FeedPostDropdown from '../components/feed/FeedPostDropdown';
+import FeedComposer from '../components/feed/FeedComposer';
 import FeedPostActions from '../components/feed/FeedPostActions';
 import PinnedPostBadge from '../components/PinnedPostBadge';
 import TieredBadgeDisplay from '../components/TieredBadgeDisplay';
 import PostHeader from '../components/PostHeader';
 import Poll from '../components/Poll';
 import GifPicker from '../components/GifPicker';
-import PollCreator from '../components/PollCreator';
-import DraftManager from '../components/DraftManager';
+
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { getImageUrl } from '../utils/imageUrl';
 import { useToast } from '../hooks/useToast';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { convertEmojiShortcuts } from '../utils/textFormatting';
 import { setupSocketListeners } from '../utils/socketHelpers';
 import logger from '../utils/logger';
@@ -119,7 +120,11 @@ function Profile() {
   const [showDraftManager, setShowDraftManager] = useState(false); // Show/hide draft manager
   const [draftSaveStatus, setDraftSaveStatus] = useState(''); // 'saving', 'saved', or ''
   const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
+  const [showMobileComposer, setShowMobileComposer] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const { toasts, showToast, removeToast } = useToast();
+  const isMobile = useMediaQuery('(max-width: 768px)');
   const actionsMenuRef = useRef(null);
   const isOwnProfile = currentUser?.username === id;
   const [canSendMessage, setCanSendMessage] = useState(false);
@@ -192,7 +197,21 @@ function Profile() {
       const badgesResponse = await api.get(`/badges/user/${userId}`);
       console.log('[Profile] Badges response:', badgesResponse.data);
       if (isMountedRef.current) {
-        setUserBadges(badgesResponse.data || []);
+        // API returns { core: [], visible: [], all: [] } — flatten into a single array
+        // core = always-visible CORE_ROLE badges, visible = user-selected public badges
+        const data = badgesResponse.data || {};
+        const flatBadges = [
+          ...(data.core || []),
+          ...(data.visible || [])
+        ];
+        // Deduplicate by badge id (in case of overlap)
+        const seen = new Set();
+        const uniqueBadges = flatBadges.filter(b => {
+          if (seen.has(b.id)) return false;
+          seen.add(b.id);
+          return true;
+        });
+        setUserBadges(uniqueBadges);
       }
     } catch (error) {
       console.error('[Profile] Failed to fetch user badges:', error);
@@ -893,6 +912,27 @@ function Profile() {
       setPostLoading(false);
     }
   };
+
+  // Restore draft handler for FeedComposer
+  const handleRestoreDraft = useCallback((draft) => {
+    setNewPost(draft.content || '');
+    setSelectedMedia(draft.media || []);
+    setPostVisibility(draft.visibility || 'followers');
+    setContentWarning(draft.contentWarning || '');
+    setShowContentWarning(!!draft.contentWarning);
+    setHideMetrics(draft.hideMetrics || false);
+    // Normalize poll options: backend stores as [{text: "...", votes: []}] but PollCreator expects strings
+    const restoredPoll = draft.poll ? { ...draft.poll } : null;
+    if (restoredPoll && restoredPoll.options) {
+      restoredPoll.options = restoredPoll.options.map(opt =>
+        typeof opt === 'object' && opt.text ? opt.text : opt
+      );
+    }
+    setPoll(restoredPoll);
+    setShowPollCreator(!!restoredPoll);
+    setSelectedPostGif(draft.gifUrl || null);
+    setShowDraftManager(false);
+  }, []);
 
   // Fetch comments for a post
   const fetchCommentsForPost = async (postId) => {
@@ -2125,248 +2165,48 @@ function Profile() {
               </button>
             </div>
 
-            {/* Create Post Section */}
+            {/* Create Post Section - Uses shared FeedComposer component */}
             {isOwnProfile && activeTab === 'posts' && (
-              <div className="create-post glossy fade-in">
-                <h2 className="section-title">Share a thought...</h2>
-                <form onSubmit={handlePostSubmit}>
-                  <textarea
-                    id="profile-new-post"
-                    name="newPost"
-                    value={newPost}
-                    onChange={(e) => {
-                      const el = e.target;
-                      el.style.height = 'auto';
-                      el.style.height = el.scrollHeight + 'px';
-                      setNewPost(el.value);
-                    }}
-                    onPaste={handlePaste}
-                    placeholder="What are you reflecting on today?"
-                    className="post-input glossy"
-                    rows="1"
-                    style={{ overflow: 'hidden', resize: 'none' }}
-                  />
-
-                  {selectedMedia.length > 0 && (
-                    <div className="media-preview">
-                      {selectedMedia.map((media, index) => (
-                        <div key={index} className="media-preview-item">
-                          {media.type === 'video' ? (
-                            <video src={getImageUrl(media.url)} controls />
-                          ) : (
-                            <OptimizedImage
-                              src={getImageUrl(media.url)}
-                              alt={`Upload ${index + 1}`}
-                              loading="eager"
-                            />
-                          )}
-                          <button
-                            type="button"
-                            className="remove-media"
-                            onClick={() => removeMedia(index)}
-                          >
-                            <X size={14} strokeWidth={1.75} aria-hidden="true" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {showContentWarning && (
-                    <div className="content-warning-input">
-                      <select
-                        id="profile-content-warning"
-                        name="contentWarning"
-                        value={contentWarning}
-                        onChange={(e) => setContentWarning(e.target.value)}
-                        className="cw-input glossy"
-                      >
-                        <option value="">Select a content warning...</option>
-                        <option value="Mental Health">Mental Health</option>
-                        <option value="Violence">Violence</option>
-                        <option value="Sexual Content">Sexual Content</option>
-                        <option value="Substance Use">Substance Use</option>
-                        <option value="Self-Harm">Self-Harm</option>
-                        <option value="Death/Grief">Death/Grief</option>
-                        <option value="Eating Disorders">Eating Disorders</option>
-                        <option value="Abuse">Abuse</option>
-                        <option value="Discrimination">Discrimination</option>
-                        <option value="Medical Content">Medical Content</option>
-                        <option value="Flashing Lights">Flashing Lights</option>
-                        <option value="Spoilers">Spoilers</option>
-                        <option value="Other">Other (describe below)</option>
-                      </select>
-                      {(['Other'].includes(contentWarning) || (contentWarning && !['', 'Mental Health', 'Violence', 'Sexual Content', 'Substance Use', 'Self-Harm', 'Death/Grief', 'Eating Disorders', 'Abuse', 'Discrimination', 'Medical Content', 'Flashing Lights', 'Spoilers', 'Other'].includes(contentWarning))) && (
-                        <input
-                          type="text"
-                          className="cw-custom-input"
-                          placeholder="Describe the content warning..."
-                          value={contentWarning === 'Other' ? '' : contentWarning}
-                          onChange={(e) => setContentWarning(e.target.value || 'Other')}
-                          maxLength={100}
-                          autoFocus
-                        />
-                      )}
-                    </div>
-                  )}
-
-                  <div className="post-actions-bar">
-                    {/* Privacy selector - moved to first position */}
-                    <select
-                      id="profile-post-privacy"
-                      name="postPrivacy"
-                      value={postVisibility}
-                      onChange={(e) => setPostVisibility(e.target.value)}
-                      className="privacy-selector glossy"
-                      aria-label="Select post privacy"
-                    >
-                      <option value="public">Public</option>
-                      <option value="followers">Connections</option>
-                      <option value="private">Private</option>
-                    </select>
-
-                    {/* GIF button - moved to second position */}
-                    <button
-                      type="button"
-                      className="btn-gif"
-                      onClick={() => setShowGifPicker(showGifPicker === 'main-post' ? null : 'main-post')}
-                      disabled={selectedPostGif !== null}
-                      title="Add GIF"
-                    >
-                      GIF
-                    </button>
-
-                    <label className="btn-media-upload">
-                      <input
-                        id="profile-media-upload"
-                        name="mediaUpload"
-                        type="file"
-                        multiple
-                        accept="image/*,video/*"
-                        onChange={handleMediaSelect}
-                        disabled={uploadingMedia || selectedMedia.length >= 3}
-                        style={{ display: 'none' }}
-                      />
-                      {uploadingMedia
-                        ? <><Upload size={14} strokeWidth={1.75} aria-hidden="true" /> Uploading... {uploadProgress}%</>
-                        : <><Camera size={14} strokeWidth={1.75} aria-hidden="true" /> Add Photos/Videos</>
-                      }
-                    </label>
-
-                    <button
-                      type="button"
-                      className={`btn-poll ${showPollCreator ? 'active' : ''}`}
-                      onClick={() => setShowPollCreator(!showPollCreator)}
-                      title="Add poll"
-                    >
-                      📊 Poll
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`btn-content-warning ${showContentWarning ? 'active' : ''}`}
-                      onClick={() => setShowContentWarning(!showContentWarning)}
-                      aria-label="Add content warning"
-                      data-tooltip="Content Warning"
-                    >
-                      <AlertTriangle size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Content Warning</span>
-                    </button>
-
-                    <label
-                      className="hide-metrics-checkbox"
-                      data-tooltip="Hide Metrics"
-                      aria-label="Hide likes, comments, and shares count"
-                    >
-                      <input
-                        id="profile-hide-metrics-checkbox"
-                        name="hideMetrics"
-                        type="checkbox"
-                        checked={hideMetrics}
-                        onChange={(e) => setHideMetrics(e.target.checked)}
-                      />
-                      <span>🔇 Hide Metrics</span>
-                    </label>
-
-                    {/* Draft save status indicator */}
-                    {draftSaveStatus && (
-                      <span className="draft-save-status">
-                        {draftSaveStatus === 'saving' ? 'Saving draft...' : 'Draft saved'}
-                      </span>
-                    )}
-
-                    <button
-                      type="button"
-                      className="btn-drafts"
-                      onClick={() => setShowDraftManager(true)}
-                      aria-label="View saved drafts"
-                      data-tooltip="Drafts"
-                    >
-                      <FileText size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Drafts</span>
-                    </button>
-
-                    <button type="submit" disabled={postLoading || uploadingMedia} className="btn-post glossy-gold">
-                      {postLoading ? 'Publishing...' : 'Publish'}
-                    </button>
-                  </div>
-
-                  {/* Poll Creator */}
-                  {showPollCreator && (
-                    <PollCreator
-                      onPollChange={setPoll}
-                      initialPoll={poll}
-                    />
-                  )}
-
-                  {/* GIF Preview */}
-                  {selectedPostGif && (
-                    <div className="post-gif-preview">
-                      <img src={selectedPostGif} alt="Selected GIF" />
-                      <button
-                        type="button"
-                        className="btn-remove-gif"
-                        onClick={() => setSelectedPostGif(null)}
-                      >
-                        <X size={14} strokeWidth={1.75} aria-hidden="true" />
-                      </button>
-                    </div>
-                  )}
-
-                  {/* GIF Picker */}
-                  {showGifPicker === 'main-post' && (
-                    <GifPicker
-                      onGifSelect={(gifUrl) => {
-                        setSelectedPostGif(gifUrl);
-                        setShowGifPicker(null);
-                      }}
-                      onClose={() => setShowGifPicker(null)}
-                    />
-                  )}
-                </form>
-
-                {/* Draft Manager Modal */}
-                {showDraftManager && (
-                  <div className="modal-overlay" onClick={() => setShowDraftManager(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                      <DraftManager
-                        draftType="post"
-                        onRestoreDraft={(draft) => {
-                          setNewPost(draft.content || '');
-                          setSelectedMedia(draft.media || []);
-                          setPostVisibility(draft.visibility || 'followers');
-                          setContentWarning(draft.contentWarning || '');
-                          setShowContentWarning(!!draft.contentWarning);
-                          setHideMetrics(draft.hideMetrics || false);
-                          setPoll(draft.poll || null);
-                          setShowPollCreator(!!draft.poll);
-                          setSelectedPostGif(draft.gifUrl || null);
-                          setShowDraftManager(false);
-                        }}
-                        onClose={() => setShowDraftManager(false)}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
+              <FeedComposer
+                isMobile={isMobile}
+                isQuietMode={false}
+                newPost={newPost}
+                selectedMedia={selectedMedia}
+                uploadingMedia={uploadingMedia}
+                uploadProgress={uploadProgress}
+                postVisibility={postVisibility}
+                contentWarning={contentWarning}
+                showContentWarning={showContentWarning}
+                selectedPostGif={selectedPostGif}
+                showGifPicker={showGifPicker}
+                poll={poll}
+                showPollCreator={showPollCreator}
+                hideMetrics={hideMetrics}
+                showDraftManager={showDraftManager}
+                draftSaveStatus={draftSaveStatus}
+                showMobileComposer={showMobileComposer}
+                isTyping={isTyping}
+                showAdvancedOptions={showAdvancedOptions}
+                loading={postLoading}
+                onPostSubmit={handlePostSubmit}
+                onPostTextChange={setNewPost}
+                onMediaSelect={handleMediaSelect}
+                onRemoveMedia={removeMedia}
+                onPaste={handlePaste}
+                onSetIsTyping={setIsTyping}
+                onSetPostVisibility={setPostVisibility}
+                onSetContentWarning={setContentWarning}
+                onSetShowContentWarning={setShowContentWarning}
+                onSetSelectedPostGif={setSelectedPostGif}
+                onSetShowGifPicker={setShowGifPicker}
+                onSetPoll={setPoll}
+                onSetShowPollCreator={setShowPollCreator}
+                onSetHideMetrics={setHideMetrics}
+                onSetShowDraftManager={setShowDraftManager}
+                onRestoreDraft={handleRestoreDraft}
+                onSetShowMobileComposer={setShowMobileComposer}
+                onSetShowAdvancedOptions={setShowAdvancedOptions}
+              />
             )}
 
             {/* Create Post Layout - Grid wrapper */}
@@ -2424,7 +2264,7 @@ function Profile() {
                         <FeedPostDropdown
                           postId={post._id}
                           isPinned={post.isPinned}
-                          isOwnPost={compareIds(post.author?._id, currentUser?.id) || compareIds(post.author?._id, currentUser?._id)}
+                          isOwnPost={compareIds(post.author?._id, currentUser?.id) || compareIds(post.author?._id, currentUser?._id) || (post.author?.username && post.author.username === currentUser?.username)}
                           isDropdownOpen={openDropdownId === post._id}
                           authorId={post.author?._id}
                           onToggleDropdown={toggleDropdown}

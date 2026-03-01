@@ -30,9 +30,13 @@ export default function BadgeSettings({ onUpdate }) {
   const fetchBadges = async () => {
     try {
       const response = await api.get('/badges/me');
-      setBadges(response.data.badges || []);
-      setPublicBadges(response.data.publicBadges || []);
-      setHiddenBadges(response.data.hiddenBadges || []);
+      const fetchedBadges = response.data.badges || [];
+      setBadges(fetchedBadges);
+      // Filter out stale badge IDs that are no longer assigned to the user
+      // This prevents BADGE_NOT_OWNED errors when saving
+      const validBadgeIds = new Set(fetchedBadges.map(b => b.id));
+      setPublicBadges((response.data.publicBadges || []).filter(id => validBadgeIds.has(id)));
+      setHiddenBadges((response.data.hiddenBadges || []).filter(id => validBadgeIds.has(id)));
     } catch (error) {
       console.error('Failed to fetch badges:', error);
     } finally {
