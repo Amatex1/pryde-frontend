@@ -10,6 +10,15 @@ import { getImageUrl } from '../../utils/imageUrl';
 import { getDisplayName } from '../../utils/getDisplayName';
 
 /**
+ * Helper function to compare IDs safely
+ * Handles MongoDB ObjectId comparison and various ID formats
+ */
+const compareIds = (id1, id2) => {
+  if (!id1 || !id2) return false;
+  return String(id1) === String(id2);
+};
+
+/**
  * FeedPost - A single post card in the feed
  * 
  * This component is memoized for performance optimization.
@@ -105,7 +114,8 @@ const FeedPost = memo(forwardRef(function FeedPost({
 }, ref) {
   // Check if this is a system post (from pryde_prompts account)
   const isSystemPost = post.isSystemPost || post.author?.isSystemAccount;
-  const isOwnPost = post.author?._id === currentUser?.id || post.author?._id === currentUser?._id;
+  // Compare IDs safely - handles MongoDB ObjectId comparison and various ID formats
+  const isOwnPost = compareIds(post.author?._id, currentUser?.id) || compareIds(post.author?._id, currentUser?._id);
   const isBookmarked = bookmarkedPosts.includes(post._id);
   const comments = postComments[post._id] || [];
   const isEditing = editingPostId === post._id;
