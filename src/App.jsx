@@ -112,6 +112,7 @@ const Following = lazyWithReload(() => import('./pages/Following'));
 const Settings = lazyWithReload(() => import('./pages/Settings'));
 const SecuritySettings = lazyWithReload(() => import('./pages/SecuritySettings'));
 const PrivacySettings = lazyWithReload(() => import('./pages/PrivacySettings'));
+const SafetySettings = lazyWithReload(() => import('./pages/SafetySettings'));
 const Bookmarks = lazyWithReload(() => import('./pages/Bookmarks'));
 const Events = lazyWithReload(() => import('./pages/Events'));
 // Phase 1: MessagesApp scaffold — routes through feature flag in index.js
@@ -441,6 +442,7 @@ function AppContent() {
                   <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
                   <Route path="/settings/security" element={<PrivateRoute><SecuritySettings /></PrivateRoute>} />
                   <Route path="/settings/privacy" element={<PrivateRoute><PrivacySettings /></PrivateRoute>} />
+                  <Route path="/settings/safety" element={<PrivateRoute><SafetySettings /></PrivateRoute>} />
                   <Route path="/bookmarks" element={<PrivateRoute><Bookmarks /></PrivateRoute>} />
                   <Route path="/events" element={<PrivateRoute><Events /></PrivateRoute>} />
                   {/* Messages route moved to FullViewportLayout below */}

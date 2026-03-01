@@ -42,19 +42,29 @@ function PostHeader({
   edited = false,
   isPinned = false,
   isSystemAccount = false, // System posts (pryde_prompts, pryde_guide, etc.)
+  isAnonymous = false,
+  _staffAnonymousView = false,
   children, // Menu button slot
   onAvatarClick,
   linkToProfile = true,
 }) {
   if (!author) return null;
 
+  // ── Anonymous Post Detection ───────────────────────────────────────────────
+  // For regular users: author._id is null (sanitized by backend)
+  // For staff: _staffAnonymousView is true and real author is visible
+  const isAnonPost = isAnonymous || author._id === null;
+  const shouldDisableProfileLink = isAnonPost && !_staffAnonymousView;
+
   // Detect system account from either prop or author field
   const isSystem = isSystemAccount || author.isSystemAccount;
   const systemDescription = author.systemDescription || 'This is an automated system account operated by Pryde Social.';
 
   const displayName = author.displayName || author.username || 'User';
-  const avatarInitial = displayName.charAt(0).toUpperCase();
+  const avatarInitial = isAnonPost && !_staffAnonymousView ? '?' : displayName.charAt(0).toUpperCase();
   const profileUrl = `/profile/${author.username}`;
+  // Override linkToProfile for anonymous posts (regular users can't click through)
+  const effectiveLinkToProfile = shouldDisableProfileLink ? false : linkToProfile;
 
   // Format timestamp - Facebook style
   const formatTimestamp = (date) => {
@@ -99,8 +109,10 @@ function PostHeader({
     : visibility === 'private' ? 'Only you'
     : 'Connections only';
 
-  // Avatar element
-  const avatarContent = author.profilePhoto ? (
+  // Avatar element — anonymous posts get a generic avatar
+  const avatarContent = (isAnonPost && !_staffAnonymousView) ? (
+    <span className="ph-avatar-fallback ph-anonymous-avatar">?</span>
+  ) : author.profilePhoto ? (
     <OptimizedImage
       src={getImageUrl(author.profilePhoto)}
       alt={author.username}
@@ -111,7 +123,7 @@ function PostHeader({
     <span className="ph-avatar-fallback">{avatarInitial}</span>
   );
 
-  const Avatar = linkToProfile ? (
+  const Avatar = effectiveLinkToProfile ? (
     <Link
       to={profileUrl}
       className="ph-avatar"
@@ -126,13 +138,17 @@ function PostHeader({
     </div>
   );
 
-  // Author name element
-  const AuthorName = linkToProfile ? (
+  // Author name element — staff see real name + anonymous label
+  const nameLabel = _staffAnonymousView
+    ? `Anonymous Member (Author: @${author.username})`
+    : displayName;
+
+  const AuthorName = effectiveLinkToProfile ? (
     <Link to={profileUrl} className="ph-name-link">
-      <span className="ph-name">{displayName}</span>
+      <span className="ph-name">{nameLabel}</span>
     </Link>
   ) : (
-    <span className="ph-name">{displayName}</span>
+    <span className="ph-name">{nameLabel}</span>
   );
 
   return (
@@ -159,8 +175,15 @@ function PostHeader({
             </span>
           )}
 
+          {/* Anonymous post indicator for staff */}
+          {_staffAnonymousView && (
+            <span className="ph-anon-badge" title="This post was submitted anonymously — only staff can see the real author">
+              🕵️ Anonymous
+            </span>
+          )}
+
           {/* INTENTIONAL MINIMALISM: Only show badges for System bots, Founder/Creator, Admin/Moderator */}
-          {author.badges?.length > 0 && !isSystem && (() => {
+          {author.badges?.length > 0 && !isSystem && !isAnonPost && (() => {
             const allowedBadges = author.badges.filter(badge =>
               badge.id === 'founder' ||
               badge.id === 'creator' ||
@@ -176,8 +199,13 @@ function PostHeader({
 
         {/* Row 2: Username · Timestamp · (edited) · Privacy - all on same line */}
         <div className="ph-meta-row">
-          {/* Username */}
-          <span className="ph-username">@{author.username}</span>
+          {/* Username — hidden for anonymous posts from regular users */}
+          {!(isAnonPost && !_staffAnonymousView) && (
+            <span className="ph-username">@{author.username}</span>
+          )}
+          {isAnonPost && !_staffAnonymousView && (
+            <span className="ph-username ph-anonymous-username">Anonymous</span>
+          )}
           <span className="ph-separator">·</span>
 
           {/* Timestamp */}
@@ -228,6 +256,8 @@ PostHeader.propTypes = {
   edited: PropTypes.bool,
   isPinned: PropTypes.bool,
   isSystemAccount: PropTypes.bool,
+  isAnonymous: PropTypes.bool,
+  _staffAnonymousView: PropTypes.bool,
   children: PropTypes.node,
   onAvatarClick: PropTypes.func,
   linkToProfile: PropTypes.bool,

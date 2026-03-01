@@ -147,6 +147,8 @@ const FeedPost = memo(forwardRef(function FeedPost({
         edited={post.edited}
         isPinned={post.isPinned}
         isSystemAccount={isSystemPost}
+        isAnonymous={post.isAnonymous}
+        _staffAnonymousView={post._staffAnonymousView}
       >
         <FeedPostDropdown
           postId={post._id}

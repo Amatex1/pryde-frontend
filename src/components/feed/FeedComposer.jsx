@@ -1,7 +1,7 @@
 import { memo, useEffect } from 'react';
 import {
   X, Plus, Upload, Camera, BarChart2, AlertTriangle,
-  VolumeX, FileText, Globe, Users, Lock,
+  VolumeX, FileText, Globe, Users, Lock, EyeOff,
 } from 'lucide-react';
 import GifPicker from '../GifPicker';
 import PollCreator from '../PollCreator';
@@ -36,6 +36,7 @@ const FeedComposer = memo(function FeedComposer({
   poll,
   showPollCreator,
   hideMetrics,
+  isAnonymous,
   showDraftManager,
   draftSaveStatus,
   showMobileComposer,
@@ -58,6 +59,7 @@ const FeedComposer = memo(function FeedComposer({
   onSetPoll,
   onSetShowPollCreator,
   onSetHideMetrics,
+  onSetIsAnonymous,
   onSetShowDraftManager,
   onRestoreDraft,
   onSetShowMobileComposer,
@@ -274,6 +276,24 @@ const FeedComposer = memo(function FeedComposer({
                 />
                 <span><VolumeX size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Hide Metrics</span></span>
               </label>
+
+              {/* Anonymous posting toggle */}
+              {onSetIsAnonymous && (
+                <label
+                  className="hide-metrics-checkbox"
+                  data-tooltip="Post Anonymously"
+                  aria-label="Post anonymously — your identity will be hidden from other users"
+                >
+                  <input
+                    id="anonymous-post-checkbox"
+                    name="isAnonymous"
+                    type="checkbox"
+                    checked={isAnonymous}
+                    onChange={(e) => onSetIsAnonymous(e.target.checked)}
+                  />
+                  <span><EyeOff size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Anonymous</span></span>
+                </label>
+              )}
             </>
           )}
 
@@ -472,6 +492,26 @@ const FeedComposer = memo(function FeedComposer({
                 <VolumeX size={20} strokeWidth={1.75} aria-hidden="true"
                   style={{ opacity: hideMetrics ? 1 : 0.5 }} />
               </label>
+
+              {/* Mobile anonymous posting toggle */}
+              {onSetIsAnonymous && (
+                <label
+                  className="mobile-btn-action"
+                  data-tooltip="Anonymous"
+                  aria-label="Post anonymously"
+                >
+                  <input
+                    id="mobile-anonymous-checkbox"
+                    name="mobileIsAnonymous"
+                    type="checkbox"
+                    checked={isAnonymous}
+                    onChange={(e) => onSetIsAnonymous(e.target.checked)}
+                    style={{ display: 'none' }}
+                  />
+                  <EyeOff size={20} strokeWidth={1.75} aria-hidden="true"
+                    style={{ opacity: isAnonymous ? 1 : 0.5 }} />
+                </label>
+              )}
 
               <button
                 type="button"

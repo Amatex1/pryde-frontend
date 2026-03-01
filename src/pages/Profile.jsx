@@ -117,6 +117,7 @@ function Profile() {
   const [poll, setPoll] = useState(null); // Poll data for new post
   const [showPollCreator, setShowPollCreator] = useState(false); // Show/hide poll creator
   const [hideMetrics, setHideMetrics] = useState(false); // Hide metrics for new post
+  const [isAnonymous, setIsAnonymous] = useState(false); // Anonymous posting toggle
   const [showDraftManager, setShowDraftManager] = useState(false); // Show/hide draft manager
   const [draftSaveStatus, setDraftSaveStatus] = useState(''); // 'saving', 'saved', or ''
   const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
@@ -865,7 +866,8 @@ function Profile() {
         contentWarning: contentWarning,
         poll: poll, // Include poll data if present
         gifUrl: selectedPostGif, // Include GIF if selected
-        hideMetrics: hideMetrics // Include hideMetrics setting
+        hideMetrics: hideMetrics, // Include hideMetrics setting
+        isAnonymous: isAnonymous // Include anonymous flag
       };
 
       const response = await api.post('/posts', postData);
@@ -880,6 +882,7 @@ function Profile() {
       setPoll(null); // Clear poll
       setShowPollCreator(false); // Hide poll creator
       setHideMetrics(false); // Reset hide metrics
+      setIsAnonymous(false); // Reset anonymous
       setPostVisibility(defaultPostVisibilityRef.current); // Reset to user's default
       setContentWarning('');
       setShowContentWarning(false);
@@ -2182,6 +2185,7 @@ function Profile() {
                 poll={poll}
                 showPollCreator={showPollCreator}
                 hideMetrics={hideMetrics}
+                isAnonymous={isAnonymous}
                 showDraftManager={showDraftManager}
                 draftSaveStatus={draftSaveStatus}
                 showMobileComposer={showMobileComposer}
@@ -2202,6 +2206,7 @@ function Profile() {
                 onSetPoll={setPoll}
                 onSetShowPollCreator={setShowPollCreator}
                 onSetHideMetrics={setHideMetrics}
+                onSetIsAnonymous={setIsAnonymous}
                 onSetShowDraftManager={setShowDraftManager}
                 onRestoreDraft={handleRestoreDraft}
                 onSetShowMobileComposer={setShowMobileComposer}
@@ -2260,6 +2265,8 @@ function Profile() {
                         visibility={post.visibility}
                         edited={post.edited}
                         isPinned={post.isPinned}
+                        isAnonymous={post.isAnonymous}
+                        _staffAnonymousView={post._staffAnonymousView}
                       >
                         <FeedPostDropdown
                           postId={post._id}

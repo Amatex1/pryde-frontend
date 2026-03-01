@@ -145,6 +145,7 @@ function Feed() {
   const [showPollCreator, setShowPollCreator] = useState(false); // Show/hide poll creator
   // NOTE: EditHistory state removed 2025-12-26 - backend returns 410 Gone
   const [hideMetrics, setHideMetrics] = useState(false); // Hide metrics for new post
+  const [isAnonymous, setIsAnonymous] = useState(false); // Anonymous posting toggle
   const [autoHideContentWarnings, setAutoHideContentWarnings] = useState(false);
   const [quietMode, setQuietMode] = useState(document.documentElement.getAttribute('data-quiet') === 'true');
   const [initializing, setInitializing] = useState(true); // Track initial load
@@ -1292,6 +1293,7 @@ function Feed() {
         contentWarning: contentWarning,
         poll: poll, // Include poll data if present
         hideMetrics: hideMetrics, // Include hideMetrics setting
+        isAnonymous: isAnonymous, // Include anonymous flag
         gifUrl: selectedPostGif // Include GIF if selected
       };
 
@@ -1330,6 +1332,7 @@ function Feed() {
       setPoll(null);
       setShowPollCreator(false);
       setHideMetrics(false);
+      setIsAnonymous(false);
 
       // Mobile UX: Close composer and scroll to top to see the new post
       if (showMobileComposer) {
@@ -2246,6 +2249,7 @@ function Feed() {
             poll={poll}
             showPollCreator={showPollCreator}
             hideMetrics={hideMetrics}
+            isAnonymous={isAnonymous}
             showDraftManager={showDraftManager}
             draftSaveStatus={draftSaveStatus}
             showMobileComposer={showMobileComposer}
@@ -2266,6 +2270,7 @@ function Feed() {
             onSetPoll={setPoll}
             onSetShowPollCreator={setShowPollCreator}
             onSetHideMetrics={setHideMetrics}
+            onSetIsAnonymous={setIsAnonymous}
             onSetShowDraftManager={setShowDraftManager}
             onRestoreDraft={handleRestoreDraft}
             onSetShowMobileComposer={setShowMobileComposer}

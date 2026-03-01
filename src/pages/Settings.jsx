@@ -546,6 +546,26 @@ function Settings() {
             </div>
           </div>
 
+          {/* Safety & Privacy Settings Link */}
+          <div className="settings-section" style={{ background: 'linear-gradient(135deg, #E8F5E9 0%, #F7F7F7 100%)', padding: '20px', borderRadius: '12px', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <h2 className="section-title" style={{ margin: 0, marginBottom: '5px' }}>🛡️ Safety & Privacy</h2>
+                <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '14px' }}>
+                  Anonymous posting, identity visibility, and search controls
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/settings/safety')}
+                className="btn-primary"
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                Manage Safety →
+              </button>
+            </div>
+          </div>
+
           {/* Basic Information moved to Edit Profile modal on Profile page */}
 
           {/* Identity Selection - Can be updated after registration */}
