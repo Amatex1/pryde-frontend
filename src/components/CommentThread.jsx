@@ -8,6 +8,15 @@ import FormattedText from './FormattedText';
 import { getImageUrl } from '../utils/imageUrl';
 
 /**
+ * Helper function to compare IDs safely
+ * Handles MongoDB ObjectId comparison and various ID formats
+ */
+const compareIds = (id1, id2) => {
+  if (!id1 || !id2) return false;
+  return String(id1) === String(id2);
+};
+
+/**
  * CommentThread Component
  *
  * Renders a single comment with its replies (one level of nesting only).
@@ -88,8 +97,10 @@ const CommentThread = ({
 
   const isEditing = editingCommentId === comment._id;
   const isOwnComment =
-    comment.authorId?._id === currentUser?._id ||
-    comment.authorId === currentUser?._id;
+    compareIds(comment.authorId?._id, currentUser?.id) ||
+    compareIds(comment.authorId?._id, currentUser?._id) ||
+    compareIds(comment.authorId, currentUser?.id) ||
+    compareIds(comment.authorId, currentUser?._id);
 
   return (
     <div key={comment._id} className="comment-thread">
@@ -287,8 +298,10 @@ const CommentThread = ({
           {replies.slice(0, MAX_INLINE_REPLIES).map((reply) => {
             const isEditingReply = editingCommentId === reply._id;
             const isOwnReply =
-              reply.authorId?._id === currentUser?._id ||
-              reply.authorId === currentUser?._id;
+              compareIds(reply.authorId?._id, currentUser?.id) ||
+              compareIds(reply.authorId?._id, currentUser?._id) ||
+              compareIds(reply.authorId, currentUser?.id) ||
+              compareIds(reply.authorId, currentUser?._id);
 
             return (
               <div
