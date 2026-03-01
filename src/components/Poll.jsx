@@ -131,8 +131,8 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
                   <div className="poll-option-content">
                     <span className="poll-option-text">{option.text}</span>
                     <span className="poll-option-percentage">{percentage}%</span>
+                    {isSelected && <span className="voted-checkmark">✓</span>}
                   </div>
-                  {isSelected && <span className="voted-checkmark">✓</span>}
                 </div>
               ) : hasVoted && resultsHidden ? (
                 // User voted but results are hidden (author-only visibility)
@@ -140,8 +140,8 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
                   <div className="poll-option-content">
                     <span className="poll-option-text">{option.text}</span>
                     {isSelected && <span className="poll-voted-indicator">Your vote</span>}
+                    {isSelected && <span className="voted-checkmark">✓</span>}
                   </div>
-                  {isSelected && <span className="voted-checkmark">✓</span>}
                 </div>
               ) : (
                 // Results hidden and user hasn't voted - show buttons only

@@ -435,9 +435,16 @@ function Feed() {
       setPostVisibility(localDraft.visibility || 'followers');
       setContentWarning(localDraft.contentWarning || '');
       setHideMetrics(localDraft.hideMetrics || false);
-      setPoll(localDraft.poll || null);
+      // Normalize poll options: backend stores as [{text: "...", votes: []}] but PollCreator expects strings
+      const restoredPoll = localDraft.poll || null;
+      if (restoredPoll && restoredPoll.options) {
+        restoredPoll.options = restoredPoll.options.map(opt =>
+          typeof opt === 'object' && opt.text ? opt.text : opt
+        );
+      }
+      setPoll(restoredPoll);
       setShowContentWarning(!!localDraft.contentWarning);
-      setShowPollCreator(!!localDraft.poll);
+      setShowPollCreator(!!restoredPoll);
       logger.debug('📝 Restored draft from localStorage (without media)');
     }
   }, []); // Only run on mount
@@ -1206,11 +1213,18 @@ function Feed() {
     setPostVisibility(draft.visibility || 'followers');
     setContentWarning(draft.contentWarning || '');
     setHideMetrics(draft.hideMetrics || false);
-    setPoll(draft.poll || null);
+    // Normalize poll options: backend stores as [{text: "...", votes: []}] but PollCreator expects strings
+    const restoredPoll = draft.poll ? { ...draft.poll } : null;
+    if (restoredPoll && restoredPoll.options) {
+      restoredPoll.options = restoredPoll.options.map(opt =>
+        typeof opt === 'object' && opt.text ? opt.text : opt
+      );
+    }
+    setPoll(restoredPoll);
     setSelectedPostGif(draft.gifUrl || null); // Restore GIF from draft
     setCurrentDraftId(draft._id);
     setShowContentWarning(!!draft.contentWarning);
-    setShowPollCreator(!!draft.poll);
+    setShowPollCreator(!!restoredPoll);
   }, []);
 
   // Delete draft after successful post (fire-and-forget, non-blocking)
