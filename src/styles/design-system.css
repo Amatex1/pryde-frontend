@@ -348,7 +348,7 @@ button:disabled, .btn:disabled {
 /* Primary button */
 .btn-primary {
   background: var(--gradient-brand, linear-gradient(135deg, #6C5CE7, #0984E3));
-  color: white;
+  color: var(--text-inverse, #FFFFFF);
   border: none;
 }
 

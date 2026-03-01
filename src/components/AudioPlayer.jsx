@@ -43,11 +43,7 @@ const AudioPlayer = ({ url, duration }) => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const percentage = x / rect.width;
-    const newTime = percentage * audioDuration;
-    
+    const newTime = parseFloat(e.target.value);
     audio.currentTime = newTime;
     setCurrentTime(newTime);
   };
@@ -77,9 +73,23 @@ const AudioPlayer = ({ url, duration }) => {
       </button>
 
       <div className="audio-info">
-        <div className="audio-progress-bar" onClick={handleSeek}>
-          <div className="audio-progress-fill" style={{ width: `${progress}%` }} />
-          <div className="audio-progress-handle" style={{ left: `${progress}%` }} />
+        <div className="audio-progress-bar">
+          <input
+            type="range"
+            className="audio-seek-slider"
+            min={0}
+            max={audioDuration || 0}
+            step="0.1"
+            value={currentTime}
+            onChange={handleSeek}
+            aria-label="Seek audio"
+            aria-valuemin={0}
+            aria-valuemax={audioDuration || 0}
+            aria-valuenow={currentTime}
+            aria-valuetext={formatTime(currentTime)}
+          />
+          <div className="audio-progress-fill" style={{ width: `${progress}%` }} aria-hidden="true" />
+          <div className="audio-progress-handle" style={{ left: `${progress}%` }} aria-hidden="true" />
         </div>
         
         <div className="audio-time">

@@ -461,6 +461,19 @@
   --border-light: var(--border-subtle);
   --card-surface: var(--bg-surface);
   --background-light: var(--bg-page);
+
+  /* ========================================
+     MISSING TOKEN ALIASES
+     Resolves undefined token warnings across
+     MessagesApp, Lounge, EditProfileModal,
+     AsyncStateWrapper, ModerationV3Panel, etc.
+     ======================================== */
+  --bg-secondary: var(--bg-subtle);
+  --bg-tertiary: var(--bg-hover);
+  --surface-sidebar: var(--bg-subtle);
+  --bg-input: var(--bg-card);
+  --color-primary-hover: var(--accent-hover);
+  --navbar-height: 70px;
 }
 
 /* ========================================

@@ -275,8 +275,8 @@
 
   .messages-app__composer button,
   .messages-app__composer .icon-button {
-    height: 30px;
-    min-height: 30px;
+    height: var(--button-height-compact);
+    min-height: var(--button-height-compact);
   }
 
   /* Remove redundant borders */

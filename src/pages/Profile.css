@@ -392,7 +392,7 @@
 }
 
 [data-theme="light"] .avatar-action-menu {
-  background: #ffffff;
+  background: var(--bg-card);
   border-color: rgba(0, 0, 0, 0.1);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
@@ -4502,8 +4502,8 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   [data-theme="light"] .profile-avatar.profile-avatar--overlay {
-    border-color: #ffffff;
-    background: #ffffff;
+    border-color: var(--bg-card);
+    background: var(--bg-card);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   }
 

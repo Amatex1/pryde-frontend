@@ -834,8 +834,8 @@
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-semibold);
     border-radius: 8px;
-    height: 34px;
-    min-height: 34px;
+    height: var(--button-height-compact);
+    min-height: var(--button-height-compact);
     border-width: 1px;
     /* Softer visual weight than Send */
     background: var(--bg-secondary, rgba(0, 0, 0, 0.04));
@@ -856,8 +856,8 @@
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
     border-radius: 8px;
-    height: 34px;
-    min-height: 34px;
+    height: var(--button-height-compact);
+    min-height: var(--button-height-compact);
   }
 
   /* Legacy class - hide on mobile with new structure */

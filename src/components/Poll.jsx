@@ -125,7 +125,7 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
                   onClick={canVote ? () => handleVote(index) : undefined}
                   role={canVote ? 'button' : undefined}
                   tabIndex={canVote ? 0 : undefined}
-                  onKeyDown={canVote ? (e) => e.key === 'Enter' && handleVote(index) : undefined}
+                  onKeyDown={canVote ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleVote(index); } } : undefined}
                 >
                   <div className="poll-option-bar" style={{ width: `${percentage}%` }} />
                   <div className="poll-option-content">
@@ -167,6 +167,7 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
             onClick={totalVotes > 0 ? handleShowVoters : undefined}
             role={totalVotes > 0 ? 'button' : undefined}
             tabIndex={totalVotes > 0 ? 0 : undefined}
+            onKeyDown={totalVotes > 0 ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleShowVoters(); } } : undefined}
           >
             {loadingVoters ? 'Loading...' : `${totalVotes} ${totalVotes === 1 ? 'vote' : 'votes'}`}
           </span>
@@ -201,8 +202,19 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
 
       {/* Voter List Modal */}
       {showVoterModal && voterData && (
-        <div className="poll-voter-modal-overlay" onClick={() => setShowVoterModal(false)}>
-          <div className="poll-voter-modal" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="poll-voter-modal-overlay"
+          onClick={() => setShowVoterModal(false)}
+          aria-hidden="true"
+        >
+          <div
+            className="poll-voter-modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Poll vote details"
+            onKeyDown={(e) => { if (e.key === 'Escape') setShowVoterModal(false); }}
+          >
             <div className="poll-voter-modal-header">
               <h3>📊 {voterData.totalVotes} {voterData.totalVotes === 1 ? 'Vote' : 'Votes'}</h3>
               <button className="poll-voter-modal-close" onClick={() => setShowVoterModal(false)}>×</button>

@@ -64,7 +64,20 @@ const PausableGif = ({ src, alt = 'GIF', className = '', loading = 'lazy' }) => 
   }
 
   return (
-    <div className={`pausable-gif-container ${className}`} onClick={handleClick}>
+    <div
+      className={`pausable-gif-container ${className}`}
+      onClick={handleClick}
+      role="button"
+      tabIndex={0}
+      aria-label={isPaused ? 'Resume GIF' : 'Pause GIF'}
+      aria-pressed={isPaused}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick(e);
+        }
+      }}
+    >
       {/* Animated GIF (hidden when paused) */}
       <img
         ref={imgRef}

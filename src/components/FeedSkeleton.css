@@ -271,7 +271,7 @@
 
   .feed-skeleton-main {
     padding: 0 1rem;
-    margin-top: 70px;
+    margin-top: var(--navbar-height, 70px);
   }
 }
 

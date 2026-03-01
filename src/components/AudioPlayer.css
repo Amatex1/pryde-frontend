@@ -44,6 +44,22 @@
   margin-bottom: 6px;
 }
 
+/* Accessible seek slider — overlaid transparently on progress bar visuals */
+.audio-seek-slider {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  z-index: 1;
+  /* Expand tap target vertically without affecting layout */
+  top: -10px;
+  height: calc(100% + 20px);
+}
+
 .audio-progress-fill {
   position: absolute;
   top: 0;

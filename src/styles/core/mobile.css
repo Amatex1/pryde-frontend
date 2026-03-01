@@ -1707,15 +1707,15 @@
   .tab.active,
   .nav-item.active {
     background: rgba(255, 255, 255, 0.15) !important;
-    color: white !important;
-    border-bottom: 2px solid white !important;
+    color: var(--text-inverse, #FFFFFF) !important;
+    border-bottom: 2px solid var(--text-inverse, #FFFFFF) !important;
   }
 
   /* Primary CTA: White on purple */
   .btn-post,
   .btn-primary,
   .fab-compose {
-    background: white !important;
+    background: var(--text-inverse, #FFFFFF) !important;
     color: var(--color-brand-bg) !important;
     border: none !important;
     font-weight: 600 !important;
@@ -1724,7 +1724,7 @@
   /* Unread indicator: White dot */
   .unread-indicator,
   .notification-badge {
-    background: white !important;
+    background: var(--text-inverse, #FFFFFF) !important;
     color: var(--color-brand-bg) !important;
   }
 }

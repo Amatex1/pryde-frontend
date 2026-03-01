@@ -1456,8 +1456,8 @@
   right: 0;
   margin-top: 0.5rem;
   min-width: 11rem;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
