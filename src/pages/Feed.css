@@ -301,10 +301,8 @@
   word-wrap: break-word;
   margin-bottom: var(--space-5);  /* 24px - posts breathe vertically */
 
-  /* 🚀 LCP OPTIMIZATION: content-visibility for off-screen posts */
-  /* This allows the browser to skip rendering of off-screen content */
-  content-visibility: auto;
-  contain-intrinsic-size: auto 300px; /* Estimated post height for layout stability */
+  /* content-visibility: auto removed — it applies contain:paint which clips
+     [data-tooltip] ::after pseudo-elements that overflow the card boundary */
 }
 
 /* Dark mode - slightly stronger shadow for depth */
