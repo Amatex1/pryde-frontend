@@ -1116,8 +1116,15 @@ function BadgeManagementModal({ user, badges = [], onAssignBadge, onRevokeBadge,
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content badge-modal" onClick={e => e.stopPropagation()}>
+    <div className="modal-overlay" onClick={onClose} aria-hidden="true">
+      <div
+        className="modal-content badge-modal"
+        onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Manage Badges for ${user.username}`}
+        onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
+      >
         <div className="modal-header">
           <h3>Manage Badges for {user.username}</h3>
           <button className="modal-close" onClick={onClose}>×</button>
@@ -2137,8 +2144,15 @@ function PostModal({ post, onClose }) {
   if (!post) return null;
 
   return (
-    <div className="admin-post-modal-overlay" onClick={onClose}>
-      <div className="admin-post-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="admin-post-modal-overlay" onClick={onClose} aria-hidden="true">
+      <div
+        className="admin-post-modal"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Post Details"
+        onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
+      >
         <div className="admin-post-modal-header">
           <h2>Post Details</h2>
           <button className="admin-modal-close" onClick={onClose}>✕</button>

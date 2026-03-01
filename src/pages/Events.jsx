@@ -191,8 +191,15 @@ function Events() {
           <div className="events-grid">{events.map((ev) => getEventCard(ev))}</div>
         )}
         {showCreateModal && (
-          <div className="modal-overlay" onClick={()=>setShowCreateModal(false)}>
-            <div className="modal-content" onClick={(e)=>e.stopPropagation()}>
+          <div className="modal-overlay" onClick={()=>setShowCreateModal(false)} aria-hidden="true">
+            <div
+              className="modal-content"
+              onClick={(e)=>e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Create New Event"
+              onKeyDown={(e) => { if (e.key === 'Escape') setShowCreateModal(false); }}
+            >
               <div className="modal-header">
                 <h2>Create New Event</h2>
                 <button className="btn-close" onClick={()=>setShowCreateModal(false)}>×</button>

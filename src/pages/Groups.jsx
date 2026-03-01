@@ -1559,8 +1559,15 @@ function Groups() {
 
         {/* Edit Post Modal */}
         {editingPost && (
-          <div className="modal-overlay" onClick={() => setEditingPost(null)}>
-            <div className="edit-post-modal glossy" onClick={e => e.stopPropagation()}>
+          <div className="modal-overlay" onClick={() => setEditingPost(null)} aria-hidden="true">
+            <div
+              className="edit-post-modal glossy"
+              onClick={e => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Edit Post"
+              onKeyDown={(e) => { if (e.key === 'Escape') setEditingPost(null); }}
+            >
               <h2>Edit Post</h2>
               <form onSubmit={handleEditSubmit}>
                 <textarea
@@ -1613,8 +1620,15 @@ function Groups() {
 
         {/* Phase 4A: Member Management Modal */}
         {showMemberModal && (
-          <div className="modal-overlay" onClick={() => setShowMemberModal(false)}>
-            <div className="member-modal glossy" onClick={e => e.stopPropagation()}>
+          <div className="modal-overlay" onClick={() => setShowMemberModal(false)} aria-hidden="true">
+            <div
+              className="member-modal glossy"
+              onClick={e => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Members"
+              onKeyDown={(e) => { if (e.key === 'Escape') setShowMemberModal(false); }}
+            >
               <div className="modal-header">
                 <h2>Members</h2>
                 <button className="btn-close" onClick={() => setShowMemberModal(false)}>✕</button>
@@ -1756,8 +1770,15 @@ function Groups() {
 
         {/* Phase 6A: Moderation Log Modal */}
         {showModLog && (
-          <div className="modal-overlay" onClick={() => setShowModLog(false)}>
-            <div className="mod-log-modal glossy" onClick={e => e.stopPropagation()}>
+          <div className="modal-overlay" onClick={() => setShowModLog(false)} aria-hidden="true">
+            <div
+              className="mod-log-modal glossy"
+              onClick={e => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Moderation Log"
+              onKeyDown={(e) => { if (e.key === 'Escape') setShowModLog(false); }}
+            >
               <div className="modal-header">
                 <h2>📋 Moderation Log</h2>
                 <button className="btn-close" onClick={() => setShowModLog(false)}>✕</button>
@@ -1810,8 +1831,15 @@ function Groups() {
 
         {/* Phase 4B: Notification Settings Modal */}
         {showNotificationSettings && (
-          <div className="modal-overlay" onClick={() => setShowNotificationSettings(false)}>
-            <div className="notification-settings-modal glossy" onClick={e => e.stopPropagation()}>
+          <div className="modal-overlay" onClick={() => setShowNotificationSettings(false)} aria-hidden="true">
+            <div
+              className="notification-settings-modal glossy"
+              onClick={e => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Notification Settings"
+              onKeyDown={(e) => { if (e.key === 'Escape') setShowNotificationSettings(false); }}
+            >
               <div className="modal-header">
                 <h2>Updates</h2>
                 <button className="btn-close" onClick={() => setShowNotificationSettings(false)}>✕</button>
@@ -1877,8 +1905,15 @@ function Groups() {
 
         {/* Edit Group Settings Modal */}
         {showEditGroupModal && (
-          <div className="modal-overlay" onClick={() => setShowEditGroupModal(false)}>
-            <div className="create-group-modal glossy" onClick={e => e.stopPropagation()}>
+          <div className="modal-overlay" onClick={() => setShowEditGroupModal(false)} aria-hidden="true">
+            <div
+              className="create-group-modal glossy"
+              onClick={e => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Group Settings"
+              onKeyDown={(e) => { if (e.key === 'Escape') setShowEditGroupModal(false); }}
+            >
               <h2>Group Settings</h2>
 
               <form onSubmit={handleEditGroup}>

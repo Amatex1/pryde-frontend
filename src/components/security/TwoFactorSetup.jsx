@@ -79,8 +79,15 @@ function TwoFactorSetup({ onClose, onSuccess }) {
   }, []);
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content two-factor-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay" onClick={onClose} aria-hidden="true">
+      <div
+        className="modal-content two-factor-modal"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Enable Two-Factor Authentication"
+        onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
+      >
         <button className="modal-close" onClick={onClose}>×</button>
         
         <h2 className="modal-title">🔐 Enable Two-Factor Authentication</h2>

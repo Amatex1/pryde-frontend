@@ -2401,8 +2401,15 @@ function Feed() {
 
       {/* Privacy Settings Modal */}
       {showPrivacyModal && (
-        <div className="modal-overlay" onClick={() => setShowPrivacyModal(false)}>
-          <div className="modal-content privacy-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay" onClick={() => setShowPrivacyModal(false)} aria-hidden="true">
+          <div
+            className="modal-content privacy-modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Custom Privacy Settings"
+            onKeyDown={(e) => { if (e.key === 'Escape') setShowPrivacyModal(false); }}
+          >
             <div className="modal-header">
               <h2>Custom Privacy Settings</h2>
               <button className="btn-close" onClick={() => setShowPrivacyModal(false)}>×</button>
@@ -2489,8 +2496,15 @@ function Feed() {
 
       {/* Comment Modal for Mobile */}
       {commentModalOpen && (
-        <div className="comment-modal-overlay" onClick={() => setCommentModalOpen(null)}>
-          <div className="comment-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="comment-modal-overlay" onClick={() => setCommentModalOpen(null)} aria-hidden="true">
+          <div
+            className="comment-modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Reply"
+            onKeyDown={(e) => { if (e.key === 'Escape') setCommentModalOpen(null); }}
+          >
             <div className="comment-modal-header">
               <h3>Reply</h3>
               <button className="btn-close-modal" onClick={() => setCommentModalOpen(null)}>✕</button>

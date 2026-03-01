@@ -25,8 +25,15 @@ function PhotoViewer({ imageUrl, onClose }) {
   }, []);
 
   return (
-    <div className="photo-viewer-overlay" onClick={onClose}>
-      <div className="photo-viewer-container">
+    <div className="photo-viewer-overlay" onClick={onClose} aria-hidden="true">
+      <div
+        className="photo-viewer-container"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Photo viewer"
+        onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
+      >
         <button className="photo-viewer-close" onClick={onClose}>
           ✕
         </button>

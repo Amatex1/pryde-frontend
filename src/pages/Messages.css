@@ -4258,11 +4258,11 @@
     font-size: var(--font-size-base) !important; /* 16px - iOS zoom prevention */
   }
 
-  /* 7. SEND BUTTON: Smaller to match thinner composer */
+  /* 7. SEND BUTTON: Smaller to match thinner composer (min 36px for touch target) */
   .messages-page .send-btn,
   .messages-page .btn-send {
-    width: 32px !important;
-    height: 32px !important;
+    width: 36px !important;
+    height: 36px !important;
     font-size: var(--font-size-base) !important; /* 16px icon */
   }
 
@@ -4387,13 +4387,13 @@ body:has(.messages-page) {
     flex: 1 !important;
   }
 
-  /* Send button - compact */
+  /* Send button - compact (min 36px for touch target) */
   .messages-page .send-btn,
   .messages-page .btn-send,
   .messages-page .send-button {
-    width: 30px !important;
-    height: 30px !important;
-    min-width: 30px !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
     font-size: var(--font-size-sm) !important; /* 14px icon */
     flex-shrink: 0 !important;
   }

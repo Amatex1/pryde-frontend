@@ -474,6 +474,21 @@
   --bg-input: var(--bg-card);
   --color-primary-hover: var(--accent-hover);
   --navbar-height: 70px;
+
+  /* Additional missing token aliases (re-audit batch) */
+  --border-dark: var(--border-strong);
+  --card-bg: var(--bg-card);
+  --accent-soft: var(--accent-muted);
+  --accent-soft-light: rgba(108, 92, 231, 0.12);
+  --accent-soft-dark: rgba(108, 92, 231, 0.25);
+  --dark-bg: var(--text-primary);
+  --conversation-container-bg: transparent;
+  --conversation-container-radius: var(--border-radius-lg);
+  --conversation-max-width: 860px;
+  --btn-font-size: var(--button-font-size);
+  --btn-height: var(--button-height-compact);
+  --btn-padding-x: var(--button-padding-x-compact);
+  --color-text-on-brand: #FFFFFF;
 }
 
 /* ========================================

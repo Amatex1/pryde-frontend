@@ -180,6 +180,24 @@
   overflow: hidden;
 }
 
+.search-see-more {
+  padding: 0.65rem 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--pryde-purple);
+  border-top: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border-radius: 0 0 16px 16px;
+}
+
+.search-see-more:hover,
+.search-see-more:focus-visible {
+  background: var(--bg-hover);
+  outline: none;
+}
+
 @media (max-width: 768px) {
   .global-search {
     max-width: 100%;

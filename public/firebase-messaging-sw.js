@@ -24,9 +24,15 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   console.log('[FCM SW] Background message received:', payload);
 
-  const notificationTitle = payload.notification?.title || payload.data?.title || 'Pryde Social';
+  const title = payload.notification?.title || payload.data?.title;
+  const body  = payload.notification?.body  || payload.data?.body;
+
+  // Skip FCM internal/management messages that have no real content
+  // (token validation, subscription refresh, etc. arrive as data-only with no title/body)
+  if (!title && !body) return;
+
   const notificationOptions = {
-    body: payload.notification?.body || payload.data?.body || 'You have a new notification',
+    body: body || '',
     icon: payload.notification?.icon || '/pryde-logo-small.webp',
     badge: '/pryde-logo-small.webp',
     data: {
@@ -34,14 +40,11 @@ messaging.onBackgroundMessage((payload) => {
       type: payload.data?.type || 'general',
       ...payload.data,
     },
-    // Android-specific
     vibrate: [100, 50, 100],
-    // Renotify if same tag — allows updating existing notification
     tag: payload.data?.type || 'pryde-notification',
-    renotify: true,
   };
 
-  return self.registration.showNotification(notificationTitle, notificationOptions);
+  return self.registration.showNotification(title, notificationOptions);
 });
 
 // Handle notification click from FCM notifications

@@ -164,8 +164,15 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="edit-profile-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay" onClick={onClose} aria-hidden="true">
+      <div
+        className="edit-profile-modal"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Edit Profile"
+        onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
+      >
         <div className="edit-profile-header">
           <h2>✏️ Edit Profile</h2>
           <button className="btn-close" onClick={onClose}>×</button>

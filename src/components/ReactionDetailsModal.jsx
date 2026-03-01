@@ -59,8 +59,15 @@ function ReactionDetailsModal({ targetType, targetId, onClose }) {
     : reactionsByEmoji[selectedTab] || [];
 
   return (
-    <div className="reaction-modal-overlay" onClick={onClose}>
-      <div className="reaction-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="reaction-modal-overlay" onClick={onClose} aria-hidden="true">
+      <div
+        className="reaction-modal"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Reactions"
+        onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
+      >
         <div className="reaction-modal-header">
           <h3>Reactions</h3>
           <button className="modal-close-btn" onClick={onClose} aria-label="Close" data-tooltip="Close"><X size={18} strokeWidth={1.75} aria-hidden="true" /></button>

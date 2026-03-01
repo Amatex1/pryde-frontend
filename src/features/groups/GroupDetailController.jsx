@@ -539,8 +539,15 @@ export default function GroupDetailController() {
 
       {/* Group Settings Modal */}
       {showSettingsModal && (
-        <div className="modal-overlay" onClick={() => setShowSettingsModal(false)}>
-          <div className="settings-modal glossy" onClick={e => e.stopPropagation()}>
+        <div className="modal-overlay" onClick={() => setShowSettingsModal(false)} aria-hidden="true">
+          <div
+            className="settings-modal glossy"
+            onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Group Settings"
+            onKeyDown={(e) => { if (e.key === 'Escape') setShowSettingsModal(false); }}
+          >
             <h2>Group Settings</h2>
 
             <form onSubmit={handleSaveSettings}>

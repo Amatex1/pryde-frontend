@@ -170,8 +170,15 @@ export default function GroupsListController() {
 
       {/* Create group modal */}
       {showCreateModal && (
-        <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <div className="modal-overlay" onClick={() => setShowCreateModal(false)} aria-hidden="true">
+          <div
+            className="modal-content"
+            onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Create Group"
+            onKeyDown={(e) => { if (e.key === 'Escape') setShowCreateModal(false); }}
+          >
             <h2>Create Group</h2>
             {/* Modal form content - simplified for now */}
             <input

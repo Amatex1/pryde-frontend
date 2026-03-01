@@ -52,8 +52,15 @@ function ReportModal({ isOpen, onClose, reportType, contentId, userId }) {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content report-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay" onClick={onClose} aria-hidden="true">
+      <div
+        className="modal-content report-modal"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Report ${reportType}`}
+        onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
+      >
         <div className="modal-header">
           <h2>Report {reportType}</h2>
           <button className="modal-close" onClick={onClose}>✕</button>

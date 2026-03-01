@@ -111,6 +111,12 @@ function GlobalSearch({ variant = 'default' }) {
     setSearchQuery('');
   };
 
+  const handleSeeMore = () => {
+    navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    setShowResults(false);
+    setSearchQuery('');
+  };
+
   const handleKeyActivate = (e, callback) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -236,6 +242,17 @@ function GlobalSearch({ variant = 'default' }) {
               ))}
             </div>
           )}
+
+          <div
+            className="search-see-more"
+            role="option"
+            tabIndex={0}
+            onClick={handleSeeMore}
+            onKeyDown={(e) => handleKeyActivate(e, handleSeeMore)}
+            aria-label="See more results"
+          >
+            See more results
+          </div>
         </div>
       )}
     </div>

@@ -686,7 +686,7 @@ export default function MessagesApp() {
 
         {/* Mobile info panel backdrop */}
         {showInfoPanel && (
-          <div className="info-panel-backdrop" onClick={() => setShowInfoPanel(false)} />
+          <div className="info-panel-backdrop" onClick={() => setShowInfoPanel(false)} aria-hidden="true" />
         )}
         <InfoPanel
           selectedChat={selectedChat}
@@ -704,8 +704,15 @@ export default function MessagesApp() {
 
       {/* New Chat Modal */}
       {showNewChatModal && (
-        <div className="modal-overlay" onClick={() => setShowNewChatModal(false)}>
-          <div className="modal-content glossy" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay" onClick={() => setShowNewChatModal(false)} aria-hidden="true">
+          <div
+            className="modal-content glossy"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="New Message"
+            onKeyDown={(e) => { if (e.key === 'Escape') setShowNewChatModal(false); }}
+          >
             <div className="modal-header">
               <h2>New Message</h2>
               <button className="btn-close" onClick={() => setShowNewChatModal(false)}>×</button>
@@ -726,7 +733,15 @@ export default function MessagesApp() {
             <div className="search-results">
               {searchResults.length > 0 ? (
                 searchResults.map((user) => (
-                  <div key={user._id} className="user-result" onClick={() => handleStartChat(user._id)}>
+                  <div
+                    key={user._id}
+                    className="user-result"
+                    onClick={() => handleStartChat(user._id)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleStartChat(user._id); } }}
+                    aria-label={`Start chat with ${getDisplayName(user)}`}
+                  >
                     <div className="user-avatar">
                       {user.profilePhoto ? (
                         <img src={getImageUrl(user.profilePhoto)} alt={getDisplayName(user)} />
@@ -750,6 +765,11 @@ export default function MessagesApp() {
                       key={friend._id}
                       className={`user-result ${friend.isActive === false ? 'deactivated-user' : ''}`}
                       onClick={() => friend.isActive !== false && handleStartChat(friend._id)}
+                      role="button"
+                      tabIndex={friend.isActive !== false ? 0 : -1}
+                      aria-disabled={friend.isActive === false}
+                      aria-label={friend.isActive === false ? `${getDisplayName(friend)} (deactivated)` : `Start chat with ${getDisplayName(friend)}`}
+                      onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && friend.isActive !== false) { e.preventDefault(); handleStartChat(friend._id); } }}
                     >
                       <div className="user-avatar">
                         {friend.isActive === false ? (
@@ -787,8 +807,15 @@ export default function MessagesApp() {
 
       {/* Delete Message Modal */}
       {deleteModalOpen && (
-        <div className="modal-overlay" onClick={() => setDeleteModalOpen(false)}>
-          <div className="delete-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay" onClick={() => setDeleteModalOpen(false)} aria-hidden="true">
+          <div
+            className="delete-modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Delete Message"
+            onKeyDown={(e) => { if (e.key === 'Escape') setDeleteModalOpen(false); }}
+          >
             <h3>Delete Message</h3>
             <p>How would you like to delete this message?</p>
             <div className="delete-modal-actions">
