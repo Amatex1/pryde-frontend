@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, Suspense, lazy } from 'react';
+import React, { useState, useRef, useEffect, useCallback, Suspense, lazy } from 'react';
 import { getImageUrl } from '../utils/imageUrl';
 import { getDisplayName } from '../utils/getDisplayName';
 
@@ -38,6 +38,43 @@ export default function MessageInput({
 }) {
   const textareaRef = useRef(null);
   const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragCounter = useRef(0);
+
+  const handleDragEnter = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current++;
+    if (e.dataTransfer.types.includes('Files')) {
+      setIsDragging(true);
+    }
+  }, []);
+
+  const handleDragLeave = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current--;
+    if (dragCounter.current === 0) {
+      setIsDragging(false);
+    }
+  }, []);
+
+  const handleDragOver = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handleDrop = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    dragCounter.current = 0;
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0 && onFileSelect && !uploadingFile && !selectedGif && !isRecipientUnavailable) {
+      onFileSelect({ target: { files } });
+    }
+  }, [onFileSelect, uploadingFile, selectedGif, isRecipientUnavailable]);
 
   // Auto-grow textarea
   const handleInput = (e) => {
@@ -77,7 +114,19 @@ export default function MessageInput({
   const hasContent = message.trim() || selectedFile || selectedGif;
 
   return (
-    <div className="message-input-container">
+    <div
+      className={`message-input-container${isDragging ? ' drag-over' : ''}`}
+      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {isDragging && (
+        <div className="drop-overlay">
+          <span>📎</span>
+          <span>Drop file here</span>
+        </div>
+      )}
       {/* Content Warning Selector */}
       {showContentWarning && (
         <div className="input-addon cw-selector">

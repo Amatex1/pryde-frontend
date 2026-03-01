@@ -30,6 +30,31 @@ function PhotoEssay() {
   const [showDraftManager, setShowDraftManager] = useState(false);
   const [currentDraftId, setCurrentDraftId] = useState(null);
   const autoSaveTimerRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragCounter = useRef(0);
+
+  const handleDragEnter = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current++;
+    if (e.dataTransfer.types.includes('Files')) {
+      setIsDragging(true);
+    }
+  }, []);
+
+  const handleDragLeave = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current--;
+    if (dragCounter.current === 0) {
+      setIsDragging(false);
+    }
+  }, []);
+
+  const handleDragOver = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
 
   useEffect(() => {
     if (id) {
@@ -118,6 +143,18 @@ function PhotoEssay() {
     } finally {
       setUploadingPhoto(false);
       setUploadProgress(0);
+    }
+  };
+
+  const handlePhotoDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    dragCounter.current = 0;
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0 && !uploadingPhoto) {
+      handlePhotoUpload({ target: { files } });
     }
   };
 
@@ -271,7 +308,19 @@ function PhotoEssay() {
 
           <div className="form-group">
             <label>Photos</label>
-            <div className="photo-upload-area">
+            <div
+              className={`photo-upload-area${isDragging ? ' drag-over' : ''}`}
+              onDragEnter={handleDragEnter}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handlePhotoDrop}
+            >
+              {isDragging && (
+                <div className="drop-overlay">
+                  <span>📷</span>
+                  <span>Drop photos here</span>
+                </div>
+              )}
               <label className="upload-button glossy-gold">
                 <input
                   type="file"
@@ -283,6 +332,7 @@ function PhotoEssay() {
                 />
                 {uploadingPhoto ? `⏳ Uploading... ${uploadProgress}%` : '📷 Add Photos'}
               </label>
+              <p className="drop-hint">or drag & drop photos here</p>
             </div>
 
             {photos.length > 0 && (

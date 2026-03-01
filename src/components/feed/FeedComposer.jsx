@@ -1,4 +1,4 @@
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useState, useCallback } from 'react';
 import {
   X, Plus, Upload, Camera, BarChart2, AlertTriangle,
   VolumeX, FileText, Globe, Users, Lock, EyeOff,
@@ -65,6 +65,46 @@ const FeedComposer = memo(function FeedComposer({
   onSetShowMobileComposer,
   onSetShowAdvancedOptions,
 }) {
+  // Drag & drop state
+  const [isDragging, setIsDragging] = useState(false);
+  const dragCounter = { current: 0 };
+
+  const handleDragEnter = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current++;
+    if (e.dataTransfer.types.includes('Files')) {
+      setIsDragging(true);
+    }
+  }, []);
+
+  const handleDragLeave = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current--;
+    if (dragCounter.current === 0) {
+      setIsDragging(false);
+    }
+  }, []);
+
+  const handleDragOver = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handleDrop = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    dragCounter.current = 0;
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0 && onMediaSelect && !uploadingMedia && selectedMedia.length < 3) {
+      // Create a synthetic event matching what the file input onChange provides
+      onMediaSelect({ target: { files } });
+    }
+  }, [onMediaSelect, uploadingMedia, selectedMedia]);
+
   // Lock body scroll while mobile composer is open (prevents background scroll on iOS)
   useEffect(() => {
     if (showMobileComposer) {
@@ -185,7 +225,19 @@ const FeedComposer = memo(function FeedComposer({
 
   // ========== DESKTOP COMPOSER ==========
   const renderDesktopComposer = () => (
-    <div className="create-post glossy fade-in">
+    <div
+      className={`create-post glossy fade-in${isDragging ? ' drag-over' : ''}`}
+      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {isDragging && (
+        <div className="drop-overlay">
+          <Upload size={32} strokeWidth={1.5} />
+          <span>Drop photos or videos here</span>
+        </div>
+      )}
       <h2 className="section-title">Share something</h2>
       <form onSubmit={onPostSubmit}>
         <textarea
@@ -425,7 +477,19 @@ const FeedComposer = memo(function FeedComposer({
           </button>
         </div>
 
-        <div className="mobile-composer-content">
+        <div
+          className={`mobile-composer-content${isDragging ? ' drag-over' : ''}`}
+          onDragEnter={handleDragEnter}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
+          {isDragging && (
+            <div className="drop-overlay">
+              <Upload size={32} strokeWidth={1.5} />
+              <span>Drop photos or videos here</span>
+            </div>
+          )}
           <form onSubmit={onPostSubmit}>
             <textarea
               id="mobile-post-input"
