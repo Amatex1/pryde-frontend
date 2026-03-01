@@ -315,7 +315,8 @@
 .post-card:hover {
   box-shadow: var(--shadow-medium);
   border-color: var(--border-default);
-  /* NO transform on hover - maintains stacking context stability */
+  /* Raise z-index so [data-tooltip] ::after isn't painted over by the next card */
+  z-index: 1;
 }
 
 /* =====================================================

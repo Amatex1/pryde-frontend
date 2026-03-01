@@ -547,7 +547,7 @@
     padding: 10px 4px !important; /* Vertical padding for touch */
     font-size: 0 !important; /* Hide text on mobile */
     white-space: nowrap !important;
-    overflow: hidden !important;
+    overflow: visible !important; /* was hidden — clipped [data-tooltip] ::after */
     text-overflow: ellipsis !important;
     display: flex !important;
     align-items: center !important;
