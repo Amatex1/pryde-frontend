@@ -125,6 +125,7 @@ function Groups() {
   const [replyingToComment, setReplyingToComment] = useState(null);
   const [replyText, setReplyText] = useState('');
   const [replyGif, setReplyGif] = useState(null);
+  const [replyIsAnonymous, setReplyIsAnonymous] = useState(false);
   const [showReactionPicker, setShowReactionPicker] = useState(null);
   const commentRefs = useRef({});
 
@@ -815,7 +816,8 @@ function Groups() {
       const response = await api.post(`/posts/${postId}/comments`, {
         content: replyText || '',
         gifUrl: replyGif || null,
-        parentCommentId: commentId
+        parentCommentId: commentId,
+        isAnonymous: replyIsAnonymous
       });
 
       setCommentReplies(prev => ({
@@ -826,6 +828,7 @@ function Groups() {
       setReplyingToComment(null);
       setReplyText('');
       setReplyGif(null);
+      setReplyIsAnonymous(false);
       setShowReplies(prev => ({
         ...prev,
         [commentId]: true
@@ -840,6 +843,7 @@ function Groups() {
     setReplyingToComment(null);
     setReplyText('');
     setReplyGif(null);
+    setReplyIsAnonymous(false);
   };
 
   // Get user's current reaction emoji for a comment
@@ -1459,6 +1463,7 @@ function Groups() {
                                 toggleReplies={toggleReplies}
                                 handleReplyToComment={handleReplyToComment}
                                 setShowReactionPicker={setShowReactionPicker}
+                                viewerRole={currentUser?.role}
                               />
                             ))}
                         </div>
@@ -1476,6 +1481,18 @@ function Groups() {
                               className="reply-input"
                               autoFocus
                             />
+                            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', cursor: 'pointer' }}>
+                              <input
+                                type="checkbox"
+                                checked={replyIsAnonymous}
+                                onChange={(e) => setReplyIsAnonymous(e.target.checked)}
+                                style={{ margin: 0 }}
+                              />
+                              <span style={{ opacity: 0.7 }}>Anon</span>
+                            </label>
+                            {replyIsAnonymous && (
+                              <span style={{ fontSize: '10px', color: '#7c3aed', background: '#ede9fe', padding: '1px 6px', borderRadius: '999px', fontWeight: 500 }}>🔒 Mods only</span>
+                            )}
                             <button type="button" onClick={handleCancelReply} className="btn-cancel-reply">
                               ✕
                             </button>

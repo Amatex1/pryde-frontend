@@ -22,6 +22,9 @@ const compareIds = (id1, id2) => {
  *
  * Renders a single comment with its replies (one level of nesting only).
  */
+// Staff roles that can see anonymous comment authors
+const STAFF_ROLES = ['moderator', 'admin', 'super_admin'];
+
 const CommentThread = ({
   comment,
   replies = [],
@@ -44,7 +47,9 @@ const CommentThread = ({
   setReactionDetailsModal,
   setReportModal,
   isFullSheet = false,
+  viewerRole,
 }) => {
+  const isStaff = STAFF_ROLES.includes(viewerRole);
   const reactionPickerTimeoutRef = useRef(null);
 
   // ── Resize-aware mobile detection ─────────────────────────────────────────
@@ -117,39 +122,63 @@ const CommentThread = ({
           </div>
         ) : (
           <>
-            {/* Avatar */}
-            <Link
-              to={`/profile/${comment.authorId?.username}`}
-              className="comment-avatar"
-              style={{ textDecoration: 'none' }}
-              aria-label={`View ${comment.authorId?.displayName || comment.authorId?.username}'s profile`}
-            >
-              {comment.authorId?.profilePhoto ? (
-                <OptimizedImage
-                  src={getImageUrl(comment.authorId.profilePhoto)}
-                  alt={comment.authorId.username}
-                  className="avatar-image"
-                />
-              ) : (
-                <span>{comment.authorId?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-              )}
-            </Link>
+            {/* Avatar — anonymous-aware */}
+            {comment.isAnonymous && !isStaff ? (
+              <div className="comment-avatar" style={{ textDecoration: 'none' }}>
+                <span>?</span>
+              </div>
+            ) : (
+              <Link
+                to={`/profile/${comment.authorId?.username}`}
+                className="comment-avatar"
+                style={{ textDecoration: 'none' }}
+                aria-label={`View ${comment.authorId?.displayName || comment.authorId?.username}'s profile`}
+              >
+                {comment.authorId?.profilePhoto ? (
+                  <OptimizedImage
+                    src={getImageUrl(comment.authorId.profilePhoto)}
+                    alt={comment.authorId.username}
+                    className="avatar-image"
+                  />
+                ) : (
+                  <span>{comment.authorId?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
+                )}
+              </Link>
+            )}
 
             {/* Lane: bubble + actions */}
             <div className="comment-lane">
               <div className="comment-bubble">
-                <Link
-                  to={`/profile/${comment.authorId?.username}`}
-                  className="comment-author"
-                  style={{ textDecoration: 'none' }}
-                >
-                  <span className="author-name">
-                    {comment.authorId?.displayName || comment.authorId?.username}
+                {comment.isAnonymous && !isStaff ? (
+                  <span className="comment-author" style={{ textDecoration: 'none' }}>
+                    <span className="author-name">Anonymous Member</span>
                   </span>
-                  {comment.authorId?.badges?.length > 0 && (
-                    <TieredBadgeDisplay badges={comment.authorId.badges} context="card" />
-                  )}
-                </Link>
+                ) : comment.isAnonymous && isStaff ? (
+                  <Link
+                    to={`/profile/${comment.authorId?.username}`}
+                    className="comment-author"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <span className="author-name">
+                      Anonymous Member{' '}
+                      <span style={{ fontSize: '11px', opacity: 0.7 }}>(Author: @{comment.authorId?.username})</span>
+                    </span>
+                    <span style={{ fontSize: '11px', marginLeft: '4px' }}>🕵️</span>
+                  </Link>
+                ) : (
+                  <Link
+                    to={`/profile/${comment.authorId?.username}`}
+                    className="comment-author"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <span className="author-name">
+                      {comment.authorId?.displayName || comment.authorId?.username}
+                    </span>
+                    {comment.authorId?.badges?.length > 0 && (
+                      <TieredBadgeDisplay badges={comment.authorId.badges} context="card" />
+                    )}
+                  </Link>
+                )}
 
                 {isEditing ? (
                   <div className="comment-edit-box">
@@ -317,46 +346,68 @@ const CommentThread = ({
                   </div>
                 ) : (
                   <>
-                    {/* Avatar */}
-                    <Link
-                      to={`/profile/${reply.authorId?.username}`}
-                      className="comment-avatar"
-                      style={{ textDecoration: 'none' }}
-                      aria-label={`View ${reply.authorId?.displayName || reply.authorId?.username}'s profile`}
-                    >
-                      {reply.authorId?.profilePhoto ? (
-                        <OptimizedImage
-                          src={getImageUrl(reply.authorId.profilePhoto)}
-                          alt={reply.authorId.username}
-                          className="avatar-image"
-                        />
-                      ) : (
-                        <span>
-                          {reply.authorId?.displayName?.charAt(0).toUpperCase() || 'U'}
-                        </span>
-                      )}
-                    </Link>
+                    {/* Avatar — anonymous-aware */}
+                    {reply.isAnonymous && !isStaff ? (
+                      <div className="comment-avatar" style={{ textDecoration: 'none' }}>
+                        <span>?</span>
+                      </div>
+                    ) : (
+                      <Link
+                        to={`/profile/${reply.authorId?.username}`}
+                        className="comment-avatar"
+                        style={{ textDecoration: 'none' }}
+                        aria-label={`View ${reply.authorId?.displayName || reply.authorId?.username}'s profile`}
+                      >
+                        {reply.authorId?.profilePhoto ? (
+                          <OptimizedImage
+                            src={getImageUrl(reply.authorId.profilePhoto)}
+                            alt={reply.authorId.username}
+                            className="avatar-image"
+                          />
+                        ) : (
+                          <span>
+                            {reply.authorId?.displayName?.charAt(0).toUpperCase() || 'U'}
+                          </span>
+                        )}
+                      </Link>
+                    )}
 
-                    {/* Lane — author is now INSIDE the bubble (no more peer flex item),
-                        giving the lane the full remaining width */}
+                    {/* Lane — anonymous-aware author rendering */}
                     <div className="comment-lane">
                       <div className="comment-bubble">
-                        {/* Author header — same pattern as top-level comments */}
-                        <Link
-                          to={`/profile/${reply.authorId?.username}`}
-                          className="comment-author"
-                          style={{ textDecoration: 'none' }}
-                        >
-                          <span className="author-name">
-                            {reply.authorId?.displayName || reply.authorId?.username}
+                        {reply.isAnonymous && !isStaff ? (
+                          <span className="comment-author" style={{ textDecoration: 'none' }}>
+                            <span className="author-name">Anonymous Member</span>
                           </span>
-                          {reply.authorId?.badges?.length > 0 && (
-                            <TieredBadgeDisplay
-                              badges={reply.authorId.badges}
-                              context="card"
-                            />
-                          )}
-                        </Link>
+                        ) : reply.isAnonymous && isStaff ? (
+                          <Link
+                            to={`/profile/${reply.authorId?.username}`}
+                            className="comment-author"
+                            style={{ textDecoration: 'none' }}
+                          >
+                            <span className="author-name">
+                              Anonymous Member{' '}
+                              <span style={{ fontSize: '11px', opacity: 0.7 }}>(Author: @{reply.authorId?.username})</span>
+                            </span>
+                            <span style={{ fontSize: '11px', marginLeft: '4px' }}>🕵️</span>
+                          </Link>
+                        ) : (
+                          <Link
+                            to={`/profile/${reply.authorId?.username}`}
+                            className="comment-author"
+                            style={{ textDecoration: 'none' }}
+                          >
+                            <span className="author-name">
+                              {reply.authorId?.displayName || reply.authorId?.username}
+                            </span>
+                            {reply.authorId?.badges?.length > 0 && (
+                              <TieredBadgeDisplay
+                                badges={reply.authorId.badges}
+                                context="card"
+                              />
+                            )}
+                          </Link>
+                        )}
 
                         {isEditingReply ? (
                           <div className="comment-edit-box">

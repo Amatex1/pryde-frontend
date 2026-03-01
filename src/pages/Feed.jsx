@@ -56,7 +56,7 @@ function Feed() {
   const [searchParams] = useSearchParams();
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const { onlineUsers, isUserOnline } = useOnlineUsers();
-  const { authReady, isAuthenticated, user: currentUser } = useAuth(); // ✅ Single source of truth for auth
+  const { authReady, isAuthenticated, user: currentUser, role } = useAuth(); // ✅ Single source of truth for auth
   const { toasts, showToast, removeToast } = useToast();
 
   // Get menu handler from AppLayout outlet context
@@ -107,6 +107,7 @@ function Feed() {
   const [replyingToComment, setReplyingToComment] = useState(null);
   const [replyText, setReplyText] = useState('');
   const [replyGif, setReplyGif] = useState(null);
+  const [replyIsAnonymous, setReplyIsAnonymous] = useState(false);
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [editingPostId, setEditingPostId] = useState(null);
   const [editPostText, setEditPostText] = useState('');
@@ -1992,7 +1993,8 @@ function Feed() {
       await api.post(`/posts/${postId}/comments`, {
         content: contentWithEmojis,
         gifUrl: replyGif || null,
-        parentCommentId: commentId // This makes it a reply
+        parentCommentId: commentId, // This makes it a reply
+        isAnonymous: replyIsAnonymous
       });
 
       // Socket event will add the reply to state - no optimistic update needed
@@ -2001,6 +2003,7 @@ function Feed() {
       setReplyingToComment(null);
       setReplyText('');
       setReplyGif(null);
+      setReplyIsAnonymous(false);
 
       // Auto-show replies after adding one
       setShowReplies(prev => ({
@@ -2011,12 +2014,13 @@ function Feed() {
       logger.error('Failed to reply to comment:', error);
       showAlert('This didn\'t post properly. You can try again in a moment.', 'Reply issue');
     }
-  }, [showGifPicker, replyText, replyGif, replyingToComment, showAlert]);
+  }, [showGifPicker, replyText, replyGif, replyingToComment, replyIsAnonymous, showAlert]);
 
   const handleCancelReply = useCallback(() => {
     setReplyingToComment(null);
     setReplyText('');
     setReplyGif(null);
+    setReplyIsAnonymous(false);
   }, []);
 
   const handleBookmark = useCallback(async (postId) => {
@@ -2348,6 +2352,9 @@ function Feed() {
             onSubmitReply={handleSubmitReply}
             onCancelReply={handleCancelReply}
             getUserReactionEmoji={getUserReactionEmoji}
+            viewerRole={role}
+            replyIsAnonymous={replyIsAnonymous}
+            onReplyIsAnonymousChange={setReplyIsAnonymous}
           />
 
           {/* Mobile FAB + Composer handled by FeedComposer component above */}
@@ -2622,6 +2629,18 @@ function Feed() {
             <form onSubmit={handleSubmitReply} className="comment-sheet-reply-form">
               <div className="reply-input-header">
                 <span>Replying to comment</span>
+                <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', cursor: 'pointer', marginLeft: 'auto', marginRight: '8px' }}>
+                  <input
+                    type="checkbox"
+                    checked={replyIsAnonymous}
+                    onChange={(e) => setReplyIsAnonymous(e.target.checked)}
+                    style={{ margin: 0 }}
+                  />
+                  <span style={{ opacity: 0.7 }}>Anon</span>
+                </label>
+                {replyIsAnonymous && (
+                  <span style={{ fontSize: '10px', color: '#7c3aed', background: '#ede9fe', padding: '1px 6px', borderRadius: '999px', fontWeight: 500, marginRight: '8px' }}>🔒 Mods only</span>
+                )}
                 <button type="button" onClick={handleCancelReply} className="btn-cancel-reply-small">✕</button>
               </div>
               <div className="comment-input-wrapper">
@@ -2715,6 +2734,7 @@ function Feed() {
                   setReactionDetailsModal={setReactionDetailsModal}
                   setReportModal={setReportModal}
                   isFullSheet={true}
+                  viewerRole={role}
                 />
               ))}
           </div>

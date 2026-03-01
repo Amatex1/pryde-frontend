@@ -294,6 +294,16 @@ const FeedComposer = memo(function FeedComposer({
                   <span><EyeOff size={16} strokeWidth={1.75} aria-hidden="true" /><span className="composer-label"> Anonymous</span></span>
                 </label>
               )}
+              {isAnonymous && (
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '4px',
+                  fontSize: '11px', color: '#7c3aed', background: '#ede9fe',
+                  padding: '2px 8px', borderRadius: '999px', fontWeight: 500,
+                  marginLeft: '4px'
+                }}>
+                  🔒 Visible to moderators only
+                </span>
+              )}
             </>
           )}
 
@@ -511,6 +521,15 @@ const FeedComposer = memo(function FeedComposer({
                   <EyeOff size={20} strokeWidth={1.75} aria-hidden="true"
                     style={{ opacity: isAnonymous ? 1 : 0.5 }} />
                 </label>
+              )}
+              {isAnonymous && (
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '4px',
+                  fontSize: '10px', color: '#7c3aed', background: '#ede9fe',
+                  padding: '2px 6px', borderRadius: '999px', fontWeight: 500
+                }}>
+                  🔒 Mods only
+                </span>
               )}
 
               <button

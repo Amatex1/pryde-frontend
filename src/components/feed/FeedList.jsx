@@ -82,6 +82,9 @@ export default function FeedList({
   onSubmitReply,
   onCancelReply,
   getUserReactionEmoji,
+  viewerRole,
+  replyIsAnonymous,
+  onReplyIsAnonymousChange,
 }) {
   return (
     <>
@@ -179,6 +182,9 @@ export default function FeedList({
                   onSubmitReply={onSubmitReply}
                   onCancelReply={onCancelReply}
                   getUserReactionEmoji={getUserReactionEmoji}
+                  viewerRole={viewerRole}
+                  replyIsAnonymous={replyIsAnonymous}
+                  onReplyIsAnonymousChange={onReplyIsAnonymousChange}
                 />
               );
             })

@@ -51,6 +51,9 @@ const FeedPostComments = memo(function FeedPostComments({
   
   // Utilities
   getUserReactionEmoji,
+  viewerRole,
+  replyIsAnonymous,
+  onReplyIsAnonymousChange,
 }) {
   return (
     <>
@@ -83,6 +86,7 @@ const FeedPostComments = memo(function FeedPostComments({
                 setShowReactionPicker={onSetShowReactionPicker}
                 setReactionDetailsModal={onSetReactionDetailsModal}
                 setReportModal={onSetReportModal}
+                viewerRole={viewerRole}
               />
             ))}
         </div>
@@ -116,6 +120,20 @@ const FeedPostComments = memo(function FeedPostComments({
             />
           </div>
           <div className="reply-composer-actions">
+            {onReplyIsAnonymousChange && (
+              <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', cursor: 'pointer', marginRight: '4px' }}>
+                <input
+                  type="checkbox"
+                  checked={replyIsAnonymous || false}
+                  onChange={(e) => onReplyIsAnonymousChange(e.target.checked)}
+                  style={{ margin: 0 }}
+                />
+                <span style={{ opacity: 0.7 }}>Anon</span>
+              </label>
+            )}
+            {replyIsAnonymous && (
+              <span style={{ fontSize: '10px', color: '#7c3aed', background: '#ede9fe', padding: '1px 6px', borderRadius: '999px', fontWeight: 500 }}>🔒 Mods only</span>
+            )}
             <button
               type="button"
               onClick={onCancelReply}

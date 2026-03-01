@@ -63,7 +63,7 @@ function Profile() {
   const navigate = useNavigate();
   // Get menu handler from AppLayout outlet context
   const { onMenuOpen } = useOutletContext() || {};
-  const { user: currentUser } = useAuth(); // Use centralized auth context
+  const { user: currentUser, role } = useAuth(); // Use centralized auth context
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const [user, setUser] = useState(null);
   const [userBadges, setUserBadges] = useState([]); // Full badge objects with visibility applied
@@ -79,6 +79,7 @@ function Profile() {
   const [replyingToComment, setReplyingToComment] = useState(null);
   const [replyText, setReplyText] = useState('');
   const [replyGif, setReplyGif] = useState(null); // GIF for reply
+  const [replyIsAnonymous, setReplyIsAnonymous] = useState(false);
   const [openCommentDropdownId, setOpenCommentDropdownId] = useState(null);
   const commentRefs = useRef({});
   const [showReplies, setShowReplies] = useState({}); // Track which comments have replies visible
@@ -1275,7 +1276,8 @@ function Profile() {
       await api.post(`/posts/${postId}/comments`, {
         content: contentWithEmojis,
         gifUrl: replyGif || null,
-        parentCommentId: commentId // Reply to comment
+        parentCommentId: commentId, // Reply to comment
+        isAnonymous: replyIsAnonymous
       });
 
       // Socket event will add the reply to state - no optimistic update needed
@@ -1283,6 +1285,7 @@ function Profile() {
 
       setReplyText('');
       setReplyGif(null);
+      setReplyIsAnonymous(false);
       setReplyingToComment(null);
       showToast('Reply added successfully', 'success');
     } catch (error) {
@@ -1295,6 +1298,7 @@ function Profile() {
     setReplyingToComment(null);
     setReplyText('');
     setReplyGif(null);
+    setReplyIsAnonymous(false);
   };
 
   // Helper function to get user's reaction emoji
@@ -2478,6 +2482,7 @@ function Profile() {
                                 setShowReactionPicker={setShowReactionPicker}
                                 setReactionDetailsModal={setReactionDetailsModal}
                                 setReportModal={setReportModal}
+                                viewerRole={role}
                               />
                             ))}
                         </div>
@@ -2498,6 +2503,18 @@ function Profile() {
                               autoFocus
                             />
                             <div className="reply-actions">
+                              <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', cursor: 'pointer' }}>
+                                <input
+                                  type="checkbox"
+                                  checked={replyIsAnonymous}
+                                  onChange={(e) => setReplyIsAnonymous(e.target.checked)}
+                                  style={{ margin: 0 }}
+                                />
+                                <span style={{ opacity: 0.7 }}>Anon</span>
+                              </label>
+                              {replyIsAnonymous && (
+                                <span style={{ fontSize: '10px', color: '#7c3aed', background: '#ede9fe', padding: '1px 6px', borderRadius: '999px', fontWeight: 500 }}>🔒 Mods only</span>
+                              )}
                               <button
                                 type="button"
                                 onClick={() => setShowGifPicker(showGifPicker === `reply-${replyingToComment.commentId}` ? null : `reply-${replyingToComment.commentId}`)}
@@ -2849,6 +2866,18 @@ function Profile() {
             <form onSubmit={handleSubmitReply} className="comment-sheet-reply-form">
               <div className="reply-input-header">
                 <span>Replying to comment</span>
+                <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', cursor: 'pointer', marginLeft: 'auto', marginRight: '8px' }}>
+                  <input
+                    type="checkbox"
+                    checked={replyIsAnonymous}
+                    onChange={(e) => setReplyIsAnonymous(e.target.checked)}
+                    style={{ margin: 0 }}
+                  />
+                  <span style={{ opacity: 0.7 }}>Anon</span>
+                </label>
+                {replyIsAnonymous && (
+                  <span style={{ fontSize: '10px', color: '#7c3aed', background: '#ede9fe', padding: '1px 6px', borderRadius: '999px', fontWeight: 500, marginRight: '8px' }}>🔒 Mods only</span>
+                )}
                 <button type="button" onClick={handleCancelReply} className="btn-cancel-reply-small" aria-label="Cancel reply"><X size={14} strokeWidth={1.75} aria-hidden="true" /></button>
               </div>
               <div className="comment-input-wrapper">
@@ -2941,6 +2970,7 @@ function Profile() {
                   setReactionDetailsModal={setReactionDetailsModal}
                   setReportModal={setReportModal}
                   isFullSheet={true}
+                  viewerRole={role}
                 />
               ))}
           </div>

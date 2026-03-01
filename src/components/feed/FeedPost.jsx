@@ -111,6 +111,9 @@ const FeedPost = memo(forwardRef(function FeedPost({
   
   // Utilities
   getUserReactionEmoji,
+  viewerRole,
+  replyIsAnonymous,
+  onReplyIsAnonymousChange,
 }, ref) {
   // Check if this is a system post (from pryde_prompts account)
   const isSystemPost = post.isSystemPost || post.author?.isSystemAccount;
@@ -257,6 +260,9 @@ const FeedPost = memo(forwardRef(function FeedPost({
         onCommentSubmit={onCommentSubmit}
         onToggleGifPicker={onToggleGifPicker}
         getUserReactionEmoji={getUserReactionEmoji}
+        viewerRole={viewerRole}
+        replyIsAnonymous={replyIsAnonymous}
+        onReplyIsAnonymousChange={onReplyIsAnonymousChange}
       />
     </div>
   );
