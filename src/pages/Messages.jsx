@@ -42,6 +42,15 @@ import MessageBubble from '../components/MessageBubble';
 import MessageInput from '../components/MessageInput';
 import TypingIndicator from '../components/TypingIndicator';
 
+/**
+ * Helper function to compare IDs safely
+ * Handles MongoDB ObjectId comparison and various ID formats
+ */
+const compareIds = (id1, id2) => {
+  if (!id1 || !id2) return false;
+  return String(id1) === String(id2);
+};
+
 function Messages() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
@@ -248,7 +257,7 @@ function Messages() {
 
     messages.forEach((msg, index) => {
       const senderId = msg.sender._id;
-      const isSent = senderId === currentUser._id;
+      const isSent = compareIds(senderId, currentUser._id);
       const previousMsg = index > 0 ? messages[index - 1] : null;
 
       // Check if this message should start a new group
@@ -1574,7 +1583,7 @@ function Messages() {
       if (debouncedFilter.trim()) {
         const q = debouncedFilter.toLowerCase();
         const otherUser = conv.otherUser || (
-          conv.lastMessage?.sender?._id === currentUser?._id
+          compareIds(conv.lastMessage?.sender?._id, currentUser?._id)
             ? conv.lastMessage?.recipient
             : conv.lastMessage?.sender
         );
@@ -1735,12 +1744,12 @@ function Messages() {
                       {filteredConversations.map((conv) => {
                         // Use the otherUser field from backend, or fallback to lastMessage sender/recipient
                         const otherUser = conv.otherUser || (
-                          conv.lastMessage?.sender?._id === currentUser?._id
+                          compareIds(conv.lastMessage?.sender?._id, currentUser?._id)
                             ? conv.lastMessage?.recipient
                             : conv.lastMessage?.sender
                         );
                         // Detect self-chat (Notes to self)
-                        const isSelfChat = otherUser?._id === currentUser?._id;
+                        const isSelfChat = compareIds(otherUser?._id, currentUser?._id);
 
                         return (
                           <div
@@ -1879,7 +1888,7 @@ function Messages() {
                   <div className="chat-user">
                     {/* Self-DM detection for visual adjustments */}
                     {(() => {
-                      const isSelfChat = selectedUser?._id === currentUser?._id;
+                      const isSelfChat = compareIds(selectedUser?._id, currentUser?._id);
                       return (
                         <>
                           <div className="chat-avatar">
@@ -2099,7 +2108,7 @@ function Messages() {
                                                   }, {})
                                                 ).map(([emoji, count]) => {
                                                   const userReacted = msg.reactions.some(
-                                                    r => r.emoji === emoji && r.user._id === currentUser?._id
+                                                    r => r.emoji === emoji && compareIds(r.user._id, currentUser?._id)
                                                   );
                                                   return (
                                                     <button

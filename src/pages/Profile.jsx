@@ -1262,7 +1262,7 @@ function Profile() {
     // Handle array format (Post reactions)
     if (Array.isArray(reactions)) {
       const userReaction = reactions.find(r =>
-        (r.user?._id === currentUser.id || r.user === currentUser.id)
+        (compareIds(r.user?._id, currentUser.id) || compareIds(r.user, currentUser.id) || compareIds(r.user?._id, currentUser._id) || compareIds(r.user, currentUser._id))
       );
       return userReaction?.emoji || null;
     }

@@ -11,6 +11,15 @@ import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
 import { quietCopy } from '../config/uiCopy';
 import './Lounge.css';
 
+/**
+ * Helper function to compare IDs safely
+ * Handles MongoDB ObjectId comparison and various ID formats
+ */
+const compareIds = (id1, id2) => {
+  if (!id1 || !id2) return false;
+  return String(id1) === String(id2);
+};
+
 function Lounge() {
   const navigate = useNavigate();
   // Get menu handler from AppLayout outlet context
@@ -511,7 +520,7 @@ function Lounge() {
 
   // Navigate to DM with user
   const handleMessageUser = (userId) => {
-    if (userId === currentUser?._id) return; // Don't DM yourself
+    if (compareIds(userId, currentUser?._id)) return; // Don't DM yourself
     navigate(`/messages?user=${userId}`);
   };
 
@@ -694,7 +703,7 @@ function Lounge() {
               {messages.map((msg) => (
                 <div
                   key={msg._id}
-                  className={`lounge-message ${msg.isDeleted ? 'deleted' : ''} ${msg._isOptimistic ? 'optimistic' : ''} ${msg.sender?.id === currentUser?._id ? 'own-message' : ''}`}
+                  className={`lounge-message ${msg.isDeleted ? 'deleted' : ''} ${msg._isOptimistic ? 'optimistic' : ''} ${compareIds(msg.sender?.id, currentUser?._id) || compareIds(msg.sender?._id, currentUser?._id) ? 'own-message' : ''}`}
                 >
                   {msg.isDeleted ? (
                     <div className="lounge-message-deleted">
@@ -780,7 +789,7 @@ function Lounge() {
                                 </button>
                               )}
                               {/* Sender can delete for all or for self */}
-                              {msg.sender?.id === currentUser?._id && (
+                              {(compareIds(msg.sender?.id, currentUser?._id) || compareIds(msg.sender?._id, currentUser?._id)) && (
                                 <button
                                   onClick={() => { openDeleteModal(msg._id, true); setOpenMessageMenu(null); }}
                                   className="menu-item menu-item-danger"
@@ -789,7 +798,7 @@ function Lounge() {
                                 </button>
                               )}
                               {/* Non-sender can delete for self only */}
-                              {msg.sender?.id !== currentUser?._id && (
+                              {!(compareIds(msg.sender?.id, currentUser?._id) || compareIds(msg.sender?._id, currentUser?._id)) && (
                                 <button
                                   onClick={() => { openDeleteModal(msg._id, false); setOpenMessageMenu(null); }}
                                   className="menu-item menu-item-danger"
@@ -798,7 +807,7 @@ function Lounge() {
                                 </button>
                               )}
                               {/* Admin can also delete for all */}
-                              {isAdmin && msg.sender?.id !== currentUser?._id && (
+                              {isAdmin && !(compareIds(msg.sender?.id, currentUser?._id) || compareIds(msg.sender?._id, currentUser?._id)) && (
                                 <button
                                   onClick={() => { openDeleteModal(msg._id, true); setOpenMessageMenu(null); }}
                                   className="menu-item menu-item-danger"

@@ -1096,8 +1096,8 @@ function Groups() {
   }
 
   // Phase 2C: Use role info from API response, with fallback to local check
-  const isOwner = group.isOwner || group.owner?._id === currentUser?.id;
-  const isModerator = group.isModerator || group.moderators?.some(m => m._id === currentUser?.id);
+  const isOwner = group.isOwner || compareIds(group.owner?._id, currentUser?.id) || compareIds(group.owner?._id, currentUser?._id);
+  const isModerator = group.isModerator || group.moderators?.some(m => compareIds(m._id, currentUser?.id) || compareIds(m._id, currentUser?._id));
 
   return (
     <div className="page-container">
