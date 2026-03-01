@@ -2,6 +2,49 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import Cropper from "react-easy-crop";
 import "./PhotoRepositionFullscreen.css";
 
+// Helper: load an image element from a URL
+const createImage = (url) =>
+  new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = (e) => reject(e);
+    img.src = url;
+  });
+
+// Helper: draw the cropped area onto a canvas and return a Blob
+const getCroppedBlob = async (imageSrc, pixelCrop, outputSize) => {
+  const image = await createImage(imageSrc);
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+
+  // Use outputSize if provided (e.g. 500×500 for avatar), otherwise use pixel crop dimensions
+  const outW = outputSize?.width || pixelCrop.width;
+  const outH = outputSize?.height || pixelCrop.height;
+  canvas.width = outW;
+  canvas.height = outH;
+
+  ctx.drawImage(
+    image,
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    outW,
+    outH
+  );
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => (blob ? resolve(blob) : reject(new Error("Canvas is empty"))),
+      "image/jpeg",
+      0.92
+    );
+  });
+};
+
 export default function PhotoRepositionInline({
   type,                                        // "cover" | "avatar"
   imageUrl,
@@ -20,6 +63,7 @@ export default function PhotoRepositionInline({
       : { x: initialPosition.x || 0, y: initialPosition.y || 0 }
   );
   const [zoom, setZoom] = useState(initialPosition.scale || 1);
+  const [saving, setSaving] = useState(false);
 
   // ── Transient zoom badge ──────────────────────────────────────────────────
   const [showZoomBadge, setShowZoomBadge] = useState(false);
@@ -57,25 +101,26 @@ export default function PhotoRepositionInline({
     setZoom(1);
   }, []);
 
-  // Capture croppedArea percentages for accurate background-position save
-  const [croppedAreaPct, setCroppedAreaPct] = useState(null);
-  const handleCropComplete = useCallback((croppedArea) => {
-    setCroppedAreaPct(croppedArea);
+  // Capture croppedAreaPixels for destructive canvas crop on save
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const handleCropComplete = useCallback((_croppedArea, croppedAreaPx) => {
+    setCroppedAreaPixels(croppedAreaPx);
   }, []);
 
-  // Non-destructive: convert croppedArea percentages → background-position percentages
-  const handleSave = useCallback(() => {
-    let bgX = 50, bgY = 50;
-    if (croppedAreaPct) {
-      bgX = croppedAreaPct.width >= 100
-        ? 50
-        : Math.max(0, Math.min(100, croppedAreaPct.x / (100 - croppedAreaPct.width) * 100));
-      bgY = croppedAreaPct.height >= 100
-        ? 50
-        : Math.max(0, Math.min(100, croppedAreaPct.y / (100 - croppedAreaPct.height) * 100));
+  // Destructive crop: create a canvas-cropped blob and pass it up
+  const handleSave = useCallback(async () => {
+    if (!croppedAreaPixels || saving) return;
+    setSaving(true);
+    try {
+      // Avatar: output 500×500 for quality; cover: use original crop pixel dimensions
+      const outputSize = type === "avatar" ? { width: 500, height: 500 } : null;
+      const blob = await getCroppedBlob(imageUrl, croppedAreaPixels, outputSize);
+      await onSave(blob, type);
+    } catch (err) {
+      console.error("Crop save failed:", err);
+      setSaving(false);
     }
-    onSave({ bgX, bgY, scale: zoom });
-  }, [croppedAreaPct, zoom, onSave]);
+  }, [croppedAreaPixels, saving, imageUrl, type, onSave]);
 
   // cropSize fills the container exactly (cover); avatar uses 1:1 aspect
   const cropperSizeProps = cropSize
@@ -155,8 +200,8 @@ export default function PhotoRepositionInline({
           <button onClick={onCancel} className="pe-btn pe-btn--secondary">
             Cancel
           </button>
-          <button onClick={handleSave} className="pe-btn pe-btn--primary">
-            Save
+          <button onClick={handleSave} className="pe-btn pe-btn--primary" disabled={saving}>
+            {saving ? "Saving…" : "Save"}
           </button>
         </div>
       </div>

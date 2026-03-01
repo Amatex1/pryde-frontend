@@ -1450,28 +1450,35 @@ function Profile() {
     setAvatarMenuOpen(true);
   };
 
-  const handleSavePosition = async (newPosition) => {
+  const handleSavePosition = async (croppedBlob, photoType) => {
     try {
-      const response = await api.put("/users/profile", {
-        ...(editingType === "cover"
-          ? { coverPhotoPosition: newPosition }
-          : { profilePhotoPosition: newPosition })
+      // Upload the destructively-cropped image as the new profile/cover photo
+      const formData = new FormData();
+      formData.append('photo', croppedBlob, `cropped-${photoType}.jpg`);
+
+      const endpoint = photoType === 'cover'
+        ? '/upload/cover-photo'
+        : '/upload/profile-photo';
+
+      const response = await api.post(endpoint, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
-      // Use the backend's returned user to keep local state in sync with DB
+
+      // Update local state with the new photo URL
       if (response.data?.user) {
         setUser(response.data.user);
-      } else {
+      } else if (response.data?.url) {
         setUser(prev => ({
           ...prev,
-          ...(editingType === "cover"
-            ? { coverPhotoPosition: newPosition }
-            : { profilePhotoPosition: newPosition })
+          ...(photoType === 'cover'
+            ? { coverPhoto: response.data.url }
+            : { profilePhoto: response.data.url })
         }));
       }
-      showToast('Photo position saved!', 'success');
+      showToast('Photo saved!', 'success');
     } catch (error) {
-      logger.error('Failed to save photo position:', error);
-      showToast('Failed to save photo position. Please try again.', 'error');
+      logger.error('Failed to save cropped photo:', error);
+      showToast('Failed to save photo. Please try again.', 'error');
     }
     setEditingType(null);
   };
@@ -1715,9 +1722,7 @@ function Profile() {
                     style={{
                       backgroundImage: `url(${getImageUrl(user.coverPhoto)})`,
                       backgroundSize: 'cover',
-                      backgroundPosition: user.coverPhotoPosition?.bgX != null
-                        ? `${user.coverPhotoPosition.bgX}% ${user.coverPhotoPosition.bgY}%`
-                        : 'center',
+                      backgroundPosition: 'center',
                       width: '100%',
                       height: '100%',
                       opacity: 0.92,
@@ -1800,9 +1805,7 @@ function Profile() {
                 style={{
                   backgroundImage: `url(${getImageUrl(user.profilePhoto)})`,
                   backgroundSize: 'cover',
-                  backgroundPosition: user.profilePhotoPosition?.bgX != null
-                    ? `${user.profilePhotoPosition.bgX}% ${user.profilePhotoPosition.bgY}%`
-                    : 'center',
+                  backgroundPosition: 'center',
                   width: '100%',
                   height: '100%',
                   cursor: 'pointer'
