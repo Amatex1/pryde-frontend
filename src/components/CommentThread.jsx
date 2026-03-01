@@ -5,6 +5,7 @@ import ReactionButton from './ReactionButton';
 import TieredBadgeDisplay from './TieredBadgeDisplay';
 import PausableGif from './PausableGif';
 import FormattedText from './FormattedText';
+import { Pencil, Trash2, Flag } from 'lucide-react';
 import { getImageUrl } from '../utils/imageUrl';
 
 /**
@@ -258,7 +259,7 @@ const CommentThread = ({
                           setOpenMenuId(null);
                         }}
                       >
-                        ✏️ Edit
+                        <Pencil size={14} strokeWidth={1.75} aria-hidden="true" /> Edit
                       </button>
                       <button
                         className="delete"
@@ -267,7 +268,7 @@ const CommentThread = ({
                           setOpenMenuId(null);
                         }}
                       >
-                        🗑️ Delete
+                        <Trash2 size={14} strokeWidth={1.75} aria-hidden="true" /> Delete
                       </button>
                     </>
                   ) : (
@@ -282,7 +283,7 @@ const CommentThread = ({
                         setOpenMenuId(null);
                       }}
                     >
-                      🚩 Report
+                      <Flag size={14} strokeWidth={1.75} aria-hidden="true" /> Report
                     </button>
                   )}
                 </div>
@@ -459,7 +460,7 @@ const CommentThread = ({
                                   setOpenMenuId(null);
                                 }}
                               >
-                                ✏️ Edit
+                                <Pencil size={14} strokeWidth={1.75} aria-hidden="true" /> Edit
                               </button>
                               <button
                                 className="delete"
@@ -468,7 +469,7 @@ const CommentThread = ({
                                   setOpenMenuId(null);
                                 }}
                               >
-                                🗑️ Delete
+                                <Trash2 size={14} strokeWidth={1.75} aria-hidden="true" /> Delete
                               </button>
                             </>
                           ) : (
@@ -483,7 +484,7 @@ const CommentThread = ({
                                 setOpenMenuId(null);
                               }}
                             >
-                              🚩 Report
+                              <Flag size={14} strokeWidth={1.75} aria-hidden="true" /> Report
                             </button>
                           )}
                         </div>

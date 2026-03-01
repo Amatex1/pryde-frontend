@@ -23,6 +23,8 @@ import ProfilePostSearch from '../components/ProfilePostSearch';
 import CommentThread from '../components/CommentThread';
 import CommentSheet from '../components/comments/CommentSheet';
 import ReactionButton from '../components/ReactionButton';
+import FeedPostDropdown from '../components/feed/FeedPostDropdown';
+import FeedPostActions from '../components/feed/FeedPostActions';
 import PinnedPostBadge from '../components/PinnedPostBadge';
 import TieredBadgeDisplay from '../components/TieredBadgeDisplay';
 import PostHeader from '../components/PostHeader';
@@ -2419,59 +2421,19 @@ function Profile() {
                         edited={post.edited}
                         isPinned={post.isPinned}
                       >
-                        <div className="post-dropdown-container">
-                          <button
-                            className="btn-dropdown"
-                            onClick={() => toggleDropdown(post._id)}
-                            title="More options"
-                          >
-                            ⋮
-                          </button>
-                          {openDropdownId === post._id && (
-                            <div className="dropdown-menu">
-                              {compareIds(post.author?._id, currentUser?.id) || compareIds(post.author?._id, currentUser?._id) ? (
-                                <>
-                                  {/* OPTIONAL FEATURES: Pin/unpin button */}
-                                  <button
-                                    className="dropdown-item"
-                                    onClick={() => {
-                                      handlePinPost(post._id);
-                                      setOpenDropdownId(null);
-                                    }}
-                                  >
-                                    {post.isPinned ? '📌 Unpin' : '📍 Pin'}
-                                  </button>
-                                  {/* DEPRECATED: View Edit History menu item removed 2025-12-26 */}
-                                  <button
-                                    className="dropdown-item"
-                                    onClick={() => handleEditPost(post)}
-                                  >
-                                    <Pencil size={14} strokeWidth={1.75} aria-hidden="true" /> Edit
-                                  </button>
-                                  <button
-                                    className="dropdown-item delete"
-                                    onClick={() => {
-                                      handleDeletePost(post._id);
-                                      setOpenDropdownId(null);
-                                    }}
-                                  >
-                                    <Trash2 size={14} strokeWidth={1.75} aria-hidden="true" /> Delete
-                                  </button>
-                                </>
-                              ) : (
-                                <button
-                                  className="dropdown-item report"
-                                  onClick={() => {
-                                    setReportModal({ isOpen: true, type: 'post', contentId: post._id, userId: post.author?._id });
-                                    setOpenDropdownId(null);
-                                  }}
-                                >
-                                  <Flag size={14} strokeWidth={1.75} aria-hidden="true" /> Report
-                                </button>
-                              )}
-                            </div>
-                          )}
-                        </div>
+                        <FeedPostDropdown
+                          postId={post._id}
+                          isPinned={post.isPinned}
+                          isOwnPost={compareIds(post.author?._id, currentUser?.id) || compareIds(post.author?._id, currentUser?._id)}
+                          isDropdownOpen={openDropdownId === post._id}
+                          authorId={post.author?._id}
+                          onToggleDropdown={toggleDropdown}
+                          onPinPost={(postId) => { handlePinPost(postId); setOpenDropdownId(null); }}
+                          onEditPost={handleEditPost}
+                          onDeletePost={(postId) => { handleDeletePost(postId); setOpenDropdownId(null); }}
+                          onReportPost={(postId, authorId) => { setReportModal({ isOpen: true, type: 'post', contentId: postId, userId: authorId }); setOpenDropdownId(null); }}
+                          post={post}
+                        />
                       </PostHeader>
 
                       <div className="post-content">
@@ -2617,61 +2579,28 @@ function Profile() {
                         <span>{post.shares?.length || 0} shares</span>
                       </div>
 
-                      <div className="post-actions soft-actions">
-                        <ReactionButton
-                          targetType="post"
-                          targetId={post._id}
-                          currentUserId={currentUser?.id}
-                          initialUserReaction={getUserReactionEmoji(post.reactions)}
-                          onReactionChange={(reactions, userReaction) => {
-                            // Update post in state with new reactions
-                            setPosts(prevPosts =>
-                              prevPosts.map(p =>
-                                p._id === post._id
-                                  ? { ...p, _reactionsUpdated: Date.now() }
-                                  : p
-                              )
-                            );
-                          }}
-                          onCountClick={() => setReactionDetailsModal({
-                            isOpen: true,
-                            targetType: 'post',
-                            targetId: post._id
-                          })}
-                        />
-                        <button
-                          className="action-btn subtle"
-                          onClick={() => toggleCommentBox(post._id)}
-                          aria-label={`Reply to post${!post.hideMetrics ? ` (${post.commentCount || 0} replies)` : ''}`}
-                          data-tooltip={!post.hideMetrics ? `Reply (${post.commentCount || 0})` : 'Reply'}
-                        >
-                          <MessageCircle {...LUCIDE_DEFAULTS} size={20} aria-hidden="true" />
-                          <span className="action-text">
-                            Reply {!post.hideMetrics && `(${post.commentCount || 0})`}
-                          </span>
-                        </button>
-                        <button
-                          className={`action-btn ghost ${bookmarkedPosts.includes(post._id) ? 'bookmarked' : ''}`}
-                          onClick={() => handleBookmark(post._id)}
-                          aria-label={bookmarkedPosts.includes(post._id) ? 'Remove save from post' : 'Save post'}
-                          data-tooltip={bookmarkedPosts.includes(post._id) ? 'Saved' : 'Save'}
-                        >
-                          <Bookmark {...LUCIDE_DEFAULTS} size={20} aria-hidden="true" />
-                          <span className="action-text">{bookmarkedPosts.includes(post._id) ? 'Saved' : 'Save'}</span>
-                        </button>
-                        {/* REMOVED: Share button - backend support incomplete (relies on deprecated Friends system) */}
-                        {/* TODO: Reimplement when backend is updated to work with Followers system */}
-                        {/* <button
-                          className="action-btn"
-                          onClick={() => handleShare(post)}
-                          aria-label={`Share post${!post.hideMetrics ? ` (${post.shares?.length || 0} shares)` : ''}`}
-                        >
-                          <ChevronRight size={16} strokeWidth={1.75} className="action-emoji" aria-hidden="true" />
-                          <span className="action-text">
-                            Share {!post.hideMetrics && `(${post.shares?.length || 0})`}
-                          </span>
-                        </button> */}
-                      </div>
+                      <FeedPostActions
+                        post={post}
+                        currentUser={currentUser}
+                        isBookmarked={bookmarkedPosts.includes(post._id)}
+                        onReactionChange={(postId, reactions, userReaction) => {
+                          setPosts(prevPosts =>
+                            prevPosts.map(p =>
+                              p._id === postId
+                                ? { ...p, _reactionsUpdated: Date.now() }
+                                : p
+                            )
+                          );
+                        }}
+                        onReactionCountClick={(postId) => setReactionDetailsModal({
+                          isOpen: true,
+                          targetType: 'post',
+                          targetId: postId
+                        })}
+                        onToggleCommentBox={toggleCommentBox}
+                        onBookmark={handleBookmark}
+                        getUserReactionEmoji={getUserReactionEmoji}
+                      />
 
                       {/* Comments Section - Facebook Style */}
                       {postComments[post._id] && postComments[post._id].length > 0 && (
