@@ -1323,6 +1323,7 @@ function Profile() {
 
   const handleProfileUpdate = (updatedUser) => {
     setUser(updatedUser);
+    if (updatedUser._id) fetchUserBadges(updatedUser._id);
     showToast('Profile updated successfully!', 'success');
   };
 
