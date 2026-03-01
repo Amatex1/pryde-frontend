@@ -2279,7 +2279,7 @@ function Profile() {
                         <FeedPostDropdown
                           postId={post._id}
                           isPinned={post.isPinned}
-                          isOwnPost={isOwnProfile}
+                          isOwnPost={post.isOwnPost === true || (post.author?.username ? post.author.username === currentUser?.username : String(post.author?._id || '') === String(currentUser?.id || currentUser?._id || ''))}
                           isDropdownOpen={openDropdownId === post._id}
                           authorId={post.author?._id}
                           onToggleDropdown={toggleDropdown}

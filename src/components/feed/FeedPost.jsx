@@ -118,7 +118,8 @@ const FeedPost = memo(forwardRef(function FeedPost({
   // Check if this is a system post (from pryde_prompts account)
   const isSystemPost = post.isSystemPost || post.author?.isSystemAccount;
   // Compare by username first (most reliable), then fall back to ID comparison
-  const isOwnPost = (() => {
+  // post.isOwnPost is set server-side for anonymous posts (where author._id is wiped)
+  const isOwnPost = post.isOwnPost === true || (() => {
     if (!post.author || !currentUser) return false;
     // Username comparison (works when author is populated, which is the normal case)
     if (typeof post.author === 'object' && post.author.username && currentUser.username && post.author.username === currentUser.username) return true;
