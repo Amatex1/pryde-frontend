@@ -691,6 +691,13 @@ textarea[name="newPost"]:focus {
   gap: 0.25rem;
 }
 
+/* Dropdown container: positioned for absolute dropdown-menu */
+.post-dropdown-container {
+  position: relative;
+  display: inline-flex;
+  z-index: 10;
+}
+
 /* Dropdown menu button: Right-aligned */
 .btn-dropdown {
   width: 32px;
@@ -806,8 +813,10 @@ textarea[name="newPost"]:focus {
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
-  overflow: hidden;
+  overflow: visible;
   padding: 0.25rem 0;
+  display: flex;
+  flex-direction: column;
 }
 
 [data-theme="dark"] .post-dropdown-container .dropdown-menu,

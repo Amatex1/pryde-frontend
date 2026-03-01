@@ -127,7 +127,7 @@ button:not(.emoji-button):not(.reaction-btn) {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md, 12px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  overflow: visible;
 }
 
 [data-theme="dark"] .dropdown-menu,

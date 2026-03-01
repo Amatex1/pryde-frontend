@@ -267,6 +267,8 @@
   height: 36px;
   flex-shrink: 0;
   margin-top: -4px; /* Optical alignment */
+  position: relative;
+  overflow: visible;
 }
 
 .ph-actions > button,
