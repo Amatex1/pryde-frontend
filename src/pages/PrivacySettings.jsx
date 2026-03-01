@@ -2,28 +2,52 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import { useToast } from '../hooks/useToast';
+import { isHighRiskCountry } from '../utils/geolocation';
 import './PrivacySettings.css';
+
+const ToggleRow = ({ label, desc, checked, onChange }) => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid var(--border-subtle)' }}>
+    <div style={{ flex: 1, marginRight: '16px' }}>
+      <span style={{ fontWeight: 600, fontSize: '15px', color: 'var(--text-primary)' }}>{label}</span>
+      <p style={{ color: 'var(--text-muted)', fontSize: '13px', margin: '4px 0 0', lineHeight: 1.4 }}>{desc}</p>
+    </div>
+    <label className="toggle-switch" style={{ flexShrink: 0 }}>
+      <input type="checkbox" checked={checked} onChange={onChange} />
+      <span className="toggle-slider"></span>
+    </label>
+  </div>
+);
 
 const PrivacySettings = () => {
   const [privacySettings, setPrivacySettings] = useState({
     profileVisibility: 'public',
     whoCanMessage: 'followers',
-    quietModeEnabled: false,
     blockedUsers: []
+  });
+  const [safety, setSafety] = useState({
+    showRealName: true,
+    allowAnonymousPosts: true,
+    hideProfileFromSearch: false,
+    hideOnlineStatus: false,
+    friendOnlyProfile: false,
+    showBadgesPublicly: true,
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [isHighRisk, setIsHighRisk] = useState(false);
   const { showToast } = useToast();
 
   useEffect(() => {
     fetchPrivacySettings();
     fetchBlockedUsers();
+    fetchSafetySettings();
+    const country = localStorage.getItem('userCountry');
+    if (country && isHighRiskCountry(country)) setIsHighRisk(true);
   }, []);
 
   const fetchPrivacySettings = async () => {
     try {
       const response = await api.get('/privacy/settings');
-      // Safely merge response with defaults to prevent undefined arrays
       setPrivacySettings(prev => ({
         ...prev,
         ...response.data,
@@ -32,6 +56,15 @@ const PrivacySettings = () => {
     } catch (error) {
       console.error('Error fetching privacy settings:', error);
       showToast('Failed to load privacy settings', 'error');
+    }
+  };
+
+  const fetchSafetySettings = async () => {
+    try {
+      const response = await api.get('/privacy/safety');
+      setSafety(prev => ({ ...prev, ...response.data }));
+    } catch {
+      showToast('Failed to load safety settings', 'error');
     }
   };
 
@@ -58,12 +91,23 @@ const PrivacySettings = () => {
     }
   };
 
+  const updateSafetySetting = async (key, value) => {
+    const prev = safety[key];
+    setSafety(s => ({ ...s, [key]: value }));
+    try {
+      await api.patch('/privacy/safety', { [key]: value });
+      showToast('Setting updated', 'success');
+    } catch {
+      setSafety(s => ({ ...s, [key]: prev }));
+      showToast('Failed to update setting', 'error');
+    }
+  };
+
   const searchUsers = async (query) => {
     if (query.trim().length < 2) {
       setSearchResults([]);
       return;
     }
-
     try {
       const response = await api.get('/users/search', {
         params: { q: query, excludeBlocked: true }
@@ -99,7 +143,14 @@ const PrivacySettings = () => {
 
   return (
     <div className="privacy-settings-container">
-      <h1>Privacy & Security</h1>
+      <h1>Privacy & Safety</h1>
+
+      {isHighRisk && (
+        <div style={{ background: '#eef2ff', border: '1px solid #c7d2fe', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', color: '#4338ca' }}>
+          <span style={{ fontSize: '18px' }}>🌍</span>
+          <span>Based on your region, you may want to review your privacy settings for additional protection.</span>
+        </div>
+      )}
 
       <section className="privacy-section">
         <h2>Profile Visibility</h2>
@@ -164,17 +215,47 @@ const PrivacySettings = () => {
       </section>
 
       <section className="privacy-section">
-        <h2>Quiet Mode</h2>
-        <div className="setting-group">
-          <label>
-            <input
-              type="checkbox"
-              checked={privacySettings.quietModeEnabled}
-              onChange={(e) => updatePrivacySetting('quietModeEnabled', e.target.checked)}
-            />
-            Enable Quiet Mode (Suppress non-critical notifications)
-          </label>
-        </div>
+        <h2>Identity Visibility</h2>
+        <ToggleRow
+          label="Show Real Name"
+          desc="Display your real name on your profile. If off, only your username is shown."
+          checked={safety.showRealName}
+          onChange={(e) => updateSafetySetting('showRealName', e.target.checked)}
+        />
+        <ToggleRow
+          label="Allow Anonymous Posting"
+          desc="Post and reply anonymously. Staff can always see the real author."
+          checked={safety.allowAnonymousPosts}
+          onChange={(e) => updateSafetySetting('allowAnonymousPosts', e.target.checked)}
+        />
+        <ToggleRow
+          label="Show Badges Publicly"
+          desc="Display your earned badges on your profile and posts."
+          checked={safety.showBadgesPublicly}
+          onChange={(e) => updateSafetySetting('showBadgesPublicly', e.target.checked)}
+        />
+      </section>
+
+      <section className="privacy-section">
+        <h2>Profile Exposure</h2>
+        <ToggleRow
+          label="Hide Profile from Search"
+          desc="Prevent your profile from appearing in search results."
+          checked={safety.hideProfileFromSearch}
+          onChange={(e) => updateSafetySetting('hideProfileFromSearch', e.target.checked)}
+        />
+        <ToggleRow
+          label="Friends-Only Profile"
+          desc="Only approved connections can view your full profile."
+          checked={safety.friendOnlyProfile}
+          onChange={(e) => updateSafetySetting('friendOnlyProfile', e.target.checked)}
+        />
+        <ToggleRow
+          label="Hide Online Status"
+          desc="Others won't see when you're online."
+          checked={safety.hideOnlineStatus}
+          onChange={(e) => updateSafetySetting('hideOnlineStatus', e.target.checked)}
+        />
       </section>
 
       <section className="privacy-section">
@@ -193,9 +274,9 @@ const PrivacySettings = () => {
             <div className="search-results">
               {searchResults.map(user => (
                 <div key={user._id} className="search-result-item">
-                  <img 
-                    src={user.profilePhoto || '/default-avatar.png'} 
-                    alt={user.username} 
+                  <img
+                    src={user.profilePhoto || '/default-avatar.png'}
+                    alt={user.username}
                     className="user-avatar"
                   />
                   <div className="user-info">
@@ -211,7 +292,6 @@ const PrivacySettings = () => {
 
         <div className="blocked-users-list">
           <h3>Currently Blocked Users</h3>
-          {/* Safe array access with nullish coalescing */}
           {(privacySettings.blockedUsers ?? []).length === 0 ? (
             <p>No users blocked</p>
           ) : (
