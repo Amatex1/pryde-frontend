@@ -462,7 +462,7 @@
   /* Step 2 — Gradient header */
   background: linear-gradient(135deg, rgba(108, 92, 231, 0.95) 0%, rgba(85, 70, 200, 0.95) 100%);
   z-index: 2;
-  padding: 0.875rem 1rem;
+  padding: 0.5rem 0.75rem;
   text-align: left;
   font-weight: var(--font-weight-semibold);
   white-space: nowrap;
@@ -495,7 +495,7 @@
 
 .users-table td,
 .blocks-table td {
-  padding: .875rem 3.3em;
+  padding: 0.4rem 1rem;
   border-bottom: 1px solid var(--border-subtle);
   color: var(--text-primary);
   white-space: nowrap;
@@ -543,7 +543,7 @@
 }
 
 .role-badge {
-  padding: 0.25rem 0.75rem;
+  padding: 0.15rem 0.5rem;
   border-radius: 20px;
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
@@ -615,7 +615,7 @@
 }
 
 .status-badge {
-  padding: 0.25rem 0.75rem;
+  padding: 0.15rem 0.5rem;
   border-radius: 20px;
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
@@ -670,16 +670,16 @@
 
 .user-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.25rem;
   flex-wrap: nowrap;
   align-items: center;
 }
 
 .btn-action {
-  padding: 0.5rem 1rem;
+  padding: 0.3rem 0.75rem;
   border: none;
-  border-radius: 8px;
-  font-size: var(--font-size-sm);
+  border-radius: 6px;
+  font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   cursor: pointer;
   background: var(--gradient-primary);
@@ -916,7 +916,7 @@ table.admin-table thead tr {
 }
 
 table.admin-table th {
-  padding: 16px 18px;
+  padding: 8px 12px;
   text-align: left;
   vertical-align: middle;
   font-weight: 600;
@@ -941,7 +941,7 @@ table.admin-table tbody tr:hover {
 }
 
 table.admin-table td {
-  padding: 16px 18px;
+  padding: 8px 12px;
   text-align: left;
   vertical-align: middle;
   font-size: 14px;
