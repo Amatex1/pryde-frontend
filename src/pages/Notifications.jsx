@@ -4,11 +4,13 @@ import Navbar from '../components/Navbar';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import logger from '../utils/logger';
+import { sendTestNotification } from '../utils/pushNotifications';
 import './Notifications.css';
 
 function Notifications() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [testPushStatus, setTestPushStatus] = useState(null); // null | 'sending' | 'ok' | 'error' | 'no-sub'
   const navigate = useNavigate();
   // Get menu handler from AppLayout outlet context
   const { onMenuOpen } = useOutletContext() || {};
@@ -72,7 +74,7 @@ function Notifications() {
         navigate('/groups');
       }
     } else if (notification.postId) {
-      if (notification.type === 'comment' && notification.commentId) {
+      if (notification.commentId && (notification.type === 'comment' || notification.type === 'like')) {
         navigate(`/feed?post=${notification.postId}&comment=${notification.commentId}`);
       } else {
         navigate(`/feed?post=${notification.postId}`);
@@ -106,7 +108,9 @@ function Notifications() {
 
     switch (notification.type) {
       case 'like':
-        return `${senderName} liked your post`;
+        return notification.commentId
+          ? `${senderName} reacted to your comment`
+          : `${senderName} liked your post`;
       case 'comment':
         return `${senderName} commented on your post`;
       case 'friend_request':
@@ -139,6 +143,18 @@ function Notifications() {
     return `${Math.floor(seconds / 604800)}w ago`;
   };
 
+  const handleTestPush = async () => {
+    setTestPushStatus('sending');
+    try {
+      const result = await sendTestNotification();
+      setTestPushStatus(result?.hasSubscription === false ? 'no-sub' : 'ok');
+    } catch {
+      setTestPushStatus('error');
+    } finally {
+      setTimeout(() => setTestPushStatus(null), 4000);
+    }
+  };
+
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
@@ -148,11 +164,26 @@ function Notifications() {
       <div className="notifications-container">
         <div className="notifications-header">
           <h1>Notifications</h1>
-          {unreadCount > 0 && (
-            <button onClick={markAllAsRead} className="mark-all-read-btn">
-              Mark all as read
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {unreadCount > 0 && (
+              <button onClick={markAllAsRead} className="mark-all-read-btn">
+                Mark all as read
+              </button>
+            )}
+            <button
+              onClick={handleTestPush}
+              disabled={testPushStatus === 'sending'}
+              className="mark-all-read-btn"
+              title="Send a test push notification to your device"
+              style={{ opacity: testPushStatus === 'sending' ? 0.6 : 1 }}
+            >
+              {testPushStatus === 'sending' ? 'Sending...'
+                : testPushStatus === 'ok' ? 'Sent'
+                : testPushStatus === 'no-sub' ? 'Enable notifications first'
+                : testPushStatus === 'error' ? 'Failed'
+                : 'Test push'}
             </button>
-          )}
+          </div>
         </div>
 
         {loading ? (
