@@ -1361,7 +1361,7 @@ function Groups() {
                 </div>
               ) : (
                 posts.map(post => {
-                  const isAuthor = compareIds(post.author?._id, currentUser?.id) || compareIds(post.author?._id, currentUser?._id);
+                  const isAuthor = compareIds(post.author?._id, currentUser?.id) || compareIds(post.author?._id, currentUser?._id) || (post.author?.username && post.author.username === currentUser?.username);
                   // Phase 4A: Owner and moderators can delete any post
                   const canDelete = isAuthor || isOwner || isModerator;
 

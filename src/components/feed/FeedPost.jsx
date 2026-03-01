@@ -115,7 +115,7 @@ const FeedPost = memo(forwardRef(function FeedPost({
   // Check if this is a system post (from pryde_prompts account)
   const isSystemPost = post.isSystemPost || post.author?.isSystemAccount;
   // Compare IDs safely - handles MongoDB ObjectId comparison and various ID formats
-  const isOwnPost = compareIds(post.author?._id, currentUser?.id) || compareIds(post.author?._id, currentUser?._id);
+  const isOwnPost = compareIds(post.author?._id, currentUser?.id) || compareIds(post.author?._id, currentUser?._id) || (post.author?.username && post.author.username === currentUser?.username);
   const isBookmarked = bookmarkedPosts.includes(post._id);
   const comments = postComments[post._id] || [];
   const isEditing = editingPostId === post._id;
