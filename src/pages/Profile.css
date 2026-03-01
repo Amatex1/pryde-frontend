@@ -1022,17 +1022,79 @@
   }
 }
 
-.dropdown-item {
-  width: 100%;
-  padding: 0.875rem 1.25rem;
+/* =====================================================
+   POST DROPDOWN - FeedPostDropdown styles for Profile page
+   (These are normally in Feed.css which Profile doesn't import)
+   ===================================================== */
+
+.post-dropdown-container {
+  position: relative;
+  display: inline-flex;
+  z-index: 10;
+}
+
+.btn-dropdown {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   border: none;
   background: transparent;
-  color: var(--text-main);
+  font-size: var(--font-size-xl);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-dropdown:hover {
+  background: var(--pryde-purple);
+  color: white;
+}
+
+[data-theme="dark"] .btn-dropdown {
+  color: var(--text-primary, #FFFFFF);
+}
+
+[data-theme="dark"] .btn-dropdown:hover {
+  background: var(--pryde-purple);
+  color: white;
+}
+
+.post-dropdown-container .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  min-width: 200px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  overflow: visible;
+  white-space: nowrap;
+  padding: 0.25rem 0;
+}
+
+[data-theme="dark"] .post-dropdown-container .dropdown-menu {
+  background: var(--bg-card, #12192F);
+  border-color: var(--border-soft, rgba(255, 255, 255, 0.08));
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.dropdown-item {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--text-primary, #1E2338);
   text-align: left;
   cursor: pointer;
-  transition: all 0.2s ease;
   font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -1041,6 +1103,33 @@
 .dropdown-item:hover {
   background: var(--soft-lavender);
   color: var(--pryde-purple);
+}
+
+[data-theme="dark"] .dropdown-item {
+  color: var(--text-primary, #FFFFFF);
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+  background: var(--bg-hover, rgba(108, 92, 231, 0.08));
+  color: var(--accent-primary, #6D6AF8);
+}
+
+.dropdown-item.delete {
+  color: var(--color-danger);
+}
+
+.dropdown-item.delete:hover {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.dropdown-item.report {
+  color: var(--color-warning);
+}
+
+.dropdown-item.report:hover {
+  background: rgba(255, 193, 7, 0.1);
+  color: var(--color-warning);
 }
 
 .dropdown-item-danger:hover {
