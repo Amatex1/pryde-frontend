@@ -3,7 +3,7 @@
    OPTION A — FINAL, CORRECT IMPLEMENTATION
    ========================================================= */
 
-const VERSION = 'pryde-sw-3.1-push-only-clean';
+const VERSION = 'pryde-sw-3.2-fcm-compat';
 
 self.addEventListener('install', () => {
   console.log(`[SW ${VERSION}] Installed`);
@@ -43,12 +43,19 @@ self.addEventListener('push', (event) => {
     data = { title: 'Pryde', body: event.data.text() };
   }
 
-  const title = data.title || 'Pryde';
+  // Support two payload shapes:
+  //   VAPID (our backend): { title, body, icon, data: { url } }
+  //   FCM nested format:   { notification: { title, body }, data: { url } }
+  const notification = data.notification || {};
+  const title = data.title || notification.title || 'Pryde';
+  const body  = data.body  || notification.body  || '';
+  const url   = data.data?.url || data.data || '/';
+
   const options = {
-    body: data.body,
-    icon: '/pryde-logo-small.webp',
+    body,
+    icon: data.icon || '/pryde-logo-small.webp',
     badge: '/pryde-logo-small.webp',
-    data: data.data?.url || '/',
+    data: url,
     ...(data.tag && { tag: data.tag }),
   };
 

@@ -11,6 +11,7 @@ function Notifications() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [testPushStatus, setTestPushStatus] = useState(null); // null | 'sending' | 'ok' | 'error' | 'no-sub'
+  const [testPushError, setTestPushError] = useState(null);
   const navigate = useNavigate();
   // Get menu handler from AppLayout outlet context
   const { onMenuOpen } = useOutletContext() || {};
@@ -145,6 +146,7 @@ function Notifications() {
 
   const handleTestPush = async () => {
     setTestPushStatus('sending');
+    setTestPushError(null);
     try {
       const result = await sendTestNotification();
       if (result?.hasSubscription === false) {
@@ -153,11 +155,12 @@ function Notifications() {
         setTestPushStatus('ok');
       } else {
         setTestPushStatus('error');
+        setTestPushError(result?.message || null);
       }
     } catch {
       setTestPushStatus('error');
     } finally {
-      setTimeout(() => setTestPushStatus(null), 4000);
+      setTimeout(() => { setTestPushStatus(null); setTestPushError(null); }, 6000);
     }
   };
 
@@ -176,19 +179,26 @@ function Notifications() {
                 Mark all as read
               </button>
             )}
-            <button
-              onClick={handleTestPush}
-              disabled={testPushStatus === 'sending'}
-              className="mark-all-read-btn"
-              title="Send a test push notification to your device"
-              style={{ opacity: testPushStatus === 'sending' ? 0.6 : 1 }}
-            >
-              {testPushStatus === 'sending' ? 'Sending...'
-                : testPushStatus === 'ok' ? 'Sent'
-                : testPushStatus === 'no-sub' ? 'Enable notifications first'
-                : testPushStatus === 'error' ? 'Failed'
-                : 'Test push'}
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+              <button
+                onClick={handleTestPush}
+                disabled={testPushStatus === 'sending'}
+                className="mark-all-read-btn"
+                title="Send a test push notification to your device"
+                style={{ opacity: testPushStatus === 'sending' ? 0.6 : 1 }}
+              >
+                {testPushStatus === 'sending' ? 'Sending...'
+                  : testPushStatus === 'ok' ? 'Sent'
+                  : testPushStatus === 'no-sub' ? 'Enable notifications first'
+                  : testPushStatus === 'error' ? 'Failed'
+                  : 'Test push'}
+              </button>
+              {testPushError && (
+                <span style={{ fontSize: '11px', color: 'var(--color-danger)', maxWidth: '240px', textAlign: 'right', lineHeight: '1.3' }}>
+                  {testPushError}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
