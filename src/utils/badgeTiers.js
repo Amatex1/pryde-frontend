@@ -52,7 +52,9 @@ const TIER_2_BADGE_IDS = [
  */
 export function getBadgeTier(badge) {
   if (!badge || !badge.id) return 3;
-  
+
+  // CORE_ROLE category (from DB) always goes to Tier 1, regardless of id string
+  if (badge.category === 'CORE_ROLE') return 1;
   if (TIER_1_BADGE_IDS.includes(badge.id)) return 1;
   if (TIER_2_BADGE_IDS.includes(badge.id)) return 2;
   return 3;
