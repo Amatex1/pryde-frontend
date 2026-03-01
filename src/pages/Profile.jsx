@@ -2264,7 +2264,7 @@ function Profile() {
                         <FeedPostDropdown
                           postId={post._id}
                           isPinned={post.isPinned}
-                          isOwnPost={compareIds(post.author?._id, currentUser?.id) || compareIds(post.author?._id, currentUser?._id) || (post.author?.username && post.author.username === currentUser?.username)}
+                          isOwnPost={(() => { if (!post.author || !currentUser) return false; const aId = typeof post.author === 'object' ? String(post.author._id || '') : String(post.author); const uId = String(currentUser.id || currentUser._id || ''); if (aId && uId && aId === uId) return true; if (typeof post.author === 'object' && post.author.username && post.author.username === currentUser.username) return true; return false; })()}
                           isDropdownOpen={openDropdownId === post._id}
                           authorId={post.author?._id}
                           onToggleDropdown={toggleDropdown}

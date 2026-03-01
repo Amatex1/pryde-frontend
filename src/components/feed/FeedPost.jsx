@@ -114,8 +114,19 @@ const FeedPost = memo(forwardRef(function FeedPost({
 }, ref) {
   // Check if this is a system post (from pryde_prompts account)
   const isSystemPost = post.isSystemPost || post.author?.isSystemAccount;
-  // Compare IDs safely - handles MongoDB ObjectId comparison and various ID formats
-  const isOwnPost = compareIds(post.author?._id, currentUser?.id) || compareIds(post.author?._id, currentUser?._id) || (post.author?.username && post.author.username === currentUser?.username);
+  // Compare IDs safely - handles both populated (object) and unpopulated (string) author
+  const isOwnPost = (() => {
+    if (!post.author || !currentUser) return false;
+    // Get author ID whether author is populated object or raw string ID
+    const authorId = typeof post.author === 'object' ? String(post.author._id || '') : String(post.author);
+    const userId = String(currentUser.id || currentUser._id || '');
+    // Debug log - TEMPORARY - remove once fix confirmed
+    console.log('[DEBUG isOwnPost]', { authorType: typeof post.author, authorId, userId, authorUsername: typeof post.author === 'object' ? post.author.username : 'N/A', currentUsername: currentUser.username, match: authorId && userId && authorId === userId });
+    if (authorId && userId && authorId === userId) return true;
+    // Username fallback (only works with populated author)
+    if (typeof post.author === 'object' && post.author.username && post.author.username === currentUser.username) return true;
+    return false;
+  })();
   const isBookmarked = bookmarkedPosts.includes(post._id);
   const comments = postComments[post._id] || [];
   const isEditing = editingPostId === post._id;
