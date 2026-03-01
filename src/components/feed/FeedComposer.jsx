@@ -349,7 +349,7 @@ const FeedComposer = memo(function FeedComposer({
               {isAnonymous && (
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', gap: '4px',
-                  fontSize: '11px', color: '#7c3aed', background: '#ede9fe',
+                  fontSize: '11px', color: 'var(--color-primary)', background: 'var(--color-primary-soft)',
                   padding: '2px 8px', borderRadius: '999px', fontWeight: 500,
                   marginLeft: '4px'
                 }}>
@@ -589,7 +589,7 @@ const FeedComposer = memo(function FeedComposer({
               {isAnonymous && (
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', gap: '4px',
-                  fontSize: '10px', color: '#7c3aed', background: '#ede9fe',
+                  fontSize: '10px', color: 'var(--color-primary)', background: 'var(--color-primary-soft)',
                   padding: '2px 6px', borderRadius: '999px', fontWeight: 500
                 }}>
                   🔒 Mods only

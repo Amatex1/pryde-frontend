@@ -2660,7 +2660,7 @@ function Feed() {
                   <span style={{ opacity: 0.7 }}>Anon</span>
                 </label>
                 {replyIsAnonymous && (
-                  <span style={{ fontSize: '10px', color: '#7c3aed', background: '#ede9fe', padding: '1px 6px', borderRadius: '999px', fontWeight: 500, marginRight: '8px' }}>🔒 Mods only</span>
+                  <span style={{ fontSize: '10px', color: 'var(--color-primary)', background: 'var(--color-primary-soft)', padding: '1px 6px', borderRadius: '999px', fontWeight: 500, marginRight: '8px' }}>🔒 Mods only</span>
                 )}
                 <button type="button" onClick={handleCancelReply} className="btn-cancel-reply-small">✕</button>
               </div>
