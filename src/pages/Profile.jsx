@@ -46,6 +46,15 @@ import { withOptimisticUpdate } from '../utils/consistencyGuard';
 import './Profile.css';
 import './Mobile.calm.css'; // PHASE D: Mobile-first calm mode
 
+/**
+ * Helper function to compare IDs safely
+ * Handles MongoDB ObjectId comparison and various ID formats
+ */
+const compareIds = (id1, id2) => {
+  if (!id1 || !id2) return false;
+  return String(id1) === String(id2);
+};
+
 function Profile() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -2420,7 +2429,7 @@ function Profile() {
                           </button>
                           {openDropdownId === post._id && (
                             <div className="dropdown-menu">
-                              {(post.author?._id === currentUser?.id || post.author?._id === currentUser?._id) ? (
+                              {compareIds(post.author?._id, currentUser?.id) || compareIds(post.author?._id, currentUser?._id) ? (
                                 <>
                                   {/* OPTIONAL FEATURES: Pin/unpin button */}
                                   <button

@@ -47,6 +47,15 @@ import { getCurrentUser } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
 import './Groups.css';
 
+/**
+ * Helper function to compare IDs safely
+ * Handles MongoDB ObjectId comparison and various ID formats
+ */
+const compareIds = (id1, id2) => {
+  if (!id1 || !id2) return false;
+  return String(id1) === String(id2);
+};
+
 function Groups() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -1352,7 +1361,7 @@ function Groups() {
                 </div>
               ) : (
                 posts.map(post => {
-                  const isAuthor = post.author?._id === currentUser?.id;
+                  const isAuthor = compareIds(post.author?._id, currentUser?.id) || compareIds(post.author?._id, currentUser?._id);
                   // Phase 4A: Owner and moderators can delete any post
                   const canDelete = isAuthor || isOwner || isModerator;
 

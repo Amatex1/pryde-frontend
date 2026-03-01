@@ -12,6 +12,15 @@ import { getImageUrl } from '../utils/imageUrl';
 import PostHeader from '../components/PostHeader';
 import './Feed.css';
 
+/**
+ * Helper function to compare IDs safely
+ * Handles MongoDB ObjectId comparison and various ID formats
+ */
+const compareIds = (id1, id2) => {
+  if (!id1 || !id2) return false;
+  return String(id1) === String(id2);
+};
+
 function FollowingFeed() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -161,7 +170,8 @@ function FollowingFeed() {
         <>
           <div className="posts-list">
             {posts.map(post => {
-              const isOwnPost = post.author?._id === currentUser?.id || post.author?._id === currentUser?._id;
+              // Compare IDs safely - handles MongoDB ObjectId comparison and various ID formats
+              const isOwnPost = compareIds(post.author?._id, currentUser?.id) || compareIds(post.author?._id, currentUser?._id);
               const isEditing = editingPostId === post._id;
               const isDropdownOpen = openDropdownId === post._id;
 
