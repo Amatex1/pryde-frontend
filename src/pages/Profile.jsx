@@ -100,6 +100,7 @@ function Profile() {
   const [photoViewerImage, setPhotoViewerImage] = useState(null);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
   const [avatarMenuPos, setAvatarMenuPos] = useState(null);
+  const [pendingPhotoUrl, setPendingPhotoUrl] = useState(null); // object URL for a newly-picked file before crop/upload
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
   const [newPost, setNewPost] = useState('');
@@ -148,6 +149,8 @@ function Profile() {
   const coverRef = useRef(null);
   const avatarRef = useRef(null);
   const avatarMenuRef = useRef(null);
+  const coverFileInputRef = useRef(null);
+  const avatarFileInputRef = useRef(null);
   const editTextareaRef = useRef(null);
   const isMountedRef = useRef(true); // Track if component is mounted to prevent race conditions
   // Phase 5B: Removed windowWidth state - use CSS media queries instead to prevent resize jitter
@@ -1437,6 +1440,43 @@ function Profile() {
   };
   const handleEditAvatar = () => setEditingType("avatar");
 
+  // Cancel any active photo edit and revoke any pending object URL
+  const handleCancelEdit = () => {
+    if (pendingPhotoUrl) {
+      URL.revokeObjectURL(pendingPhotoUrl);
+      setPendingPhotoUrl(null);
+    }
+    setEditingType(null);
+  };
+
+  // File picker handlers — user selects a new image from disk
+  const handleCoverFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (pendingPhotoUrl) URL.revokeObjectURL(pendingPhotoUrl);
+    const url = URL.createObjectURL(file);
+    setPendingPhotoUrl(url);
+    if (coverRef.current) {
+      const w = coverRef.current.offsetWidth;
+      const h = window.innerWidth >= 1025 ? 300 : 220;
+      setCoverCropSize({ width: w, height: h });
+    }
+    setEditingType('cover');
+    e.target.value = '';
+  };
+
+  const handleAvatarFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (pendingPhotoUrl) URL.revokeObjectURL(pendingPhotoUrl);
+    const url = URL.createObjectURL(file);
+    setPendingPhotoUrl(url);
+    setAvatarMenuOpen(false);
+    setAvatarMenuPos(null);
+    setEditingType('avatar');
+    e.target.value = '';
+  };
+
   const handleAvatarClick = () => {
     if (avatarMenuOpen) {
       setAvatarMenuOpen(false);
@@ -1479,6 +1519,10 @@ function Profile() {
     } catch (error) {
       logger.error('Failed to save cropped photo:', error);
       showToast('Failed to save photo. Please try again.', 'error');
+    }
+    if (pendingPhotoUrl) {
+      URL.revokeObjectURL(pendingPhotoUrl);
+      setPendingPhotoUrl(null);
     }
     setEditingType(null);
   };
@@ -1635,6 +1679,24 @@ function Profile() {
       <Navbar onMenuClick={onMenuOpen} />
 
       <div className="profile-container">
+        {/* Hidden file inputs for uploading new profile/cover photos */}
+        <input
+          ref={coverFileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleCoverFileChange}
+          aria-hidden="true"
+        />
+        <input
+          ref={avatarFileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleAvatarFileChange}
+          aria-hidden="true"
+        />
+
         {/* ── Avatar action menu — portal so it escapes overflow:hidden on the avatar ── */}
         {isOwnProfile && avatarMenuOpen && avatarMenuPos && createPortal(
           <>
@@ -1648,20 +1710,28 @@ function Profile() {
               ref={avatarMenuRef}
               style={{ top: avatarMenuPos.top, left: avatarMenuPos.left }}
             >
-              {user.profilePhoto && (
-                <button
-                  className="avatar-action-item"
-                  onClick={() => { setAvatarMenuOpen(false); setAvatarMenuPos(null); setPhotoViewerImage(getImageUrl(user.profilePhoto)); }}
-                >
-                  View profile pic
-                </button>
-              )}
               <button
                 className="avatar-action-item"
-                onClick={() => { setAvatarMenuOpen(false); setAvatarMenuPos(null); handleEditAvatar(); }}
+                onClick={() => { setAvatarMenuOpen(false); setAvatarMenuPos(null); avatarFileInputRef.current?.click(); }}
               >
-                Edit profile pic
+                <Camera size={14} strokeWidth={1.75} aria-hidden="true" /> Upload new photo
               </button>
+              {user.profilePhoto && (
+                <>
+                  <button
+                    className="avatar-action-item"
+                    onClick={() => { setAvatarMenuOpen(false); setAvatarMenuPos(null); handleEditAvatar(); }}
+                  >
+                    Reposition
+                  </button>
+                  <button
+                    className="avatar-action-item"
+                    onClick={() => { setAvatarMenuOpen(false); setAvatarMenuPos(null); setPhotoViewerImage(getImageUrl(user.profilePhoto)); }}
+                  >
+                    View photo
+                  </button>
+                </>
+              )}
             </div>
           </>,
           document.body
@@ -1679,12 +1749,12 @@ function Profile() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="avatar-reposition-modal-header">
-                Reposition Profile Photo
+                {pendingPhotoUrl ? 'Change Profile Photo' : 'Reposition Profile Photo'}
               </div>
               <PhotoRepositionInline
                 type="avatar"
-                imageUrl={getImageUrl(user.profilePhoto)}
-                onCancel={() => setEditingType(null)}
+                imageUrl={pendingPhotoUrl || getImageUrl(user.profilePhoto)}
+                onCancel={handleCancelEdit}
                 onSave={handleSavePosition}
               />
             </div>
@@ -1707,8 +1777,8 @@ function Profile() {
               <PhotoRepositionInline
                 type="cover"
                 cropSize={coverCropSize}
-                imageUrl={getImageUrl(user.coverPhoto)}
-                onCancel={() => setEditingType(null)}
+                imageUrl={pendingPhotoUrl || getImageUrl(user.coverPhoto)}
+                onCancel={handleCancelEdit}
                 onSave={handleSavePosition}
               />
             ) : (
@@ -1735,10 +1805,10 @@ function Profile() {
                   <div className="profile-header-actions">
                     <button
                       className="btn-edit-cover"
-                      onClick={handleEditCover}
-                      title="Edit cover photo"
+                      onClick={() => coverFileInputRef.current?.click()}
+                      title="Change cover photo"
                     >
-                      <Camera size={20} strokeWidth={1.75} aria-hidden="true" /> <span className="btn-label">Edit Cover</span>
+                      <Camera size={20} strokeWidth={1.75} aria-hidden="true" /> <span className="btn-label">Change Cover</span>
                     </button>
                     <button
                       className="btn-edit-profile-cover"

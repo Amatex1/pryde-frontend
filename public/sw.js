@@ -49,6 +49,7 @@ self.addEventListener('push', (event) => {
     icon: '/pryde-logo-small.webp',
     badge: '/pryde-logo-small.webp',
     data: data.data?.url || '/',
+    ...(data.tag && { tag: data.tag }),
   };
 
   event.waitUntil(

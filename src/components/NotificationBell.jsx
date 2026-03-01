@@ -229,7 +229,7 @@ const NotificationBell = memo(() => {
         navigate('/groups');
       }
     } else if (notification.postId) {
-      if (notification.type === 'comment' && notification.commentId) {
+      if (notification.commentId && (notification.type === 'comment' || notification.type === 'like')) {
         navigate(`/feed?post=${notification.postId}&comment=${notification.commentId}`);
       } else {
         navigate(`/feed?post=${notification.postId}`);
@@ -264,7 +264,9 @@ const NotificationBell = memo(() => {
 
     switch (notification.type) {
       case 'like':
-        return `${senderName} liked your post`;
+        return notification.commentId
+          ? `${senderName} reacted to your comment`
+          : `${senderName} liked your post`;
       case 'comment':
         return `${senderName} commented on your post`;
       case 'friend_request':
