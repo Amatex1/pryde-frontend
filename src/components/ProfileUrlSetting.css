@@ -20,8 +20,8 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  background: var(--bg-primary);
-  border: 2px solid var(--border-color);
+  background: var(--bg);
+  border: 2px solid var(--border-subtle);
   border-radius: 8px;
   padding: 8px 12px;
   transition: border-color 0.2s ease;
@@ -114,12 +114,12 @@
   padding: 10px 20px;
   font-size: 0.9rem;
   background: transparent;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
 }
 
 .url-actions .btn-secondary:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
 }
 
 .url-hint {
@@ -146,6 +146,6 @@
 
 /* Quiet mode friendly */
 .quiet-mode .profile-url-setting {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
 }
 

@@ -23,9 +23,9 @@
 .profile-search-input {
   width: 100%;
   padding: 14px 48px 14px 50px;
-  border: 2px solid var(--border-color);
+  border: 2px solid var(--border-subtle);
   border-radius: 28px;
-  background: var(--bg-primary);
+  background: var(--bg);
   color: var(--text-primary);
   font-size: 1rem;
   transition: all 0.2s;
@@ -61,7 +61,7 @@
 
 .search-filters {
   background: var(--card-bg);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
   padding: 16px;
 }
@@ -79,14 +79,14 @@
 }
 
 .filter-tabs::-webkit-scrollbar-thumb {
-  background: var(--border-color);
+  background: var(--border-subtle);
   border-radius: 2px;
 }
 
 .filter-tab {
   padding: 8px 16px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-color);
+  background: var(--bg);
+  border: 1px solid var(--border-subtle);
   border-radius: 20px;
   color: var(--text-primary);
   font-size: 0.9rem;

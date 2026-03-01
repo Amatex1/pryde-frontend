@@ -459,6 +459,36 @@
   }
 }
 
+/* iPad portrait (768px) — explicit tablet pass */
+@media (min-width: 601px) and (max-width: 768px) {
+  .home-hero {
+    padding: 100px 20px 80px;
+  }
+
+  [data-galaxy="true"] .home-hero {
+    padding: 110px 20px 90px;
+  }
+
+  .why-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .section-sub {
+    font-size: 15px;
+    margin-bottom: 32px;
+  }
+
+  .home-trust {
+    padding: 28px 20px;
+  }
+
+  .trust-inner {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
 @media (max-width: 600px) {
   .home-hero {
     padding: 100px 16px 80px;

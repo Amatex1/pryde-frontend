@@ -57,33 +57,37 @@ function VerifyEmail() {
   return (
     <div className="auth-container">
       <div className="auth-card glossy fade-in">
+        <Link to="/" className="auth-home-link">
+          ← Back to home
+        </Link>
+
         <div className="auth-header">
           <h1 className="auth-title text-shadow">✨ Pryde Social</h1>
-          <h2>Email Verification</h2>
+          <p className="auth-subtitle">Email Verification</p>
         </div>
 
         {status === 'verifying' && (
           <div className="verification-status">
-            <div className="spinner"></div>
+            <div className="verification-spinner" />
             <p>Verifying your email address...</p>
           </div>
         )}
 
         {status === 'success' && (
-          <div className="verification-status success">
-            <div className="success-icon">✓</div>
+          <div className="verification-status">
+            <div className="verification-icon verification-icon--success">✓</div>
             <h3>Email Verified!</h3>
             <p>{message}</p>
-            <p className="redirect-message">Redirecting you to the feed...</p>
-            <Link to="/feed" className="btn-primary">
+            <p className="verification-redirect">Redirecting you to the feed...</p>
+            <Link to="/feed" className="btn-primary" style={{ display: 'inline-block', marginTop: 'var(--space-lg)' }}>
               Go to Feed Now
             </Link>
           </div>
         )}
 
         {status === 'error' && (
-          <div className="verification-status error">
-            <div className="error-icon">✕</div>
+          <div className="verification-status">
+            <div className="verification-icon verification-icon--error">✕</div>
             <h3>Verification Failed</h3>
             <p>{message}</p>
             <div className="verification-actions">
@@ -97,72 +101,6 @@ function VerifyEmail() {
           </div>
         )}
       </div>
-
-      <style>{`
-        .verification-status {
-          text-align: center;
-          padding: 2rem;
-        }
-
-        .spinner {
-          width: 50px;
-          height: 50px;
-          border: 4px solid rgba(108, 92, 231, 0.2);
-          border-top-color: var(--pryde-purple);
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin: 0 auto 1.5rem;
-        }
-
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-
-        .success-icon,
-        .error-icon {
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 3rem;
-          margin: 0 auto 1.5rem;
-          font-weight: bold;
-        }
-
-        .success-icon {
-          background: linear-gradient(135deg, #10b981, #059669);
-          color: white;
-        }
-
-        .error-icon {
-          background: linear-gradient(135deg, #ef4444, #dc2626);
-          color: white;
-        }
-
-        .verification-status h3 {
-          margin: 0 0 1rem 0;
-          color: var(--text-main);
-        }
-
-        .verification-status p {
-          color: var(--text-muted);
-          margin: 0.5rem 0;
-        }
-
-        .redirect-message {
-          font-size: 0.9rem;
-          margin-top: 1rem !important;
-        }
-
-        .verification-actions {
-          display: flex;
-          gap: 1rem;
-          justify-content: center;
-          margin-top: 2rem;
-        }
-      `}</style>
     </div>
   );
 }

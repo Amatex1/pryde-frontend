@@ -129,7 +129,7 @@
 @media (prefers-reduced-motion: reduce) {
   .skeleton-box {
     animation: none;
-    background: var(--bg-secondary);
+    background: var(--bg-subtle);
   }
   
   [data-theme="dark"] .skeleton-box {

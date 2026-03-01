@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import './Auth.css';
@@ -8,16 +8,6 @@ function ForgotPassword() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-
-  // Apply user's dark mode preference
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem('darkMode');
-    if (savedDarkMode === 'true') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-    }
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,14 +29,15 @@ function ForgotPassword() {
   return (
     <div className="auth-container">
       <div className="auth-card glossy">
+        <Link to="/" className="auth-home-link">
+          ← Back to home
+        </Link>
+
         <div className="auth-header">
-          <h1 className="auth-title">
-            <span className="brand-icon">✨</span>
-            Pryde Social
-          </h1>
-          <h2>Reset Password</h2>
-          <p className="auth-subtitle">
-            Enter your email address and we'll send you a link to reset your password.
+          <h1 className="auth-title">✨ Pryde Social</h1>
+          <p className="auth-subtitle">Reset your password</p>
+          <p className="auth-subtext">
+            Enter your email and we'll send you a link to reset your password.
           </p>
         </div>
 
@@ -80,7 +71,7 @@ function ForgotPassword() {
 
           <button 
             type="submit" 
-            className="btn-submit glossy-gold"
+            className="btn-primary glossy-gold"
             disabled={loading}
           >
             {loading ? 'Sending...' : 'Send Reset Link'}

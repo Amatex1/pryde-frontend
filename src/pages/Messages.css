@@ -400,7 +400,7 @@
 }
 
 .virtual-conversation-list::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
 }
 
 .virtual-conversation-list::-webkit-scrollbar-thumb {
@@ -1307,7 +1307,7 @@
   padding: 0.875rem 1.25rem;
   border-radius: 18px;
   border: 2px solid var(--pryde-purple);
-  background: white;
+  background: var(--bg-card);
   color: var(--text-main);
   font-size: var(--font-size-base);
   font-family: inherit;
@@ -1504,7 +1504,7 @@
 }
 
 .btn-cancel-reply:hover {
-  color: var(--error);
+  color: var(--color-danger);
   transform: scale(1.2);
 }
 
@@ -1542,7 +1542,7 @@
   align-items: center;
   justify-content: center;
   font-size: var(--font-size-3xl);
-  background: var(--background-light);
+  background: var(--bg-subtle);
   border-radius: 6px;
 }
 
@@ -2391,7 +2391,7 @@
   text-transform: uppercase;
   color: var(--text-muted);
   letter-spacing: 0.5px;
-  background: var(--bg-light);
+  background: var(--bg-subtle);
 }
 
 /* Light Mode + Quiet Mode - Fix dark section labels */
@@ -3018,7 +3018,7 @@
 }
 
 .icon-btn:hover:not(:disabled) {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   color: var(--pryde-purple);
 }
 

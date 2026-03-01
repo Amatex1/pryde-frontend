@@ -92,7 +92,7 @@
 }
 
 .emoji-picker-close:hover {
-  background: var(--bg-light);
+  background: var(--bg-subtle);
   color: var(--text-main);
 }
 
@@ -104,7 +104,7 @@
 }
 
 .emoji-button {
-  background: var(--bg-light);
+  background: var(--bg-subtle);
   border: 2px solid transparent;
   border-radius: 0.75rem;
   padding: 1.125rem;

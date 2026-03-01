@@ -102,7 +102,7 @@
    ──────────────────────────────────────── */
 
 .post-author-avatar {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   border: 2px solid var(--border-light);
   box-shadow: none;
   transition: opacity 0.15s ease;
@@ -255,14 +255,14 @@
 }
 
 .reaction-button:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   border-color: var(--border-light);
   box-shadow: none;
   transform: none;
 }
 
 .reaction-button.reacted {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   border-color: var(--border-medium);
 }
 
@@ -271,7 +271,7 @@
    ──────────────────────────────────────── */
 
 .poll-option-bar {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-light);
   box-shadow: none;
 }
@@ -316,7 +316,7 @@
 }
 
 .friend-sidebar-item:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   box-shadow: none;
 }
 
@@ -361,7 +361,7 @@
 .emoji-picker-container,
 .actions-dropdown-menu,
 .reaction-picker {
-  background: var(--bg-primary);
+  background: var(--bg);
   border: 1px solid var(--border-light);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
@@ -369,7 +369,7 @@
 [data-theme="dark"] .emoji-picker-container,
 [data-theme="dark"] .actions-dropdown-menu,
 [data-theme="dark"] .reaction-picker {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   border-color: var(--border-dark);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
@@ -478,7 +478,7 @@
 /* Composer textarea: Calm, readable */
 .post-form-textarea,
 textarea[name="newPost"] {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-light);
   border-radius: 8px;
   padding: 0.75rem;
@@ -498,7 +498,7 @@ textarea[name="newPost"]:focus {
 
 [data-theme="dark"] .post-form-textarea,
 [data-theme="dark"] textarea[name="newPost"] {
-  background: var(--bg-tertiary);
+  background: var(--bg-hover);
   border-color: var(--border-dark);
 }
 
@@ -530,7 +530,7 @@ textarea[name="newPost"]:focus {
   padding: 0.5rem 0.75rem;
   border-radius: 8px;
   border: 1px solid var(--border-light);
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   color: var(--text-secondary);
   font-size: var(--font-size-sm);
   cursor: pointer;
@@ -541,7 +541,7 @@ textarea[name="newPost"]:focus {
 }
 
 .btn-composer-action:hover {
-  background: var(--bg-tertiary);
+  background: var(--bg-hover);
   border-color: var(--border-medium);
   transform: none;
   box-shadow: none;
@@ -555,7 +555,7 @@ textarea[name="newPost"]:focus {
 
 [data-theme="dark"] .btn-composer-action {
   border-color: var(--border-dark);
-  background: var(--bg-tertiary);
+  background: var(--bg-hover);
 }
 
 /* Post button: Prominent but calm */
@@ -616,7 +616,7 @@ textarea[name="newPost"]:focus {
   border-radius: 50%;
   flex-shrink: 0;
   overflow: hidden;
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   border: 2px solid var(--border-light);
   box-shadow: none;
   transition: opacity 0.15s ease;
@@ -710,7 +710,7 @@ textarea[name="newPost"]:focus {
 }
 
 .btn-dropdown:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
 }
 
 /* ────────────────────────────────────────
@@ -777,7 +777,7 @@ textarea[name="newPost"]:focus {
 }
 
 .btn-action:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   color: var(--text-primary);
 }
 
@@ -833,7 +833,7 @@ textarea[name="newPost"]:focus {
 }
 
 .dropdown-item:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
 }
 
 .dropdown-item.delete,
@@ -857,14 +857,14 @@ textarea[name="newPost"]:focus {
 .poll-container {
   margin-top: 0.75rem;
   padding: 1rem;
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-light);
   border-radius: 8px;
   box-shadow: none;
 }
 
 [data-theme="dark"] .poll-container {
-  background: var(--bg-tertiary);
+  background: var(--bg-hover);
   border-color: var(--border-dark);
 }
 
@@ -891,7 +891,7 @@ textarea[name="newPost"]:focus {
 
 .poll-option:hover {
   border-color: var(--border-medium);
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   transform: none;
   box-shadow: none;
 }
@@ -1265,13 +1265,13 @@ textarea[name="newPost"]:focus,
 
 [data-quiet="true"] .post-card,
 [data-quiet-mode="true"] .post-card {
-  background: var(--bg-primary);
+  background: var(--bg);
   border-color: var(--border-subtle);
 }
 
 [data-quiet="true"] .feed-tab.active,
 [data-quiet-mode="true"] .feed-tab.active {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   color: var(--text-primary);
 }
 

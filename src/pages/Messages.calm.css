@@ -98,7 +98,7 @@
 }
 
 .tab-pill:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   border-color: var(--border-medium);
 }
 
@@ -152,7 +152,7 @@
   flex-shrink: 0;
   position: relative;
   overflow: hidden;
-  background: var(--bg-tertiary);
+  background: var(--bg-hover);
 }
 
 .conv-avatar img {
@@ -296,7 +296,7 @@
   border-radius: 50%;
   flex-shrink: 0;
   overflow: hidden;
-  background: var(--bg-tertiary);
+  background: var(--bg-hover);
 }
 
 .thread-avatar img {
@@ -352,7 +352,7 @@
 }
 
 .btn-thread-menu:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
 }
 
 /* Back button for mobile */
@@ -373,7 +373,7 @@
 }
 
 .btn-back:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
 }
 
 /* ────────────────────────────────────────
@@ -531,7 +531,7 @@
 }
 
 .btn-message-action:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
 }
 
 /* Typing indicator */
@@ -540,7 +540,7 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.625rem 0.875rem;
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-light);
   border-radius: 16px 16px 16px 4px;
   width: fit-content;
@@ -611,7 +611,7 @@
   padding: 0.75rem 1rem;
   border: 1px solid var(--border-light);
   border-radius: 22px;
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   color: var(--text-primary);
   font-size: 0.9375rem;
   line-height: 1.5;
@@ -627,7 +627,7 @@
 
 [data-theme="dark"] .composer-input {
   border-color: var(--border-dark);
-  background: var(--bg-tertiary);
+  background: var(--bg-hover);
 }
 
 /* Composer actions */
@@ -654,11 +654,11 @@
 }
 
 .btn-composer:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
 }
 
 .btn-composer.active {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   color: var(--pryde-purple);
 }
 
@@ -694,7 +694,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 0.75rem;
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   border-left: 3px solid var(--pryde-purple);
   border-radius: 4px;
   font-size: 0.8125rem;
@@ -725,7 +725,7 @@
 }
 
 .btn-cancel-reply:hover {
-  background: var(--bg-tertiary);
+  background: var(--bg-hover);
 }
 
 /* ────────────────────────────────────────
@@ -949,7 +949,7 @@
 }
 
 .thread-menu-item:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
 }
 
 .thread-menu-item.danger {

@@ -58,15 +58,15 @@ const PrivacySettings = () => {
     }
   };
 
-  const searchUsers = async () => {
-    if (searchQuery.trim().length < 2) {
+  const searchUsers = async (query) => {
+    if (query.trim().length < 2) {
       setSearchResults([]);
       return;
     }
 
     try {
       const response = await api.get('/users/search', {
-        params: { q: searchQuery, excludeBlocked: true }
+        params: { q: query, excludeBlocked: true }
       });
       setSearchResults(response.data.users || []);
     } catch (error) {
@@ -186,7 +186,7 @@ const PrivacySettings = () => {
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
-              searchUsers();
+              searchUsers(e.target.value);
             }}
           />
           {searchResults.length > 0 && (

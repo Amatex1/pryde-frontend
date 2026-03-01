@@ -15,8 +15,8 @@
   gap: 8px;
   padding: 10px 16px;
   border-radius: 8px;
-  border: 2px solid var(--border-color);
-  background: var(--bg-primary);
+  border: 2px solid var(--border-subtle);
+  background: var(--bg);
   color: var(--text-primary);
   font-size: 0.9rem;
   font-weight: 600;

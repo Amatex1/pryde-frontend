@@ -156,7 +156,7 @@
 }
 
 .reaction-error p {
-  color: var(--color-error, #ff4444);
+  color: var(--color-danger);
   font-size: 0.95rem;
 }
 

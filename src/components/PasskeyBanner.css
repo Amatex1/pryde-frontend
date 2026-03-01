@@ -57,7 +57,7 @@
 }
 
 .passkey-banner-actions .btn-primary {
-  background: white;
+  background: var(--bg-card);
   color: var(--pryde-purple);
   padding: 0.625rem 1.25rem;
   border-radius: 8px;

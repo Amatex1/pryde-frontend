@@ -90,22 +90,22 @@
 }
 
 .notification-card {
-  background: var(--card-surface);
-  border: 2px solid var(--border-light);
-  border-radius: 12px;
-  padding: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  padding: var(--space-4);
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
+  gap: var(--space-4);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   position: relative;
 }
 
 .notification-card:hover {
   border-color: var(--pryde-purple);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.15);
+  box-shadow: var(--shadow-soft);
 }
 
 .notification-card.unread {
@@ -121,7 +121,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--background-light);
+  background: var(--bg-subtle);
   border-radius: 50%;
 }
 
@@ -150,36 +150,7 @@
   margin-top: 0.5rem;
 }
 
-/* Dark Mode */
-[data-theme="dark"] .notifications-page {
-  background: var(--background-light);
-}
-
-[data-theme="dark"] .notification-card {
-  background: var(--card-surface);
-  border-color: var(--border-light);
-}
-
-[data-theme="dark"] .notification-card:hover {
-  border-color: var(--pryde-purple);
-  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
-}
-
-[data-theme="dark"] .notification-card.unread {
-  background: rgba(108, 92, 231, 0.15);
-}
-
-[data-theme="dark"] .notification-icon {
-  background: var(--background-light);
-}
-
-[data-theme="dark"] .mark-all-read-btn {
-  background: rgba(108, 92, 231, 0.2);
-}
-
-[data-theme="dark"] .mark-all-read-btn:hover {
-  background: var(--pryde-purple);
-}
+/* Dark mode is handled automatically via CSS custom properties */
 
 /* Tablet breakpoint: 769px - 1024px */
 @media (min-width: 769px) and (max-width: 1024px) {

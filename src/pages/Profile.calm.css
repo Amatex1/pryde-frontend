@@ -31,7 +31,7 @@
 /* Cover photo: Separate, no decorative overlay */
 .cover-photo {
   height: 200px;
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   border-radius: 12px 12px 0 0;
   overflow: hidden;
   position: relative;
@@ -46,7 +46,7 @@
 .cover-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  background: linear-gradient(135deg, var(--bg-subtle) 0%, var(--bg-hover) 100%);
 }
 
 /* ────────────────────────────────────────
@@ -68,7 +68,7 @@
   border-radius: 50%;
   border: 4px solid var(--bg-card);
   margin-top: -60px; /* Overlap cover by half */
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle depth only */
 }
@@ -134,7 +134,7 @@
 }
 
 .profile-badges .badge {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-light);
   padding: 0.25rem 0.75rem;
   border-radius: 6px;
@@ -212,7 +212,7 @@
 
 .profile-action-buttons button,
 .profile-action-buttons .btn {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-light);
   padding: 0.625rem 1.25rem;
   border-radius: 8px;
@@ -226,7 +226,7 @@
 
 .profile-action-buttons button:hover,
 .profile-action-buttons .btn:hover {
-  background: var(--bg-tertiary);
+  background: var(--bg-hover);
   border-color: var(--border-medium);
 }
 
@@ -285,7 +285,7 @@
 }
 
 .interest-tag {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-light);
   padding: 0.375rem 0.75rem;
   border-radius: 6px;

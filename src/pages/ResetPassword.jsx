@@ -13,16 +13,6 @@ function ResetPassword() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  // Apply user's dark mode preference
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem('darkMode');
-    if (savedDarkMode === 'true') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-    }
-  }, []);
-
   useEffect(() => {
     const tokenFromUrl = searchParams.get('token');
     if (!tokenFromUrl) {
@@ -84,11 +74,8 @@ function ResetPassword() {
       <div className="auth-container">
         <div className="auth-card glossy">
           <div className="auth-header">
-            <h1 className="auth-title">
-              <span className="brand-icon">✨</span>
-              Pryde Social
-            </h1>
-            <p>Loading...</p>
+            <h1 className="auth-title">✨ Pryde Social</h1>
+            <p className="auth-subtitle">Loading...</p>
           </div>
         </div>
       </div>
@@ -98,21 +85,20 @@ function ResetPassword() {
   return (
     <div className="auth-container">
       <div className="auth-card glossy">
+        <Link to="/" className="auth-home-link">
+          ← Back to home
+        </Link>
+
         <div className="auth-header">
-          <h1 className="auth-title">
-            <span className="brand-icon">✨</span>
-            Pryde Social
-          </h1>
-          <h2>Create New Password</h2>
-          <p className="auth-subtitle">
-            Enter your new password below.
-          </p>
+          <h1 className="auth-title">✨ Pryde Social</h1>
+          <p className="auth-subtitle">Create a new password</p>
+          <p className="auth-subtext">Enter your new password below.</p>
         </div>
 
         {message && (
           <div className="alert alert-success">
             {message}
-            <p style={{ marginTop: '10px', fontSize: '0.9rem' }}>
+            <p style={{ marginTop: 'var(--space-sm)', fontSize: 'var(--font-size-sm)' }}>
               Redirecting to login...
             </p>
           </div>
@@ -140,7 +126,7 @@ function ResetPassword() {
                 disabled={loading}
                 autoComplete="new-password"
               />
-              <small style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.5rem', display: 'block' }}>
+              <small style={{ color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)', marginTop: 'var(--space-xs)', display: 'block' }}>
                 At least 12 characters with one uppercase, one lowercase, one number, and one special character.
               </small>
             </div>
@@ -163,7 +149,7 @@ function ResetPassword() {
 
             <button 
               type="submit" 
-              className="btn-submit glossy-gold"
+              className="btn-primary glossy-gold"
               disabled={loading}
             >
               {loading ? 'Resetting...' : 'Reset Password'}

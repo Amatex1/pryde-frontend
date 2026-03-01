@@ -69,7 +69,7 @@
   border: 2px solid var(--border-light);
   border-radius: 0.5rem;
   font-size: 1rem;
-  background: var(--bg-light);
+  background: var(--bg-subtle);
   color: var(--text-main);
   transition: all 0.2s ease;
 }
@@ -97,7 +97,7 @@
 }
 
 .btn-secondary {
-  background: var(--bg-light);
+  background: var(--bg-subtle);
   color: var(--text-main);
   border: 2px solid var(--border-light);
 }

@@ -577,7 +577,7 @@ function Register({ onLoginSuccess }) {
                     padding: 'var(--space-md)',
                     background: 'var(--bg-subtle)',
                     borderRadius: 'var(--border-radius-md)',
-                    border: `2px solid ${passwordStrength.color || 'var(--border-color)'}`,
+                    border: `2px solid ${passwordStrength.color || 'var(--border-subtle)'}`,
                     transition: 'border-color 0.3s ease'
                   }}>
                     <div style={{
@@ -589,7 +589,7 @@ function Register({ onLoginSuccess }) {
                       <span style={{
                         fontSize: 'var(--font-size-md)',
                         fontWeight: '600',
-                        color: 'var(--text-primary)'
+                        color: 'var(--text-main)'
                       }}>
                         Password Strength
                       </span>
@@ -606,7 +606,7 @@ function Register({ onLoginSuccess }) {
                     <div style={{
                       width: '100%',
                       height: '10px',
-                      background: 'var(--bg-primary)',
+                      background: 'var(--bg-subtle)',
                       borderRadius: 'var(--border-radius-full)',
                       overflow: 'hidden',
                       boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)'

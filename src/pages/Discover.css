@@ -3,7 +3,7 @@
    ======================================== */
 
 .discover-container {
-  max-width: var(--fluid-container-2xl, 2000px);
+  max-width: 1400px;
   margin: 0 auto;
   padding: var(--space-6) var(--space-4);
 }
@@ -14,15 +14,15 @@
 }
 
 .discover-header h1 {
-  font-size: 32px;
+  font-size: var(--font-size-3xl);
   color: var(--color-primary);
   margin-bottom: var(--space-2);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .discover-subtitle {
   color: var(--text-muted);
-  font-size: 16px;
+  font-size: var(--font-size-base);
 }
 
 /* Phase 2C: Renamed from tags-grid to discover-groups-grid */
@@ -55,34 +55,34 @@
 }
 
 .discover-group-card .group-label {
-  font-size: 20px;
+  font-size: var(--font-size-lg);
   color: var(--text-main);
   margin-bottom: var(--space-3);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .discover-group-card .group-description {
   color: var(--text-muted);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
   margin-bottom: var(--space-4);
   min-height: 48px;
 }
 
 .discover-group-card .group-stats {
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-light);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
 }
 
 .discover-group-card .group-member-count {
   color: var(--pryde-purple);
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
 }
 
 .loading {
   text-align: center;
-  padding: 3rem;
+  padding: var(--space-8);
   color: var(--text-muted);
 }
 
@@ -93,60 +93,61 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 1rem;
+  padding: var(--space-4);
 }
 
 .modal-content {
-  background: white;
-  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-strong);
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--border-light);
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .modal-header h2 {
   margin: 0;
   color: var(--text-main);
-  font-size: 1.5rem;
+  font-size: var(--font-size-xl);
 }
 
 .modal-close {
   background: none;
   border: none;
-  font-size: 2rem;
+  font-size: var(--font-size-xl);
   color: var(--text-muted);
   cursor: pointer;
   padding: 0;
-  width: 32px;
-  height: 32px;
+  min-width: 36px;
+  min-height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: all 0.2s;
+  transition: background 0.15s ease;
 }
 
 .modal-close:hover {
-  background: var(--bg-light);
+  background: var(--bg-hover);
   color: var(--text-main);
 }
 
 .modal-body {
-  padding: 1.5rem;
+  padding: var(--space-6);
 }
 
 /* Tablet: 2 columns */
@@ -180,6 +181,14 @@
   }
 
   .discover-header h1 {
-    font-size: 2rem;
+    font-size: var(--font-size-2xl);
+  }
+
+  .modal-content {
+    max-height: 85dvh;
+  }
+
+  .modal-body {
+    padding: var(--space-4);
   }
 }

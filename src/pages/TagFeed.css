@@ -56,7 +56,7 @@
   padding: 1rem;
   border: 2px solid var(--border-light);
   border-radius: 12px;
-  background: var(--bg-light);
+  background: var(--bg-subtle);
   color: var(--text-main);
   font-size: 1rem;
   resize: vertical;
@@ -101,9 +101,11 @@
 }
 
 .post-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  padding: var(--space-6);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
 }
 
 .post-header {
@@ -253,8 +255,8 @@
 }
 
 .btn-action.liked {
-  color: #ff4444;
-  border-color: #ff4444;
+  color: var(--color-danger);
+  border-color: var(--color-danger);
 }
 
 .post-tags {

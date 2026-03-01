@@ -214,7 +214,7 @@
   padding: 8px 12px;
   border-radius: 20px;
   border: 1px solid var(--border-subtle);
-  background: var(--bg-primary);
+  background: var(--bg);
   font-size: 14px;
 }
 

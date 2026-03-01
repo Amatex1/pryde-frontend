@@ -98,11 +98,12 @@ function InviteRequired() {
             />
           </div>
 
-          {error && <div className="auth-error">{error}</div>}
+          {error && <div className="error-message" role="alert">{error}</div>}
 
-          <button 
-            type="submit" 
-            className="btn-primary btn-full"
+          <button
+            type="submit"
+            className="btn-primary"
+            style={{ width: '100%' }}
             disabled={loading || !inviteCode.trim()}
           >
             {loading ? 'Validating...' : 'Continue with Invite'}
@@ -113,10 +114,9 @@ function InviteRequired() {
           <span>or</span>
         </div>
 
-        <p className="auth-switch">
-          Already have an account?{' '}
-          <Link to="/login">Sign in</Link>
-        </p>
+        <div className="auth-footer" style={{ marginTop: 'var(--space-md)' }}>
+          <p>Already have an account? <Link to="/login" className="auth-link">Sign in</Link></p>
+        </div>
 
         <div className="invite-footer">
           <p className="invite-footer-text">

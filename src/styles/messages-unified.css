@@ -60,11 +60,11 @@
 }
 
 .dm-item:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
 }
 
 .dm-item.active {
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   border-left: 3px solid var(--pryde-purple);
 }
 
@@ -270,7 +270,7 @@
   align-items: center;
   gap: 6px;
   padding: 6px 10px;
-  background: var(--bg-secondary);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
   border-radius: 20px;
 }

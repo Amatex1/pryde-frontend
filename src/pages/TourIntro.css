@@ -9,7 +9,7 @@
   justify-content: center;
   min-height: 100vh;
   padding: 1.5rem;
-  background: var(--bg-primary);
+  background: var(--bg);
 }
 
 .tour-intro-card {

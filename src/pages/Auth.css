@@ -633,26 +633,6 @@
   line-height: var(--line-height-relaxed);
 }
 
-.auth-divider {
-  display: flex;
-  align-items: center;
-  margin: var(--space-md) 0;
-  color: var(--text-muted);
-  font-size: var(--font-size-sm);
-}
-
-.auth-divider::before,
-.auth-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border-subtle);
-}
-
-.auth-divider span {
-  padding: 0 var(--space-sm);
-}
-
 .auth-logo {
   display: flex;
   justify-content: center;
@@ -712,4 +692,83 @@
   background: var(--color-success-soft);
   border-color: var(--color-success);
   color: var(--color-success);
+}
+
+/* ========================================
+   VERIFY EMAIL - STATUS STATES
+   ======================================== */
+
+.verification-status {
+  text-align: center;
+  padding: var(--space-xl) var(--space-md);
+}
+
+.verification-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(108, 92, 231, 0.2);
+  border-top-color: var(--pryde-purple);
+  border-radius: 50%;
+  animation: auth-spin 0.9s linear infinite;
+  margin: 0 auto var(--space-lg);
+}
+
+@keyframes auth-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .verification-spinner {
+    animation: none;
+    border-color: var(--pryde-purple);
+  }
+}
+
+.verification-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  margin: 0 auto var(--space-lg);
+}
+
+.verification-icon--success {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.verification-icon--error {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.verification-status h3 {
+  margin: 0 0 var(--space-md) 0;
+  color: var(--text-main);
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+}
+
+.verification-status p {
+  color: var(--text-muted);
+  margin: var(--space-sm) 0;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+}
+
+.verification-redirect {
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-md) !important;
+}
+
+.verification-actions {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+  margin-top: var(--space-xl);
+  flex-wrap: wrap;
 }
