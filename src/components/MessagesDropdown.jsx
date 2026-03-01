@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef, memo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { MessageCircle } from 'lucide-react';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import { getCurrentUser } from '../utils/auth';
 import { getSocket } from '../utils/socket';
 import { useUnreadMessages } from '../hooks/useUnreadMessages';
+import { LUCIDE_DEFAULTS } from '../utils/lucideDefaults';
 import './MessagesDropdown.css';
 
 const MessagesDropdown = memo(() => {
@@ -126,10 +128,10 @@ const MessagesDropdown = memo(() => {
       <button
         className="messages-dropdown-btn"
         onClick={() => setShowDropdown(!showDropdown)}
-        aria-label="Messages"
+        aria-label={totalUnread > 0 ? `Messages, ${totalUnread} unread` : 'Messages'}
         title="Messages"
       >
-        <span className="nav-icon">💬</span>
+        <MessageCircle {...LUCIDE_DEFAULTS} aria-hidden="true" />
         <span className="nav-label">Messages</span>
         {totalUnread > 0 && (
           <span className="nav-badge">{totalUnread > 99 ? '99+' : totalUnread}</span>

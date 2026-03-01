@@ -1,7 +1,9 @@
 import api from './api';
 import { isAuthReady } from './authCircuitBreaker';
+import { isFirebaseConfigured, getFCMToken, onForegroundMessage, detectDevicePlatform } from './firebaseConfig';
 
 let isSubscribed = false;
+let fcmToken = null;
 
 /* -------------------------------------------
    CHECK SUBSCRIPTION STATE
@@ -63,6 +65,9 @@ export const subscribeToPushNotifications = async () => {
     // Send subscription to backend
     await api.post('/push/subscribe', { subscription });
 
+    // Also register FCM token for native Android/iOS push
+    await registerFCMToken();
+
     isSubscribed = true;
     return true;
   } catch (error) {
@@ -92,6 +97,9 @@ export const unsubscribeFromPushNotifications = async () => {
     } else {
       await api.post('/push/unsubscribe');
     }
+
+    // Also unregister FCM token
+    await unregisterFCMToken();
 
     isSubscribed = false;
     return true;
@@ -143,6 +151,37 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 /* -------------------------------------------
+   FCM TOKEN REGISTRATION
+--------------------------------------------*/
+async function registerFCMToken() {
+  if (!isFirebaseConfigured()) return;
+
+  try {
+    const token = await getFCMToken();
+    if (token) {
+      fcmToken = token;
+      const device = detectDevicePlatform();
+      await api.post('/push/fcm-register', { token, device });
+      console.log('[FCM] Token registered for device:', device);
+    }
+  } catch (error) {
+    console.debug('[FCM] Token registration failed (non-critical):', error.message);
+  }
+}
+
+async function unregisterFCMToken() {
+  if (!fcmToken) return;
+
+  try {
+    await api.post('/push/fcm-unregister', { token: fcmToken });
+    fcmToken = null;
+    console.log('[FCM] Token unregistered');
+  } catch (error) {
+    console.debug('[FCM] Token unregister failed (non-critical):', error.message);
+  }
+}
+
+/* -------------------------------------------
    INITIALIZE PUSH NOTIFICATIONS
 --------------------------------------------*/
 export const initializePushNotifications = async () => {
@@ -159,19 +198,43 @@ export const initializePushNotifications = async () => {
 
       // Check current subscription status (will respect circuit breaker)
       const subscriptionStatus = await isPushNotificationSubscribed();
-      
+
       // Set up push event listener
       registration.addEventListener('push', (event) => {
         const data = event.data.json();
         const options = {
           body: data.body,
-          icon: data.icon || '/favicon.svg',
-          badge: data.badge || '/favicon.svg',
+          icon: data.icon || '/pryde-logo-small.webp',
+          badge: data.badge || '/pryde-logo-small.webp',
           data: data.data || {}
         };
-        
+
         registration.showNotification(data.title || 'Pryde Social', options);
       });
+
+      // Initialize FCM for native Android/iOS push
+      if (isFirebaseConfigured()) {
+        try {
+          // Register the FCM service worker
+          await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
+          // Register FCM token with backend
+          await registerFCMToken();
+          // Listen for foreground FCM messages
+          onForegroundMessage((payload) => {
+            const title = payload.notification?.title || 'Pryde Social';
+            const options = {
+              body: payload.notification?.body || 'New notification',
+              icon: payload.notification?.icon || '/pryde-logo-small.webp',
+              badge: '/pryde-logo-small.webp',
+              data: payload.data || {},
+            };
+            registration.showNotification(title, options);
+          });
+          console.log('[Push] FCM initialized for native push notifications');
+        } catch (fcmError) {
+          console.debug('[Push] FCM initialization failed (falling back to VAPID only):', fcmError.message);
+        }
+      }
 
       return subscriptionStatus;
     } catch (error) {

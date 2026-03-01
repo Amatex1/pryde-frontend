@@ -26,17 +26,19 @@
 
 .messages-dropdown-btn .nav-badge {
   position: absolute;
-  top: -0.25rem;
-  right: -0.25rem;
-  background: linear-gradient(135deg, var(--error-light), #ee5a6f);
+  top: -5px;
+  right: -5px;
+  background: var(--color-danger);
   color: white;
   font-size: 0.65rem;
   font-weight: 700;
   padding: 0.15rem 0.35rem;
-  border-radius: 0.625rem;
+  border-radius: var(--radius-pill);
   min-width: 1rem;
   text-align: center;
-  box-shadow: 0 0.125rem 0.5rem rgba(255, 107, 107, 0.4);
+  border: 2px solid var(--bg-card);
+  line-height: 1;
+  pointer-events: none;
 }
 
 .messages-dropdown {

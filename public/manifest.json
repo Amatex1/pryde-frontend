@@ -109,6 +109,7 @@
       "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
     }
   ],
+  "gcm_sender_id": "219429795853",
   "prefer_related_applications": false,
   "related_applications": [],
   "share_target": {
