@@ -72,7 +72,9 @@ function Login() {
       await login({
         token: response.data.accessToken || response.data.token,
         refreshToken: response.data.refreshToken,
-        user: response.data.user
+        user: response.data.user,
+        countryCode: response.data.countryCode,
+        requiresSafetyCheck: response.data.requiresSafetyCheck
       });
 
       navigate('/feed');

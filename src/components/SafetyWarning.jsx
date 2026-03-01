@@ -1,60 +1,52 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import logger from '../utils/logger';
+import api from '../utils/api';
 import './SafetyWarning.css';
 import {
   getRiskLevel,
   getSafetyRecommendations,
   getStoredCountry
 } from '../utils/geolocation';
+import { useAuth } from '../context/AuthContext';
 
-// NOTE: detectUserCountry removed - country is now provided by backend during login
-// This avoids CORS issues with external geolocation APIs (ipapi.co, ip-api.com, etc.)
-
+/**
+ * SafetyWarning — Backend-controlled safety modal
+ *
+ * Shows when `requiresSafetyCheck` is true (set by backend on login/signup).
+ * Acknowledgement is persisted via POST /api/users/safety-acknowledge.
+ * No longer uses localStorage for dismissal — backend is source of truth.
+ */
 function SafetyWarning() {
-  const [show, setShow] = useState(false);
-  const [riskLevel, setRiskLevel] = useState('safe');
+  const { requiresSafetyCheck, setRequiresSafetyCheck } = useAuth();
   const [recommendations, setRecommendations] = useState(null);
-  const [dismissed, setDismissed] = useState(false);
+  const [acknowledging, setAcknowledging] = useState(false);
 
   useEffect(() => {
-    checkLocation();
-  }, []);
+    if (!requiresSafetyCheck) return;
 
-  const checkLocation = async () => {
-    try {
-      // Check if user has already dismissed the warning
-      const dismissedWarning = localStorage.getItem('pryde_safety_warning_dismissed');
-      if (dismissedWarning) {
-        setDismissed(true);
-        return;
+    const countryCode = getStoredCountry();
+    if (countryCode) {
+      const level = getRiskLevel(countryCode);
+      if (level !== 'safe') {
+        const recs = getSafetyRecommendations(level);
+        setRecommendations(recs);
       }
-
-      // Get stored country (set by backend during login)
-      // NOTE: No longer calling external APIs - backend provides countryCode during login
-      const countryCode = getStoredCountry();
-
-      if (countryCode) {
-        const level = getRiskLevel(countryCode);
-        setRiskLevel(level);
-
-        if (level !== 'safe') {
-          const recs = getSafetyRecommendations(level);
-          setRecommendations(recs);
-          setShow(true);
-        }
-      }
-      // If no countryCode stored, user either hasn't logged in yet or backend didn't provide it
-      // This is fine - we just won't show a warning
-    } catch (error) {
-      logger.error('Failed to check location:', error);
     }
-  };
+  }, [requiresSafetyCheck]);
 
-  const handleDismiss = () => {
-    setShow(false);
-    setDismissed(true);
-    localStorage.setItem('pryde_safety_warning_dismissed', 'true');
-  };
+  const handleAcknowledge = useCallback(async () => {
+    setAcknowledging(true);
+    try {
+      await api.post('/users/safety-acknowledge');
+      setRequiresSafetyCheck(false);
+    } catch (error) {
+      logger.error('Failed to acknowledge safety warning:', error);
+      // Still dismiss locally so user isn't stuck
+      setRequiresSafetyCheck(false);
+    } finally {
+      setAcknowledging(false);
+    }
+  }, [setRequiresSafetyCheck]);
 
   const handleGoToSafety = () => {
     window.location.href = '/safety';
@@ -64,7 +56,7 @@ function SafetyWarning() {
     window.location.href = '/settings';
   };
 
-  if (!show || !recommendations || dismissed) {
+  if (!requiresSafetyCheck || !recommendations) {
     return null;
   }
 
@@ -108,11 +100,12 @@ function SafetyWarning() {
           >
             🔒 Privacy Settings
           </button>
-          <button 
+          <button
             className="btn-dismiss-warning"
-            onClick={handleDismiss}
+            onClick={handleAcknowledge}
+            disabled={acknowledging}
           >
-            I Understand
+            {acknowledging ? 'Saving...' : 'I Understand'}
           </button>
         </div>
 

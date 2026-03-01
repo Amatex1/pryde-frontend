@@ -270,7 +270,9 @@ function Register({ onLoginSuccess }) {
         await onLoginSuccess({
           token: response.data.accessToken || response.data.token,
           accessToken: response.data.accessToken,
-          user: response.data.user
+          user: response.data.user,
+          countryCode: response.data.countryCode,
+          requiresSafetyCheck: response.data.requiresSafetyCheck
         });
       } else {
         // Fallback to direct auth utils (shouldn't happen in normal flow)

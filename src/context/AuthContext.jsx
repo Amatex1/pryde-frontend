@@ -79,6 +79,7 @@ export function AuthProvider({ children }) {
   // - Socket connection
   // ======================================================
   const [isAuthReady, setIsAuthReady] = useState(false);
+  const [requiresSafetyCheck, setRequiresSafetyCheck] = useState(false);
 
   // Derived state for backward compatibility
   const loading = authStatus === AUTH_STATES.LOADING;
@@ -270,7 +271,7 @@ export function AuthProvider({ children }) {
    * @param {Object} authData - { token, user, countryCode } (refreshToken now stored only in httpOnly cookie)
    */
   const login = useCallback(async (authData) => {
-    const { token, accessToken, user: userData, countryCode } = authData;
+    const { token, accessToken, user: userData, countryCode, requiresSafetyCheck: safetyCheck } = authData;
 
     // 🔍 AUTH VERIFICATION DIAGNOSTIC - Log login start
     if (process.env.NODE_ENV === 'development') {
@@ -300,6 +301,13 @@ export function AuthProvider({ children }) {
       } catch (e) {
         logger.warn('[AuthContext] Failed to store countryCode:', e);
       }
+    }
+
+    // 🛡️ Backend-controlled safety check (replaces localStorage dismissal)
+    if (safetyCheck) {
+      setRequiresSafetyCheck(true);
+    } else {
+      setRequiresSafetyCheck(false);
     }
 
     // 🔐 SECURITY: refreshToken no longer stored in localStorage
@@ -594,6 +602,10 @@ export function AuthProvider({ children }) {
     authLoading,
     authReady, // DEPRECATED: Use isAuthReady instead
     isAuthenticated,
+
+    // Geo Safety
+    requiresSafetyCheck,
+    setRequiresSafetyCheck,
 
     // Actions
     login,
