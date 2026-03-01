@@ -171,7 +171,7 @@ function FollowingFeed() {
           <div className="posts-list">
             {posts.map(post => {
               // Compare IDs safely - handles MongoDB ObjectId comparison and various ID formats
-              const isOwnPost = (() => { if (!post.author || !currentUser) return false; const aId = typeof post.author === 'object' ? String(post.author._id || '') : String(post.author); const uId = String(currentUser.id || currentUser._id || ''); if (aId && uId && aId === uId) return true; if (typeof post.author === 'object' && post.author.username && post.author.username === currentUser.username) return true; return false; })();
+              const isOwnPost = (() => { if (!post.author || !currentUser) return false; if (typeof post.author === 'object' && post.author.username && currentUser.username && post.author.username === currentUser.username) return true; const aId = typeof post.author === 'object' ? String(post.author._id || '') : String(post.author); const uId = String(currentUser.id || currentUser._id || ''); if (aId && uId && aId === uId) return true; return false; })();
               const isEditing = editingPostId === post._id;
               const isDropdownOpen = openDropdownId === post._id;
 

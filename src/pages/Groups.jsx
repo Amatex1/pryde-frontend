@@ -1361,7 +1361,7 @@ function Groups() {
                 </div>
               ) : (
                 posts.map(post => {
-                  const isAuthor = (() => { if (!post.author || !currentUser) return false; const aId = typeof post.author === 'object' ? String(post.author._id || '') : String(post.author); const uId = String(currentUser.id || currentUser._id || ''); if (aId && uId && aId === uId) return true; if (typeof post.author === 'object' && post.author.username && post.author.username === currentUser.username) return true; return false; })();
+                  const isAuthor = (() => { if (!post.author || !currentUser) return false; if (typeof post.author === 'object' && post.author.username && currentUser.username && post.author.username === currentUser.username) return true; const aId = typeof post.author === 'object' ? String(post.author._id || '') : String(post.author); const uId = String(currentUser.id || currentUser._id || ''); if (aId && uId && aId === uId) return true; return false; })();
                   // Phase 4A: Owner and moderators can delete any post
                   const canDelete = isAuthor || isOwner || isModerator;
 

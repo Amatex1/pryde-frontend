@@ -2264,7 +2264,7 @@ function Profile() {
                         <FeedPostDropdown
                           postId={post._id}
                           isPinned={post.isPinned}
-                          isOwnPost={(() => { if (!post.author || !currentUser) { console.log('[DEBUG Profile isOwnPost] EARLY EXIT', { author: post.author, currentUser }); return false; } const aId = typeof post.author === 'object' ? String(post.author._id || '') : String(post.author); const uId = String(currentUser.id || currentUser._id || ''); console.log('[DEBUG Profile isOwnPost]', { authorType: typeof post.author, aId, uId, authorUsername: typeof post.author === 'object' ? post.author.username : 'N/A', currentUsername: currentUser.username, idMatch: aId === uId }); if (aId && uId && aId === uId) return true; if (typeof post.author === 'object' && post.author.username && post.author.username === currentUser.username) return true; return false; })()}
+                          isOwnPost={isOwnProfile}
                           isDropdownOpen={openDropdownId === post._id}
                           authorId={post.author?._id}
                           onToggleDropdown={toggleDropdown}
