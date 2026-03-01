@@ -1684,7 +1684,6 @@ function Profile() {
               <PhotoRepositionInline
                 type="avatar"
                 imageUrl={getImageUrl(user.profilePhoto)}
-                initialPosition={user.profilePhotoPosition || { x: 0, y: 0, scale: 1 }}
                 onCancel={() => setEditingType(null)}
                 onSave={handleSavePosition}
               />
@@ -1709,7 +1708,6 @@ function Profile() {
                 type="cover"
                 cropSize={coverCropSize}
                 imageUrl={getImageUrl(user.coverPhoto)}
-                initialPosition={user.coverPhotoPosition || { x: 0, y: 0, scale: 1 }}
                 onCancel={() => setEditingType(null)}
                 onSave={handleSavePosition}
               />
