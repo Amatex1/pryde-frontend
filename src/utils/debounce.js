@@ -1,3 +1,5 @@
+import React from 'react';
+
 /**
  * ⚡ PERFORMANCE: Debounce utility to limit function execution frequency
  * Prevents excessive re-renders and API calls during rapid user input

@@ -706,7 +706,7 @@ function Admin() {
     return (
       <>
         {activeTab === 'dashboard' && stats && (
-          <section id="content-dashboard" role="region" aria-labelledby="tab-dashboard">
+          <section id="content-dashboard" aria-labelledby="tab-dashboard">
             <DashboardTab stats={stats} />
           </section>
         )}
@@ -773,7 +773,7 @@ function Admin() {
           />
         )}
         {activeTab === 'broadcast' && currentUser?.role === 'super_admin' && (
-          <section id="content-broadcast" role="region" aria-labelledby="tab-broadcast">
+          <section id="content-broadcast" aria-labelledby="tab-broadcast">
             <div className="admin-tab-content">
               <h2 className="admin-section-heading">📢 @everyone Announcement</h2>
               <p className="admin-section-description">

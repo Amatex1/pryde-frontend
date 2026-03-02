@@ -131,6 +131,8 @@ class ErrorBoundary extends Component {
                 }}
                 onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
                 onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
+                onFocus={(e) => e.target.style.transform = 'translateY(-2px)'}
+                onBlur={(e) => e.target.style.transform = 'translateY(0)'}
               >
                 Try Again
               </button>
@@ -156,6 +158,14 @@ class ErrorBoundary extends Component {
                   e.target.style.background = 'transparent';
                   e.target.style.color = 'var(--accent-secondary)';
                 }}
+                onFocus={(e) => {
+                  e.target.style.background = 'var(--accent-secondary)';
+                  e.target.style.color = 'white';
+                }}
+                onBlur={(e) => {
+                  e.target.style.background = 'transparent';
+                  e.target.style.color = 'var(--accent-secondary)';
+                }}
               >
                 Reload Page
               </button>
@@ -178,6 +188,14 @@ class ErrorBoundary extends Component {
                   e.target.style.color = 'white';
                 }}
                 onMouseOut={(e) => {
+                  e.target.style.background = 'transparent';
+                  e.target.style.color = '#616161';
+                }}
+                onFocus={(e) => {
+                  e.target.style.background = '#616161';
+                  e.target.style.color = 'white';
+                }}
+                onBlur={(e) => {
                   e.target.style.background = 'transparent';
                   e.target.style.color = '#616161';
                 }}

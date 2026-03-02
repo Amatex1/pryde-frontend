@@ -244,16 +244,36 @@ const NotificationBell = memo(() => {
   const getNotificationIcon = (type) => {
     const props = { size: 16, strokeWidth: 1.75, 'aria-hidden': true };
     switch (type) {
-      case 'like':           return <Heart {...props} />;
-      case 'comment':        return <MessageCircle {...props} />;
-      case 'friend_request': return <UserPlus {...props} />;
-      case 'friend_accept':  return <UserCheck {...props} />;
-      case 'mention':        return <AtSign {...props} />;
-      case 'share':          return <Repeat2 {...props} />;
-      case 'reaction':       return <Smile {...props} />;
-      case 'group_post':     return <FileText {...props} />;
-      case 'group_mention':  return <AtSign {...props} />;
-      default:               return <Bell {...props} />;
+      case 'like': {
+        return <Heart {...props} />;
+      }
+      case 'comment': {
+        return <MessageCircle {...props} />;
+      }
+      case 'friend_request': {
+        return <UserPlus {...props} />;
+      }
+      case 'friend_accept': {
+        return <UserCheck {...props} />;
+      }
+      case 'mention': {
+        return <AtSign {...props} />;
+      }
+      case 'share': {
+        return <Repeat2 {...props} />;
+      }
+      case 'reaction': {
+        return <Smile {...props} />;
+      }
+      case 'group_post': {
+        return <FileText {...props} />;
+      }
+      case 'group_mention': {
+        return <AtSign {...props} />;
+      }
+      default: {
+        return <Bell {...props} />;
+      }
     }
   };
 
@@ -263,42 +283,58 @@ const NotificationBell = memo(() => {
     const groupName = notification.groupName || 'a group';
 
     switch (notification.type) {
-      case 'like':
+      case 'like': {
         return notification.commentId
           ? `${senderName} reacted to your comment`
           : `${senderName} liked your post`;
-      case 'comment':
+      }
+      case 'comment': {
         return `${senderName} commented on your post`;
-      case 'friend_request':
+      }
+      case 'friend_request': {
         return `${senderName} sent you a connection request`;
-      case 'friend_accept':
+      }
+      case 'friend_accept': {
         return `${senderName} accepted your request`;
-      case 'mention':
+      }
+      case 'mention': {
         return `${senderName} mentioned you`;
-      case 'share':
+      }
+      case 'share': {
         return `${senderName} shared your post`;
-      case 'reaction':
+      }
+      case 'reaction': {
         return `${senderName} reacted to your post`;
-      case 'group_post':
+      }
+      case 'group_post': {
         return `New post in ${groupName}`;
-      case 'group_mention':
+      }
+      case 'group_mention': {
         return `${senderName} mentioned you in ${groupName}`;
-      case 'resonance':
+      }
+      case 'resonance': {
         return 'Someone quietly resonated with your post';
-      case 'circle_invite':
+      }
+      case 'circle_invite': {
         return `${senderName} invited you to a circle`;
-      case 'circle_post':
+      }
+      case 'circle_post': {
         return `New post in your circle`;
-      case 'login_approval':
+      }
+      case 'login_approval': {
         return 'New login attempt needs approval';
-      case 'system':
+      }
+      case 'system': {
         return notification.message || 'System update';
-      case 'moderation':
+      }
+      case 'moderation': {
         return notification.message || 'Moderation update';
-      default:
+      }
+      default: {
         // CALM-FIRST: Strip exclamation marks from any message
         const msg = notification.message || 'New update';
         return msg.replace(/!/g, '');
+      }
     }
   };
 

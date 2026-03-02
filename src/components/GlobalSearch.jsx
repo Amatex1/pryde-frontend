@@ -133,7 +133,7 @@ function GlobalSearch({ variant = 'default' }) {
       <div className="search-input-wrapper">
         <input
           ref={inputRef}
-          type="text"
+          type="search"
           id="global-search-input"
           name="search"
           value={searchQuery}
@@ -144,14 +144,13 @@ function GlobalSearch({ variant = 'default' }) {
           data-variant={variant}
           autoComplete="off"
           aria-label="Search users, posts, and groups"
-          aria-expanded={showResults}
-          aria-haspopup="listbox"
+          aria-controls="search-results-dropdown"
         />
         {loading && <Loader size={16} strokeWidth={1.75} className="search-loading" aria-hidden="true" />}
       </div>
 
       {showResults && (
-        <div className="search-results-dropdown" role="listbox" aria-label="Search results">
+        <div id="search-results-dropdown" className="search-results-dropdown" role="listbox" aria-label="Search results">
           {error && (
             <div className="no-search-results search-error">Search failed — please try again</div>
           )}
@@ -168,6 +167,7 @@ function GlobalSearch({ variant = 'default' }) {
                   key={group._id}
                   className="search-result-item group-item"
                   role="option"
+                  aria-selected={false}
                   tabIndex={0}
                   onClick={() => handleGroupClick(group.slug)}
                   onKeyDown={(e) => handleKeyActivate(e, () => handleGroupClick(group.slug))}
@@ -195,6 +195,7 @@ function GlobalSearch({ variant = 'default' }) {
                   key={user._id}
                   className="search-result-item user-item"
                   role="option"
+                  aria-selected={false}
                   tabIndex={0}
                   onClick={() => handleUserClick(user.username)}
                   onKeyDown={(e) => handleKeyActivate(e, () => handleUserClick(user.username))}
@@ -224,6 +225,7 @@ function GlobalSearch({ variant = 'default' }) {
                   key={post._id}
                   className="search-result-item post-item"
                   role="option"
+                  aria-selected={false}
                   tabIndex={0}
                   onClick={() => handlePostClick(post._id)}
                   onKeyDown={(e) => handleKeyActivate(e, () => handlePostClick(post._id))}
@@ -246,6 +248,7 @@ function GlobalSearch({ variant = 'default' }) {
           <div
             className="search-see-more"
             role="option"
+            aria-selected={false}
             tabIndex={0}
             onClick={handleSeeMore}
             onKeyDown={(e) => handleKeyActivate(e, handleSeeMore)}

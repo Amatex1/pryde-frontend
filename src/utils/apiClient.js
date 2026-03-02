@@ -53,6 +53,7 @@ import { getAuthToken, getIsLoggingOut } from './auth';
 import { refreshAccessToken } from './tokenRefresh'; // 🔐 Global single-flight refresh
 import logger from './logger';
 import { FRONTEND_VERSION } from './pwaSafety';
+import { forceReloadWithCacheClear } from './emergencyRecovery';
 import {
   shouldBlockRequest,
   recordAuthFailure,
