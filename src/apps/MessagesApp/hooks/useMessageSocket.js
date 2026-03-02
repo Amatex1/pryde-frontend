@@ -9,8 +9,6 @@ import {
   onNewMessage,
   onMessageSent,
   onUserTyping,
-  getSocket,
-  isSocketConnected,
 } from '../../../utils/socket';
 import { setupSocketListeners } from '../../../utils/socketHelpers';
 import logger from '../../../utils/logger';

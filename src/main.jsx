@@ -104,3 +104,14 @@ initWebVitals()
    ================================ */
 initMotionSystem()
 initOrientationLock()
+
+/* ================================
+   AXE-CORE ACCESSIBILITY RUNTIME
+   Dev-only — zero production impact
+   Violations appear in browser console
+   ================================ */
+if (import.meta.env.DEV) {
+  import('@axe-core/react').then(axe => {
+    axe.default(React, ReactDOM, 1000)
+  })
+}

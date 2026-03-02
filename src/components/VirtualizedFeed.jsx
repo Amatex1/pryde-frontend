@@ -131,11 +131,6 @@ const VirtualizedFeed = memo(forwardRef(function VirtualizedFeed({
     }
   }, [posts, listRef]);
   
-  // Empty state
-  if (!posts || posts.length === 0) {
-    return emptyState || null;
-  }
-  
   // Calculate item count (posts + optional loading/end indicator)
   const itemCount = posts.length + (loading || (!hasMore && endOfListIndicator) ? 1 : 0);
   
@@ -166,6 +161,11 @@ const VirtualizedFeed = memo(forwardRef(function VirtualizedFeed({
     
     return renderItem(post, index, style, measureRef);
   }, [posts, renderItem, setItemHeight, loading, loadingIndicator, hasMore, endOfListIndicator]);
+  
+  // Empty state
+  if (!posts || posts.length === 0) {
+    return emptyState || null;
+  }
   
   return (
     <div ref={containerRef} className="virtualized-feed-container">

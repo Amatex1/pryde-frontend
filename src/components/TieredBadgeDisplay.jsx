@@ -117,8 +117,13 @@ function TieredBadgeDisplay({ badges = [], context = 'profile', isOwnProfile = f
 
         {modalOpen && (
           <>
-            <div className="badge-tier-3-backdrop" onClick={() => setModalOpen(false)} />
-            <div className="badge-tier-3-modal">
+            <button
+              type="button"
+              className="badge-tier-3-backdrop"
+              onClick={() => setModalOpen(false)}
+              aria-label="Close modal"
+            />
+            <div className="badge-tier-3-modal" role="dialog" aria-modal="true" aria-label="Badge details">
               <div className="badge-tier-3-header">
                 <h3>More badges</h3>
                 <button
@@ -173,8 +178,13 @@ function TieredBadgeDisplay({ badges = [], context = 'profile', isOwnProfile = f
 
         {modalOpen && (
           <>
-            <div className="badge-tier-3-backdrop" onClick={() => setModalOpen(false)} />
-            <div className="badge-tier-3-modal">
+            <button
+              type="button"
+              className="badge-tier-3-backdrop"
+              onClick={() => setModalOpen(false)}
+              aria-label="Close modal"
+            />
+            <div className="badge-tier-3-modal" role="dialog" aria-modal="true" aria-label="All badges">
               <div className="badge-tier-3-header">
                 <h3>All badges</h3>
                 <button

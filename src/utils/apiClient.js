@@ -163,7 +163,7 @@ export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = fal
   // 🚨 SECURITY: Block accidental Cloudflare API calls from frontend
   if (fullUrl.includes('/api/v4/accounts') || fullUrl.includes('/api/v4/user') || fullUrl.includes('cloudflare.com/client/v4')) {
     logger.error('[SECURITY] Blocked Cloudflare API call from frontend:', fullUrl);
-    const error = new ApiError('Blocked illegal Cloudflare API call', 403, { url: fullUrl });
+    const error = createApiError(403, 'Blocked illegal Cloudflare API call', 'CLOUDFLARE_BLOCKED');
     inflight.delete(cacheKey);
     return error;
   }

@@ -38,7 +38,7 @@ export function useOnlineUsers() {
     
     const cleanupFunctions = [];
 
-    const setupListeners = (socket) => {
+    const setupListeners = (_socket) => {
       // Listen for initial online users list
       const cleanupOnlineUsers = onOnlineUsers((users) => {
         logger.debug('👥 useOnlineUsers: Received online users list:', users);

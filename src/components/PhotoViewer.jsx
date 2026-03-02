@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import './PhotoViewer.css';
 
 function PhotoViewer({ imageUrl, onClose }) {
@@ -24,17 +24,27 @@ function PhotoViewer({ imageUrl, onClose }) {
     };
   }, []);
 
+  // Stop propagation handler
+  const stopPropagation = useCallback((e) => {
+    e.stopPropagation();
+  }, []);
+
   return (
-    <div className="photo-viewer-overlay" onClick={onClose} aria-hidden="true">
+    <button
+      type="button"
+      className="photo-viewer-overlay"
+      onClick={onClose}
+      aria-label="Close photo viewer"
+    >
       <div
         className="photo-viewer-container"
-        onClick={(e) => e.stopPropagation()}
+        onClick={stopPropagation}
+        onKeyDown={stopPropagation}
         role="dialog"
         aria-modal="true"
         aria-label="Photo viewer"
-        onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
       >
-        <button className="photo-viewer-close" onClick={onClose}>
+        <button className="photo-viewer-close" onClick={onClose} aria-label="Close">
           ✕
         </button>
         {imgError ? (
@@ -47,7 +57,8 @@ function PhotoViewer({ imageUrl, onClose }) {
             src={imageUrl}
             alt="Full size"
             className="photo-viewer-image"
-            onClick={(e) => e.stopPropagation()}
+            onClick={stopPropagation}
+            onKeyDown={stopPropagation}
             onError={(e) => {
               e.stopPropagation();
               setImgError(true);
@@ -55,9 +66,8 @@ function PhotoViewer({ imageUrl, onClose }) {
           />
         )}
       </div>
-    </div>
+    </button>
   );
 }
 
 export default PhotoViewer;
-

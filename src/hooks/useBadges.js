@@ -5,7 +5,7 @@
  * Provides badge lookup by user ID.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../utils/api';
 import logger from '../utils/logger';
 
@@ -141,4 +141,3 @@ export function useUserBadges(userId) {
 }
 
 export default useBadges;
-

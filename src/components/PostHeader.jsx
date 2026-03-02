@@ -133,9 +133,14 @@ function PostHeader({
       {avatarContent}
     </Link>
   ) : (
-    <div className="ph-avatar" onClick={onAvatarClick}>
+    <button
+      type="button"
+      className="ph-avatar"
+      onClick={onAvatarClick}
+      aria-label={`View ${displayName}'s profile`}
+    >
       {avatarContent}
-    </div>
+    </button>
   );
 
   // Author name element — staff see real name + anonymous label

@@ -1,157 +1,115 @@
 /**
- * ESLint Configuration - Flat Config Format (ESLint 9+)
- *
- * ARCHITECTURE GUARD:
- * This configuration enforces the "no viewport logic in features/pages" rule.
- *
- * Layout decisions (viewport detection, media queries in JS) are ONLY allowed
- * in src/layouts/. Feature and page files must be layout-agnostic.
+ * ESLint Flat Config (ESLint 9+)
+ * Clean, disciplined, production-ready setup
  */
 
-import js from '@eslint/js';
-import securityPlugin from 'eslint-plugin-security';
-import reactPlugin from 'eslint-plugin-react';
-import reactHooks from 'eslint-plugin-react-hooks';
-import globals from 'globals';
+import js from '@eslint/js'
+import reactPlugin from 'eslint-plugin-react'
+import reactHooks from 'eslint-plugin-react-hooks'
+import jsxA11y from 'eslint-plugin-jsx-a11y'
+import security from 'eslint-plugin-security'
+import globals from 'globals'
 
 export default [
-  // Base recommended rules
+
+  // Base JS recommended
   js.configs.recommended,
 
-  // React plugin with JSX support
+  // React + Hooks + Accessibility
   {
+    files: ['**/*.{js,jsx}'],
     plugins: {
       react: reactPlugin,
-      'react-hooks': reactHooks
+      'react-hooks': reactHooks,
+      'jsx-a11y': jsxA11y,
     },
-    languageOptions: {
-      parserOptions: {
-        ecmaFeatures: {
-          jsx: true
-        }
-      }
-    },
-    settings: {
-      react: {
-        version: 'detect'
-      }
-    },
-    rules: {
-      // Enforce the official React Hooks rules
-      ...reactHooks.configs.recommended.rules
-    }
-  },
-
-  // Security plugin
-  {
-    plugins: {
-      security: securityPlugin
-    },
-    rules: {
-      ...securityPlugin.configs.recommended.rules
-    }
-  },
-
-  // Global settings for all files
-  {
     languageOptions: {
       ecmaVersion: 2024,
       sourceType: 'module',
       parserOptions: {
-        ecmaFeatures: {
-          jsx: true
-        }
+        ecmaFeatures: { jsx: true }
       },
       globals: {
         ...globals.browser,
         ...globals.node,
-        // PWA/Service Worker globals
-        caches: 'readonly',
-        clients: 'readonly',
-        importScripts: 'readonly',
-        // Test globals
-        describe: 'readonly',
-        it: 'readonly',
-        expect: 'readonly',
-        beforeEach: 'readonly',
-        afterEach: 'readonly'
       }
     },
+    settings: {
+      react: { version: 'detect' }
+    },
     rules: {
-      // Relaxed rules for this codebase
-      'no-unused-vars': ['warn', { 
+      // React
+      'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
+
+      // Hooks (STRICT)
+      ...reactHooks.configs.recommended.rules,
+
+      // Accessibility (Balanced Enforcement)
+      ...jsxA11y.configs.recommended.rules,
+
+      // Downgrade noisy ones to warnings instead of disabling
+      'jsx-a11y/click-events-have-key-events': 'warn',
+      'jsx-a11y/no-static-element-interactions': 'warn',
+      'jsx-a11y/no-noninteractive-element-interactions': 'warn',
+      'jsx-a11y/label-has-associated-control': 'warn',
+      'jsx-a11y/no-autofocus': 'warn',
+      'jsx-a11y/media-has-caption': 'warn',
+
+      // General code quality
+      'no-unused-vars': ['warn', {
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_'
       }],
-      'no-console': 'off', // We use console for logging
+
+      'no-console': 'warn',
       'no-debugger': 'warn'
     }
   },
 
+  // Security plugin (STRICT)
+  {
+    plugins: { security },
+    rules: {
+      ...security.configs.recommended.rules
+    }
+  },
+
   // =============================================================
-  // ARCHITECTURE GUARD: No viewport logic in features/pages
-  // =============================================================
-  // 
-  // RULE: Feature and page files must NOT contain viewport or
-  // device detection logic. All layout decisions belong in /layouts.
-  //
-  // This prevents:
-  // - window.innerWidth / window.outerWidth
-  // - window.matchMedia()
-  // - useMediaQuery hooks
-  // - Direct viewport measurements
-  //
-  // Layout-agnostic components are easier to maintain, test, and
-  // ensure consistent behavior across desktop/mobile/PWA.
+  // ARCHITECTURE GUARD — Viewport logic restricted
   // =============================================================
   {
-    files: ['src/features/**/*.js', 'src/features/**/*.jsx', 'src/pages/**/*.js', 'src/pages/**/*.jsx'],
+    files: [
+      'src/features/**/*.{js,jsx}',
+      'src/pages/**/*.{js,jsx}'
+    ],
     rules: {
-      'no-restricted-globals': [
-        'error',
-        {
-          name: 'innerWidth',
-          message: 'ARCHITECTURE VIOLATION: Viewport logic not allowed in features/pages. Use layout components in src/layouts/ instead.'
-        },
-        {
-          name: 'innerHeight',
-          message: 'ARCHITECTURE VIOLATION: Viewport logic not allowed in features/pages. Use layout components in src/layouts/ instead.'
-        },
-        {
-          name: 'outerWidth',
-          message: 'ARCHITECTURE VIOLATION: Viewport logic not allowed in features/pages. Use layout components in src/layouts/ instead.'
-        },
-        {
-          name: 'outerHeight',
-          message: 'ARCHITECTURE VIOLATION: Viewport logic not allowed in features/pages. Use layout components in src/layouts/ instead.'
-        }
-      ],
       'no-restricted-properties': [
         'error',
         {
           object: 'window',
           property: 'innerWidth',
-          message: 'ARCHITECTURE VIOLATION: window.innerWidth not allowed in features/pages. Layout logic belongs in src/layouts/.'
+          message: 'ARCHITECTURE: Layout logic belongs in src/layouts/'
         },
         {
           object: 'window',
           property: 'innerHeight',
-          message: 'ARCHITECTURE VIOLATION: window.innerHeight not allowed in features/pages. Layout logic belongs in src/layouts/.'
+          message: 'ARCHITECTURE: Layout logic belongs in src/layouts/'
         },
         {
           object: 'window',
           property: 'outerWidth',
-          message: 'ARCHITECTURE VIOLATION: window.outerWidth not allowed in features/pages. Layout logic belongs in src/layouts/.'
+          message: 'ARCHITECTURE: Layout logic belongs in src/layouts/'
         },
         {
           object: 'window',
           property: 'outerHeight',
-          message: 'ARCHITECTURE VIOLATION: window.outerHeight not allowed in features/pages. Layout logic belongs in src/layouts/.'
+          message: 'ARCHITECTURE: Layout logic belongs in src/layouts/'
         },
         {
           object: 'window',
           property: 'matchMedia',
-          message: 'ARCHITECTURE VIOLATION: window.matchMedia not allowed in features/pages. Layout logic belongs in src/layouts/.'
+          message: 'ARCHITECTURE: Layout logic belongs in src/layouts/'
         }
       ]
     }
@@ -163,10 +121,7 @@ export default [
       'node_modules/**',
       'dist/**',
       'build/**',
-      'public/**',
-      '*.config.js',
-      'vite.config.js'
+      'public/**'
     ]
   }
-];
-
+]

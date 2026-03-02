@@ -21,7 +21,6 @@ export function useMessages({
   const [messages, setMessages] = useState([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const chatContainerRef = useRef(null);
-  const lastScrolledChatRef = useRef(null);
 
   // Helper function to format date headers
   const formatDateHeader = (date) => {

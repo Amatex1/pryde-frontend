@@ -16,7 +16,7 @@ import axios from "axios";
 // - Vercel rewrites don't forward cookies properly for cross-origin backends
 // - Auth endpoints (login, logout, refresh) NEED cookies to work
 // - sameSite='none' + secure + credentials='include' enables cross-origin cookies
-import { getAuthToken, logout, isManualLogout, setAuthToken, getCurrentUser, getIsLoggingOut } from "./auth";
+import { getAuthToken, logout, isManualLogout, getCurrentUser, getIsLoggingOut } from "./auth";
 import { refreshAccessToken, isRefreshInProgress, getRefreshPromise } from './tokenRefresh'; // 🔐 Global single-flight refresh
 import logger from './logger';
 import { disconnectSocket, initializeSocket } from './socket';

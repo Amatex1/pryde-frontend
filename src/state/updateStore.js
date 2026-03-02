@@ -3,7 +3,7 @@
  * Manages update availability state across the app
  */
 
-import { checkVersion, subscribeToUpdates } from '../utils/versionChecker';
+import { subscribeToUpdates } from '../utils/versionChecker';
 
 let updateAvailable = false;
 const subscribers = new Set();

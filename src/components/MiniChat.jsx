@@ -203,7 +203,12 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
 
   if (isMinimized) {
     return (
-      <div className="mini-chat-minimized glossy" onClick={onMinimize}>
+      <button
+        type="button"
+        className="mini-chat-minimized glossy"
+        onClick={onMinimize}
+        aria-label={`Open chat with ${friendName}`}
+      >
         <div className="minimized-header">
           <div className="minimized-avatar">
             {friendPhoto ? (
@@ -216,8 +221,9 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
           </div>
           <span className="minimized-name">{friendName}</span>
         </div>
-        <button
-          type="button"
+        <span
+          role="button"
+          tabIndex={0}
           className="btn-close-mini"
           onClick={(e) => {
             console.log('[Pryde] Close button clicked (minimized)');
@@ -225,10 +231,18 @@ function MiniChat({ friendId, friendName, friendPhoto, onClose, onMinimize, isMi
             e.stopPropagation();
             onClose();
           }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              e.stopPropagation();
+              onClose();
+            }
+          }}
+          aria-label={`Close chat with ${friendName}`}
         >
           ×
-        </button>
-      </div>
+        </span>
+      </button>
     );
   }
 
