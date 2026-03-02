@@ -53,8 +53,8 @@ self.addEventListener('push', (event) => {
 
   const options = {
     body,
-    icon: data.icon || '/pryde-logo-small.webp',
-    badge: '/pryde-logo-small.webp',
+    icon: data.icon || '/pryde-logo-small.png',
+    badge: '/pryde-logo-small.png',
     data: url,
     ...(data.tag && { tag: data.tag }),
   };

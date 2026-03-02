@@ -33,8 +33,8 @@ messaging.onBackgroundMessage((payload) => {
 
   const notificationOptions = {
     body: body || '',
-    icon: payload.notification?.icon || '/pryde-logo-small.webp',
-    badge: '/pryde-logo-small.webp',
+    icon: payload.notification?.icon || '/pryde-logo-small.png',
+    badge: '/pryde-logo-small.png',
     data: {
       url: payload.data?.url || payload.fcmOptions?.link || '/',
       type: payload.data?.type || 'general',

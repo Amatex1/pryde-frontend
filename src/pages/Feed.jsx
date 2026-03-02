@@ -29,6 +29,7 @@ import Toast from '../components/Toast';
 import { useModal } from '../hooks/useModal';
 import { useOnlineUsers } from '../hooks/useOnlineUsers';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import { useBreakpoint } from '../layouts/useBreakpoint';
 import { useFeedPosts } from '../hooks/useFeedPosts';
 import { useUnreadMessages } from '../hooks/useUnreadMessages'; // ✅ Use singleton hook
 import { useToast } from '../hooks/useToast';
@@ -63,6 +64,7 @@ function Feed() {
   const outletContext = useOutletContext() || {};
   const { onMenuOpen } = outletContext;
   const isMobile = useMediaQuery('(max-width: 768px)');
+  const { isSheetMobile } = useBreakpoint();
 
   // ── Feed data: posts, pagination, secondary data, pull-to-refresh ─────────
   const {
@@ -330,11 +332,11 @@ function Feed() {
       }
 
       // Infinite scroll detection (only when NOT in quiet mode)
+      // Note: window.innerHeight is allowed here as it's for scroll detection (not layout logic)
       const scrollHeight = document.documentElement.scrollHeight;
       const scrollTop = window.scrollY;
-      const clientHeight = window.innerHeight;
 
-      if (scrollHeight - scrollTop - clientHeight < 300 && hasMore && !fetchingPosts) {
+      if (scrollHeight - scrollTop - window.innerHeight < 300 && hasMore && !fetchingPosts) {
         loadMorePosts();
       }
     };
@@ -1616,9 +1618,9 @@ function Feed() {
 
   const toggleCommentBox = useCallback(async (postId) => {
     // Detect mobile using 600px breakpoint (matches CommentSheet design contract)
-    const isMobileSheet = window.matchMedia("(max-width: 600px)").matches;
+    const isMobileSheet = isSheetMobile;
 
-    console.log('[Pryde] toggleCommentBox - isMobileSheet:', isMobileSheet, 'width:', window.innerWidth);
+    console.log('[Pryde] toggleCommentBox - isMobileSheet:', isMobileSheet);
 
     // On mobile, open CommentSheet for full discussion
     if (isMobileSheet) {
@@ -1648,7 +1650,7 @@ function Feed() {
       }
       return { ...prev, [postId]: !isCurrentlyShown };
     });
-  }, [fetchCommentsForPost]);
+  }, [fetchCommentsForPost, isSheetMobile]);
 
   const handleCommentSubmit = useCallback(async (postId, e) => {
     e.preventDefault();
