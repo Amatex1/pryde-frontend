@@ -28,17 +28,17 @@
   position: absolute;
   top: -5px;
   right: -5px;
-  background: var(--color-danger);
+  background: var(--color-danger, #e53e3e);
   color: white;
   font-size: 0.65rem;
   font-weight: 700;
-  padding: 0.15rem 0.35rem;
+  padding: 0.1rem 0.35rem;
   border-radius: var(--radius-pill);
   min-width: 1rem;
   text-align: center;
-  border: 2px solid var(--bg-card);
-  line-height: 1;
+  line-height: 1.2;
   pointer-events: none;
+  /* No border/dot — just the number */
 }
 
 .messages-dropdown {

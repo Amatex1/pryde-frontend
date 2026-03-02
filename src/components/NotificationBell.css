@@ -28,19 +28,19 @@
 
 .notification-badge {
   position: absolute;
-  top: -0.3125rem;
-  right: -0.3125rem;
-  /* CALM-FIRST: Softer, less urgent color */
-  background: var(--accent-primary, #7c5cff);
+  top: -0.4rem;
+  right: -0.4rem;
+  background: var(--color-danger, #e53e3e);
   color: white;
   font-size: 0.7rem;
-  font-weight: 600;
-  padding: 0.2rem 0.4rem;
+  font-weight: 700;
+  padding: 0.1rem 0.35rem;
   border-radius: 0.625rem;
-  min-width: 1.25rem;
+  min-width: 1.1rem;
   text-align: center;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.15);
-  /* CALM-FIRST: No animation - removed pulse per notification spec */
+  line-height: 1.2;
+  pointer-events: none;
+  /* No border/dot — just the number */
 }
 
 /* REMOVED: Pulse animation creates urgency pressure
