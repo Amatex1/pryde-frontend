@@ -1,0 +1,197 @@
+/* ========================================
+   JAVASCRIPT TOOLTIP FALLBACK
+   Used when CSS tooltips are clipped or blocked
+   
+   This provides a portal-based tooltip that:
+   - Renders outside normal DOM flow (prevents clipping)
+   - Uses fixed positioning (bypasses z-index issues)
+   - Has its own high z-index (above everything)
+   ======================================== */
+
+/* Animation keyframes */
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Base tooltip container */
+.tooltip-js {
+  pointer-events: none;
+  animation: tooltipFadeIn 150ms ease-out forwards;
+}
+
+/* Tooltip content */
+.tooltip-js__content {
+  background: rgba(15, 14, 28, 0.95);
+  color: #f0eeff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Arrow/pointer */
+.tooltip-js::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+}
+
+/* Position variants */
+.tooltip-js--bottom::before {
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-bottom-color: rgba(15, 14, 28, 0.95);
+}
+
+.tooltip-js--top::before {
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top-color: rgba(15, 14, 28, 0.95);
+}
+
+.tooltip-js--left::before {
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left-color: rgba(15, 14, 28, 0.95);
+}
+
+.tooltip-js--right::before {
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-right-color: rgba(15, 14, 28, 0.95);
+}
+
+/* ========================================
+   ENHANCED CSS TOOLTIP SAFEGUARDS
+   Additional protection against clipping
+   ======================================== */
+
+/* Force all potential tooltip containers to allow overflow */
+.tooltip-js,
+[data-tooltip] {
+  overflow: visible !important;
+}
+
+/* Key containers that MUST NOT clip tooltips */
+.post-card,
+.post-content,
+.post-header,
+.post-actions,
+.feed-post,
+.feed-item,
+.card,
+.glossy,
+.modal-content,
+.modal-body,
+.dropdown-menu,
+.menu,
+.popover,
+.select-menu,
+[role="menu"],
+[role="dialog"],
+.dialog,
+.panel,
+.sidebar,
+.rail,
+.navbar,
+.nav,
+.header,
+.footer,
+main,
+article,
+section {
+  overflow: visible !important;
+}
+
+/* Exception: explicitly scrollable containers */
+.scrollable,
+.scroll-container,
+.overflow-auto,
+.overflow-scroll,
+[data-scroll="true"] {
+  overflow: auto !important;
+}
+
+/* Grid and flex containers - ensure they don't create new clipping contexts */
+.grid,
+.flex,
+.inline-flex,
+.grid-container,
+.feed-layout,
+.profile-layout {
+  overflow: visible !important;
+}
+
+/* Ensure transform doesn't create new containing block for tooltips */
+.tooltip-js,
+[data-tooltip] {
+  transform: none !important;
+}
+
+/* Z-index reset for tooltip containers */
+.tooltip-js {
+  z-index: 9999999 !important;
+}
+
+/* Safeguard: ensure fixed-position elements don't clip */
+.fixed,
+.sticky {
+  overflow: visible !important;
+}
+
+/* Mobile-specific safeguards */
+@media (max-width: 768px) {
+  .tooltip-js__content {
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+}
+
+/* Touch device - disable hover tooltips, JS tooltips can still work */
+@media (hover: none) and (pointer: coarse) {
+  [data-tooltip]:hover::before,
+  [data-tooltip]:hover::after {
+    display: none !important;
+  }
+  
+  /* But keep JS tooltips on focus for accessibility */
+  [data-tooltip]:focus::before,
+  [data-tooltip]:focus::after {
+    display: block !important;
+    opacity: 1 !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .tooltip-js__content {
+    background: #000;
+    border: 2px solid #fff;
+    color: #fff;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .tooltip-js {
+    animation: none;
+    opacity: 1;
+  }
+}

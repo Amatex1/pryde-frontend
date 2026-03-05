@@ -1,0 +1,153 @@
+/* ========================================
+   ICON BUTTON - Tooltip-enabled button component
+   ======================================== */
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-md, 10px);
+  cursor: pointer;
+  transition: all var(--duration-standard, 160ms) ease;
+  background: transparent;
+  color: var(--text-secondary);
+  position: relative;
+  /* Ensure tooltip can escape */
+  overflow: visible !important;
+}
+
+/* Size variants */
+.icon-btn--sm {
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+}
+
+.icon-btn--md {
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+}
+
+.icon-btn--lg {
+  width: 48px;
+  height: 48px;
+  padding: 10px;
+}
+
+/* Variant styles */
+.icon-btn--default {
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+}
+
+.icon-btn--default:hover {
+  background: var(--bg-active);
+  color: var(--text-primary);
+}
+
+.icon-btn--default:active {
+  transform: scale(0.95);
+}
+
+.icon-btn--primary {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.icon-btn--primary:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+.icon-btn--primary:active {
+  transform: scale(0.95);
+}
+
+.icon-btn--ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.icon-btn--ghost:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.icon-btn--danger {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.icon-btn--danger:hover {
+  background: var(--color-danger);
+  color: white;
+}
+
+.icon-btn--danger:active {
+  transform: scale(0.95);
+}
+
+/* Disabled state */
+.icon-btn:disabled,
+.icon-btn--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Focus styles for accessibility */
+.icon-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   TOOLTIP ENHANCEMENTS FOR ICON BUTTON
+   ======================================== */
+
+/* Ensure icon button is always positioned for tooltip */
+.icon-btn {
+  position: relative;
+}
+
+/* Add extra spacing for tooltip on icon buttons */
+.icon-btn[data-tooltip]::after {
+  /* Increase gap for icon buttons */
+  top: calc(100% + 12px) !important;
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================== */
+
+@media (max-width: 768px) {
+  .icon-btn--md {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .icon-btn--lg {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+/* Touch devices - larger hit targets */
+@media (hover: none) and (pointer: coarse) {
+  .icon-btn--sm {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .icon-btn--md {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .icon-btn--lg {
+    width: 52px;
+    height: 52px;
+  }
+}
