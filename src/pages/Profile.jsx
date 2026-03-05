@@ -19,6 +19,7 @@ import FormattedText from '../components/FormattedText';
 import ProfileSkeleton from '../components/ProfileSkeleton';
 import PostSkeleton from '../components/PostSkeleton';
 import OptimizedImage from '../components/OptimizedImage';
+import EmptyState from '../components/EmptyState';
 import ProfilePostSearch from '../components/ProfilePostSearch';
 import CommentThread from '../components/CommentThread';
 import CommentSheet from '../components/comments/CommentSheet';
@@ -2313,10 +2314,13 @@ function Profile() {
                     <PostSkeleton />
                     <PostSkeleton />
                   </>
-                ) : (searchResults ? searchResults.posts : posts).length === 0 ? (
-                  <div className="empty-state glossy">
-                    <p>{searchResults ? 'No posts found' : 'No posts yet'}</p>
-                  </div>
+) : (searchResults ? searchResults.posts : posts).length === 0 ? (
+                  <EmptyState 
+                    type="profile" 
+                    className="glossy"
+                    title={searchResults ? 'No posts found' : 'No posts yet'}
+                    description={searchResults ? 'Try a different search' : 'When this user posts, it\'ll show up here.'}
+                  />
                 ) : (
                   <div className="posts-list">
                     {/* OPTIONAL FEATURES: Sort posts to show pinned first (only if not searching) */}

@@ -1,5 +1,6 @@
 import PostSkeleton from '../PostSkeleton';
 import FeedPost from './FeedPost';
+import EmptyState from '../EmptyState';
 import { quietCopy } from '../../config/uiCopy';
 
 /**
@@ -97,13 +98,20 @@ export default function FeedList({
             <PostSkeleton />
           </>
         ) : posts.length === 0 ? (
-          <div className="empty-state glossy">
-            <p className="empty-state-primary">
-              {quietMode ? quietCopy.emptyFeed : "There's nothing new right now — and that's okay."}
-            </p>
-            <p className="empty-state-secondary">When people share, you'll see it here.</p>
-            <p className="empty-state-tertiary">Pryde moves at a human pace.</p>
-          </div>
+          <EmptyState
+            type="feed"
+            className="glossy"
+            action={{
+              label: 'Create Post',
+              onClick: () => {
+                // Focus on composer
+                const composer = document.querySelector('.feed-composer textarea, .composer-textarea');
+                if (composer) {
+                  composer.focus();
+                }
+              }
+            }}
+          />
         ) : (
           posts
             .filter(post => !blockedUsers.includes(post.author?._id))

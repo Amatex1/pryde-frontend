@@ -77,41 +77,53 @@ window.__VERSION__ = buildVersionMeta?.content || 'unknown'
 window.__BUILD_TIME__ = buildTimeMeta?.content || 'unknown'
 
 /* ================================
-   EARLY SAFE INIT
+   SILENT UPDATE CHECK
+   Check for pending update and auto-refresh if needed
+   This runs BEFORE React renders to ensure seamless update
    ================================ */
-initializeTheme()
-initTextDensity()
+import { checkAndApplyPendingUpdate } from './hooks/useAppVersion'
+const updateTriggered = checkAndApplyPendingUpdate()
 
-/* ================================
-   APP BOOT (NO SIDE EFFECTS)
-   ================================ */
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-)
+// Only continue with normal app boot if update wasn't triggered
+if (!updateTriggered) {
+  
+  /* ================================
+     EARLY SAFE INIT
+     ================================ */
+  initializeTheme()
+  initTextDensity()
 
-/* ================================
-   Telemetry (Passive)
-   ================================ */
-initWebVitals()
+  /* ================================
+     APP BOOT (NO SIDE EFFECTS)
+     ================================ */
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  )
 
-/* ================================
-   MOTION SYSTEM
-   Runs after React mounts — MutationObserver
-   picks up .post-card.fade-in elements as
-   they are added to the DOM by React.
-   ================================ */
-initMotionSystem()
-initOrientationLock()
+  /* ================================
+     Telemetry (Passive)
+     ================================ */
+  initWebVitals()
 
-/* ================================
-   AXE-CORE ACCESSIBILITY RUNTIME
-   Dev-only — zero production impact
-   Violations appear in browser console
-   ================================ */
-if (import.meta.env.DEV) {
-  import('@axe-core/react').then(axe => {
-    axe.default(React, ReactDOM, 1000)
-  })
+  /* ================================
+     MOTION SYSTEM
+     Runs after React mounts — MutationObserver
+     picks up .post-card.fade-in elements as
+     they are added to the DOM by React.
+     ================================ */
+  initMotionSystem()
+  initOrientationLock()
+
+  /* ================================
+     AXE-CORE ACCESSIBILITY RUNTIME
+     Dev-only — zero production impact
+     Violations appear in browser console
+     ================================ */
+  if (import.meta.env.DEV) {
+    import('@axe-core/react').then(axe => {
+      axe.default(React, ReactDOM, 1000)
+    })
+  }
 }

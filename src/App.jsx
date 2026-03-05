@@ -30,24 +30,21 @@ import PWAInstallPrompt from './components/PWAInstallPrompt';
 import CookieBanner from './components/CookieBanner';
 import PushNotificationPrompt from './components/PushNotificationPrompt';
 import ErrorBoundary from './components/ErrorBoundary';
-import UpdateBanner from './components/UpdateBanner';
-import AuthLoadingScreen from './components/AuthLoadingScreen'; // 🔥 NEW: Global auth loading screen
-import AuthGate from './components/AuthGate'; // 🔥 NEW: Auth gate wrapper
-import SpeedInsights from './components/SpeedInsights'; // Vercel Speed Insights
+// UpdateBanner removed - updates now happen silently in background
+import AuthLoadingScreen from './components/AuthLoadingScreen';
+import AuthGate from './components/AuthGate';
+import SpeedInsights from './components/SpeedInsights';
 import { AppReadyProvider } from './state/appReady';
 import LoadingGate from './components/LoadingGate';
-import RoleRoute from './components/RoleRoute'; // Role-based route protection for admin
-import useAppVersion from './hooks/useAppVersion';
+import RoleRoute from './components/RoleRoute';
 
 // Harden lazy imports: catch failures gracefully (NEVER auto-reload - causes infinite loops!)
-// If chunk fails to load (404, cache mismatch, stale Cloudflare asset), show error UI instead
 const lazyWithReload = (importFn) => {
   return lazy(async () => {
     try {
       return await importFn();
     } catch (err) {
       console.error('Lazy load failed:', err);
-      // Return a fallback component instead of reloading (which causes infinite loops)
       return {
         default: () => (
           <div style={{
@@ -81,30 +78,28 @@ const lazyWithReload = (importFn) => {
   });
 };
 
-// Eagerly loaded entry pages — these are the first routes any visitor hits,
-// so they must be in the main bundle to avoid a lazy-load waterfall on initial paint
+// Eagerly loaded entry pages
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 
 // Lazy load remaining pages with cache-mismatch protection
-const InviteRequired = lazyWithReload(() => import('./pages/InviteRequired')); // Phase 7B
-const Welcome = lazyWithReload(() => import('./pages/Welcome')); // Calm onboarding: soft landing page
-const TourIntro = lazyWithReload(() => import('./pages/TourIntro')); // Calm onboarding: tour opt-in gate
+const InviteRequired = lazyWithReload(() => import('./pages/InviteRequired'));
+const Welcome = lazyWithReload(() => import('./pages/Welcome'));
+const TourIntro = lazyWithReload(() => import('./pages/TourIntro'));
 const Footer = lazyWithReload(() => import('./components/Footer'));
 const ForgotPassword = lazyWithReload(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazyWithReload(() => import('./pages/ResetPassword'));
 const VerifyEmail = lazyWithReload(() => import('./pages/VerifyEmail'));
 const Feed = lazyWithReload(() => import('./pages/Feed'));
-const FeedController = lazyWithReload(() => import('./features/feed/FeedController')); // New layout system
+const FeedController = lazyWithReload(() => import('./features/feed/FeedController'));
 const FollowingFeed = lazyWithReload(() => import('./pages/FollowingFeed'));
 const Journal = lazyWithReload(() => import('./pages/Journal'));
 const Longform = lazyWithReload(() => import('./pages/Longform'));
 const Discover = lazyWithReload(() => import('./pages/Discover'));
 const Search = lazyWithReload(() => import('./pages/Search'));
-// Phase 2B: TagFeed removed - redirects to /groups/:slug
-const GroupsList = lazyWithReload(() => import('./pages/GroupsList')); // Phase 2: Groups listing
-const Groups = lazyWithReload(() => import('./pages/Groups')); // Phase 2: Individual group page
+const GroupsList = lazyWithReload(() => import('./pages/GroupsList'));
+const Groups = lazyWithReload(() => import('./pages/Groups'));
 const PhotoEssay = lazyWithReload(() => import('./pages/PhotoEssay'));
 const Profile = lazyWithReload(() => import('./pages/Profile'));
 const Followers = lazyWithReload(() => import('./pages/Followers'));
@@ -114,16 +109,13 @@ const SecuritySettings = lazyWithReload(() => import('./pages/SecuritySettings')
 const PrivacySettings = lazyWithReload(() => import('./pages/PrivacySettings'));
 const Bookmarks = lazyWithReload(() => import('./pages/Bookmarks'));
 const Events = lazyWithReload(() => import('./pages/Events'));
-// Phase 1: MessagesApp scaffold — routes through feature flag in index.js
-// Set VITE_USE_NEW_MESSAGES_APP=true to use new architecture
 const Messages = lazyWithReload(() => import('./apps/MessagesApp'));
 const Lounge = lazyWithReload(() => import('./pages/Lounge'));
 const Notifications = lazyWithReload(() => import('./pages/Notifications'));
 const Admin = lazyWithReload(() => import('./pages/Admin'));
-// Phase 2B: Hashtag removed - redirects to /groups/:tag
 const ReactivateAccount = lazyWithReload(() => import('./pages/ReactivateAccount'));
 
-// Lazy load legal pages with cache-mismatch protection
+// Lazy load legal pages
 const Terms = lazyWithReload(() => import('./pages/legal/Terms'));
 const Privacy = lazyWithReload(() => import('./pages/legal/Privacy'));
 const Community = lazyWithReload(() => import('./pages/legal/Community'));
@@ -136,10 +128,8 @@ const DMCA = lazyWithReload(() => import('./pages/legal/DMCA'));
 const AcceptableUse = lazyWithReload(() => import('./pages/legal/AcceptableUse'));
 const CookiePolicy = lazyWithReload(() => import('./pages/legal/CookiePolicy'));
 const Helplines = lazyWithReload(() => import('./pages/legal/Helplines'));
-const TrustAndSafety = lazyWithReload(() => import('./pages/legal/TrustAndSafety')); // Phase 6B
-const PlatformGuarantees = lazyWithReload(() => import('./pages/PlatformGuarantees')); // Phase 7A
-
-// Trust Center Consolidation (Phase 8)
+const TrustAndSafety = lazyWithReload(() => import('./pages/legal/TrustAndSafety'));
+const PlatformGuarantees = lazyWithReload(() => import('./pages/PlatformGuarantees'));
 const TrustCenter = lazyWithReload(() => import('./pages/TrustCenter'));
 const CommunityGuidelines = lazyWithReload(() => import('./pages/CommunityGuidelines'));
 const SafetyModeration = lazyWithReload(() => import('./pages/SafetyModeration'));
@@ -154,7 +144,6 @@ const PageLoader = () => {
   const [showReload, setShowReload] = useState(false);
 
   useEffect(() => {
-    // If loading takes more than 10 seconds, show reload button
     const timeout = setTimeout(() => {
       setShowReload(true);
     }, 10000);
@@ -168,7 +157,7 @@ const PageLoader = () => {
       justifyContent: 'center',
       alignItems: 'center',
       minHeight: '100vh',
-      background: '#f7f7f7', // Hardcoded fallback color
+      background: '#f7f7f7',
       color: '#2b2b2b'
     }}>
       <div style={{ textAlign: 'center', padding: '2rem' }}>
@@ -214,74 +203,44 @@ const PageLoader = () => {
   );
 };
 
-/**
- * PrivateRoute - Protects routes that require authentication
- * Uses AuthContext for auth state (single source of truth)
- */
 function PrivateRoute({ children }) {
   const { authStatus } = useAuth();
-
-  // 🔍 PROD DEBUG: Always log auth status for debugging
   console.log('[PrivateRoute] authStatus:', authStatus);
 
-  // Show loading while auth is being verified
   if (authStatus === AUTH_STATES.LOADING) {
     return <PageLoader />;
   }
 
-  // Redirect to login if not authenticated
   if (authStatus === AUTH_STATES.UNAUTHENTICATED) {
-    console.warn('[PrivateRoute] 🚪 Redirecting to /login - authStatus is UNAUTHENTICATED');
+    console.warn('[PrivateRoute] Redirecting to /login');
     return <Navigate to="/login" />;
   }
 
   return children;
 }
 
-/**
- * Phase 2B: Tags → Groups Migration Redirects
- * Redirects /tags/:slug to /groups/:slug
- * Preserves bookmarks, SEO, avoids 404s
- */
 function TagToGroupRedirect() {
   const { slug } = useParams();
   return <Navigate to={`/groups/${slug}`} replace />;
 }
 
-/**
- * Phase 2B: Hashtag → Groups Migration Redirect
- * Redirects /hashtag/:tag to /groups/:tag
- */
 function HashtagToGroupRedirect() {
   const { tag } = useParams();
   return <Navigate to={`/groups/${tag}`} replace />;
 }
 
-/**
- * AppContent - Main app content (inside AuthProvider)
- * Uses AuthContext for all auth state
- */
 function AppContent() {
   const { authStatus, isAuthenticated, isAuthReady, user, login, updateUser } = useAuth();
 
-  // Update banner state - use the hook that polls for new versions
-  const updateAvailable = useAppVersion();
-  const [showUpdateBanner, setShowUpdateBanner] = useState(true);
+  // Note: Version updates now happen silently via checkAndApplyPendingUpdate in main.jsx
+  // No banner is shown - updates apply automatically on next page load
 
-  // Onboarding tour state
   const [showTour, setShowTour] = useState(false);
-
-  // Derived state for convenience
   const isAuth = isAuthenticated;
   const authLoading = authStatus === AUTH_STATES.LOADING;
 
-  // NOTE: Mobile detection removed - layout now handled by CSS in AppLayout
-  // All platforms use the same layout primitives (PageViewport, PageContainer, PageLayout)
-
-  // 🎯 ONBOARDING TOUR: Show tour for new users who haven't completed/skipped it
   useEffect(() => {
     if (isAuthenticated && user && user.showTour === true) {
-      // Small delay to let the feed render first
       const timer = setTimeout(() => {
         setShowTour(true);
       }, 500);
@@ -289,44 +248,29 @@ function AppContent() {
     }
   }, [isAuthenticated, user]);
 
-  // 🔥 AUTH LIFECYCLE: Proactive token refresh (runs once on mount)
-  // Keeps users logged in like Facebook - refreshes tokens on:
-  // - App load, tab focus, every 10 minutes
   useEffect(() => {
     const cleanup = setupAuthLifecycle();
     return () => cleanup?.();
   }, []);
 
-  // 🔥 AUTHENTICATED USER EFFECTS
-  // These only run when user is authenticated AND auth is ready
-  // 🔐 RACE CONDITION FIX: Added isAuthReady dependency to prevent premature execution
   useEffect(() => {
-    // 🔐 BOOT GUARD: Wait for auth to be fully ready before executing protected behavior
     if (!isAuthReady || !isAuthenticated || !user) return;
 
-    // Apply all user theme preferences (theme, galaxy, quiet mode, cursor) from backend
-    // This ensures preferences persist across devices and survive localStorage clearing
     applyUserTheme(user);
-
-    // Reset logout flag to allow socket reconnection
     resetLogoutFlag();
 
-    // Listen for new messages and play sound
     const cleanupNewMessage = onNewMessage((msg) => {
       playNotificationSound().catch(err => {
         logger.warn('Failed to play notification sound:', err);
       });
     });
 
-    // Preload resources for authenticated users
-    // Note: Preloader functions have their own guards, but this effect gate is the primary defense
     Promise.all([
       preloadCriticalResources(),
       preloadFeedData(),
-      // 🚀 LCP OPTIMIZATION: Prefetch Feed chunk so it's ready immediately
-      import('./pages/Feed').catch(() => {/* ignore prefetch errors */})
+      import('./pages/Feed').catch(() => {})
     ]).catch(err => {
-      logger.debug('Resource preload failed (non-critical):', err);
+      logger.debug('Resource preload failed:', err);
     });
 
     return () => {
@@ -334,37 +278,30 @@ function AppContent() {
     };
   }, [isAuthReady, isAuthenticated, user]);
 
-  // 🔥 UNAUTHENTICATED EFFECTS
   useEffect(() => {
     if (authStatus === AUTH_STATES.UNAUTHENTICATED) {
       disconnectSocketForLogout();
-      cleanupAuthLifecycle(); // Stop refresh interval on logout
+      cleanupAuthLifecycle();
     }
   }, [authStatus]);
 
-  // Expose checkForUpdate globally for testing
   useEffect(() => {
     window.checkForUpdate = checkForUpdate;
   }, []);
 
-  // DOM order sanity check (development only)
   useEffect(() => {
     checkDomOrder();
   }, []);
-
-  // Note: Console guard (setupDevConsole) is called in main.jsx before React renders
 
   return (
     <AuthGate>
       <Router>
         <Suspense fallback={<PageLoader />}>
           <div className="app-container">
-            {/* Phase 5C: Skip link for keyboard users */}
             <a href="#main-content" className="skip-link">
               Skip to main content
             </a>
 
-            {/* Screen reader live region for announcements */}
             <div
               id="aria-live-announcer"
               aria-live="polite"
@@ -372,25 +309,18 @@ function AppContent() {
               className="aria-live-region"
             />
 
-            {/* Safety Warning for high-risk regions */}
             {isAuth && <SafetyWarning />}
 
-            {/* Update banner for new deployments */}
-            {updateAvailable && showUpdateBanner && (
-              <UpdateBanner onClose={() => setShowUpdateBanner(false)} />
-            )}
+            {/* Update banner removed - updates now happen silently in background */}
 
             <main id="main-content" role="main">
               <Routes>
-                {/* Unified layout wrapper - same for all platforms */}
                 <Route element={<AppLayout />}>
-                  {/* Public Home Page - Redirect to feed if logged in */}
                   <Route path="/" element={
                     authLoading ? <PageLoader /> :
                     !isAuth ? <Home /> : <Navigate to="/feed" />
                   } />
 
-                  {/* Auth Pages - Use AuthContext login function */}
                   <Route path="/login" element={
                     authLoading ? <PageLoader /> :
                     !isAuth ? <Login onLoginSuccess={login} /> : <Navigate to="/feed" />
@@ -413,19 +343,16 @@ function AppContent() {
                   } />
                   <Route path="/verify-email" element={<VerifyEmail />} />
 
-                  {/* Reactivate Account */}
                   <Route path="/reactivate" element={
                     authLoading ? <PageLoader /> :
                     isAuth ? <ReactivateAccount /> : <Navigate to="/login" />
                   } />
 
-                  {/* Calm Onboarding Routes - Protected, shown after registration */}
                   <Route path="/welcome" element={<PrivateRoute><Welcome /></PrivateRoute>} />
                   <Route path="/tour-intro" element={<PrivateRoute><TourIntro /></PrivateRoute>} />
 
-                  {/* Protected Routes */}
                   <Route path="/feed" element={<PrivateRoute><Feed /></PrivateRoute>} />
-                  <Route path="/feed-v2" element={<PrivateRoute><FeedController /></PrivateRoute>} /> {/* New layout system test */}
+                  <Route path="/feed-v2" element={<PrivateRoute><FeedController /></PrivateRoute>} />
                   <Route path="/feed/following" element={<PrivateRoute><FollowingFeed /></PrivateRoute>} />
                   <Route path="/journal" element={<PrivateRoute><Journal /></PrivateRoute>} />
                   <Route path="/longform" element={<PrivateRoute><Longform /></PrivateRoute>} />
@@ -444,17 +371,13 @@ function AppContent() {
                   <Route path="/settings/safety" element={<Navigate to="/settings/privacy" replace />} />
                   <Route path="/bookmarks" element={<PrivateRoute><Bookmarks /></PrivateRoute>} />
                   <Route path="/events" element={<PrivateRoute><Events /></PrivateRoute>} />
-                  {/* Messages route moved to FullViewportLayout below */}
                   <Route path="/lounge" element={<PrivateRoute><Lounge /></PrivateRoute>} />
                   <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
 
-                  {/* Phase 2B: Tags → Groups Migration Redirects */}
-                  {/* Preserve bookmarks, SEO, avoid 404s */}
                   <Route path="/tags" element={<Navigate to="/groups" replace />} />
                   <Route path="/tags/:slug" element={<TagToGroupRedirect />} />
                   <Route path="/hashtag/:tag" element={<HashtagToGroupRedirect />} />
 
-                  {/* Admin Panel - Role-protected */}
                   <Route path="/admin" element={
                     <PrivateRoute>
                       <RoleRoute allowedRoles={['moderator', 'admin', 'super_admin']}>
@@ -463,21 +386,14 @@ function AppContent() {
                     </PrivateRoute>
                   } />
 
-                  {/* Legal Pages - Public Access */}
-                  {/* Trust Center Hub */}
                   <Route path="/trust-center" element={<><TrustCenter /><Footer /></>} />
-
-                  {/* Core Legal Pages */}
                   <Route path="/terms" element={<><Terms /><Footer /></>} />
                   <Route path="/privacy" element={<><Privacy /><Footer /></>} />
                   <Route path="/dmca" element={<><DMCA /><Footer /></>} />
-
-                  {/* Consolidated Pages (New) */}
                   <Route path="/community-guidelines" element={<><CommunityGuidelines /><Footer /></>} />
                   <Route path="/safety-moderation" element={<><SafetyModeration /><Footer /></>} />
                   <Route path="/security" element={<><SecurityOverview /><Footer /></>} />
 
-                  {/* Redirects for Old Routes */}
                   <Route path="/acceptable-use" element={<Navigate to="/community-guidelines" replace />} />
                   <Route path="/safety" element={<Navigate to="/safety-moderation" replace />} />
                   <Route path="/safety-center" element={<Navigate to="/safety-moderation" replace />} />
@@ -485,57 +401,41 @@ function AppContent() {
                   <Route path="/trust-and-safety" element={<Navigate to="/safety-moderation" replace />} />
                   <Route path="/cookie-policy" element={<Navigate to="/privacy" replace />} />
 
-                  {/* Legacy Routes (Keep for now) */}
                   <Route path="/community" element={<><Community /><Footer /></>} />
-
-                  {/* Other Legal Pages */}
                   <Route path="/contact" element={<><Contact /><Footer /></>} />
                   <Route path="/faq" element={<><FAQ /><Footer /></>} />
                   <Route path="/legal-requests" element={<><LegalRequests /><Footer /></>} />
                   <Route path="/helplines" element={<><Helplines /><Footer /></>} />
                   <Route path="/guarantees" element={<><PlatformGuarantees /><Footer /></>} />
 
-                  {/* Custom Profile URL - catch-all for /@username style URLs */}
                   <Route path="/@:slug" element={<PrivateRoute><Profile /></PrivateRoute>} />
                 </Route>
 
-                {/* Full Viewport Layout - No PageContainer constraints */}
                 <Route element={<FullViewportLayout />}>
                   <Route path="/messages" element={<PrivateRoute><Messages /></PrivateRoute>} />
                 </Route>
               </Routes>
             </main>
 
-            {/* PWA Install Prompt - Show for all users (auth status doesn't matter for install) */}
             <PWAInstallPrompt />
-
-            {/* Cookie Banner */}
             <CookieBanner />
-
-            {/* One-time push notification permission prompt */}
             {isAuthenticated && <PushNotificationPrompt />}
 
-            {/* 🎯 Onboarding Tour - Calm welcome for new users */}
-            {/* IMPORTANT: Must be inside Router because it uses useNavigate() */}
             <OnboardingTour
               isOpen={showTour}
               onClose={() => {
                 setShowTour(false);
-                // Update local user state to prevent tour from showing again
                 if (updateUser) {
                   updateUser({ showTour: false, hasCompletedTour: true });
                 }
               }}
               onComplete={() => {
-                // Update local user state
                 if (updateUser) {
                   updateUser({ showTour: false, hasCompletedTour: true });
                 }
               }}
             />
 
-            {/* 🌙 Quiet Return Toast - Soft welcome for returning inactive users */}
-            {/* Shows once per inactivity window (14-30 days), auto-dismisses after 5s */}
             {user && (user.hasCompletedTour || user.hasSkippedTour || user.onboardingTourDismissed) && (
               <QuietReturnToast />
             )}
@@ -543,40 +443,26 @@ function AppContent() {
         </Suspense>
       </Router>
 
-      {/* 🔍 Debug Overlay - Toggle with ?debug=true or Ctrl+Shift+D */}
       <DebugOverlay />
-
-      {/* 📴 Offline Banner - Shows when app is offline */}
       <OfflineBanner />
     </AuthGate>
   );
 }
 
-/**
- * App - Root component that provides all context providers
- * AuthProvider is the outermost provider for auth state
- */
 function App() {
-  // 🎨 SYSTEM THEME LISTENER - Listens for OS dark/light mode changes
   useEffect(() => {
     const cleanup = initThemeListener();
-
-    // Load user's theme preference if exists
     const preference = getThemePreference();
     if (preference !== 'auto') {
       setThemeMode(preference);
     }
-
     logger.info('[App] Theme listener initialized, preference:', preference);
     return cleanup;
   }, []);
 
-  // 📱 PWA MODE DETECTION
   useEffect(() => {
     const checkPWA = () => {
       const pwaMode = isPWA();
-
-      // Add class to body for CSS targeting
       if (pwaMode) {
         document.body.classList.add('pwa-mode');
         document.body.classList.remove('browser-mode');
@@ -584,13 +470,10 @@ function App() {
         document.body.classList.add('browser-mode');
         document.body.classList.remove('pwa-mode');
       }
-
       logger.info('[App] Running in PWA mode:', pwaMode);
     };
 
     checkPWA();
-
-    // Listen for display mode changes
     const mediaQuery = window.matchMedia('(display-mode: standalone)');
     const handleChange = () => checkPWA();
 
@@ -598,22 +481,19 @@ function App() {
       mediaQuery.addEventListener('change', handleChange);
       return () => mediaQuery.removeEventListener('change', handleChange);
     } else {
-      // Legacy browsers
       mediaQuery.addListener(handleChange);
       return () => mediaQuery.removeListener(handleChange);
     }
   }, []);
 
-  // 🛡️ PWA SAFETY CHECKS (runs once on mount)
   useEffect(() => {
     const runPWASafetyChecks = async () => {
       try {
-        logger.info('[App] 🛡️ Running PWA safety checks...');
+        logger.info('[App] Running PWA safety checks...');
         const safetyResult = await executePWASafetyChecks();
 
         if (!safetyResult.safe) {
-          logger.warn('[App] 🔥 PWA safety check failed:', safetyResult.action);
-
+          logger.warn('[App] PWA safety check failed:', safetyResult.action);
           switch (safetyResult.action) {
             case 'disable_pwa':
               disablePWAAndReload(safetyResult.message);
@@ -626,18 +506,13 @@ function App() {
               logger.warn('[App] Unknown safety action:', safetyResult.action);
           }
         }
-
-        logger.info('[App] ✅ PWA safety checks passed');
+        logger.info('[App] PWA safety checks passed');
       } catch (error) {
         logger.error('[App] PWA safety checks failed:', error);
-        // Continue anyway (fail open)
       }
     };
 
-    // Initialize offline manager
     initOfflineManager();
-
-    // Run PWA safety checks
     runPWASafetyChecks();
   }, []);
 

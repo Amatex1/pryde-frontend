@@ -1,0 +1,169 @@
+/**
+ * EmptyState Styles
+ * 
+ * Polished empty states for: feed, messages, profile, search, etc.
+ */
+
+/* Base empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  min-height: 200px;
+}
+
+/* Icon */
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.9;
+  filter: grayscale(0.1);
+}
+
+/* Title */
+.empty-state-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-main, #1E1E26);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+}
+
+[data-theme="dark"] .empty-state-title {
+  color: #F5F6FA;
+}
+
+/* Description */
+.empty-state-description {
+  font-size: 0.9375rem;
+  color: var(--text-secondary, #6B6E80);
+  margin: 0 0 1.5rem 0;
+  max-width: 300px;
+  line-height: 1.5;
+}
+
+/* Action button */
+.empty-state-action {
+  background: var(--color-primary, #6C5CE7);
+  color: white;
+  border: none;
+  border-radius: var(--radius-pill, 9999px);
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.empty-state-action:hover {
+  background: var(--color-primary-hover, #5849c4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.25);
+}
+
+.empty-state-action:active {
+  transform: translateY(0);
+}
+
+/* Variant: compact (smaller spacing) */
+.empty-state-compact {
+  padding: 1.5rem 1rem;
+  min-height: auto;
+}
+
+.empty-state-compact .empty-state-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-compact .empty-state-title {
+  font-size: 1rem;
+}
+
+.empty-state-compact .empty-state-description {
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+/* Variant: large (more prominent) */
+.empty-state-large {
+  padding: 4rem 2rem;
+  min-height: 300px;
+}
+
+.empty-state-large .empty-state-icon {
+  font-size: 4rem;
+}
+
+.empty-state-large .empty-state-title {
+  font-size: 1.5rem;
+}
+
+.empty-state-large .empty-state-description {
+  font-size: 1rem;
+  max-width: 400px;
+}
+
+/* Specific type variants */
+.empty-state-feed {
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  border: 1px dashed var(--border-subtle);
+}
+
+.empty-state-messages {
+  background: transparent;
+}
+
+.empty-state-search {
+  background: transparent;
+}
+
+/* Animation */
+@keyframes emptyStateFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.empty-state {
+  animation: emptyStateFadeIn 0.3s ease;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .empty-state {
+    animation: none;
+  }
+  
+  .empty-state-action:hover {
+    transform: none;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .empty-state {
+    padding: 2rem 1rem;
+  }
+  
+  .empty-state-icon {
+    font-size: 2.5rem;
+  }
+  
+  .empty-state-title {
+    font-size: 1.125rem;
+  }
+  
+  .empty-state-description {
+    font-size: 0.875rem;
+  }
+}

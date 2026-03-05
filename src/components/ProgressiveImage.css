@@ -1,0 +1,164 @@
+/**
+ * ProgressiveImage Styles
+ * 
+ * Blur-up image loading effect
+ */
+
+/* Base container */
+.progressive-image-container,
+.optimized-image {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg-subtle, #f0f0f0);
+  border-radius: inherit;
+}
+
+/* Aspect ratio container */
+.progressive-image-container[style*="padding-bottom"] {
+  position: relative;
+  height: 0;
+}
+
+.progressive-image-container[style*="padding-bottom"] .progressive-image-placeholder,
+.progressive-image-container[style*="padding-bottom"] .progressive-image-main {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Placeholder - always visible */
+.progressive-image-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(10px);
+  transform: scale(1.1); /* Compensate for blur edge artifact */
+  transition: opacity 0.3s ease;
+}
+
+/* Main image */
+.progressive-image-main {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* Loaded state - show main image */
+.progressive-image-container.loaded .progressive-image-main {
+  opacity: 1;
+}
+
+.progressive-image-container.loaded .progressive-image-placeholder {
+  opacity: 0;
+}
+
+/* Error state */
+.progressive-image-error,
+.optimized-image-error {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-subtle, #f5f5f5);
+  color: var(--text-muted, #9CA0B3);
+}
+
+.progressive-image-error-icon {
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
+}
+
+.progressive-image-error-text {
+  font-size: 0.75rem;
+}
+
+/* OptimizedImage specific */
+.optimized-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.optimized-image.loaded img {
+  opacity: 1;
+}
+
+/* Loading skeleton */
+.optimized-image-skeleton {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary, #f0f0f0) 0%,
+    var(--bg-tertiary, #e0e0e0) 50%,
+    var(--bg-secondary, #f0f0f0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Dark mode */
+[data-theme="dark"] .progressive-image-container,
+[data-theme="dark"] .optimized-image {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .progressive-image-error,
+[data-theme="dark"] .optimized-image-error {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .optimized-image-skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .progressive-image-placeholder,
+  .progressive-image-main,
+  .optimized-image img {
+    transition: none;
+  }
+  
+  .optimized-image-skeleton {
+    animation: none;
+    background: var(--bg-subtle);
+  }
+}
