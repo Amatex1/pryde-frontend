@@ -1,3 +1,19 @@
+/*
+PRYDE Z-INDEX SYSTEM
+
+Never use raw numbers like:
+
+z-index: 9999;
+z-index: 10000;
+
+Instead use variables defined here.
+
+Example:
+z-index: var(--z-tooltip);
+
+This prevents stacking bugs across the UI.
+*/
+
 /**
  * ========================================
  * CORE Z-INDEX SYSTEM

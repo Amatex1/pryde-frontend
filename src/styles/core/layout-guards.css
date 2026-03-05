@@ -1,0 +1,55 @@
+/* ------------------------------------------------ */
+/* PRYDE LAYOUT GUARDS                              */
+/* Prevent common React flexbox overflow bugs       */
+/* Must be used carefully to avoid breaking layouts */
+/* ------------------------------------------------ */
+
+/* Fix flexbox text overflow in nested components */
+.flex,
+[class*="flex"] {
+  min-width: 0;
+}
+
+/* Ensure images and media never break containers */
+img,
+video,
+canvas,
+picture,
+figure {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Prevent overflow in common wrapper classes */
+.wrapper,
+.container,
+.content,
+.card,
+.panel {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Prevent hidden overflow scrollbars on body */
+body {
+  overflow-x: hidden;
+}
+
+/* Ensure buttons and inputs inherit font */
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Fix for long usernames in specific contexts */
+.username,
+.display-name,
+.user-name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

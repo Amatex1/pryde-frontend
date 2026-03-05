@@ -11,6 +11,9 @@
 /* BASE STYLES */
 @import './styles/design-system.css';       /* Design system */
 
+/* CORE - Architecture guards (must be first) */
+@import './styles/core/layout-guards.css';  /* Layout safety */
+
 /* LAYOUT SYSTEM — consolidated into core/layout.css */
 
 /* COMPONENTS */

@@ -27,6 +27,9 @@
 /* ========================================
    TOOLTIP — [data-tooltip] attribute
    Floating label on hover/focus, icon-only buttons
+   
+   NOTE: Using explicit properties to prevent ad blockers (Ghostery, etc.)
+   from hiding CSS pseudo-element tooltips
    ======================================== */
 [data-tooltip] {
   position: relative;
@@ -34,54 +37,82 @@
 
 /* Tooltip arrow — points up toward the button */
 [data-tooltip]::before {
-  content: '';
-  position: absolute;
-  top: calc(100% + 1px);
-  left: 50%;
-  transform: translateX(-50%);
-  border: 5px solid transparent;
-  border-bottom-color: rgba(15, 14, 28, 0.92);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--duration-quick, 120ms) ease;
-  z-index: 10000;
+  content: '' !important;
+  position: absolute !important;
+  top: calc(100% + 1px) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  border: 5px solid transparent !important;
+  border-bottom-color: rgba(15, 14, 28, 0.92) !important;
+  opacity: 0 !important;
+  visibility: visible !important;
+  pointer-events: none !important;
+  transition: opacity 120ms ease !important;
+  z-index: 999999 !important;
+  contain: layout style !important;
+  display: block !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Tooltip label — appears below the button */
 [data-tooltip]::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  top: calc(100% + 11px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(15, 14, 28, 0.92);
-  color: #f0eeff;
-  padding: 4px 9px;
-  border-radius: 7px;
-  font-size: 11px;
-  font-weight: 500;
-  line-height: 1.4;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity var(--duration-quick, 120ms) ease;
-  z-index: 10000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  content: attr(data-tooltip) !important;
+  position: absolute !important;
+  top: calc(100% + 11px) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background: rgba(15, 14, 28, 0.92) !important;
+  color: #f0eeff !important;
+  padding: 4px 9px !important;
+  border-radius: 7px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+  visibility: visible !important;
+  transition: opacity 120ms ease !important;
+  z-index: 999999 !important;
+  contain: layout style !important;
+  display: block !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  margin: 0 !important;
+  border: none !important;
+  font-family: inherit !important;
+  text-align: center !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  text-shadow: none !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
 }
 
+/* Hover and focus states - explicit visibility */
 [data-tooltip]:hover::before,
 [data-tooltip]:hover::after,
 [data-tooltip]:focus-visible::before,
 [data-tooltip]:focus-visible::after {
-  opacity: 1;
+  opacity: 1 !important;
 }
 
 /* Never show tooltips on touch-primary devices */
 @media (hover: none) {
   [data-tooltip]::before,
   [data-tooltip]::after {
-    display: none;
+    display: none !important;
   }
+}
+
+/* Additional safeguard: ensure tooltip container doesn't clip */
+[data-tooltip] {
+  overflow: visible !important;
 }
 
 /* Unified focus ring - calm, not harsh */
