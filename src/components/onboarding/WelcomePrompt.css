@@ -1,0 +1,106 @@
+/**
+ * WelcomePrompt - First-time user onboarding prompt styles
+ * 
+ * Maintains Pryde's calm, welcoming design system.
+ */
+
+.welcome-prompt {
+  background: linear-gradient(135deg, var(--color-bg-elevated) 0%, var(--color-bg-secondary) 100%);
+  border: 1px solid var(--color-border-subtle, rgba(255, 255, 255, 0.08));
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.welcome-prompt:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.welcome-prompt-minimized {
+  padding: 10px 16px;
+}
+
+.welcome-prompt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.welcome-prompt-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #fff);
+}
+
+.welcome-prompt-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.welcome-prompt-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.6));
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.welcome-prompt-btn:hover {
+  background: var(--color-bg-hover, rgba(255, 255, 255, 0.08));
+  color: var(--color-text-primary, #fff);
+}
+
+.welcome-prompt-btn-dismiss:hover {
+  background: rgba(255, 100, 100, 0.15);
+  color: #ff6b6b;
+}
+
+.welcome-prompt-message {
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.8));
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.welcome-prompt-actions-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.welcome-prompt-create-btn {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.welcome-prompt-create-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+.welcome-prompt-skip-btn {
+  background: transparent;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.6));
+  border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: color 0.2s ease;
+}
+
+.welcome-prompt-skip-btn:hover {
+  color: var(--color-text-primary, #fff);
+}
