@@ -1,11 +1,14 @@
 import PostSkeleton from '../PostSkeleton';
 import FeedPost from './FeedPost';
 import EmptyState from '../EmptyState';
+import { ActivityTag } from '../ui/ActivityTag';
 import { quietCopy } from '../../config/uiCopy';
 
 /**
  * FeedList — renders the scrollable post list with skeleton, empty, and loaded states.
  * Extracted from Feed.jsx (Phase 3 reorganisation). No logic changes.
+ * 
+ * CALM FEED: Supports activity tags and conversation headers
  */
 export default function FeedList({
   // Data
@@ -14,6 +17,7 @@ export default function FeedList({
   fetchingPosts,
   hasMore,
   quietMode,
+  feedHeader, // CALM FEED: Header for conversation section
   postRefs,
   commentRefs,
   currentUser,
@@ -113,89 +117,108 @@ export default function FeedList({
             }}
           />
         ) : (
-          posts
-            .filter(post => !blockedUsers.includes(post.author?._id))
-            .map((post, postIndex) => {
-              const isFirstPost = postIndex === 0;
-              const shouldEagerLoad = postIndex < 3;
+          <>
+            {/* CALM FEED: Conversation section header */}
+            {feedHeader && (
+              <div className="feed-conversation-header">
+                <span className="feed-conversation-header-icon">🌿</span>
+                <span className="feed-conversation-header-text">{feedHeader}</span>
+              </div>
+            )}
+            
+            {posts
+              .filter(post => !blockedUsers.includes(post.author?._id))
+              .map((post, postIndex) => {
+                const isFirstPost = postIndex === 0;
+                const shouldEagerLoad = postIndex < 3;
 
-              return (
-                <FeedPost
-                  key={post._id}
-                  ref={(el) => postRefs.current[post._id] = el}
-                  post={post}
-                  postIndex={postIndex}
-                  currentUser={currentUser}
-                  isFirstPost={isFirstPost}
-                  shouldEagerLoad={shouldEagerLoad}
-                  openDropdownId={openDropdownId}
-                  editingPostId={editingPostId}
-                  editPostText={editPostText}
-                  editPostVisibility={editPostVisibility}
-                  editPostMedia={editPostMedia}
-                  editPostTextareaRef={editPostTextareaRef}
-                  expandedPosts={expandedPosts}
-                  revealedPosts={revealedPosts}
-                  autoHideContentWarnings={autoHideContentWarnings}
-                  bookmarkedPosts={bookmarkedPosts}
-                  postComments={postComments}
-                  commentReplies={commentReplies}
-                  showReplies={showReplies}
-                  showCommentBox={showCommentBox}
-                  commentText={commentText}
-                  commentGif={commentGif}
-                  showGifPicker={showGifPicker}
-                  replyingToComment={replyingToComment}
-                  replyText={replyText}
-                  replyGif={replyGif}
-                  editingCommentId={editingCommentId}
-                  editCommentText={editCommentText}
-                  showReactionPicker={showReactionPicker}
-                  commentRefs={commentRefs}
-                  onToggleDropdown={onToggleDropdown}
-                  onPinPost={onPinPost}
-                  onEditPost={onEditPost}
-                  onDeletePost={onDeletePost}
-                  onReportPost={onReportPost}
-                  onBookmark={onBookmark}
-                  onReactionChange={onReactionChange}
-                  onReactionCountClick={onReactionCountClick}
-                  onEditPostTextChange={onEditPostTextChange}
-                  onEditPostVisibilityChange={onEditPostVisibilityChange}
-                  onRemoveEditMedia={onRemoveEditMedia}
-                  onSaveEditPost={onSaveEditPost}
-                  onCancelEditPost={onCancelEditPost}
-                  onEditPostKeyDown={onEditPostKeyDown}
-                  onExpandPost={onExpandPost}
-                  onRevealPost={onRevealPost}
-                  onPhotoClick={onPhotoClick}
-                  onPollVote={onPollVote}
-                  onToggleCommentBox={onToggleCommentBox}
-                  onCommentChange={onCommentChange}
-                  onCommentSubmit={onCommentSubmit}
-                  onCommentGifSelect={onCommentGifSelect}
-                  onToggleGifPicker={onToggleGifPicker}
-                  onEditComment={onEditComment}
-                  onSaveEditComment={onSaveEditComment}
-                  onCancelEditComment={onCancelEditComment}
-                  onDeleteComment={onDeleteComment}
-                  onCommentReaction={onCommentReaction}
-                  onToggleReplies={onToggleReplies}
-                  onReplyToComment={onReplyToComment}
-                  onSetShowReactionPicker={onSetShowReactionPicker}
-                  onSetReactionDetailsModal={onSetReactionDetailsModal}
-                  onSetReportModal={onSetReportModal}
-                  onReplyTextChange={onReplyTextChange}
-                  onReplyGifSelect={onReplyGifSelect}
-                  onSubmitReply={onSubmitReply}
-                  onCancelReply={onCancelReply}
-                  getUserReactionEmoji={getUserReactionEmoji}
-                  viewerRole={viewerRole}
-                  replyIsAnonymous={replyIsAnonymous}
-                  onReplyIsAnonymousChange={onReplyIsAnonymousChange}
-                />
-              );
-            })
+                return (
+                  <div key={post._id} className="post-wrapper">
+                    {/* CALM FEED: Activity tag */}
+                    {post.activityTag && (
+                      <div className="post-activity-tag">
+                        <ActivityTag type={post.activityTag} />
+                      </div>
+                    )}
+                    
+                    <FeedPost
+                      key={post._id}
+                      ref={(el) => postRefs.current[post._id] = el}
+                      post={post}
+                      postIndex={postIndex}
+                      currentUser={currentUser}
+                      isFirstPost={isFirstPost}
+                      shouldEagerLoad={shouldEagerLoad}
+                      openDropdownId={openDropdownId}
+                      editingPostId={editingPostId}
+                      editPostText={editPostText}
+                      editPostVisibility={editPostVisibility}
+                      editPostMedia={editPostMedia}
+                      editPostTextareaRef={editPostTextareaRef}
+                      expandedPosts={expandedPosts}
+                      revealedPosts={revealedPosts}
+                      autoHideContentWarnings={autoHideContentWarnings}
+                      bookmarkedPosts={bookmarkedPosts}
+                      postComments={postComments}
+                      commentReplies={commentReplies}
+                      showReplies={showReplies}
+                      showCommentBox={showCommentBox}
+                      commentText={commentText}
+                      commentGif={commentGif}
+                      showGifPicker={showGifPicker}
+                      replyingToComment={replyingToComment}
+                      replyText={replyText}
+                      replyGif={replyGif}
+                      editingCommentId={editingCommentId}
+                      editCommentText={editCommentText}
+                      showReactionPicker={showReactionPicker}
+                      commentRefs={commentRefs}
+                      onToggleDropdown={onToggleDropdown}
+                      onPinPost={onPinPost}
+                      onEditPost={onEditPost}
+                      onDeletePost={onDeletePost}
+                      onReportPost={onReportPost}
+                      onBookmark={onBookmark}
+                      onReactionChange={onReactionChange}
+                      onReactionCountClick={onReactionCountClick}
+                      onEditPostTextChange={onEditPostTextChange}
+                      onEditPostVisibilityChange={onEditPostVisibilityChange}
+                      onRemoveEditMedia={onRemoveEditMedia}
+                      onSaveEditPost={onSaveEditPost}
+                      onCancelEditPost={onCancelEditPost}
+                      onEditPostKeyDown={onEditPostKeyDown}
+                      onExpandPost={onExpandPost}
+                      onRevealPost={onRevealPost}
+                      onPhotoClick={onPhotoClick}
+                      onPollVote={onPollVote}
+                      onToggleCommentBox={onToggleCommentBox}
+                      onCommentChange={onCommentChange}
+                      onCommentSubmit={onCommentSubmit}
+                      onCommentGifSelect={onCommentGifSelect}
+                      onToggleGifPicker={onToggleGifPicker}
+                      onEditComment={onEditComment}
+                      onSaveEditComment={onSaveEditComment}
+                      onCancelEditComment={onCancelEditComment}
+                      onDeleteComment={onDeleteComment}
+                      onCommentReaction={onCommentReaction}
+                      onToggleReplies={onToggleReplies}
+                      onReplyToComment={onReplyToComment}
+                      onSetShowReactionPicker={onSetShowReactionPicker}
+                      onSetReactionDetailsModal={onSetReactionDetailsModal}
+                      onSetReportModal={onSetReportModal}
+                      onReplyTextChange={onReplyTextChange}
+                      onReplyGifSelect={onReplyGifSelect}
+                      onSubmitReply={onSubmitReply}
+                      onCancelReply={onCancelReply}
+                      getUserReactionEmoji={getUserReactionEmoji}
+                      viewerRole={viewerRole}
+                      replyIsAnonymous={replyIsAnonymous}
+                      onReplyIsAnonymousChange={onReplyIsAnonymousChange}
+                    />
+                  </div>
+                );
+              })}
+          </>
         )}
       </div>
 

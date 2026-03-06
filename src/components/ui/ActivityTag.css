@@ -1,0 +1,83 @@
+/**
+ * ActivityTag - CSS Styles
+ * Calm, gentle styling for activity badges
+ */
+
+.activity-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.activity-tag-icon {
+  font-size: 0.85rem;
+}
+
+.activity-tag-label {
+  line-height: 1;
+}
+
+/* Active conversation - calm green */
+.activity-tag-active {
+  background-color: rgba(72, 187, 120, 0.15);
+  color: #2f855a;
+}
+
+/* Ongoing discussion - warm amber */
+.activity-tag-discussion {
+  background-color: rgba(237, 137, 54, 0.15);
+  color: #c05621;
+}
+
+/* New member - friendly purple */
+.activity-tag-new-member {
+  background-color: rgba(128, 90, 213, 0.15);
+  color: #6b46c1;
+}
+
+/* Community moment - soft blue */
+.activity-tag-community {
+  background-color: rgba(66, 153, 225, 0.15);
+  color: #2b6cb0;
+}
+
+/* Hover state - subtle lift */
+.activity-tag:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Activity tag list container */
+.activity-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+/* Feed header for conversations */
+.feed-conversation-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, rgba(72, 187, 120, 0.1) 0%, rgba(66, 153, 225, 0.1) 100%);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  color: #2d3748;
+}
+
+.feed-conversation-header-icon {
+  font-size: 1.1rem;
+}
+
+.feed-conversation-header-text {
+  font-weight: 500;
+}

@@ -21,6 +21,9 @@ export function useFeedPosts() {
   const [page, setPage] = useState(1);
   const [feedFilter, setFeedFilter] = useState('followers');
   const [loadedPostIds, setLoadedPostIds] = useState(new Set(initialPosts.map(p => p._id)));
+  
+  // CALM FEED: Header for conversation section
+  const [feedHeader, setFeedHeader] = useState(null);
 
   // ── Secondary data ───────────────────────────────────────────────────────
   const [blockedUsers, setBlockedUsers] = useState([]);
@@ -38,6 +41,10 @@ export function useFeedPosts() {
       setFetchingPosts(true);
       const response = await api.get(`/posts?filter=${feedFilter}&page=${pageNum}&limit=20`);
       const newPosts = response.data.posts || [];
+
+      // CALM FEED: Extract feed header from response
+      const header = response.data.feedHeader || null;
+      setFeedHeader(header);
 
       if (append) {
         // Prevent duplicates using Set
@@ -151,6 +158,9 @@ export function useFeedPosts() {
     page, setPage,
     feedFilter, setFeedFilter,
     loadedPostIds, setLoadedPostIds,
+
+    // CALM FEED: Conversation header
+    feedHeader,
 
     // Secondary data
     blockedUsers, setBlockedUsers,

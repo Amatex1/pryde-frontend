@@ -1,0 +1,86 @@
+/* Skeleton loading animations and styles */
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #2a2a2a 25%,
+    #3a3a3a 50%,
+    #2a2a2a 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* Post skeleton */
+.post-skeleton {
+  padding: 16px;
+  margin-bottom: 16px;
+  background: var(--bg-secondary, #1a1a1a);
+  border-radius: 12px;
+}
+
+.skeleton-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.skeleton-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.skeleton-author {
+  flex: 1;
+}
+
+.skeleton-line {
+  height: 14px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+}
+
+.skeleton-line.tiny {
+  width: 30%;
+  height: 10px;
+}
+
+.skeleton-line.short {
+  width: 40%;
+}
+
+.skeleton-line.medium {
+  width: 70%;
+}
+
+.skeleton-content {
+  margin-bottom: 12px;
+}
+
+.skeleton-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.skeleton-button {
+  width: 60px;
+  height: 32px;
+  border-radius: 16px;
+}
+
+/* Feed skeleton container */
+.feed-skeleton {
+  padding: 16px;
+}
