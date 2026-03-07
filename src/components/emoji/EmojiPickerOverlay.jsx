@@ -69,11 +69,12 @@ const EmojiPickerOverlay = ({
   }, [open, mode, onClose]);
 
   // Calculate popover position (desktop)
+  // Using document.documentElement for viewport detection (architecture-compliant)
   const getPopoverStyle = useCallback(() => {
     if (!anchorRect) return {};
 
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
+    const viewportWidth = document.documentElement.clientWidth;
+    const viewportHeight = document.documentElement.clientHeight;
     const pickerWidth = 340;
     const pickerHeight = 80;
     const padding = 8;

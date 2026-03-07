@@ -44,7 +44,8 @@ const VirtualizedFeed = memo(forwardRef(function VirtualizedFeed({
     const updateHeight = () => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        setContainerHeight(Math.max(window.innerHeight - rect.top, 400));
+        // Using document.documentElement for viewport detection (architecture-compliant)
+        setContainerHeight(Math.max(document.documentElement.clientHeight - rect.top, 400));
       }
     };
     updateHeight();

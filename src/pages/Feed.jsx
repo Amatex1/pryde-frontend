@@ -333,11 +333,12 @@ function Feed() {
       }
 
       // Infinite scroll detection (only when NOT in quiet mode)
-      // Note: window.innerHeight is allowed here as it's for scroll detection (not layout logic)
+      // Using document.documentElement.clientHeight for scroll detection (architecture-compliant)
       const scrollHeight = document.documentElement.scrollHeight;
       const scrollTop = window.scrollY;
+      const viewportHeight = document.documentElement.clientHeight;
 
-      if (scrollHeight - scrollTop - window.innerHeight < 300 && hasMore && !fetchingPosts) {
+      if (scrollHeight - scrollTop - viewportHeight < 300 && hasMore && !fetchingPosts) {
         loadMorePosts();
       }
     };

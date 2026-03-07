@@ -103,10 +103,11 @@ const ReactionButton = ({
   }, [targetType, targetId, currentUserId]);
 
   // Detect mobile/PWA mode
+  // Using document.documentElement for viewport detection (architecture-compliant)
   const detectMode = useCallback(() => {
-    const isMobile = window.innerWidth <= 768;
-    const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
-                  window.navigator.standalone === true;
+    const isMobile = document.documentElement.clientWidth <= 768;
+    const isPWA = typeof window !== 'undefined' && (window.matchMedia('(display-mode: standalone)').matches ||
+                  window.navigator.standalone === true);
     return (isMobile || isPWA) ? 'mobile' : 'desktop';
   }, []);
 
@@ -199,8 +200,9 @@ const ReactionButton = ({
   };
 
   // Handle hover (desktop only)
+  // Using document.documentElement for viewport detection (architecture-compliant)
   const handleMouseEnter = () => {
-    if (window.innerWidth > 768) {
+    if (document.documentElement.clientWidth > 768) {
       if (hoverTimeoutRef.current) {
         clearTimeout(hoverTimeoutRef.current);
       }
@@ -211,7 +213,7 @@ const ReactionButton = ({
   };
 
   const handleMouseLeave = () => {
-    if (window.innerWidth > 768) {
+    if (document.documentElement.clientWidth > 768) {
       if (hoverTimeoutRef.current) {
         clearTimeout(hoverTimeoutRef.current);
       }
@@ -223,7 +225,7 @@ const ReactionButton = ({
   const handleClick = () => {
     if (showPicker) {
       closePicker();
-    } else if (window.innerWidth <= 768) {
+    } else if (document.documentElement.clientWidth <= 768) {
       // Mobile: always open picker
       openPicker();
     } else if (!userReaction) {

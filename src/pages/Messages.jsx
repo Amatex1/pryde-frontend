@@ -60,16 +60,19 @@ function Messages() {
   const { onMenuOpen } = useOutletContext() || {};
 
   // Don't restore selected chat on mobile - always show conversation list first
+  // Using document.documentElement.clientWidth for viewport detection (architecture-compliant)
+  const isDesktopViewport = typeof window !== 'undefined' && document.documentElement.clientWidth > 768;
+
   const [selectedChat, setSelectedChat] = useState(() => {
     // Only restore on desktop (width > 768px)
-    if (window.innerWidth > 768) {
+    if (isDesktopViewport) {
       const saved = localStorage.getItem('selectedChat');
       return saved || null;
     }
     return null;
   });
   const [selectedChatType, setSelectedChatType] = useState(() => {
-    if (window.innerWidth > 768) {
+    if (isDesktopViewport) {
       const saved = localStorage.getItem('selectedChatType');
       return saved || 'user';
     }
