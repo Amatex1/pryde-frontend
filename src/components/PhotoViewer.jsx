@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import './PhotoViewer.css';
 
 function PhotoViewer({ imageUrl, onClose }) {
@@ -29,13 +30,16 @@ function PhotoViewer({ imageUrl, onClose }) {
     e.stopPropagation();
   }, []);
 
-  return (
+  return createPortal(
     <button
       type="button"
       className="photo-viewer-overlay"
       onClick={onClose}
       aria-label="Close photo viewer"
     >
+      <button className="photo-viewer-close" onClick={onClose} aria-label="Close">
+        ✕
+      </button>
       <div
         className="photo-viewer-container"
         onClick={stopPropagation}
@@ -44,9 +48,6 @@ function PhotoViewer({ imageUrl, onClose }) {
         aria-modal="true"
         aria-label="Photo viewer"
       >
-        <button className="photo-viewer-close" onClick={onClose} aria-label="Close">
-          ✕
-        </button>
         {imgError ? (
           <div className="photo-viewer-error">
             <span className="photo-viewer-error-icon">🖼️</span>
@@ -66,7 +67,8 @@ function PhotoViewer({ imageUrl, onClose }) {
           />
         )}
       </div>
-    </button>
+    </button>,
+    document.body
   );
 }
 

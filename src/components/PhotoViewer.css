@@ -54,9 +54,9 @@
 }
 
 .photo-viewer-close {
-  position: absolute;
-  top: -50px;
-  right: 0;
+  position: fixed;
+  top: 16px;
+  right: 16px;
   background: rgba(255, 255, 255, 0.1);
   border: 2px solid rgba(255, 255, 255, 0.3);
   color: white;
@@ -104,8 +104,8 @@
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .photo-viewer-close {
-    top: 10px;
-    right: 10px;
+    top: 12px;
+    right: 12px;
     width: 40px;
     height: 40px;
     font-size: 24px;
