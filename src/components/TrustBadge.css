@@ -2,23 +2,23 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 8px;
+  padding: 4px 10px;
   border-radius: 12px;
   font-weight: 500;
-  font-size: 12px;
+  font-size: 14px;
   border: 1px solid;
   white-space: nowrap;
 }
 
 .trust-badge-small {
-  padding: 1px 6px;
-  font-size: 10px;
+  padding: 2px 8px;
+  font-size: 12px;
   gap: 2px;
 }
 
 .trust-badge-large {
-  padding: 4px 12px;
-  font-size: 14px;
+  padding: 6px 14px;
+  font-size: 16px;
   gap: 6px;
 }
 

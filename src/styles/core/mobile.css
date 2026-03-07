@@ -259,9 +259,10 @@
 
   /* Compact action buttons */
   .action-btn {
-    padding: 6px 10px !important;
-    font-size: 13px !important;
-    gap: 6px !important;
+    padding: 10px 14px !important;
+    font-size: 15px !important;
+    gap: 8px !important;
+    min-height: 48px !important;
   }
 
   /* Make reaction button container inline */
@@ -337,12 +338,12 @@
     touch-action: manipulation; /* Prevent double-tap zoom */
   }
 
-  /* Exception for action buttons - they can be smaller */
+  /* Exception for action buttons - larger touch targets */
   .action-btn {
-    min-height: 36px !important;
+    min-height: 44px !important;
     min-width: auto !important;
-    padding: 6px 10px !important;
-    font-size: 13px !important;
+    padding: 10px 14px !important;
+    font-size: 15px !important;
   }
 
   /* Icon buttons */
@@ -1849,7 +1850,8 @@
   /* Reduce cover height in landscape */
   .cover-photo,
   .profile-cover {
-    max-height: 160px;
+    max-height: 200px;
+    height: 200px;
   }
 
   /* Slightly reduce avatar size */
