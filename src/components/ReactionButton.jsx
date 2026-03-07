@@ -73,7 +73,7 @@ const ReactionButton = ({
 
     const handleReactionAdded = (data) => {
       if (data.targetType === targetType && data.targetId === targetId) {
-        setReactions(data.reactions);
+        setReactions(data.reactions || {});
         // Update user reaction if it was this user who reacted
         if (data.userId === currentUserId) {
           setUserReaction(data.emoji);
@@ -83,7 +83,7 @@ const ReactionButton = ({
 
     const handleReactionRemoved = (data) => {
       if (data.targetType === targetType && data.targetId === targetId) {
-        setReactions(data.reactions);
+        setReactions(data.reactions || {});
         // Update user reaction if it was this user who removed their reaction
         if (data.userId === currentUserId) {
           setUserReaction(null);
@@ -182,7 +182,7 @@ const ReactionButton = ({
       });
 
       // Update with server response
-      setReactions(response.data.reactions);
+      setReactions(response.data.reactions || {});
       setUserReaction(response.data.action === 'removed' ? null : emoji);
 
       // Callback
@@ -246,7 +246,7 @@ const ReactionButton = ({
   }, []);
 
   // Calculate total reaction count
-  const totalCount = Object.values(reactions).reduce((sum, count) => sum + count, 0);
+  const totalCount = Object.values(reactions || {}).reduce((sum, count) => sum + count, 0);
 
   // Show loading state while fetching
   if (!isInitialized) {
