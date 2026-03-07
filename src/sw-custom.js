@@ -67,7 +67,7 @@ function shouldBypassServiceWorker(request) {
     
     return false;
   } catch (error) {
-    console.error('[SW Custom] Error checking bypass:', error);
+    // Silent fail - don't log in production SW
     return false;
   }
 }
@@ -77,6 +77,7 @@ function shouldBypassServiceWorker(request) {
  */
 function logApiBypass(url, reason) {
   if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1') {
+    // eslint-disable-next-line no-console
     console.log(`[SW Custom] ⚠️ API request bypassed: ${url} (${reason})`);
   }
 }
@@ -109,6 +110,7 @@ self.addEventListener('fetch', (event) => {
     // This prevents CORS errors, ERR_FAILED loops, and auth issues
     event.respondWith(
       fetch(request).catch(error => {
+        // eslint-disable-next-line no-console
         console.error('[SW Custom] Network fetch failed:', error);
         return new Response('Network error', {
           status: 503,
@@ -145,4 +147,3 @@ self.addEventListener('message', (event) => {
     });
   }
 });
-

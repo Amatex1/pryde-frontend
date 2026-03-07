@@ -62,7 +62,7 @@ export default [
         varsIgnorePattern: '^_'
       }],
 
-      'no-console': 'warn',
+      'no-console': 'off',
       'no-debugger': 'warn'
     }
   },

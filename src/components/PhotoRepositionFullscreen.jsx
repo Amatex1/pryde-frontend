@@ -57,6 +57,12 @@ export default function PhotoRepositionInline({
   const isLegacyDefault =
     initialPosition.x === 50 && initialPosition.y === 50;
 
+  // Track if user uploaded a new image (to distinguish from server-cropped images)
+  const [newImageFile, setNewImageFile] = useState(null);
+  
+  // Ref for file input to allow uploading new original image
+  const fileInputRef = useRef(null);
+
   const [crop, setCrop] = useState(
     isLegacyDefault
       ? { x: 0, y: 0 }
@@ -101,26 +107,69 @@ export default function PhotoRepositionInline({
     setZoom(1);
   }, []);
 
+  // Handle new image upload - trigger file input click
+  const handleUploadNew = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  // Handle file selection
+  const handleFileChange = useCallback((e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate it's an image
+      if (!file.type.startsWith('image/')) {
+        console.error('Selected file is not an image');
+        return;
+      }
+      setNewImageFile(file);
+    }
+  }, []);
+
   // Capture croppedAreaPixels for destructive canvas crop on save
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const handleCropComplete = useCallback((_croppedArea, croppedAreaPx) => {
     setCroppedAreaPixels(croppedAreaPx);
   }, []);
 
-  // Destructive crop: create a canvas-cropped blob and pass it up
+  // Save the FULL original image - not the cropped version
+  // The crop/zoom is only for preview; the original full quality image is always saved
   const handleSave = useCallback(async () => {
-    if (!croppedAreaPixels || saving) return;
+    if (saving) return;
     setSaving(true);
     try {
-      // Avatar: output 500×500 for quality; cover: use original crop pixel dimensions
-      const outputSize = type === "avatar" ? { width: 500, height: 500 } : null;
-      const blob = await getCroppedBlob(imageUrl, croppedAreaPixels, outputSize);
+      // If user uploaded a new file, use it directly
+      if (newImageFile) {
+        await onSave(newImageFile, type);
+        return;
+      }
+      
+      // Load the original image and convert to blob (full image, not cropped)
+      const image = await createImage(imageUrl);
+      
+      // Create a canvas with the full original image dimensions
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = image.width;
+      canvas.height = image.height;
+      
+      // Draw the FULL image (no cropping)
+      ctx.drawImage(image, 0, 0);
+      
+      // Convert to blob - full quality JPEG
+      const blob = await new Promise((resolve) => {
+        canvas.toBlob(
+          (b) => resolve(b),
+          "image/jpeg",
+          0.95 // Higher quality for full images
+        );
+      });
+      
       await onSave(blob, type);
     } catch (err) {
-      console.error("Crop save failed:", err);
+      console.error("Save failed:", err);
       setSaving(false);
     }
-  }, [croppedAreaPixels, saving, imageUrl, type, onSave]);
+  }, [saving, imageUrl, type, onSave, newImageFile]);
 
   // cropSize fills the container exactly (cover); avatar uses 1:1 aspect
   const cropperSizeProps = cropSize
@@ -136,6 +185,15 @@ export default function PhotoRepositionInline({
 
   return (
     <div className={`photo-editor-inline ${type}`}>
+      {/* Hidden file input for new image upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        style={{ display: 'none' }}
+      />
+      
       {/* ── Crop canvas ───────────────────────────────────────────────────── */}
       <div className={`photo-editor-crop-container ${type}`}>
         {/* Transient zoom badge — fades out automatically */}
@@ -194,6 +252,9 @@ export default function PhotoRepositionInline({
         </div>
 
         <div className="photo-editor-inline-buttons">
+          <button onClick={handleUploadNew} className="pe-btn pe-btn--secondary">
+            Upload New
+          </button>
           <button onClick={handleReset} className="pe-btn pe-btn--secondary">
             Reset
           </button>
