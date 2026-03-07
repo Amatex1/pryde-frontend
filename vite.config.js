@@ -27,6 +27,10 @@ export default defineConfig({
         // sw-bypass-api.js handles skipWaiting + clientsClaim — do NOT set them here.
         importScripts: ['sw-bypass-api.js'],
 
+        // Increase maximum file size to cache large assets like background images
+        // Default is 2 MiB, midnight-sanctuary.webp is 3.46 MB
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
+
         // Only precache static assets (NO HTML!)
         // HTML must always come from network to prevent ERR_FAILED on navigation.
         globPatterns: ['**/*.{js,css,ico,png,svg,webp,woff2}'],
