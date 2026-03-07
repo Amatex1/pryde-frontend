@@ -93,6 +93,7 @@ function isNavigationRequest(request) {
  * - Has credentials: include
  * - Accepts JSON
  * - Is cross-origin
+ * - Is Vercel-specific path (_vercel, _next)
  */
 function shouldBypassServiceWorker(request) {
   try {
@@ -102,6 +103,12 @@ function shouldBypassServiceWorker(request) {
     // Let browser handle it natively to preserve cookies/auth
     if (url.origin !== self.location.origin) {
       return { bypass: null, reason: 'cross-origin - let browser handle' };
+    }
+
+    // 🔥 RULE 0b: Bypass Vercel-specific paths (speed-insights, analytics, etc.)
+    // These are Vercel platform features that don't exist when deployed to other platforms
+    if (url.pathname.startsWith('/_vercel/') || url.pathname.startsWith('/_next/')) {
+      return { bypass: true, reason: 'Vercel platform path' };
     }
 
     // 🔥 RULE 1: Bypass if URL matches API pattern (same-origin only)

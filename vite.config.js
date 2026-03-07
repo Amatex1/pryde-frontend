@@ -59,6 +59,8 @@ export default defineConfig({
           /^\/me/,
           /^\/notifications/,
           /^\/counts/,
+          /^\/_vercel\/.*/,
+          /^\/_next\/.*/,
           /.*/
         ],
 
