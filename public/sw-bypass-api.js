@@ -53,7 +53,8 @@ const API_PATTERNS = [
   /\/login$/,       // Login page
   /\/register$/,    // Register page
   /\/profile\//,    // Profile pages
-  /\/settings\//    // Settings pages
+  /\/settings\//,   // Settings pages
+  /\/_vercel\//     // Vercel-specific paths (speed-insights, analytics, etc.)
 ];
 
 // 🔥 ALLOWED: Static asset patterns (same-origin only)
