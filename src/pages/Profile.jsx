@@ -29,6 +29,7 @@ import FeedComposer from '../components/feed/FeedComposer';
 import FeedPostActions from '../components/feed/FeedPostActions';
 import PinnedPostBadge from '../components/PinnedPostBadge';
 import TieredBadgeDisplay from '../components/TieredBadgeDisplay';
+import TrustBadge from '../components/TrustBadge';
 import PostHeader from '../components/PostHeader';
 import Poll from '../components/Poll';
 import GifPicker from '../components/GifPicker';
@@ -39,6 +40,7 @@ import { useAuth } from '../context/AuthContext';
 import { getImageUrl } from '../utils/imageUrl';
 import { useToast } from '../hooks/useToast';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import { useBreakpoint } from '../layouts/useBreakpoint';
 import { convertEmojiShortcuts } from '../utils/textFormatting';
 import { setupSocketListeners } from '../utils/socketHelpers';
 import logger from '../utils/logger';
@@ -129,6 +131,8 @@ function Profile() {
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const { toasts, showToast, removeToast } = useToast();
   const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobileSheet = useMediaQuery('(max-width: 600px)'); // For CommentSheet mobile detection
+  const { isDesktopLarge } = useBreakpoint(); // Use centralized breakpoint detection
   const actionsMenuRef = useRef(null);
   const isOwnProfile = currentUser?.username === id;
   const [canSendMessage, setCanSendMessage] = useState(false);
@@ -1099,10 +1103,7 @@ function Profile() {
 
   // Toggle comment box and fetch comments if needed
   const toggleCommentBox = async (postId) => {
-    // Detect mobile using 600px breakpoint (matches CommentSheet design contract)
-    const isMobileSheet = window.matchMedia("(max-width: 600px)").matches;
-
-    // On mobile, open CommentSheet for full discussion
+    // Use centralized hook for mobile detection (matches CommentSheet design contract)
     if (isMobileSheet) {
       setCommentSheetOpen(postId);
       // Fetch comments if not already loaded
@@ -1434,7 +1435,7 @@ function Profile() {
     if (coverRef.current) {
       // Use the crop-container's explicit CSS heights (220px mobile / 300px desktop)
       const w = coverRef.current.offsetWidth;
-      const h = window.innerWidth >= 1025 ? 300 : 220;
+      const h = isDesktopLarge ? 300 : 220;
       setCoverCropSize({ width: w, height: h });
     }
     setEditingType("cover");
@@ -1459,7 +1460,7 @@ function Profile() {
     setPendingPhotoUrl(url);
     if (coverRef.current) {
       const w = coverRef.current.offsetWidth;
-      const h = window.innerWidth >= 1025 ? 300 : 220;
+      const h = isDesktopLarge ? 300 : 220;
       setCoverCropSize({ width: w, height: h });
     }
     setEditingType('cover');
@@ -1949,6 +1950,13 @@ function Profile() {
 
                 {/* 3. Founder / Creator role (single elegant pill) */}
                 <TieredBadgeDisplay badges={userBadges} context="profile" isOwnProfile={isOwnProfile} onEditBadges={() => setEditProfileModal(true)} />
+                
+                {/* Trust Level Badge - Show for other users' profiles */}
+                {!isOwnProfile && user.trustLevel && (
+                  <div style={{ marginTop: '8px' }}>
+                    <TrustBadge trustLevel={user.trustLevel} showLabel={true} size="medium" />
+                  </div>
+                )}
 
                 {/* 6. Bio */}
                 {user.bio && <p className="profile-bio">{sanitizeBio(user.bio)}</p>}

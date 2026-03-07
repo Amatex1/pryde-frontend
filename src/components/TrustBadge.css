@@ -1,0 +1,36 @@
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 12px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.trust-badge-small {
+  padding: 1px 6px;
+  font-size: 10px;
+  gap: 2px;
+}
+
+.trust-badge-large {
+  padding: 4px 12px;
+  font-size: 14px;
+  gap: 6px;
+}
+
+.trust-badge-label {
+  line-height: 1;
+}
+
+/* Color variables for trust levels */
+:root {
+  --trust-trusted: #8B5CF6;
+  --trust-regular: #3B82F6;
+  --trust-new: #6B7280;
+  --trust-caution: #F59E0B;
+  --trust-restricted: #EF4444;
+}

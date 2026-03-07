@@ -1,14 +1,17 @@
+import { useRef, useMemo } from 'react';
 import PostSkeleton from '../PostSkeleton';
 import FeedPost from './FeedPost';
 import EmptyState from '../EmptyState';
 import { ActivityTag } from '../ui/ActivityTag';
-import { quietCopy } from '../../config/uiCopy';
+import VirtualizedFeed from '../VirtualizedFeed';
 
 /**
  * FeedList — renders the scrollable post list with skeleton, empty, and loaded states.
  * Extracted from Feed.jsx (Phase 3 reorganisation). No logic changes.
  * 
  * CALM FEED: Supports activity tags and conversation headers
+ * 
+ * OPTIMIZATION: Uses VirtualizedFeed for performance when posts > 20
  */
 export default function FeedList({
   // Data
@@ -16,13 +19,12 @@ export default function FeedList({
   blockedUsers,
   fetchingPosts,
   hasMore,
-  quietMode,
-  feedHeader, // CALM FEED: Header for conversation section
+  feedHeader,
   postRefs,
   commentRefs,
   currentUser,
 
-  // Per-post state (passed through to FeedPost)
+  // Per-post state
   openDropdownId,
   editingPostId,
   editPostText,
@@ -91,146 +93,280 @@ export default function FeedList({
   replyIsAnonymous,
   onReplyIsAnonymousChange,
 }) {
+  const listRef = useRef(null);
+  
+  // Filter blocked users and memoize
+  const filteredPosts = useMemo(() => 
+    posts.filter(post => !blockedUsers?.includes(post.author?._id)),
+    [posts, blockedUsers]
+  );
+  
+  // Use virtualization for large lists (performance optimization)
+  const useVirtualization = posts.length > 20;
+  
+  // Render a single post item
+  const renderPostItem = (post, postIndex, style, measureRef) => {
+    const isFirstPost = postIndex === 0;
+    const shouldEagerLoad = postIndex < 3;
+    
+    return (
+      <div ref={measureRef} key={post._id} style={style} className="post-wrapper">
+        {post.activityTag && (
+          <div className="post-activity-tag">
+            <ActivityTag type={post.activityTag} />
+          </div>
+        )}
+        
+        <FeedPost
+          post={post}
+          postIndex={postIndex}
+          currentUser={currentUser}
+          isFirstPost={isFirstPost}
+          shouldEagerLoad={shouldEagerLoad}
+          openDropdownId={openDropdownId}
+          editingPostId={editingPostId}
+          editPostText={editPostText}
+          editPostVisibility={editPostVisibility}
+          editPostMedia={editPostMedia}
+          editPostTextareaRef={editPostTextareaRef}
+          expandedPosts={expandedPosts}
+          revealedPosts={revealedPosts}
+          autoHideContentWarnings={autoHideContentWarnings}
+          bookmarkedPosts={bookmarkedPosts}
+          postComments={postComments}
+          commentReplies={commentReplies}
+          showReplies={showReplies}
+          showCommentBox={showCommentBox}
+          commentText={commentText}
+          commentGif={commentGif}
+          showGifPicker={showGifPicker}
+          replyingToComment={replyingToComment}
+          replyText={replyText}
+          replyGif={replyGif}
+          editingCommentId={editingCommentId}
+          editCommentText={editCommentText}
+          showReactionPicker={showReactionPicker}
+          commentRefs={commentRefs}
+          onToggleDropdown={onToggleDropdown}
+          onPinPost={onPinPost}
+          onEditPost={onEditPost}
+          onDeletePost={onDeletePost}
+          onReportPost={onReportPost}
+          onBookmark={onBookmark}
+          onReactionChange={onReactionChange}
+          onReactionCountClick={onReactionCountClick}
+          onEditPostTextChange={onEditPostTextChange}
+          onEditPostVisibilityChange={onEditPostVisibilityChange}
+          onRemoveEditMedia={onRemoveEditMedia}
+          onSaveEditPost={onSaveEditPost}
+          onCancelEditPost={onCancelEditPost}
+          onEditPostKeyDown={onEditPostKeyDown}
+          onExpandPost={onExpandPost}
+          onRevealPost={onRevealPost}
+          onPhotoClick={onPhotoClick}
+          onPollVote={onPollVote}
+          onToggleCommentBox={onToggleCommentBox}
+          onCommentChange={onCommentChange}
+          onCommentSubmit={onCommentSubmit}
+          onCommentGifSelect={onCommentGifSelect}
+          onToggleGifPicker={onToggleGifPicker}
+          onEditComment={onEditComment}
+          onSaveEditComment={onSaveEditComment}
+          onCancelEditComment={onCancelEditComment}
+          onDeleteComment={onDeleteComment}
+          onCommentReaction={onCommentReaction}
+          onToggleReplies={onToggleReplies}
+          onReplyToComment={onReplyToComment}
+          onSetShowReactionPicker={onSetShowReactionPicker}
+          onSetReactionDetailsModal={onSetReactionDetailsModal}
+          onSetReportModal={onSetReportModal}
+          onReplyTextChange={onReplyTextChange}
+          onReplyGifSelect={onReplyGifSelect}
+          onSubmitReply={onSubmitReply}
+          onCancelReply={onCancelReply}
+          getUserReactionEmoji={getUserReactionEmoji}
+          viewerRole={viewerRole}
+          replyIsAnonymous={replyIsAnonymous}
+          onReplyIsAnonymousChange={onReplyIsAnonymousChange}
+        />
+      </div>
+    );
+  };
+
+  const loadingIndicator = (
+    <div className="load-more-container">
+      <div className="loading-indicator">Loading more posts...</div>
+    </div>
+  );
+  
+  const endOfListIndicator = (
+    <div className="end-of-feed">
+      <p className="end-of-feed-primary">You're all caught up!</p>
+      <p className="end-of-feed-secondary">Take a break, or check back later.</p>
+    </div>
+  );
+  
+  const emptyState = (
+    <EmptyState
+      type="feed"
+      className="glossy"
+      action={{
+        label: 'Create Post',
+        onClick: () => {
+          const composer = document.querySelector('.feed-composer textarea, .composer-textarea');
+          if (composer) composer.focus();
+        }
+      }}
+    />
+  );
+
+  if (fetchingPosts && posts.length === 0) {
+    return (
+      <div className="posts-list">
+        <PostSkeleton />
+        <PostSkeleton />
+        <PostSkeleton />
+      </div>
+    );
+  }
+
+  if (posts.length === 0) {
+    return emptyState;
+  }
+
+  if (useVirtualization) {
+    return (
+      <>
+        {feedHeader && (
+          <div className="feed-conversation-header">
+            <span className="feed-conversation-header-icon">🌿</span>
+            <span className="feed-conversation-header-text">{feedHeader}</span>
+          </div>
+        )}
+        
+        <VirtualizedFeed
+          posts={filteredPosts}
+          renderItem={renderPostItem}
+          listRef={listRef}
+          loading={fetchingPosts}
+          hasMore={hasMore}
+          onLoadMore={onLoadMore}
+          loadingIndicator={loadingIndicator}
+          endOfListIndicator={endOfListIndicator}
+          emptyState={emptyState}
+        />
+      </>
+    );
+  }
+
+  // Regular rendering for small lists
   return (
     <>
       <div className="posts-list">
-        {/* Only show skeletons on initial load (no posts yet), not during infinite scroll */}
-        {fetchingPosts && posts.length === 0 ? (
-          <>
-            <PostSkeleton />
-            <PostSkeleton />
-            <PostSkeleton />
-          </>
-        ) : posts.length === 0 ? (
-          <EmptyState
-            type="feed"
-            className="glossy"
-            action={{
-              label: 'Create Post',
-              onClick: () => {
-                // Focus on composer
-                const composer = document.querySelector('.feed-composer textarea, .composer-textarea');
-                if (composer) {
-                  composer.focus();
-                }
-              }
-            }}
-          />
-        ) : (
-          <>
-            {/* CALM FEED: Conversation section header */}
-            {feedHeader && (
-              <div className="feed-conversation-header">
-                <span className="feed-conversation-header-icon">🌿</span>
-                <span className="feed-conversation-header-text">{feedHeader}</span>
-              </div>
-            )}
-            
-            {posts
-              .filter(post => !blockedUsers.includes(post.author?._id))
-              .map((post, postIndex) => {
-                const isFirstPost = postIndex === 0;
-                const shouldEagerLoad = postIndex < 3;
-
-                return (
-                  <div key={post._id} className="post-wrapper">
-                    {/* CALM FEED: Activity tag */}
-                    {post.activityTag && (
-                      <div className="post-activity-tag">
-                        <ActivityTag type={post.activityTag} />
-                      </div>
-                    )}
-                    
-                    <FeedPost
-                      key={post._id}
-                      ref={(el) => postRefs.current[post._id] = el}
-                      post={post}
-                      postIndex={postIndex}
-                      currentUser={currentUser}
-                      isFirstPost={isFirstPost}
-                      shouldEagerLoad={shouldEagerLoad}
-                      openDropdownId={openDropdownId}
-                      editingPostId={editingPostId}
-                      editPostText={editPostText}
-                      editPostVisibility={editPostVisibility}
-                      editPostMedia={editPostMedia}
-                      editPostTextareaRef={editPostTextareaRef}
-                      expandedPosts={expandedPosts}
-                      revealedPosts={revealedPosts}
-                      autoHideContentWarnings={autoHideContentWarnings}
-                      bookmarkedPosts={bookmarkedPosts}
-                      postComments={postComments}
-                      commentReplies={commentReplies}
-                      showReplies={showReplies}
-                      showCommentBox={showCommentBox}
-                      commentText={commentText}
-                      commentGif={commentGif}
-                      showGifPicker={showGifPicker}
-                      replyingToComment={replyingToComment}
-                      replyText={replyText}
-                      replyGif={replyGif}
-                      editingCommentId={editingCommentId}
-                      editCommentText={editCommentText}
-                      showReactionPicker={showReactionPicker}
-                      commentRefs={commentRefs}
-                      onToggleDropdown={onToggleDropdown}
-                      onPinPost={onPinPost}
-                      onEditPost={onEditPost}
-                      onDeletePost={onDeletePost}
-                      onReportPost={onReportPost}
-                      onBookmark={onBookmark}
-                      onReactionChange={onReactionChange}
-                      onReactionCountClick={onReactionCountClick}
-                      onEditPostTextChange={onEditPostTextChange}
-                      onEditPostVisibilityChange={onEditPostVisibilityChange}
-                      onRemoveEditMedia={onRemoveEditMedia}
-                      onSaveEditPost={onSaveEditPost}
-                      onCancelEditPost={onCancelEditPost}
-                      onEditPostKeyDown={onEditPostKeyDown}
-                      onExpandPost={onExpandPost}
-                      onRevealPost={onRevealPost}
-                      onPhotoClick={onPhotoClick}
-                      onPollVote={onPollVote}
-                      onToggleCommentBox={onToggleCommentBox}
-                      onCommentChange={onCommentChange}
-                      onCommentSubmit={onCommentSubmit}
-                      onCommentGifSelect={onCommentGifSelect}
-                      onToggleGifPicker={onToggleGifPicker}
-                      onEditComment={onEditComment}
-                      onSaveEditComment={onSaveEditComment}
-                      onCancelEditComment={onCancelEditComment}
-                      onDeleteComment={onDeleteComment}
-                      onCommentReaction={onCommentReaction}
-                      onToggleReplies={onToggleReplies}
-                      onReplyToComment={onReplyToComment}
-                      onSetShowReactionPicker={onSetShowReactionPicker}
-                      onSetReactionDetailsModal={onSetReactionDetailsModal}
-                      onSetReportModal={onSetReportModal}
-                      onReplyTextChange={onReplyTextChange}
-                      onReplyGifSelect={onReplyGifSelect}
-                      onSubmitReply={onSubmitReply}
-                      onCancelReply={onCancelReply}
-                      getUserReactionEmoji={getUserReactionEmoji}
-                      viewerRole={viewerRole}
-                      replyIsAnonymous={replyIsAnonymous}
-                      onReplyIsAnonymousChange={onReplyIsAnonymousChange}
-                    />
-                  </div>
-                );
-              })}
-          </>
+        {feedHeader && (
+          <div className="feed-conversation-header">
+            <span className="feed-conversation-header-icon">🌿</span>
+            <span className="feed-conversation-header-text">{feedHeader}</span>
+          </div>
         )}
+        
+        {filteredPosts.map((post, postIndex) => {
+          const isFirstPost = postIndex === 0;
+          const shouldEagerLoad = postIndex < 3;
+
+          return (
+            <div key={post._id} className="post-wrapper">
+              {post.activityTag && (
+                <div className="post-activity-tag">
+                  <ActivityTag type={post.activityTag} />
+                </div>
+              )}
+              
+              <FeedPost
+                ref={(el) => postRefs.current[post._id] = el}
+                post={post}
+                postIndex={postIndex}
+                currentUser={currentUser}
+                isFirstPost={isFirstPost}
+                shouldEagerLoad={shouldEagerLoad}
+                openDropdownId={openDropdownId}
+                editingPostId={editingPostId}
+                editPostText={editPostText}
+                editPostVisibility={editPostVisibility}
+                editPostMedia={editPostMedia}
+                editPostTextareaRef={editPostTextareaRef}
+                expandedPosts={expandedPosts}
+                revealedPosts={revealedPosts}
+                autoHideContentWarnings={autoHideContentWarnings}
+                bookmarkedPosts={bookmarkedPosts}
+                postComments={postComments}
+                commentReplies={commentReplies}
+                showReplies={showReplies}
+                showCommentBox={showCommentBox}
+                commentText={commentText}
+                commentGif={commentGif}
+                showGifPicker={showGifPicker}
+                replyingToComment={replyingToComment}
+                replyText={replyText}
+                replyGif={replyGif}
+                editingCommentId={editingCommentId}
+                editCommentText={editCommentText}
+                showReactionPicker={showReactionPicker}
+                commentRefs={commentRefs}
+                onToggleDropdown={onToggleDropdown}
+                onPinPost={onPinPost}
+                onEditPost={onEditPost}
+                onDeletePost={onDeletePost}
+                onReportPost={onReportPost}
+                onBookmark={onBookmark}
+                onReactionChange={onReactionChange}
+                onReactionCountClick={onReactionCountClick}
+                onEditPostTextChange={onEditPostTextChange}
+                onEditPostVisibilityChange={onEditPostVisibilityChange}
+                onRemoveEditMedia={onRemoveEditMedia}
+                onSaveEditPost={onSaveEditPost}
+                onCancelEditPost={onCancelEditPost}
+                onEditPostKeyDown={onEditPostKeyDown}
+                onExpandPost={onExpandPost}
+                onRevealPost={onRevealPost}
+                onPhotoClick={onPhotoClick}
+                onPollVote={onPollVote}
+                onToggleCommentBox={onToggleCommentBox}
+                onCommentChange={onCommentChange}
+                onCommentSubmit={onCommentSubmit}
+                onCommentGifSelect={onCommentGifSelect}
+                onToggleGifPicker={onToggleGifPicker}
+                onEditComment={onEditComment}
+                onSaveEditComment={onSaveEditComment}
+                onCancelEditComment={onCancelEditComment}
+                onDeleteComment={onDeleteComment}
+                onCommentReaction={onCommentReaction}
+                onToggleReplies={onToggleReplies}
+                onReplyToComment={onReplyToComment}
+                onSetShowReactionPicker={onSetShowReactionPicker}
+                onSetReactionDetailsModal={onSetReactionDetailsModal}
+                onSetReportModal={onSetReportModal}
+                onReplyTextChange={onReplyTextChange}
+                onReplyGifSelect={onReplyGifSelect}
+                onSubmitReply={onSubmitReply}
+                onCancelReply={onCancelReply}
+                getUserReactionEmoji={getUserReactionEmoji}
+                viewerRole={viewerRole}
+                replyIsAnonymous={replyIsAnonymous}
+                onReplyIsAnonymousChange={onReplyIsAnonymousChange}
+              />
+            </div>
+          );
+        })}
       </div>
 
-      {/* Loading indicator for infinite scroll */}
       {fetchingPosts && posts.length > 0 && (
         <div className="load-more-container">
           <div className="loading-indicator">Loading more posts...</div>
         </div>
       )}
 
-      {/* Load More Button - only show when not currently fetching */}
-      {!fetchingPosts && hasMore && posts.length > 0 && (
+      {!fetchingPosts && hasMore && posts.length > 0 && posts.length <= 20 && (
         <div className="load-more-container">
           <button
             className="btn-load-more glossy"
@@ -242,10 +378,9 @@ export default function FeedList({
         </div>
       )}
 
-      {/* End of Feed Message */}
       {!fetchingPosts && !hasMore && posts.length > 0 && (
         <div className="end-of-feed">
-          <p className="end-of-feed-primary">🎉 You're all caught up!</p>
+          <p className="end-of-feed-primary">You're all caught up!</p>
           <p className="end-of-feed-secondary">Take a break, or check back later.</p>
         </div>
       )}

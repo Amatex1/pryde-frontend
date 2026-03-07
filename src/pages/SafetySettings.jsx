@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import { useToast } from '../hooks/useToast';
 import { isHighRiskCountry } from '../utils/geolocation';
+import TrustBadge from '../components/TrustBadge';
+import { TRUST_LEVEL_COLORS, TRUST_LEVEL_DESCRIPTIONS } from '../constants/trustLevels';
 import './PrivacySettings.css';
 
 const ToggleRow = ({ label, desc, checked, onChange }) => (
@@ -37,12 +39,14 @@ const SafetySettings = () => {
     showBadgesPublicly: true,
     quietModeEnabled: false,
   });
+  const [trustData, setTrustData] = useState({ trustScore: null, trustLevel: null });
   const [loading, setLoading] = useState(true);
   const [isHighRisk, setIsHighRisk] = useState(false);
   const { showToast } = useToast();
 
   useEffect(() => {
     fetchSafetySettings();
+    fetchTrustLevel();
     const country = localStorage.getItem('userCountry');
     if (country && isHighRiskCountry(country)) setIsHighRisk(true);
   }, []);
@@ -55,6 +59,18 @@ const SafetySettings = () => {
       showToast('Failed to load safety settings', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchTrustLevel = async () => {
+    try {
+      const response = await api.get('/users/me/trust');
+      setTrustData({
+        trustScore: response.data.trustScore,
+        trustLevel: response.data.trustLevel
+      });
+    } catch (error) {
+      console.error('Failed to fetch trust level:', error);
     }
   };
 
@@ -110,6 +126,37 @@ const SafetySettings = () => {
 
         <SectionCard icon="🤫" title="Expression Controls">
           <ToggleRow label="Quiet Mode" desc="Reduce social pressure — hide like counts and reaction details from your view." checked={safety.quietModeEnabled} onChange={(e) => updateSetting('quietModeEnabled', e.target.checked)} />
+        </SectionCard>
+
+        <SectionCard icon="🛡️" title="Trust & Safety">
+          {trustData.trustScore !== null ? (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                <TrustBadge trustLevel={trustData.trustLevel} showLabel={true} size="large" />
+                <span style={{ fontSize: '24px', fontWeight: 700, color: TRUST_LEVEL_COLORS[trustData.trustLevel] }}>
+                  {trustData.trustScore}
+                </span>
+              </div>
+              <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '16px', lineHeight: 1.5 }}>
+                {TRUST_LEVEL_DESCRIPTIONS[trustData.trustLevel]}
+              </p>
+              <div style={{ background: 'var(--bg-elevated)', borderRadius: '8px', padding: '12px' }}>
+                <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
+                  Factors that affect your trust level:
+                </p>
+                <ul style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0, paddingLeft: '16px', lineHeight: 1.6 }}>
+                  <li>Account age and verification</li>
+                  <li>Positive community interactions</li>
+                  <li>Following community guidelines</li>
+                  <li>Profile completeness</li>
+                </ul>
+              </div>
+            </div>
+          ) : (
+            <div style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
+              Loading trust level...
+            </div>
+          )}
         </SectionCard>
       </div>
     </div>
