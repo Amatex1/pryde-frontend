@@ -14,3 +14,199 @@
 /* Post cards and other styles inherit from Feed.css */
 /* This file can be extended for stream-specific styling */
 
+/* ========================================
+   FEED ANIMATION POLISH
+   Smooth, subtle animations for posts entering the feed
+   ======================================== */
+
+/* Base fade-in animation for posts */
+.post-card {
+  animation: feedItemFadeIn 0.4s ease-out forwards;
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+@keyframes feedItemFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered animation delays for natural feel */
+.post-card:nth-child(1) { animation-delay: 0ms; }
+.post-card:nth-child(2) { animation-delay: 50ms; }
+.post-card:nth-child(3) { animation-delay: 100ms; }
+.post-card:nth-child(4) { animation-delay: 150ms; }
+.post-card:nth-child(5) { animation-delay: 200ms; }
+.post-card:nth-child(6) { animation-delay: 250ms; }
+.post-card:nth-child(7) { animation-delay: 300ms; }
+.post-card:nth-child(8) { animation-delay: 350ms; }
+.post-card:nth-child(9) { animation-delay: 400ms; }
+.post-card:nth-child(10) { animation-delay: 450ms; }
+
+/* Older posts animate faster (less noticeable) */
+.post-card:nth-child(n+11) { 
+  animation-duration: 0.25s;
+  animation-delay: 0ms;
+}
+
+/* Subtle scale on hover */
+.post-card:hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Smooth loading skeleton animation */
+@keyframes skeletonPulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.post-skeleton {
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+  background: linear-gradient(90deg, 
+    var(--bg-subtle, rgba(255,255,255,0.05)) 25%, 
+    var(--bg-hover, rgba(255,255,255,0.1)) 50%, 
+    var(--bg-subtle, rgba(255,255,255,0.05)) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes skeletonShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Smooth content reveal animation */
+.post-content {
+  animation: contentReveal 0.3s ease-out;
+}
+
+@keyframes contentReveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Reaction button micro-interactions */
+.reaction-btn {
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.reaction-btn:hover {
+  transform: scale(1.2);
+}
+
+.reaction-btn:active {
+  transform: scale(0.95);
+}
+
+/* Smooth dropdown animations */
+.dropdown-menu {
+  animation: dropdownFadeIn 0.15s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Toast notification animations */
+.toast {
+  animation: toastSlideIn 0.3s ease-out;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.toast.removing {
+  animation: toastSlideOut 0.2s ease-in forwards;
+}
+
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+/* Smooth modal animations */
+.modal-overlay {
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  animation: modalScaleIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .post-card,
+  .post-skeleton,
+  .post-content,
+  .reaction-btn,
+  .dropdown-menu,
+  .toast,
+  .modal-overlay,
+  .modal-content {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+

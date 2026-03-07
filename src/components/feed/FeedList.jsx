@@ -102,7 +102,12 @@ export default function FeedList({
   );
   
   // Use virtualization for large lists (performance optimization)
-  const useVirtualization = posts.length > 20;
+  // Lowered threshold from 20 to 10 for better performance with 100+ posts
+  const useVirtualization = posts.length > 10;
+  
+  // Hybrid scroll: use virtualization OR regular with load more button
+  // Virtualization handles 10-50 posts smoothly, regular for smaller lists
+  const useHybridScroll = posts.length > 50;
   
   // Render a single post item
   const renderPostItem = (post, postIndex, style, measureRef) => {

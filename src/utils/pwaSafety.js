@@ -101,8 +101,7 @@ export async function checkVersionCompatibility() {
     return { compatible: true, reason: null };
   }
   
-	  // Compare versions (simple string comparison for now)
-	  // TODO: Use semver library for proper version comparison
+	  // Compare versions using custom compareVersions function
 	  const currentVersion = FRONTEND_VERSION;
 	  const minVersion = status.minFrontendVersion;
 	  
