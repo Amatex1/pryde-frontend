@@ -33,7 +33,6 @@ import ErrorBoundary from './components/ErrorBoundary';
 // UpdateBanner removed - updates now happen silently in background
 import AuthLoadingScreen from './components/AuthLoadingScreen';
 import AuthGate from './components/AuthGate';
-import SpeedInsights from './components/SpeedInsights';
 import { AppReadyProvider } from './state/appReady';
 import LoadingGate from './components/LoadingGate';
 import RoleRoute from './components/RoleRoute';
@@ -522,7 +521,6 @@ function App() {
         <LoadingGate>
           <AuthProvider>
             <SocketProvider>
-              <SpeedInsights />
               <AppContent />
             </SocketProvider>
           </AuthProvider>
