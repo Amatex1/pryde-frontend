@@ -1,24 +1,40 @@
 // src/config/api.js
 
 const isProduction = import.meta.env.PROD;
+
+// Custom domain for backend - uses VITE_API_DOMAIN env var
+// This makes the httpOnly refresh token cookie first-party (same root as the frontend)
+// and Safari ITP won't block or expire it.
+const API_DOMAIN = import.meta.env.VITE_API_DOMAIN;
+
+// Fallback to Render URL for local development
 const BACKEND_URL = 'https://pryde-backend.onrender.com';
-// VITE_API_DOMAIN should be set to the custom Render domain (e.g. https://api.prydesocial.com)
-// so the httpOnly refresh token cookie is first-party (same root as prydesocial.com)
-// and Safari ITP won't block or expire it. Falls back to the raw Render URL if not set.
-const API_DOMAIN = import.meta.env.VITE_API_DOMAIN || BACKEND_URL;
+
+// In production, use the custom domain; in development, use Render URL
+const getBackendUrl = () => {
+  if (isProduction && API_DOMAIN) {
+    return API_DOMAIN;
+  }
+  return BACKEND_URL;
+};
 
 export const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
-  (isProduction ? '/api' : `${BACKEND_URL}/api`);
+  (isProduction ? '/api' : `${getBackendUrl()}/api`);
 
-export const API_AUTH_URL = isProduction ? `${API_DOMAIN}/api` : `${BACKEND_URL}/api`;
+// Use custom domain in production, Render URL in development
+export const API_AUTH_URL = isProduction 
+  ? (API_DOMAIN ? `${API_DOMAIN}/api` : '/api') 
+  : `${BACKEND_URL}/api`;
 
 export const SOCKET_URL =
-  import.meta.env.VITE_SOCKET_URL || (isProduction ? API_DOMAIN : BACKEND_URL);
+  import.meta.env.VITE_SOCKET_URL || (isProduction 
+    ? (API_DOMAIN || BACKEND_URL) 
+    : BACKEND_URL);
 
 // 🔥 Uploads ALWAYS go directly to backend (files are stored there, not on Vercel)
 export const UPLOADS_BASE_URL =
-  import.meta.env.VITE_UPLOADS_URL || BACKEND_URL;
+  import.meta.env.VITE_UPLOADS_URL || getBackendUrl();
 
 export default {
   API_BASE_URL,

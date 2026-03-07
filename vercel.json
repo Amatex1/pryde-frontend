@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://pryde-backend.onrender.com/api/:path*"
+      "destination": "https://api.prydeapp.com/api/:path*"
     },
     {
       "source": "/socket.io/:path*",
-      "destination": "https://pryde-backend.onrender.com/socket.io/:path*"
+      "destination": "https://api.prydeapp.com/socket.io/:path*"
     },
     {
       "source": "/((?!api|socket\\.io|assets|icons).*)",
