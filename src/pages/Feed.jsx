@@ -58,7 +58,7 @@ function Feed() {
   const [searchParams] = useSearchParams();
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
   const { onlineUsers, isUserOnline } = useOnlineUsers();
-  const { authReady, isAuthenticated, user: currentUser, role } = useAuth(); // ✅ Single source of truth for auth
+  const { isAuthReady, isAuthenticated, user: currentUser, role } = useAuth(); // ✅ Single source of truth for auth
   const { toasts, showToast, removeToast } = useToast();
 
   // Get menu handler from AppLayout outlet context
@@ -351,7 +351,7 @@ function Feed() {
 
   useEffect(() => {
     // 🔥 AUTH READY GATE: Wait for auth to be ready before fetching data
-    if (!authReady) {
+    if (!isAuthReady) {
       logger.debug('[Feed] Waiting for auth to be ready...');
       return;
     }
@@ -417,7 +417,7 @@ function Feed() {
         fetchPosts(); // Refresh cached data in background
       }, 1000);
     }
-  }, [authReady, isAuthenticated]); // ✅ Run when auth state changes
+  }, [isAuthReady, isAuthenticated]); // ✅ Run when auth state changes
 
   // Restore localStorage draft on mount (fallback if backend draft fails)
   useEffect(() => {
