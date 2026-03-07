@@ -11,6 +11,7 @@ import FormattedText from '../components/FormattedText';
 import OptimizedImage from '../components/OptimizedImage';
 import CommentThread from '../components/CommentThread';
 import CommentSheet from '../components/comments/CommentSheet';
+import { CommentProvider } from '../components/comments/CommentContext';
 import ReactionButton from '../components/ReactionButton';
 import GifPicker from '../components/GifPicker';
 import PollCreator from '../components/PollCreator';
@@ -2665,7 +2666,14 @@ function Feed() {
           {replyingToComment?.postId === commentSheetOpen && (
             <form onSubmit={handleSubmitReply} className="comment-sheet-reply-form">
               <div className="reply-input-header">
-                <span>Replying to comment</span>
+                <span>↩ Replying to <strong>
+                  {(() => {
+                    const target = postComments[commentSheetOpen]?.find(
+                      c => String(c._id) === String(replyingToComment.commentId)
+                    );
+                    return target?.authorId?.displayName || target?.authorId?.username || 'comment';
+                  })()}
+                </strong></span>
                 <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', cursor: 'pointer', marginLeft: 'auto', marginRight: '8px' }}>
                   <input
                     type="checkbox"
@@ -2744,37 +2752,40 @@ function Feed() {
           )}
 
           {/* All Comments with Full Replies */}
-          <div className="comment-sheet-threads">
-            {postComments[commentSheetOpen] && postComments[commentSheetOpen]
-              .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)
-              .map((comment) => (
-                <CommentThread
-                  key={comment._id}
-                  comment={comment}
-                  replies={commentReplies[comment._id] || []}
-                  currentUser={currentUser}
-                  postId={commentSheetOpen}
-                  showReplies={showReplies}
-                  editingCommentId={editingCommentId}
-                  editCommentText={editCommentText}
-                  showReactionPicker={showReactionPicker}
-                  commentRefs={commentRefs}
-                  getUserReactionEmoji={getUserReactionEmoji}
-                  handleEditComment={handleEditComment}
-                  handleSaveEditComment={handleSaveEditComment}
-                  handleCancelEditComment={handleCancelEditComment}
-                  handleDeleteComment={handleDeleteComment}
-                  handleCommentReaction={handleCommentReaction}
-                  toggleReplies={toggleReplies}
-                  handleReplyToComment={handleReplyToComment}
-                  setShowReactionPicker={setShowReactionPicker}
-                  setReactionDetailsModal={setReactionDetailsModal}
-                  setReportModal={setReportModal}
-                  isFullSheet={true}
-                  viewerRole={role}
-                />
-              ))}
-          </div>
+          <CommentProvider value={{
+            currentUser,
+            postId: commentSheetOpen,
+            viewerRole: role,
+            editingCommentId,
+            editCommentText,
+            showReplies,
+            showReactionPicker,
+            commentRefs,
+            getUserReactionEmoji,
+            handleEditComment,
+            handleSaveEditComment,
+            handleCancelEditComment,
+            handleDeleteComment,
+            handleCommentReaction,
+            toggleReplies,
+            handleReplyToComment,
+            setShowReactionPicker,
+            setReactionDetailsModal,
+            setReportModal,
+          }}>
+            <div className="comment-sheet-threads">
+              {postComments[commentSheetOpen] && postComments[commentSheetOpen]
+                .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)
+                .map((comment) => (
+                  <CommentThread
+                    key={comment._id}
+                    comment={comment}
+                    replies={commentReplies[comment._id] || []}
+                    isFullSheet={true}
+                  />
+                ))}
+            </div>
+          </CommentProvider>
         </CommentSheet>
       )}
 

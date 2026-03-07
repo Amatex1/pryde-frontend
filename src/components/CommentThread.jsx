@@ -1,551 +1,338 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import OptimizedImage from './OptimizedImage';
 import ReactionButton from './ReactionButton';
 import TieredBadgeDisplay from './TieredBadgeDisplay';
 import PausableGif from './PausableGif';
 import FormattedText from './FormattedText';
-import { Pencil, Trash2, Flag } from 'lucide-react';
+import { Pencil, Trash2, Flag, ChevronUp, ChevronDown } from 'lucide-react';
 import { getImageUrl } from '../utils/imageUrl';
+import { useCommentContext } from './comments/CommentContext';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 
-/**
- * Helper function to compare IDs safely
- * Handles MongoDB ObjectId comparison and various ID formats
- */
+const STAFF_ROLES = ['moderator', 'admin', 'super_admin'];
+
 const compareIds = (id1, id2) => {
   if (!id1 || !id2) return false;
   return String(id1) === String(id2);
 };
 
-/**
- * CommentThread Component
- *
- * Renders a single comment with its replies (one level of nesting only).
- */
-// Staff roles that can see anonymous comment authors
-const STAFF_ROLES = ['moderator', 'admin', 'super_admin'];
-
-const CommentThread = ({
-  comment,
-  replies = [],
-  currentUser,
-  postId,
-  showReplies,
-  editingCommentId,
-  editCommentText,
-  showReactionPicker,
-  commentRefs,
-  getUserReactionEmoji,
-  handleEditComment,
-  handleSaveEditComment,
-  handleCancelEditComment,
-  handleDeleteComment,
-  handleCommentReaction,
-  toggleReplies,
-  handleReplyToComment,
-  setShowReactionPicker,
-  setReactionDetailsModal,
-  setReportModal,
-  isFullSheet = false,
-  viewerRole,
-}) => {
-  const isStaff = STAFF_ROLES.includes(viewerRole);
-  const reactionPickerTimeoutRef = useRef(null);
-
-  // ── Resize-aware mobile detection ─────────────────────────────────────────
-  // Using state + matchMedia listener so the limit updates on orientation change
-  const [isMobile, setIsMobile] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return window.matchMedia('(max-width: 600px)').matches;
+function formatCommentTime(dateStr) {
+  return new Date(dateStr).toLocaleString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    month: 'short',
+    day: 'numeric',
   });
+}
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const mql = window.matchMedia('(max-width: 600px)');
-    const handler = (e) => setIsMobile(e.matches);
-    mql.addEventListener('change', handler);
-    return () => mql.removeEventListener('change', handler);
-  }, []);
+// ── CommentRow ─────────────────────────────────────────────────────────────
+// Renders a single comment or reply row. Reads all handlers from CommentContext.
+// isReply:        whether this is a threaded reply (affects CSS class, delete flag)
+// parentCommentId: the top-level comment's ID — reply button targets this
+// openMenuId / setOpenMenuId: 3-dot menu state, owned by the parent CommentThread
 
+function CommentRow({ item, isReply = false, parentCommentId = null, openMenuId, setOpenMenuId }) {
+  const {
+    currentUser,
+    viewerRole,
+    postId,
+    editingCommentId,
+    editCommentText,
+    commentRefs,
+    showReplies,
+    handleEditComment,
+    handleSaveEditComment,
+    handleCancelEditComment,
+    handleDeleteComment,
+    toggleReplies,
+    handleReplyToComment,
+    setReactionDetailsModal,
+    setReportModal,
+  } = useCommentContext();
+
+  const isStaff = STAFF_ROLES.includes(viewerRole);
+  const isEditing = editingCommentId === item._id;
+  const isOwnItem =
+    compareIds(item.authorId?._id, currentUser?.id) ||
+    compareIds(item.authorId?._id, currentUser?._id) ||
+    compareIds(item.authorId, currentUser?.id) ||
+    compareIds(item.authorId, currentUser?._id);
+
+  const handleEditKeyDown = useCallback(
+    (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSaveEditComment(item._id);
+      }
+    },
+    [handleSaveEditComment, item._id]
+  );
+
+  // The reply button always targets the top-level comment (for replies) or itself (for top-level)
+  const replyTargetId = isReply ? parentCommentId : item._id;
+
+  if (item.isDeleted) {
+    return (
+      <div className="comment-deleted">
+        <span className="deleted-icon">🗑️</span>
+        <span className="deleted-text">This comment was deleted.</span>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {/* Avatar */}
+      {item.isAnonymous && !isStaff ? (
+        <div className="comment-avatar">
+          <span>?</span>
+        </div>
+      ) : (
+        <Link
+          to={`/profile/${item.authorId?.username}`}
+          className="comment-avatar"
+          style={{ textDecoration: 'none' }}
+          aria-label={`View ${item.authorId?.displayName || item.authorId?.username}'s profile`}
+        >
+          {item.authorId?.profilePhoto ? (
+            <OptimizedImage
+              src={getImageUrl(item.authorId.profilePhoto)}
+              alt={item.authorId.username}
+              className="avatar-image"
+            />
+          ) : (
+            <span>{item.authorId?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
+          )}
+        </Link>
+      )}
+
+      {/* Lane: bubble + actions */}
+      <div className="comment-lane">
+        <div className="comment-bubble">
+          {/* Author name */}
+          {item.isAnonymous && !isStaff ? (
+            <span className="comment-author">
+              <span className="author-name">Anonymous Member</span>
+            </span>
+          ) : item.isAnonymous && isStaff ? (
+            <Link
+              to={`/profile/${item.authorId?.username}`}
+              className="comment-author"
+              style={{ textDecoration: 'none' }}
+            >
+              <span className="author-name">
+                Anonymous Member{' '}
+                <span style={{ fontSize: '11px', opacity: 0.7 }}>(Author: @{item.authorId?.username})</span>
+              </span>
+              <span style={{ fontSize: '11px', marginLeft: '4px' }}>🕵️</span>
+            </Link>
+          ) : (
+            <Link
+              to={`/profile/${item.authorId?.username}`}
+              className="comment-author"
+              style={{ textDecoration: 'none' }}
+            >
+              <span className="author-name">
+                {item.authorId?.displayName || item.authorId?.username}
+              </span>
+              {item.authorId?.badges?.length > 0 && (
+                <TieredBadgeDisplay badges={item.authorId.badges} context="card" />
+              )}
+            </Link>
+          )}
+
+          {/* Edit box or comment text */}
+          {isEditing ? (
+            <div className="comment-edit-box">
+              <textarea
+                value={editCommentText}
+                onChange={(e) => handleEditComment(item._id, e.target.value)}
+                onKeyDown={handleEditKeyDown}
+                className="comment-edit-input"
+                enterKeyHint="send"
+                autoFocus
+              />
+              <div className="comment-edit-actions">
+                <button className="btn-save-comment" onClick={() => handleSaveEditComment(item._id)}>
+                  Save
+                </button>
+                <button className="btn-cancel-comment" onClick={handleCancelEditComment}>
+                  Never mind
+                </button>
+              </div>
+            </div>
+          ) : (
+            <span className="comment-text">
+              <FormattedText text={item.content} />
+            </span>
+          )}
+
+          {item.gifUrl && (
+            <div className="comment-gif">
+              <PausableGif src={item.gifUrl} alt="GIF" />
+            </div>
+          )}
+        </div>
+
+        {/* Inline actions */}
+        <div className="comment-actions">
+          <ReactionButton
+            targetType="comment"
+            targetId={item._id}
+            currentUserId={currentUser?.id}
+            onCountClick={() =>
+              setReactionDetailsModal({ isOpen: true, targetType: 'comment', targetId: item._id })
+            }
+          />
+          <button
+            className="comment-action-btn"
+            onClick={() => handleReplyToComment(postId, replyTargetId)}
+          >
+            Reply
+          </button>
+          <time
+            className="comment-time"
+            dateTime={new Date(item.createdAt).toISOString()}
+          >
+            {formatCommentTime(item.createdAt)}
+            {item.isEdited && <span className="edited-indicator"> (edited)</span>}
+          </time>
+          {!isReply && item.replyCount > 0 && (
+            <button
+              className="comment-action-btn view-replies-btn"
+              onClick={() => toggleReplies(item._id)}
+              aria-expanded={!!showReplies[item._id]}
+            >
+              {showReplies[item._id]
+                ? <ChevronUp size={12} aria-hidden="true" />
+                : <ChevronDown size={12} aria-hidden="true" />}
+              {' '}{item.replyCount}{' '}{item.replyCount === 1 ? 'reply' : 'replies'}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* 3-dot menu */}
+      <div className="comment-menu-container">
+        <button
+          className="comment-menu-btn"
+          onClick={() => setOpenMenuId(openMenuId === item._id ? null : item._id)}
+          aria-label={isReply ? 'Reply options' : 'Comment options'}
+          aria-haspopup="menu"
+          aria-expanded={openMenuId === item._id}
+        >
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <circle cx="8" cy="3" r="1.5" />
+            <circle cx="8" cy="8" r="1.5" />
+            <circle cx="8" cy="13" r="1.5" />
+          </svg>
+        </button>
+        {openMenuId === item._id && (
+          <div className="comment-menu" role="menu">
+            {isOwnItem ? (
+              <>
+                <button
+                  role="menuitem"
+                  onClick={() => {
+                    handleEditComment(item._id, item.content);
+                    setOpenMenuId(null);
+                  }}
+                >
+                  <Pencil size={14} strokeWidth={1.75} aria-hidden="true" /> Edit
+                </button>
+                <button
+                  role="menuitem"
+                  className="delete"
+                  onClick={() => {
+                    handleDeleteComment(postId, item._id, isReply);
+                    setOpenMenuId(null);
+                  }}
+                >
+                  <Trash2 size={14} strokeWidth={1.75} aria-hidden="true" /> Delete
+                </button>
+              </>
+            ) : (
+              <button
+                role="menuitem"
+                onClick={() => {
+                  setReportModal({
+                    isOpen: true,
+                    type: 'comment',
+                    contentId: item._id,
+                    userId: item.authorId?._id,
+                  });
+                  setOpenMenuId(null);
+                }}
+              >
+                <Flag size={14} strokeWidth={1.75} aria-hidden="true" /> Report
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+// ── CommentThread ──────────────────────────────────────────────────────────
+// Renders a top-level comment and its (optionally visible) replies.
+// All business logic lives in CommentContext — this component is purely structural.
+
+const CommentThread = ({ comment, replies = [], isFullSheet = false }) => {
+  const { showReplies, commentRefs } = useCommentContext();
+  const isMobile = useMediaQuery('(max-width: 600px)');
   const isMobileInline = !isFullSheet && isMobile;
   const MAX_INLINE_REPLIES = isMobileInline ? 2 : Infinity;
 
-  // ── 3-dot menu state ──────────────────────────────────────────────────────
   const [openMenuId, setOpenMenuId] = useState(null);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!event.target.closest('.comment-menu-container')) {
-        setOpenMenuId(null);
-      }
+    if (!openMenuId) return;
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.comment-menu-container')) setOpenMenuId(null);
     };
-    if (openMenuId) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [openMenuId]);
 
-  // ── Enter key submits edit (Shift+Enter = newline) ────────────────────────
-  const handleEditKeyDown = useCallback(
-    (e, commentId) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        handleSaveEditComment(commentId);
-      }
-    },
-    [handleSaveEditComment]
-  );
-
-  // Only render top-level comments (no parentCommentId)
+  // Skip reply items — they are rendered via their parent thread
   if (comment.parentCommentId !== null && comment.parentCommentId !== undefined) {
     return null;
   }
 
-  const isEditing = editingCommentId === comment._id;
-  const isOwnComment =
-    compareIds(comment.authorId?._id, currentUser?.id) ||
-    compareIds(comment.authorId?._id, currentUser?._id) ||
-    compareIds(comment.authorId, currentUser?.id) ||
-    compareIds(comment.authorId, currentUser?._id);
-
   return (
-    <div key={comment._id} className="comment-thread">
-      {/* ── Top-level comment row ─────────────────────────────────────────── */}
+    <div className="comment-thread">
       <div
         className="comment-row"
         ref={(el) => (commentRefs.current[comment._id] = el)}
       >
-        {comment.isDeleted ? (
-          <div className="comment-deleted">
-            <span className="deleted-icon">🗑️</span>
-            <span className="deleted-text">This comment was deleted.</span>
-          </div>
-        ) : (
-          <>
-            {/* Avatar — anonymous-aware */}
-            {comment.isAnonymous && !isStaff ? (
-              <div className="comment-avatar" style={{ textDecoration: 'none' }}>
-                <span>?</span>
-              </div>
-            ) : (
-              <Link
-                to={`/profile/${comment.authorId?.username}`}
-                className="comment-avatar"
-                style={{ textDecoration: 'none' }}
-                aria-label={`View ${comment.authorId?.displayName || comment.authorId?.username}'s profile`}
-              >
-                {comment.authorId?.profilePhoto ? (
-                  <OptimizedImage
-                    src={getImageUrl(comment.authorId.profilePhoto)}
-                    alt={comment.authorId.username}
-                    className="avatar-image"
-                  />
-                ) : (
-                  <span>{comment.authorId?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                )}
-              </Link>
-            )}
-
-            {/* Lane: bubble + actions */}
-            <div className="comment-lane">
-              <div className="comment-bubble">
-                {comment.isAnonymous && !isStaff ? (
-                  <span className="comment-author" style={{ textDecoration: 'none' }}>
-                    <span className="author-name">Anonymous Member</span>
-                  </span>
-                ) : comment.isAnonymous && isStaff ? (
-                  <Link
-                    to={`/profile/${comment.authorId?.username}`}
-                    className="comment-author"
-                    style={{ textDecoration: 'none' }}
-                  >
-                    <span className="author-name">
-                      Anonymous Member{' '}
-                      <span style={{ fontSize: '11px', opacity: 0.7 }}>(Author: @{comment.authorId?.username})</span>
-                    </span>
-                    <span style={{ fontSize: '11px', marginLeft: '4px' }}>🕵️</span>
-                  </Link>
-                ) : (
-                  <Link
-                    to={`/profile/${comment.authorId?.username}`}
-                    className="comment-author"
-                    style={{ textDecoration: 'none' }}
-                  >
-                    <span className="author-name">
-                      {comment.authorId?.displayName || comment.authorId?.username}
-                    </span>
-                    {comment.authorId?.badges?.length > 0 && (
-                      <TieredBadgeDisplay badges={comment.authorId.badges} context="card" />
-                    )}
-                  </Link>
-                )}
-
-                {isEditing ? (
-                  <div className="comment-edit-box">
-                    <textarea
-                      value={editCommentText}
-                      onChange={(e) => handleEditComment(comment._id, e.target.value)}
-                      onKeyDown={(e) => handleEditKeyDown(e, comment._id)}
-                      className="comment-edit-input"
-                      enterKeyHint="send"
-                      autoFocus
-                    />
-                    <div className="comment-edit-actions">
-                      <button
-                        className="btn-save-comment"
-                        onClick={() => handleSaveEditComment(comment._id)}
-                      >
-                        Save
-                      </button>
-                      <button
-                        className="btn-cancel-comment"
-                        onClick={handleCancelEditComment}
-                      >
-                        Never mind
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <span className="comment-text">
-                    <FormattedText text={comment.content} />
-                  </span>
-                )}
-
-                {comment.gifUrl && (
-                  <div className="comment-gif">
-                    <PausableGif src={comment.gifUrl} alt="GIF" />
-                  </div>
-                )}
-              </div>
-
-              {/* Inline actions */}
-              <div className="comment-actions">
-                <ReactionButton
-                  targetType="comment"
-                  targetId={comment._id}
-                  currentUserId={currentUser?.id}
-                  onCountClick={() =>
-                    setReactionDetailsModal({
-                      isOpen: true,
-                      targetType: 'comment',
-                      targetId: comment._id,
-                    })
-                  }
-                />
-                <button
-                  className="comment-action-btn"
-                  onClick={() => handleReplyToComment(postId, comment._id)}
-                >
-                  Reply
-                </button>
-                <span className="comment-time">
-                  {new Date(comment.createdAt).toLocaleString('en-US', {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: true,
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                  {comment.isEdited && (
-                    <span className="edited-indicator"> (edited)</span>
-                  )}
-                </span>
-                {comment.replyCount > 0 && (
-                  <button
-                    className="comment-action-btn view-replies-btn"
-                    onClick={() => toggleReplies(comment._id)}
-                  >
-                    {showReplies[comment._id] ? '▲' : '▼'}{' '}
-                    {comment.replyCount}{' '}
-                    {comment.replyCount === 1 ? 'reply' : 'replies'}
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* 3-dot menu */}
-            <div className="comment-menu-container">
-              <button
-                className="comment-menu-btn"
-                onClick={() =>
-                  setOpenMenuId(openMenuId === comment._id ? null : comment._id)
-                }
-                aria-label="Comment options"
-              >
-                <svg viewBox="0 0 16 16" fill="currentColor">
-                  <circle cx="8" cy="3" r="1.5" />
-                  <circle cx="8" cy="8" r="1.5" />
-                  <circle cx="8" cy="13" r="1.5" />
-                </svg>
-              </button>
-              {openMenuId === comment._id && (
-                <div className="comment-menu">
-                  {isOwnComment ? (
-                    <>
-                      <button
-                        onClick={() => {
-                          handleEditComment(comment._id, comment.content);
-                          setOpenMenuId(null);
-                        }}
-                      >
-                        <Pencil size={14} strokeWidth={1.75} aria-hidden="true" /> Edit
-                      </button>
-                      <button
-                        className="delete"
-                        onClick={() => {
-                          handleDeleteComment(postId, comment._id, false);
-                          setOpenMenuId(null);
-                        }}
-                      >
-                        <Trash2 size={14} strokeWidth={1.75} aria-hidden="true" /> Delete
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        setReportModal({
-                          isOpen: true,
-                          type: 'comment',
-                          contentId: comment._id,
-                          userId: comment.authorId?._id,
-                        });
-                        setOpenMenuId(null);
-                      }}
-                    >
-                      <Flag size={14} strokeWidth={1.75} aria-hidden="true" /> Report
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          </>
-        )}
+        <CommentRow
+          item={comment}
+          isReply={false}
+          openMenuId={openMenuId}
+          setOpenMenuId={setOpenMenuId}
+        />
       </div>
 
-      {/* ── Replies ───────────────────────────────────────────────────────── */}
       {showReplies[comment._id] && replies.length > 0 && (
         <div className="comment-replies">
-          {replies.slice(0, MAX_INLINE_REPLIES).map((reply) => {
-            const isEditingReply = editingCommentId === reply._id;
-            const isOwnReply =
-              compareIds(reply.authorId?._id, currentUser?.id) ||
-              compareIds(reply.authorId?._id, currentUser?._id) ||
-              compareIds(reply.authorId, currentUser?.id) ||
-              compareIds(reply.authorId, currentUser?._id);
-
-            return (
-              <div
-                key={reply._id}
-                className="comment-row reply"
-                ref={(el) => (commentRefs.current[reply._id] = el)}
-              >
-                {reply.isDeleted ? (
-                  <div className="comment-deleted">
-                    <span className="deleted-icon">🗑️</span>
-                    <span className="deleted-text">This comment was deleted.</span>
-                  </div>
-                ) : (
-                  <>
-                    {/* Avatar — anonymous-aware */}
-                    {reply.isAnonymous && !isStaff ? (
-                      <div className="comment-avatar" style={{ textDecoration: 'none' }}>
-                        <span>?</span>
-                      </div>
-                    ) : (
-                      <Link
-                        to={`/profile/${reply.authorId?.username}`}
-                        className="comment-avatar"
-                        style={{ textDecoration: 'none' }}
-                        aria-label={`View ${reply.authorId?.displayName || reply.authorId?.username}'s profile`}
-                      >
-                        {reply.authorId?.profilePhoto ? (
-                          <OptimizedImage
-                            src={getImageUrl(reply.authorId.profilePhoto)}
-                            alt={reply.authorId.username}
-                            className="avatar-image"
-                          />
-                        ) : (
-                          <span>
-                            {reply.authorId?.displayName?.charAt(0).toUpperCase() || 'U'}
-                          </span>
-                        )}
-                      </Link>
-                    )}
-
-                    {/* Lane — anonymous-aware author rendering */}
-                    <div className="comment-lane">
-                      <div className="comment-bubble">
-                        {reply.isAnonymous && !isStaff ? (
-                          <span className="comment-author" style={{ textDecoration: 'none' }}>
-                            <span className="author-name">Anonymous Member</span>
-                          </span>
-                        ) : reply.isAnonymous && isStaff ? (
-                          <Link
-                            to={`/profile/${reply.authorId?.username}`}
-                            className="comment-author"
-                            style={{ textDecoration: 'none' }}
-                          >
-                            <span className="author-name">
-                              Anonymous Member{' '}
-                              <span style={{ fontSize: '11px', opacity: 0.7 }}>(Author: @{reply.authorId?.username})</span>
-                            </span>
-                            <span style={{ fontSize: '11px', marginLeft: '4px' }}>🕵️</span>
-                          </Link>
-                        ) : (
-                          <Link
-                            to={`/profile/${reply.authorId?.username}`}
-                            className="comment-author"
-                            style={{ textDecoration: 'none' }}
-                          >
-                            <span className="author-name">
-                              {reply.authorId?.displayName || reply.authorId?.username}
-                            </span>
-                            {reply.authorId?.badges?.length > 0 && (
-                              <TieredBadgeDisplay
-                                badges={reply.authorId.badges}
-                                context="card"
-                              />
-                            )}
-                          </Link>
-                        )}
-
-                        {isEditingReply ? (
-                          <div className="comment-edit-box">
-                            <textarea
-                              value={editCommentText}
-                              onChange={(e) =>
-                                handleEditComment(reply._id, e.target.value)
-                              }
-                              onKeyDown={(e) => handleEditKeyDown(e, reply._id)}
-                              className="comment-edit-input"
-                              enterKeyHint="send"
-                              autoFocus
-                            />
-                            <div className="comment-edit-actions">
-                              <button
-                                className="btn-save-comment"
-                                onClick={() => handleSaveEditComment(reply._id)}
-                              >
-                                Save
-                              </button>
-                              <button
-                                className="btn-cancel-comment"
-                                onClick={handleCancelEditComment}
-                              >
-                                Never mind
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <span className="comment-text">
-                            <FormattedText text={reply.content} />
-                          </span>
-                        )}
-
-                        {reply.gifUrl && (
-                          <div className="comment-gif">
-                            <PausableGif src={reply.gifUrl} alt="GIF" />
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Inline actions */}
-                      <div className="comment-actions">
-                        <ReactionButton
-                          targetType="comment"
-                          targetId={reply._id}
-                          currentUserId={currentUser?.id}
-                          onCountClick={() =>
-                            setReactionDetailsModal({
-                              isOpen: true,
-                              targetType: 'comment',
-                              targetId: reply._id,
-                            })
-                          }
-                        />
-                        <button
-                          className="comment-action-btn reply-btn"
-                          onClick={() => handleReplyToComment(postId, comment._id)}
-                        >
-                          Reply
-                        </button>
-                        <span className="comment-time">
-                          {new Date(reply.createdAt).toLocaleString('en-US', {
-                            hour: 'numeric',
-                            minute: '2-digit',
-                            hour12: true,
-                            month: 'short',
-                            day: 'numeric',
-                          })}
-                          {reply.isEdited && (
-                            <span className="edited-indicator"> (edited)</span>
-                          )}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* 3-dot menu */}
-                    <div className="comment-menu-container">
-                      <button
-                        className="comment-menu-btn"
-                        onClick={() =>
-                          setOpenMenuId(
-                            openMenuId === reply._id ? null : reply._id
-                          )
-                        }
-                        aria-label="Reply options"
-                      >
-                        <svg viewBox="0 0 16 16" fill="currentColor">
-                          <circle cx="8" cy="3" r="1.5" />
-                          <circle cx="8" cy="8" r="1.5" />
-                          <circle cx="8" cy="13" r="1.5" />
-                        </svg>
-                      </button>
-                      {openMenuId === reply._id && (
-                        <div className="comment-menu">
-                          {isOwnReply ? (
-                            <>
-                              <button
-                                onClick={() => {
-                                  handleEditComment(reply._id, reply.content);
-                                  setOpenMenuId(null);
-                                }}
-                              >
-                                <Pencil size={14} strokeWidth={1.75} aria-hidden="true" /> Edit
-                              </button>
-                              <button
-                                className="delete"
-                                onClick={() => {
-                                  handleDeleteComment(postId, reply._id, true);
-                                  setOpenMenuId(null);
-                                }}
-                              >
-                                <Trash2 size={14} strokeWidth={1.75} aria-hidden="true" /> Delete
-                              </button>
-                            </>
-                          ) : (
-                            <button
-                              onClick={() => {
-                                setReportModal({
-                                  isOpen: true,
-                                  type: 'comment',
-                                  contentId: reply._id,
-                                  userId: reply.authorId?._id,
-                                });
-                                setOpenMenuId(null);
-                              }}
-                            >
-                              <Flag size={14} strokeWidth={1.75} aria-hidden="true" /> Report
-                            </button>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
-            );
-          })}
+          {replies.slice(0, MAX_INLINE_REPLIES).map((reply) => (
+            <div
+              key={reply._id}
+              className="comment-row reply"
+              ref={(el) => (commentRefs.current[reply._id] = el)}
+            >
+              <CommentRow
+                item={reply}
+                isReply={true}
+                parentCommentId={comment._id}
+                openMenuId={openMenuId}
+                setOpenMenuId={setOpenMenuId}
+              />
+            </div>
+          ))}
         </div>
       )}
     </div>

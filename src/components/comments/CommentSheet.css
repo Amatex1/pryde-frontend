@@ -14,16 +14,10 @@
   bottom: 0;
   width: 100%;
   height: 100%;
-  /* Solid background with fallbacks for both light and dark mode */
-  background: var(--app-bg, var(--bg-primary, #ffffff));
+  background: var(--bg-card);
   display: flex;
   flex-direction: column;
   overscroll-behavior: contain;
-}
-
-/* Dark mode solid background */
-[data-theme="dark"] .comment-sheet {
-  background: var(--app-bg, #1a1a2e);
 }
 
 /* Header */

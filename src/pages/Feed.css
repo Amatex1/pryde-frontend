@@ -1975,11 +1975,7 @@ html:not([data-theme]) .post-actions {
   padding-left: 12px;
   padding-top: 8px;
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-content: normal;
-  justify-content: normal;
-  align-items: normal;
+  flex-direction: column;
   gap: 4px;
   margin-top: 4px;
   border-left: 2px solid var(--pryde-purple, #6c5ce7);  /* Purple thread line */
@@ -2366,12 +2362,6 @@ html:not([data-theme]) .post-actions {
    COMMENT-ACTIONS (ANCHORED UNDER BUBBLE)
    ======================================== */
 
-/* Hide inline edit/delete buttons (moved to 3-dot menu) */
-.comment-actions .edit-btn,
-.comment-actions .delete-btn {
-  display: none !important;
-}
-
 /* Actions stay anchored under bubble */
 .comment-actions {
   margin-left: 12px;
@@ -2442,21 +2432,17 @@ html:not([data-theme]) .post-actions {
 
 /* Delete button styling */
 .delete-btn {
-  color: #b91c1c !important; /* Darker red for better contrast (WCAG AA compliant) */
+  color: var(--color-danger) !important;
 }
 
 .delete-btn:hover {
-  color: #991b1b !important; /* Even darker red on hover */
+  color: var(--color-danger) !important;
+  opacity: 0.8;
   font-weight: 700;
 }
 
-/* Dark mode delete button */
 [data-theme="dark"] .delete-btn {
-  color: #f87171 !important; /* Lighter red for dark backgrounds */
-}
-
-[data-theme="dark"] .delete-btn:hover {
-  color: #fca5a5 !important; /* Even lighter on hover */
+  opacity: 0.9;
 }
 
 /* Reaction picker container */
@@ -2791,6 +2777,61 @@ html:not([data-theme]) .post-actions {
   border-radius: 10px;
   border: 2px solid var(--pryde-purple);
 }
+
+/* Replying-to indicator pill */
+.reply-target-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.reply-target-indicator strong { color: var(--color-brand); }
+
+.btn-cancel-reply-small {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  margin-left: auto;
+}
+.btn-cancel-reply-small:hover { color: var(--text-main); }
+
+/* Anonymous toggle label */
+.anon-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-right: 4px;
+  opacity: 0.8;
+}
+
+.anon-mods-badge {
+  font-size: 10px;
+  color: var(--color-brand);
+  background: color-mix(in srgb, var(--color-brand) 12%, transparent);
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+/* View all comments link */
+.view-all-comments-btn {
+  font-size: var(--font-size-xs);
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--color-brand);
+}
+.view-all-comments-btn:hover { text-decoration: underline; }
 
 .reply-input-wrapper {
   display: flex;

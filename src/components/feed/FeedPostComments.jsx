@@ -1,15 +1,16 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { X, Send } from 'lucide-react';
 import CommentThread from '../CommentThread';
 import GifPicker from '../GifPicker';
 import OptimizedImage from '../OptimizedImage';
 import { getImageUrl } from '../../utils/imageUrl';
+import { CommentProvider } from '../comments/CommentContext';
 
 /**
- * FeedPostComments - Renders the comments section of a post
- * 
- * Includes: comments list, reply input box, comment input box
- * This component is memoized for performance optimization.
+ * FeedPostComments - Renders the comments section of a post.
+ *
+ * All comment/reply handlers are injected into CommentContext so that
+ * CommentThread and CommentRow can consume them without deep prop drilling.
  */
 const FeedPostComments = memo(function FeedPostComments({
   post,
@@ -28,7 +29,7 @@ const FeedPostComments = memo(function FeedPostComments({
   editCommentText,
   showReactionPicker,
   commentRefs,
-  
+
   // Handlers
   onEditComment,
   onSaveEditComment,
@@ -48,53 +49,93 @@ const FeedPostComments = memo(function FeedPostComments({
   onCommentGifSelect,
   onCommentSubmit,
   onToggleGifPicker,
-  
+
   // Utilities
   getUserReactionEmoji,
   viewerRole,
   replyIsAnonymous,
   onReplyIsAnonymousChange,
 }) {
+  // Build context value once per render — all handlers + state CommentThread needs
+  const contextValue = useMemo(() => ({
+    currentUser,
+    postId: post._id,
+    viewerRole,
+    editingCommentId,
+    editCommentText,
+    showReplies,
+    showReactionPicker,
+    commentRefs,
+    getUserReactionEmoji,
+    handleEditComment: onEditComment,
+    handleSaveEditComment: onSaveEditComment,
+    handleCancelEditComment: onCancelEditComment,
+    handleDeleteComment: onDeleteComment,
+    handleCommentReaction: onCommentReaction,
+    toggleReplies: onToggleReplies,
+    handleReplyToComment: onReplyToComment,
+    setShowReactionPicker: onSetShowReactionPicker,
+    setReactionDetailsModal: onSetReactionDetailsModal,
+    setReportModal: onSetReportModal,
+  }), [
+    currentUser, post._id, viewerRole, editingCommentId, editCommentText,
+    showReplies, showReactionPicker, commentRefs, getUserReactionEmoji,
+    onEditComment, onSaveEditComment, onCancelEditComment, onDeleteComment,
+    onCommentReaction, onToggleReplies, onReplyToComment, onSetShowReactionPicker,
+    onSetReactionDetailsModal, onSetReportModal,
+  ]);
+
+  // Only top-level comments shown inline on the feed card (last 3)
+  const topLevelComments = comments.filter(
+    (c) => c.parentCommentId === null || c.parentCommentId === undefined
+  );
+  const hiddenCount = Math.max(0, topLevelComments.length - 3);
+  const visibleComments = topLevelComments.slice(-3);
+
+  // "Replying to @username" indicator
+  const replyTarget = replyingToComment?.commentId
+    ? comments.find((c) => String(c._id) === String(replyingToComment.commentId))
+    : null;
+  const replyTargetName =
+    replyTarget?.authorId?.displayName ||
+    replyTarget?.authorId?.username ||
+    null;
+
   return (
-    <>
-      {/* Comments Section */}
-      {comments.length > 0 && (
+    <CommentProvider value={contextValue}>
+      {/* Comments list */}
+      {visibleComments.length > 0 && (
         <div className="post-comments">
-          {comments
-            .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)
-            .slice(-3)
-            .map((comment) => (
-              <CommentThread
-                key={comment._id}
-                comment={comment}
-                replies={commentReplies[comment._id] || []}
-                currentUser={currentUser}
-                postId={post._id}
-                showReplies={showReplies}
-                editingCommentId={editingCommentId}
-                editCommentText={editCommentText}
-                showReactionPicker={showReactionPicker}
-                commentRefs={commentRefs}
-                getUserReactionEmoji={getUserReactionEmoji}
-                handleEditComment={onEditComment}
-                handleSaveEditComment={onSaveEditComment}
-                handleCancelEditComment={onCancelEditComment}
-                handleDeleteComment={onDeleteComment}
-                handleCommentReaction={onCommentReaction}
-                toggleReplies={onToggleReplies}
-                handleReplyToComment={onReplyToComment}
-                setShowReactionPicker={onSetShowReactionPicker}
-                setReactionDetailsModal={onSetReactionDetailsModal}
-                setReportModal={onSetReportModal}
-                viewerRole={viewerRole}
-              />
-            ))}
+          {hiddenCount > 0 && (
+            <button
+              className="comment-action-btn view-all-comments-btn"
+              onClick={() => onReplyToComment(post._id, null)}
+              style={{ display: 'block', marginBottom: '4px', color: 'var(--color-brand)', fontWeight: 500 }}
+            >
+              View all {topLevelComments.length} comments
+            </button>
+          )}
+          {visibleComments.map((comment) => (
+            <CommentThread
+              key={comment._id}
+              comment={comment}
+              replies={commentReplies[comment._id] || []}
+            />
+          ))}
         </div>
       )}
 
-      {/* Reply Input Box - Shown when replying to a comment */}
+      {/* Reply input box */}
       {replyingToComment?.postId === post._id && (
         <form onSubmit={onSubmitReply} className="reply-input-box">
+          {replyTargetName && (
+            <div className="reply-target-indicator">
+              <span>↩ Replying to <strong>@{replyTargetName}</strong></span>
+              <button type="button" className="btn-cancel-reply-small" onClick={onCancelReply} aria-label="Cancel reply">
+                <X size={13} strokeWidth={2} aria-hidden="true" />
+              </button>
+            </div>
+          )}
           <div className="reply-input-wrapper">
             <div className="reply-user-avatar">
               {currentUser?.profilePhoto ? (
@@ -121,29 +162,24 @@ const FeedPostComments = memo(function FeedPostComments({
           </div>
           <div className="reply-composer-actions">
             {onReplyIsAnonymousChange && (
-              <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', cursor: 'pointer', marginRight: '4px' }}>
+              <label className="anon-toggle-label">
                 <input
                   type="checkbox"
                   checked={replyIsAnonymous || false}
                   onChange={(e) => onReplyIsAnonymousChange(e.target.checked)}
-                  style={{ margin: 0 }}
                 />
-                <span style={{ opacity: 0.7 }}>Anon</span>
+                <span>Anon</span>
               </label>
             )}
             {replyIsAnonymous && (
-              <span style={{ fontSize: '10px', color: '#7c3aed', background: '#ede9fe', padding: '1px 6px', borderRadius: '999px', fontWeight: 500 }}>🔒 Mods only</span>
+              <span className="anon-mods-badge">🔒 Mods only</span>
             )}
-            <button
-              type="button"
-              onClick={onCancelReply}
-              className="btn-cancel-reply"
-            >
+            <button type="button" onClick={onCancelReply} className="btn-cancel-reply">
               Cancel
             </button>
             <button
               type="button"
-              onClick={() => onToggleGifPicker(`reply-${replyingToComment._id}`)}
+              onClick={() => onToggleGifPicker(`reply-${replyingToComment.commentId}`)}
               className="btn-gif"
               title="Add GIF"
             >
@@ -160,28 +196,21 @@ const FeedPostComments = memo(function FeedPostComments({
           {replyGif && (
             <div className="reply-gif-preview">
               <img src={replyGif} alt="Selected GIF" />
-              <button
-                type="button"
-                className="btn-remove-gif"
-                onClick={() => onReplyGifSelect(null)}
-              >
+              <button type="button" className="btn-remove-gif" onClick={() => onReplyGifSelect(null)}>
                 <X size={14} strokeWidth={1.75} aria-hidden="true" />
               </button>
             </div>
           )}
-          {showGifPicker === `reply-${replyingToComment._id}` && (
+          {showGifPicker === `reply-${replyingToComment.commentId}` && (
             <GifPicker
-              onGifSelect={(gifUrl) => {
-                onReplyGifSelect(gifUrl);
-                onToggleGifPicker(null);
-              }}
+              onGifSelect={(gifUrl) => { onReplyGifSelect(gifUrl); onToggleGifPicker(null); }}
               onClose={() => onToggleGifPicker(null)}
             />
           )}
         </form>
       )}
 
-      {/* Comment Input Box */}
+      {/* Comment input box */}
       {showCommentBox[post._id] && (
         <form onSubmit={(e) => onCommentSubmit(post._id, e)} className="comment-input-box">
           <div className="comment-input-wrapper">
@@ -225,29 +254,21 @@ const FeedPostComments = memo(function FeedPostComments({
           {commentGif[post._id] && (
             <div className="comment-gif-preview">
               <img src={commentGif[post._id]} alt="Selected GIF" />
-              <button
-                type="button"
-                className="btn-remove-gif"
-                onClick={() => onCommentGifSelect(post._id, null)}
-              >
+              <button type="button" className="btn-remove-gif" onClick={() => onCommentGifSelect(post._id, null)}>
                 <X size={14} strokeWidth={1.75} aria-hidden="true" />
               </button>
             </div>
           )}
           {showGifPicker === `comment-${post._id}` && (
             <GifPicker
-              onGifSelect={(gifUrl) => {
-                onCommentGifSelect(post._id, gifUrl);
-                onToggleGifPicker(null);
-              }}
+              onGifSelect={(gifUrl) => { onCommentGifSelect(post._id, gifUrl); onToggleGifPicker(null); }}
               onClose={() => onToggleGifPicker(null)}
             />
           )}
         </form>
       )}
-    </>
+    </CommentProvider>
   );
 });
 
 export default FeedPostComments;
-
