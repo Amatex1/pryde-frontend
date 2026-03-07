@@ -36,6 +36,7 @@ import {
   getAuthToken,
   setAuthToken,
   setCurrentUser,
+  getCurrentUser,
   clearAllTokens,
   logout as authLogout,
   isManualLogout
@@ -63,8 +64,13 @@ export const AUTH_STATES = {
 };
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [authStatus, setAuthStatus] = useState(AUTH_STATES.LOADING);
+  // Seed from localStorage cache so returning users see their app immediately.
+  // verifyAuth() still runs in the background to validate/refresh the session.
+  const _cachedUser = getCurrentUser();
+  const [user, setUser] = useState(_cachedUser);
+  const [authStatus, setAuthStatus] = useState(
+    _cachedUser ? AUTH_STATES.AUTHENTICATED : AUTH_STATES.LOADING
+  );
   const [error, setError] = useState(null);
 
   // ======================================================
