@@ -22,6 +22,7 @@ import OptimizedImage from '../components/OptimizedImage';
 import EmptyState from '../components/EmptyState';
 import ProfilePostSearch from '../components/ProfilePostSearch';
 import CommentThread from '../components/CommentThread';
+import { CommentProvider } from '../components/comments/CommentContext';
 import CommentSheet from '../components/comments/CommentSheet';
 import ReactionButton from '../components/ReactionButton';
 import FeedPostDropdown from '../components/feed/FeedPostDropdown';
@@ -2536,37 +2537,28 @@ function Profile() {
 
                       {/* Comments Section - Facebook Style */}
                       {postComments[post._id] && postComments[post._id].length > 0 && (
-                        <div className="post-comments">
-                          {postComments[post._id]
-                            .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)
-                            .slice(-3)
-                            .map((comment) => (
-                              <CommentThread
-                                key={comment._id}
-                                comment={comment}
-                                replies={commentReplies[comment._id] || []}
-                                currentUser={currentUser}
-                                postId={post._id}
-                                showReplies={showReplies}
-                                editingCommentId={editingCommentId}
-                                editCommentText={editCommentText}
-                                showReactionPicker={showReactionPicker}
-                                commentRefs={commentRefs}
-                                getUserReactionEmoji={getUserReactionEmoji}
-                                handleEditComment={handleEditComment}
-                                handleSaveEditComment={handleSaveEditComment}
-                                handleCancelEditComment={handleCancelEditComment}
-                                handleDeleteComment={handleDeleteComment}
-                                handleCommentReaction={handleCommentReaction}
-                                toggleReplies={toggleReplies}
-                                handleReplyToComment={handleReplyToComment}
-                                setShowReactionPicker={setShowReactionPicker}
-                                setReactionDetailsModal={setReactionDetailsModal}
-                                setReportModal={setReportModal}
-                                viewerRole={role}
-                              />
-                            ))}
-                        </div>
+                        <CommentProvider value={{
+                          currentUser, postId: post._id, viewerRole: role,
+                          showReplies, editingCommentId, editCommentText,
+                          showReactionPicker, commentRefs, getUserReactionEmoji,
+                          handleEditComment, handleSaveEditComment, handleCancelEditComment,
+                          handleDeleteComment, handleCommentReaction, toggleReplies,
+                          handleReplyToComment, setShowReactionPicker,
+                          setReactionDetailsModal, setReportModal,
+                        }}>
+                          <div className="post-comments">
+                            {postComments[post._id]
+                              .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)
+                              .slice(-3)
+                              .map((comment) => (
+                                <CommentThread
+                                  key={comment._id}
+                                  comment={comment}
+                                  replies={commentReplies[comment._id] || []}
+                                />
+                              ))}
+                          </div>
+                        </CommentProvider>
                       )}
 
                       {/* Reply Input Box - Shown when replying to a comment */}
@@ -3024,37 +3016,28 @@ function Profile() {
           )}
 
           {/* All Comments with Full Replies */}
-          <div className="comment-sheet-threads">
-            {postComments[commentSheetOpen] && postComments[commentSheetOpen]
-              .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)
-              .map((comment) => (
-                <CommentThread
-                  key={comment._id}
-                  comment={comment}
-                  replies={commentReplies[comment._id] || []}
-                  currentUser={currentUser}
-                  postId={commentSheetOpen}
-                  showReplies={showReplies}
-                  editingCommentId={editingCommentId}
-                  editCommentText={editCommentText}
-                  showReactionPicker={showReactionPicker}
-                  commentRefs={commentRefs}
-                  getUserReactionEmoji={getUserReactionEmoji}
-                  handleEditComment={handleEditComment}
-                  handleSaveEditComment={handleSaveEditComment}
-                  handleCancelEditComment={handleCancelEditComment}
-                  handleDeleteComment={handleDeleteComment}
-                  handleCommentReaction={handleCommentReaction}
-                  toggleReplies={toggleReplies}
-                  handleReplyToComment={handleReplyToComment}
-                  setShowReactionPicker={setShowReactionPicker}
-                  setReactionDetailsModal={setReactionDetailsModal}
-                  setReportModal={setReportModal}
-                  isFullSheet={true}
-                  viewerRole={role}
-                />
-              ))}
-          </div>
+          <CommentProvider value={{
+            currentUser, postId: commentSheetOpen, viewerRole: role,
+            showReplies, editingCommentId, editCommentText,
+            showReactionPicker, commentRefs, getUserReactionEmoji,
+            handleEditComment, handleSaveEditComment, handleCancelEditComment,
+            handleDeleteComment, handleCommentReaction, toggleReplies,
+            handleReplyToComment, setShowReactionPicker,
+            setReactionDetailsModal, setReportModal,
+          }}>
+            <div className="comment-sheet-threads">
+              {postComments[commentSheetOpen] && postComments[commentSheetOpen]
+                .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)
+                .map((comment) => (
+                  <CommentThread
+                    key={comment._id}
+                    comment={comment}
+                    replies={commentReplies[comment._id] || []}
+                    isFullSheet={true}
+                  />
+                ))}
+            </div>
+          </CommentProvider>
         </CommentSheet>
       )}
     </div>

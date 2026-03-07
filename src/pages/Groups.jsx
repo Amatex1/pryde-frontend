@@ -36,6 +36,7 @@ import PostHeader from '../components/PostHeader';
 import Toast from '../components/Toast';
 import FormattedText from '../components/FormattedText';
 import CommentThread from '../components/CommentThread';
+import { CommentProvider } from '../components/comments/CommentContext';
 import GifPicker from '../components/GifPicker';
 import GroupPostDropdown from '../components/groups/GroupPostDropdown';
 import GroupActionsDropdown from '../components/groups/GroupActionsDropdown';
@@ -1439,34 +1440,28 @@ function Groups() {
 
                       {/* Comments Section */}
                       {postComments[post._id] && postComments[post._id].length > 0 && (
-                        <div className="post-comments">
-                          {postComments[post._id]
-                            .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)
-                            .map((comment) => (
-                              <CommentThread
-                                key={comment._id}
-                                comment={comment}
-                                replies={commentReplies[comment._id] || []}
-                                currentUser={currentUser}
-                                postId={post._id}
-                                showReplies={showReplies}
-                                editingCommentId={editingCommentId}
-                                editCommentText={editCommentText}
-                                showReactionPicker={showReactionPicker}
-                                commentRefs={commentRefs}
-                                getUserReactionEmoji={getUserReactionEmoji}
-                                handleEditComment={handleEditComment}
-                                handleSaveEditComment={handleSaveEditComment}
-                                handleCancelEditComment={handleCancelEditComment}
-                                handleDeleteComment={handleDeleteComment}
-                                handleCommentReaction={handleCommentReaction}
-                                toggleReplies={toggleReplies}
-                                handleReplyToComment={handleReplyToComment}
-                                setShowReactionPicker={setShowReactionPicker}
-                                viewerRole={currentUser?.role}
-                              />
-                            ))}
-                        </div>
+                        <CommentProvider value={{
+                          currentUser, postId: post._id, viewerRole: currentUser?.role,
+                          showReplies, editingCommentId, editCommentText,
+                          showReactionPicker, commentRefs, getUserReactionEmoji,
+                          handleEditComment, handleSaveEditComment, handleCancelEditComment,
+                          handleDeleteComment, handleCommentReaction, toggleReplies,
+                          handleReplyToComment, setShowReactionPicker,
+                          setReactionDetailsModal: () => {},
+                          setReportModal: () => {},
+                        }}>
+                          <div className="post-comments">
+                            {postComments[post._id]
+                              .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)
+                              .map((comment) => (
+                                <CommentThread
+                                  key={comment._id}
+                                  comment={comment}
+                                  replies={commentReplies[comment._id] || []}
+                                />
+                              ))}
+                          </div>
+                        </CommentProvider>
                       )}
 
                       {/* Reply Input Box */}
