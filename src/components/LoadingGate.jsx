@@ -1,3 +1,19 @@
+// PUBLIC_ROUTES - Same as AuthGate, render immediately without blocking
+const PUBLIC_ROUTES = [
+  '/',
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/verify-email',
+  '/terms',
+  '/privacy',
+  '/community',
+  '/safety',
+  '/cookie-policy',
+  '/invite-required'
+];
+
 import { useState, useEffect } from 'react';
 import { useAppReady } from '../state/appReady';
 import './LoadingGate.css';
@@ -16,11 +32,20 @@ import './LoadingGate.css';
  * - Sidebar appearing late
  * - Layout shifts
  * - Flash of unstyled content
+ * 
+ * 🔥 PUBLIC ROUTES: Public routes render immediately without blocking
+ * This eliminates the "checking authentication" screen on page load/refresh
  */
 function LoadingGate({ children, requireAuth = false }) {
   const { ready, setReady } = useAppReady();
   const [loadingStage, setLoadingStage] = useState('auth');
   const [progress, setProgress] = useState(0);
+
+  // 🔥 LCP FIX: Check if we're on a public route
+  const isPublicRoute = PUBLIC_ROUTES.some(route => 
+    window.location.pathname === route || 
+    window.location.pathname.startsWith('/legal/')
+  );
 
   useEffect(() => {
     const loadCriticalResources = async () => {
@@ -77,6 +102,12 @@ function LoadingGate({ children, requireAuth = false }) {
     }
   }, [ready, setReady]);
 
+  // 🔥 PUBLIC ROUTES: Render immediately without loading gate
+  // This eliminates the "checking authentication" loading screen
+  if (isPublicRoute) {
+    return children;
+  }
+
   if (!ready) {
     return (
       <div className="loading-gate">
@@ -99,8 +130,6 @@ function LoadingGate({ children, requireAuth = false }) {
     );
   }
 
-  return children;
-}
 
 export default LoadingGate;
 
