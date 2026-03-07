@@ -53,21 +53,23 @@ const VirtualizedFeed = memo(forwardRef(function VirtualizedFeed({
     return () => window.removeEventListener('resize', updateHeight);
   }, [height]);
 
-  const itemCount = posts.length + (loading || (!hasMore && endOfListIndicator) ? 1 : 0);
+  // Safe array handling - prevent undefined errors
+  const safePostsLength = posts?.length || 0;
+  const itemCount = safePostsLength + (loading || (!hasMore && endOfListIndicator) ? 1 : 0);
 
   const { getRowHeight, setRowHeight } = useDynamicRowHeight({
     defaultRowHeight: DEFAULT_POST_HEIGHT,
-    key: posts.length,
+    key: safePostsLength,
   });
 
   const handleRowsRendered = useCallback(({ overscanStopIndex }) => {
-    if (onLoadMore && !loading && hasMore && overscanStopIndex >= posts.length - 1) {
+    if (onLoadMore && !loading && hasMore && overscanStopIndex >= safePostsLength - 1) {
       onLoadMore();
     }
-  }, [onLoadMore, loading, hasMore, posts.length]);
+  }, [onLoadMore, loading, hasMore, safePostsLength]);
 
   const RowComponent = useCallback(({ index, style }) => {
-    if (index >= posts.length) {
+    if (index >= safePostsLength) {
       if (loading && loadingIndicator) return <div style={style}>{loadingIndicator}</div>;
       if (!hasMore && endOfListIndicator) return <div style={style}>{endOfListIndicator}</div>;
       return null;
@@ -79,9 +81,10 @@ const VirtualizedFeed = memo(forwardRef(function VirtualizedFeed({
       }
     };
     return renderItem(post, index, style, measureRef);
-  }, [posts, renderItem, loading, loadingIndicator, hasMore, endOfListIndicator, setRowHeight]);
+  }, [posts, renderItem, loading, loadingIndicator, hasMore, endOfListIndicator, setRowHeight, safePostsLength]);
 
-  if (!posts || posts.length === 0) {
+  // Safe array handling - prevent undefined errors
+  if (!posts || safePostsLength === 0) {
     return emptyState || null;
   }
 
@@ -103,4 +106,3 @@ const VirtualizedFeed = memo(forwardRef(function VirtualizedFeed({
 }));
 
 export default VirtualizedFeed;
-
