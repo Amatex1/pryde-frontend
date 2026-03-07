@@ -141,9 +141,10 @@ function shouldBypassServiceWorker(request) {
       return { bypass: true, reason: 'JSON Accept header' };
     }
 
-    // 🔥 RULE 5: Bypass if cross-origin (only cache same-origin)
+    // 🔥 RULE 5: Bypass if cross-origin - do NOT intercept at all
+    // Let browser handle it natively to preserve cookies/auth
     if (url.origin !== self.location.origin) {
-      return { bypass: true, reason: 'cross-origin' };
+      return { bypass: null, reason: 'cross-origin - let browser handle' };
     }
 
     // 🔥 RULE 6: Only allow static assets
@@ -213,6 +214,13 @@ self.addEventListener('fetch', (event) => {
 
   // Check if request should bypass service worker (API, auth, etc.)
   const bypassResult = shouldBypassServiceWorker(request);
+
+  // For cross-origin requests, DON'T call respondWith at all - let browser handle natively
+  // This preserves cookies/auth headers
+  if (bypassResult.bypass === null) {
+    // Do nothing - let browser handle cross-origin requests natively
+    return;
+  }
 
   if (bypassResult.bypass) {
     // Log bypass in dev mode
