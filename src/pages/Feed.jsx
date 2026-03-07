@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link, useSearchParams, useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import { safeKeys, safeEntries } from '../utils/safeObject';
 import PasskeyBanner from '../components/PasskeyBanner';
 import EmailVerificationBanner from '../components/EmailVerificationBanner';
 import ReportModal from '../components/ReportModal';
@@ -1411,7 +1412,7 @@ function Feed() {
 
     // Handle object format (Comment reactions)
     if (typeof reactions !== 'object') return null;
-    for (const [emoji, userIds] of Object.entries(reactions)) {
+    for (const [emoji, userIds] of safeEntries(reactions)) {
       if (Array.isArray(userIds) && userIds.some(id => id?.toString() === currentUser.id?.toString())) {
         return emoji;
       }
