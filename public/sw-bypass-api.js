@@ -29,32 +29,11 @@
  * - If no, let Workbox handle it (static assets only)
  */
 
-// 🔥 MANDATORY: API endpoints that MUST bypass service worker
+// 🔥 MANDATORY: API endpoints that MUST bypass service worker (SAME-ORIGIN ONLY)
+// Cross-origin APIs are handled by browser natively to preserve cookies
 const API_PATTERNS = [
-  /\/api\//,
-  /\/auth\//,
-  /\/me$/,
-  /\/status$/,
-  /\/notifications$/,
-  /\/counts$/,
-  /\/refresh$/,
-  /\/push\//,
-  /\/users\//,
-  /\/posts\//,
-  /\/messages\//,
-  /\/feed$/,        // Match /feed exactly
-  /\/feed\//,       // Match /feed/ and anything after
-  /\/search\//,
-  /\/upload\//,
-  /\/admin\//,
-  /\/stability\//,
-  /\/session-inspector\//,
-  /\/safe-mode\//,
-  /\/login$/,       // Login page
-  /\/register$/,    // Register page
-  /\/profile\//,    // Profile pages
-  /\/settings\//,   // Settings pages
-  /\/_vercel/       // Vercel-specific paths (speed-insights, analytics, etc.)
+  // Same-origin API paths only (if you have any)
+  // External APIs (api.prydeapp.com) are handled by cross-origin rule below
 ];
 
 // 🔥 ALLOWED: Static asset patterns (same-origin only)
@@ -119,7 +98,13 @@ function shouldBypassServiceWorker(request) {
   try {
     const url = new URL(request.url);
 
-    // 🔥 RULE 1: Bypass if URL matches API pattern
+    // 🔥 RULE 0: FIRST check if cross-origin - do NOT intercept at all
+    // Let browser handle it natively to preserve cookies/auth
+    if (url.origin !== self.location.origin) {
+      return { bypass: null, reason: 'cross-origin - let browser handle' };
+    }
+
+    // 🔥 RULE 1: Bypass if URL matches API pattern (same-origin only)
     const isApiRequest = API_PATTERNS.some(pattern => pattern.test(url.pathname));
     if (isApiRequest) {
       return { bypass: true, reason: 'API endpoint' };
@@ -139,12 +124,6 @@ function shouldBypassServiceWorker(request) {
     const acceptHeader = request.headers.get('Accept');
     if (acceptHeader && acceptHeader.includes('application/json')) {
       return { bypass: true, reason: 'JSON Accept header' };
-    }
-
-    // 🔥 RULE 5: Bypass if cross-origin - do NOT intercept at all
-    // Let browser handle it natively to preserve cookies/auth
-    if (url.origin !== self.location.origin) {
-      return { bypass: null, reason: 'cross-origin - let browser handle' };
     }
 
     // 🔥 RULE 6: Only allow static assets
