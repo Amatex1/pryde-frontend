@@ -80,9 +80,14 @@ class PageErrorBoundary extends Component {
 
             {/* Error details - always shown to aid debugging */}
             {error && (
-              <details className="page-error-details">
+              <details className="page-error-details" open>
                 <summary>Error Details</summary>
-                <pre>{error.toString()}</pre>
+                <pre>{error.toString()}{'\n\n'}{error.stack}</pre>
+                {this.state.errorInfo?.componentStack && (
+                  <pre style={{ marginTop: '8px', fontSize: '0.75em', opacity: 0.8 }}>
+                    Component Stack:{this.state.errorInfo.componentStack}
+                  </pre>
+                )}
               </details>
             )}
 

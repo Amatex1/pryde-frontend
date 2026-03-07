@@ -849,9 +849,9 @@ function Groups() {
 
   // Get user's current reaction emoji for a comment
   const getUserReactionEmoji = (reactions) => {
-    if (!reactions || !currentUser) return null;
+    if (!reactions || !currentUser || typeof reactions !== 'object') return null;
     for (const [emoji, userIds] of Object.entries(reactions)) {
-      if (userIds.some(id => id?.toString() === currentUser.id?.toString())) {
+      if (Array.isArray(userIds) && userIds.some(id => id?.toString() === currentUser.id?.toString())) {
         return emoji;
       }
     }

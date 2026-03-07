@@ -1319,8 +1319,9 @@ function Profile() {
     }
 
     // Handle object format (Comment reactions)
+    if (typeof reactions !== 'object') return null;
     for (const [emoji, userIds] of Object.entries(reactions)) {
-      if (userIds.includes(currentUser.id)) return emoji;
+      if (Array.isArray(userIds) && userIds.includes(currentUser.id)) return emoji;
     }
     return null;
   };

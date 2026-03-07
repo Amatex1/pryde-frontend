@@ -1410,8 +1410,9 @@ function Feed() {
     }
 
     // Handle object format (Comment reactions)
+    if (typeof reactions !== 'object') return null;
     for (const [emoji, userIds] of Object.entries(reactions)) {
-      if (userIds.some(id => id?.toString() === currentUser.id?.toString())) {
+      if (Array.isArray(userIds) && userIds.some(id => id?.toString() === currentUser.id?.toString())) {
         return emoji;
       }
     }
