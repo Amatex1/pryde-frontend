@@ -96,18 +96,21 @@ export default function FeedList({
   const listRef = useRef(null);
   
   // Filter blocked users and memoize
+  // Safe array handling - return empty array if posts is undefined/null
   const filteredPosts = useMemo(() => 
-    posts.filter(post => !blockedUsers?.includes(post.author?._id)),
+    (posts || []).filter(post => !blockedUsers?.includes(post.author?._id)),
     [posts, blockedUsers]
   );
   
   // Use virtualization for large lists (performance optimization)
   // Lowered threshold from 20 to 10 for better performance with 100+ posts
-  const useVirtualization = posts.length > 10;
+  // Safe array handling
+  const useVirtualization = (posts || []).length > 10;
   
   // Hybrid scroll: use virtualization OR regular with load more button
   // Virtualization handles 10-50 posts smoothly, regular for smaller lists
-  const useHybridScroll = posts.length > 50;
+  // Safe array handling
+  const useHybridScroll = (posts || []).length > 50;
   
   // Render a single post item
   const renderPostItem = (post, postIndex, style, measureRef) => {
@@ -225,7 +228,7 @@ export default function FeedList({
     />
   );
 
-  if (fetchingPosts && posts.length === 0) {
+  if (fetchingPosts && (posts || []).length === 0) {
     return (
       <div className="posts-list">
         <PostSkeleton />
@@ -235,7 +238,7 @@ export default function FeedList({
     );
   }
 
-  if (posts.length === 0) {
+  if ((posts || []).length === 0) {
     return emptyState;
   }
 
@@ -365,13 +368,13 @@ export default function FeedList({
         })}
       </div>
 
-      {fetchingPosts && posts.length > 0 && (
+      {fetchingPosts && (posts || []).length > 0 && (
         <div className="load-more-container">
           <div className="loading-indicator">Loading more posts...</div>
         </div>
       )}
 
-      {!fetchingPosts && hasMore && posts.length > 0 && posts.length <= 20 && (
+      {!fetchingPosts && hasMore && (posts || []).length > 0 && (posts || []).length <= 20 && (
         <div className="load-more-container">
           <button
             className="btn-load-more glossy"
@@ -383,7 +386,7 @@ export default function FeedList({
         </div>
       )}
 
-      {!fetchingPosts && !hasMore && posts.length > 0 && (
+      {!fetchingPosts && !hasMore && (posts || []).length > 0 && (
         <div className="end-of-feed">
           <p className="end-of-feed-primary">You're all caught up!</p>
           <p className="end-of-feed-secondary">Take a break, or check back later.</p>
