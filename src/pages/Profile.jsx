@@ -40,7 +40,6 @@ import { useAuth } from '../context/AuthContext';
 import { getImageUrl } from '../utils/imageUrl';
 import { useToast } from '../hooks/useToast';
 import { useMediaQuery } from '../hooks/useMediaQuery';
-import { useBreakpoint } from '../layouts/useBreakpoint';
 import { convertEmojiShortcuts } from '../utils/textFormatting';
 import { setupSocketListeners } from '../utils/socketHelpers';
 import logger from '../utils/logger';
@@ -132,7 +131,6 @@ function Profile() {
   const { toasts, showToast, removeToast } = useToast();
   const isMobile = useMediaQuery('(max-width: 768px)');
   const isMobileSheet = useMediaQuery('(max-width: 600px)'); // For CommentSheet mobile detection
-  const { isDesktopLarge } = useBreakpoint(); // Use centralized breakpoint detection
   const actionsMenuRef = useRef(null);
   const isOwnProfile = currentUser?.username === id;
   const [canSendMessage, setCanSendMessage] = useState(false);
@@ -1433,9 +1431,8 @@ function Profile() {
   // Inline photo reposition handlers
   const handleEditCover = () => {
     if (coverRef.current) {
-      // Use the crop-container's explicit CSS heights (220px mobile / 300px desktop)
       const w = coverRef.current.offsetWidth;
-      const h = isDesktopLarge ? 300 : 220;
+      const h = coverRef.current.offsetHeight;
       setCoverCropSize({ width: w, height: h });
     }
     setEditingType("cover");
@@ -1460,7 +1457,7 @@ function Profile() {
     setPendingPhotoUrl(url);
     if (coverRef.current) {
       const w = coverRef.current.offsetWidth;
-      const h = isDesktopLarge ? 300 : 220;
+      const h = coverRef.current.offsetHeight;
       setCoverCropSize({ width: w, height: h });
     }
     setEditingType('cover');
