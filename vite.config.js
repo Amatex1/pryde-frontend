@@ -9,31 +9,31 @@ export default defineConfig({
     react(),
     // Inject build version into HTML for auto-refresh detection
     buildVersionPlugin(),
-    // 🔥 EMERGENCY: PWA Plugin DISABLED to fix refresh loop
     // PWA Plugin with Workbox
+    // registerType: 'prompt' prevents auto-reload loops caused by autoUpdate +
+    // skipWaiting + clientsClaim activating a new SW mid-session.
+    // sw-bypass-api.js handles skipWaiting/clientsClaim in its own install/activate events.
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['pryde-logo.png', 'robots.txt', 'favicon.ico', 'icons/*.png', 'offline.html'],
       manifest: false, // Use existing manifest.json
-      injectRegister: null, // 🔥 DISABLED: Don't inject registration code
+      injectRegister: 'auto',
 
       // Use generateSW mode with custom strategies
       strategies: 'generateSW',
 
       workbox: {
-        // Import custom service worker code BEFORE Workbox routing
+        // Import custom service worker code BEFORE Workbox routing.
+        // sw-bypass-api.js handles skipWaiting + clientsClaim — do NOT set them here.
         importScripts: ['sw-bypass-api.js'],
 
-        // 🔥 CRITICAL: Only precache static assets (NO HTML!)
-        // HTML must ALWAYS come from network to prevent ERR_FAILED on navigation
+        // Only precache static assets (NO HTML!)
+        // HTML must always come from network to prevent ERR_FAILED on navigation.
         globPatterns: ['**/*.{js,css,ico,png,svg,webp,woff2}'],
 
-        // 🔥 CRITICAL: Disable navigation fallback completely
-        // Navigation requests are handled by browser, not SW
+        // Disable navigation fallback completely — browser handles navigation.
         navigateFallback: null,
 
-        // 🔥 CRITICAL: Exclude ALL API requests and navigation from service worker
-        // This prevents CORS errors, ERR_FAILED loops, and auth issues
         navigateFallbackDenylist: [
           /^\/api\/.*/,
           /^\/auth\/.*/,
@@ -41,28 +41,13 @@ export default defineConfig({
           /^\/me/,
           /^\/notifications/,
           /^\/counts/,
-          /.*/ // Deny all navigation fallback as safety measure
+          /.*/
         ],
 
-        // Runtime caching ONLY for static assets
-        // NO API caching, NO JSON caching, NO authenticated endpoints
+        // Runtime caching for static assets only.
+        // CDN images (cross-origin) are bypassed by sw-bypass-api.js rule 5.
         runtimeCaching: [
-          // 🔥 STATIC ASSETS ONLY: Images from uploads
-          {
-            urlPattern: /^https:\/\/pryde-backend\.onrender\.com\/uploads\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'image-cache',
-              expiration: {
-                maxEntries: 200,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
-          // 🔥 STATIC ASSETS ONLY: Images (same-origin)
+          // Same-origin images (local uploads served through API)
           {
             urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/,
             handler: 'CacheFirst',
@@ -77,7 +62,7 @@ export default defineConfig({
               }
             }
           },
-          // 🔥 STATIC ASSETS ONLY: Fonts
+          // Fonts
           {
             urlPattern: /\.(?:woff2?|ttf|eot)$/,
             handler: 'CacheFirst',
@@ -92,7 +77,7 @@ export default defineConfig({
               }
             }
           },
-          // 🔥 STATIC ASSETS ONLY: JS/CSS bundles
+          // JS/CSS bundles
           {
             urlPattern: /\.(?:js|css)$/,
             handler: 'CacheFirst',
@@ -109,28 +94,14 @@ export default defineConfig({
           }
         ],
 
-        // Clean up outdated caches automatically
         cleanupOutdatedCaches: true,
-
-        // Skip waiting to activate new service worker immediately
-        skipWaiting: true,
-
-        // Claim clients immediately
-        clientsClaim: true,
-
-        // 🔥 CRITICAL: Add custom fetch handler to bypass ALL API requests
-        // This is injected BEFORE Workbox routing to ensure API requests never hit cache
+        // skipWaiting and clientsClaim intentionally omitted — handled by sw-bypass-api.js
         additionalManifestEntries: [],
-
-        // Custom navigation route handler
-        // This ensures API requests are NEVER intercepted by service worker
         ignoreURLParametersMatching: [/.*/]
       },
       devOptions: {
-        enabled: false // Disable in development
-      },
-      // 🔥 EMERGENCY: Disable service worker generation completely
-      disable: true
+        enabled: false
+      }
     }),
     // Bundle analyzer (only in build mode)
     process.env.ANALYZE && visualizer({
