@@ -25,15 +25,12 @@ import {
   emitTyping,
   onUserTyping,
   isSocketConnected,
-  isConnectionReady,
   getSocket
 } from '../utils/socket';
 import { setupSocketListeners } from '../utils/socketHelpers';
 import { compressImage } from '../utils/compressImage';
 import { uploadWithProgress } from '../utils/uploadWithProgress';
 import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
-import { withOptimisticUpdate } from '../utils/consistencyGuard';
-import { debounce } from '../utils/debounce';
 import { quietCopy } from '../config/uiCopy';
 import './Messages.css';
 import '../styles/themes/messages.css';
@@ -53,8 +50,7 @@ const compareIds = (id1, id2) => {
 
 function Messages() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { modalState, closeModal, showAlert, showConfirm } = useModal();
-  const { onlineUsers, isUserOnline } = useOnlineUsers();
+  const { onlineUsers } = useOnlineUsers();
   const { user: currentUser, authReady } = useAuth(); // Use centralized auth context
   // Get menu handler from AppLayout outlet context
   const { onMenuOpen } = useOutletContext() || {};
@@ -104,7 +100,6 @@ function Messages() {
   const [editMessageText, setEditMessageText] = useState('');
   const [activeTab, setActiveTab] = useState('all'); // 'all' or 'unread' or 'archived'
   const [replyingTo, setReplyingTo] = useState(null); // Message being replied to
-  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null); // Track which dropdown is open
   const [archivedConversations, setArchivedConversations] = useState([]);
   const [mutedConversations, setMutedConversations] = useState([]);
@@ -1465,16 +1460,6 @@ function Messages() {
     }
   };
 
-  const handleMarkAsRead = async (userId) => {
-    try {
-      await api.delete(`/messages/conversations/${userId}/mark-unread`);
-
-      // Refresh conversations
-      fetchConversations();
-    } catch (error) {
-      logger.error('Failed to mark as read:', error);
-    }
-  };
 
   const handleDeleteConversation = async (userId) => {
     const confirmed = await showConfirm(
@@ -1656,7 +1641,7 @@ function Messages() {
               ) : (
                 <>
                   {/* Group Chats - Hidden for Plan A */}
-                  {false && groupChats.length > 0 && (
+                  {typeof window === 'undefined' && groupChats.length > 0 && (
                     <>
                       <div className="section-label">Groups</div>
                       {groupChats

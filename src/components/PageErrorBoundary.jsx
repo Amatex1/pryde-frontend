@@ -11,6 +11,7 @@
 
 import { Component } from 'react';
 import logger from '../utils/logger';
+import { captureException } from '../utils/sentry';
 import './PageErrorBoundary.css';
 
 class PageErrorBoundary extends Component {
@@ -29,12 +30,14 @@ class PageErrorBoundary extends Component {
 
   componentDidCatch(error, errorInfo) {
     const { pageName = 'Page' } = this.props;
-    
+
     logger.error(`PageErrorBoundary [${pageName}] caught error:`, error);
-    console.error(`🔴 [${pageName}] Error:`, error);
-    console.error(`🔴 [${pageName}] Component Stack:`, errorInfo?.componentStack);
+    console.error(`[${pageName}] Error:`, error);
+    console.error(`[${pageName}] Component Stack:`, errorInfo?.componentStack);
 
     this.setState({ error, errorInfo });
+
+    captureException(error, { component: `PageErrorBoundary:${pageName}` });
   }
 
   handleRetry = () => {
@@ -75,8 +78,8 @@ class PageErrorBoundary extends Component {
               {pageName} couldn't load properly. This section may be temporarily unavailable.
             </p>
 
-            {/* Error details in dev mode */}
-            {process.env.NODE_ENV === 'development' && error && (
+            {/* Error details - always shown to aid debugging */}
+            {error && (
               <details className="page-error-details">
                 <summary>Error Details</summary>
                 <pre>{error.toString()}</pre>
