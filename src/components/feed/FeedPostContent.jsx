@@ -163,16 +163,22 @@ const FeedPostContent = memo(function FeedPostContent({
                           {media.type === 'video' ? (
                             <video src={getImageUrl(media.url)} controls />
                           ) : (
-                            <OptimizedImage
-                              src={getImageUrl(media.url)}
-                              alt={`Post media ${index + 1}`}
-                              onClick={() => onPhotoClick(getImageUrl(media.url))}
-                              style={{ cursor: 'pointer' }}
-                              fetchPriority={isFirstPost && index === 0 ? 'high' : undefined}
-                              loading={shouldEagerLoad && index === 0 ? 'eager' : 'lazy'}
-                              responsiveSizes={media.sizes}
-                              imageSize="feed"
-                            />
+                            <a
+                              href={getImageUrl(media.url)}
+                              onClick={(e) => { e.preventDefault(); onPhotoClick(getImageUrl(media.url)); }}
+                              aria-label={`View photo ${index + 1}`}
+                              style={{ display: 'contents' }}
+                            >
+                              <OptimizedImage
+                                src={getImageUrl(media.url)}
+                                alt={`Post media ${index + 1}`}
+                                style={{ cursor: 'pointer' }}
+                                fetchPriority={isFirstPost && index === 0 ? 'high' : undefined}
+                                loading={shouldEagerLoad && index === 0 ? 'eager' : 'lazy'}
+                                responsiveSizes={media.sizes}
+                                imageSize="feed"
+                              />
+                            </a>
                           )}
                         </div>
                       ))}

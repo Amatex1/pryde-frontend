@@ -5,6 +5,20 @@ import { VitePWA } from 'vite-plugin-pwa'
 import buildVersionPlugin from './vite-plugin-build-version.js'
 
 export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test-setup.js',
+    include: ['src/**/*.{test,spec}.{js,jsx}'],
+    exclude: ['node_modules', 'dist'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      include: ['src/components/**', 'src/utils/**', 'src/hooks/**'],
+      exclude: ['src/**/*.test.*', 'src/test-setup.js'],
+      thresholds: { lines: 50, functions: 50, branches: 40 },
+    },
+  },
   plugins: [
     react(),
     // Inject build version into HTML for auto-refresh detection

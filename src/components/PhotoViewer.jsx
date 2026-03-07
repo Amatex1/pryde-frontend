@@ -31,11 +31,10 @@ function PhotoViewer({ imageUrl, onClose }) {
   }, []);
 
   return createPortal(
-    <button
-      type="button"
+    <div
       className="photo-viewer-overlay"
       onClick={onClose}
-      aria-label="Close photo viewer"
+      role="presentation"
     >
       <button className="photo-viewer-close" onClick={onClose} aria-label="Close">
         ✕
@@ -67,7 +66,7 @@ function PhotoViewer({ imageUrl, onClose }) {
           />
         )}
       </div>
-    </button>,
+    </div>,
     document.body
   );
 }

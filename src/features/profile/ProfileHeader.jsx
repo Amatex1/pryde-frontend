@@ -54,16 +54,22 @@ export default function ProfileHeader({
       {/* Cover Photo - LCP FIX: Use OptimizedImage instead of background-image */}
       <div className="cover-photo">
         {user.coverPhoto ? (
-          <OptimizedImage
-            src={getImageUrl(user.coverPhoto)}
-            alt={`${user.displayName || user.username}'s cover photo`}
-            className="cover-photo-image"
-            onClick={() => onPhotoClick?.(getImageUrl(user.coverPhoto))}
-            loading="eager"
-            fetchPriority="high"
-            aspectRatio="3/1"
-            style={{ cursor: 'pointer', width: '100%', height: '100%', objectFit: 'cover' }}
-          />
+          <a
+            href={getImageUrl(user.coverPhoto)}
+            onClick={(e) => { e.preventDefault(); onPhotoClick?.(getImageUrl(user.coverPhoto)); }}
+            aria-label={`View ${user.displayName || user.username}'s cover photo`}
+            style={{ display: 'contents' }}
+          >
+            <OptimizedImage
+              src={getImageUrl(user.coverPhoto)}
+              alt={`${user.displayName || user.username}'s cover photo`}
+              className="cover-photo-image"
+              loading="eager"
+              fetchPriority="high"
+              aspectRatio="3/1"
+              style={{ cursor: 'pointer', width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </a>
         ) : (
           <div className="cover-placeholder shimmer"></div>
         )}
@@ -84,16 +90,22 @@ export default function ProfileHeader({
       <div className="profile-info">
         <div className="profile-avatar-wrapper">
           {user.profilePhoto ? (
-            <OptimizedImage
-              src={getImageUrl(user.profilePhoto)}
-              alt={`${user.displayName || user.username}'s profile photo`}
-              className="profile-avatar-image"
-              onClick={() => onPhotoClick?.(getImageUrl(user.profilePhoto))}
-              loading="eager"
-              fetchPriority="high"
-              aspectRatio="1/1"
-              style={{ cursor: 'pointer', width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
-            />
+            <a
+              href={getImageUrl(user.profilePhoto)}
+              onClick={(e) => { e.preventDefault(); onPhotoClick?.(getImageUrl(user.profilePhoto)); }}
+              aria-label={`View ${user.displayName || user.username}'s profile photo`}
+              style={{ display: 'contents' }}
+            >
+              <OptimizedImage
+                src={getImageUrl(user.profilePhoto)}
+                alt={`${user.displayName || user.username}'s profile photo`}
+                className="profile-avatar-image"
+                loading="eager"
+                fetchPriority="high"
+                aspectRatio="1/1"
+                style={{ cursor: 'pointer', width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+              />
+            </a>
           ) : (
             <span>{user.displayName?.charAt(0).toUpperCase()}</span>
           )}
