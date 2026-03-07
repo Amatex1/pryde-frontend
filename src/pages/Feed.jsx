@@ -846,7 +846,7 @@ function Feed() {
 
       // ⚡ PHASE 2C: Destroy batchers to prevent memory leaks
       if (socketBatchersRef.current) {
-        Object.values(socketBatchersRef.current).forEach(batcher => batcher?.destroy?.());
+        Object.values(socketBatchersRef.current || {}).forEach(batcher => batcher?.destroy?.());
         socketBatchersRef.current = null;
       }
 
