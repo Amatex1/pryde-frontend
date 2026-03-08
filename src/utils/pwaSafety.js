@@ -89,6 +89,21 @@ export async function isPWAEnabled() {
 }
 
 /**
+ * Check if site is in maintenance mode
+ * 
+ * @returns {Promise<{enabled: boolean, message: string|null, eta: string|null}>}
+ */
+export async function checkMaintenanceMode() {
+  const status = await fetchVersionStatus();
+  
+  return {
+    enabled: status.maintenanceMode === true,
+    message: status.message,
+    eta: status.maintenanceETA
+  };
+}
+
+/**
  * Check if frontend version is compatible with backend
  * 
  * @returns {Promise<{compatible: boolean, reason: string|null}>}
@@ -147,6 +162,16 @@ export async function executePWASafetyChecks() {
   try {
     const status = await fetchVersionStatus();
     
+    // Check 0: Maintenance Mode (highest priority - show maintenance page)
+    if (status.maintenanceMode === true) {
+      logger.warn('[PWA Safety] 🔧 MAINTENANCE MODE ACTIVE');
+      return {
+        safe: false,
+        action: 'maintenance',
+        message: status.message || 'Site is under maintenance'
+      };
+    }
+    
     // Check 1: PWA Kill-Switch
     if (status.pwaEnabled === false) {
       logger.warn('[PWA Safety] 🔥 PWA is DISABLED via kill-switch');
@@ -157,7 +182,18 @@ export async function executePWASafetyChecks() {
       };
     }
     
-    // Check 2: Force Reload
+    // Check 2: Maintenance Mode (full site)
+    if (status.maintenanceMode === true) {
+      logger.warn('[PWA Safety] 🔧 Maintenance mode is ENABLED');
+      return {
+        safe: false,
+        action: 'maintenance',
+        message: status.message || 'Site is under maintenance',
+        eta: status.maintenanceETA || null
+      };
+    }
+    
+    // Check 3: Force Reload
     if (status.forceReload === true) {
       logger.warn('[PWA Safety] 🔄 Force reload requested by backend');
       return {

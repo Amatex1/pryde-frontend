@@ -1,0 +1,116 @@
+/**
+ * Maintenance Banner Styles
+ */
+
+.maintenance-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.maintenance-banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.maintenance-icon {
+  font-size: 1.5rem;
+}
+
+.maintenance-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.maintenance-text strong {
+  font-size: 0.95rem;
+  color: #000;
+}
+
+.maintenance-message {
+  font-size: 0.85rem;
+  color: #333;
+}
+
+.maintenance-eta {
+  font-size: 0.8rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.maintenance-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: 16px;
+}
+
+.maintenance-btn-disable {
+  padding: 6px 12px;
+  background: #000;
+  color: #ffc107;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.maintenance-btn-disable:hover:not(:disabled) {
+  background: #333;
+}
+
+.maintenance-btn-disable:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.maintenance-btn-dismiss {
+  padding: 6px 12px;
+  background: transparent;
+  color: #333;
+  border: 1px solid #333;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.maintenance-btn-dismiss:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 600px) {
+  .maintenance-banner-content {
+    flex-wrap: wrap;
+    padding: 10px 12px;
+  }
+
+  .maintenance-actions {
+    margin-left: 0;
+    margin-top: 8px;
+    width: 100%;
+    justify-content: center;
+  }
+}

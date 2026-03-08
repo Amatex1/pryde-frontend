@@ -20,6 +20,7 @@ import { isPWA } from './utils/pwa';
 import { initThemeListener, getThemePreference, setThemeMode } from './utils/themeManager';
 import DebugOverlay from './components/DebugOverlay';
 import OfflineBanner from './components/OfflineBanner';
+import MaintenanceBanner from './components/MaintenanceBanner';
 import OnboardingTour from './components/onboarding/OnboardingTour';
 import QuietReturnToast from './components/onboarding/QuietReturnToast';
 
@@ -444,7 +445,8 @@ function AppContent() {
 
       <DebugOverlay />
       <OfflineBanner />
-    </AuthGate>
+      <MaintenanceBanner />
+    </AuthGate> REPLACE
   );
 }
 
@@ -494,6 +496,30 @@ function App() {
         if (!safetyResult.safe) {
           logger.warn('[App] PWA safety check failed:', safetyResult.action);
           switch (safetyResult.action) {
+            case 'maintenance': {
+              // Check for admin bypass - admins can continue using the site during maintenance
+              const isAdminBypass = localStorage.getItem('admin_maintenance_bypass') === 'true';
+              const userRole = localStorage.getItem('user_role');
+              const isAdmin = userRole === 'admin' || userRole === 'super_admin';
+              
+              if (isAdminBypass || isAdmin) {
+                logger.warn('[App] ⚠️ Admin bypass - showing maintenance warning banner');
+                // Store maintenance info for the banner
+                sessionStorage.setItem('maintenance_warning', JSON.stringify({
+                  message: safetyResult.message,
+                  eta: safetyResult.eta
+                }));
+                // Continue with app - show warning banner instead
+                return;
+              }
+              
+              // Redirect to maintenance page with optional message
+              const maintenanceUrl = safetyResult.message 
+                ? `/maintenance.html?message=${encodeURIComponent(safetyResult.message)}`
+                : '/maintenance.html';
+              window.location.href = maintenanceUrl;
+              return;
+            }
             case 'disable_pwa':
               disablePWAAndReload(safetyResult.message);
               return;

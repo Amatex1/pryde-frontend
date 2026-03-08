@@ -42,6 +42,8 @@ function Admin() {
   const [broadcastMessage, setBroadcastMessage] = useState('');
   const [broadcastSending, setBroadcastSending] = useState(false);
   const [broadcastResult, setBroadcastResult] = useState(null);
+  const [maintenanceStatus, setMaintenanceStatus] = useState(null);
+  const [maintenanceLoading, setMaintenanceLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
@@ -297,6 +299,16 @@ function Admin() {
         ]);
         setModerationSettings(settingsRes.data);
         setModerationHistory(historyRes.data.history || []);
+      } else if (activeTab === 'maintenance') {
+        // Load maintenance status
+        try {
+          const response = await api.get('/admin/debug/maintenance/status');
+          setMaintenanceStatus(response.data);
+        } catch (error) {
+          console.error('Load maintenance status error:', error);
+          // Set default state if endpoint doesn't exist yet
+          setMaintenanceStatus({ enabled: false, message: null });
+        }
       }
     } catch (error) {
       console.error('Load data error:', error);
@@ -685,6 +697,12 @@ function Admin() {
           >
             🔒 Security
           </button>
+          <button
+            className={`admin-nav-item ${activeTab === 'maintenance' ? 'active' : ''}`}
+            onClick={() => handleNavClick('maintenance')}
+          >
+            🔧 Maintenance
+          </button>
         </div>
 
         {currentUser?.role === 'super_admin' && (
@@ -771,6 +789,121 @@ function Admin() {
             showAlert={showAlert}
             showConfirm={showConfirm}
           />
+        )}
+        {activeTab === 'maintenance' && (
+          <section id="content-maintenance" aria-labelledby="tab-maintenance">
+            <div className="admin-tab-content">
+              <h2 className="admin-section-heading">🔧 Maintenance Mode</h2>
+              <p className="admin-section-description">
+                Enable maintenance mode to temporarily redirect all users to a maintenance page. Use this during upgrades or critical updates.
+              </p>
+
+              {/* Status Card */}
+              <div style={{
+                background: 'var(--card-surface)',
+                padding: '1.5rem',
+                borderRadius: '12px',
+                marginBottom: '1.5rem',
+                border: `2px solid ${maintenanceStatus?.enabled ? '#ef4444' : '#10b981'}`
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                  <span style={{ fontSize: '2rem' }}>
+                    {maintenanceStatus?.enabled ? '🚫' : '✅'}
+                  </span>
+                  <div>
+                    <h3 style={{ margin: 0 }}>
+                      {maintenanceStatus?.enabled ? 'Maintenance Mode Active' : 'Site is Live'}
+                    </h3>
+                    {maintenanceStatus?.enabled && maintenanceStatus.message && (
+                      <p style={{ margin: '0.5rem 0 0', color: 'var(--text-muted)' }}>
+                        Message: {maintenanceStatus.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Toggle Button */}
+              <div style={{ marginBottom: '1.5rem' }}>
+                {maintenanceStatus?.enabled ? (
+                  <button
+                    onClick={async () => {
+                      setMaintenanceLoading(true);
+                      try {
+                        await api.post('/admin/debug/maintenance/disable');
+                        setMaintenanceStatus({ enabled: false, message: null });
+                        showAlert('Maintenance mode disabled', 'Success');
+                      } catch (error) {
+                        showAlert('Failed to disable maintenance mode', 'Error');
+                      } finally {
+                        setMaintenanceLoading(false);
+                      }
+                    }}
+                    disabled={maintenanceLoading}
+                    style={{
+                      padding: '1rem 2rem',
+                      background: 'linear-gradient(135deg, #10b981, #059669)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '12px',
+                      cursor: maintenanceLoading ? 'not-allowed' : 'pointer',
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      opacity: maintenanceLoading ? 0.7 : 1
+                    }}
+                  >
+                    {maintenanceLoading ? 'Disabling...' : '🟢 Disable Maintenance Mode'}
+                  </button>
+                ) : (
+                  <button
+                    onClick={async () => {
+                      const message = await showPrompt(
+                        'Enter a message to show users (optional):',
+                        'Enable Maintenance Mode',
+                        'Message',
+                        'We are performing scheduled maintenance'
+                      );
+                      setMaintenanceLoading(true);
+                      try {
+                        await api.post('/admin/debug/maintenance/enable', { message: message || undefined });
+                        setMaintenanceStatus({ enabled: true, message: message || 'We are performing scheduled maintenance' });
+                        showAlert('Maintenance mode enabled', 'Success');
+                      } catch (error) {
+                        showAlert('Failed to enable maintenance mode', 'Error');
+                      } finally {
+                        setMaintenanceLoading(false);
+                      }
+                    }}
+                    disabled={maintenanceLoading}
+                    style={{
+                      padding: '1rem 2rem',
+                      background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '12px',
+                      cursor: maintenanceLoading ? 'not-allowed' : 'pointer',
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      opacity: maintenanceLoading ? 0.7 : 1
+                    }}
+                  >
+                    {maintenanceLoading ? 'Enabling...' : '🔴 Enable Maintenance Mode'}
+                  </button>
+                )}
+              </div>
+
+              {/* Info Box */}
+              <div className="broadcast-info-box">
+                <strong>How it works:</strong>
+                <ul>
+                  <li>When enabled, all users will be redirected to a maintenance page.</li>
+                  <li>Admins will still be able to access the site normally.</li>
+                  <li>The maintenance page auto-refreshes every 30 seconds to check if the site is back.</li>
+                  <li>Make sure to disable maintenance mode when you're done!</li>
+                </ul>
+              </div>
+            </div>
+          </section>
         )}
         {activeTab === 'broadcast' && currentUser?.role === 'super_admin' && (
           <section id="content-broadcast" aria-labelledby="tab-broadcast">
