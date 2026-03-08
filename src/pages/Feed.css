@@ -4398,25 +4398,33 @@ label.btn-media-upload:disabled {
   overflow: hidden;
 }
 
-/* Single images: CONTAIN, not crop */
+/* Single images: shrink box to fit the image, no letterboxing */
 .post-media-grid.single .post-media-item {
-  max-height: 420px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  background: transparent;
 }
 
 .post-media-grid.single .post-media-item img {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   height: auto;
   max-height: 420px;
-  object-fit: contain; /* NEVER crop - show full image */
   display: block;
   cursor: pointer;
   transition: opacity 0.2s ease;
 }
 
-/* Multiple images: CONTAIN, never crop */
+/* Multiple images: align-items start so cells don't stretch taller than image */
+.post-media-grid.double,
+.post-media-grid.multiple {
+  align-items: start;
+}
+
 .post-media-grid.double .post-media-item,
 .post-media-grid.multiple .post-media-item {
-  max-height: 300px;
+  background: transparent;
 }
 
 .post-media-grid.double .post-media-item img,
@@ -4491,17 +4499,13 @@ label.btn-media-upload:disabled {
   }
 
   /* MOBILE: Images never exceed 50% of viewport height */
-  .post-media-grid.single .post-media-item {
-    max-height: 50vh; /* Never exceed half viewport */
-  }
-
   .post-media-grid.single .post-media-item img {
-    max-height: 50vh; /* Enforce on image too */
+    max-height: 50vh;
   }
 
-  .post-media-grid.double .post-media-item,
-  .post-media-grid.multiple .post-media-item {
-    max-height: 200px; /* Smaller on mobile */
+  .post-media-grid.double .post-media-item img,
+  .post-media-grid.multiple .post-media-item img {
+    max-height: 200px;
   }
 
   /* Feed cards feel stackable on mobile */

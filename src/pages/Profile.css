@@ -159,36 +159,68 @@
 .profile-page .post-media-grid.double,
 .post-media-grid.double {
   grid-template-columns: repeat(2, 1fr) !important;
+  align-items: start !important;
 }
 
 .profile-page .post-media-grid.multiple,
 .post-media-grid.multiple {
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  align-items: start !important;
 }
 
 .profile-page .post-media-item,
 .post-media-item {
   position: relative !important;
-  width: 100% !important;
-  background: var(--bg-subtle) !important;
   border-radius: 8px !important;
   overflow: hidden !important;
 }
 
+/* Single: container hugs the image, no letterbox */
 .profile-page .post-media-grid.single .post-media-item,
 .post-media-grid.single .post-media-item {
-  max-height: 600px !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  background: transparent !important;
 }
 
+/* Multi: cells don't stretch taller than their image */
+.profile-page .post-media-grid.double .post-media-item,
+.profile-page .post-media-grid.multiple .post-media-item,
+.post-media-grid.double .post-media-item,
+.post-media-grid.multiple .post-media-item {
+  width: 100% !important;
+  background: transparent !important;
+}
+
+/* Single image sizing */
+.profile-page .post-media-grid.single .post-media-item img,
+.post-media-grid.single .post-media-item img {
+  width: auto !important;
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: 600px !important;
+  display: block !important;
+  cursor: pointer !important;
+  transition: opacity 0.2s ease !important;
+}
+
+/* Multi image sizing */
 .profile-page .post-media-item img,
 .profile-page .post-media-item video,
 .post-media-item img,
 .post-media-item video {
-  width: 100% !important;
   height: auto !important;
   object-fit: contain !important; /* NEVER crop - show full image */
   cursor: pointer !important;
   transition: opacity 0.2s ease !important;
+}
+
+.profile-page .post-media-grid.double .post-media-item img,
+.profile-page .post-media-grid.multiple .post-media-item img,
+.post-media-grid.double .post-media-item img,
+.post-media-grid.multiple .post-media-item img {
+  width: 100% !important;
 }
 
 .profile-page .post-media-item img:hover,
