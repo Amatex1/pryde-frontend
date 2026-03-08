@@ -1,4 +1,5 @@
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useRef } from 'react';
+import { useAutoResize } from '../../hooks/useAutoResize';
 import { X, Send } from 'lucide-react';
 import CommentThread from '../CommentThread';
 import GifPicker from '../GifPicker';
@@ -56,6 +57,9 @@ const FeedPostComments = memo(function FeedPostComments({
   replyIsAnonymous,
   onReplyIsAnonymousChange,
 }) {
+  const replyTextareaRef = useRef(null);
+  useAutoResize(replyTextareaRef, replyText);
+
   // Build context value once per render — all handlers + state CommentThread needs
   const contextValue = useMemo(() => ({
     currentUser,
@@ -92,9 +96,10 @@ const FeedPostComments = memo(function FeedPostComments({
   const hiddenCount = Math.max(0, topLevelComments.length - 3);
   const visibleComments = topLevelComments.slice(-3);
 
-  // "Replying to @username" indicator
+  // "Replying to @username" indicator — search top-level comments first, then replies
   const replyTarget = replyingToComment?.commentId
-    ? comments.find((c) => String(c._id) === String(replyingToComment.commentId))
+    ? (comments.find((c) => String(c._id) === String(replyingToComment.commentId))
+        ?? Object.values(commentReplies).flat().find((r) => String(r._id) === String(replyingToComment.commentId)))
     : null;
   const replyTargetName =
     replyTarget?.authorId?.displayName ||
@@ -149,14 +154,17 @@ const FeedPostComments = memo(function FeedPostComments({
                 <span>{currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
               )}
             </div>
-            <input
+            <textarea
+              ref={replyTextareaRef}
               id={`feed-reply-${replyingToComment.commentId}`}
               name="reply"
-              type="text"
               value={replyText}
               onChange={(e) => onReplyTextChange(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSubmitReply(e); } }}
               placeholder={replyGif ? "Caption, if you'd like" : "Write a reply..."}
               className="reply-input"
+              enterKeyHint="send"
+              rows={1}
               autoFocus
             />
           </div>

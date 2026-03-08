@@ -801,9 +801,9 @@ function Groups() {
   };
 
   // Handle reply to comment
-  const handleReplyToComment = (postId, commentId) => {
+  const handleReplyToComment = (postId, commentId, mentionUsername = null) => {
     setReplyingToComment({ postId, commentId });
-    setReplyText('');
+    setReplyText(mentionUsername ? `@${mentionUsername} ` : '');
     setReplyGif(null);
   };
 

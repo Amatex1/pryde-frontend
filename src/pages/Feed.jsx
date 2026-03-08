@@ -2003,9 +2003,9 @@ function Feed() {
     }
   }, [showConfirm, showAlert]);
 
-  const handleReplyToComment = useCallback((postId, commentId) => {
+  const handleReplyToComment = useCallback((postId, commentId, mentionUsername = null) => {
     setReplyingToComment({ postId, commentId });
-    setReplyText('');
+    setReplyText(mentionUsername ? `@${mentionUsername} ` : '');
   }, []);
 
   const handleSubmitReply = useCallback(async (e) => {
@@ -2686,9 +2686,9 @@ function Feed() {
               <div className="reply-input-header">
                 <span>↩ Replying to <strong>
                   {(() => {
-                    const target = postComments[commentSheetOpen]?.find(
-                      c => String(c._id) === String(replyingToComment.commentId)
-                    );
+                    const target =
+                      postComments[commentSheetOpen]?.find(c => String(c._id) === String(replyingToComment.commentId))
+                      ?? Object.values(commentReplies).flat().find(r => String(r._id) === String(replyingToComment.commentId));
                     return target?.authorId?.displayName || target?.authorId?.username || 'comment';
                   })()}
                 </strong></span>
@@ -2719,12 +2719,18 @@ function Feed() {
                     <span>{currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
                   )}
                 </div>
-                <input
-                  type="text"
+                <textarea
                   value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
+                  onChange={(e) => {
+                    setReplyText(e.target.value);
+                    e.target.style.height = 'auto';
+                    e.target.style.height = `${e.target.scrollHeight}px`;
+                  }}
+                  onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmitReply(e); } }}
                   placeholder={replyGif ? "Caption, if you'd like" : "Write a reply..."}
-                  className="comment-input"
+                  className="comment-input reply-textarea"
+                  enterKeyHint="send"
+                  rows={1}
                   autoFocus
                 />
                 <button

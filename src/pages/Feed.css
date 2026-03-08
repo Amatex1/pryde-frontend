@@ -4663,7 +4663,7 @@ label.btn-media-upload:disabled {
 .reply-input-wrapper,
 .reply-composer-wrapper {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   width: 100%;
 }
@@ -4678,6 +4678,7 @@ label.btn-media-upload:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 2px;
 }
 
 .reply-user-avatar img {
@@ -4693,21 +4694,28 @@ label.btn-media-upload:disabled {
 }
 
 .reply-input,
-.reply-composer input {
+.reply-composer input,
+.reply-textarea {
   flex: 1;
-  height: 36px;
-  padding: 0 12px;
-  border-radius: 999px;
+  min-height: 36px;
+  max-height: 120px;
+  padding: 8px 12px;
+  border-radius: 18px;
   border: 1px solid var(--border-light);
   outline: none;
   font-size: var(--font-size-sm);
+  font-family: inherit;
+  line-height: 1.5;
   color: var(--text-main);
   background: var(--card-surface);
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  resize: none;
+  overflow-y: auto;
 }
 
 .reply-input:focus,
-.reply-composer input:focus {
+.reply-composer input:focus,
+.reply-textarea:focus {
   border-color: var(--pryde-purple);
   box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.1);
 }

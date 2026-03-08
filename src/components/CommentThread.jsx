@@ -188,7 +188,11 @@ function CommentRow({ item, isReply = false, parentCommentId = null, openMenuId,
           />
           <button
             className="comment-action-btn"
-            onClick={() => handleReplyToComment(postId, replyTargetId)}
+            onClick={() => handleReplyToComment(
+              postId,
+              replyTargetId,
+              isReply ? (item.authorId?.username || item.authorId?.displayName) : null
+            )}
           >
             Reply
           </button>

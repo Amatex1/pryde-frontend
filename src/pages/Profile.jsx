@@ -1255,9 +1255,9 @@ function Profile() {
     }
   };
 
-  const handleReplyToComment = (postId, commentId) => {
+  const handleReplyToComment = (postId, commentId, mentionUsername = null) => {
     setReplyingToComment({ postId, commentId });
-    setReplyText('');
+    setReplyText(mentionUsername ? `@${mentionUsername} ` : '');
   };
 
   const handleSubmitReply = async (e) => {
