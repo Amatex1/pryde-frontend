@@ -92,8 +92,7 @@ const VirtualizedFeed = memo(forwardRef(function VirtualizedFeed({
     <div ref={containerRef} className="virtualized-feed-container">
       <List
         listRef={listRef}
-        height={containerHeight}
-        width={width}
+        style={{ height: containerHeight, width }}
         rowCount={itemCount}
         rowHeight={getRowHeight}
         rowComponent={RowComponent}

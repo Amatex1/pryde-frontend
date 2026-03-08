@@ -103,9 +103,12 @@ export default function FeedList({
   );
   
   // Use virtualization for large lists (performance optimization)
-  // Lowered threshold from 20 to 10 for better performance with 100+ posts
+  // DISABLED: react-window v2 auto-sizes to container and requires explicit
+  // container height via style prop, not height prop. The VirtualizedFeed component
+  // passes height as a prop which is ignored by v2's List, causing empty renders.
+  // Disabled until VirtualizedFeed is updated for react-window v2 API.
   // Safe array handling
-  const useVirtualization = (posts || []).length > 10;
+  const useVirtualization = false; // was: (posts || []).length > 10;
   
   // Hybrid scroll: use virtualization OR regular with load more button
   // Virtualization handles 10-50 posts smoothly, regular for smaller lists
