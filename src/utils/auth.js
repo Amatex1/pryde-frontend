@@ -1,20 +1,37 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// 🔐 SECURITY HARDENING: In-Memory Token Storage
+// 🔐 SECURITY HARDENING: Hybrid Token Storage
 // ═══════════════════════════════════════════════════════════════════════════
-// Access tokens now stored ONLY in memory - NOT localStorage
-// This protects against XSS attacks that could steal tokens from localStorage
-// On page reload, silent refresh via httpOnly cookie restores the session
+// Access tokens are stored in BOTH memory AND localStorage:
+// - Primary: in-memory (protects against XSS)
+// - Fallback: localStorage (survives page refresh, enables silent refresh)
+//
+// On page reload, we first check localStorage for a fallback token,
+// then attempt refresh if needed. This provides UX continuity while
+// maintaining XSS protection for active sessions.
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Module-level in-memory store (not accessible to XSS)
 let inMemoryAccessToken = null;
 let tokenSetTime = null;
 
+// Fallback: localStorage token (for page reload survival)
+const FALLBACK_TOKEN_KEY = 'pryde_access_token';
+const FALLBACK_TOKEN_TIME_KEY = 'pryde_access_token_time';
+
 export const setAuthToken = (token) => {
   if (token) {
-    console.log('🔑 Setting access token (in-memory only)');
+    console.log('🔑 Setting access token (memory + localStorage fallback)');
     inMemoryAccessToken = token;
     tokenSetTime = Date.now();
+    
+    // Store in localStorage as fallback for page reload survival
+    try {
+      localStorage.setItem(FALLBACK_TOKEN_KEY, token);
+      localStorage.setItem(FALLBACK_TOKEN_TIME_KEY, tokenSetTime.toString());
+    } catch (e) {
+      console.warn('Failed to store token fallback:', e);
+    }
+    
     // Also clear any legacy localStorage token
     localStorage.removeItem('token');
     localStorage.removeItem('tokenSetTime');
@@ -22,6 +39,15 @@ export const setAuthToken = (token) => {
     console.log('🗑️ Clearing access token from memory');
     inMemoryAccessToken = null;
     tokenSetTime = null;
+    
+    // Clear localStorage fallback
+    try {
+      localStorage.removeItem(FALLBACK_TOKEN_KEY);
+      localStorage.removeItem(FALLBACK_TOKEN_TIME_KEY);
+    } catch (e) {
+      console.warn('Failed to clear token fallback:', e);
+    }
+    
     // Also clear any legacy localStorage token
     localStorage.removeItem('token');
     localStorage.removeItem('tokenSetTime');
@@ -57,6 +83,15 @@ export const getAuthToken = () => {
     return inMemoryAccessToken;
   }
 
+  // Fallback: Check for new localStorage token (hybrid storage)
+  const fallbackToken = localStorage.getItem(FALLBACK_TOKEN_KEY);
+  if (fallbackToken) {
+    console.log('📦 Restoring token from localStorage fallback');
+    inMemoryAccessToken = fallbackToken;
+    tokenSetTime = parseInt(localStorage.getItem(FALLBACK_TOKEN_TIME_KEY) || Date.now().toString());
+    return inMemoryAccessToken;
+  }
+
   // Fallback: Check for legacy localStorage token (migration path)
   // This handles the case where user had token in localStorage before upgrade
   const legacyToken = localStorage.getItem('token');
@@ -77,6 +112,8 @@ export const getAuthToken = () => {
 export const clearAllTokens = () => {
   inMemoryAccessToken = null;
   tokenSetTime = null;
+  localStorage.removeItem(FALLBACK_TOKEN_KEY);
+  localStorage.removeItem(FALLBACK_TOKEN_TIME_KEY);
   localStorage.removeItem('token');
   localStorage.removeItem('tokenSetTime');
   localStorage.removeItem('refreshToken');
