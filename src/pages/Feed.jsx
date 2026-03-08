@@ -234,7 +234,10 @@ function Feed() {
         });
       }
     });
-  }, [posts, postComments, fetchCommentsForPost]);
+  // Note: fetchCommentsForPost is stable (empty deps useCallback) and defined later
+  // in the component body, so we intentionally exclude it to avoid a TDZ error.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [posts, postComments]);
 
   // Scroll lock when mobile comment sheet is open
   useEffect(() => {
