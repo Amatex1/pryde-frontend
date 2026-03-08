@@ -85,6 +85,7 @@ export default function MaintenanceBanner() {
             Dismiss
           </button>
         </div>
+      </div>
     </div>
   );
 }

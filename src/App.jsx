@@ -446,7 +446,7 @@ function AppContent() {
       <DebugOverlay />
       <OfflineBanner />
       <MaintenanceBanner />
-    </AuthGate> REPLACE
+    </AuthGate>
   );
 }
 
