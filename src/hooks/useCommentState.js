@@ -67,8 +67,8 @@ export function useCommentState({ postId, currentUser }) {
     
     setIsSubmitting(true);
     try {
-      const response = await api.post('/comments', {
-        postId: targetPostId,
+      // Backend expects: POST /api/posts/:postId/comments
+      const response = await api.post(`/posts/${targetPostId}/comments`, {
         content: text.trim(),
         gifUrl: gif,
         isAnonymous
@@ -88,8 +88,8 @@ export function useCommentState({ postId, currentUser }) {
     
     setIsSubmitting(true);
     try {
-      const response = await api.post('/comments', {
-        postId: targetPostId,
+      // Backend expects: POST /api/posts/:postId/comments (with parentCommentId for replies)
+      const response = await api.post(`/posts/${targetPostId}/comments`, {
         content: text.trim(),
         parentCommentId,
         gifUrl: gif,

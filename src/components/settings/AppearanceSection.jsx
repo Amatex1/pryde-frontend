@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { getCursorStyleOptions } from '../../utils/themeManager';
 
 const AppearanceSection = ({
@@ -18,6 +19,19 @@ const AppearanceSection = ({
   textDensity,
   onDensityChange,
 }) => {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(
+    () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handler = (e) => setPrefersReducedMotion(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  const showReducedMotionNotice = prefersReducedMotion && cursorStyle !== 'system' && cursorStyle !== 'reduced-motion';
+
   return (
     <>
       {/* APPEARANCE: Light Mode + Galaxy Mode */}
@@ -173,6 +187,25 @@ const AppearanceSection = ({
             </label>
           ))}
         </div>
+
+        {/* Live preview area - hover here to see the active cursor */}
+        <div
+          className="cursor-preview-area"
+          data-cursor={cursorStyle === 'system' ? undefined : cursorStyle}
+          aria-label="Hover here to preview cursor style"
+        >
+          <span className="cursor-preview-label">
+            Move mouse here to preview
+          </span>
+        </div>
+
+        {/* Reduced motion notice */}
+        {showReducedMotionNotice && (
+          <p className="cursor-reduced-motion-notice">
+            Your OS has <strong>Reduce Motion</strong> enabled, so the system cursor is being used instead.
+            To see this style, disable Reduce Motion in your accessibility settings.
+          </p>
+        )}
       </div>
 
       {/* TEXT DENSITY */}

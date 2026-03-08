@@ -76,18 +76,20 @@ JWT-based authentication with httpOnly refresh token cookies. Supports email/pas
 **Routes**:
 | Route | Method | Auth | Description |
 |-------|--------|------|-------------|
-| `/api/auth/register` | POST | Public | Create new account |
+| `/api/auth/signup` | POST | Public | Register new account |
 | `/api/auth/login` | POST | Public | Login with email/password |
-| `/api/auth/status` | GET | Required | Check auth status, get user data |
+| `/api/auth/status` | GET | Optional | Check auth status, get user data |
 | `/api/auth/logout` | POST | Required | Logout current session |
 | `/api/auth/logout-all` | POST | Required | Logout all sessions |
+| `/api/auth/me` | GET | Required | Get current user profile |
 | `/api/auth/forgot-password` | POST | Public | Request password reset email |
 | `/api/auth/reset-password` | POST | Public | Reset password with token |
 | `/api/auth/change-password` | POST | Required | Change password (logged in) |
-| `/api/auth/verify-email` | GET | Public | Verify email with token |
+| `/api/auth/verify-email/:token` | GET | Public | Verify email with token |
 | `/api/auth/resend-verification` | POST | Required | Resend verification email |
 | `/api/auth/deactivate` | POST | Required | Deactivate account |
 | `/api/auth/reactivate` | POST | Public | Reactivate deactivated account |
+| `/api/auth/check-username/:username` | GET | Public | Check username availability |
 | `/api/refresh` | POST | Cookie | Refresh access token |
 
 **2FA Routes** (`/api/2fa`):
@@ -356,6 +358,7 @@ Threaded comments on posts with nested replies and reactions.
 | `/api/comments/:commentId` | PUT | Required | Edit comment |
 | `/api/comments/:commentId` | DELETE | Required | Delete comment |
 | `/api/comments/:commentId/replies` | GET | Required | Get replies to comment |
+| `/api/comments/:commentId/react` | POST | Required | React to comment |
 
 ### Frontend Integration
 

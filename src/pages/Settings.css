@@ -1072,6 +1072,61 @@
   filter: saturate(0.8);
 }
 
+/* Cursor preview area */
+.cursor-preview-area {
+  margin-top: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1.5px dashed var(--border-light, rgba(127, 127, 127, 0.3));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px;
+  background: var(--card-surface, rgba(127, 127, 127, 0.04));
+  transition: border-color 0.2s ease;
+}
+
+.cursor-preview-area:hover {
+  border-color: var(--pryde-purple);
+}
+
+.cursor-preview-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Ensure the preview area inherits the cursor from its own data-cursor attribute */
+.cursor-preview-area[data-cursor="soft-rounded"] {
+  cursor: url('/cursors/soft-rounded.svg') 4 3, auto;
+}
+.cursor-preview-area[data-cursor="calm-dot"] {
+  cursor: url('/cursors/calm-dot.svg') 8 8, auto;
+}
+.cursor-preview-area[data-cursor="high-contrast"] {
+  cursor: url('/cursors/high-contrast.svg') 5 4, auto;
+}
+.cursor-preview-area[data-cursor="reduced-motion"] {
+  cursor: auto;
+}
+
+.cursor-reduced-motion-notice {
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  background: rgba(255, 170, 0, 0.1);
+  border: 1px solid rgba(255, 170, 0, 0.35);
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+[data-theme="dark"] .cursor-reduced-motion-notice {
+  background: rgba(255, 170, 0, 0.08);
+  border-color: rgba(255, 170, 0, 0.25);
+}
+
 /* ========================================
    THEME READABILITY FIXES
    Ensuring text is readable in all modes
