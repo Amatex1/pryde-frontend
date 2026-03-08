@@ -180,6 +180,7 @@ function Feed() {
   const autoSaveTimerRef = useRef(null); // Auto-save timer
   const scrollHandledRef = useRef(false); // Track if we've already scrolled to a post from URL params
   const scrollLockYRef = useRef(null); // Saves window.scrollY before body scroll-lock so it survives effect cleanup
+  const commentFetchInFlightRef = useRef(new Set()); // Track in-flight comment fetches to prevent duplicate API calls
 
   // ⚡ PHASE 2C: Socket event batchers for performance
   // These batch multiple socket events within 100ms to reduce React re-renders
@@ -217,15 +218,23 @@ function Feed() {
   };
 
   // Auto-fetch comments for posts that have comments
-  // This is separate from scroll handling to prevent scroll jumps on infinite scroll
+  // Uses a ref to track in-flight fetches so we don't fire duplicate requests
+  // when postComments updates (which would cascade into O(N²) API calls)
   useEffect(() => {
     posts.forEach(post => {
-      if (post.commentCount > 0 && !postComments[post._id]) {
+      if (
+        post.commentCount > 0 &&
+        !postComments[post._id] &&
+        !commentFetchInFlightRef.current.has(post._id)
+      ) {
+        commentFetchInFlightRef.current.add(post._id);
         logger.debug(`📥 Auto-fetching ${post.commentCount} comments for post ${post._id}`);
-        fetchCommentsForPost(post._id);
+        fetchCommentsForPost(post._id).finally(() => {
+          commentFetchInFlightRef.current.delete(post._id);
+        });
       }
     });
-  }, [posts, postComments]);
+  }, [posts, postComments, fetchCommentsForPost]);
 
   // Scroll lock when mobile comment sheet is open
   useEffect(() => {
@@ -1552,13 +1561,16 @@ function Feed() {
         const reactions = { ...comment.reactions };
         const currentUserId = currentUser?.id;
 
-        // Remove user from all emoji arrays
+        // Remove user from all emoji arrays (defensive: skip non-array values)
         Object.keys(reactions).forEach(key => {
-          reactions[key] = reactions[key].filter(uid => uid !== currentUserId);
+          if (Array.isArray(reactions[key])) {
+            reactions[key] = reactions[key].filter(uid => uid !== currentUserId);
+          }
         });
 
         // Add user to selected emoji array (or remove if clicking same emoji)
-        const hadThisReaction = comment.reactions?.[emoji]?.includes(currentUserId);
+        const emojiList = comment.reactions?.[emoji];
+        const hadThisReaction = Array.isArray(emojiList) && emojiList.includes(currentUserId);
         if (!hadThisReaction) {
           if (!reactions[emoji]) reactions[emoji] = [];
           reactions[emoji].push(currentUserId);
