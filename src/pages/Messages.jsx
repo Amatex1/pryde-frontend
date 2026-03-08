@@ -51,7 +51,8 @@ const compareIds = (id1, id2) => {
 function Messages() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { onlineUsers } = useOnlineUsers();
-  const { user: currentUser, authReady } = useAuth(); // Use centralized auth context
+  const { user: currentUser, isAuthReady } = useAuth(); // Use centralized auth context
+  const { modalState, closeModal, showAlert, showConfirm } = useModal();
   // Get menu handler from AppLayout outlet context
   const { onMenuOpen } = useOutletContext() || {};
 
@@ -110,6 +111,7 @@ function Messages() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [showGifPicker, setShowGifPicker] = useState(false);
   const [selectedGif, setSelectedGif] = useState(null);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
   const [contentWarning, setContentWarning] = useState('');
   const [showContentWarning, setShowContentWarning] = useState(false);
@@ -410,13 +412,13 @@ function Messages() {
   // Fetch conversations and group chats on mount
   useEffect(() => {
     // 🔒 AUTH GUARD: Wait for auth to be ready before making API calls
-    if (!authReady) {
+    if (!isAuthReady) {
       logger.debug('[Messages] Waiting for auth to be ready...');
       return;
     }
 
     fetchConversations();
-  }, [authReady]);
+  }, [isAuthReady]);
 
   // Fetch messages and user/group info for selected chat
   useEffect(() => {
