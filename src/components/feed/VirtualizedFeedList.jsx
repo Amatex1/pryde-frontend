@@ -5,13 +5,13 @@
  * Uses VariableSizeList for dynamic height posts.
  * 
  * Features:
- * - Dynamic height measurement
+ * - Dynamic height measurement via useDynamicRowHeight hook
  * - Infinite scroll integration
  * - Maintains compatibility with all FeedPost props
  */
 
 import { useRef, useCallback, useEffect, useState, memo, forwardRef } from 'react';
-import { VariableSizeList as List } from 'react-window';
+import { List, useDynamicRowHeight } from 'react-window';
 import FeedPost from './FeedPost';
 import PostSkeleton from '../PostSkeleton';
 import EmptyState from '../EmptyState';
@@ -19,8 +19,6 @@ import './VirtualizedFeed.css';
 
 // Default estimated height for posts (text + media + comments)
 const DEFAULT_POST_HEIGHT = 400;
-// Minimum post height for calculations
-const MIN_POST_HEIGHT = 200;
 // Overscan to render extra items above/below viewport for smooth scrolling
 const OVERSCAN_COUNT = 3;
 // Threshold from bottom to trigger load more
@@ -133,23 +131,12 @@ const VirtualizedFeedList = memo(forwardRef(function VirtualizedFeedList({
   const internalListRef = useRef(null);
   const listRef = externalListRef || internalListRef;
   const containerRef = useRef(null);
-  
-  // Height cache for dynamic sizing
-  const sizeMap = useRef({});
-  // Store row heights for getItemSize
-  const getRowHeight = useCallback((index) => {
-    return sizeMap.current[index] || DEFAULT_POST_HEIGHT;
-  }, []);
-  
-  // Update height for a specific row
-  const setRowHeight = useCallback((index, size) => {
-    if (sizeMap.current[index] !== size && size >= MIN_POST_HEIGHT) {
-      sizeMap.current[index] = size;
-      if (listRef.current) {
-        listRef.current.resetAfterIndex(index);
-      }
-    }
-  }, [listRef]);
+
+  // Use the useDynamicRowHeight hook for dynamic sizing
+  const { getRowHeight, setRowHeight } = useDynamicRowHeight({
+    defaultRowHeight: DEFAULT_POST_HEIGHT,
+    key: posts?.length || 0,
+  });
   
   // Container height state
   const [containerHeight, setContainerHeight] = useState(height || 600);
@@ -181,13 +168,6 @@ const VirtualizedFeedList = memo(forwardRef(function VirtualizedFeedList({
   // Calculate total item count including loading/end indicators
   const itemCount = postsLength + (loading || (!hasMore && endOfListIndicator) ? 1 : 0);
   
-  // Reset size map when posts change significantly
-  useEffect(() => {
-    if (postsLength === 0) {
-      sizeMap.current = {};
-    }
-  }, [postsLength]);
-  
   // Handle scroll to detect when to load more
   const handleItemsRendered = useCallback(({ overscanStopIndex, visibleStopIndex }) => {
     // Trigger load more when near bottom
@@ -200,17 +180,7 @@ const VirtualizedFeedList = memo(forwardRef(function VirtualizedFeedList({
   }, [onLoadMore, loading, hasMore, postsLength]);
   
   // Default render function for FeedPost
-  const defaultRenderItem = useCallback((post, index, style) => {
-    const measureRef = (el) => {
-      if (el) {
-        // Measure actual height after render
-        requestAnimationFrame(() => {
-          const height = el.getBoundingClientRect().height;
-          setRowHeight(index, height);
-        });
-      }
-    };
-    
+  const defaultRenderItem = useCallback((post, index, style, measureRef) => {
     const isFirstPost = index === 0;
     const shouldEagerLoad = index < 3;
     
@@ -306,22 +276,18 @@ const VirtualizedFeedList = memo(forwardRef(function VirtualizedFeedList({
     onToggleReplies, onReplyToComment, onSetShowReactionPicker,
     onSetReactionDetailsModal, onSetReportModal, onReplyTextChange,
     onReplyGifSelect, onSubmitReply, onCancelReply, getUserReactionEmoji,
-    viewerRole, replyIsAnonymous, onReplyIsAnonymousChange, setRowHeight
+    viewerRole, replyIsAnonymous, onReplyIsAnonymousChange
   ]);
   
   // Use custom render or default
   const itemRenderer = renderItem || defaultRenderItem;
   
   // Row component for react-window
-  const Row = useCallback(({ index, style }) => {
+  const RowComponent = useCallback(({ index, style }) => {
     // Handle loading or end indicators
     if (index >= postsLength) {
-      if (loading && loadingIndicator) {
-        return <div style={style}>{loadingIndicator}</div>;
-      }
-      if (!hasMore && endOfListIndicator) {
-        return <div style={style}>{endOfListIndicator}</div>;
-      }
+      if (loading && loadingIndicator) return <div style={style}>{loadingIndicator}</div>;
+      if (!hasMore && endOfListIndicator) return <div style={style}>{endOfListIndicator}</div>;
       return null;
     }
     
@@ -350,17 +316,16 @@ const VirtualizedFeedList = memo(forwardRef(function VirtualizedFeedList({
     <div ref={containerRef} className="virtualized-feed-list-container">
       <List
         ref={listRef}
-        height={containerHeight}
-        width={width}
-        itemCount={itemCount}
-        itemSize={getRowHeight}
-        onItemsRendered={handleItemsRendered}
+        style={{ height: containerHeight, width }}
+        rowCount={itemCount}
+        rowHeight={getRowHeight}
+        rowComponent={RowComponent}
+        rowProps={{}}
+        onRowsRendered={handleItemsRendered}
         overscanCount={OVERSCAN_COUNT}
         className="virtualized-feed-list"
         {...rest}
-      >
-        {Row}
-      </List>
+      />
     </div>
   );
 }));
