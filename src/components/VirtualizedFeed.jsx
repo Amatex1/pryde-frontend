@@ -97,6 +97,7 @@ const VirtualizedFeed = memo(forwardRef(function VirtualizedFeed({
         rowCount={itemCount}
         rowHeight={getRowHeight}
         rowComponent={RowComponent}
+        rowProps={{}}
         onRowsRendered={handleRowsRendered}
         overscanCount={OVERSCAN_COUNT}
         className="virtualized-feed-list"

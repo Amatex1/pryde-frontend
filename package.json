@@ -2,7 +2,7 @@
   "name": "pryde-social-client",
   "private": true,
   "version": "1.0.0",
-  "buildVersion": "2026.03.08-1124",
+  "buildVersion": "2026.03.08-1201",
   "type": "module",
   "scripts": {
     "dev": "vite",
