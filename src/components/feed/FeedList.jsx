@@ -103,13 +103,10 @@ export default function FeedList({
     [posts, blockedUsers]
   );
   
-  // Use virtualization for large lists (performance optimization)
-  // Enable when posts > 10 for better performance
-  // Virtualization renders only visible posts, dramatically improving performance
-  const useVirtualization = (posts || []).length > 10;
-  
-  // Use new VirtualizedFeedList for better react-window v2 compatibility
-  const useNewVirtualization = (posts || []).length > 20;
+  // Virtualization disabled — react-window creates a nested scroll container
+  // which conflicts with page scroll and causes overlapping/glitching.
+  const useVirtualization = false;
+  const useNewVirtualization = false;
   
   // Render a single post item
   const renderPostItem = (post, postIndex, style, measureRef) => {
