@@ -1,0 +1,75 @@
+/**
+ * VirtualizedFeed - Styles for virtualized feed list
+ * 
+ * Optimized for react-window VariableSizeList rendering
+ */
+
+/* Container for the virtualized feed list */
+.virtualized-feed-list-container {
+  width: 100%;
+  position: relative;
+}
+
+/* The react-window list component */
+.virtualized-feed-list {
+  /* Scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb, #888) var(--scrollbar-track, transparent);
+}
+
+.virtualized-feed-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.virtualized-feed-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.virtualized-feed-list::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb, #888);
+  border-radius: 4px;
+}
+
+/* Individual post wrapper in virtual list */
+.virtualized-post-wrapper {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+/* Smooth loading indicator animation */
+.virtualized-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.virtualized-loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-color, #e0e0e0);
+  border-top-color: var(--primary-color, #007bff);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* End of list indicator */
+.virtualized-end-of-list {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-muted, #888);
+  font-size: 14px;
+}
+
+/* Empty state override for virtualized list */
+.virtualized-feed-list-container .empty-state {
+  padding: 40px 20px;
+}
+
