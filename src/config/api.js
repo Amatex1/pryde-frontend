@@ -18,23 +18,31 @@ const getBackendUrl = () => {
   return BACKEND_URL;
 };
 
+// Use direct backend URL in production (NOT Vercel proxy which breaks cookies)
+// In development, use Render URL
 export const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
-  (isProduction ? '/api' : `${getBackendUrl()}/api`);
+  (isProduction 
+    ? (API_DOMAIN ? `${API_DOMAIN}/api` : 'https://api.prydeapp.com/api') 
+    : `${getBackendUrl()}/api`);
 
 // Use custom domain in production, Render URL in development
+// 🔥 CRITICAL: Always use direct backend URL in production!
+// Vercel proxy (/api) does NOT forward cookies properly - this breaks auth!
 export const API_AUTH_URL = isProduction 
-  ? (API_DOMAIN ? `${API_DOMAIN}/api` : '/api') 
+  ? (API_DOMAIN ? `${API_DOMAIN}/api` : 'https://api.prydeapp.com/api') 
   : `${BACKEND_URL}/api`;
 
 export const SOCKET_URL =
   import.meta.env.VITE_SOCKET_URL || (isProduction 
-    ? (API_DOMAIN || BACKEND_URL) 
+    ? (API_DOMAIN || 'https://api.prydeapp.com') 
     : BACKEND_URL);
 
 // 🔥 Uploads ALWAYS go directly to backend (files are stored there, not on Vercel)
 export const UPLOADS_BASE_URL =
-  import.meta.env.VITE_UPLOADS_URL || getBackendUrl();
+  import.meta.env.VITE_UPLOADS_URL || (isProduction
+    ? (API_DOMAIN || 'https://api.prydeapp.com')
+    : getBackendUrl());
 
 export default {
   API_BASE_URL,

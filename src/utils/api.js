@@ -85,6 +85,9 @@ api.interceptors.request.use(
     const token = getAuthToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      logger.debug('🔑 Token attached to request:', config.url);
+    } else {
+      logger.warn('⚠️ No token found for request:', config.url);
     }
 
     // Add CSRF token for state-changing requests (POST, PUT, PATCH, DELETE)
