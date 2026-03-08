@@ -243,4 +243,4 @@ const MessageBubble = memo(function MessageBubble({
   );
 }
 
-export default memo(MessageBubble);
+export default MessageBubble;
