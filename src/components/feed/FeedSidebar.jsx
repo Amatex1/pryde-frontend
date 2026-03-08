@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import CommunityResources from '../Sidebar/CommunityResources';
 import SuggestedConnections from '../Sidebar/SuggestedConnections';
+import CommunitySidebar, { CommunitySpotlight, CommunityThemes, ActiveMembers } from '../Sidebar/CommunitySpotlight';
 
 /**
  * FeedSidebar — static right-hand panel shown on desktop.
@@ -9,7 +10,14 @@ import SuggestedConnections from '../Sidebar/SuggestedConnections';
 export default function FeedSidebar({ showMobileSidebar }) {
   return (
     <aside className={`feed-sidebar ${showMobileSidebar ? 'mobile-visible' : ''}`}>
-      {/* REMOVED 2025-12-26: Featured Tags / Trending removed (Phase 5) */}
+      {/* =========================================
+          Community Features (Spotlight, Themes, Active Members)
+         ========================================= */}
+      <div className="sidebar-card community-features glossy">
+        <CommunitySpotlight />
+        <CommunityThemes />
+        <ActiveMembers />
+      </div>
 
       {/* =========================================
           Explore Pryde — Feature Discovery
@@ -23,6 +31,14 @@ export default function FeedSidebar({ showMobileSidebar }) {
           <Link to="/groups" className="explore-link">
             <strong>👥 Groups</strong>
             <span>Join shared spaces built around interests, support, and identity.</span>
+          </Link>
+          <Link to="/circles" className="explore-link">
+            <strong>🌱 Circles</strong>
+            <span>Small, intimate communities with people you trust.</span>
+          </Link>
+          <Link to="/collections" className="explore-link">
+            <strong>📚 Collections</strong>
+            <span>Save and organize posts that matter to you.</span>
           </Link>
           <Link to="/journal" className="explore-link">
             <strong>📔 Journal</strong>
