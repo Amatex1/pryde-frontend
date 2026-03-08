@@ -10,6 +10,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
 import { getImageUrl } from '../../utils/imageUrl';
 import { getDisplayName } from '../../utils/getDisplayName';
@@ -18,6 +19,7 @@ import OptimizedImage from '../OptimizedImage';
 import './SuggestedConnections.css';
 
 export default function SuggestedConnections() {
+  const { isAuthReady, isAuthenticated } = useAuth();
   const isQuietMode = getQuietMode();
 
   const [suggestions, setSuggestions] = useState([]);
@@ -38,8 +40,12 @@ export default function SuggestedConnections() {
   }, []);
 
   useEffect(() => {
+    // Wait for auth to be ready before fetching suggestions
+    if (!isAuthReady || !isAuthenticated) {
+      return;
+    }
     fetchSuggestions();
-  }, [fetchSuggestions]);
+  }, [fetchSuggestions, isAuthReady, isAuthenticated]);
 
   const handleFollow = async (userId) => {
     try {
