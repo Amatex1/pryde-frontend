@@ -241,6 +241,6 @@ const MessageBubble = memo(function MessageBubble({
       </div>
     </>
   );
-}
+});
 
 export default MessageBubble;
