@@ -562,7 +562,10 @@ export function AuthProvider({ children }) {
   // This prevents session expiration during long idle periods (e.g., overnight)
   // NOTE: Visibility change refresh is handled by authLifecycle.js with socket coordination
   useEffect(() => {
-    if (authStatus !== AUTH_STATES.AUTHENTICATED) return;
+    // 🔐 CRITICAL: Wait for isAuthReady before starting the interval.
+    // authStatus seeds as AUTHENTICATED from the localStorage-cached user, so without
+    // this check the interval would start before verifyAuth() has confirmed the session.
+    if (authStatus !== AUTH_STATES.AUTHENTICATED || !isAuthReady) return;
 
     const REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
     let refreshTimer = null;
@@ -589,7 +592,7 @@ export function AuthProvider({ children }) {
     return () => {
       if (refreshTimer) clearInterval(refreshTimer);
     };
-  }, [authStatus, attemptSilentRefresh]);
+  }, [authStatus, isAuthReady, attemptSilentRefresh]);
 
   const value = {
     // Core state

@@ -24,6 +24,12 @@ import logger from './logger';
 let isRefreshing = false;
 let refreshPromise = null;
 
+// Cooldown state: after a failed refresh, block retries for a short window.
+// This prevents sequential 401 responses (from concurrent API calls) from each
+// triggering their own /api/refresh request after the first one already failed.
+let lastRefreshFailedAt = 0;
+const REFRESH_FAIL_COOLDOWN_MS = 10_000; // 10 seconds
+
 /**
  * Attempt to refresh the access token using httpOnly cookie
  *
@@ -56,6 +62,14 @@ export async function refreshAccessToken({ force = false } = {}) {
     return null;
   }
 
+  // 🔥 COOLDOWN: If the last refresh attempt failed recently, bail out immediately.
+  // Sequential 401 responses (from concurrent API calls) would otherwise each trigger
+  // their own /api/refresh request after the first one already failed and cleaned up.
+  if (!force && lastRefreshFailedAt > 0 && Date.now() - lastRefreshFailedAt < REFRESH_FAIL_COOLDOWN_MS) {
+    logger.debug('[TokenRefresh] ⏸️ Skipping - recent refresh failure cooldown active');
+    return null;
+  }
+
   // Single-flight: if already refreshing, await existing promise
   if (isRefreshing && refreshPromise && !force) {
     logger.debug('[TokenRefresh] 🔄 Already refreshing - awaiting existing promise');
@@ -78,6 +92,7 @@ export async function refreshAccessToken({ force = false } = {}) {
       if (!response.ok) {
         const errorText = await response.text().catch(() => 'Unknown error');
         logger.warn(`[TokenRefresh] ❌ Failed: ${response.status} - ${errorText}`);
+        lastRefreshFailedAt = Date.now();
         return null;
       }
 
@@ -86,10 +101,12 @@ export async function refreshAccessToken({ force = false } = {}) {
       if (data.accessToken) {
         logger.debug('[TokenRefresh] ✅ Token refreshed successfully');
         setAuthToken(data.accessToken);
+        lastRefreshFailedAt = 0; // Clear cooldown on success
         return data.accessToken;
       }
 
       logger.warn('[TokenRefresh] ⚠️ No accessToken in response');
+      lastRefreshFailedAt = Date.now();
       return null;
     } catch (error) {
       // TypeError("Failed to fetch") = network error (server sleeping, offline, CORS preflight)
@@ -99,6 +116,7 @@ export async function refreshAccessToken({ force = false } = {}) {
       } else {
         logger.error('[TokenRefresh] ❌ Error:', error.message);
       }
+      lastRefreshFailedAt = Date.now();
       return null;
     } finally {
       isRefreshing = false;
