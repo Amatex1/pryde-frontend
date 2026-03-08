@@ -168,7 +168,8 @@ export async function executePWASafetyChecks() {
       return {
         safe: false,
         action: 'maintenance',
-        message: status.message || 'Site is under maintenance'
+        message: status.message || 'Site is under maintenance',
+        eta: status.maintenanceETA || null
       };
     }
     
@@ -179,17 +180,6 @@ export async function executePWASafetyChecks() {
         safe: false,
         action: 'disable_pwa',
         message: status.message || 'PWA is currently disabled for maintenance'
-      };
-    }
-    
-    // Check 2: Maintenance Mode (full site)
-    if (status.maintenanceMode === true) {
-      logger.warn('[PWA Safety] 🔧 Maintenance mode is ENABLED');
-      return {
-        safe: false,
-        action: 'maintenance',
-        message: status.message || 'Site is under maintenance',
-        eta: status.maintenanceETA || null
       };
     }
     
