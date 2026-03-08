@@ -1,0 +1,206 @@
+/**
+ * MemberSpotlightCard CSS
+ * 
+ * Styling for the member spotlight card.
+ */
+
+.member-spotlight-card {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.spotlight-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.spotlight-badge {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.spotlight-dismiss {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted, #9ca3af);
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 150ms ease;
+}
+
+.spotlight-dismiss:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary, #1f2937);
+}
+
+.spotlight-content {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.spotlight-avatar-link {
+  flex-shrink: 0;
+}
+
+.spotlight-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(99, 102, 241, 0.3);
+}
+
+.spotlight-avatar-fallback {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 600;
+  border: 3px solid rgba(99, 102, 241, 0.3);
+}
+
+.spotlight-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.spotlight-name {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+  text-decoration: none;
+  margin-bottom: 2px;
+}
+
+.spotlight-name:hover {
+  color: #6366f1;
+}
+
+.spotlight-username {
+  display: block;
+  color: var(--text-muted, #6b7280);
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.spotlight-bio {
+  color: var(--text-secondary, #4b5563);
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 0 0 8px 0;
+}
+
+.spotlight-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.spotlight-stat {
+  color: var(--text-muted, #6b7280);
+  font-size: 12px;
+}
+
+.spotlight-recent-post {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.recent-post-label {
+  display: block;
+  color: var(--text-muted, #6b7280);
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.recent-post-content {
+  color: var(--text-secondary, #4b5563);
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.spotlight-cta {
+  display: block;
+  text-align: center;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 150ms ease;
+}
+
+.spotlight-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .member-spotlight-card {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%);
+    border-color: rgba(99, 102, 241, 0.25);
+  }
+
+  .spotlight-name {
+    color: var(--text-primary, #f9fafb);
+  }
+
+  .spotlight-username {
+    color: var(--text-muted, #9ca3af);
+  }
+
+  .spotlight-bio {
+    color: var(--text-secondary, #d1d5db);
+  }
+
+  .spotlight-stat {
+    color: var(--text-muted, #9ca3af);
+  }
+
+  .spotlight-recent-post {
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  .recent-post-label {
+    color: var(--text-muted, #9ca3af);
+  }
+
+  .recent-post-content {
+    color: var(--text-secondary, #d1d5db);
+  }
+
+  .spotlight-dismiss:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary, #f9fafb);
+  }
+}
+

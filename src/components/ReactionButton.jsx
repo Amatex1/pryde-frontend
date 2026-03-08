@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
 import api from '../utils/api';
 import { getSocket } from '../utils/socket';
 import { EmojiPickerOverlay } from './emoji';
@@ -295,5 +295,5 @@ const ReactionButton = ({
   );
 };
 
-export default ReactionButton;
+export default memo(ReactionButton);
 

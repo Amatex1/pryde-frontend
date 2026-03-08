@@ -1,0 +1,169 @@
+/* ========================================
+   ADMIN LAYOUT SYSTEM - SaaS-Style Dashboard
+   ======================================== */
+
+/* ========================================
+   PHASE 1: ADMIN PAGE CONTAINER
+   ======================================== */
+
+.admin-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ========================================
+   PHASE 2: ADMIN HEADER
+   ======================================== */
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ========================================
+   PHASE 4: TABLE SYSTEM
+   ======================================== */
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 13px;
+  border-bottom: 2px solid var(--border-subtle, #e2e8f0);
+  color: var(--text-secondary, #475569);
+  background: var(--bg-subtle, #f8fafc);
+  white-space: nowrap;
+}
+
+.admin-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-subtle, #e2e8f0);
+  color: var(--text-primary, #1a1a2e);
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.admin-table tr:hover {
+  background: var(--bg-hover, #f1f5f9);
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Table scroll container */
+.admin-table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ========================================
+   PHASE 10: LOADING STATES
+   ======================================== */
+
+.admin-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  color: var(--text-muted, #64748b);
+}
+
+.admin-loading__spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-subtle, #e2e8f0);
+  border-top-color: var(--pryde-purple, #6c5ce7);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-right: 12px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========================================
+   PHASE 11: RESPONSIVE IMPROVEMENTS
+   ======================================== */
+
+@media (max-width: 768px) {
+  .admin-page {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .admin-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-page {
+    padding: 12px;
+  }
+}
+
+/* ========================================
+   DARK MODE SUPPORT
+   ======================================== */
+
+[data-theme="dark"] .admin-page {
+  background: var(--bg, #0f172a);
+}
+
+[data-theme="dark"] .admin-table th {
+  background: var(--bg-subtle, #1e293b);
+  border-bottom-color: var(--border-subtle, #334155);
+  color: var(--text-secondary, #cbd5e1);
+}
+
+[data-theme="dark"] .admin-table td {
+  border-bottom-color: var(--border-subtle, #334155);
+  color: var(--text-primary, #f1f5f9);
+}
+
+[data-theme="dark"] .admin-table tr:hover {
+  background: var(--bg-hover, #334155);
+}
+
+[data-theme="dark"] .admin-loading__spinner {
+  border-color: var(--border-subtle, #334155);
+  border-top-color: var(--pryde-purple, #6c5ce7);
+}
+

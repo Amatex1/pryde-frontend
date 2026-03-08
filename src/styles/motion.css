@@ -58,7 +58,7 @@
 
 /*
   Usage:
-    <div class="avatar-ring [avatar-ring--self | avatar-ring--active]">
+    <div class="avatar-ring [avatar-ring--self]">
       <img class="avatar-image" ... />
     </div>
 
@@ -89,10 +89,7 @@
   box-shadow: 0 0 14px rgba(108, 92, 231, 0.30);
 }
 
-/* Recently active / unread DM indicator */
-.avatar-ring--active {
-  box-shadow: 0 0 10px rgba(9, 132, 227, 0.24);
-}
+
 
 /* Interactive avatar rings */
 .avatar-ring:is(a, button):hover {
@@ -170,21 +167,7 @@
 }
 
 
-/* ------------------------------------------------------------------ */
-/* 5. BRAND GRADIENT UTILITIES                                          */
-/* ------------------------------------------------------------------ */
 
-.gradient-brand {
-  background: var(--gradient-brand, linear-gradient(135deg, #6C5CE7, #0984E3));
-}
-
-.gradient-brand-text {
-  background: var(--gradient-brand, linear-gradient(135deg, #6C5CE7, #0984E3));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
 
 
 /* ------------------------------------------------------------------ */
@@ -246,8 +229,7 @@ button,
 
   /* Avatar ring: ring stays, glow removed */
   .avatar-ring,
-  .avatar-ring--self,
-  .avatar-ring--active {
+  .avatar-ring--self {
     box-shadow: none;
     transition: none;
   }

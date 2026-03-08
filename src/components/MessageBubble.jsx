@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, memo } from 'react';
 import { getImageUrl } from '../utils/imageUrl';
 import { getDisplayName, getDisplayNameInitial } from '../utils/getDisplayName';
 import { sanitizeMessage } from '../utils/sanitize';
@@ -9,7 +9,7 @@ const AudioPlayer = lazy(() => import('./AudioPlayer'));
 /**
  * MessageBubble — Calm grouped message display
  */
-export default function MessageBubble({
+const MessageBubble = memo(function MessageBubble({
   group,
   currentUserId,
   onEdit,
@@ -242,3 +242,5 @@ export default function MessageBubble({
     </>
   );
 }
+
+export default memo(MessageBubble);

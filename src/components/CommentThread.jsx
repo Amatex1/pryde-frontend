@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { Link } from 'react-router-dom';
 import OptimizedImage from './OptimizedImage';
 import ReactionButton from './ReactionButton';
@@ -343,4 +343,4 @@ const CommentThread = ({ comment, replies = [], isFullSheet = false }) => {
   );
 };
 
-export default CommentThread;
+export default memo(CommentThread);

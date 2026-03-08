@@ -807,6 +807,87 @@ button:active,
 
 
 /* ════════════════════════════════════════════
+   CONSOLIDATED UTILITY CLASSES
+   Reduces duplicate selectors across codebase
+   ════════════════════════════════════════════ */
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: var(--space-4, 1rem);
+  color: var(--text-muted, #666);
+}
+
+.empty-state p {
+  color: var(--text-muted);
+}
+
+.loading {
+  text-align: center;
+  padding: var(--space-4, 1rem);
+  color: var(--text-muted, #666);
+}
+
+.loading-state,
+.empty-state {
+  text-align: center;
+  color: var(--text-muted, #666);
+}
+
+/* Dark mode */
+[data-theme="dark"] .empty-state,
+[data-theme="dark"] .loading {
+  color: var(--text-muted, #9FA1C0);
+}
+
+/* Layout Utilities */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1rem);
+}
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3, 0.75rem);
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Basic Flex */
+.flex { display: flex; }
+.row { display: flex; flex-direction: row; }
+.column { display: flex; flex-direction: column; }
+
+/* Margin Top */
+.mt-1 { margin-top: var(--space-1, 0.25rem); }
+.mt-2 { margin-top: var(--space-2, 0.5rem); }
+.mt-3 { margin-top: var(--space-3, 0.75rem); }
+
+/* Margin Bottom */
+.mb-1 { margin-bottom: var(--space-1, 0.25rem); }
+.mb-2 { margin-bottom: var(--space-2, 0.5rem); }
+
+/* Padding */
+.p-2 { padding: var(--space-2, 0.5rem); }
+.p-3 { padding: var(--space-3, 0.75rem); }
+.p-4 { padding: var(--space-4, 1rem); }
+
+/* Card Utility */
+.card {
+  background: var(--bg-card, var(--bg-primary, #fff));
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: var(--shadow-soft, 0 2px 8px rgba(0,0,0,0.08));
+  padding: var(--space-4, 1rem);
+}
+
+
+/* ════════════════════════════════════════════
    GLOBAL INTERACTIVE ELEMENT BEHAVIORS
    Applies tap-target, pressable, and lift-hover
    to all key interactive element types.

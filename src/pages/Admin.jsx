@@ -10,6 +10,7 @@ import { getCurrentUser } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
 import { getSocket, setupSocketListeners } from '../utils/socketHelpers';
 import './Admin.css';
+import '../styles/admin-layout.css';
 
 function Admin() {
   const { modalState, closeModal, showAlert, showConfirm, showPrompt } = useModal();

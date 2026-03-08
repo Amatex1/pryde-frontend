@@ -4,6 +4,7 @@ import FeedPost from './FeedPost';
 import EmptyState from '../EmptyState';
 import { ActivityTag } from '../ui/ActivityTag';
 import VirtualizedFeed from '../VirtualizedFeed';
+import VirtualizedFeedList from './VirtualizedFeedList';
 
 /**
  * FeedList — renders the scrollable post list with skeleton, empty, and loaded states.
@@ -103,17 +104,12 @@ export default function FeedList({
   );
   
   // Use virtualization for large lists (performance optimization)
-  // DISABLED: react-window v2 auto-sizes to container and requires explicit
-  // container height via style prop, not height prop. The VirtualizedFeed component
-  // passes height as a prop which is ignored by v2's List, causing empty renders.
-  // Disabled until VirtualizedFeed is updated for react-window v2 API.
-  // Safe array handling
-  const useVirtualization = false; // was: (posts || []).length > 10;
+  // Enable when posts > 10 for better performance
+  // Virtualization renders only visible posts, dramatically improving performance
+  const useVirtualization = (posts || []).length > 10;
   
-  // Hybrid scroll: use virtualization OR regular with load more button
-  // Virtualization handles 10-50 posts smoothly, regular for smaller lists
-  // Safe array handling
-  const useHybridScroll = (posts || []).length > 50;
+  // Use new VirtualizedFeedList for better react-window v2 compatibility
+  const useNewVirtualization = (posts || []).length > 20;
   
   // Render a single post item
   const renderPostItem = (post, postIndex, style, measureRef) => {

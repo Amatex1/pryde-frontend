@@ -1,0 +1,326 @@
+/* ========================================
+   PRYDE SOCIAL - CSS UTILITIES
+   Reusable utility classes to reduce CSS duplication
+   
+   Usage: Add these classes to HTML elements instead of 
+   writing duplicate CSS declarations in component files.
+   ======================================== */
+
+/* ========================================
+   BORDER RADIUS UTILITIES
+   ======================================== */
+
+.u-radius-sm {
+  border-radius: var(--radius-sm, 8px);
+}
+
+.u-radius-md {
+  border-radius: var(--radius-md, 12px);
+}
+
+.u-radius-lg {
+  border-radius: var(--radius-lg, 16px);
+}
+
+.u-radius-pill {
+  border-radius: 999px;
+}
+
+.u-radius-full {
+  border-radius: 50%;
+}
+
+/* ========================================
+   SHADOW UTILITIES
+   ======================================== */
+
+.u-shadow-sm {
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+}
+
+.u-shadow-md {
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.07));
+}
+
+.u-shadow-lg {
+  box-shadow: var(--shadow-lg, 0 10px 15px rgba(0, 0, 0, 0.1));
+}
+
+.u-shadow-focus {
+  box-shadow: var(--shadow-focus, 0 0 0 3px rgba(108, 92, 231, 0.15));
+}
+
+/* ========================================
+   TRANSITION UTILITIES
+   ======================================== */
+
+.u-transition-fast {
+  transition: all var(--transition-fast, 100ms ease);
+}
+
+.u-transition-base {
+  transition: all var(--transition-base, 150ms ease);
+}
+
+.u-transition-slow {
+  transition: all var(--transition-slow, 250ms ease);
+}
+
+/* ========================================
+   FLEXBOX UTILITIES
+   ======================================== */
+
+.u-flex {
+  display: flex;
+}
+
+.u-flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.u-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.u-flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.u-flex-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.u-flex-end {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.u-flex-wrap {
+  flex-wrap: wrap;
+}
+
+.u-flex-1 {
+  flex: 1;
+}
+
+/* ========================================
+   GAP UTILITIES
+   ======================================== */
+
+.u-gap-xs {
+  gap: var(--space-xs, 4px);
+}
+
+.u-gap-sm {
+  gap: var(--space-sm, 8px);
+}
+
+.u-gap-md {
+  gap: var(--space-md, 12px);
+}
+
+.u-gap-lg {
+  gap: var(--space-lg, 16px);
+}
+
+/* ========================================
+   SPACING UTILITIES - MARGIN
+   ======================================== */
+
+.u-m-0 { margin: 0; }
+.u-mt-sm { margin-top: var(--space-sm, 8px); }
+.u-mt-md { margin-top: var(--space-md, 12px); }
+.u-mt-lg { margin-top: var(--space-lg, 16px); }
+.u-mb-sm { margin-bottom: var(--space-sm, 8px); }
+.u-mb-md { margin-bottom: var(--space-md, 12px); }
+.u-mb-lg { margin-bottom: var(--space-lg, 16px); }
+.u-ml-sm { margin-left: var(--space-sm, 8px); }
+.u-mr-sm { margin-right: var(--space-sm, 8px); }
+
+/* ========================================
+   SPACING UTILITIES - PADDING
+   ======================================== */
+
+.u-p-0 { padding: 0; }
+.u-p-sm { padding: var(--space-sm, 8px); }
+.u-p-md { padding: var(--space-md, 12px); }
+.u-p-lg { padding: var(--space-lg, 16px); }
+.u-pt-sm { padding-top: var(--space-sm, 8px); }
+.u-pb-sm { padding-bottom: var(--space-sm, 8px); }
+.u-pl-sm { padding-left: var(--space-sm, 8px); }
+.u-pr-sm { padding-right: var(--space-sm, 8px); }
+
+/* ========================================
+   TEXT UTILITIES
+   ======================================== */
+
+.u-text-center {
+  text-align: center;
+}
+
+.u-text-sm {
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.u-text-xs {
+  font-size: var(--font-size-xs, 0.75rem);
+}
+
+.u-font-medium {
+  font-weight: var(--font-weight-medium, 500);
+}
+
+.u-font-semibold {
+  font-weight: var(--font-weight-semibold, 600);
+}
+
+.u-text-muted {
+  color: var(--text-muted, #64748b);
+}
+
+.u-text-primary {
+  color: var(--text-primary, #1a1a2e);
+}
+
+/* ========================================
+   WIDTH UTILITIES
+   ======================================== */
+
+.u-w-full {
+  width: 100%;
+}
+
+.u-h-full {
+  height: 100%;
+}
+
+.u-min-h-touch {
+  min-height: 44px;
+}
+
+/* ========================================
+   OVERFLOW UTILITIES
+   ======================================== */
+
+.u-overflow-hidden {
+  overflow: hidden;
+}
+
+.u-overflow-auto {
+  overflow: auto;
+}
+
+/* ========================================
+   POSITION UTILITIES
+   ======================================== */
+
+.u-relative {
+  position: relative;
+}
+
+.u-absolute {
+  position: absolute;
+}
+
+.u-fixed {
+  position: fixed;
+}
+
+.u-sticky {
+  position: sticky;
+}
+
+/* ========================================
+   CURSOR UTILITIES
+   ======================================== */
+
+.u-cursor-pointer {
+  cursor: pointer;
+}
+
+.u-cursor-default {
+  cursor: default;
+}
+
+.u-cursor-not-allowed {
+  cursor: not-allowed;
+}
+
+/* ========================================
+   OPACITY UTILITIES
+   ======================================== */
+
+.u-opacity-0 {
+  opacity: 0;
+}
+
+.u-opacity-50 {
+  opacity: 0.5;
+}
+
+.u-opacity-65 {
+  opacity: 0.65;
+}
+
+.u-opacity-100 {
+  opacity: 1;
+}
+
+/* ========================================
+   VISIBILITY UTILITIES
+   ======================================== */
+
+.u-visible {
+  visibility: visible;
+}
+
+.u-invisible {
+  visibility: hidden;
+}
+
+/* ========================================
+   INTERACTION STATES
+   ======================================== */
+
+.u-hover-lift {
+  transition: transform var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1)),
+              box-shadow var(--duration-standard, 160ms) var(--ease-standard, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.u-hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg, 0 10px 15px rgba(0, 0, 0, 0.1));
+}
+
+/* ========================================
+   RESPONSIVE DISPLAY (mobile-first)
+   ======================================== */
+
+.u-hidden-mobile {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .u-hidden-mobile {
+    display: block;
+  }
+}
+
+.u-hidden-desktop {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .u-hidden-desktop {
+    display: none;
+  }
+}
+

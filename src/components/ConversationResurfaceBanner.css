@@ -1,0 +1,103 @@
+/**
+ * ConversationResurfaceBanner CSS
+ * 
+ * Styling for the conversation resurfacing banner.
+ * Shows when an older discussion becomes active again.
+ */
+
+.conversation-resurface-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.conversation-resurface-banner:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+  border-color: rgba(99, 102, 241, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+.conversation-resurface-banner:focus {
+  outline: 2px solid rgba(99, 102, 241, 0.5);
+  outline-offset: 2px;
+}
+
+.resurface-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.resurface-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.resurface-message {
+  display: block;
+  color: var(--text-primary, #1f2937);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.resurface-author {
+  display: block;
+  color: var(--text-muted, #6b7280);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.resurface-dismiss {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted, #9ca3af);
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 150ms ease;
+}
+
+.resurface-dismiss:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary, #1f2937);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .conversation-resurface-banner {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+    border-color: rgba(99, 102, 241, 0.3);
+  }
+
+  .conversation-resurface-banner:hover {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+  }
+
+  .resurface-message {
+    color: var(--text-primary, #f9fafb);
+  }
+
+  .resurface-author {
+    color: var(--text-muted, #9ca3af);
+  }
+
+  .resurface-dismiss:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary, #f9fafb);
+  }
+}
+

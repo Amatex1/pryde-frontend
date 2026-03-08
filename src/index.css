@@ -23,6 +23,7 @@
 /* styles/navbar.css loaded in main.jsx — not duplicated here */
 
 /* UTILITIES */
+@import './styles/utilities.css';           /* Reusable utility classes */
 @import './styles/accessibility.css';       /* Accessibility */
 /* hardening.css — consolidated into core/utilities.css */
 
