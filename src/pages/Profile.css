@@ -350,7 +350,7 @@
   border-radius: 8px;
   border: none;
   background: rgba(255, 255, 255, 0.95);
-  color: var(--text-primary);
+  color: var(--color-text);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
@@ -364,13 +364,13 @@
 
 [data-theme="dark"] .btn-edit-cover {
   background: rgba(30, 30, 30, 0.95);
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .btn-edit-cover:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
 }
 
@@ -384,7 +384,7 @@
   border-radius: 8px;
   border: none;
   background: rgba(255, 255, 255, 0.95);
-  color: var(--text-primary);
+  color: var(--color-text);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
@@ -398,7 +398,7 @@
 
 [data-theme="dark"] .btn-edit-profile-cover {
   background: rgba(30, 30, 30, 0.95);
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .btn-edit-profile-cover:hover {
@@ -438,7 +438,7 @@
   text-align: left;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--color-text);
   cursor: pointer;
   transition: background 0.15s;
 }
@@ -556,8 +556,8 @@
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  border: 2px solid var(--pryde-purple);
-  color: var(--pryde-purple);
+  border: 2px solid var(--color-brand);
+  color: var(--color-brand);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-sm);
   cursor: pointer;
@@ -567,7 +567,7 @@
 }
 
 .btn-profile-upload:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
@@ -576,12 +576,12 @@
 /* Dark mode support for upload buttons */
 [data-theme="dark"] .btn-profile-upload {
   background: rgba(26, 27, 45, 0.95);
-  color: var(--pryde-purple);
-  border-color: var(--pryde-purple);
+  color: var(--color-brand);
+  border-color: var(--color-brand);
 }
 
 [data-theme="dark"] .btn-profile-upload:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
 }
 
@@ -589,11 +589,11 @@
 .upload-message-banner {
   padding: 0.75rem;
   background: var(--soft-lavender);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   text-align: center;
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-sm);
-  border-bottom: 2px solid var(--pryde-purple);
+  border-bottom: 2px solid var(--color-brand);
 }
 
 .cover-placeholder {
@@ -652,7 +652,7 @@
 .profile-name {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
-  color: var(--text-primary);
+  color: var(--color-text);
   margin: 0;
   margin-bottom: 2px;
   display: inline-flex;
@@ -690,7 +690,7 @@
 
 .profile-name .user-badge.badge-default,
 .profile-name .user-badge.badge-lavender {
-  -webkit-text-fill-color: var(--pryde-purple, #6B46C1);
+  -webkit-text-fill-color: var(--color-brand, #6B46C1);
 }
 
 /* Dark mode overrides for user badges in profile name */
@@ -710,7 +710,7 @@
   justify-content: center;
   width: 1.1rem; /* Reduced from 1.5rem */
   height: 1.1rem; /* Reduced from 1.5rem */
-  background: linear-gradient(135deg, var(--pryde-purple) 0%, var(--electric-blue) 100%);
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--electric-blue) 100%);
   color: white !important;
   border-radius: 50%;
   font-size: var(--font-size-xs); /* Reduced from 0.75rem */
@@ -745,7 +745,7 @@
 }
 
 [data-theme="dark"] .verified-badge {
-  background: linear-gradient(135deg, var(--electric-blue) 0%, var(--pryde-purple) 100%);
+  background: linear-gradient(135deg, var(--electric-blue) 0%, var(--color-brand) 100%);
   box-shadow:
     0 0 0 1px rgba(9, 132, 227, 0.15), /* Reduced glow */
     0 1px 4px rgba(9, 132, 227, 0.2); /* Reduced glow */
@@ -796,7 +796,7 @@
   padding: 6px 12px;
   border-radius: 6px;
   background: var(--bg-subtle);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   border: 1px solid var(--border-subtle);
@@ -811,15 +811,15 @@
   padding: 0.5rem 1rem;
   border-radius: 20px;
   background: var(--soft-lavender);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
-  border: 1px solid var(--pryde-purple);
+  border: 1px solid var(--color-brand);
 }
 
 /* 6. Bio */
 .profile-bio {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   margin: 8px 0 0 0;
   line-height: var(--line-height-normal);
   font-size: var(--font-size-base);
@@ -840,7 +840,7 @@
 }
 
 .social-title {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-size: var(--font-size-base);
   margin-bottom: 1rem;
   font-weight: var(--font-weight-semibold);
@@ -865,7 +865,7 @@
 }
 
 .social-link-item:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   transform: translateX(5px);
 }
@@ -877,7 +877,7 @@
 
 .social-platform {
   font-weight: var(--font-weight-semibold);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   transition: color 0.3s ease;
 }
 
@@ -888,14 +888,14 @@
 }
 
 .meta-item {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   text-decoration: none;
   transition: color 0.2s ease;
   font-size: var(--font-size-sm);
 }
 
 .meta-item:hover {
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 /* Stats */
@@ -926,7 +926,7 @@
 .stat-value {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .stat-label {
@@ -1003,13 +1003,13 @@
 
 [data-theme="light"] .profile-actions-dropdown--header .btn-actions-menu:hover {
   background: rgba(255, 255, 255, 0.95);
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 .btn-actions-menu:hover {
   background: var(--soft-lavender);
-  border-color: var(--pryde-purple);
-  color: var(--pryde-purple);
+  border-color: var(--color-brand);
+  color: var(--color-brand);
   transform: scale(1.05);
 }
 
@@ -1082,16 +1082,16 @@
 }
 
 .btn-dropdown:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
 }
 
 [data-theme="dark"] .btn-dropdown {
-  color: var(--text-primary, #FFFFFF);
+  color: var(--color-text, #FFFFFF);
 }
 
 [data-theme="dark"] .btn-dropdown:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
 }
 
@@ -1129,7 +1129,7 @@
   margin: 0 !important;
   border: none !important;
   background: transparent !important;
-  color: var(--text-primary, #1E2338) !important;
+  color: var(--color-text, #1E2338) !important;
   text-align: left !important;
   cursor: pointer !important;
   font-size: var(--font-size-base) !important;
@@ -1143,11 +1143,11 @@
 
 .post-dropdown-container .dropdown-menu .dropdown-item:hover {
   background: var(--soft-lavender) !important;
-  color: var(--pryde-purple) !important;
+  color: var(--color-brand) !important;
 }
 
 [data-theme="dark"] .post-dropdown-container .dropdown-menu .dropdown-item {
-  color: var(--text-primary, #FFFFFF) !important;
+  color: var(--color-text, #FFFFFF) !important;
 }
 
 [data-theme="dark"] .post-dropdown-container .dropdown-menu .dropdown-item:hover {
@@ -1231,14 +1231,14 @@
 
 .notes-helper-text {
   font-size: var(--font-size-xs);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   opacity: 0.7;
 }
 
 .btn-unfriend {
   background: var(--soft-lavender);
-  color: var(--pryde-purple);
-  border: 2px solid var(--pryde-purple);
+  color: var(--color-brand);
+  border: 2px solid var(--color-brand);
   box-shadow: 0 4px 12px rgba(108, 92, 231, 0.15);
 }
 
@@ -1295,7 +1295,7 @@
   display: inline-block;
   padding: 0.375rem 0.625rem;
   background: var(--bg-subtle);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   border-radius: 16px;
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-normal);
@@ -1432,7 +1432,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem;
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   border-radius: 8px;
   text-decoration: none;
   color: #ffffff;
@@ -1457,7 +1457,7 @@
 .website-link {
   display: block;
   padding: 0.75rem;
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   border-radius: 8px;
   color: #ffffff;
   text-decoration: none;
@@ -1477,7 +1477,7 @@
 
 [data-theme="dark"] .social-link,
 [data-theme="dark"] .website-link {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: #ffffff;
 }
 
@@ -1668,7 +1668,7 @@
 }
 
 .create-post-sidebar::-webkit-scrollbar-thumb {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   border-radius: 3px;
 }
 
@@ -1707,7 +1707,7 @@
 /* Light mode - use purple for section titles */
 [data-theme="light"] .section-title,
 html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .profile-page .post-input {
@@ -1728,7 +1728,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .profile-page .post-input:focus {
   outline: none;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
@@ -1797,7 +1797,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .cw-input:focus {
   outline: none;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 /* ========================================
@@ -1843,7 +1843,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .profile-page .post-actions-bar button:hover,
 .profile-page .post-actions-bar label:hover {
   background: rgba(108, 92, 231, 0.1);
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 /* Media upload button - slightly different style */
@@ -1855,7 +1855,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .profile-page .btn-media-upload:hover {
   background: rgba(108, 92, 231, 0.1);
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   transform: none;
   box-shadow: none;
 }
@@ -1872,14 +1872,14 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .profile-page .btn-poll.active {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 /* GIF button */
 .profile-page .btn-gif {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   border: none;
   min-width: 50px;
@@ -1896,14 +1896,14 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .profile-page .btn-content-warning:hover {
-  border-color: var(--pryde-purple);
-  color: var(--pryde-purple);
+  border-color: var(--color-brand);
+  color: var(--color-brand);
 }
 
 .profile-page .btn-content-warning.active {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 /* Privacy selector - same height as buttons */
@@ -1926,7 +1926,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .profile-page .privacy-selector:focus {
   outline: none;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 /* Post button - stands out but same height */
@@ -1998,7 +1998,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .profile-sidebar::-webkit-scrollbar-thumb {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   border-radius: 3px;
 }
 
@@ -2369,11 +2369,11 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .profile-page .action-btn.bookmarked {
   background: rgba(108, 92, 231, 0.15);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .profile-page .action-btn.bookmarked:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
 }
 
@@ -2404,7 +2404,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 [data-theme="dark"] .profile-page .action-btn.bookmarked:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
 }
 
@@ -2441,7 +2441,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .profile-page .reaction-count-btn:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   text-decoration: underline;
 }
 
@@ -2516,7 +2516,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   gap: 4px;
   margin-top: 8px;
   position: relative;
-  border-left: 2px solid var(--pryde-purple, #6c5ce7);  /* Purple thread line */
+  border-left: 2px solid var(--color-brand, #6c5ce7);  /* Purple thread line */
 }
 
 .profile-page .comment.reply {
@@ -2653,7 +2653,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .profile-page .comment-action-btn:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 [data-theme="dark"] .profile-page .comment-action-btn {
@@ -2661,7 +2661,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 [data-theme="dark"] .profile-page .comment-action-btn:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 /* Twitter/X style view replies button - Scoped to Profile page */
@@ -2671,7 +2671,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .profile-page .view-replies-btn:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   text-decoration: underline;
 }
 
@@ -2722,7 +2722,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .profile-page .reaction-count-btn:hover {
   background: var(--soft-lavender);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   transform: scale(1.05);
 }
 
@@ -2861,7 +2861,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .profile-page .btn-comment-action:hover {
   background: rgba(108, 92, 231, 0.1);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .profile-page .comment-edit-box {
@@ -2872,7 +2872,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .profile-page .comment-edit-input {
   padding: 0.5rem;
-  border: 2px solid var(--pryde-purple);
+  border: 2px solid var(--color-brand);
   border-radius: 8px;
   background: var(--card-surface);
   color: var(--text-main);
@@ -2896,7 +2896,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .profile-page .btn-save-comment {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
 }
 
@@ -2926,7 +2926,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .reply-input {
   padding: 0.5rem;
-  border: 2px solid var(--pryde-purple);
+  border: 2px solid var(--color-brand);
   border-radius: 8px;
   background: var(--card-surface);
   color: var(--text-main);
@@ -2950,7 +2950,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .btn-submit-reply {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
 }
 
@@ -3134,7 +3134,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
   .comment-replies {
     padding-left: 10px;
-    border-left: 2px solid var(--pryde-purple);
+    border-left: 2px solid var(--color-brand);
   }
 
   .comment.reply {
@@ -3487,7 +3487,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
   .comment-replies {
     padding-left: 8px;
-    border-left: 2px solid var(--pryde-purple);
+    border-left: 2px solid var(--color-brand);
   }
 
   .comment.reply {
@@ -3547,7 +3547,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .edit-post-textarea:focus {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
@@ -3648,7 +3648,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .visibility-select:focus {
   outline: none;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
@@ -3675,7 +3675,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .btn-save-edit {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
 }
 
@@ -3727,7 +3727,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .page-subtitle {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   font-size: var(--font-size-base);
 }
 
@@ -3786,7 +3786,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   justify-content: center;
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 .user-card .user-avatar img {
@@ -3809,13 +3809,13 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .user-card .user-username {
   font-size: var(--font-size-sm);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   margin-bottom: 0.5rem;
 }
 
 .user-card .user-bio {
   font-size: var(--font-size-sm);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -3870,7 +3870,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   border-radius: 6px;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-normal);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   transition: all 0.15s ease;
 }
 
@@ -3882,7 +3882,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 [data-theme="dark"] .profile-identity-pills .badge {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.1);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 [data-theme="dark"] .profile-identity-pills .badge:hover {
@@ -4032,7 +4032,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .profile-name {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
-  color: var(--text-primary);
+  color: var(--color-text);
   margin: 0;
   line-height: var(--line-height-tight);
   text-shadow: none; /* Remove decorative text shadow */
@@ -4065,7 +4065,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .profile-bio {
   font-size: var(--font-size-base);
   line-height: var(--line-height-relaxed);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   margin: 0.5rem 0 0 0;
   max-width: 500px;
 }
@@ -4089,7 +4089,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 }
 
 .meta-item:hover {
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 /* Stats: Clean, horizontal row - ALWAYS on one line */
@@ -4125,7 +4125,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 .stat-value {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .stat-label {
@@ -4151,7 +4151,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   font-weight: var(--font-weight-medium);
   border: 1px solid var(--border-medium);
   background: var(--bg);
-  color: var(--text-primary);
+  color: var(--color-text);
   cursor: pointer;
   transition: all 0.15s ease;
   box-shadow: none; /* No decorative shadows */
@@ -4164,15 +4164,15 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
 
 .btn-add-friend,
 .btn-message {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 .btn-add-friend:hover,
 .btn-message:hover {
-  background: var(--pryde-purple-dark, #5a3a9f);
-  border-color: var(--pryde-purple-dark, #5a3a9f);
+  background: var(--color-branddark, #5a3a9f);
+  border-color: var(--color-branddark, #5a3a9f);
 }
 
 /* Mobile: Stack vertically */

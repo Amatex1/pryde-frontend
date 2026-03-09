@@ -1,12 +1,12 @@
-ï»¿/* ========================================
+/* ========================================
    PRYDE SOCIAL - PLATFORM-GRADE DESIGN SYSTEM
-   Import order: Tokens ï¿½+' Layout ï¿½+' Components ï¿½+' Pages
+   Import order: Tokens ?+' Layout ?+' Components ?+' Pages
    ======================================== */
 
 /* GLOBAL FONTS: Inter (UI) + IBM Plex Sans (Brand Headers) */
 /* Loaded via <link> in index.html for faster parallel fetching (avoids @import render-blocking cascade) */
 
-/* FOUNDATION: tokens, typography, layout, theme â€” now in core/ via main.jsx */
+/* FOUNDATION: tokens, typography, layout, theme — now in core/ via main.jsx */
 
 /* BASE STYLES */
 @import './styles/design-system.css';       /* Design system */
@@ -14,18 +14,18 @@
 /* CORE - Architecture guards (must be first) */
 @import './styles/core/layout-guards.css';  /* Layout safety */
 
-/* LAYOUT SYSTEM â€” consolidated into core/layout.css */
+/* LAYOUT SYSTEM — consolidated into core/layout.css */
 
 /* COMPONENTS */
 @import './styles/components.css';          /* Reusable components */
 @import './styles/tooltip.css';              /* Tooltip fallback system */
 @import './components/IconButton.css';      /* IconButton with tooltips */
-/* styles/navbar.css loaded in main.jsx â€” not duplicated here */
+/* styles/navbar.css loaded in main.jsx — not duplicated here */
 
 /* UTILITIES */
 @import './styles/utilities.css';           /* Reusable utility classes */
 @import './styles/accessibility.css';       /* Accessibility */
-/* hardening.css â€” consolidated into core/utilities.css */
+/* hardening.css — consolidated into core/utilities.css */
 
 /* CALM MODE: Platform-grade transformation (PHASE A-F) */
 @import './components/Navbar.calm.css';     /* Quiet chrome */
@@ -270,7 +270,7 @@ button {
   transform: translateX(-50%);
 }
 
-/* iOS scroll containment â€” allow native swipe-to-refresh only inside feed */
+/* iOS scroll containment — allow native swipe-to-refresh only inside feed */
 .feed-scroll-container {
   overscroll-behavior: contain;
 }

@@ -19,12 +19,12 @@
 .sidebar-section h3 {
   margin: 0 0 0.75rem;
   font-size: 1rem;
-  color: var(--text-primary, #fff);
+  color: var(--color-text, #fff);
 }
 
 .about-text {
   margin: 0 0 1rem;
-  color: var(--text-secondary, #aaa);
+  color: var(--color-text-secondary, #aaa);
   line-height: 1.5;
 }
 
@@ -45,13 +45,13 @@
 }
 
 .meta-value {
-  color: var(--text-primary, #fff);
+  color: var(--color-text, #fff);
 }
 
 .rules-list {
   margin: 0;
   padding-left: 1.25rem;
-  color: var(--text-secondary, #aaa);
+  color: var(--color-text-secondary, #aaa);
 }
 
 .rules-list li {
@@ -66,7 +66,7 @@
 }
 
 .leader-item:not(:last-child) {
-  border-bottom: 1px solid var(--border-color, #333);
+  border-bottom: 1px solid var(--color-border, #333);
 }
 
 .leader-avatar {
@@ -155,9 +155,9 @@
   width: 100%;
   padding: 0.5rem;
   background: var(--bg-tertiary, #252525);
-  border: 1px solid var(--border-color, #333);
+  border: 1px solid var(--color-border, #333);
   border-radius: 8px;
-  color: var(--text-primary, #fff);
+  color: var(--color-text, #fff);
   cursor: pointer;
   transition: background 0.2s;
 }

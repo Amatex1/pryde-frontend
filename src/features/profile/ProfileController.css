@@ -15,10 +15,10 @@
 
 .profile-error h2 {
   margin-bottom: var(--space-3, 12px);
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .profile-error p {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 

@@ -19,7 +19,7 @@
 
 .poll-question h4 {
   margin: 0;
-  color: var(--text-primary);
+  color: var(--color-text);
   font-size: 1rem;
   font-weight: 600;
 }
@@ -45,7 +45,7 @@
   background: var(--bg-surface);
   border: 2px solid var(--border-default);
   border-radius: 8px;
-  color: var(--text-primary);
+  color: var(--color-text);
   font-size: 0.95rem;
   font-weight: 500;
   text-align: left;
@@ -117,7 +117,7 @@
   top: 0;
   left: 0;
   height: 100%;
-  background: linear-gradient(90deg, var(--pryde-purple), var(--electric-blue));
+  background: linear-gradient(90deg, var(--color-brand, var(--electric-blue)));
   opacity: 0.2;
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -133,7 +133,7 @@
 }
 
 .poll-option-text {
-  color: var(--text-primary);
+  color: var(--color-text);
   font-size: 0.95rem;
   flex: 1;
   word-wrap: break-word;
@@ -289,7 +289,7 @@
 .poll-voter-modal-header h3 {
   margin: 0;
   font-size: 1.1rem;
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .poll-voter-modal-close {
@@ -304,7 +304,7 @@
 }
 
 .poll-voter-modal-close:hover {
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .poll-voter-modal-content {
@@ -332,7 +332,7 @@
 
 .poll-voter-option-text {
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--color-text);
   font-size: 0.9rem;
 }
 
@@ -375,7 +375,7 @@
 }
 
 .poll-voter-name {
-  color: var(--text-primary);
+  color: var(--color-text);
   font-size: 0.9rem;
 }
 

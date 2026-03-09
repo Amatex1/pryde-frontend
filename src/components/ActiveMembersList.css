@@ -8,7 +8,7 @@
   padding: 12px;
   background: var(--surface-primary, #ffffff);
   border-radius: 12px;
-  border: 1px solid var(--border-color, #e5e7eb);
+  border: 1px solid var(--color-border, #e5e7eb);
 }
 
 .active-members-header {
@@ -25,7 +25,7 @@
 .active-members-title {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-primary, #1f2937);
+  color: var(--color-text, #1f2937);
 }
 
 .active-members-count {
@@ -112,7 +112,7 @@
 }
 
 .active-members-names a {
-  color: var(--text-primary, #1f2937);
+  color: var(--color-text, #1f2937);
   text-decoration: none;
   font-weight: 500;
 }
@@ -138,11 +138,11 @@
 @media (prefers-color-scheme: dark) {
   .active-members-list {
     background: var(--surface-primary, #1f2937);
-    border-color: var(--border-color, #374151);
+    border-color: var(--color-border, #374151);
   }
 
   .active-members-title {
-    color: var(--text-primary, #f9fafb);
+    color: var(--color-text, #f9fafb);
   }
 
   .active-member-avatar {
@@ -158,7 +158,7 @@
   }
 
   .active-members-names a {
-    color: var(--text-primary, #f9fafb);
+    color: var(--color-text, #f9fafb);
   }
 }
 

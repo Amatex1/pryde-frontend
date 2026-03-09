@@ -403,12 +403,15 @@
   --surface-border: rgba(0, 0, 0, 0.08);
 
   /* ========================================
-     TEXT COLORS
+     TEXT COLORS (LEGACY - map to theme-aware tokens)
+     These point to the new standardized tokens that respond to themes
      ======================================== */
-  --text-primary: #1E1E26;
-  --text-secondary: #6B6E80;
-  --text-muted: #9CA0B3;
-  --text-inverse: #FFFFFF;
+  --color-text: #1E1E26;
+  --text-primary: var(--color-text);
+  --color-text-secondary: #6B6E80;
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-meta);
+  --text-inverse: var(--color-text-inverse);
 
   /* ========================================
      BORDERS
@@ -457,14 +460,18 @@
 
   /* ========================================
      LEGACY MAPPINGS (Backward Compatibility)
+     These point to the new standardized tokens that respond to themes
      ======================================== */
   --bg: var(--bg-page);
-  --text-main: var(--text-primary);
+  --text-main: var(--color-text);
   --text-light: var(--text-muted);
-  --pryde-purple: var(--accent-primary);
+  --color-brand: #6C5CE7;
+  --pryde-purple: var(--color-brand);
   --electric-blue: var(--accent-secondary);
-  --soft-lavender: var(--accent-muted);
+  --soft-lavender: var(--color-brand-muted);
   --border-light: var(--border-subtle);
+  --color-border: rgba(0, 0, 0, 0.08);
+  --border-color: var(--color-border);
   --card-surface: var(--bg-surface);
   --background-light: var(--bg-page);
 
@@ -487,7 +494,7 @@
   --accent-soft: var(--accent-muted);
   --accent-soft-light: rgba(108, 92, 231, 0.12);
   --accent-soft-dark: rgba(108, 92, 231, 0.25);
-  --dark-bg: var(--text-primary);
+  --dark-bg: var(--color-text);
   --conversation-container-bg: transparent;
   --conversation-container-radius: var(--border-radius-lg);
   --conversation-max-width: 860px;
@@ -517,14 +524,17 @@
   --surface-elevated: var(--color-surface);
   --surface-border: rgba(255, 255, 255, 0.08);
 
-  --text-primary: #F8F7FF;
-  --text-secondary: #B0B2D0;
+  --color-text: #F8F7FF;
+  --text-primary: var(--color-text);
+  --color-text-secondary: #B0B2D0;
+  --text-secondary: var(--color-text-secondary);
   --text-muted: #9FA1C0;
   --text-inverse: #1E1E26;
 
   --border-subtle: #262842;
   --border-default: #33355A;
   --border-strong: #454872;
+  --color-border: rgba(255, 255, 255, 0.08);
 
   --accent-primary: #6C5CE7;
   --accent-hover: #7F6FF2;
@@ -563,8 +573,8 @@
   --bg-hover: rgba(108, 92, 231, 0.03);
   --bg-subtle: #F5F6F7;
 
-  --text-primary: #374151;
-  --text-secondary: #6B7280;
+  --color-text: #374151;
+  --color-text-secondary: #6B7280;
   --text-muted: #9CA3AF;
 
   --border-subtle: #E5E7EB;
@@ -600,8 +610,8 @@
   --bg-hover: rgba(108, 92, 231, 0.04);
   --bg-subtle: #18181f;
 
-  --text-primary: #e4e4ea;
-  --text-secondary: #9a9aa8;
+  --color-text: #e4e4ea;
+  --color-text-secondary: #9a9aa8;
   --text-muted: #7a7a88;
 
   --border-subtle: rgba(255, 255, 255, 0.04);
@@ -657,8 +667,8 @@
   --bg-card: #12192F;
   --bg-hover: rgba(108, 92, 231, 0.08);
 
-  --text-primary: #FFFFFF;
-  --text-secondary: #A8B0C2;
+  --color-text: #FFFFFF;
+  --color-text-secondary: #A8B0C2;
   --text-muted: #7B7D9E;
 
   --accent-primary: #6D6AF8;
@@ -677,8 +687,8 @@
   --bg-card: #161E36;
   --bg-hover: rgba(108, 92, 231, 0.045);
 
-  --text-primary: #E7EAF3;
-  --text-secondary: #A2AAC2;
+  --color-text: #E7EAF3;
+  --color-text-secondary: #A2AAC2;
   --text-muted: #7E859C;
 
   --accent-primary: #7A6ED6;
@@ -701,8 +711,8 @@
   --bg-card: #FFFFFF;
   --bg-hover: rgba(108, 92, 231, 0.06);
 
-  --text-primary: #1E2338;
-  --text-secondary: #5E6787;
+  --color-text: #1E2338;
+  --color-text-secondary: #5E6787;
   --text-muted: #9CA0B3;
 
   --accent-primary: #6C5CE7;
@@ -721,8 +731,8 @@
   --bg-card: #FBFCFF;
   --bg-hover: rgba(108, 92, 231, 0.035);
 
-  --text-primary: #2A2F44;
-  --text-secondary: #6F7895;
+  --color-text: #2A2F44;
+  --color-text-secondary: #6F7895;
   --text-muted: #9CA3AF;
 
   --accent-primary: #746AE2;
@@ -749,8 +759,8 @@
   --surface-2: #4A5269;
   --surface-3: #555D78;
 
-  --text-primary: #FFFFFF;
-  --text-secondary: rgba(255, 255, 255, 0.92);
+  --color-text: #FFFFFF;
+  --color-text-secondary: rgba(255, 255, 255, 0.92);
   --text-muted: rgba(255, 255, 255, 0.75);
 
   --accent-primary: #B57FFF;
@@ -764,10 +774,13 @@
   --bg-app: linear-gradient(180deg, var(--bg-deep-base) 0%, var(--bg-deep-mid) 50%, var(--bg-deep-accent) 100%);
   --color-bg: linear-gradient(180deg, var(--bg-deep-base) 0%, var(--bg-deep-mid) 50%, var(--bg-deep-accent) 100%);
   --color-surface: var(--surface-1);
+  --surface-elevated: var(--color-surface);
   --color-border: rgba(181, 127, 255, 0.18);
-  --color-text: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
+  --border-color: var(--color-border);
+  --text-primary: var(--color-text);
+  --text-secondary: var(--color-text-secondary);
   --color-brand: var(--accent-primary);
+  --pryde-purple: var(--color-brand);
   --color-brand-hover: #C68FFF;
   --color-text-inverse: #1A1F2E;
 }
@@ -778,7 +791,7 @@
 
 body {
   background: var(--bg-app);
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .card,
@@ -1204,7 +1217,7 @@ button {
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
 }
 
 /* Hover effects */
@@ -1278,7 +1291,7 @@ button {
 }
 
 [data-theme="dark"] .bookmark-card:hover {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 /* Privacy Settings */
@@ -1366,7 +1379,7 @@ button {
 }
 
 [data-theme="dark"] .footer-section a:hover {
-  color: var(--pryde-purple) !important;
+  color: var(--color-brand) !important;
 }
 
 /* Admin Page */
@@ -1386,7 +1399,7 @@ button {
 }
 
 [data-theme="dark"] .activity-section h3 {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 [data-theme="dark"] .activity-item {
@@ -1395,7 +1408,7 @@ button {
 }
 
 [data-theme="dark"] .activity-user {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 [data-theme="dark"] .activity-content {
@@ -1427,7 +1440,7 @@ button {
 /* Admin Report Cards */
 [data-theme="dark"] .report-card {
   background: var(--card-surface);
-  border-left-color: var(--pryde-purple);
+  border-left-color: var(--color-brand);
 }
 
 [data-theme="dark"] .stat-card {
@@ -1472,7 +1485,7 @@ button {
 /* Security Settings */
 [data-theme="dark"] .security-status-card {
   background: rgba(108, 92, 231, 0.15) !important;
-  border: 1px solid var(--pryde-purple) !important;
+  border: 1px solid var(--color-brand) !important;
 }
 
 [data-theme="dark"] .security-status-card strong,
@@ -1510,7 +1523,7 @@ button {
 
 [data-theme="dark"] .backup-codes-container > div > div {
   background: var(--card-surface) !important;
-  color: var(--pryde-purple) !important;
+  color: var(--color-brand) !important;
 }
 
 [data-theme="dark"] .conversation-list {
@@ -1578,7 +1591,7 @@ button {
 
 [data-theme="dark"] .session-card.current-session {
   background: linear-gradient(135deg, rgba(108, 92, 231, 0.15) 0%, var(--card-surface) 100%);
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 [data-theme="dark"] .session-details {
@@ -1618,13 +1631,13 @@ button {
 /* Backup codes dark mode */
 [data-theme="dark"] .backup-codes-container {
   background: var(--card-surface);
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 [data-theme="dark"] .backup-code {
   background: rgba(108, 92, 231, 0.1);
-  color: var(--pryde-purple);
-  border-color: var(--pryde-purple);
+  color: var(--color-brand);
+  border-color: var(--color-brand);
 }
 
 /* Comment deleted state dark mode */
@@ -2597,7 +2610,7 @@ html {
 
 [data-quiet-writing="true"] textarea,
 [data-quiet-writing="true"] [contenteditable="true"] {
-  caret-color: var(--text-secondary, #888);
+  caret-color: var(--color-text-secondary, #888);
 }
 
 /* ==================================================
@@ -2832,7 +2845,7 @@ html {
   border: 1px dashed var(--border-light);
   border-radius: 0.5rem;
   padding: 0.5rem 1rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   font-size: 0.875rem;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -2840,7 +2853,7 @@ html {
 
 [data-quiet="true"] .btn-more-options:hover {
   background: var(--color-surface-active, rgba(255, 255, 255, 0.1));
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 [data-quiet="true"] .post-actions-bar {

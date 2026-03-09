@@ -114,7 +114,7 @@
 
 .search-input:focus {
   outline: none;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
@@ -177,7 +177,7 @@
 }
 
 .friend-avatar .avatar-placeholder {
-  background: linear-gradient(135deg, var(--pryde-purple), var(--electric-blue));
+  background: linear-gradient(135deg, var(--color-brand, var(--electric-blue)));
   display: flex;
   align-items: center;
   justify-content: center;

@@ -350,7 +350,7 @@ const AppearanceSection = ({
               </div>
 
               {/* IMPROVEMENT 5: Deep Quiet */}
-              <div className="notification-item subtoggle" style={{ borderLeft: '3px solid #F59E0B', paddingLeft: '12px' }}>
+              <div className="notification-item subtoggle" style={{ borderLeft: '3px solid var(--color-warning)', paddingLeft: '12px' }}>
                 <div className="notification-info">
                   <h3>🌑 Deep Quiet</h3>
                   <p>Maximum calm - hide all metrics and reduce UI</p>

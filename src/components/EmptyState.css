@@ -39,7 +39,7 @@
 /* Description */
 .empty-state-description {
   font-size: 0.9375rem;
-  color: var(--text-secondary, #6B6E80);
+  color: var(--color-text-secondary, #6B6E80);
   margin: 0 0 1.5rem 0;
   max-width: 300px;
   line-height: 1.5;

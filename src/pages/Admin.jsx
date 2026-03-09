@@ -1735,11 +1735,11 @@ function SecurityTab({ logs, stats, onResolve }) {
 
   const getSeverityColor = (severity) => {
     switch (severity) {
-      case 'critical': return '#dc3545';
-      case 'high': return '#ff8c00';
-      case 'medium': return '#ffc107';
-      case 'low': return '#28a745';
-      default: return '#6c757d';
+      case 'critical': return 'var(--color-danger)';
+      case 'high': return 'var(--color-warning)';
+      case 'medium': return 'var(--color-warning)';
+      case 'low': return 'var(--color-success)';
+      default: return 'var(--color-text-secondary)';
     }
   };
 
@@ -1880,7 +1880,7 @@ function SecurityTab({ logs, stats, onResolve }) {
                     <span style={{
                       marginLeft: '0.5rem',
                       padding: '0.25rem 0.5rem',
-                      background: log.action === 'banned' ? '#dc3545' : log.action === 'blocked' ? '#ff8c00' : '#6c757d',
+                      background: log.action === 'banned' ? 'var(--color-danger)' : log.action === 'blocked' ? 'var(--color-warning)' : 'var(--color-text-secondary)',
                       color: 'white',
                       borderRadius: '4px',
                       fontSize: '0.875rem'

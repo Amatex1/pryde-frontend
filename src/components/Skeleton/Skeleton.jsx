@@ -54,6 +54,7 @@ export function SkeletonPost() {
           <SkeletonLine width="120px" height="14px" />
           <SkeletonLine width="80px" height="12px" />
         </div>
+      </div>
       <div className="skeleton-post-content">
         <SkeletonLine width="100%" />
         <SkeletonLine width="90%" />
@@ -64,6 +65,7 @@ export function SkeletonPost() {
         <SkeletonLine width="60px" height="24px" />
         <SkeletonLine width="60px" height="24px" />
       </div>
+    </div>
   );
 }
 
@@ -76,6 +78,7 @@ export function SkeletonCard({ hasImage = false }) {
         <SkeletonLine width="100%" />
         <SkeletonLine width="70%" />
       </div>
+    </div>
   );
 }
 

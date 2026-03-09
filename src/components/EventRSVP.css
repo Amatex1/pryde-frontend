@@ -17,7 +17,7 @@
   border-radius: 8px;
   border: 2px solid var(--border-subtle);
   background: var(--bg);
-  color: var(--text-primary);
+  color: var(--color-text);
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;

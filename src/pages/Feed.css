@@ -434,21 +434,21 @@
 }
 
 .btn-dropdown:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 [data-theme="dark"] .btn-dropdown {
   background: var(--bg-card, #12192F);
   border-color: var(--border-soft, rgba(255, 255, 255, 0.08));
-  color: var(--text-primary, #FFFFFF);
+  color: var(--color-text, #FFFFFF);
 }
 
 [data-theme="dark"] .btn-dropdown:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 .dropdown-menu {
@@ -477,7 +477,7 @@
   padding: 0.75rem 1rem;
   border: none;
   background: transparent;
-  color: var(--text-primary, #1E2338);
+  color: var(--color-text, #1E2338);
   text-align: left;
   cursor: pointer;
   font-size: var(--font-size-base);
@@ -489,11 +489,11 @@
 
 .dropdown-item:hover {
   background: var(--soft-lavender);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 [data-theme="dark"] .dropdown-item {
-  color: var(--text-primary, #FFFFFF);
+  color: var(--color-text, #FFFFFF);
 }
 
 [data-theme="dark"] .dropdown-item:hover {
@@ -543,7 +543,7 @@
 }
 
 .post-edit-textarea:focus {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
@@ -605,7 +605,7 @@
 }
 
 .btn-save-post {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
 }
 
@@ -692,7 +692,7 @@
   font-weight: bold;
   color: white;
   overflow: hidden;
-  border: 2px solid var(--pryde-purple);
+  border: 2px solid var(--color-brand);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -744,7 +744,7 @@
 
 .post-author-name {
   font-weight: 600;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   transition: color 0.2s ease;
   line-height: 1.2;
   flex-shrink: 1; /* Allow name to shrink on mobile */
@@ -955,7 +955,7 @@
 .author-name,
 .post-author-name {
   font-weight: 600;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   transition: color 0.2s ease;
   white-space: nowrap; /* ONE-LINE RULE: No wrapping */
   overflow: hidden; /* Hide overflow */
@@ -1008,7 +1008,7 @@
   justify-content: center;
   width: 1.1rem; /* Reduced from 1.25rem */
   height: 1.1rem; /* Reduced from 1.25rem */
-  background: linear-gradient(135deg, var(--pryde-purple) 0%, var(--electric-blue) 100%);
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--electric-blue) 100%);
   color: white;
   border-radius: 50%;
   font-size: var(--font-size-xs); /* Reduced from 0.65rem */
@@ -1039,7 +1039,7 @@
 }
 
 [data-theme="dark"] .verified-badge {
-  background: linear-gradient(135deg, var(--electric-blue) 0%, var(--pryde-purple) 100%);
+  background: linear-gradient(135deg, var(--electric-blue) 0%, var(--color-brand) 100%);
   box-shadow:
     0 0 0 1px rgba(9, 132, 227, 0.15), /* Reduced glow */
     0 1px 4px rgba(9, 132, 227, 0.2); /* Reduced glow */
@@ -1099,7 +1099,7 @@
 }
 
 .cw-custom-input:focus {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
 }
 
@@ -1155,9 +1155,9 @@ button.btn-poll.active {
 
 [data-theme="dark"] .post-actions-bar .btn-poll.active,
 [data-theme="dark"] button.btn-poll.active {
-  background: var(--pryde-purple) !important;
+  background: var(--color-brand) !important;
   color: white !important;
-  border-color: var(--pryde-purple) !important;
+  border-color: var(--color-brand) !important;
 }
 
 /* Content Warning Button - Calm, available tool */
@@ -1249,7 +1249,7 @@ button.btn-drafts {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   background: var(--soft-lavender);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   animation: fadeIn 0.3s ease;
 }
 
@@ -1286,7 +1286,7 @@ button.btn-drafts:hover {
 [data-theme="dark"] button.btn-drafts:hover {
   background: rgba(108, 92, 231, 0.25) !important;
   color: #e8e9f0 !important;
-  border-color: var(--pryde-purple) !important;
+  border-color: var(--color-brand) !important;
 }
 
 /* ========================================
@@ -1368,8 +1368,8 @@ label.hide-metrics-checkbox:hover {
 }
 
 .hide-metrics-checkbox input[type="checkbox"]:checked {
-  background: var(--pryde-purple) !important;
-  border-color: var(--pryde-purple) !important;
+  background: var(--color-brand) !important;
+  border-color: var(--color-brand) !important;
 }
 
 .hide-metrics-checkbox input[type="checkbox"]:checked::after {
@@ -1412,8 +1412,8 @@ body.dark-mode .hide-metrics-checkbox input[type="checkbox"] {
 
 [data-theme="dark"] .hide-metrics-checkbox input[type="checkbox"]:checked,
 body.dark-mode .hide-metrics-checkbox input[type="checkbox"]:checked {
-  background: var(--pryde-purple) !important;
-  border-color: var(--pryde-purple) !important;
+  background: var(--color-brand) !important;
+  border-color: var(--color-brand) !important;
 }
 
 /* Light mode + Quiet mode - Fix visibility */
@@ -1421,7 +1421,7 @@ body.dark-mode .hide-metrics-checkbox input[type="checkbox"]:checked {
 html:not([data-theme])[data-quiet-mode="true"] .hide-metrics-checkbox {
   background: var(--bg-surface) !important;
   border-color: var(--border-soft) !important;
-  color: var(--text-primary) !important;
+  color: var(--color-text) !important;
 }
 
 [data-theme="light"][data-quiet-mode="true"] .hide-metrics-checkbox:hover,
@@ -1795,7 +1795,7 @@ html:not([data-theme]) .post-actions {
 }
 
 .reaction-count-btn:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   text-decoration: underline;
 }
 
@@ -1985,7 +1985,7 @@ html:not([data-theme]) .post-actions {
   flex-direction: column;
   gap: 4px;
   margin-top: 4px;
-  border-left: 2px solid var(--pryde-purple, #6c5ce7);  /* Purple thread line */
+  border-left: 2px solid var(--color-brand, #6c5ce7);  /* Purple thread line */
   position: relative;
 }
 
@@ -2066,7 +2066,7 @@ html:not([data-theme]) .post-actions {
 
 .reply-expand {
   font-size: var(--font-size-xs);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   margin-left: 32px;  /* Reduced from 40px */
   cursor: pointer;
   padding: 4px 0;
@@ -2146,7 +2146,7 @@ html:not([data-theme]) .post-actions {
   cursor: pointer;
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   transition: opacity 0.12s ease;
   padding: 0;
 }
@@ -2208,7 +2208,7 @@ html:not([data-theme]) .post-actions {
   border: none;
   text-align: left;
   font-size: var(--font-size-sm);
-  color: var(--text-primary);
+  color: var(--color-text);
   cursor: pointer;
   transition: background 0.15s ease;
   display: flex;
@@ -2271,7 +2271,7 @@ html:not([data-theme]) .post-actions {
 /* Author pronouns */
 .comment-author .author-pronouns {
   font-size: var(--font-size-xs);
-  color: var(--text-secondary, var(--text-muted));
+  color: var(--color-text-secondary, var(--text-muted));
   margin-left: 4px;
   font-weight: normal;
 }
@@ -2280,7 +2280,7 @@ html:not([data-theme]) .post-actions {
 .comment-timestamp,
 .comment-time {
   font-size: var(--font-size-xs);
-  color: var(--text-secondary, var(--text-muted));
+  color: var(--color-text-secondary, var(--text-muted));
   margin-left: 6px;
   white-space: nowrap;
   font-weight: var(--font-weight-normal);
@@ -2378,7 +2378,7 @@ html:not([data-theme]) .post-actions {
   font-size: var(--font-size-xs);
   opacity: 0.7;
   align-items: center;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 /* Show actions on hover (desktop) */
@@ -2433,7 +2433,7 @@ html:not([data-theme]) .post-actions {
 }
 
 .view-replies-btn:hover {
-  color: var(--pryde-purple) !important;
+  color: var(--color-brand) !important;
   text-decoration: underline;
 }
 
@@ -2728,7 +2728,7 @@ html:not([data-theme]) .post-actions {
 .comment-edit-input {
   padding: var(--space-3);
   border-radius: var(--radius-md);
-  border: 2px solid var(--pryde-purple);
+  border: 2px solid var(--color-brand);
   background: var(--bg-card);
   color: var(--text-main);
   font-size: var(--font-size-sm);
@@ -2782,7 +2782,7 @@ html:not([data-theme]) .post-actions {
   padding: 0.75rem;
   background: rgba(108, 92, 231, 0.05);
   border-radius: 10px;
-  border: 2px solid var(--pryde-purple);
+  border: 2px solid var(--color-brand);
 }
 
 /* Replying-to indicator pill */
@@ -2849,7 +2849,7 @@ html:not([data-theme]) .post-actions {
 .reply-input {
   padding: var(--space-3);
   border-radius: var(--radius-md);
-  border: 2px solid var(--pryde-purple);
+  border: 2px solid var(--color-brand);
   background: var(--bg-card);
   color: var(--text-main);
   font-size: var(--font-size-sm);
@@ -3086,7 +3086,7 @@ html:not([data-theme]) .post-actions {
 
 .support-link {
   display: inline-block;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   text-decoration: none;
@@ -3117,7 +3117,7 @@ html:not([data-theme]) .post-actions {
 }
 
 .friends-search-input:focus {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
@@ -3148,12 +3148,12 @@ html:not([data-theme]) .post-actions {
 }
 
 .friends-tab:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .friends-tab.active {
-  color: var(--pryde-purple);
-  border-bottom-color: var(--pryde-purple);
+  color: var(--color-brand);
+  border-bottom-color: var(--color-brand);
 }
 
 /* Friends Sidebar List */
@@ -3210,7 +3210,7 @@ html:not([data-theme]) .post-actions {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3256,7 +3256,7 @@ html:not([data-theme]) .post-actions {
 
 .friend-sidebar-name {
   font-weight: var(--font-weight-semibold);
-  color: var(--pryde-purple); /* Changed from var(--text-main) to purple for better visibility */
+  color: var(--color-brand); /* Changed from var(--text-main) to purple for better visibility */
   font-size: var(--font-size-sm);
   white-space: nowrap;
   overflow: hidden;
@@ -3296,7 +3296,7 @@ html:not([data-theme]) .post-actions {
   height: 32px;
   border-radius: 8px;
   border: none;
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   font-size: var(--font-size-base);
   cursor: pointer;
@@ -3378,7 +3378,7 @@ html:not([data-theme]) .post-actions {
 }
 
 [data-theme="dark"] .btn-friend-action {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
 }
 
 [data-theme="dark"] .btn-friend-action:hover {
@@ -3392,7 +3392,7 @@ html:not([data-theme]) .post-actions {
 [data-theme="dark"] .friends-search-input {
   background: var(--bg-card, #12192F);
   border-color: var(--border-soft, rgba(255, 255, 255, 0.08));
-  color: var(--text-primary, #FFFFFF);
+  color: var(--color-text, #FFFFFF);
 }
 
 [data-theme="dark"] .friends-search-input::placeholder {
@@ -3400,7 +3400,7 @@ html:not([data-theme]) .post-actions {
 }
 
 [data-theme="dark"] .friends-search-input:focus {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 [data-theme="dark"] .friends-tabs {
@@ -3412,11 +3412,11 @@ html:not([data-theme]) .post-actions {
 }
 
 [data-theme="dark"] .friends-tab:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 [data-theme="dark"] .friends-tab.active {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 /* Trending List */
@@ -3436,7 +3436,7 @@ html:not([data-theme]) .post-actions {
 }
 
 .trending-item:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   transform: translateX(5px);
 }
@@ -3964,7 +3964,7 @@ html:not([data-theme]) .post-actions {
 .refresh-spinner {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   text-align: center;
 }
 
@@ -3977,7 +3977,7 @@ html:not([data-theme]) .post-actions {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   border: none;
   font-size: var(--font-size-xl);
@@ -4012,9 +4012,9 @@ html:not([data-theme]) .post-actions {
   padding: 1rem 2rem;
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   background: var(--card-bg);
-  border: 2px solid var(--pryde-purple);
+  border: 2px solid var(--color-brand);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -4022,7 +4022,7 @@ html:not([data-theme]) .post-actions {
 }
 
 .btn-load-more:hover:not(:disabled) {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
@@ -4037,7 +4037,7 @@ html:not([data-theme]) .post-actions {
 .end-of-feed {
   text-align: center;
   padding: 2rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   font-size: var(--font-size-base);
 }
 
@@ -4213,8 +4213,8 @@ html:not([data-theme]) .post-actions {
 .composer-actions input[type="checkbox"]:checked,
 .post-actions-bar input[type="checkbox"]:checked,
 .hide-metrics-checkbox input[type="checkbox"]:checked {
-  background: var(--pryde-purple);
-  border-color: var(--pryde-purple);
+  background: var(--color-brand);
+  border-color: var(--color-brand);
 }
 
 /* Checkmark icon */
@@ -4255,8 +4255,8 @@ html:not([data-theme]) .post-actions {
 [data-theme="dark"] .composer-actions input[type="checkbox"]:checked,
 [data-theme="dark"] .post-actions-bar input[type="checkbox"]:checked,
 [data-theme="dark"] .hide-metrics-checkbox input[type="checkbox"]:checked {
-  background: var(--pryde-purple);
-  border-color: var(--pryde-purple);
+  background: var(--color-brand);
+  border-color: var(--color-brand);
 }
 
 /* Quiet mode stays subtle, not larger */
@@ -4546,7 +4546,7 @@ label.btn-media-upload:disabled {
 }
 
 .comment-user-avatar span {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-base);
 }
@@ -4564,7 +4564,7 @@ label.btn-media-upload:disabled {
 }
 
 .comment-input:focus {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   background: var(--card-surface);
 }
 
@@ -4573,7 +4573,7 @@ label.btn-media-upload:disabled {
   height: 36px;
   border-radius: 50%;
   border: none;
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   font-size: var(--font-size-xl);
   cursor: pointer;
@@ -4667,7 +4667,7 @@ label.btn-media-upload:disabled {
   padding: 8px;
   margin-left: 3rem;
   background: rgba(108, 92, 231, 0.05);
-  border-left: 3px solid var(--pryde-purple);
+  border-left: 3px solid var(--color-brand);
   border-radius: 16px;
 }
 
@@ -4699,7 +4699,7 @@ label.btn-media-upload:disabled {
 }
 
 .reply-user-avatar span {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-base);
 }
@@ -4727,7 +4727,7 @@ label.btn-media-upload:disabled {
 .reply-input:focus,
 .reply-composer input:focus,
 .reply-textarea:focus {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.1);
 }
 
@@ -4749,7 +4749,7 @@ label.btn-media-upload:disabled {
 .reply-cancel {
   order: 1;
   font-size: var(--font-size-sm);
-  color: var(--text-secondary, var(--text-muted));
+  color: var(--color-text-secondary, var(--text-muted));
   cursor: pointer;
   background: none;
   border: none;
@@ -4776,7 +4776,7 @@ button[data-action="gif"] {
   min-width: 36px;
   border-radius: 50%;
   border: none;
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
@@ -4806,7 +4806,7 @@ button[data-action="gif"] {
   min-width: 36px;
   border-radius: 50%;
   border: none;
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   font-size: var(--font-size-lg);
   cursor: pointer;
@@ -5059,7 +5059,7 @@ select.privacy-selector:focus {
 }
 
 .privacy-section h3 {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-size: var(--font-size-lg);
   margin-bottom: 0.5rem;
 }
@@ -5149,7 +5149,7 @@ select.privacy-selector:focus {
 }
 
 .friend-avatar-small span {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-base);
 }
@@ -5174,13 +5174,13 @@ select.privacy-selector:focus {
 }
 
 .btn-secondary:hover {
-  border-color: var(--pryde-purple);
-  color: var(--pryde-purple);
+  border-color: var(--color-brand);
+  color: var(--color-brand);
 }
 
 /* Hashtag Links */
 .hashtag-link {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-weight: var(--font-weight-semibold);
   text-decoration: none;
   transition: all 0.2s ease;
@@ -5201,7 +5201,7 @@ select.privacy-selector:focus {
 }
 
 .hashtag-title {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-size: var(--font-size-3xl);
   margin-bottom: 0.5rem;
 }
@@ -5232,7 +5232,7 @@ select.privacy-selector:focus {
 
 .trending-item:hover {
   background: var(--soft-lavender);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .trending-count {
@@ -5258,13 +5258,13 @@ select.privacy-selector:focus {
 /* Highlighted Post/Comment Animations */
 .highlighted-post {
   animation: highlightPulse 3s ease-in-out;
-  border: 2px solid var(--pryde-purple) !important;
+  border: 2px solid var(--color-brand) !important;
 }
 
 .highlighted-comment {
   animation: highlightPulse 3s ease-in-out;
   background: rgba(108, 92, 231, 0.1) !important;
-  border-left: 3px solid var(--pryde-purple) !important;
+  border-left: 3px solid var(--color-brand) !important;
   padding-left: 1rem !important;
 }
 
@@ -5370,7 +5370,7 @@ select.privacy-selector:focus {
 }
 
 .comment-modal-textarea:focus {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   background: var(--card-surface);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
@@ -5395,9 +5395,9 @@ select.privacy-selector:focus {
 }
 
 .btn-gif-modal:hover {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 .btn-submit-comment {

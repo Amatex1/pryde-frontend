@@ -43,7 +43,7 @@
 
 .group-card-description {
   margin: 0 0 0.75rem;
-  color: var(--text-secondary, #aaa);
+  color: var(--color-text-secondary, #aaa);
   font-size: 0.875rem;
   line-height: 1.4;
 }

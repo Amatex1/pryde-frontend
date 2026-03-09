@@ -1021,22 +1021,22 @@
 [data-theme="dark"][data-quiet-mode="true"] .user-profile-trigger {
   background: transparent;
   border-color: var(--border-soft, rgba(255, 255, 255, 0.06));
-  color: var(--text-primary, #E7EAF3);
+  color: var(--color-text, #E7EAF3);
 }
 
 [data-theme="dark"][data-quiet="true"] .user-profile-trigger .user-name,
 [data-theme="dark"][data-quiet-mode="true"] .user-profile-trigger .user-name {
-  color: var(--text-primary, #E7EAF3);
+  color: var(--color-text, #E7EAF3);
 }
 
 [data-theme="dark"][data-quiet="true"] .nav-link,
 [data-theme="dark"][data-quiet-mode="true"] .nav-link {
-  color: var(--text-primary, #E7EAF3);
+  color: var(--color-text, #E7EAF3);
 }
 
 [data-theme="dark"][data-quiet="true"] .dropdown-item,
 [data-theme="dark"][data-quiet-mode="true"] .dropdown-item {
-  color: var(--text-primary, #E7EAF3);
+  color: var(--color-text, #E7EAF3);
 }
 
 [data-theme="dark"][data-quiet="true"] .dropdown-item:hover,

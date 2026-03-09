@@ -12,7 +12,7 @@
 }
 
 .view-attendees-btn:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .attendees-icon {
@@ -51,12 +51,12 @@
 }
 
 .attendees-tab:hover {
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .attendees-tab.active {
-  color: var(--pryde-purple);
-  border-bottom-color: var(--pryde-purple);
+  color: var(--color-brand);
+  border-bottom-color: var(--color-brand);
 }
 
 .attendees-list {
@@ -98,7 +98,7 @@
 }
 
 .attendee-name {
-  color: var(--text-primary);
+  color: var(--color-text);
   font-weight: 600;
   font-size: 0.95rem;
   overflow: hidden;

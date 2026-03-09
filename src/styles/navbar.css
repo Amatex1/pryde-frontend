@@ -1,11 +1,11 @@
-ï»¿/* ========================================
+/* ========================================
    NAVBAR - PLATFORM-GRADE DESIGN
    Calm, Confident, Professional
    ======================================== */
 
 .navbar {
   height: var(--navbar-height);
-  /* Glass effect â€” semi-transparent surface with blur */
+  /* Glass effect — semi-transparent surface with blur */
   background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -271,7 +271,7 @@
   }
 }
 
-/* Decorative overrides removed â€” Navbar.css handles background, shadow, and animation */
+/* Decorative overrides removed — Navbar.css handles background, shadow, and animation */
 
 /* ========================================
    ACCESSIBILITY

@@ -181,7 +181,7 @@ function TrustAndSafety() {
             padding: '1.5rem',
             marginTop: '1.5rem'
           }}>
-            <h3 style={{ marginTop: 0, color: '#2e7d32' }}>💚 Most Actions Are Temporary</h3>
+            <h3 style={{ marginTop: 0, color: 'var(--color-success)' }}>💚 Most Actions Are Temporary</h3>
             <p style={{ marginBottom: 0 }}>
               The vast majority of moderation actions are temporary and contextual.
               We believe in second chances and understand that everyone makes mistakes.

@@ -127,12 +127,12 @@ function SafetyModeration() {
 
           <div style={{
             background: 'rgba(255, 165, 0, 0.1)',
-            border: '2px solid #ff8c00',
+            border: '2px solid var(--color-warning)',
             borderRadius: '8px',
             padding: '1.5rem',
             marginTop: '1.5rem'
           }}>
-            <h3 style={{ color: '#ff8c00', marginTop: 0 }}>⚠️ Safety in High-Risk Regions</h3>
+            <h3 style={{ color: 'var(--color-warning)', marginTop: 0 }}>⚠️ Safety in High-Risk Regions</h3>
             <p>
               <strong>If you are in a country where same-sex relationships are criminalised, please take extra precautions:</strong>
             </p>
@@ -346,7 +346,7 @@ function SafetyModeration() {
             padding: '1.5rem',
             marginTop: '1.5rem'
           }}>
-            <h3 style={{ marginTop: 0, color: '#2e7d32' }}>💚 Most Actions Are Temporary</h3>
+            <h3 style={{ marginTop: 0, color: 'var(--color-success)' }}>💚 Most Actions Are Temporary</h3>
             <p style={{ marginBottom: 0 }}>
               The vast majority of moderation actions are temporary and contextual.
               We believe in second chances and understand that everyone makes mistakes.

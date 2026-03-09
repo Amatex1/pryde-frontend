@@ -35,7 +35,7 @@
 }
 
 .async-loading-message {
-  color: var(--text-secondary, #666);
+  color: var(--color-text-secondary, #666);
   font-size: var(--text-sm, 0.875rem);
   margin: 0;
 }
@@ -58,13 +58,13 @@
 .async-error-title {
   font-size: var(--text-base, 1rem);
   font-weight: 600;
-  color: var(--text-primary, #1a1a2e);
+  color: var(--color-text, #1a1a2e);
   margin: 0 0 var(--space-2, 0.5rem) 0;
 }
 
 .async-error-message {
   font-size: var(--text-sm, 0.875rem);
-  color: var(--text-secondary, #666);
+  color: var(--color-text-secondary, #666);
   margin: 0 0 var(--space-4, 1rem) 0;
   line-height: 1.5;
 }
@@ -102,7 +102,7 @@
 
 .async-empty-message {
   font-size: var(--text-sm, 0.875rem);
-  color: var(--text-secondary, #666);
+  color: var(--color-text-secondary, #666);
   margin: 0;
   line-height: 1.5;
 }

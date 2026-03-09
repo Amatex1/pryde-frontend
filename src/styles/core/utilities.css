@@ -291,7 +291,7 @@ a,
 /* Modal header */
 .modal-header {
   padding: 16px 20px;
-  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -334,7 +334,7 @@ a,
 /* Modal footer */
 .modal-footer {
   padding: 16px 20px;
-  border-top: 1px solid var(--border-color, #e5e7eb);
+  border-top: 1px solid var(--color-border, #e5e7eb);
   display: flex;
   gap: 12px;
   justify-content: flex-end;
@@ -632,7 +632,7 @@ button:active,
 [data-theme="dark"] select,
 [data-theme="dark"] option {
   background-color: var(--bg-card, #1A1B30);
-  color: var(--text-primary, #F8F7FF);
+  color: var(--color-text, #F8F7FF);
   border-color: var(--border-subtle, #262842);
 }
 

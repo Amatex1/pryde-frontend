@@ -3,8 +3,8 @@
   bottom: 16px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--surface-elevated, linear-gradient(135deg, #8b5cf6, #6d28d9));
-  color: var(--text-primary, white);
+  background: var(--color-surface, linear-gradient(135deg, #8b5cf6, #6d28d9));
+  color: var(--color-text, white);
   border-radius: 999px;
   padding: 10px 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
@@ -86,7 +86,7 @@
 
 .update-btn.secondary {
   background: transparent;
-  color: var(--text-secondary, rgba(255, 255, 255, 0.8));
+  color: var(--color-text-secondary rgba(255, 255, 255, 0.8));
   padding: 6px 8px;
 }
 

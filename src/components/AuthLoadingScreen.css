@@ -45,7 +45,7 @@
 
 .auth-loading-reload-text {
   margin-bottom: 1rem;
-  color: var(--text-secondary, #616161);
+  color: var(--color-text-secondary, #616161);
   font-size: 0.9rem;
 }
 

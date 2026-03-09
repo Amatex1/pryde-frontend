@@ -1,4 +1,4 @@
-﻿/**
+/**
  * UserBadge Component Styles - PHASE A: Calm, Platform-Grade
  * 
  * Removed: Gradients, glows, decorative effects, transform animations
@@ -36,27 +36,27 @@
   letter-spacing: 0.01em;
 }
 
-/* ────────────────────────────────────────
+/* ----------------------------------------
    Color Variants - Flat, No Gradients
-   ──────────────────────────────────────── */
+   ---------------------------------------- */
 
 .badge-default {
   background: var(--bg-secondary, #f4f4f4);
-  color: var(--text-secondary, #666);
+  color: var(--color-text-secondary, #666);
   border-color: var(--border-light, #e0e0e0);
 }
 
 /* Rainbow: Simplified to purple (primary brand color) */
 .badge-rainbow {
-  background: var(--pryde-purple, #6B46C1);
+  background: var(--color-brand, #6B46C1);
   color: white;
-  border-color: var(--pryde-purple, #6B46C1);
+  border-color: var(--color-brand, #6B46C1);
 }
 
 .badge-purple {
-  background: var(--pryde-purple, #6B46C1);
+  background: var(--color-brand, #6B46C1);
   color: white;
-  border-color: var(--pryde-purple, #6B46C1);
+  border-color: var(--color-brand, #6B46C1);
 }
 
 /* Gold: Flat, muted */
@@ -97,13 +97,13 @@
   border-color: #10b981;
 }
 
-/* ────────────────────────────────────────
+/* ----------------------------------------
    Dark Mode - Muted, Calm
-   ──────────────────────────────────────── */
+   ---------------------------------------- */
 
 [data-theme="dark"] .badge-default {
   background: rgba(255, 255, 255, 0.08);
-  color: var(--text-secondary, #aaa);
+  color: var(--color-text-secondary, #aaa);
   border-color: rgba(255, 255, 255, 0.12);
 }
 
@@ -150,9 +150,9 @@
   border-color: rgba(16, 185, 129, 0.9);
 }
 
-/* ────────────────────────────────────────
+/* ----------------------------------------
    Mobile Responsive
-   ──────────────────────────────────────── */
+   ---------------------------------------- */
 
 @media (max-width: 768px) {
   .user-badge {

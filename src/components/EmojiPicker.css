@@ -120,7 +120,7 @@
 
 .emoji-button:hover {
   background: var(--soft-lavender);
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   transform: scale(1.1);
 }
 

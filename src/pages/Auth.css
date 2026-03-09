@@ -48,7 +48,7 @@
 }
 
 .auth-home-link:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   background: var(--soft-lavender);
 }
 
@@ -136,7 +136,7 @@
   border: none;
   font-size: var(--font-size-base);
   font-weight: 500;
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -161,7 +161,7 @@
 }
 
 .auth-link {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   text-decoration: none;
   font-weight: 600;
   transition: all 0.3s ease;
@@ -188,7 +188,7 @@
 }
 
 .auth-link-muted:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   text-decoration: underline; /* Subtle underline only on hover */
 }
 
@@ -212,7 +212,7 @@
 }
 
 .auth-legal-links a:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .auth-legal-links span {
@@ -270,7 +270,7 @@
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: var(--pryde-purple);
+  accent-color: var(--color-brand);
   flex-shrink: 0;
 }
 
@@ -279,7 +279,7 @@
 }
 
 .checkbox-text a {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   text-decoration: underline;
 }
 
@@ -307,7 +307,7 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: var(--pryde-purple);
+  accent-color: var(--color-brand);
   flex-shrink: 0;
 }
 
@@ -316,7 +316,7 @@
 }
 
 .terms-checkbox-text a {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   text-decoration: underline;
 }
 
@@ -457,13 +457,13 @@
 }
 
 .identity-option:hover {
-  border-color: var(--pryde-purple-light);
+  border-color: var(--color-brandlight);
   background: rgba(108, 92, 231, 0.05);
 }
 
 .identity-option.selected {
   background: rgba(108, 92, 231, 0.1); /* Subtle selection, not full purple */
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   color: var(--text-main); /* Keep text dark, not white */
 }
 
@@ -473,7 +473,7 @@
   width: 16px; /* Smaller than default 20px */
   height: 16px;
   cursor: pointer;
-  accent-color: var(--pryde-purple);
+  accent-color: var(--color-brand);
   flex-shrink: 0;
 }
 
@@ -514,8 +514,8 @@
 }
 
 .btn-skip-optional:hover {
-  border-color: var(--pryde-purple-light);
-  color: var(--pryde-purple);
+  border-color: var(--color-brandlight);
+  color: var(--color-brand);
   background: rgba(108, 92, 231, 0.03);
 }
 
@@ -538,7 +538,7 @@
 .btn-unskip {
   background: none;
   border: none;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   text-decoration: underline;
   cursor: pointer;
   font-size: var(--font-size-sm);
@@ -602,7 +602,7 @@
   background: var(--bg-subtle);
   border-radius: var(--border-radius-md);
   font-size: var(--font-size-sm);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 .invite-value-icon {
@@ -660,17 +660,17 @@
 
 [data-theme="dark"] .auth-title,
 [data-theme="dark"] .auth-subtitle {
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .form-label {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 [data-theme="dark"] .form-input {
   background: var(--bg-surface);
   border-color: var(--border-subtle);
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .form-input::placeholder {
@@ -707,7 +707,7 @@
   width: 48px;
   height: 48px;
   border: 3px solid rgba(108, 92, 231, 0.2);
-  border-top-color: var(--pryde-purple);
+  border-top-color: var(--color-brand);
   border-radius: 50%;
   animation: auth-spin 0.9s linear infinite;
   margin: 0 auto var(--space-lg);
@@ -720,7 +720,7 @@
 @media (prefers-reduced-motion: reduce) {
   .verification-spinner {
     animation: none;
-    border-color: var(--pryde-purple);
+    border-color: var(--color-brand);
   }
 }
 

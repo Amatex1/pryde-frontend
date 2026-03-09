@@ -10,7 +10,7 @@
 
 /* Default focus ring for all interactive elements */
 :focus-visible {
-  outline: 2px solid var(--pryde-purple, #6C5CE7);
+  outline: 2px solid var(--color-brand, #6C5CE7);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -19,7 +19,7 @@
 button:focus-visible,
 a:focus-visible,
 [role="button"]:focus-visible {
-  outline: 2px solid var(--pryde-purple, #6C5CE7);
+  outline: 2px solid var(--color-brand, #6C5CE7);
   outline-offset: 2px;
   box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.15);
 }
@@ -29,7 +29,7 @@ input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
   outline: none;
-  border-color: var(--pryde-purple, #6C5CE7);
+  border-color: var(--color-brand, #6C5CE7);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
 }
 
@@ -59,7 +59,7 @@ select:focus-visible {
   top: -100px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--pryde-purple, #6C5CE7);
+  background: var(--color-brand, #6C5CE7);
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
@@ -442,14 +442,14 @@ textarea:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   /* Ensure text remains readable */
-  color: var(--text-secondary, #666);
+  color: var(--color-text-secondary, #666);
 }
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   :root {
-    --text-primary: #000;
-    --text-secondary: #333;
+    --color-text: #000;
+    --color-text-secondary: #333;
     --bg-page: #fff;
     --border-default: #000;
   }

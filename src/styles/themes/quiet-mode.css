@@ -246,7 +246,7 @@
 
 .quiet-preview-content h3 {
   margin-bottom: 16px;
-  color: var(--text-primary, #F9FAFB);
+  color: var(--color-text, #F9FAFB);
 }
 
 .quiet-preview-content .preview-item {
@@ -296,8 +296,8 @@
 
 /* High contrast mode */
 [data-quiet-high-contrast="true"] {
-  --text-primary: #FFFFFF;
-  --text-secondary: #E5E7EB;
+  --color-text: #FFFFFF;
+  --color-text-secondary: #E5E7EB;
   --text-muted: #D1D5DB;
   --color-border: #4B5563;
   --color-surface: #1F2937;

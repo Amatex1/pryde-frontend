@@ -115,7 +115,7 @@
   font-size: 0.9rem;
   background: transparent;
   border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 .url-actions .btn-secondary:hover {

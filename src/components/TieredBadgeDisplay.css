@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TieredBadgeDisplay Styles
  * 
  * Calm, hierarchical badge display system.
@@ -20,12 +20,12 @@
   vertical-align: middle;
 }
 
-/* ────────────────────────────────────────
+/* ----------------------------------------
    TIER 1: Identity Badges
    - Inline with username
    - Subtle but authoritative
    - No glow, no gradients
-   ──────────────────────────────────────── */
+   ---------------------------------------- */
 
 .badge-tier-1 {
   display: inline-flex;
@@ -54,12 +54,12 @@
   border: none;
 }
 
-/* ────────────────────────────────────────
+/* ----------------------------------------
    TIER 2: Status Badges
    - Muted row below name
    - Small, quiet, informational
    - Flat design
-   ──────────────────────────────────────── */
+   ---------------------------------------- */
 
 .badge-tier-2 {
   display: flex;
@@ -95,12 +95,12 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
-/* ────────────────────────────────────────
+/* ----------------------------------------
    TIER 3: Cosmetic Badges
    - Hidden by default
    - Trigger button is subtle
    - Modal is clean and calm
-   ──────────────────────────────────────── */
+   ---------------------------------------- */
 
 .badge-tier-3-trigger {
   display: inline-flex;
@@ -120,7 +120,7 @@
 
 .badge-tier-3-trigger:hover {
   background: var(--bg-subtle);
-  color: var(--text-primary);
+  color: var(--color-text);
   border-color: var(--border-medium);
 }
 
@@ -133,12 +133,12 @@
   border-color: rgba(255, 255, 255, 0.15);
 }
 
-/* ────────────────────────────────────────
+/* ----------------------------------------
    EXPANDED BADGES CONTAINER
    - Contained area under initial badges
    - Uses spacing/grouping, not borders
    - Calm and predictable interaction
-   ──────────────────────────────────────── */
+   ---------------------------------------- */
 
 .badge-expanded-container {
   display: flex;
@@ -223,7 +223,7 @@
   margin: 0;
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .badge-tier-3-close {
@@ -243,7 +243,7 @@
 
 .badge-tier-3-close:hover {
   background: var(--bg-subtle);
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .badge-tier-3-close:hover {
@@ -295,7 +295,7 @@
 .badge-tier-3-label {
   font-size: 0.9375rem;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .badge-tier-3-tooltip {
@@ -304,9 +304,9 @@
   line-height: 1.4;
 }
 
-/* ────────────────────────────────────────
+/* ----------------------------------------
    Context Variations
-   ──────────────────────────────────────── */
+   ---------------------------------------- */
 
 /* Profile context: Full display */
 .tiered-badge-display--profile {
@@ -382,9 +382,9 @@
   align-items: center;
 }
 
-/* ────────────────────────────────────────
+/* ----------------------------------------
    Mobile Responsive
-   ──────────────────────────────────────── */
+   ---------------------------------------- */
 
 @media (max-width: 768px) {
   /* badge-inline-row uses inline-flex by default (designed to sit next to a username).

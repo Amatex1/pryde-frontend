@@ -55,7 +55,7 @@
 }
 
 .reactivate-user strong {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .reactivate-error {
@@ -79,7 +79,7 @@
   padding: var(--space-4) var(--space-8);
   border: none;
   border-radius: var(--radius-pill);
-  background: var(--gradient-brand, linear-gradient(135deg, var(--pryde-purple) 0%, var(--electric-blue) 100%));
+  background: var(--gradient-brand, linear-gradient(135deg, var(--color-brand) 0%, var(--electric-blue) 100%));
   color: white;
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
@@ -127,7 +127,7 @@
 }
 
 .reactivate-help a {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   text-decoration: none;
   font-weight: 500;
 }

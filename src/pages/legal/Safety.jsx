@@ -84,12 +84,12 @@ function Safety() {
 
           <div style={{
             background: 'rgba(255, 165, 0, 0.1)',
-            border: '2px solid #ff8c00',
+            border: '2px solid var(--color-warning)',
             borderRadius: '8px',
             padding: '1.5rem',
             marginTop: '1.5rem'
           }}>
-            <h3 style={{ color: '#ff8c00', marginTop: 0 }}>⚠️ Safety in High-Risk Regions</h3>
+            <h3 style={{ color: 'var(--color-warning)', marginTop: 0 }}>⚠️ Safety in High-Risk Regions</h3>
             <p>
               <strong>If you are in a country where same-sex relationships are criminalised, please take extra precautions:</strong>
             </p>

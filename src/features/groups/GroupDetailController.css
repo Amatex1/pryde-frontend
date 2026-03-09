@@ -23,7 +23,7 @@
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid var(--border-color, #333);
+  border: 3px solid var(--color-border, #333);
   border-top-color: var(--accent-color, #7c3aed);
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -86,7 +86,7 @@
 
 .settings-modal h2 {
   margin: 0 0 1.5rem 0;
-  color: var(--text-primary, #fff);
+  color: var(--color-text, #fff);
 }
 
 .settings-modal .form-group {
@@ -96,7 +96,7 @@
 .settings-modal label {
   display: block;
   margin-bottom: 0.5rem;
-  color: var(--text-secondary, #aaa);
+  color: var(--color-text-secondary, #aaa);
   font-weight: 500;
 }
 
@@ -106,9 +106,9 @@
   width: 100%;
   padding: 0.75rem;
   background: var(--input-bg, #16162a);
-  border: 1px solid var(--border-color, #333);
+  border: 1px solid var(--color-border, #333);
   border-radius: 8px;
-  color: var(--text-primary, #fff);
+  color: var(--color-text, #fff);
   font-size: 1rem;
 }
 
@@ -122,7 +122,7 @@
 .settings-modal .form-hint {
   margin-top: 0.5rem;
   font-size: 0.875rem;
-  color: var(--text-secondary, #888);
+  color: var(--color-text-secondary, #888);
 }
 
 .modal-buttons {
@@ -135,8 +135,8 @@
 .modal-buttons .btn-cancel {
   padding: 0.75rem 1.5rem;
   background: transparent;
-  border: 1px solid var(--border-color, #333);
-  color: var(--text-primary, #fff);
+  border: 1px solid var(--color-border, #333);
+  color: var(--color-text, #fff);
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.2s;

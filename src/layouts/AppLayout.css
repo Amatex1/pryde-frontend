@@ -45,7 +45,7 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  color: var(--text-secondary, #616161);
+  color: var(--color-text-secondary, #616161);
   gap: 2px;
   padding: 6px 4px;
   transition: all 0.15s ease;
@@ -231,7 +231,7 @@
   font-size: 24px;
   padding: 8px;
   cursor: pointer;
-  color: var(--text-primary, #2b2b2b);
+  color: var(--color-text, #2b2b2b);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -248,7 +248,7 @@
   text-align: center;
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-primary, #2b2b2b);
+  color: var(--color-text, #2b2b2b);
   margin: 0;
 }
 
@@ -287,7 +287,7 @@
   background: transparent;
   font-size: 16px;
   line-height: 1.5;
-  color: var(--text-primary, #2b2b2b);
+  color: var(--color-text, #2b2b2b);
   font-family: inherit;
   padding: 0;
   margin-bottom: 16px;
@@ -299,7 +299,7 @@
 }
 
 .mobile-post-input::placeholder {
-  color: var(--text-secondary, #616161);
+  color: var(--color-text-secondary, #616161);
 }
 
 .mobile-composer-actions {
@@ -344,7 +344,7 @@
 
 .mobile-btn-action.active {
   background-color: var(--accent-light, rgba(108, 92, 231, 0.1));
-  color: var(--pryde-purple, #6C5CE7);
+  color: var(--color-brand, #6C5CE7);
 }
 
 .mobile-privacy-selector {
@@ -354,7 +354,7 @@
   border: 1px solid var(--border-subtle, #e0e0e0);
   background: var(--surface-primary, #ffffff);
   font-size: 11px;
-  color: var(--text-primary, #2b2b2b);
+  color: var(--color-text, #2b2b2b);
   cursor: pointer;
 }
 
@@ -394,7 +394,7 @@
 }
 
 [data-theme="dark"] .mobile-nav a {
-  color: var(--text-secondary, #b0b0b0);
+  color: var(--color-text-secondary, #b0b0b0);
 }
 
 [data-theme="dark"] .mobile-nav a.active {
@@ -415,7 +415,7 @@
 [data-theme="dark"] .mobile-composer-title,
 [data-theme="dark"] .mobile-composer-close,
 [data-theme="dark"] .mobile-post-input {
-  color: var(--text-primary, #f7f7f7);
+  color: var(--color-text, #f7f7f7);
 }
 
 [data-theme="dark"] .mobile-composer-close:hover,
@@ -427,7 +427,7 @@
 [data-theme="dark"] .mobile-privacy-selector {
   background: var(--surface-secondary, #3a3a3a);
   border-color: var(--border-subtle, #4a4a4a);
-  color: var(--text-primary, #f7f7f7);
+  color: var(--color-text, #f7f7f7);
 }
 
 /* ========================================

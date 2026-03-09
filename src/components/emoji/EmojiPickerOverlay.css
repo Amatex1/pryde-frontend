@@ -9,7 +9,7 @@
 .emoji-picker-popover .emoji-picker-content {
   position: fixed;
   background: var(--bg-card, #ffffff);
-  border: 1px solid var(--border-color, #e0e0e0);
+  border: 1px solid var(--color-border, #e0e0e0);
   border-radius: 24px;
   padding: 8px 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
@@ -71,7 +71,7 @@
   justify-content: center;
   padding-bottom: 12px;
   margin-bottom: 12px;
-  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  border-bottom: 1px solid var(--color-border, #e0e0e0);
   position: relative;
 }
 
@@ -89,7 +89,7 @@
 .emoji-picker-sheet-title {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-primary, #1e1e26);
+  color: var(--color-text, #1e1e26);
 }
 
 .emoji-picker-sheet-close {
@@ -107,7 +107,7 @@
 }
 
 .emoji-picker-sheet-close:hover {
-  color: var(--text-primary, #1e1e26);
+  color: var(--color-text, #1e1e26);
 }
 
 /* Pryde Emoji Grid */
@@ -145,7 +145,7 @@
 [data-theme="dark"] .emoji-picker-popover .emoji-picker-content,
 [data-theme="dark"] .emoji-picker-sheet .emoji-picker-content {
   background: var(--bg-card, #1a1b2e);
-  border-color: var(--border-color, #2d2e42);
+  border-color: var(--color-border, #2d2e42);
 }
 
 [data-theme="dark"] .pryde-emoji-button:hover {

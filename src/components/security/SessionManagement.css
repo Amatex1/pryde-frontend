@@ -93,7 +93,7 @@
 
 .session-card.current-session {
   background: var(--card-surface);
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   border-width: 2px;
 }
 
@@ -128,7 +128,7 @@
 }
 
 .current-badge {
-  background: var(--pryde-purple);
+  background: var(--color-brand);
   color: white;
   padding: 2px 8px;
   border-radius: 12px;
@@ -175,7 +175,7 @@
 }
 
 .session-expand-btn:hover {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 /* Expanded details */

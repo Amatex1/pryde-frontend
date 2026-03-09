@@ -22,7 +22,7 @@
 
 .push-prompt {
   background: var(--bg-secondary, #1e1e2e);
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--color-border rgba(255, 255, 255, 0.1));
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
@@ -40,12 +40,12 @@
   font-size: 1rem;
   font-weight: 600;
   margin: 0;
-  color: var(--text-primary, #fff);
+  color: var(--color-text, #fff);
 }
 
 .push-prompt-body {
   font-size: 0.875rem;
-  color: var(--text-secondary, rgba(255, 255, 255, 0.65));
+  color: var(--color-text-secondary rgba(255, 255, 255, 0.65));
   margin: 0;
   line-height: 1.5;
 }
@@ -83,7 +83,7 @@
 
 .push-prompt-btn.secondary {
   background: var(--bg-tertiary, rgba(255, 255, 255, 0.08));
-  color: var(--text-secondary, rgba(255, 255, 255, 0.65));
+  color: var(--color-text-secondary rgba(255, 255, 255, 0.65));
 }
 
 .push-prompt-btn.secondary:hover:not(:disabled) {
@@ -112,12 +112,12 @@
   align-items: flex-start;
   gap: 10px;
   font-size: 0.85rem;
-  color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+  color: var(--color-text-secondary rgba(255, 255, 255, 0.7));
   line-height: 1.45;
 }
 
 .ios-install-steps li strong {
-  color: var(--text-primary, #fff);
+  color: var(--color-text, #fff);
   font-weight: 600;
 }
 

@@ -44,7 +44,7 @@
   height: 40px;
   flex-shrink: 0;
   cursor: pointer;
-  color: var(--text-primary, inherit);
+  color: var(--color-text, inherit);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -123,7 +123,7 @@
   border-radius: 16px;
   border: 1px solid var(--border-subtle);
   background: var(--bg-subtle);
-  color: var(--text-primary);
+  color: var(--color-text);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -185,7 +185,7 @@
   justify-content: space-between;
   margin-bottom: 8px;
   font-size: 12px;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 .comment-sheet-reply-form .btn-cancel-reply-small {
@@ -193,7 +193,7 @@
   border: none;
   font-size: 16px;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   padding: 4px;
 }
 

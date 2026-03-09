@@ -46,10 +46,10 @@ function AdminSecurity({ logs, stats, onResolve }) {
 
   const getSeverityColor = (severity) => {
     switch (severity) {
-      case 'critical': return '#dc3545';
-      case 'high': return '#ff8c00';
-      case 'medium': return '#ffc107';
-      case 'low': return '#28a745';
+      case 'critical': return 'var(--color-danger)';
+      case 'high': return 'var(--color-warning)';
+      case 'medium': return 'var(--color-warning)';
+      case 'low': return 'var(--color-success)';
       default: return '#6c757d';
     }
   };

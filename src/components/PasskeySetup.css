@@ -76,7 +76,7 @@
 
 .passkey-name-input input:focus {
   outline: none;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 

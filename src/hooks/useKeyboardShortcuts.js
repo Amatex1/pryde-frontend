@@ -118,6 +118,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }) {
           </div>
         ))}
       </div>
+    </div>
   );
 }
 

@@ -6,7 +6,7 @@
   width: 100%;
   padding: var(--button-padding-y) var(--button-padding-x);
   min-height: var(--button-height-mobile);
-  background: linear-gradient(135deg, var(--pryde-purple) 0%, var(--electric-blue) 100%);
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--electric-blue) 100%);
   border: none;
   border-radius: var(--button-radius-pill);
   color: white;

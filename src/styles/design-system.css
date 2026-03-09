@@ -468,17 +468,17 @@ input:focus, textarea:focus, select:focus {
 
 [data-theme="dark"] select,
 [data-theme="dark"] option {
-  background-color: var(--surface-elevated);
-  color: var(--text-primary);
+  background-color: var(--color-surface);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] select:focus {
-  background-color: var(--surface-elevated);
+  background-color: var(--color-surface);
   border-color: var(--accent-primary);
 }
 
 [data-theme="dark"] option {
-  background-color: var(--surface-elevated);
+  background-color: var(--color-surface);
 }
 
 [data-theme="dark"] option:hover,
@@ -493,9 +493,9 @@ input:focus, textarea:focus, select:focus {
 [data-theme="dark"] .dropdown-menu,
 [data-theme="dark"] .menu,
 [data-theme="dark"] .select-menu {
-  background-color: var(--surface-elevated);
+  background-color: var(--color-surface);
   border: 1px solid var(--surface-border);
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 [data-theme="dark"] .dropdown-item:hover {

@@ -1,4 +1,4 @@
-﻿/* ========================================
+/* ========================================
    EVENTS PAGE - POLISHED WITH DESIGN SYSTEM
    ======================================== */
 
@@ -70,7 +70,7 @@
 }
 
 .filter-select:hover {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 .events-grid {
@@ -125,7 +125,7 @@
 
 .event-badge.category {
   background: var(--soft-lavender);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .event-badge.type {
@@ -252,7 +252,7 @@
 }
 
 .btn-rsvp:hover {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   background: var(--soft-lavender);
 }
 
@@ -262,8 +262,8 @@
 }
 
 .btn-rsvp.active {
-  border-color: var(--pryde-purple);
-  background: var(--pryde-purple);
+  border-color: var(--color-brand);
+  background: var(--color-brand);
   color: white;
 }
 

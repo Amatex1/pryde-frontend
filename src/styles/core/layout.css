@@ -591,7 +591,7 @@ body,
 /* Post content = confident */
 .post-content,
 .post-text {
-  color: var(--text-primary);
+  color: var(--color-text);
   font-size: 15.5px;
   line-height: 1.6;
 }
@@ -606,7 +606,7 @@ body,
 
 /* Actions = clear but restrained */
 .post-actions button {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   font-weight: 500;
 }
 

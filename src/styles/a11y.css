@@ -60,13 +60,13 @@ a:focus-visible {
 
 /* Ensure text has sufficient contrast */
 body {
-  color: var(--text-primary, #1E1E26);
+  color: var(--color-text, #1E1E26);
   background-color: var(--bg-page, #F5F6FA);
 }
 
 /* Dark mode text */
 :root[data-theme="dark"] body {
-  color: var(--text-primary, #F8F7FF);
+  color: var(--color-text, #F8F7FF);
   background-color: var(--bg-page, #0F1021);
 }
 
@@ -122,7 +122,7 @@ label {
   display: block;
   margin-bottom: 6px;
   font-weight: 500;
-  color: var(--text-primary, #1E1E26);
+  color: var(--color-text, #1E1E26);
 }
 
 :root[data-theme="dark"] label {
@@ -140,7 +140,7 @@ label .required::after {
   display: block;
   margin-top: 4px;
   font-size: 0.875rem;
-  color: var(--text-secondary, #666);
+  color: var(--color-text-secondary, #666);
 }
 
 :root[data-theme="dark"] .form-help {

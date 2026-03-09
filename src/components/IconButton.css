@@ -11,7 +11,7 @@
   cursor: pointer;
   transition: all var(--duration-standard, 160ms) ease;
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   position: relative;
   /* Ensure tooltip can escape */
   overflow: visible !important;
@@ -39,12 +39,12 @@
 /* Variant styles */
 .icon-btn--default {
   background: var(--bg-hover);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 .icon-btn--default:hover {
   background: var(--bg-active);
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .icon-btn--default:active {
@@ -67,12 +67,12 @@
 
 .icon-btn--ghost {
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 .icon-btn--ghost:hover {
   background: var(--bg-hover);
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .icon-btn--danger {

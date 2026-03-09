@@ -157,7 +157,7 @@
   align-items: center;
   justify-content: center;
   background: var(--color-primary-soft);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -237,7 +237,7 @@
 .post-author {
   font-weight: 600;
   font-size: 0.875rem;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .post-content {

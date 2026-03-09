@@ -61,7 +61,7 @@
 .thank-you-message {
   display: block;
   font-size: 14px;
-  color: var(--text-secondary, #4b5563);
+  color: var(--color-text-secondary, #4b5563);
   line-height: 1.4;
 }
 
@@ -90,18 +90,18 @@
 
 .thank-you-dismiss:hover {
   background: rgba(0, 0, 0, 0.05);
-  color: var(--text-primary, #1f2937);
+  color: var(--color-text, #1f2937);
 }
 
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   .thank-you-message {
-    color: var(--text-secondary, #d1d5db);
+    color: var(--color-text-secondary, #d1d5db);
   }
 
   .thank-you-dismiss:hover {
     background: rgba(255, 255, 255, 0.1);
-    color: var(--text-primary, #f9fafb);
+    color: var(--color-text, #f9fafb);
   }
 }
 

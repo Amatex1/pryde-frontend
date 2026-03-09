@@ -12,7 +12,7 @@
   flex-direction: column;
   padding: 0.75rem 1rem;
   background: var(--bg-secondary, #1a1a1a);
-  border-top: 1px solid var(--border-color, #333);
+  border-top: 1px solid var(--color-border, #333);
 }
 
 .message-composer-content.disabled {
@@ -51,7 +51,7 @@
 
 .reply-text {
   font-size: 0.875rem;
-  color: var(--text-secondary, #aaa);
+  color: var(--color-text-secondary, #aaa);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -73,9 +73,9 @@
   width: 100%;
   padding: 0.5rem;
   background: var(--bg-tertiary, #252525);
-  border: 1px solid var(--border-color, #333);
+  border: 1px solid var(--color-border, #333);
   border-radius: 8px;
-  color: var(--text-primary, #fff);
+  color: var(--color-text, #fff);
 }
 
 /* ========================================
@@ -138,9 +138,9 @@
   width: 100%;
   padding: 0.75rem 1rem;
   background: var(--bg-tertiary, #252525);
-  border: 1px solid var(--border-color, #333);
+  border: 1px solid var(--color-border, #333);
   border-radius: 24px;
-  color: var(--text-primary, #fff);
+  color: var(--color-text, #fff);
   font-size: 1rem;  /* Prevents iOS zoom on focus */
 }
 
@@ -176,7 +176,7 @@
 
 .recording-time {
   font-family: monospace;
-  color: var(--text-primary, #fff);
+  color: var(--color-text, #fff);
   flex: 1;
 }
 

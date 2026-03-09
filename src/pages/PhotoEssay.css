@@ -21,7 +21,7 @@
 
 .photo-essay-header h1 {
   margin: 0 0 var(--space-2) 0;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
 }
@@ -48,7 +48,7 @@
   display: block;
   margin-bottom: var(--space-2);
   font-weight: var(--font-weight-semibold);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-size: var(--font-size-sm);
 }
 
@@ -68,7 +68,7 @@
 .input-field:focus,
 .select-field:focus {
   outline: none;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: var(--shadow-focus);
 }
 
@@ -85,7 +85,7 @@
 }
 
 .photo-upload-area.drag-over {
-  border-color: var(--pryde-purple, #6C5CE7);
+  border-color: var(--color-brand, #6C5CE7);
   background: rgba(108, 92, 231, 0.06);
 }
 
@@ -163,7 +163,7 @@
 
 .caption-input:focus {
   outline: none;
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
 }
 
 .form-actions {
@@ -198,7 +198,7 @@
 .btn-drafts {
   padding: var(--space-3) var(--space-6);
   border-radius: var(--radius-md);
-  border: 2px solid var(--pryde-purple);
+  border: 2px solid var(--color-brand);
   background: var(--bg-card);
   color: var(--text-main);
   font-weight: var(--font-weight-semibold);
@@ -209,7 +209,7 @@
 
 .btn-drafts:hover {
   background: var(--soft-lavender);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
 }
 
 .btn-primary:disabled {

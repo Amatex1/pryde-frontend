@@ -34,7 +34,7 @@
 
 .custom-modal-message {
   font-size: 1rem;
-  color: var(--text-primary);
+  color: var(--color-text);
   margin-bottom: 1.5rem;
   line-height: 1.6;
   text-align: center;
@@ -46,7 +46,7 @@
   border-radius: 12px;
   border: 2px solid var(--border-subtle);
   background: var(--bg-surface);
-  color: var(--text-primary);
+  color: var(--color-text);
   font-size: 1rem;
   margin-bottom: 1.5rem;
   transition: all 0.3s ease;
@@ -97,7 +97,7 @@
 
 .custom-modal-btn-secondary {
   background: var(--bg-surface);
-  color: var(--text-primary);
+  color: var(--color-text);
   border-color: var(--border-subtle);
 }
 

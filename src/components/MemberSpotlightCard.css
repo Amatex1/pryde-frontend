@@ -45,7 +45,7 @@
 
 .spotlight-dismiss:hover {
   background: rgba(0, 0, 0, 0.05);
-  color: var(--text-primary, #1f2937);
+  color: var(--color-text, #1f2937);
 }
 
 .spotlight-content {
@@ -89,7 +89,7 @@
   display: block;
   font-size: 18px;
   font-weight: 600;
-  color: var(--text-primary, #1f2937);
+  color: var(--color-text, #1f2937);
   text-decoration: none;
   margin-bottom: 2px;
 }
@@ -106,7 +106,7 @@
 }
 
 .spotlight-bio {
-  color: var(--text-secondary, #4b5563);
+  color: var(--color-text-secondary, #4b5563);
   font-size: 14px;
   line-height: 1.4;
   margin: 0 0 8px 0;
@@ -138,7 +138,7 @@
 }
 
 .recent-post-content {
-  color: var(--text-secondary, #4b5563);
+  color: var(--color-text-secondary, #4b5563);
   font-size: 14px;
   font-style: italic;
   line-height: 1.4;
@@ -171,7 +171,7 @@
   }
 
   .spotlight-name {
-    color: var(--text-primary, #f9fafb);
+    color: var(--color-text, #f9fafb);
   }
 
   .spotlight-username {
@@ -179,7 +179,7 @@
   }
 
   .spotlight-bio {
-    color: var(--text-secondary, #d1d5db);
+    color: var(--color-text-secondary, #d1d5db);
   }
 
   .spotlight-stat {
@@ -195,12 +195,12 @@
   }
 
   .recent-post-content {
-    color: var(--text-secondary, #d1d5db);
+    color: var(--color-text-secondary, #d1d5db);
   }
 
   .spotlight-dismiss:hover {
     background: rgba(255, 255, 255, 0.1);
-    color: var(--text-primary, #f9fafb);
+    color: var(--color-text, #f9fafb);
   }
 }
 

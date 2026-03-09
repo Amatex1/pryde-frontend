@@ -19,7 +19,7 @@
   margin-bottom: 8px;
   font-weight: 500;
   font-size: 0.9375rem;
-  color: var(--text-primary, #1E1E26);
+  color: var(--color-text, #1E1E26);
 }
 
 [data-theme="dark"] .form-label {
@@ -47,9 +47,9 @@
   padding: 12px 16px;
   font-size: 1rem;
   line-height: 1.5;
-  color: var(--text-primary, #1E1E26);
+  color: var(--color-text, #1E1E26);
   background-color: var(--bg-card, #FFFFFF);
-  border: 2px solid var(--border-color, #E0E0E0);
+  border: 2px solid var(--color-border, #E0E0E0);
   border-radius: 8px;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -129,7 +129,7 @@
   display: block;
   margin-top: 6px;
   font-size: 0.875rem;
-  color: var(--text-secondary, #666);
+  color: var(--color-text-secondary, #666);
 }
 
 [data-theme="dark"] .form-help {
@@ -164,7 +164,7 @@
 
 .checkbox-label {
   font-size: 1rem;
-  color: var(--text-primary, #1E1E26);
+  color: var(--color-text, #1E1E26);
   cursor: pointer;
   user-select: none;
 }
@@ -188,7 +188,7 @@
   margin-bottom: 12px;
   font-weight: 500;
   font-size: 0.9375rem;
-  color: var(--text-primary, #1E1E26);
+  color: var(--color-text, #1E1E26);
 }
 
 [data-theme="dark"] .radio-group-legend {
@@ -217,7 +217,7 @@
 
 .radio-label {
   font-size: 1rem;
-  color: var(--text-primary, #1E1E26);
+  color: var(--color-text, #1E1E26);
   cursor: pointer;
   user-select: none;
 }

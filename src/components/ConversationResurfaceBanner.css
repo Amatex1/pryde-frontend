@@ -42,7 +42,7 @@
 
 .resurface-message {
   display: block;
-  color: var(--text-primary, #1f2937);
+  color: var(--color-text, #1f2937);
   font-size: 14px;
   font-weight: 500;
   line-height: 1.4;
@@ -73,7 +73,7 @@
 
 .resurface-dismiss:hover {
   background: rgba(0, 0, 0, 0.05);
-  color: var(--text-primary, #1f2937);
+  color: var(--color-text, #1f2937);
 }
 
 /* Dark mode */
@@ -88,7 +88,7 @@
   }
 
   .resurface-message {
-    color: var(--text-primary, #f9fafb);
+    color: var(--color-text, #f9fafb);
   }
 
   .resurface-author {
@@ -97,7 +97,7 @@
 
   .resurface-dismiss:hover {
     background: rgba(255, 255, 255, 0.1);
-    color: var(--text-primary, #f9fafb);
+    color: var(--color-text, #f9fafb);
   }
 }
 

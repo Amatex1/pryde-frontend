@@ -270,7 +270,7 @@
   transition: all 0.2s ease;
   border: 1px solid var(--border-subtle);
   background: var(--bg-secondary, #2d2d44);
-  color: var(--text-primary, #fff);
+  color: var(--color-text, #fff);
   margin-top: 0.75rem;
 }
 
@@ -288,7 +288,7 @@
 .upload-progress {
   margin-top: 0.5rem;
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   text-align: center;
 }
 
@@ -299,7 +299,7 @@
 }
 
 .photo-controls label {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   font-size: 0.85rem;
   font-weight: 500;
 }
@@ -943,12 +943,12 @@
 
 .toggle-text {
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .toggle-description {
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   margin: 0;
   padding-left: 60px;
 }

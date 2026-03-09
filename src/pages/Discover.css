@@ -75,7 +75,7 @@
 }
 
 .discover-group-card .group-member-count {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-sm);
 }

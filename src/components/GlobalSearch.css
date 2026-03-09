@@ -25,7 +25,7 @@
 }
 
 .search-input:focus {
-  border-color: var(--pryde-purple);
+  border-color: var(--color-brand);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
@@ -103,7 +103,7 @@
   height: 36px;
   border-radius: 50%;
   background: var(--color-primary-soft);
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -130,7 +130,7 @@
 }
 
 .user-avatar-small span {
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-weight: 600;
   font-size: 1.1rem;
 }
@@ -165,7 +165,7 @@
 
 .post-author-small {
   font-weight: 600;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   font-size: 0.85rem;
   margin-bottom: 0.25rem;
 }
@@ -185,7 +185,7 @@
   text-align: center;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--pryde-purple);
+  color: var(--color-brand);
   border-top: 1px solid var(--border-light);
   cursor: pointer;
   transition: background 0.2s ease;

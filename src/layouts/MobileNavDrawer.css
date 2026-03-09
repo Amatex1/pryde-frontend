@@ -49,7 +49,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px;
-  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  border-bottom: 1px solid var(--color-border, #e0e0e0);
   background: var(--bg-secondary, #f5f5f5);
 }
 
@@ -87,7 +87,7 @@
 
 .mobile-nav-username {
   font-weight: 600;
-  color: var(--text-primary, #1a1a1a);
+  color: var(--color-text, #1a1a1a);
 }
 
 .mobile-nav-view-profile {
@@ -106,7 +106,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-secondary, #666);
+  color: var(--color-text-secondary, #666);
 }
 
 .mobile-nav-close-btn svg {
@@ -132,7 +132,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  color: var(--text-primary, #1a1a1a);
+  color: var(--color-text, #1a1a1a);
   text-decoration: none;
   border: none;
   background: transparent;
@@ -174,7 +174,7 @@
 
 .mobile-nav-divider {
   height: 1px;
-  background: var(--border-color, #e0e0e0);
+  background: var(--color-border, #e0e0e0);
   margin: 8px 16px;
 }
 
@@ -228,15 +228,15 @@
 
 [data-theme="dark"] .mobile-nav-header {
   background: var(--bg-secondary, #2a2a2a);
-  border-color: var(--border-color, #333);
+  border-color: var(--color-border, #333);
 }
 
 [data-theme="dark"] .mobile-nav-username {
-  color: var(--text-primary, #f0f0f0);
+  color: var(--color-text, #f0f0f0);
 }
 
 [data-theme="dark"] .mobile-nav-item {
-  color: var(--text-primary, #f0f0f0);
+  color: var(--color-text, #f0f0f0);
 }
 
 [data-theme="dark"] .mobile-nav-item:hover {
@@ -244,7 +244,7 @@
 }
 
 [data-theme="dark"] .mobile-nav-close-btn {
-  color: var(--text-secondary, #aaa);
+  color: var(--color-text-secondary, #aaa);
 }
 
 [data-theme="dark"] .mobile-nav-close-btn:hover {
@@ -252,7 +252,7 @@
 }
 
 [data-theme="dark"] .mobile-nav-divider {
-  background: var(--border-color, #333);
+  background: var(--color-border, #333);
 }
 
 /* Ensure mobile-only triggers never appear on desktop */
