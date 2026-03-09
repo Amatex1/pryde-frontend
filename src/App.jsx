@@ -100,6 +100,8 @@ const Discover = lazyWithReload(() => import('./pages/Discover'));
 const Search = lazyWithReload(() => import('./pages/Search'));
 const GroupsList = lazyWithReload(() => import('./pages/GroupsList'));
 const Groups = lazyWithReload(() => import('./pages/Groups'));
+const Circles = lazyWithReload(() => import('./pages/Circles'));
+const Collections = lazyWithReload(() => import('./pages/Collections'));
 const PhotoEssay = lazyWithReload(() => import('./pages/PhotoEssay'));
 const Profile = lazyWithReload(() => import('./pages/Profile'));
 const Followers = lazyWithReload(() => import('./pages/Followers'));
@@ -360,6 +362,8 @@ function AppContent() {
                   <Route path="/search" element={<PrivateRoute><Search /></PrivateRoute>} />
                   <Route path="/groups" element={<PrivateRoute><GroupsList /></PrivateRoute>} />
                   <Route path="/groups/:slug" element={<PrivateRoute><Groups /></PrivateRoute>} />
+                  <Route path="/circles" element={<PrivateRoute><Circles /></PrivateRoute>} />
+                  <Route path="/collections" element={<PrivateRoute><Collections /></PrivateRoute>} />
                   <Route path="/photo-essay" element={<PrivateRoute><PhotoEssay /></PrivateRoute>} />
                   <Route path="/photo-essay/:id" element={<PrivateRoute><PhotoEssay /></PrivateRoute>} />
                   <Route path="/profile/:id" element={<PrivateRoute><Profile /></PrivateRoute>} />
