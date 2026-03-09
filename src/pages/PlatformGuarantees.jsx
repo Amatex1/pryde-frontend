@@ -33,6 +33,7 @@ function PlatformGuarantees() {
             <li><strong>No engagement algorithms.</strong> Posts are shown in order. We don't manipulate what you see based on what will keep you hooked.</li>
             <li><strong>No public metrics pressure.</strong> You won't see like counts, follower counts, or anything designed to make you compare yourself to others.</li>
             <li><strong>Privacy-respecting by default.</strong> Your settings start private. We believe in opt-in sharing, not opt-out protection.</li>
+            <li><strong>Quiet Mode.</strong> A comprehensive privacy feature with scheduled hours, content filtering, Deep Quiet mode, and visual customization options.</li>
           </ul>
         </section>
 

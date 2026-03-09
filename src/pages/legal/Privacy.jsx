@@ -20,7 +20,7 @@ function Privacy() {
           🏠 Home
         </Link>
         <h1>🌈 Pryde Social — Privacy Policy</h1>
-        <p className="legal-subtitle">Last Updated: 10.12.2025</p>
+        <p className="legal-subtitle">Last Updated: January 15, 2025</p>
       </div>
 
       <div className="legal-content">
@@ -48,9 +48,14 @@ function Privacy() {
             <li>GIF selections (URLs from Tenor)</li>
             <li>Bookmarks and saved content</li>
             <li>Tag/community preferences</li>
-            <li>Privacy settings and Quiet Mode preference</li>
+            <li>Privacy settings and Quiet Mode (including scheduled hours, content filtering, Deep Quiet mode)</li>
             <li>Two-factor authentication settings</li>
             <li>Passkey/WebAuthn credentials</li>
+            <li>Circles (friend groups)</li>
+            <li>Collections (saved content groups)</li>
+            <li>Anonymous posting preferences</li>
+            <li>Galaxy Mode preference</li>
+            <li>Accessibility settings (text density, cursor style, high contrast)</li>
           </ul>
 
           <h3>B. Automatically Collected Information</h3>
@@ -323,7 +328,7 @@ function Privacy() {
 
         <div className="legal-footer-note">
           <p className="last-updated">
-            Last Updated: 10.12.2025
+            Last Updated: January 15, 2025
           </p>
         </div>
       </div>

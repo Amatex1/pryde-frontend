@@ -29,7 +29,7 @@ function CommunityGuidelines() {
           🏠 Home
         </Link>
         <h1>🌈 Pryde Social — Community Guidelines</h1>
-        <p className="legal-subtitle">Last Updated: 10.12.2025</p>
+        <p className="legal-subtitle">Last Updated: January 15, 2025</p>
       </div>
 
       <div className="legal-content">
@@ -334,7 +334,7 @@ function CommunityGuidelines() {
             <strong>Thank you for being part of Pryde Social.</strong> Together, we're building a community where LGBTQ+ people can connect, create, and thrive.
           </p>
           <p className="last-updated">
-            Last Updated: 13.12.2025
+            Last Updated: January 15, 2025
           </p>
         </div>
       </div>

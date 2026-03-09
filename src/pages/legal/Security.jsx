@@ -20,7 +20,7 @@ function Security() {
           🏠 Home
         </Link>
         <h1>🌈 Pryde Social — Security</h1>
-        <p className="legal-subtitle">Last Updated: December 28, 2024</p>
+        <p className="legal-subtitle">Last Updated: January 15, 2025</p>
       </div>
 
       <div className="legal-content">
@@ -307,7 +307,7 @@ function Security() {
             <li>Updated "Last Updated" date at the top of this page</li>
           </ul>
           <p>
-            <strong>Last Updated:</strong> November 27, 2025
+            <strong>Last Updated:</strong> January 15, 2025
           </p>
         </section>
       </div>

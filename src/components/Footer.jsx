@@ -31,6 +31,8 @@ function Footer() {
         <div className="footer-links-container">
           <a href="/trust-center">Trust Center</a>
           <span className="separator">•</span>
+          <a href="/guarantees">Platform Guarantees</a>
+          <span className="separator">•</span>
           <a href="/terms">Terms</a>
           <span className="separator">•</span>
           <a href="/privacy">Privacy</a>

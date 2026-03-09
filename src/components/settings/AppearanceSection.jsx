@@ -23,6 +23,24 @@ const AppearanceSection = ({
     () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
 
+  // QUIET MODE ENHANCEMENTS: Additional state for all 10 improvements
+  const [quietHoursEnabled, setQuietHoursEnabled] = useState(false);
+  const [quietHoursStart, setQuietHoursStart] = useState('22:00');
+  const [quietHoursEnd, setQuietHoursEnd] = useState('08:00');
+  const [quietContentFilter, setQuietContentFilter] = useState('all');
+  const [quietHideViral, setQuietHideViral] = useState(false);
+  const [quietGentleTransitions, setQuietGentleTransitions] = useState(true);
+  const [quietColorScheme, setQuietColorScheme] = useState('default');
+  const [quietHideStories, setQuietHideStories] = useState(false);
+  const [quietDeepQuiet, setQuietDeepQuiet] = useState(false);
+  const [quietMinimalUI, setQuietMinimalUI] = useState(false);
+  const [quietHideTrending, setQuietHideTrending] = useState(false);
+  const [quietShowHiddenCount, setQuietShowHiddenCount] = useState(true);
+  const [quietHighContrast, setQuietHighContrast] = useState(false);
+  const [quietHideMentions, setQuietHideMentions] = useState(false);
+  const [quietMuteGroupSummary, setQuietMuteGroupSummary] = useState(false);
+  const [showAdvancedQuietOptions, setShowAdvancedQuietOptions] = useState(false);
+
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
     const handler = (e) => setPrefersReducedMotion(e.matches);
@@ -31,6 +49,58 @@ const AppearanceSection = ({
   }, []);
 
   const showReducedMotionNotice = prefersReducedMotion && cursorStyle !== 'system' && cursorStyle !== 'reduced-motion';
+
+  // Handler for quiet enhancement changes
+  const handleQuietEnhancementChange = (setting, value) => {
+    // Update local state
+    switch (setting) {
+      case 'quietHoursEnabled':
+        setQuietHoursEnabled(value);
+        break;
+      case 'quietHoursStart':
+        setQuietHoursStart(value);
+        break;
+      case 'quietHoursEnd':
+        setQuietHoursEnd(value);
+        break;
+      case 'quietContentFilter':
+        setQuietContentFilter(value);
+        break;
+      case 'quietHideViral':
+        setQuietHideViral(value);
+        break;
+      case 'quietGentleTransitions':
+        setQuietGentleTransitions(value);
+        break;
+      case 'quietColorScheme':
+        setQuietColorScheme(value);
+        break;
+      case 'quietHideStories':
+        setQuietHideStories(value);
+        break;
+      case 'quietDeepQuiet':
+        setQuietDeepQuiet(value);
+        break;
+      case 'quietMinimalUI':
+        setQuietMinimalUI(value);
+        break;
+      case 'quietHideTrending':
+        setQuietHideTrending(value);
+        break;
+      case 'quietShowHiddenCount':
+        setQuietShowHiddenCount(value);
+        break;
+      case 'quietHighContrast':
+        setQuietHighContrast(value);
+        break;
+      case 'quietHideMentions':
+        setQuietHideMentions(value);
+        break;
+      case 'quietMuteGroupSummary':
+        setQuietMuteGroupSummary(value);
+        break;
+    }
+  };
 
   return (
     <>
@@ -74,7 +144,7 @@ const AppearanceSection = ({
         </div>
       </div>
 
-      {/* PHASE 2: Quiet Mode + V2 Sub-toggles */}
+      {/* PHASE 2: Quiet Mode + V2 Sub-toggles + ENHANCEMENTS */}
       <div className="settings-section">
         <h2 className="section-title">🌿 Quiet Mode</h2>
         <p className="section-description">
@@ -104,6 +174,83 @@ const AppearanceSection = ({
             <div className="quiet-mode-subtoggle-section">
               <p className="subtoggle-header">Customize your quiet experience:</p>
 
+              {/* IMPROVEMENT 1: Scheduled Quiet Hours */}
+              <div className="notification-item subtoggle">
+                <div className="notification-info">
+                  <h3>🕐 Scheduled Quiet Hours</h3>
+                  <p>Automatically enable quiet mode during specific hours</p>
+                </div>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={quietHoursEnabled}
+                    onChange={(e) => handleQuietEnhancementChange('quietHoursEnabled', e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+              
+              {quietHoursEnabled && (
+                <div className="quiet-hours-config" style={{ padding: '12px', margin: '8px 0', background: 'var(--color-surface-muted)', borderRadius: '8px' }}>
+                  <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
+                    <div>
+                      <label style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Start</label>
+                      <input 
+                        type="time" 
+                        value={quietHoursStart}
+                        onChange={(e) => handleQuietEnhancementChange('quietHoursStart', e.target.value)}
+                        style={{ padding: '6px', borderRadius: '4px', background: 'var(--color-bg)', color: 'var(--text-primary)' }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '12px', color: 'var(--text-muted)' }}>End</label>
+                      <input 
+                        type="time" 
+                        value={quietHoursEnd}
+                        onChange={(e) => handleQuietEnhancementChange('quietHoursEnd', e.target.value)}
+                        style={{ padding: '6px', borderRadius: '4px', background: 'var(--color-bg)', color: 'var(--text-primary)' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* IMPROVEMENT 2: Content Filtering */}
+              <div className="notification-item subtoggle">
+                <div className="notification-info">
+                  <h3>📄 Content Filter</h3>
+                  <p>Show only certain types of content</p>
+                </div>
+                <select 
+                  value={quietContentFilter}
+                  onChange={(e) => handleQuietEnhancementChange('quietContentFilter', e.target.value)}
+                  style={{ padding: '6px', borderRadius: '4px', background: 'var(--color-surface)', color: 'var(--text-primary)' }}
+                >
+                  <option value="all">Show all</option>
+                  <option value="text-only">Text only</option>
+                  <option value="images-only">Images only</option>
+                  <option value="videos-only">Videos only</option>
+                  <option value="no-polls">No polls</option>
+                  <option value="low-engagement">Low engagement</option>
+                </select>
+              </div>
+
+              <div className="notification-item subtoggle">
+                <div className="notification-info">
+                  <h3>📵 Hide Viral Posts</h3>
+                  <p>Filter out high-engagement viral content</p>
+                </div>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={quietHideViral}
+                    onChange={(e) => handleQuietEnhancementChange('quietHideViral', e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+
+              {/* V2 Sub-toggles */}
               <div className="notification-item subtoggle">
                 <div className="notification-info">
                   <h3>🎨 Calm Visuals</h3>
@@ -154,6 +301,183 @@ const AppearanceSection = ({
                   <span className="toggle-slider"></span>
                 </label>
               </div>
+
+              {/* IMPROVEMENT 4: Visual Improvements */}
+              <div className="notification-item subtoggle">
+                <div className="notification-info">
+                  <h3>🌊 Gentle Transitions</h3>
+                  <p>Smooth, subtle animations instead of abrupt changes</p>
+                </div>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={quietGentleTransitions}
+                    onChange={(e) => handleQuietEnhancementChange('quietGentleTransitions', e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div className="notification-item subtoggle">
+                <div className="notification-info">
+                  <h3>🎭 Color Scheme</h3>
+                  <p>Choose a calming color variant</p>
+                </div>
+                <select 
+                  value={quietColorScheme}
+                  onChange={(e) => handleQuietEnhancementChange('quietColorScheme', e.target.value)}
+                  style={{ padding: '6px', borderRadius: '4px', background: 'var(--color-surface)', color: 'var(--text-primary)' }}
+                >
+                  <option value="default">Default</option>
+                  <option value="monochrome">Monochrome</option>
+                  <option value="sepia">Sepia</option>
+                </select>
+              </div>
+
+              <div className="notification-item subtoggle">
+                <div className="notification-info">
+                  <h3>📖 Hide Stories</h3>
+                  <p>Hide the Stories section entirely</p>
+                </div>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={quietHideStories}
+                    onChange={(e) => handleQuietEnhancementChange('quietHideStories', e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+
+              {/* IMPROVEMENT 5: Deep Quiet */}
+              <div className="notification-item subtoggle" style={{ borderLeft: '3px solid #F59E0B', paddingLeft: '12px' }}>
+                <div className="notification-info">
+                  <h3>🌑 Deep Quiet</h3>
+                  <p>Maximum calm - hide all metrics and reduce UI</p>
+                </div>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={quietDeepQuiet}
+                    onChange={(e) => handleQuietEnhancementChange('quietDeepQuiet', e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+
+              {quietDeepQuiet && (
+                <div className="deep-quiet-options" style={{ padding: '12px', margin: '8px 0', background: 'rgba(245, 158, 11, 0.1)', borderRadius: '8px' }}>
+                  <div className="notification-item subtoggle">
+                    <div className="notification-info">
+                      <h3>🎬 Disable Animations</h3>
+                      <p>Remove all animations and autoplay</p>
+                    </div>
+                    <label className="toggle-switch">
+                      <input
+                        type="checkbox"
+                        checked={quietMinimalUI}
+                        onChange={(e) => handleQuietEnhancementChange('quietMinimalUI', e.target.checked)}
+                      />
+                      <span className="toggle-slider"></span>
+                    </label>
+                  </div>
+                  <div className="notification-item subtoggle">
+                    <div className="notification-info">
+                      <h3>📈 Hide Trending</h3>
+                      <p>Hide trending topics and suggestions</p>
+                    </div>
+                    <label className="toggle-switch">
+                      <input
+                        type="checkbox"
+                        checked={quietHideTrending}
+                        onChange={(e) => handleQuietEnhancementChange('quietHideTrending', e.target.checked)}
+                      />
+                      <span className="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+              )}
+
+              {/* IMPROVEMENT 7: Better Feedback */}
+              <div className="notification-item subtoggle">
+                <div className="notification-info">
+                  <h3>👁️ Show Hidden Count</h3>
+                  <p>Display how many posts were filtered</p>
+                </div>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={quietShowHiddenCount}
+                    onChange={(e) => handleQuietEnhancementChange('quietShowHiddenCount', e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+
+              {/* IMPROVEMENT 9: Accessibility */}
+              <div className="notification-item subtoggle">
+                <div className="notification-info">
+                  <h3>♿ High Contrast</h3>
+                  <p>Increase contrast for better visibility</p>
+                </div>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={quietHighContrast}
+                    onChange={(e) => handleQuietEnhancementChange('quietHighContrast', e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+
+              {/* IMPROVEMENT 10: Communication */}
+              <div className="notification-item subtoggle">
+                <div className="notification-info">
+                  <h3>@ Hide Mentions</h3>
+                  <p>Hide @mention notification counts</p>
+                </div>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={quietHideMentions}
+                    onChange={(e) => handleQuietEnhancementChange('quietHideMentions', e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div className="notification-item subtoggle">
+                <div className="notification-info">
+                  <h3>👥 Mute Group Summary</h3>
+                  <p>Reduce group chat activity notifications</p>
+                </div>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={quietMuteGroupSummary}
+                    onChange={(e) => handleQuietEnhancementChange('quietMuteGroupSummary', e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+
+              {/* Show more options */}
+              <button
+                type="button"
+                onClick={() => setShowAdvancedQuietOptions(!showAdvancedQuietOptions)}
+                style={{
+                  marginTop: '12px',
+                  padding: '8px 16px',
+                  background: 'var(--color-surface-muted)',
+                  border: 'none',
+                  borderRadius: '6px',
+                  color: 'var(--text-secondary)',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                {showAdvancedQuietOptions ? '▲ Less Options' : '▼ More Options'}
+              </button>
             </div>
           )}
         </div>
@@ -263,3 +587,4 @@ const AppearanceSection = ({
 };
 
 export default AppearanceSection;
+

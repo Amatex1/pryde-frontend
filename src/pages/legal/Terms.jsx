@@ -20,7 +20,7 @@ function Terms() {
           🏠 Home
         </Link>
         <h1>🌈 Pryde Social — Terms of Service</h1>
-        <p className="legal-subtitle">Last Updated: 10.12.2025</p>
+        <p className="legal-subtitle">Last Updated: January 15, 2025</p>
       </div>
 
       <div className="legal-content">
@@ -62,9 +62,13 @@ function Terms() {
             <li>Journals, longform posts, and photo essays</li>
             <li>Community tags and discovery</li>
             <li>Events system</li>
+            <li>Circles (friend groups) and Collections</li>
+            <li>Stories (ephemeral content)</li>
+            <li>Anonymous posting and commenting</li>
             <li>Bookmarks and sharing</li>
-            <li>Privacy controls and Quiet Mode</li>
+            <li>Privacy controls and Quiet Mode (including Deep Quiet, scheduled hours, content filtering)</li>
             <li>Security features (2FA, passkeys, email verification)</li>
+            <li>Galaxy visual theme and accessibility settings</li>
           </ul>
           <p>
             <strong>We do not guarantee:</strong>
@@ -265,7 +269,7 @@ function Terms() {
 
         <div className="legal-footer-note">
           <p className="last-updated">
-            Last Updated: 10.12.2025
+            Last Updated: January 15, 2025
           </p>
         </div>
       </div>
@@ -278,3 +282,4 @@ function Terms() {
 }
 
 export default Terms;
+

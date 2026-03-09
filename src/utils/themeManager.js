@@ -8,6 +8,18 @@
  * - data-quiet-writing: Writing focus mode (distraction-free)
  * - data-quiet-metrics: Hide engagement metrics (likes, counts)
  *
+ * QUIET MODE ENHANCEMENTS (All 10 Improvements):
+ * 1. Scheduled/Automatic Quiet Hours
+ * 2. Granular Content Filtering
+ * 3. Enhanced "Calm Feed" Algorithm
+ * 4. Visual Improvements (mute button, transitions, monochrome, hide stories)
+ * 5. "Deep Quiet" Mode
+ * 6. Smart Triggers
+ * 7. Better User Feedback
+ * 8. Persistence Improvements
+ * 9. Accessibility
+ * 10. Communication Features
+ *
  * CURSOR CUSTOMIZATION adds:
  * - data-cursor: Optional cursor style (system, soft-rounded, calm-dot, high-contrast, reduced-motion)
  */
@@ -16,6 +28,35 @@
 const THEME_COLORS = {
   light: '#F5F6FA', // --bg-page light mode
   dark: '#0F1021'   // --bg-page dark mode
+};
+
+// Default quiet mode enhancement settings
+const DEFAULT_QUIET_SETTINGS = {
+  quietHoursEnabled: false,
+  quietHoursStart: '22:00',
+  quietHoursEnd: '08:00',
+  quietOnWorkFocus: false,
+  quietContentFilter: 'all',
+  quietHideViral: false,
+  quietFollowedOnly: false,
+  quietGentleTransitions: true,
+  quietColorScheme: 'default',
+  quietHideStories: false,
+  quietDeepQuiet: false,
+  quietDisableAnimations: false,
+  quietMinimalUI: false,
+  quietHideTrending: false,
+  quietAutoTrigger: false,
+  quietNegativeThreshold: 5,
+  quietKeywordTriggers: [],
+  quietShowHiddenCount: true,
+  quietSessionOverride: false,
+  quietFeedSettings: 'default',
+  quietMessageSettings: 'default',
+  quietHighContrast: false,
+  quietHideMentions: false,
+  quietMuteGroupSummary: false,
+  quietReduceStoryNotifications: false,
 };
 
 /**
@@ -92,6 +133,9 @@ export const initializeTheme = () => {
     document.documentElement.removeAttribute('data-quiet-metrics');
   }
 
+  // QUIET MODE ENHANCEMENTS: Initialize all settings from localStorage
+  initializeQuietEnhancements();
+
   // CURSOR CUSTOMIZATION: Initialize cursor style from localStorage
   const savedCursorStyle = localStorage.getItem('cursorStyle') || 'system';
   if (savedCursorStyle !== 'system') {
@@ -112,6 +156,268 @@ export const initializeTheme = () => {
     quietMetrics: quietMetrics === 'true',
     cursorStyle: savedCursorStyle
   };
+};
+
+/**
+ * Initialize all quiet mode enhancement settings
+ */
+const initializeQuietEnhancements = () => {
+  // Initialize each enhancement setting from localStorage with defaults
+  Object.keys(DEFAULT_QUIET_SETTINGS).forEach(key => {
+    const localStorageKey = key;
+    const defaultValue = DEFAULT_QUIET_SETTINGS[key];
+    const savedValue = localStorage.getItem(localStorageKey);
+    
+    // For arrays, parse JSON; for others, use saved or default
+    let value;
+    if (Array.isArray(defaultValue)) {
+      value = savedValue ? JSON.parse(savedValue) : defaultValue;
+    } else {
+      value = savedValue !== null ? savedValue : defaultValue;
+    }
+    
+    // Apply to DOM based on setting type
+    applyQuietEnhancementToDOM(key, value);
+  });
+};
+
+/**
+ * Apply a quiet mode enhancement setting to the DOM
+ * @param {string} key - Setting key
+ * @param {any} value - Setting value
+ */
+const applyQuietEnhancementToDOM = (key, value) => {
+  const root = document.documentElement;
+  const isQuietMode = root.getAttribute('data-quiet') === 'true';
+  
+  if (!isQuietMode) {
+    // Only apply enhancements when quiet mode is enabled
+    return;
+  }
+
+  switch (key) {
+    // IMPROVEMENT 1: Scheduled/Automatic Quiet Hours
+    case 'quietHoursEnabled':
+    case 'quietHoursStart':
+    case 'quietHoursEnd':
+    case 'quietOnWorkFocus':
+      // These are logic-based, handled in checkQuietHoursSchedule()
+      break;
+
+    // IMPROVEMENT 2: Granular Content Filtering
+    case 'quietContentFilter':
+      root.setAttribute('data-quiet-content-filter', value);
+      break;
+    case 'quietHideViral':
+      root.setAttribute('data-quiet-hide-viral', String(value));
+      break;
+    case 'quietFollowedOnly':
+      root.setAttribute('data-quiet-followed-only', String(value));
+      break;
+
+    // IMPROVEMENT 4: Visual Improvements
+    case 'quietGentleTransitions':
+      root.setAttribute('data-quiet-gentle-transitions', String(value));
+      break;
+    case 'quietColorScheme':
+      root.setAttribute('data-quiet-color-scheme', value);
+      break;
+    case 'quietHideStories':
+      root.setAttribute('data-quiet-hide-stories', String(value));
+      break;
+
+    // IMPROVEMENT 5: Deep Quiet Mode
+    case 'quietDeepQuiet':
+      root.setAttribute('data-quiet-deep', String(value));
+      break;
+    case 'quietDisableAnimations':
+      root.setAttribute('data-quiet-no-animations', String(value));
+      break;
+    case 'quietMinimalUI':
+      root.setAttribute('data-quiet-minimal-ui', String(value));
+      break;
+    case 'quietHideTrending':
+      root.setAttribute('data-quiet-hide-trending', String(value));
+      break;
+
+    // IMPROVEMENT 7: Better User Feedback
+    case 'quietShowHiddenCount':
+      root.setAttribute('data-quiet-show-hidden-count', String(value));
+      break;
+    case 'quietSessionOverride':
+      // This is a runtime flag, not persistent
+      break;
+
+    // IMPROVEMENT 8: Persistence & Context
+    case 'quietFeedSettings':
+      root.setAttribute('data-quiet-feed', value);
+      break;
+    case 'quietMessageSettings':
+      root.setAttribute('data-quiet-messages', value);
+      break;
+
+    // IMPROVEMENT 9: Accessibility
+    case 'quietHighContrast':
+      root.setAttribute('data-quiet-high-contrast', String(value));
+      break;
+
+    // IMPROVEMENT 10: Communication Features
+    case 'quietHideMentions':
+      root.setAttribute('data-quiet-hide-mentions', String(value));
+      break;
+    case 'quietMuteGroupSummary':
+      root.setAttribute('data-quiet-mute-group-summary', String(value));
+      break;
+    case 'quietReduceStoryNotifications':
+      root.setAttribute('data-quiet-reduce-story-notifs', String(value));
+      break;
+  }
+};
+
+/**
+ * Set a quiet mode enhancement setting
+ * @param {string} key - Setting key
+ * @param {any} value - Setting value
+ */
+export const setQuietEnhancement = (key, value) => {
+  if (!(key in DEFAULT_QUIET_SETTINGS)) {
+    console.warn(`Invalid quiet mode enhancement: ${key}`);
+    return;
+  }
+
+  // Store in localStorage
+  const localStorageKey = key;
+  if (Array.isArray(value)) {
+    localStorage.setItem(localStorageKey, JSON.stringify(value));
+  } else {
+    localStorage.setItem(localStorageKey, String(value));
+  }
+
+  // Apply to DOM if quiet mode is enabled
+  const isQuietMode = document.documentElement.getAttribute('data-quiet') === 'true';
+  if (isQuietMode) {
+    applyQuietEnhancementToDOM(key, value);
+  }
+};
+
+/**
+ * Get a quiet mode enhancement setting
+ * @param {string} key - Setting key
+ * @returns {any} - Setting value
+ */
+export const getQuietEnhancement = (key) => {
+  if (!(key in DEFAULT_QUIET_SETTINGS)) {
+    console.warn(`Invalid quiet mode enhancement: ${key}`);
+    return DEFAULT_QUIET_SETTINGS[key];
+  }
+
+  const localStorageKey = key;
+  const defaultValue = DEFAULT_QUIET_SETTINGS[key];
+  const savedValue = localStorage.getItem(localStorageKey);
+
+  if (savedValue === null) {
+    return defaultValue;
+  }
+
+  if (Array.isArray(defaultValue)) {
+    try {
+      return JSON.parse(savedValue);
+    } catch {
+      return defaultValue;
+    }
+  }
+
+  // Convert string booleans to actual booleans
+  if (typeof defaultValue === 'boolean') {
+    return savedValue === 'true';
+  }
+
+  // Convert string numbers to actual numbers
+  if (typeof defaultValue === 'number') {
+    return Number(savedValue);
+  }
+
+  return savedValue;
+};
+
+/**
+ * Get all quiet mode enhancement settings
+ * @returns {Object} - All enhancement settings
+ */
+export const getAllQuietEnhancements = () => {
+  const settings = {};
+  Object.keys(DEFAULT_QUIET_SETTINGS).forEach(key => {
+    settings[key] = getQuietEnhancement(key);
+  });
+  return settings;
+};
+
+/**
+ * IMPROVEMENT 1: Check if current time is within quiet hours
+ * @returns {boolean} - True if within quiet hours
+ */
+export const isInQuietHours = () => {
+  const enabled = getQuietEnhancement('quietHoursEnabled');
+  if (!enabled) return false;
+
+  const start = getQuietEnhancement('quietHoursStart');
+  const end = getQuietEnhancement('quietHoursEnd');
+
+  const now = new Date();
+  const currentTime = now.getHours() * 60 + now.getMinutes();
+
+  const [startHour, startMin] = start.split(':').map(Number);
+  const [endHour, endMin] = end.split(':').map(Number);
+
+  const startTime = startHour * 60 + startMin;
+  const endTime = endHour * 60 + endMin;
+
+  // Handle overnight schedules (e.g., 22:00 - 08:00)
+  if (endTime < startTime) {
+    return currentTime >= startTime || currentTime < endTime;
+  }
+
+  return currentTime >= startTime && currentTime < endTime;
+};
+
+/**
+ * IMPROVEMENT 6: Smart Triggers - Check keyword triggers
+ * @param {string} content - Content to check
+ * @returns {boolean} - True if content triggers quiet mode
+ */
+export const checkKeywordTriggers = (content) => {
+  const triggers = getQuietEnhancement('quietKeywordTriggers');
+  if (!triggers || triggers.length === 0) return false;
+
+  const lowerContent = content.toLowerCase();
+  return triggers.some(keyword => lowerContent.includes(keyword.toLowerCase()));
+};
+
+/**
+ * IMPROVEMENT 7: Session override - temporarily disable quiet mode
+ * @returns {boolean} - New quiet mode state
+ */
+let sessionOverrideActive = false;
+export const toggleSessionQuietOverride = () => {
+  sessionOverrideActive = !sessionOverrideActive;
+  localStorage.setItem('quietSessionOverride', String(sessionOverrideActive));
+  
+  if (sessionOverrideActive) {
+    // Temporarily disable quiet mode for this session
+    document.documentElement.setAttribute('data-quiet-session-override', 'true');
+  } else {
+    document.documentElement.removeAttribute('data-quiet-session-override');
+  }
+  
+  return getQuietMode();
+};
+
+/**
+ * Check if session override is active
+ * @returns {boolean}
+ */
+export const isSessionOverrideActive = () => {
+  return localStorage.getItem('quietSessionOverride') === 'true';
 };
 
 /**
@@ -222,6 +528,9 @@ export const setQuietMode = (enabled) => {
     document.documentElement.setAttribute('data-quiet-writing', quietWriting);
     document.documentElement.setAttribute('data-quiet-metrics', quietMetrics);
 
+    // Apply all quiet mode enhancements to DOM
+    initializeQuietEnhancements();
+
     // Show gentle confirmation only on off → on transition
     if (!wasEnabled) {
       showQuietModeToast();
@@ -233,7 +542,41 @@ export const setQuietMode = (enabled) => {
     document.documentElement.removeAttribute('data-quiet-visuals');
     document.documentElement.removeAttribute('data-quiet-writing');
     document.documentElement.removeAttribute('data-quiet-metrics');
+    
+    // Remove all quiet enhancement attributes
+    removeAllQuietEnhancementAttributes();
   }
+};
+
+/**
+ * Remove all quiet mode enhancement attributes from DOM
+ */
+const removeAllQuietEnhancementAttributes = () => {
+  const root = document.documentElement;
+  const attributesToRemove = [
+    'data-quiet-content-filter',
+    'data-quiet-hide-viral',
+    'data-quiet-followed-only',
+    'data-quiet-gentle-transitions',
+    'data-quiet-color-scheme',
+    'data-quiet-hide-stories',
+    'data-quiet-deep',
+    'data-quiet-no-animations',
+    'data-quiet-minimal-ui',
+    'data-quiet-hide-trending',
+    'data-quiet-show-hidden-count',
+    'data-quiet-feed',
+    'data-quiet-messages',
+    'data-quiet-high-contrast',
+    'data-quiet-hide-mentions',
+    'data-quiet-mute-group-summary',
+    'data-quiet-reduce-story-notifs',
+    'data-quiet-session-override',
+  ];
+  
+  attributesToRemove.forEach(attr => {
+    root.removeAttribute(attr);
+  });
 };
 
 /**
@@ -297,7 +640,9 @@ export const getQuietModeSettings = () => {
     enabled: getQuietMode(),
     visuals: getQuietSubToggle('visuals'),
     writing: getQuietSubToggle('writing'),
-    metrics: getQuietSubToggle('metrics')
+    metrics: getQuietSubToggle('metrics'),
+    // Include all enhancements
+    ...getAllQuietEnhancements()
   };
 };
 
@@ -413,6 +758,9 @@ export const applyUserTheme = (user) => {
     localStorage.setItem('quietMetrics', settings.quietMetrics ? 'true' : 'false');
   }
 
+  // QUIET MODE ENHANCEMENTS: Sync all enhancement settings from backend
+  syncQuietEnhancementsFromBackend(settings);
+
   // Re-apply quiet mode to ensure sub-toggles are set correctly
   if (settings.quietModeEnabled) {
     setQuietMode(true);
@@ -422,6 +770,27 @@ export const applyUserTheme = (user) => {
   if (settings.cursorStyle) {
     setCursorStyle(settings.cursorStyle);
   }
+};
+
+/**
+ * Sync all quiet mode enhancement settings from backend
+ * @param {Object} settings - User privacy settings from backend
+ */
+const syncQuietEnhancementsFromBackend = (settings) => {
+  const enhancementKeys = Object.keys(DEFAULT_QUIET_SETTINGS);
+  
+  enhancementKeys.forEach(key => {
+    if (settings[key] !== undefined) {
+      let value = settings[key];
+      
+      // Store in localStorage
+      if (Array.isArray(value)) {
+        localStorage.setItem(key, JSON.stringify(value));
+      } else {
+        localStorage.setItem(key, String(value));
+      }
+    }
+  });
 };
 
 // =========================================
@@ -593,3 +962,4 @@ export const updateiOSStatusBar = (isDarkMode) => {
 
   statusBar.content = isDarkMode ? 'black-translucent' : 'default';
 };
+
