@@ -116,7 +116,7 @@ export function CommunityThemes() {
         {themes.map((theme, index) => (
           <div key={index} className="theme-item">
             <span className="theme-emoji">{theme.emoji || '💭'}</span>
-            <span className="theme-text">{theme.topic}</span>
+            <span className="theme-text">{theme.title}</span>
           </div>
         ))}
       </div>
