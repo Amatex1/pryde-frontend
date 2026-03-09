@@ -49,6 +49,7 @@ import { compressPostMedia } from '../utils/compressImage';
 import { uploadMultipleWithProgress } from '../utils/uploadWithProgress';
 import { saveDraft, loadDraft, clearDraft } from '../utils/draftStore';
 import { withOptimisticUpdate } from '../utils/consistencyGuard';
+import { validatePhotoFile } from '../utils/photoValidation';
 import './Profile.css';
 import './Mobile.calm.css'; // PHASE D: Mobile-first calm mode
 
@@ -59,6 +60,45 @@ import './Mobile.calm.css'; // PHASE D: Mobile-first calm mode
 const compareIds = (id1, id2) => {
   if (!id1 || !id2) return false;
   return String(id1) === String(id2);
+};
+
+const isFiniteNumber = (value) => typeof value === 'number' && Number.isFinite(value);
+
+const clampPhotoBackgroundPercent = (value, fallback = 50) => {
+  if (!isFiniteNumber(value)) return fallback;
+  return Math.min(100, Math.max(0, value));
+};
+
+const getPhotoBackgroundPosition = (position) => {
+  if (!isFiniteNumber(position?.bgX) || !isFiniteNumber(position?.bgY)) {
+    return 'center';
+  }
+
+  return `${clampPhotoBackgroundPercent(position.bgX)}% ${clampPhotoBackgroundPercent(position.bgY)}%`;
+};
+
+const normalizePhotoPositionPayload = (position) => ({
+  x: isFiniteNumber(position?.x) ? position.x : 0,
+  y: isFiniteNumber(position?.y) ? position.y : 0,
+  scale: isFiniteNumber(position?.scale) ? position.scale : 1,
+  bgX: clampPhotoBackgroundPercent(position?.bgX),
+  bgY: clampPhotoBackgroundPercent(position?.bgY),
+});
+
+const normalizePhotoSavePayload = (savePayloadOrPhoto, legacyType) => {
+  if (legacyType) {
+    return {
+      photo: savePayloadOrPhoto,
+      type: legacyType,
+      position: null,
+    };
+  }
+
+  return {
+    photo: savePayloadOrPhoto?.photo,
+    type: savePayloadOrPhoto?.type,
+    position: savePayloadOrPhoto?.position ?? null,
+  };
 };
 
 function Profile() {
@@ -1447,13 +1487,23 @@ function Profile() {
       URL.revokeObjectURL(pendingPhotoUrl);
       setPendingPhotoUrl(null);
     }
+    setAvatarMenuOpen(false);
+    setAvatarMenuPos(null);
     setEditingType(null);
   };
 
   // File picker handlers — user selects a new image from disk
   const handleCoverFileChange = (e) => {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
+
+    const validationMessage = validatePhotoFile(file);
+    if (validationMessage) {
+      showToast(validationMessage, 'error');
+      return;
+    }
+
     if (pendingPhotoUrl) URL.revokeObjectURL(pendingPhotoUrl);
     const url = URL.createObjectURL(file);
     setPendingPhotoUrl(url);
@@ -1463,19 +1513,25 @@ function Profile() {
       setCoverCropSize({ width: w, height: h });
     }
     setEditingType('cover');
-    e.target.value = '';
   };
 
   const handleAvatarFileChange = (e) => {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
+
+    const validationMessage = validatePhotoFile(file);
+    if (validationMessage) {
+      showToast(validationMessage, 'error');
+      return;
+    }
+
     if (pendingPhotoUrl) URL.revokeObjectURL(pendingPhotoUrl);
     const url = URL.createObjectURL(file);
     setPendingPhotoUrl(url);
     setAvatarMenuOpen(false);
     setAvatarMenuPos(null);
     setEditingType('avatar');
-    e.target.value = '';
   };
 
   const handleAvatarClick = () => {
@@ -1491,41 +1547,77 @@ function Profile() {
     setAvatarMenuOpen(true);
   };
 
-  const handleSavePosition = async (croppedBlob, photoType) => {
+  const handleSavePosition = async (savePayloadOrPhoto, legacyType) => {
+    const { photo, type: photoType, position } = normalizePhotoSavePayload(savePayloadOrPhoto, legacyType);
+    const normalizedPosition = normalizePhotoPositionPayload(position);
+
     try {
-      // Upload the destructively-cropped image as the new profile/cover photo
-      const formData = new FormData();
-      formData.append('photo', croppedBlob, `cropped-${photoType}.jpg`);
+      let nextPhotoUrl = photoType === 'cover'
+        ? user?.coverPhoto
+        : user?.profilePhoto;
 
-      const endpoint = photoType === 'cover'
-        ? '/upload/cover-photo'
-        : '/upload/profile-photo';
+      if (photo) {
+        const formData = new FormData();
+        const filename = photo instanceof File
+          ? photo.name
+          : `cropped-${photoType}.jpg`;
 
-      const response = await api.post(endpoint, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+        formData.append('photo', photo, filename);
 
-      // Update local state with the new photo URL
-      if (response.data?.user) {
-        setUser(response.data.user);
-      } else if (response.data?.url) {
+        const endpoint = photoType === 'cover'
+          ? '/upload/cover-photo'
+          : '/upload/profile-photo';
+
+        const uploadResponse = await api.post(endpoint, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        if (uploadResponse.data?.user) {
+          nextPhotoUrl = photoType === 'cover'
+            ? uploadResponse.data.user.coverPhoto
+            : uploadResponse.data.user.profilePhoto;
+        } else if (uploadResponse.data?.url) {
+          nextPhotoUrl = uploadResponse.data.url;
+        }
+      }
+
+      const profilePayload = photoType === 'cover'
+        ? {
+          coverPhotoPosition: normalizedPosition,
+          ...(nextPhotoUrl ? { coverPhoto: nextPhotoUrl } : {})
+        }
+        : {
+          profilePhotoPosition: normalizedPosition,
+          ...(nextPhotoUrl ? { profilePhoto: nextPhotoUrl } : {})
+        };
+
+      const profileResponse = await api.put('/users/profile', profilePayload);
+
+      if (profileResponse.data?.user) {
+        setUser(profileResponse.data.user);
+      } else {
         setUser(prev => ({
           ...prev,
-          ...(photoType === 'cover'
-            ? { coverPhoto: response.data.url }
-            : { profilePhoto: response.data.url })
+          ...profilePayload
         }));
       }
+
       showToast('Photo saved!', 'success');
+
+      if (pendingPhotoUrl) {
+        URL.revokeObjectURL(pendingPhotoUrl);
+        setPendingPhotoUrl(null);
+      }
+
+      setAvatarMenuOpen(false);
+      setAvatarMenuPos(null);
+      setEditingType(null);
     } catch (error) {
-      logger.error('Failed to save cropped photo:', error);
-      showToast('Failed to save photo. Please try again.', 'error');
+      logger.error('Failed to save photo:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to save photo. Please try again.';
+      showToast(errorMessage, 'error');
+      throw error;
     }
-    if (pendingPhotoUrl) {
-      URL.revokeObjectURL(pendingPhotoUrl);
-      setPendingPhotoUrl(null);
-    }
-    setEditingType(null);
   };
 
   const handleMessage = () => {
@@ -1743,7 +1835,7 @@ function Profile() {
         {editingType === "avatar" && createPortal(
           <div
             className="avatar-reposition-modal-backdrop"
-            onClick={() => setEditingType(null)}
+            onClick={handleCancelEdit}
           >
             <div
               className="avatar-reposition-modal"
@@ -1755,6 +1847,7 @@ function Profile() {
               <PhotoRepositionInline
                 type="avatar"
                 imageUrl={pendingPhotoUrl || getImageUrl(user.profilePhoto)}
+                initialPosition={user.profilePhotoPosition}
                 onCancel={handleCancelEdit}
                 onSave={handleSavePosition}
               />
@@ -1779,6 +1872,7 @@ function Profile() {
                 type="cover"
                 cropSize={coverCropSize}
                 imageUrl={pendingPhotoUrl || getImageUrl(user.coverPhoto)}
+                initialPosition={user.coverPhotoPosition}
                 onCancel={handleCancelEdit}
                 onSave={handleSavePosition}
               />
@@ -1791,7 +1885,7 @@ function Profile() {
                     style={{
                       backgroundImage: `url(${getImageUrl(user.coverPhoto)})`,
                       backgroundSize: 'cover',
-                      backgroundPosition: 'center',
+                      backgroundPosition: getPhotoBackgroundPosition(user.coverPhotoPosition),
                       width: '100%',
                       height: '100%',
                       opacity: 0.92,
@@ -1874,7 +1968,7 @@ function Profile() {
                 style={{
                   backgroundImage: `url(${getImageUrl(user.profilePhoto)})`,
                   backgroundSize: 'cover',
-                  backgroundPosition: 'center',
+                  backgroundPosition: getPhotoBackgroundPosition(user.profilePhotoPosition),
                   width: '100%',
                   height: '100%',
                   cursor: 'pointer'

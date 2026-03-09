@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import Cropper from "react-easy-crop";
 import "./PhotoRepositionFullscreen.css";
+import { PHOTO_UPLOAD_HELP_TEXT, validatePhotoFile } from "../utils/photoValidation";
 
 // Helper: load an image element from a URL
 const createImage = (url) =>
@@ -12,37 +13,37 @@ const createImage = (url) =>
     img.src = url;
   });
 
-// Helper: draw the cropped area onto a canvas and return a Blob
-const getCroppedBlob = async (imageSrc, pixelCrop, outputSize) => {
-  const image = await createImage(imageSrc);
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
+const revokeObjectUrlSafely = (url) => {
+  if (url && typeof URL !== "undefined" && typeof URL.revokeObjectURL === "function") {
+    URL.revokeObjectURL(url);
+  }
+};
 
-  // Use outputSize if provided (e.g. 500×500 for avatar), otherwise use pixel crop dimensions
-  const outW = outputSize?.width || pixelCrop.width;
-  const outH = outputSize?.height || pixelCrop.height;
-  canvas.width = outW;
-  canvas.height = outH;
+const clampPercentage = (value, fallback = 50) => {
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return fallback;
+  }
 
-  ctx.drawImage(
-    image,
-    pixelCrop.x,
-    pixelCrop.y,
-    pixelCrop.width,
-    pixelCrop.height,
-    0,
-    0,
-    outW,
-    outH
-  );
+  return Math.min(100, Math.max(0, value));
+};
 
-  return new Promise((resolve, reject) => {
-    canvas.toBlob(
-      (blob) => (blob ? resolve(blob) : reject(new Error("Canvas is empty"))),
-      "image/jpeg",
-      0.92
-    );
-  });
+const roundPositionValue = (value) => Math.round(value * 100) / 100;
+
+const buildPhotoPosition = ({ crop, zoom, croppedAreaPercentages, fallbackPosition = {} }) => {
+  const bgXFromCrop = croppedAreaPercentages
+    ? croppedAreaPercentages.x + (croppedAreaPercentages.width / 2)
+    : fallbackPosition.bgX;
+  const bgYFromCrop = croppedAreaPercentages
+    ? croppedAreaPercentages.y + (croppedAreaPercentages.height / 2)
+    : fallbackPosition.bgY;
+
+  return {
+    x: roundPositionValue(crop?.x ?? fallbackPosition.x ?? 0),
+    y: roundPositionValue(crop?.y ?? fallbackPosition.y ?? 0),
+    scale: roundPositionValue(zoom ?? fallbackPosition.scale ?? 1),
+    bgX: roundPositionValue(clampPercentage(bgXFromCrop, 50)),
+    bgY: roundPositionValue(clampPercentage(bgYFromCrop, 50)),
+  };
 };
 
 export default function PhotoRepositionInline({
@@ -59,9 +60,12 @@ export default function PhotoRepositionInline({
 
   // Track if user uploaded a new image (to distinguish from server-cropped images)
   const [newImageFile, setNewImageFile] = useState(null);
-  
+  const [activeImageUrl, setActiveImageUrl] = useState(imageUrl);
+  const [errorMessage, setErrorMessage] = useState("");
+
   // Ref for file input to allow uploading new original image
   const fileInputRef = useRef(null);
+  const uploadedPreviewUrlRef = useRef(null);
 
   const [crop, setCrop] = useState(
     isLegacyDefault
@@ -69,6 +73,7 @@ export default function PhotoRepositionInline({
       : { x: initialPosition.x || 0, y: initialPosition.y || 0 }
   );
   const [zoom, setZoom] = useState(initialPosition.scale || 1);
+  const [croppedAreaPercentages, setCroppedAreaPercentages] = useState(null);
   const [saving, setSaving] = useState(false);
 
   // ── Transient zoom badge ──────────────────────────────────────────────────
@@ -83,8 +88,40 @@ export default function PhotoRepositionInline({
 
   useEffect(() => () => clearTimeout(badgeTimerRef.current), []);
 
+  useEffect(() => {
+    if (uploadedPreviewUrlRef.current) {
+      revokeObjectUrlSafely(uploadedPreviewUrlRef.current);
+      uploadedPreviewUrlRef.current = null;
+    }
+
+    const nextIsLegacyDefault =
+      initialPosition.x === 50 && initialPosition.y === 50;
+
+    setNewImageFile(null);
+    setActiveImageUrl(imageUrl);
+    setErrorMessage("");
+    setCrop(
+      nextIsLegacyDefault
+        ? { x: 0, y: 0 }
+        : { x: initialPosition.x || 0, y: initialPosition.y || 0 }
+    );
+    setZoom(initialPosition.scale || 1);
+    setCroppedAreaPercentages(null);
+  }, [imageUrl, initialPosition.x, initialPosition.y, initialPosition.scale]);
+
+  useEffect(() => () => {
+    if (uploadedPreviewUrlRef.current) {
+      revokeObjectUrlSafely(uploadedPreviewUrlRef.current);
+      uploadedPreviewUrlRef.current = null;
+    }
+  }, []);
+
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleCropChange = useCallback((c) => setCrop(c), []);
+
+  const handleCropComplete = useCallback((areaPercentages) => {
+    setCroppedAreaPercentages(areaPercentages);
+  }, []);
 
   // react-easy-crop fires onZoomChange on pinch/scroll — badge shows then
   const handleZoomChange = useCallback(
@@ -105,6 +142,8 @@ export default function PhotoRepositionInline({
   const handleReset = useCallback(() => {
     setCrop({ x: 0, y: 0 });
     setZoom(1);
+    setCroppedAreaPercentages(null);
+    setErrorMessage("");
   }, []);
 
   // Handle new image upload - trigger file input click
@@ -115,61 +154,97 @@ export default function PhotoRepositionInline({
   // Handle file selection
   const handleFileChange = useCallback((e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // Validate it's an image
-      if (!file.type.startsWith('image/')) {
-        console.error('Selected file is not an image');
-        return;
-      }
-      setNewImageFile(file);
-    }
-  }, []);
+    e.target.value = "";
 
-  // Capture croppedAreaPixels for destructive canvas crop on save
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const handleCropComplete = useCallback((_croppedArea, croppedAreaPx) => {
-    setCroppedAreaPixels(croppedAreaPx);
+    if (!file) {
+      return;
+    }
+
+    const validationMessage = validatePhotoFile(file);
+    if (validationMessage) {
+      setErrorMessage(validationMessage);
+      return;
+    }
+
+    if (uploadedPreviewUrlRef.current) {
+      revokeObjectUrlSafely(uploadedPreviewUrlRef.current);
+    }
+
+    const nextPreviewUrl = URL.createObjectURL(file);
+    uploadedPreviewUrlRef.current = nextPreviewUrl;
+
+    setErrorMessage("");
+    setNewImageFile(file);
+    setActiveImageUrl(nextPreviewUrl);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setCroppedAreaPercentages(null);
   }, []);
 
   // Save the FULL original image - not the cropped version
   // The crop/zoom is only for preview; the original full quality image is always saved
   const handleSave = useCallback(async () => {
     if (saving) return;
+
     setSaving(true);
+    setErrorMessage("");
+
     try {
+      const position = buildPhotoPosition({
+        crop,
+        zoom,
+        croppedAreaPercentages,
+        fallbackPosition: initialPosition,
+      });
+
       // If user uploaded a new file, use it directly
       if (newImageFile) {
-        await onSave(newImageFile, type);
+        await onSave({ photo: newImageFile, type, position });
         return;
       }
-      
+
+      if (!activeImageUrl) {
+        throw new Error("Please choose an image to continue.");
+      }
+
       // Load the original image and convert to blob (full image, not cropped)
-      const image = await createImage(imageUrl);
-      
+      const image = await createImage(activeImageUrl);
+
       // Create a canvas with the full original image dimensions
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
+
+      if (!ctx) {
+        throw new Error("Could not prepare the image for upload. Please try again.");
+      }
+
       canvas.width = image.width;
       canvas.height = image.height;
-      
+
       // Draw the FULL image (no cropping)
       ctx.drawImage(image, 0, 0);
-      
+
       // Convert to blob - full quality JPEG
-      const blob = await new Promise((resolve) => {
+      const blob = await new Promise((resolve, reject) => {
         canvas.toBlob(
-          (b) => resolve(b),
+          (b) => (b ? resolve(b) : reject(new Error("Could not prepare the image for upload. Please try again."))),
           "image/jpeg",
           0.95 // Higher quality for full images
         );
       });
-      
-      await onSave(blob, type);
+
+      await onSave({ photo: blob, type, position });
     } catch (err) {
       console.error("Save failed:", err);
+      setErrorMessage(
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to save photo. Please try again."
+      );
+    } finally {
       setSaving(false);
     }
-  }, [saving, imageUrl, type, onSave, newImageFile]);
+  }, [saving, activeImageUrl, crop, zoom, croppedAreaPercentages, initialPosition, type, onSave, newImageFile]);
 
   // cropSize fills the container exactly (cover); avatar uses 1:1 aspect
   const cropperSizeProps = cropSize
@@ -191,6 +266,7 @@ export default function PhotoRepositionInline({
         type="file"
         accept="image/*"
         onChange={handleFileChange}
+        aria-label={`Upload a new ${type} photo`}
         style={{ display: 'none' }}
       />
       
@@ -204,7 +280,7 @@ export default function PhotoRepositionInline({
         )}
 
         <Cropper
-          image={imageUrl}
+          image={activeImageUrl}
           crop={crop}
           zoom={zoom}
           {...cropperSizeProps}
@@ -228,42 +304,67 @@ export default function PhotoRepositionInline({
 
       {/* ── Controls bar ─────────────────────────────────────────────────── */}
       <div className="photo-editor-inline-controls">
-        <span className="photo-editor-inline-hint-bar">{hintText}</span>
-
-        {/* +/− zoom buttons */}
-        <div className="photo-editor-inline-zoom">
-          <button
-            className="pe-zoom-btn"
-            onClick={() => stepZoom(-0.15)}
-            disabled={zoom <= 1}
-            aria-label="Zoom out"
-          >
-            −
-          </button>
-          <span className="zoom-level">{zoomPercent}%</span>
-          <button
-            className="pe-zoom-btn"
-            onClick={() => stepZoom(0.15)}
-            disabled={zoom >= 3}
-            aria-label="Zoom in"
-          >
-            +
-          </button>
+        <div className="photo-editor-inline-meta">
+          <span className="photo-editor-inline-hint-bar">{hintText}</span>
+          <span className="photo-editor-inline-file-help">{PHOTO_UPLOAD_HELP_TEXT}</span>
+          {errorMessage && (
+            <div className="photo-editor-inline-status photo-editor-inline-status--error" role="alert">
+              {errorMessage}
+            </div>
+          )}
         </div>
 
-        <div className="photo-editor-inline-buttons">
-          <button onClick={handleUploadNew} className="pe-btn pe-btn--secondary">
-            Upload New
-          </button>
-          <button onClick={handleReset} className="pe-btn pe-btn--secondary">
-            Reset
-          </button>
-          <button onClick={onCancel} className="pe-btn pe-btn--secondary">
-            Cancel
-          </button>
-          <button onClick={handleSave} className="pe-btn pe-btn--primary" disabled={saving}>
-            {saving ? "Saving…" : "Save"}
-          </button>
+        <div className="photo-editor-inline-action-groups">
+          <div className="photo-editor-inline-zoom-panel">
+            <div className="photo-editor-inline-zoom">
+              <button
+                className="pe-zoom-btn"
+                onClick={() => stepZoom(-0.15)}
+                disabled={zoom <= 1}
+                aria-label="Zoom out"
+              >
+                −
+              </button>
+              <span className="zoom-level">{zoomPercent}%</span>
+              <button
+                className="pe-zoom-btn"
+                onClick={() => stepZoom(0.15)}
+                disabled={zoom >= 3}
+                aria-label="Zoom in"
+              >
+                +
+              </button>
+            </div>
+
+            <label className="photo-editor-inline-slider-wrap">
+              <span className="sr-only">Zoom level</span>
+              <input
+                className="photo-editor-inline-slider"
+                type="range"
+                min="1"
+                max="3"
+                step="0.01"
+                value={zoom}
+                onChange={(e) => handleZoomChange(Number(e.target.value))}
+                aria-label="Zoom level"
+              />
+            </label>
+          </div>
+
+          <div className="photo-editor-inline-buttons">
+            <button onClick={handleUploadNew} className="pe-btn pe-btn--secondary" type="button">
+              Upload New
+            </button>
+            <button onClick={handleReset} className="pe-btn pe-btn--secondary" type="button">
+              Reset
+            </button>
+            <button onClick={onCancel} className="pe-btn pe-btn--secondary" type="button">
+              Cancel
+            </button>
+            <button onClick={handleSave} className="pe-btn pe-btn--primary" disabled={saving} type="button">
+              {saving ? "Saving…" : "Save"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
