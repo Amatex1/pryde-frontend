@@ -146,11 +146,14 @@ export function usePostDraft({ draftKey = 'default-draft', autoSaveDelay = 1000 
   // Restore from server draft (if applicable)
   const restoreServerDraft = useCallback(async () => {
     try {
-      const response = await api.get('/drafts/current');
-      if (response.data?.content) {
-        setDraft(response.data.content);
-        setDraftMedia(response.data.media || []);
-        setDraftVisibility(response.data.visibility || 'public');
+      // GET /api/drafts returns all drafts - get the first one (most recent)
+      const response = await api.get('/drafts');
+      const drafts = response.data?.drafts || response.data;
+      if (drafts && drafts.length > 0) {
+        const latestDraft = drafts[0];
+        setDraft(latestDraft.content || '');
+        setDraftMedia(latestDraft.media || []);
+        setDraftVisibility(latestDraft.visibility || 'public');
         setHasUnsavedChanges(true);
       }
     } catch (error) {

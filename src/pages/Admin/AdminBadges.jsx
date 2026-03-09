@@ -90,13 +90,13 @@ function AdminBadges({ badges, onRefresh }) {
           </button>
           <button
             onClick={handleSeedAutoBadges}
-            style={{ padding: '0.75rem 1.5rem', background: 'linear-gradient(135deg, #10b981, #059669)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}
+            style={{ padding: '0.75rem 1.5rem', background: 'var(--color-success)', color: 'var(--color-surface)', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}
           >
             🌱 Seed Auto Badges
           </button>
           <button
             onClick={() => { setShowAuditLog(!showAuditLog); if (!showAuditLog) loadAuditLog(); }}
-            style={{ padding: '0.75rem 1.5rem', background: 'linear-gradient(135deg, #6366f1, #4f46e5)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}
+            style={{ padding: '0.75rem 1.5rem', background: 'var(--color-brand)', color: 'var(--color-surface)', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}
           >
             {showAuditLog ? '✕ Hide Log' : '📋 Audit Log'}
           </button>
@@ -165,7 +165,7 @@ function AdminBadges({ badges, onRefresh }) {
           <button
             type="submit"
             disabled={creating}
-            style={{ marginTop: '1rem', padding: '0.75rem 2rem', background: 'linear-gradient(135deg, #10b981, #059669)', color: 'white', border: 'none', borderRadius: '8px', cursor: creating ? 'not-allowed' : 'pointer', fontWeight: '600', opacity: creating ? 0.6 : 1 }}
+            style={{ marginTop: '1rem', padding: '0.75rem 2rem', background: 'var(--color-success)', color: 'var(--color-surface)', border: 'none', borderRadius: '8px', cursor: creating ? 'not-allowed' : 'pointer', fontWeight: '600', opacity: creating ? 0.6 : 1 }}
           >
             {creating ? 'Creating...' : 'Create Badge'}
           </button>
@@ -184,12 +184,12 @@ function AdminBadges({ badges, onRefresh }) {
               {auditLog.map((log, index) => (
                 <div key={log._id || index} style={{ padding: '0.75rem', borderBottom: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
                   <div>
-                    <span style={{ padding: '2px 6px', borderRadius: '4px', fontSize: '0.75rem', background: log.action === 'assigned' ? '#10b981' : '#ef4444', color: 'white', marginRight: '0.5rem' }}>
+                    <span style={{ padding: '2px 6px', borderRadius: '4px', fontSize: '0.75rem', background: log.action === 'assigned' ? 'var(--color-success)' : 'var(--color-danger)', color: 'var(--color-surface)', marginRight: '0.5rem' }}>
                       {log.action}
                     </span>
                     <strong>{log.badgeLabel}</strong> → @{log.username}
                     {log.isAutomatic && (
-                      <span style={{ marginLeft: '0.5rem', padding: '2px 6px', background: '#6366f1', color: 'white', borderRadius: '4px', fontSize: '0.7rem' }}>
+                      <span style={{ marginLeft: '0.5rem', padding: '2px 6px', background: 'var(--color-brand)', color: 'var(--color-surface)', borderRadius: '4px', fontSize: '0.7rem' }}>
                         AUTO
                       </span>
                     )}
@@ -218,7 +218,7 @@ function AdminBadges({ badges, onRefresh }) {
                 <div style={{ fontWeight: '600', fontSize: '1.1rem' }}>
                   {badge.label}
                   {badge.assignmentType === 'automatic' && (
-                    <span style={{ marginLeft: '0.5rem', padding: '2px 6px', background: '#6366f1', color: 'white', borderRadius: '4px', fontSize: '0.7rem' }}>
+                    <span style={{ marginLeft: '0.5rem', padding: '2px 6px', background: 'var(--color-brand)', color: 'var(--color-surface)', borderRadius: '4px', fontSize: '0.7rem' }}>
                       AUTO
                     </span>
                   )}
@@ -230,7 +230,7 @@ function AdminBadges({ badges, onRefresh }) {
                   </div>
                 )}
                 <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
-                  <span style={{ padding: '2px 8px', background: badge.type === 'platform' ? 'var(--pryde-purple)' : badge.type === 'community' ? '#10b981' : '#f59e0b', color: 'white', borderRadius: '4px', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                  <span style={{ padding: '2px 8px', background: badge.type === 'platform' ? 'var(--color-brand)' : badge.type === 'community' ? 'var(--color-success)' : 'var(--color-warning)', color: 'var(--color-surface)', borderRadius: '4px', fontSize: '0.75rem', textTransform: 'uppercase' }}>
                     {badge.type}
                   </span>
                   <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>ID: {badge.id}</span>

@@ -35,6 +35,7 @@ const SafetySettings = () => {
     allowAnonymousPosts: true,
     hideProfileFromSearch: false,
     hideOnlineStatus: false,
+    onlineStatusVisibility: 'everyone',
     friendOnlyProfile: false,
     showBadgesPublicly: true,
     quietModeEnabled: false,
@@ -106,7 +107,7 @@ const SafetySettings = () => {
         </div>
 
         {isHighRisk && (
-          <div style={{ background: '#eef2ff', border: '1px solid #c7d2fe', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', color: '#4338ca' }}>
+          <div className="alert-info" style={{ borderRadius: '12px', padding: '14px 18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}>
             <span style={{ fontSize: '18px' }}>🌍</span>
             <span>Based on your region, you may want to review your privacy settings for additional protection.</span>
           </div>
@@ -121,7 +122,28 @@ const SafetySettings = () => {
         <SectionCard icon="🔒" title="Profile Exposure">
           <ToggleRow label="Hide Profile from Search" desc="Prevent your profile from appearing in search results." checked={safety.hideProfileFromSearch} onChange={(e) => updateSetting('hideProfileFromSearch', e.target.checked)} />
           <ToggleRow label="Friends-Only Profile" desc="Only approved connections can view your full profile." checked={safety.friendOnlyProfile} onChange={(e) => updateSetting('friendOnlyProfile', e.target.checked)} />
-          <ToggleRow label="Hide Online Status" desc="Others won't see when you're online." checked={safety.hideOnlineStatus} onChange={(e) => updateSetting('hideOnlineStatus', e.target.checked)} />
+          <div style={{ padding: '14px 0', borderBottom: '1px solid var(--border-subtle)' }}>
+            <span style={{ fontWeight: 600, fontSize: '15px', color: 'var(--text-primary)' }}>Who can see your online status</span>
+            <p style={{ color: 'var(--text-muted)', fontSize: '13px', margin: '4px 0 10px', lineHeight: 1.4 }}>Control who sees the live green dot when you're active.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {[
+                { value: 'everyone', label: 'Everyone' },
+                { value: 'followers', label: 'Followers only' },
+                { value: 'no-one', label: 'No one' },
+              ].map(opt => (
+                <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '14px' }}>
+                  <input
+                    type="radio"
+                    name="onlineStatusVisibility"
+                    value={opt.value}
+                    checked={safety.onlineStatusVisibility === opt.value}
+                    onChange={() => updateSetting('onlineStatusVisibility', opt.value)}
+                  />
+                  {opt.label}
+                </label>
+              ))}
+            </div>
+          </div>
         </SectionCard>
 
         <SectionCard icon="🤫" title="Expression Controls">

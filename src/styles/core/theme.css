@@ -69,10 +69,16 @@
      ======================================== */
   --color-success: #00B894;
   --color-success-soft: rgba(0, 184, 148, 0.15);
+  --color-success-text: #007A61;   /* on-soft text, light mode */
   --color-danger: #FF7675;
   --color-danger-soft: rgba(255, 118, 117, 0.15);
+  --color-danger-text: #B83030;    /* on-soft text, light mode */
   --color-warning: #FDCB6E;
   --color-warning-soft: rgba(253, 203, 110, 0.15);
+  --color-warning-text: #7A5300;   /* on-soft text, light mode */
+  --color-info: var(--color-brand);
+  --color-info-soft: var(--color-brand-muted);
+  --color-info-text: var(--color-brand);
 
   /* ========================================
      SHADOWS (Minimal)
@@ -532,10 +538,13 @@
 
   --color-success: #00D9A5;
   --color-success-soft: rgba(0, 217, 165, 0.20);
+  --color-success-text: #00D9A5;   /* on-soft text, dark mode */
   --color-danger: #FF8B8A;
   --color-danger-soft: rgba(255, 139, 138, 0.20);
+  --color-danger-text: #FF8B8A;    /* on-soft text, dark mode */
   --color-warning: #FFD97E;
   --color-warning-soft: rgba(255, 217, 126, 0.20);
+  --color-warning-text: #FFD97E;   /* on-soft text, dark mode */
 
   --shadow-soft: none;
   --shadow-medium: none;
@@ -2854,3 +2863,47 @@ html {
 [data-quiet="true"] .chat-messages {
   opacity: 0.95;
 }
+
+/* =========================================================
+   SEMANTIC ALERT / STATUS CARD UTILITIES
+   Use these classes instead of hardcoded inline colors so
+   all themes (light, dark, quiet, galaxy) are respected.
+   ========================================================= */
+
+.alert-success {
+  background: var(--color-success-soft);
+  border: 1px solid var(--color-success);
+  color: var(--color-success-text);
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.alert-warning {
+  background: var(--color-warning-soft);
+  border: 1px solid var(--color-warning);
+  color: var(--color-warning-text);
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.alert-danger {
+  background: var(--color-danger-soft);
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger-text);
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.alert-info {
+  background: var(--color-info-soft);
+  border: 1px solid var(--color-info);
+  color: var(--color-info-text);
+  padding: 15px;
+  border-radius: 8px;
+}
+
+/* Status badge pills (e.g. admin tables) */
+.badge-success { background: var(--color-success-soft); color: var(--color-success-text); }
+.badge-danger  { background: var(--color-danger-soft);  color: var(--color-danger-text);  }
+.badge-warning { background: var(--color-warning-soft); color: var(--color-warning-text); }
+.badge-info    { background: var(--color-info-soft);    color: var(--color-info-text);    }

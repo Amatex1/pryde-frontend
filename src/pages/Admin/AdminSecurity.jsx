@@ -77,17 +77,17 @@ function AdminSecurity({ logs, stats, onResolve }) {
           </div>
           <div className="stat-card">
             <h3>Unresolved</h3>
-            <p className="stat-number" style={{ color: '#ff8c00' }}>{stats.unresolved}</p>
+            <p className="stat-number" style={{ color: 'var(--color-warning)' }}>{stats.unresolved}</p>
           </div>
           <div className="stat-card">
             <h3>Underage Attempts</h3>
-            <p className="stat-number" style={{ color: '#dc3545' }}>
+            <p className="stat-number" style={{ color: 'var(--color-danger)' }}>
               {stats.byType.underage_registration + stats.byType.underage_login + stats.byType.underage_access}
             </p>
           </div>
           <div className="stat-card">
             <h3>Critical</h3>
-            <p className="stat-number" style={{ color: '#dc3545' }}>{stats.bySeverity.critical}</p>
+            <p className="stat-number" style={{ color: 'var(--color-danger)' }}>{stats.bySeverity.critical}</p>
           </div>
         </div>
       )}
@@ -153,7 +153,7 @@ function AdminSecurity({ logs, stats, onResolve }) {
                 {log.action && (
                   <p>
                     <strong>Action:</strong>
-                    <span style={{ marginLeft: '0.5rem', padding: '0.25rem 0.5rem', background: log.action === 'banned' ? '#dc3545' : log.action === 'blocked' ? '#ff8c00' : '#6c757d', color: 'white', borderRadius: '4px', fontSize: '0.875rem' }}>
+                    <span style={{ marginLeft: '0.5rem', padding: '0.25rem 0.5rem', background: log.action === 'banned' ? 'var(--color-danger)' : log.action === 'blocked' ? 'var(--color-warning)' : 'var(--color-text-secondary)', color: 'var(--color-surface)', borderRadius: '4px', fontSize: '0.875rem' }}>
                       {log.action.toUpperCase()}
                     </span>
                   </p>

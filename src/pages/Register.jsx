@@ -120,13 +120,13 @@ function Register({ onLoginSuccess }) {
 
     // Determine label and color
     if (score <= 2) {
-      return { score, label: 'Weak', color: '#ff6b6b' };
+      return { score, label: 'Weak', color: 'var(--color-danger)' };
     } else if (score <= 4) {
-      return { score, label: 'Medium', color: '#ffa500' };
+      return { score, label: 'Medium', color: 'var(--color-warning)' };
     } else if (score <= 6) {
-      return { score, label: 'Strong', color: '#4caf50' };
+      return { score, label: 'Strong', color: 'var(--color-success)' };
     } else {
-      return { score, label: 'Very Strong', color: '#0984E3' };
+      return { score, label: 'Very Strong', color: 'var(--color-info)' };
     }
   };
 
@@ -506,9 +506,9 @@ function Register({ onLoginSuccess }) {
                     ) : usernameAvailable ? (
                       <>
                         {usernameAvailable.available ? (
-                          <span style={{ color: '#4caf50', fontWeight: '600' }}>✓ {usernameAvailable.message}</span>
+                          <span style={{ color: 'var(--color-success)', fontWeight: '600' }}>✓ {usernameAvailable.message}</span>
                         ) : (
-                          <span style={{ color: '#ff6b6b', fontWeight: '600' }}>✗ {usernameAvailable.message}</span>
+                          <span style={{ color: 'var(--color-danger)', fontWeight: '600' }}>✗ {usernameAvailable.message}</span>
                         )}
                         {/* Show warning if check is stale (>30 seconds old) */}
                         {usernameAvailable.available && usernameCheckTimestamp &&
@@ -516,11 +516,11 @@ function Register({ onLoginSuccess }) {
                           <div style={{
                             marginTop: 'var(--space-sm)',
                             padding: 'var(--space-sm)',
-                            background: 'rgba(255, 165, 0, 0.1)',
-                            border: '1px solid rgba(255, 165, 0, 0.3)',
+                            background: 'var(--color-warning-soft)',
+                            border: '1px solid var(--color-warning)',
                             borderRadius: 'var(--border-radius-sm)',
                             fontSize: 'var(--font-size-xs)',
-                            color: '#ffa500',
+                            color: 'var(--color-warning-text)',
                             display: 'flex',
                             alignItems: 'center',
                             gap: 'var(--space-xs)'

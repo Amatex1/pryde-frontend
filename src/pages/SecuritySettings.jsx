@@ -173,22 +173,22 @@ function SecuritySettings() {
           {/* Two-Factor Authentication Section */}
           <div className="settings-section">
             <h2 className="section-title">Two-Factor Authentication (2FA)</h2>
-            <p style={{ color: '#616161', marginBottom: '15px' }}>
+            <p style={{ color: 'var(--color-text-secondary)', marginBottom: '15px' }}>
               Add an extra layer of security to your account by requiring a verification code in addition to your password.
             </p>
 
             {twoFactorStatus.enabled ? (
-              <div className="security-status-card" style={{ background: '#d4edda', border: '1px solid #c3e6cb', padding: '15px', borderRadius: '8px', marginBottom: '15px' }}>
+              <div className="security-status-card alert-success" style={{ padding: '15px', borderRadius: '8px', marginBottom: '15px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                   <span style={{ fontSize: '24px' }}>✅</span>
                   <div>
-                    <strong style={{ color: '#155724' }}>2FA is enabled</strong>
-                    <p style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#155724' }}>
+                    <strong>2FA is enabled</strong>
+                    <p style={{ margin: '5px 0 0 0', fontSize: '14px' }}>
                       Your account is protected with two-factor authentication
                     </p>
                   </div>
                 </div>
-                <div style={{ marginTop: '10px', fontSize: '14px', color: '#155724' }}>
+                <div style={{ marginTop: '10px', fontSize: '14px' }}>
                   <strong>Backup codes remaining:</strong> {twoFactorStatus.backupCodesRemaining} / 10
                 </div>
                 <div style={{ marginTop: '15px', display: 'flex', gap: '10px' }}>
@@ -201,12 +201,12 @@ function SecuritySettings() {
                 </div>
               </div>
             ) : (
-              <div className="security-status-card" style={{ background: '#fff3cd', border: '1px solid #ffeaa7', padding: '15px', borderRadius: '8px', marginBottom: '15px' }}>
+              <div className="security-status-card alert-warning" style={{ padding: '15px', borderRadius: '8px', marginBottom: '15px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                   <span style={{ fontSize: '24px' }}>⚠️</span>
                   <div>
-                    <strong style={{ color: '#856404' }}>2FA is not enabled</strong>
-                    <p style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#856404' }}>
+                    <strong>2FA is not enabled</strong>
+                    <p style={{ margin: '5px 0 0 0', fontSize: '14px' }}>
                       Your account is less secure without two-factor authentication
                     </p>
                   </div>

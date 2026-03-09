@@ -76,8 +76,8 @@ function AdminReports({ reports, onResolve }) {
               )}
               <div>
                 <div><strong>{user.displayName || user.username}</strong></div>
-                <div style={{ color: '#666', fontSize: '0.9em' }}>@{user.username}</div>
-                <div style={{ color: '#666', fontSize: '0.9em' }}>{user.email}</div>
+                <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.9em' }}>@{user.username}</div>
+                <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.9em' }}>{user.email}</div>
               </div>
             </div>
             {user.bio && <p className="preview-content">{user.bio}</p>}

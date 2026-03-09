@@ -244,7 +244,7 @@ function AdminUsers({
                   <td data-label="Joined">{new Date(user.createdAt).toLocaleDateString()}</td>
                   <td data-label="Actions" className="actions-cell">
                     {user.role?.toLowerCase() === 'super_admin' ? (
-                      <span style={{ color: '#6C5CE7', fontWeight: 'bold' }}>🛡️ Platform Owner</span>
+                      <span style={{ color: 'var(--color-brand)', fontWeight: 'bold' }}>🛡️ Platform Owner</span>
                     ) : (
                       <div className="admin-actions">
                         <button className="admin-action-trigger" onClick={() => toggleActionMenu(user._id)}>⋯</button>

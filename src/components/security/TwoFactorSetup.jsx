@@ -93,7 +93,7 @@ function TwoFactorSetup({ onClose, onSuccess }) {
         <h2 className="modal-title">🔐 Enable Two-Factor Authentication</h2>
 
         {error && (
-          <div className="error-message" style={{ background: 'var(--error)', color: 'white', padding: '10px', borderRadius: '5px', marginBottom: '15px' }}>
+          <div className="error-message alert-danger" style={{ padding: '10px', borderRadius: '5px', marginBottom: '15px' }}>
             {error}
           </div>
         )}
@@ -144,7 +144,7 @@ function TwoFactorSetup({ onClose, onSuccess }) {
                   textAlign: 'center',
                   letterSpacing: '10px',
                   fontWeight: 'bold',
-                  border: '2px solid #E0E0E0',
+                  border: '2px solid var(--color-border)',
                   borderRadius: '8px',
                   marginBottom: '15px',
                   boxSizing: 'border-box'
@@ -168,9 +168,9 @@ function TwoFactorSetup({ onClose, onSuccess }) {
         {/* Step 3: Backup Codes */}
         {step === 3 && (
           <div className="setup-step">
-            <div style={{ background: 'var(--success)', border: '1px solid var(--success)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-              <h3 style={{ color: 'white', marginTop: 0 }}>✅ 2FA Enabled Successfully!</h3>
-              <p style={{ color: 'white', margin: 0 }}>
+            <div className="alert-success" style={{ padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+              <h3 style={{ marginTop: 0 }}>✅ 2FA Enabled Successfully!</h3>
+              <p style={{ margin: 0 }}>
                 Your account is now protected with two-factor authentication.
               </p>
             </div>
@@ -182,8 +182,8 @@ function TwoFactorSetup({ onClose, onSuccess }) {
             </p>
 
             <div className="backup-codes-container" style={{
-              background: '#f7f7f7',
-              border: '2px solid #E0E0E0',
+              background: 'var(--color-surface-muted)',
+              border: '2px solid var(--color-border)',
               borderRadius: '8px',
               padding: '20px',
               marginBottom: '15px'
@@ -191,14 +191,14 @@ function TwoFactorSetup({ onClose, onSuccess }) {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 {backupCodes.map((code, index) => (
                   <div key={index} style={{
-                    background: 'white',
+                    background: 'var(--color-surface)',
                     padding: '10px',
                     borderRadius: '5px',
                     fontFamily: 'monospace',
                     fontSize: '16px',
                     fontWeight: 'bold',
                     textAlign: 'center',
-                    color: '#6C5CE7'
+                    color: 'var(--color-brand)'
                   }}>
                     {code}
                   </div>
@@ -219,7 +219,7 @@ function TwoFactorSetup({ onClose, onSuccess }) {
               ✅ I've Saved My Backup Codes
             </button>
 
-            <p style={{ fontSize: '12px', color: '#856404', marginTop: '15px', textAlign: 'center' }}>
+            <p style={{ fontSize: '12px', color: 'var(--color-warning-text)', marginTop: '15px', textAlign: 'center' }}>
               ⚠️ You won't be able to see these codes again. Make sure to save them now!
             </p>
           </div>

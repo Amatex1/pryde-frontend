@@ -10,7 +10,23 @@ import AccountManagementSection from '../components/settings/AccountManagementSe
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
 import { logout, getAuthToken } from '../utils/auth';
-import { getTheme, setTheme as setThemeManager, getGalaxyMode, setGalaxyMode as setGalaxyModeManager, setQuietMode, setQuietSubToggle, getQuietSubToggle, setCursorStyle, getCursorStyle, setTextDensity, getTextDensity } from '../utils/themeManager';
+import { 
+  getTheme, 
+  setTheme as setThemeManager, 
+  getGalaxyMode, 
+  setGalaxyMode as setGalaxyModeManager, 
+  setQuietMode, 
+  setQuietSubToggle, 
+  getQuietSubToggle, 
+  setCursorStyle, 
+  getCursorStyle, 
+  setTextDensity, 
+  getTextDensity,
+  setQuietEnhancement,
+  getQuietEnhancement,
+  getAllQuietEnhancements,
+  toggleSessionQuietOverride
+} from '../utils/themeManager';
 import { useAuth } from '../context/AuthContext';
 import logger from '../utils/logger';
 import { promptInstall, isPWA, isInstallPromptAvailable } from '../utils/pwa';
@@ -32,6 +48,35 @@ function Settings() {
   const [quietVisuals, setQuietVisuals] = useState(true);
   const [quietWriting, setQuietWriting] = useState(true);
   const [quietMetrics, setQuietMetrics] = useState(false);
+  
+  // QUIET MODE ENHANCEMENTS: All 10 improvements state
+  const [quietEnhancements, setQuietEnhancements] = useState({
+    quietHoursEnabled: false,
+    quietHoursStart: '22:00',
+    quietHoursEnd: '08:00',
+    quietOnWorkFocus: false,
+    quietContentFilter: 'all',
+    quietHideViral: false,
+    quietFollowedOnly: false,
+    quietGentleTransitions: true,
+    quietColorScheme: 'default',
+    quietHideStories: false,
+    quietDeepQuiet: false,
+    quietDisableAnimations: false,
+    quietMinimalUI: false,
+    quietHideTrending: false,
+    quietAutoTrigger: false,
+    quietNegativeThreshold: 5,
+    quietKeywordTriggers: [],
+    quietShowHiddenCount: true,
+    quietFeedSettings: 'default',
+    quietMessageSettings: 'default',
+    quietHighContrast: false,
+    quietHideMentions: false,
+    quietMuteGroupSummary: false,
+    quietReduceStoryNotifications: false,
+  });
+  
   // CURSOR CUSTOMIZATION: Optional cursor styles
   const [cursorStyle, setCursorStyleState] = useState('system');
   // TEXT DENSITY: Compact or Cozy text sizing
@@ -435,7 +480,7 @@ function Settings() {
           </div>
 
           {/* Privacy Settings Link */}
-          <div className="settings-section" style={{ background: 'linear-gradient(135deg, #EDEAFF 0%, #F7F7F7 100%)', padding: '20px', borderRadius: '12px', marginBottom: '20px' }}>
+          <div className="settings-section" style={{ background: 'linear-gradient(135deg, var(--color-brand-muted) 0%, var(--color-surface-muted) 100%)', padding: '20px', borderRadius: '12px', marginBottom: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
                 <h2 className="section-title" style={{ margin: 0, marginBottom: '5px' }}>🔒 Privacy & Safety</h2>

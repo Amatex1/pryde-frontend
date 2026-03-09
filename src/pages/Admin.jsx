@@ -1131,8 +1131,8 @@ function ReportsTab({ reports, onResolve }) {
               )}
               <div>
                 <div><strong>{user.displayName || user.username}</strong></div>
-                <div style={{ color: '#666', fontSize: '0.9em' }}>@{user.username}</div>
-                <div style={{ color: '#666', fontSize: '0.9em' }}>{user.email}</div>
+                <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.9em' }}>@{user.username}</div>
+                <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.9em' }}>{user.email}</div>
               </div>
             </div>
             {user.bio && <p className="preview-content">{user.bio}</p>}
@@ -1466,7 +1466,7 @@ function UsersTab({ users, badges = [], onSuspend, onBan, onUnsuspend, onUnban, 
                       console.log(`Is super admin: ${isSuperAdmin}`);
                       return isSuperAdmin;
                     })() ? (
-                      <span style={{ color: '#6C5CE7', fontWeight: 'bold' }}>
+                      <span style={{ color: 'var(--color-brand)', fontWeight: 'bold' }}>
                         🛡️ Platform Owner (Protected)
                       </span>
                     ) : (
@@ -1766,17 +1766,17 @@ function SecurityTab({ logs, stats, onResolve }) {
           </div>
           <div className="stat-card">
             <h3>Unresolved</h3>
-            <p className="stat-number" style={{ color: '#ff8c00' }}>{stats.unresolved}</p>
+            <p className="stat-number" style={{ color: 'var(--color-warning)' }}>{stats.unresolved}</p>
           </div>
           <div className="stat-card">
             <h3>Underage Attempts</h3>
-            <p className="stat-number" style={{ color: '#dc3545' }}>
+            <p className="stat-number" style={{ color: 'var(--color-danger)' }}>
               {stats.byType.underage_registration + stats.byType.underage_login + stats.byType.underage_access}
             </p>
           </div>
           <div className="stat-card">
             <h3>Critical</h3>
-            <p className="stat-number" style={{ color: '#dc3545' }}>{stats.bySeverity.critical}</p>
+            <p className="stat-number" style={{ color: 'var(--color-danger)' }}>{stats.bySeverity.critical}</p>
           </div>
         </div>
       )}

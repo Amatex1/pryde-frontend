@@ -22,6 +22,7 @@ const PrivacySettings = () => {
   const [privacySettings, setPrivacySettings] = useState({
     profileVisibility: 'public',
     whoCanMessage: 'followers',
+    showLastSeen: true,
     blockedUsers: []
   });
   const [safety, setSafety] = useState({
@@ -146,7 +147,7 @@ const PrivacySettings = () => {
       <h1>Privacy & Safety</h1>
 
       {isHighRisk && (
-        <div style={{ background: '#eef2ff', border: '1px solid #c7d2fe', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', color: '#4338ca' }}>
+        <div className="alert-info" style={{ borderRadius: '12px', padding: '14px 18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}>
           <span style={{ fontSize: '18px' }}>🌍</span>
           <span>Based on your region, you may want to review your privacy settings for additional protection.</span>
         </div>
@@ -251,11 +252,38 @@ const PrivacySettings = () => {
           onChange={(e) => updateSafetySetting('friendOnlyProfile', e.target.checked)}
         />
         <ToggleRow
-          label="Hide Online Status"
-          desc="Others won't see when you're online."
-          checked={safety.hideOnlineStatus}
-          onChange={(e) => updateSafetySetting('hideOnlineStatus', e.target.checked)}
+          label="Show Last Seen"
+          desc="Show others when you were last active. If off, your last seen time is hidden."
+          checked={privacySettings.showLastSeen}
+          onChange={(e) => updatePrivacySetting('showLastSeen', e.target.checked)}
         />
+        <div style={{ padding: '14px 0', borderBottom: '1px solid var(--border-subtle)' }}>
+          <span style={{ fontWeight: 600, fontSize: '15px', color: 'var(--text-primary)' }}>Who can see your online status</span>
+          <p style={{ color: 'var(--text-muted)', fontSize: '13px', margin: '4px 0 12px', lineHeight: 1.4 }}>Control who sees the live green dot when you're active.</p>
+          <div className="setting-group">
+            <label>
+              <input type="radio" name="onlineStatusVisibility" value="everyone"
+                checked={safety.onlineStatusVisibility === 'everyone'}
+                onChange={() => updateSafetySetting('onlineStatusVisibility', 'everyone')}
+              />
+              Everyone
+            </label>
+            <label>
+              <input type="radio" name="onlineStatusVisibility" value="followers"
+                checked={safety.onlineStatusVisibility === 'followers'}
+                onChange={() => updateSafetySetting('onlineStatusVisibility', 'followers')}
+              />
+              Followers only
+            </label>
+            <label>
+              <input type="radio" name="onlineStatusVisibility" value="no-one"
+                checked={safety.onlineStatusVisibility === 'no-one'}
+                onChange={() => updateSafetySetting('onlineStatusVisibility', 'no-one')}
+              />
+              No one
+            </label>
+          </div>
+        </div>
       </section>
 
       <section className="privacy-section">

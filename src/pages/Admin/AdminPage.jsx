@@ -608,7 +608,7 @@ function AdminPage() {
               <p className="admin-section-description">
                 Enable maintenance mode to temporarily redirect all users to a maintenance page.
               </p>
-              <div style={{ background: 'var(--card-surface)', padding: '1.5rem', borderRadius: '12px', marginBottom: '1.5rem', border: `2px solid ${maintenanceStatus?.enabled ? '#ef4444' : '#10b981'}` }}>
+              <div style={{ background: 'var(--card-surface)', padding: '1.5rem', borderRadius: '12px', marginBottom: '1.5rem', border: `2px solid ${maintenanceStatus?.enabled ? 'var(--color-danger)' : 'var(--color-success)'}` }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                   <span style={{ fontSize: '2rem' }}>{maintenanceStatus?.enabled ? '🚫' : '✅'}</span>
                   <div>
@@ -638,8 +638,8 @@ function AdminPage() {
                 disabled={maintenanceLoading}
                 style={{
                   padding: '1rem 2rem',
-                  background: maintenanceStatus?.enabled ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #ef4444, #dc2626)',
-                  color: 'white', border: 'none', borderRadius: '12px', cursor: maintenanceLoading ? 'not-allowed' : 'pointer'
+                  background: maintenanceStatus?.enabled ? 'var(--color-success)' : 'var(--color-danger)',
+                  color: 'var(--color-surface)', border: 'none', borderRadius: '12px', cursor: maintenanceLoading ? 'not-allowed' : 'pointer'
                 }}
               >
                 {maintenanceLoading ? 'Loading...' : maintenanceStatus?.enabled ? '🟢 Disable' : '🔴 Enable'}
