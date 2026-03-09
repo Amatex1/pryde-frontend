@@ -1,0 +1,241 @@
+/**
+ * Accessibility Global Styles
+ * Focus indicators, color contrast fixes, and form label improvements
+ */
+
+/* ========================================
+   FOCUS INDICATORS - WCAG 2.1 Success Criterion 2.4.7
+   ======================================== */
+
+/* Global focus outline - visible and high contrast */
+*:focus {
+  outline: 3px solid var(--color-primary, #6C5CE7);
+  outline-offset: 2px;
+}
+
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Visible focus for keyboard navigation */
+*:focus-visible {
+  outline: 3px solid var(--color-primary, #6C5CE7);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(108, 92, 231, 0.3);
+}
+
+/* Remove default focus for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Button focus styles */
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid var(--color-primary, #6C5CE7);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(108, 92, 231, 0.3);
+}
+
+/* Input focus styles */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--color-primary, #6C5CE7);
+  outline-offset: 0;
+  border-color: var(--color-primary, #6C5CE7);
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+}
+
+/* Link focus styles */
+a:focus-visible {
+  outline: 3px solid var(--color-primary, #6C5CE7);
+  outline-offset: 2px;
+  text-decoration: underline;
+}
+
+/* ========================================
+   COLOR CONTRAST FIXES - WCAG 2.1 AA
+   ======================================== */
+
+/* Ensure text has sufficient contrast */
+body {
+  color: var(--text-primary, #1E1E26);
+  background-color: var(--bg-page, #F5F6FA);
+}
+
+/* Dark mode text */
+:root[data-theme="dark"] body {
+  color: var(--text-primary, #F8F7FF);
+  background-color: var(--bg-page, #0F1021);
+}
+
+/* High contrast text utility classes */
+.text-high-contrast {
+  color: #1E1E26 !important;
+}
+
+.text-medium-contrast {
+  color: #4A4A5A !important;
+}
+
+.text-low-contrast {
+  color: #7A7A8A !important;
+}
+
+/* Dark mode high contrast */
+:root[data-theme="dark"] .text-high-contrast {
+  color: #FFFFFF !important;
+}
+
+:root[data-theme="dark"] .text-medium-contrast {
+  color: #D0D0D0 !important;
+}
+
+:root[data-theme="dark"] .text-low-contrast {
+  color: #A0A0A0 !important;
+}
+
+/* Ensure buttons have sufficient contrast */
+.btn {
+  color: #FFFFFF !important;
+  background-color: var(--color-primary, #6C5CE7);
+}
+
+.btn-secondary {
+  color: #FFFFFF !important;
+  background-color: #00CEC9;
+}
+
+.btn-outline {
+  color: var(--color-primary, #6C5CE7) !important;
+  border: 2px solid var(--color-primary, #6C5CE7);
+  background-color: transparent;
+}
+
+/* ========================================
+   FORM LABEL ACCESSIBILITY
+   ======================================== */
+
+/* Labels must be visible */
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: var(--text-primary, #1E1E26);
+}
+
+:root[data-theme="dark"] label {
+  color: #F8F7FF;
+}
+
+/* Required field indicator */
+label .required::after {
+  content: " *";
+  color: #E74C3C;
+}
+
+/* Help text for forms */
+.form-help {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.875rem;
+  color: var(--text-secondary, #666);
+}
+
+:root[data-theme="dark"] .form-help {
+  color: #A0A0A0;
+}
+
+/* Error messages */
+.form-error {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.875rem;
+  color: #E74C3C;
+  font-weight: 500;
+}
+
+/* Input wrapper for proper spacing */
+.input-wrapper {
+  margin-bottom: 16px;
+}
+
+/* Placeholder text - reduce opacity for better contrast */
+::placeholder {
+  color: #999;
+  opacity: 0.7;
+}
+
+:root[data-theme="dark"] ::placeholder {
+  color: #666;
+}
+
+/* ========================================
+   REDUCED MOTION SUPPORT
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ========================================
+   HIGH CONTRAST MODE SUPPORT
+   ======================================== */
+
+@media (prefers-contrast: high) {
+  * {
+    border-width: 2px !important;
+  }
+  
+  button,
+  input,
+  select,
+  textarea {
+    border-width: 3px !important;
+  }
+  
+  .btn {
+    border-width: 3px !important;
+    font-weight: 700;
+  }
+  
+  a {
+    text-decoration: underline !important;
+  }
+}
+
+/* ========================================
+   SCREEN READER ONLY (SR-ONLY)
+   ======================================== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Make sr-only content visible on focus */
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}

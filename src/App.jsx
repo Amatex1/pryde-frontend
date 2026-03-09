@@ -56,12 +56,12 @@ const lazyWithReload = (importFn) => {
             gap: '16px'
           }}>
             <h2>Failed to load this page</h2>
-            <p style={{ color: '#666' }}>This usually happens after an update. Please refresh to get the latest version.</p>
+            <p style={{ color: 'var(--color-text-secondary)' }}>This usually happens after an update. Please refresh to get the latest version.</p>
             <button
               onClick={() => window.location.reload()}
               style={{
                 padding: '12px 24px',
-                backgroundColor: '#7c3aed',
+                backgroundColor: 'var(--color-brand)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '8px',
@@ -157,8 +157,8 @@ const PageLoader = () => {
       justifyContent: 'center',
       alignItems: 'center',
       minHeight: '100vh',
-      background: '#f7f7f7',
-      color: '#2b2b2b'
+      background: 'var(--color-bg)',
+      color: 'var(--color-text)'
     }}>
       <div style={{ textAlign: 'center', padding: '2rem' }}>
         <div style={{
@@ -176,7 +176,7 @@ const PageLoader = () => {
           <div style={{ marginTop: '2rem' }}>
             <p style={{
               marginBottom: '1rem',
-              color: '#616161',
+              color: 'var(--color-text-secondary)',
               fontSize: '0.9rem'
             }}>
               Taking longer than expected...

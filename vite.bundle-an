@@ -1,0 +1,56 @@
+/**
+ * Bundle Analyzer Configuration
+ * Add this to vite.config.js to analyze bundle sizes
+ * 
+ * Usage: npm run build && npx vite-bundle-visualizer
+ */
+
+import { visualizer } from 'rollup-plugin-visualizer';
+
+export default {
+  plugins: [
+    visualizer({
+      filename: 'dist/stats.html',
+      open: true,
+      gzipSize: true,
+      brotliSize: true,
+      template: 'treemap' // or 'sunburst', 'network'
+    })
+  ]
+};
+
+/**
+ * Alternative: Use webpack-bundle-analyzer
+ * 
+ * 1. npm install --save-dev webpack-bundle-analyzer
+ * 
+ * 2. Add to webpack.config.js:
+ * const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+ * 
+ * plugins: [
+ *   new BundleAnalyzerPlugin({
+ *     analyzerMode: 'static',
+ *     reportFilename: 'bundle-report.html',
+ *     openAnalyzer: true
+ *   })
+ * ]
+ * 
+ * 3. Run: npm run build && npx webpack-bundle-analyzer dist/bundle-report.json
+ */
+
+// Simple bundle size tracking
+export function logBundleSizes() {
+  if (typeof window === 'undefined') return;
+  
+  const resources = performance.getEntriesByType('resource');
+  
+  const jsFiles = resources
+    .filter(r => r.name.endsWith('.js'))
+    .map(r => ({ name: r.name.split('/').pop(), size: (r.transferSize / 1024).toFixed(2) + ' KB' }));
+    
+  console.log('📦 JavaScript Bundle Sizes:');
+  jsFiles.forEach(f => console.log(`  ${f.name}: ${f.size}`));
+  
+  const totalSize = jsFiles.reduce((acc, f) => acc + parseFloat(f.size), 0);
+  console.log(`  Total: ${totalSize.toFixed(2)} KB`);
+}

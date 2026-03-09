@@ -16,7 +16,7 @@ import NotificationBell from './NotificationBell';
 import MessagesDropdown from './MessagesDropdown';
 import { SkeletonNavbarActions } from './SkeletonLoader';
 import api from '../utils/api';
-import { getQuietMode, setQuietMode as setQuietModeManager, getGalaxyMode, toggleGalaxyMode as toggleGalaxyModeManager } from '../utils/themeManager';
+import { getQuietMode, setQuietMode as setQuietModeManager, getGalaxyMode, toggleGalaxyMode as toggleGalaxyModeManager, toggleSessionQuietOverride } from '../utils/themeManager';
 import prydeLogo from '../assets/pryde-logo.png';
 import { useAuth } from '../context/AuthContext';
 import { useUnreadMessages } from '../hooks/useUnreadMessages'; // ✅ Use singleton hook

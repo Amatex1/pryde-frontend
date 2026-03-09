@@ -61,8 +61,8 @@ class ErrorBoundary extends Component {
           justifyContent: 'center',
           minHeight: '100vh',
           padding: '2rem',
-          background: 'var(--bg-light, #f7f7f7)',
-          color: 'var(--text-main, #2b2b2b)',
+          background: 'var(--color-bg)',
+          color: 'var(--color-text)',
           textAlign: 'center'
         }}>
           <div style={{
@@ -76,13 +76,13 @@ class ErrorBoundary extends Component {
             <h1 style={{ 
               fontSize: '1.5rem', 
               marginBottom: '1rem',
-              color: 'var(--text-main, #2b2b2b)'
+              color: 'var(--color-text)'
             }}>
               Oops! Something went wrong
             </h1>
             <p style={{ 
               marginBottom: '2rem',
-              color: 'var(--text-muted, #616161)',
+              color: 'var(--color-text-secondary)',
               lineHeight: '1.6'
             }}>
               We're sorry, but something unexpected happened. 
@@ -94,7 +94,7 @@ class ErrorBoundary extends Component {
               <details open style={{
                 marginBottom: '2rem',
                 textAlign: 'left',
-                background: '#f5f5f5',
+                background: 'var(--color-surface-muted)',
                 padding: '1rem',
                 borderRadius: '8px',
                 fontSize: '0.85rem'
@@ -105,7 +105,7 @@ class ErrorBoundary extends Component {
                 <pre style={{
                   overflow: 'auto',
                   fontSize: '0.75rem',
-                  color: '#d32f2f',
+                  color: 'var(--color-danger)',
                   whiteSpace: 'pre-wrap',
                   wordBreak: 'break-word'
                 }}>
@@ -177,27 +177,27 @@ class ErrorBoundary extends Component {
                   borderRadius: '12px',
                   border: '2px solid #616161',
                   background: 'transparent',
-                  color: '#616161',
+                  color: 'var(--color-text-secondary)',
                   fontSize: '1rem',
                   fontWeight: '600',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease'
                 }}
                 onMouseOver={(e) => {
-                  e.target.style.background = '#616161';
+                  e.target.style.background = 'var(--color-text-secondary)';
                   e.target.style.color = 'white';
                 }}
                 onMouseOut={(e) => {
                   e.target.style.background = 'transparent';
-                  e.target.style.color = '#616161';
+                  e.target.style.color = 'var(--color-text-secondary)';
                 }}
                 onFocus={(e) => {
-                  e.target.style.background = '#616161';
+                  e.target.style.background = 'var(--color-text-secondary)';
                   e.target.style.color = 'white';
                 }}
                 onBlur={(e) => {
                   e.target.style.background = 'transparent';
-                  e.target.style.color = '#616161';
+                  e.target.style.color = 'var(--color-text-secondary)';
                 }}
               >
                 Go to Feed
