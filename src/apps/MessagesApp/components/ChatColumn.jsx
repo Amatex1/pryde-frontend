@@ -73,6 +73,45 @@ export default function ChatColumn({
   onDeleteMessage,
 }) {
   const isSelfChat = selectedUser?._id === currentUser?._id;
+  const isGroupChat = selectedChatType === 'group';
+  const isMuted = mutedConversations.includes(selectedChat);
+  const isOnline = !isGroupChat && !isSelfChat && onlineUsers.includes(selectedChat);
+  const username = !isGroupChat && !isSelfChat && !selectedUser?.isDeleted ? getUsername(selectedUser) : '';
+
+  let chatTitle = 'Conversation';
+  if (isGroupChat) {
+    chatTitle = selectedGroup?.name || 'Group Chat';
+  } else if (isSelfChat) {
+    chatTitle = 'Notes to self';
+  } else if (selectedUser?.isDeleted) {
+    chatTitle = 'Unknown User';
+  } else {
+    chatTitle = getDisplayName(selectedUser);
+  }
+
+  let chatSubtitle = '';
+  if (isGroupChat) {
+    const memberCount = selectedGroup?.members?.length || 0;
+    chatSubtitle = memberCount > 0 ? `${memberCount} member${memberCount === 1 ? '' : 's'}` : 'Group chat';
+  } else if (isSelfChat) {
+    chatSubtitle = 'Private notes and reminders';
+  } else if (selectedUser?.isDeleted) {
+    chatSubtitle = 'Profile unavailable';
+  } else if (selectedUser?.isActive === false) {
+    chatSubtitle = 'Account deactivated';
+  } else {
+    const metaParts = [];
+    if (username) {
+      metaParts.push(username.startsWith('@') ? username : `@${username}`);
+    }
+    if (!isRecipientUnavailable) {
+      metaParts.push(isOnline ? 'Online' : 'Offline');
+    }
+    if (isMuted) {
+      metaParts.push('Muted');
+    }
+    chatSubtitle = metaParts.join(' • ');
+  }
 
   return (
     <section className="messages-app__chat">
@@ -95,54 +134,47 @@ export default function ChatColumn({
             </div>
             <div className="chat-user-info">
               <div className="chat-user-name">
-                <span className="display-name">
-                  {selectedChatType === 'group' ? (selectedGroup?.name || 'Group Chat')
-                    : isSelfChat ? 'Notes to self'
-                    : selectedUser?.isDeleted ? 'Unknown User'
-                    : getDisplayName(selectedUser)}
-                </span>
-                {selectedChatType !== 'group' && !isSelfChat && !selectedUser?.isDeleted && getUsername(selectedUser) && (
-                  <span className="username">{getUsername(selectedUser)}</span>
-                )}
-                {mutedConversations.includes(selectedChat) && <span className="muted-indicator"><BellOff size={14} strokeWidth={1.75} aria-hidden="true" /></span>}
+                <span className="display-name">{chatTitle}</span>
               </div>
-              {selectedChatType !== 'group' && !isSelfChat && selectedUser?.isActive === false && !selectedUser?.isDeleted && (
-                <div className="chat-user-subtitle">Account deactivated</div>
-              )}
-              {selectedChatType !== 'group' && !isSelfChat && !isRecipientUnavailable && (
-                <div className={`chat-user-status ${onlineUsers.includes(selectedChat) ? 'online' : 'offline'}`}>
-                  {onlineUsers.includes(selectedChat) ? 'Online' : 'Offline'}
+              {chatSubtitle && (
+                <div className={`chat-user-meta ${isOnline ? 'online' : ''}`}>
+                  {chatSubtitle}
                 </div>
               )}
             </div>
           </div>
           <div className="chat-header-actions">
             <button
-              className="btn-chat-settings"
-              onClick={() => mutedConversations.includes(selectedChat) ? onUnmute(selectedChat, selectedChatType === 'group') : onMute(selectedChat, selectedChatType === 'group')}
-              title={mutedConversations.includes(selectedChat) ? 'Unmute' : 'Mute'}
-            >
-              {mutedConversations.includes(selectedChat)
-                ? <Bell size={18} strokeWidth={1.75} aria-hidden="true" />
-                : <BellOff size={18} strokeWidth={1.75} aria-hidden="true" />}
-            </button>
-            <button
               className="btn-chat-info"
               onClick={onToggleInfoPanel}
-              title="View info"
+              title="Conversation details"
+              aria-label="Conversation details"
             >
               <Info size={18} strokeWidth={1.75} aria-hidden="true" />
+            </button>
+            <button
+              className="btn-chat-settings"
+              onClick={() => isMuted ? onUnmute(selectedChat, isGroupChat) : onMute(selectedChat, isGroupChat)}
+              title={isMuted ? 'Unmute conversation' : 'Mute conversation'}
+              aria-label={isMuted ? 'Unmute conversation' : 'Mute conversation'}
+              aria-pressed={isMuted}
+            >
+              {isMuted
+                ? <Bell size={18} strokeWidth={1.75} aria-hidden="true" />
+                : <BellOff size={18} strokeWidth={1.75} aria-hidden="true" />}
             </button>
           </div>
         </header>
       )}
       <MessageList
         selectedChat={selectedChat}
+        selectedChatType={selectedChatType}
         messages={messages}
         groupMessagesBySender={groupMessagesBySender}
         loadingMessages={loadingMessages}
         isTyping={isTyping}
         selectedUser={selectedUser}
+        isSelfChat={isSelfChat}
         currentUser={currentUser}
         currentTheme={currentTheme}
         chatContainerRef={chatContainerRef}

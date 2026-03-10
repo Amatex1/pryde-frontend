@@ -13,11 +13,13 @@ import { sanitizeMessage } from '../../../utils/sanitize';
 
 export default function MessageList({
   selectedChat,
+  selectedChatType,
   messages,
   groupMessagesBySender,
   loadingMessages,
   isTyping,
   selectedUser,
+  isSelfChat = false,
   currentUser,
   currentTheme,
   chatContainerRef,
@@ -47,6 +49,8 @@ export default function MessageList({
 
   // Check if we should show the unread divider (only if there are unread messages)
   const showUnreadDivider = lastReadIndex >= 0 && lastReadIndex < messages.length - 1;
+  const isGroupChat = selectedChatType === 'group';
+
   return (
     <div className="messages-app__messages-scroll" ref={chatContainerRef} onScroll={onScroll}>
       {selectedChat ? (
@@ -66,16 +70,36 @@ export default function MessageList({
                   {group.showDateHeader && (
                     <div className="message-date-header"><span>{group.dateHeader}</span></div>
                   )}
-                  <div className={`message-group-cluster ${group.isCurrentUser ? 'sent' : 'received'}`}>
-                    <div className="message-group-cluster-header">
-                      <div className="cluster-avatar">
-                        {group.senderInfo.profilePhoto ? (
-                          <img src={getImageUrl(group.senderInfo.profilePhoto)} alt={getDisplayName(group.senderInfo)} />
-                        ) : (<span>{getDisplayNameInitial(group.senderInfo)}</span>)}
-                      </div>
-                      <span className="cluster-sender-name">{getDisplayName(group.senderInfo)}</span>
-                    </div>
-                    {group.messages.map((msg, msgIndex) => {
+                  {(() => {
+                    const isSentCluster = group.isCurrentUser;
+                    const sentColors = isSentCluster ? getSentMessageColor(currentTheme) : null;
+                    const senderAccent = !isSentCluster
+                      ? getUserChatColor(group.senderInfo?._id || group.senderId, currentTheme)
+                      : null;
+                    const shouldShowClusterHeader = isGroupChat && !isSelfChat && !isSentCluster;
+                    const clusterStyle = senderAccent
+                      ? {
+                          '--message-accent': senderAccent.background,
+                          '--message-accent-text': senderAccent.text,
+                        }
+                      : undefined;
+
+                    return (
+                      <div
+                        className={`message-group-cluster ${isSentCluster ? 'sent' : 'received'} ${shouldShowClusterHeader ? 'has-header' : 'no-header'}`}
+                        style={clusterStyle}
+                      >
+                        {shouldShowClusterHeader && (
+                          <div className="message-group-cluster-header">
+                            <div className="cluster-avatar">
+                              {group.senderInfo?.profilePhoto ? (
+                                <img src={getImageUrl(group.senderInfo.profilePhoto)} alt={getDisplayName(group.senderInfo)} />
+                              ) : (<span>{getDisplayNameInitial(group.senderInfo)}</span>)}
+                            </div>
+                            <span className="cluster-sender-name">{getDisplayName(group.senderInfo)}</span>
+                          </div>
+                        )}
+                        {group.messages.map((msg, msgIndex) => {
                       const isEditing = editingMessageId === msg._id;
                       const isFirst = msgIndex === 0;
                       const isLast = msgIndex === group.messages.length - 1;
@@ -85,7 +109,7 @@ export default function MessageList({
                       const showDividerAfter = showUnreadDivider && msg._id === lastReadMessageId;
                       return (
                         <React.Fragment key={msg._id}>
-                          <div className={`message-group ${group.isCurrentUser ? 'sent' : 'received'}`} data-position={bubblePosition}>
+                          <div className={`message-group ${isSentCluster ? 'sent' : 'received'}`} data-position={bubblePosition}>
                             <div className="message-content">
                             {msg.isDeleted ? (
                               <div className="message-bubble message-deleted">
@@ -103,10 +127,10 @@ export default function MessageList({
                             ) : (
                               <>
                                 <div
-                                  className={`message-bubble ${bubblePosition}`}
-                                  style={group.isCurrentUser
-                                    ? { background: getSentMessageColor(currentTheme).background, color: getSentMessageColor(currentTheme).text }
-                                    : { background: getUserChatColor(msg.sender._id, currentTheme).background, color: getUserChatColor(msg.sender._id, currentTheme).text }}
+                                  className={`message-bubble ${isSentCluster ? 'sent' : 'received'} ${bubblePosition}`}
+                                  style={isSentCluster
+                                    ? { background: sentColors.background, color: sentColors.text }
+                                    : undefined}
                                 >
                                   {msg.content && sanitizeMessage(msg.content)}
                                   {/* Attachment (Image / Video) */}
@@ -161,13 +185,13 @@ export default function MessageList({
                                     <div className="message-menu-dropdown">
                                       <button onClick={() => { onReply(msg); setOpenMessageMenu(null); }} className="menu-item"><Reply size={14} strokeWidth={1.75} aria-hidden="true" /> Reply</button>
                                       <button onClick={() => { onReact(msg._id); setOpenMessageMenu(null); }} className="menu-item"><Smile size={14} strokeWidth={1.75} aria-hidden="true" /> React</button>
-                                      {group.isCurrentUser && (
+                                      {isSentCluster && (
                                         <>
                                           <button onClick={() => { onEdit(msg._id, msg.content); setOpenMessageMenu(null); }} className="menu-item"><Pencil size={14} strokeWidth={1.75} aria-hidden="true" /> Edit</button>
                                           <button onClick={() => { onDelete(msg._id, true); setOpenMessageMenu(null); }} className="menu-item menu-item-danger"><Trash2 size={14} strokeWidth={1.75} aria-hidden="true" /> Delete</button>
                                         </>
                                       )}
-                                      {!group.isCurrentUser && (
+                                      {!isSentCluster && (
                                         <button onClick={() => { onDelete(msg._id, false); setOpenMessageMenu(null); }} className="menu-item menu-item-danger"><Trash2 size={14} strokeWidth={1.75} aria-hidden="true" /> Delete for me</button>
                                       )}
                                     </div>
@@ -188,7 +212,9 @@ export default function MessageList({
                         </React.Fragment>
                       );
                     })}
-                  </div>
+                      </div>
+                    );
+                  })()}
                 </React.Fragment>
               ))
             )}

@@ -1,18 +1,7 @@
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
 import './legal/Legal.css';
 
 function PlatformGuarantees() {
-  // Apply user's theme preference
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem('darkMode');
-    if (savedDarkMode === 'true') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-    }
-  }, []);
-
   return (
     <div className="legal-page">
       <div className="legal-header">

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import AsyncStateWrapper from '../components/AsyncStateWrapper';
+import EmptyState from '../components/EmptyState';
 import api from '../utils/api';
-import { getImageUrl } from '../utils/imageUrl';
 import logger from '../utils/logger';
 import { sendTestNotification } from '../utils/pushNotifications';
 import './Notifications.css';
@@ -10,6 +11,7 @@ import './Notifications.css';
 function Notifications() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [testPushStatus, setTestPushStatus] = useState(null); // null | 'sending' | 'ok' | 'error' | 'no-sub'
   const [testPushError, setTestPushError] = useState(null);
   const navigate = useNavigate();
@@ -23,12 +25,14 @@ function Notifications() {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
+      setFetchError(null);
       const response = await api.get('/notifications');
       // Filter out message notifications - they should only appear in Messages page
       const filteredNotifications = response.data.filter(n => n.type !== 'message');
       setNotifications(filteredNotifications);
     } catch (error) {
       logger.error('Failed to fetch notifications:', error);
+      setFetchError(error);
     } finally {
       setLoading(false);
     }
@@ -202,20 +206,29 @@ function Notifications() {
           </div>
         </div>
 
-        {loading ? (
-          <div className="loading-state">Loading notifications...</div>
-        ) : notifications.length === 0 ? (
-          <div className="empty-state">
-            <span className="empty-icon">🔔</span>
-            <p>No notifications yet</p>
-          </div>
-        ) : (
+        <AsyncStateWrapper
+          isLoading={loading}
+          isError={Boolean(fetchError)}
+          isEmpty={!loading && !fetchError && notifications.length === 0}
+          error={fetchError}
+          onRetry={fetchNotifications}
+          loadingMessage="Loading notifications..."
+          emptyComponent={(
+            <EmptyState
+              type="notifications"
+              title="No notifications yet"
+              description="You're all caught up for now."
+            />
+          )}
+        >
           <div className="notifications-list">
             {notifications.map(notification => (
-              <div
+              <button
                 key={notification._id}
                 className={`notification-card ${!notification.read ? 'unread' : ''} ${notification.type === 'announcement' ? 'announcement' : ''}`}
+                type="button"
                 onClick={() => handleNotificationClick(notification)}
+                aria-label={getNotificationText(notification)}
               >
                 <div className="notification-icon">{getNotificationIcon(notification.type)}</div>
                 <div className="notification-content">
@@ -223,10 +236,10 @@ function Notifications() {
                   <span className="notification-time">{getTimeAgo(notification.createdAt)}</span>
                 </div>
                 {!notification.read && <div className="unread-indicator"></div>}
-              </div>
+              </button>
             ))}
           </div>
-        )}
+        </AsyncStateWrapper>
       </div>
     </div>
   );

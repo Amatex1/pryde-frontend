@@ -9,7 +9,7 @@
  * - Any other full-width app-like experiences
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Outlet } from 'react-router-dom';
 import PageErrorBoundary from '../components/PageErrorBoundary';
 import MobileNav from '../mobile/MobileNav';
@@ -18,6 +18,7 @@ import './FullViewportLayout.css';
 
 export default function FullViewportLayout() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const mobileNavTriggerRef = useRef(null);
 
   const handleMenuOpen = useCallback(() => {
     setIsMobileNavOpen(true);
@@ -30,14 +31,23 @@ export default function FullViewportLayout() {
   return (
     <div className="full-viewport-layout">
       <PageErrorBoundary pageName="Full Viewport Layout">
-        <Outlet context={{ onMenuOpen: handleMenuOpen }} />
+        <Outlet context={{
+          onMenuOpen: handleMenuOpen,
+          onMenuClose: handleMenuClose,
+          isMobileNavOpen,
+          mobileNavTriggerRef,
+        }} />
       </PageErrorBoundary>
 
       {/* Mobile bottom navigation */}
       <MobileNav />
 
       {/* Mobile navigation drawer */}
-      <MobileNavDrawer open={isMobileNavOpen} onClose={handleMenuClose} />
+      <MobileNavDrawer
+        open={isMobileNavOpen}
+        onClose={handleMenuClose}
+        returnFocusRef={mobileNavTriggerRef}
+      />
     </div>
   );
 }

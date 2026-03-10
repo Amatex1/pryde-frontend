@@ -1,5 +1,4 @@
 ﻿import { Link } from 'react-router-dom';
-import prydeLogo from '../assets/pryde-logo.png';
 import './Footer.css';
 
 function Footer() {
@@ -29,23 +28,23 @@ function Footer() {
 
         {/* Legal Links - Consolidated */}
         <div className="footer-links-container">
-          <a href="/trust-center">Trust Center</a>
+          <Link to="/trust-center">Trust Center</Link>
           <span className="separator">•</span>
-          <a href="/guarantees">Platform Guarantees</a>
+          <Link to="/guarantees">Platform Guarantees</Link>
           <span className="separator">•</span>
-          <a href="/terms">Terms</a>
+          <Link to="/terms">Terms</Link>
           <span className="separator">•</span>
-          <a href="/privacy">Privacy</a>
+          <Link to="/privacy">Privacy</Link>
           <span className="separator">•</span>
-          <a href="/dmca">DMCA</a>
+          <Link to="/dmca">DMCA</Link>
           <span className="separator">•</span>
-          <a href="/community-guidelines">Community Guidelines</a>
+          <Link to="/community-guidelines">Community Guidelines</Link>
           <span className="separator">•</span>
-          <a href="/security">Security</a>
+          <Link to="/security">Security</Link>
           <span className="separator">•</span>
-          <a href="/faq">FAQ</a>
+          <Link to="/faq">FAQ</Link>
           <span className="separator">•</span>
-          <a href="/contact">Contact</a>
+          <Link to="/contact">Contact</Link>
         </div>
       </div>
 

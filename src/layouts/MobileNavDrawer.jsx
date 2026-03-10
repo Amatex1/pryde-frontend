@@ -29,11 +29,12 @@ import api from '../utils/api';
 import { getQuietMode, setQuietMode as setQuietModeManager, getGalaxyMode, toggleGalaxyMode as toggleGalaxyModeManager } from '../utils/themeManager';
 import './MobileNavDrawer.css';
 
-export default function MobileNavDrawer({ open, onClose }) {
+export default function MobileNavDrawer({ open, onClose, returnFocusRef }) {
   const navigate = useNavigate();
   const { user, clearUser } = useAuth();
   const { totalUnread } = useUnreadMessages();
   const drawerRef = useRef(null);
+  const wasOpenRef = useRef(false);
   
   // Theme state
   const [quietMode, setQuietMode] = useState(() => getQuietMode());
@@ -84,12 +85,19 @@ export default function MobileNavDrawer({ open, onClose }) {
   // Manage focus: pull into drawer when open, release when closed
   useEffect(() => {
     if (open) {
+      wasOpenRef.current = true;
       drawerRef.current?.focus();
-    } else {
-      const focused = drawerRef.current?.querySelector(':focus');
-      if (focused) focused.blur();
+      return;
     }
-  }, [open]);
+
+    const focused = drawerRef.current?.querySelector(':focus');
+    if (focused) focused.blur();
+
+    if (wasOpenRef.current) {
+      returnFocusRef?.current?.focus?.();
+      wasOpenRef.current = false;
+    }
+  }, [open, returnFocusRef]);
 
   return (
     <>
@@ -102,6 +110,7 @@ export default function MobileNavDrawer({ open, onClose }) {
       
       {/* Drawer */}
       <div
+        id="mobile-menu"
         ref={drawerRef}
         className={`mobile-nav-drawer ${open ? 'mobile-nav-drawer-open' : ''}`}
         role="dialog"

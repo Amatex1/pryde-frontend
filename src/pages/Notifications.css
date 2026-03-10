@@ -91,6 +91,7 @@
 
 .notification-card {
   background: var(--bg-card);
+  width: 100%;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-card);
   padding: var(--space-4);
@@ -98,14 +99,19 @@
   align-items: flex-start;
   gap: var(--space-4);
   cursor: pointer;
+  appearance: none;
+  font: inherit;
+  text-align: left;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   position: relative;
 }
 
-.notification-card:hover {
+.notification-card:hover,
+.notification-card:focus-visible {
   border-color: var(--color-brand);
   transform: translateY(-2px);
   box-shadow: var(--shadow-soft);
+  outline: none;
 }
 
 .notification-card.unread {

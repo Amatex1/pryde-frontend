@@ -13,6 +13,8 @@ import ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left';
 import SearchIcon from 'lucide-react/dist/esm/icons/search';
 import X from 'lucide-react/dist/esm/icons/x';
 import Users from 'lucide-react/dist/esm/icons/users';
+import AsyncStateWrapper from '../components/AsyncStateWrapper';
+import EmptyState from '../components/EmptyState';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import './Search.css';
@@ -22,7 +24,7 @@ function Search() {
   const [searchResults, setSearchResults] = useState({ users: [], posts: [], groups: [] });
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,7 +34,7 @@ function Search() {
       } else {
         setSearchResults({ users: [], posts: [], groups: [] });
         setHasSearched(false);
-        setError(false);
+        setError(null);
       }
     }, 300);
 
@@ -41,7 +43,7 @@ function Search() {
 
   const performSearch = async () => {
     setLoading(true);
-    setError(false);
+    setError(null);
     try {
       // Fetch users/posts and all groups in parallel
       const [searchResponse, groupsResponse] = await Promise.allSettled([
@@ -63,15 +65,15 @@ function Search() {
         ).slice(0, 5);
       }
 
-      if (searchResponse.status === 'rejected') {
-        setError(true);
-      }
+      setError(searchResponse.status === 'rejected'
+        ? searchResponse.reason || new Error('Search failed. Please try again.')
+        : null);
 
       setSearchResults({ ...mainResults, groups });
       setHasSearched(true);
     } catch (err) {
       console.error('Search error:', err);
-      setError(true);
+      setError(err);
       setHasSearched(true);
     } finally {
       setLoading(false);
@@ -90,18 +92,11 @@ function Search() {
     navigate(`/feed?post=${postId}`);
   };
 
-  const handleKeyActivate = (e, callback) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      callback();
-    }
-  };
-
   const clearSearch = () => {
     setSearchQuery('');
     setSearchResults({ users: [], posts: [], groups: [] });
     setHasSearched(false);
-    setError(false);
+    setError(null);
   };
 
   const hasResults = searchResults.users.length > 0 ||
@@ -135,26 +130,7 @@ function Search() {
       </div>
 
       <div className="search-results">
-        {loading && (
-          <div className="search-loading">
-            <span>Searching...</span>
-          </div>
-        )}
-
-        {!loading && hasSearched && error && (
-          <div className="no-results">
-            <p>Search failed. Please try again.</p>
-          </div>
-        )}
-
-        {!loading && hasSearched && !error && !hasResults && (
-          <div className="no-results">
-            <p>No results found for "{searchQuery}"</p>
-            <p className="no-results-hint">Try searching for users, posts, or groups</p>
-          </div>
-        )}
-
-        {!hasSearched && !loading && (
+        {!searchQuery.trim() && !loading && (
           <div className="search-hints">
             <p>Search for users by name or username</p>
             <p>Search posts by content</p>
@@ -162,90 +138,102 @@ function Search() {
           </div>
         )}
 
-        {/* PHASE 4C: Groups replace hashtags */}
-        {searchResults.groups?.length > 0 && (
-          <div className="results-section">
-            <h3 className="section-title">Groups</h3>
-            {searchResults.groups.map((group) => (
-              <div
-                key={group._id}
-                className="result-item group-item"
-                role="button"
-                tabIndex={0}
-                onClick={() => handleGroupClick(group.slug)}
-                onKeyDown={(e) => handleKeyActivate(e, () => handleGroupClick(group.slug))}
-                aria-label={`Group: ${group.name}`}
-              >
-                <div className="group-icon" aria-hidden="true">
-                  <Users size={20} strokeWidth={1.75} />
-                </div>
-                <div className="group-info">
-                  <span className="group-name">{group.name}</span>
-                  {group.description && (
-                    <span className="group-description">
-                      {group.description.substring(0, 60)}{group.description.length > 60 ? '...' : ''}
-                    </span>
-                  )}
-                </div>
+        {searchQuery.trim() && (
+          <AsyncStateWrapper
+            isLoading={loading}
+            isError={Boolean(error)}
+            isEmpty={hasSearched && !error && !hasResults}
+            error={error}
+            onRetry={performSearch}
+            loadingMessage="Searching across Pryde..."
+            emptyComponent={(
+              <EmptyState
+                type="search"
+                title={`No results for "${searchQuery}"`}
+                description="Try searching for users, posts, or groups."
+              />
+            )}
+          >
+            {/* PHASE 4C: Groups replace hashtags */}
+            {searchResults.groups?.length > 0 && (
+              <div className="results-section">
+                <h3 className="section-title">Groups</h3>
+                {searchResults.groups.map((group) => (
+                  <button
+                    key={group._id}
+                    type="button"
+                    className="result-item group-item"
+                    onClick={() => handleGroupClick(group.slug)}
+                    aria-label={`Group: ${group.name}`}
+                  >
+                    <div className="group-icon" aria-hidden="true">
+                      <Users size={20} strokeWidth={1.75} />
+                    </div>
+                    <div className="group-info">
+                      <span className="group-name">{group.name}</span>
+                      {group.description && (
+                        <span className="group-description">
+                          {group.description.substring(0, 60)}{group.description.length > 60 ? '...' : ''}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
+            )}
 
-        {searchResults.users.length > 0 && (
-          <div className="results-section">
-            <h3 className="section-title">Users</h3>
-            {searchResults.users.map((user) => (
-              <div
-                key={user._id}
-                className="result-item user-item"
-                role="button"
-                tabIndex={0}
-                onClick={() => handleUserClick(user.username)}
-                onKeyDown={(e) => handleKeyActivate(e, () => handleUserClick(user.username))}
-                aria-label={`User: ${user.displayName || user.username}`}
-              >
-                <div className="user-avatar" aria-hidden="true">
-                  {user.profilePhoto ? (
-                    <img src={getImageUrl(user.profilePhoto)} alt="" />
-                  ) : (
-                    <span>{user.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                  )}
-                </div>
-                <div className="user-info">
-                  <span className="user-name">{user.displayName || user.username}</span>
-                  <span className="user-username">@{user.username}</span>
-                </div>
+            {searchResults.users.length > 0 && (
+              <div className="results-section">
+                <h3 className="section-title">Users</h3>
+                {searchResults.users.map((user) => (
+                  <button
+                    key={user._id}
+                    type="button"
+                    className="result-item user-item"
+                    onClick={() => handleUserClick(user.username)}
+                    aria-label={`User: ${user.displayName || user.username}`}
+                  >
+                    <div className="user-avatar" aria-hidden="true">
+                      {user.profilePhoto ? (
+                        <img src={getImageUrl(user.profilePhoto)} alt="" />
+                      ) : (
+                        <span>{user.displayName?.charAt(0).toUpperCase() || 'U'}</span>
+                      )}
+                    </div>
+                    <div className="user-info">
+                      <span className="user-name">{user.displayName || user.username}</span>
+                      <span className="user-username">@{user.username}</span>
+                    </div>
+                  </button>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
+            )}
 
-        {searchResults.posts.length > 0 && (
-          <div className="results-section">
-            <h3 className="section-title">Posts</h3>
-            {searchResults.posts.slice(0, 10).map((post) => (
-              <div
-                key={post._id}
-                className="result-item post-item"
-                role="button"
-                tabIndex={0}
-                onClick={() => handlePostClick(post._id)}
-                onKeyDown={(e) => handleKeyActivate(e, () => handlePostClick(post._id))}
-                aria-label={`Post by ${post.author?.displayName || post.author?.username}`}
-              >
-                <div className="post-preview">
-                  <span className="post-author">
-                    {post.author?.displayName || post.author?.username}
-                  </span>
-                  <p className="post-content">
-                    {post.content?.substring(0, 100)}
-                    {post.content?.length > 100 && '...'}
-                  </p>
-                </div>
+            {searchResults.posts.length > 0 && (
+              <div className="results-section">
+                <h3 className="section-title">Posts</h3>
+                {searchResults.posts.slice(0, 10).map((post) => (
+                  <button
+                    key={post._id}
+                    type="button"
+                    className="result-item post-item"
+                    onClick={() => handlePostClick(post._id)}
+                    aria-label={`Post by ${post.author?.displayName || post.author?.username}`}
+                  >
+                    <div className="post-preview">
+                      <span className="post-author">
+                        {post.author?.displayName || post.author?.username}
+                      </span>
+                      <p className="post-content">
+                        {post.content?.substring(0, 100)}
+                        {post.content?.length > 100 && '...'}
+                      </p>
+                    </div>
+                  </button>
+                ))}
               </div>
-            ))}
-          </div>
+            )}
+          </AsyncStateWrapper>
         )}
       </div>
     </div>

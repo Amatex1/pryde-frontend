@@ -3,16 +3,6 @@ import Cropper from "react-easy-crop";
 import "./PhotoRepositionFullscreen.css";
 import { PHOTO_UPLOAD_HELP_TEXT, validatePhotoFile } from "../utils/photoValidation";
 
-// Helper: load an image element from a URL
-const createImage = (url) =>
-  new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => resolve(img);
-    img.onerror = (e) => reject(e);
-    img.src = url;
-  });
-
 const revokeObjectUrlSafely = (url) => {
   if (url && typeof URL !== "undefined" && typeof URL.revokeObjectURL === "function") {
     URL.revokeObjectURL(url);
@@ -207,33 +197,7 @@ export default function PhotoRepositionInline({
         throw new Error("Please choose an image to continue.");
       }
 
-      // Load the original image and convert to blob (full image, not cropped)
-      const image = await createImage(activeImageUrl);
-
-      // Create a canvas with the full original image dimensions
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-
-      if (!ctx) {
-        throw new Error("Could not prepare the image for upload. Please try again.");
-      }
-
-      canvas.width = image.width;
-      canvas.height = image.height;
-
-      // Draw the FULL image (no cropping)
-      ctx.drawImage(image, 0, 0);
-
-      // Convert to blob - full quality JPEG
-      const blob = await new Promise((resolve, reject) => {
-        canvas.toBlob(
-          (b) => (b ? resolve(b) : reject(new Error("Could not prepare the image for upload. Please try again."))),
-          "image/jpeg",
-          0.95 // Higher quality for full images
-        );
-      });
-
-      await onSave({ photo: blob, type, position });
+      await onSave({ type, position });
     } catch (err) {
       console.error("Save failed:", err);
       setErrorMessage(

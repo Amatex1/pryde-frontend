@@ -37,6 +37,8 @@ import AuthGate from './components/AuthGate';
 import { AppReadyProvider } from './state/appReady';
 import LoadingGate from './components/LoadingGate';
 import RoleRoute from './components/RoleRoute';
+import Footer from './components/Footer';
+import LegalPageWrapper from './pages/legal/LegalPageWrapper';
 
 // Harden lazy imports: catch failures gracefully (NEVER auto-reload - causes infinite loops!)
 const lazyWithReload = (importFn) => {
@@ -87,7 +89,6 @@ import Register from './pages/Register';
 const InviteRequired = lazyWithReload(() => import('./pages/InviteRequired'));
 const Welcome = lazyWithReload(() => import('./pages/Welcome'));
 const TourIntro = lazyWithReload(() => import('./pages/TourIntro'));
-const Footer = lazyWithReload(() => import('./components/Footer'));
 const ForgotPassword = lazyWithReload(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazyWithReload(() => import('./pages/ResetPassword'));
 const VerifyEmail = lazyWithReload(() => import('./pages/VerifyEmail'));
@@ -127,10 +128,7 @@ const Contact = lazyWithReload(() => import('./pages/legal/Contact'));
 const FAQ = lazyWithReload(() => import('./pages/legal/FAQ'));
 const LegalRequests = lazyWithReload(() => import('./pages/legal/LegalRequests'));
 const DMCA = lazyWithReload(() => import('./pages/legal/DMCA'));
-const AcceptableUse = lazyWithReload(() => import('./pages/legal/AcceptableUse'));
-const CookiePolicy = lazyWithReload(() => import('./pages/legal/CookiePolicy'));
 const Helplines = lazyWithReload(() => import('./pages/legal/Helplines'));
-const TrustAndSafety = lazyWithReload(() => import('./pages/legal/TrustAndSafety'));
 const PlatformGuarantees = lazyWithReload(() => import('./pages/PlatformGuarantees'));
 const TrustCenter = lazyWithReload(() => import('./pages/TrustCenter'));
 const CommunityGuidelines = lazyWithReload(() => import('./pages/CommunityGuidelines'));
@@ -204,6 +202,38 @@ const PageLoader = () => {
     </div>
   );
 };
+
+const renderLegalPage = (PageComponent) => (
+  <LegalPageWrapper>
+    <PageComponent />
+    <Footer />
+  </LegalPageWrapper>
+);
+
+const legalPageRoutes = [
+  ['/trust-center', TrustCenter],
+  ['/terms', Terms],
+  ['/privacy', Privacy],
+  ['/dmca', DMCA],
+  ['/community-guidelines', CommunityGuidelines],
+  ['/safety-moderation', SafetyModeration],
+  ['/security', SecurityOverview],
+  ['/community', Community],
+  ['/contact', Contact],
+  ['/faq', FAQ],
+  ['/legal-requests', LegalRequests],
+  ['/helplines', Helplines],
+  ['/guarantees', PlatformGuarantees],
+];
+
+const legalRedirectRoutes = [
+  ['/acceptable-use', '/community-guidelines'],
+  ['/safety', '/safety-moderation'],
+  ['/safety-center', '/safety-moderation'],
+  ['/trust-safety', '/safety-moderation'],
+  ['/trust-and-safety', '/safety-moderation'],
+  ['/cookie-policy', '/privacy'],
+];
 
 function PrivateRoute({ children }) {
   const { authStatus } = useAuth();
@@ -390,27 +420,13 @@ function AppContent() {
                     </PrivateRoute>
                   } />
 
-                  <Route path="/trust-center" element={<><TrustCenter /><Footer /></>} />
-                  <Route path="/terms" element={<><Terms /><Footer /></>} />
-                  <Route path="/privacy" element={<><Privacy /><Footer /></>} />
-                  <Route path="/dmca" element={<><DMCA /><Footer /></>} />
-                  <Route path="/community-guidelines" element={<><CommunityGuidelines /><Footer /></>} />
-                  <Route path="/safety-moderation" element={<><SafetyModeration /><Footer /></>} />
-                  <Route path="/security" element={<><SecurityOverview /><Footer /></>} />
+                  {legalPageRoutes.map(([path, PageComponent]) => (
+                    <Route key={path} path={path} element={renderLegalPage(PageComponent)} />
+                  ))}
 
-                  <Route path="/acceptable-use" element={<Navigate to="/community-guidelines" replace />} />
-                  <Route path="/safety" element={<Navigate to="/safety-moderation" replace />} />
-                  <Route path="/safety-center" element={<Navigate to="/safety-moderation" replace />} />
-                  <Route path="/trust-safety" element={<Navigate to="/safety-moderation" replace />} />
-                  <Route path="/trust-and-safety" element={<Navigate to="/safety-moderation" replace />} />
-                  <Route path="/cookie-policy" element={<Navigate to="/privacy" replace />} />
-
-                  <Route path="/community" element={<><Community /><Footer /></>} />
-                  <Route path="/contact" element={<><Contact /><Footer /></>} />
-                  <Route path="/faq" element={<><FAQ /><Footer /></>} />
-                  <Route path="/legal-requests" element={<><LegalRequests /><Footer /></>} />
-                  <Route path="/helplines" element={<><Helplines /><Footer /></>} />
-                  <Route path="/guarantees" element={<><PlatformGuarantees /><Footer /></>} />
+                  {legalRedirectRoutes.map(([path, target]) => (
+                    <Route key={path} path={path} element={<Navigate to={target} replace />} />
+                  ))}
 
                   <Route path="/@:slug" element={<PrivateRoute><Profile /></PrivateRoute>} />
                 </Route>

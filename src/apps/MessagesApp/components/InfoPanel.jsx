@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, User, Ban, Flag } from 'lucide-react';
+import { X, User, Ban, Flag, Users } from 'lucide-react';
 import { getImageUrl } from '../../../utils/imageUrl';
 import { getDisplayName, getDisplayNameInitial } from '../../../utils/getDisplayName';
 import SharedMedia from './SharedMedia';
@@ -23,6 +23,8 @@ export default function InfoPanel({
   onClose,
 }) {
   const navigate = useNavigate();
+  const isGroupChat = selectedChatType === 'group';
+  const hasSelection = Boolean(selectedChat) && (isGroupChat ? Boolean(selectedGroup) : Boolean(selectedUser));
   const isSelfChat = selectedUser?._id === currentUserId;
 
   const handleViewProfile = () => {
@@ -31,35 +33,51 @@ export default function InfoPanel({
     }
   };
 
-  const isOnline = onlineUsers.includes(selectedChat);
+  const isOnline = !isGroupChat && onlineUsers.includes(selectedChat);
+  const groupDescription = selectedGroup?.description || selectedGroup?.bio;
+  const groupMemberCount = selectedGroup?.members?.length || 0;
 
   return (
-    <aside className={`messages-app__info ${isOpen ? 'mobile-open' : ''}`}>
-      {selectedChat && selectedUser ? (
+    <aside className={`messages-app__info ${isOpen ? 'is-open' : ''}`}>
+      {hasSelection ? (
         <>
-          {/* Mobile close button */}
           <button className="info-close-btn" onClick={onClose} aria-label="Close info panel">
             <X size={22} strokeWidth={2} aria-hidden="true" />
           </button>
           <div className="info-header">
-            <div className="info-avatar">
-              {selectedUser?.profilePhoto ? (
+            <div className={`info-avatar ${isGroupChat ? 'info-avatar--group' : ''}`}>
+              {isGroupChat ? (
+                <span>{selectedGroup?.name?.charAt(0)?.toUpperCase() || 'G'}</span>
+              ) : selectedUser?.profilePhoto ? (
                 <img src={getImageUrl(selectedUser.profilePhoto)} alt={getDisplayName(selectedUser)} />
               ) : (
                 <span>{getDisplayNameInitial(selectedUser)}</span>
               )}
-              {/* Status dot on avatar */}
-              <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>
+              {!isGroupChat && !isSelfChat && <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>}
             </div>
-            <h3 className="info-name">{getDisplayName(selectedUser)}</h3>
-            {selectedUser?.username && <p className="info-username">@{selectedUser.username}</p>}
+            <h3 className="info-name">{isGroupChat ? (selectedGroup?.name || 'Group Chat') : getDisplayName(selectedUser)}</h3>
+            {isGroupChat ? (
+              <p className="info-username">{groupMemberCount > 0 ? `${groupMemberCount} member${groupMemberCount === 1 ? '' : 's'}` : 'Group chat'}</p>
+            ) : selectedUser?.username ? (
+              <p className="info-username">@{selectedUser.username}</p>
+            ) : null}
           </div>
-          {selectedUser?.bio && (
-            <div className="info-bio"><p>{selectedUser.bio}</p></div>
+          {(groupDescription || selectedUser?.bio) && (
+            <div className="info-bio"><p>{isGroupChat ? groupDescription : selectedUser.bio}</p></div>
           )}
 
-          {/* Action Buttons */}
-          {!isSelfChat && !selectedUser?.isDeleted && (
+          {isGroupChat ? (
+            <div className="info-stat-grid">
+              <div className="info-stat-card">
+                <span className="info-stat-label">Type</span>
+                <span className="info-stat-value">Group chat</span>
+              </div>
+              <div className="info-stat-card">
+                <span className="info-stat-label">Members</span>
+                <span className="info-stat-value">{groupMemberCount || '—'}</span>
+              </div>
+            </div>
+          ) : !isSelfChat && !selectedUser?.isDeleted && (
             <div className="info-actions">
               <button
                 type="button"
@@ -85,11 +103,17 @@ export default function InfoPanel({
             </div>
           )}
 
-          {/* Shared Media Section */}
-          <SharedMedia userId={selectedChat} />
+          {isGroupChat ? (
+            <div className="info-detail-card info-detail-card--group">
+              <div className="info-detail-title"><Users size={16} strokeWidth={1.75} aria-hidden="true" /> Group details</div>
+              <div className="info-detail-text">Member management and shared media for groups can stay lightweight in Phase 1 while the drawer remains useful and non-empty.</div>
+            </div>
+          ) : (
+            <SharedMedia userId={selectedChat} />
+          )}
         </>
       ) : (
-        <div className="info-empty-state" />
+        <div className="info-empty-state">Select a conversation to view details.</div>
       )}
     </aside>
   );
