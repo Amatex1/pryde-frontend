@@ -3,8 +3,8 @@
  * Extracted from: src/pages/Messages.jsx lines 2179-2356
  */
 
-import React, { lazy, Suspense } from 'react';
-import { X, Mic, AlertTriangle, ArrowUp, Video } from 'lucide-react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
+import { X, Mic, AlertTriangle, ArrowUp, Video, Paperclip, MoreHorizontal } from 'lucide-react';
 import { getImageUrl } from '../../../utils/imageUrl';
 import { getDisplayName } from '../../../utils/getDisplayName';
 
@@ -40,12 +40,21 @@ export default function Composer({
   isRecipientUnavailable,
   recipientUnavailableReason,
 }) {
+  const [showComposerTools, setShowComposerTools] = useState(false);
+
+  useEffect(() => {
+    setShowComposerTools(false);
+  }, [selectedChat, selectedFile, selectedGif]);
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       if (selectedChat) onSendMessage(e);
     }
   };
+
+  const canUseSecondaryTools = Boolean(selectedChat) && !selectedFile && !selectedGif && !isRecipientUnavailable;
+  const toolsTrayOpen = showComposerTools || showGifPicker || showVoiceRecorder || showContentWarning;
 
   return (
     <form onSubmit={selectedChat ? onSendMessage : (e) => e.preventDefault()} className="messages-app__composer">
@@ -110,15 +119,44 @@ export default function Composer({
       )}
       <div className="message-composer calm-composer">
         <input type="file" ref={fileInputRef} onChange={onFileSelect} accept="image/*,video/*" style={{ display: 'none' }} />
+        {toolsTrayOpen && (
+          <div className="composer-tools-tray">
+            <button
+              type="button"
+              className={`composer-tray-btn ${showGifPicker ? 'active' : ''}`}
+              onClick={onToggleGifPicker}
+              disabled={!canUseSecondaryTools}
+            >
+              GIF
+            </button>
+            <button
+              type="button"
+              className={`composer-tray-btn ${showVoiceRecorder ? 'active' : ''}`}
+              onClick={onToggleVoiceRecorder}
+              disabled={!canUseSecondaryTools}
+            >
+              <Mic size={14} strokeWidth={1.75} aria-hidden="true" /> Voice note
+            </button>
+            <button
+              type="button"
+              className={`composer-tray-btn ${showContentWarning ? 'active' : ''}`}
+              onClick={onToggleContentWarning}
+              disabled={!selectedChat || isRecipientUnavailable}
+            >
+              <AlertTriangle size={14} strokeWidth={1.75} aria-hidden="true" /> Content warning
+            </button>
+          </div>
+        )}
         <div className="composer-input-row">
           <button
             type="button"
-            className="composer-action-btn"
+            className={`composer-action-btn composer-action-btn--attach ${uploadingFile ? 'composer-action-btn--progress' : ''}`}
             onClick={() => fileInputRef.current?.click()}
             disabled={!selectedChat || uploadingFile || selectedGif || isRecipientUnavailable}
             title={uploadingFile ? `Uploading... ${uploadProgress}%` : 'Attach'}
+            aria-label={uploadingFile ? `Uploading attachment ${uploadProgress}%` : 'Attach file'}
           >
-            {uploadingFile ? `${uploadProgress}%` : '+'}
+            {uploadingFile ? `${uploadProgress}%` : <Paperclip size={16} strokeWidth={1.9} aria-hidden="true" />}
           </button>
           <textarea
             ref={textareaRef}
@@ -130,11 +168,16 @@ export default function Composer({
             className="message-input"
             disabled={!selectedChat || isRecipientUnavailable}
           />
-          <div className="composer-trailing-actions">
-            <button type="button" className={`composer-action-btn ${showGifPicker ? 'active' : ''}`} onClick={onToggleGifPicker} disabled={!selectedChat || selectedFile || selectedGif || isRecipientUnavailable} title="GIF">GIF</button>
-            <button type="button" className="composer-action-btn" onClick={onToggleVoiceRecorder} disabled={!selectedChat || selectedFile || selectedGif || isRecipientUnavailable} title="Voice note" aria-label="Voice note"><Mic size={16} strokeWidth={1.75} aria-hidden="true" /></button>
-            <button type="button" className={`composer-action-btn ${showContentWarning ? 'active' : ''}`} onClick={onToggleContentWarning} disabled={!selectedChat || isRecipientUnavailable} title="Content warning" aria-label="Content warning"><AlertTriangle size={16} strokeWidth={1.75} aria-hidden="true" /></button>
-          </div>
+          <button
+            type="button"
+            className={`composer-action-btn composer-action-btn--tools ${toolsTrayOpen ? 'active' : ''}`}
+            onClick={() => setShowComposerTools(prev => !prev)}
+            disabled={!selectedChat || isRecipientUnavailable}
+            title="More tools"
+            aria-label="More tools"
+          >
+            <MoreHorizontal size={16} strokeWidth={1.9} aria-hidden="true" />
+          </button>
           <button type="submit" className="send-btn" disabled={!selectedChat || uploadingFile || isRecipientUnavailable || (!message.trim() && !selectedFile && !selectedGif)} aria-label="Send"><ArrowUp size={18} strokeWidth={2} aria-hidden="true" /></button>
         </div>
         {showGifPicker && (

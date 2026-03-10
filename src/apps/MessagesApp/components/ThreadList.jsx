@@ -6,13 +6,49 @@
 
 import React from 'react';
 import {
-  MessageCircle, Archive, StickyNote, BellOff, Bell,
+  MessageCircle, Archive, StickyNote, BellOff, Bell, Users,
   Trash2, Ban, Mic, MoreVertical, MailOpen, ArchiveRestore,
 } from 'lucide-react';
 import MessageSearch from '../../../components/MessageSearch';
 import { getImageUrl } from '../../../utils/imageUrl';
-import { getDisplayName, getDisplayNameInitial, getUsername } from '../../../utils/getDisplayName';
+import { getDisplayName, getDisplayNameInitial } from '../../../utils/getDisplayName';
 import { quietCopy } from '../../../config/uiCopy';
+
+function formatConversationTime(timestamp) {
+  if (!timestamp) return '';
+
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMinutes = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffMinutes < 1) return 'now';
+  if (diffMinutes < 60) return `${diffMinutes}m`;
+  if (diffHours < 24) return `${diffHours}h`;
+  if (diffDays < 7) {
+    return date.toLocaleDateString(undefined, { weekday: 'short' });
+  }
+
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+function getConversationPreview(conv) {
+  if (conv.lastMessage?.voiceNote?.url) {
+    return 'Voice note';
+  }
+
+  if (conv.lastMessage?.content?.trim()) {
+    return conv.lastMessage.content.trim();
+  }
+
+  if (conv.lastMessage?.attachment) {
+    return 'Attachment';
+  }
+
+  return 'No messages yet';
+}
 
 export default function ThreadList({
   conversations,
@@ -41,6 +77,18 @@ export default function ThreadList({
   onBlock,
   quietMode,
 }) {
+  const normalizedFilter = conversationFilter.trim().toLowerCase();
+  const visibleGroups = groupChats.filter((group) => {
+    const isArchived = archivedConversations.includes(group._id);
+
+    if (activeTab === 'archived') return isArchived;
+    if (activeTab === 'unread') return false;
+    if (isArchived) return false;
+
+    if (!normalizedFilter) return true;
+    return (group.name || '').toLowerCase().includes(normalizedFilter);
+  });
+
   return (
     <aside className="messages-app__threads">
       <div className="messages-app__threads-header">
@@ -52,7 +100,7 @@ export default function ThreadList({
       </div>
 
       <div className="message-search-container">
-        <MessageSearch onSearch={onFilterChange} placeholder="Filter by name..." />
+        <MessageSearch onSearch={onFilterChange} placeholder="Search conversations" />
       </div>
 
       <div className="messages-tabs">
@@ -75,16 +123,22 @@ export default function ThreadList({
                       ? conv.lastMessage?.recipient
                       : conv.lastMessage?.sender
                   );
+                  const otherUserId = otherUser?._id;
                   const isSelfChat = otherUser?._id === currentUser?._id;
+                  const isActive = selectedChat === otherUserId && selectedChatType === 'user';
+                  const isOnline = !isSelfChat && otherUserId && onlineUsers.includes(otherUserId);
+                  const isMuted = mutedConversations.includes(conv._id);
+                  const hasUnread = conv.unread > 0 || conv.manuallyUnread;
+                  const preview = getConversationPreview(conv);
 
                   return (
                     <div
                       key={conv._id}
-                      className={`conversation-item ${selectedChat === otherUser?._id && selectedChatType === 'user' ? 'active' : ''} ${conv.manuallyUnread ? 'manually-unread' : ''} ${conv.unread > 0 ? 'has-unread' : ''}`}
+                      className={`conversation-item ${isActive ? 'active' : ''} ${conv.manuallyUnread ? 'manually-unread' : ''} ${hasUnread ? 'has-unread' : ''}`}
                     >
                       <div
                         className="conv-clickable"
-                        onClick={() => onSelectChat(otherUser?._id, 'user')}
+                        onClick={() => onSelectChat(otherUserId, 'user')}
                       >
                         <div className="conv-avatar">
                           {otherUser?.profilePhoto ? (
@@ -93,24 +147,22 @@ export default function ThreadList({
                             <span>{isSelfChat ? <StickyNote size={16} strokeWidth={1.75} aria-hidden="true" /> : getDisplayNameInitial(otherUser)}</span>
                           )}
                           {conv.unread > 0 && <span className="unread-indicator"></span>}
-                          {!isSelfChat && onlineUsers.includes(conv._id) && <span className="status-dot online"></span>}
+                          {isOnline && <span className="status-dot online"></span>}
                         </div>
                         <div className="conv-info">
                           <div className="conv-header">
                             <div className="conv-name">{isSelfChat ? 'Notes to self' : getDisplayName(otherUser)}</div>
                             <div className="conv-time">
-                              {conv.lastMessage?.createdAt ? new Date(conv.lastMessage.createdAt).toLocaleTimeString() : ''}
+                              {formatConversationTime(conv.lastMessage?.createdAt)}
                             </div>
                           </div>
-                          {!isSelfChat && getUsername(otherUser) && (
-                            <div className="conv-username">{getUsername(otherUser)}</div>
-                          )}
                           <div className="conv-last-message">
-                            {mutedConversations.includes(conv._id) && <BellOff size={14} strokeWidth={1.75} aria-hidden="true" style={{marginRight:'4px'}} />}
-                            {conv.lastMessage?.voiceNote?.url ? <><Mic size={14} strokeWidth={1.75} aria-hidden="true" /> Voice note</> : (conv.lastMessage?.content || 'No messages')}
+                            {preview === 'Voice note' && <Mic size={14} strokeWidth={1.75} aria-hidden="true" />}
+                            <span className="conv-last-message-text">{preview}</span>
+                            {isMuted && <span className="conv-meta-badge"><BellOff size={12} strokeWidth={1.75} aria-hidden="true" /> Muted</span>}
                           </div>
                         </div>
-                        {conv.unread > 0 && <div className="unread-badge">{conv.unread}</div>}
+                        {conv.unread > 0 && <div className="unread-badge">{conv.unread > 99 ? '99+' : conv.unread}</div>}
                       </div>
 
                       <div className="conv-actions">
@@ -149,9 +201,44 @@ export default function ThreadList({
               </>
             )}
 
-            {conversations.length === 0 && groupChats.length === 0 && (
+            {visibleGroups.length > 0 && (
+              <>
+                <div className="section-label">Groups</div>
+                {visibleGroups.map((group) => {
+                  const memberCount = group.members?.length || 0;
+                  const preview = memberCount > 0
+                    ? `${memberCount} member${memberCount === 1 ? '' : 's'}`
+                    : 'Group chat';
+
+                  return (
+                    <div
+                      key={group._id}
+                      className={`conversation-item conversation-item--group ${selectedChat === group._id && selectedChatType === 'group' ? 'active' : ''}`}
+                    >
+                      <div className="conv-clickable" onClick={() => onSelectChat(group._id, 'group')}>
+                        <div className="conv-avatar conv-avatar--group">
+                          <span>{group.name?.charAt(0)?.toUpperCase() || 'G'}</span>
+                        </div>
+                        <div className="conv-info">
+                          <div className="conv-header">
+                            <div className="conv-name">{group.name || 'Group chat'}</div>
+                            <div className="conv-time">{formatConversationTime(group.updatedAt)}</div>
+                          </div>
+                          <div className="conv-last-message">
+                            <Users size={14} strokeWidth={1.75} aria-hidden="true" />
+                            <span className="conv-last-message-text">{preview}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </>
+            )}
+
+            {conversations.length === 0 && visibleGroups.length === 0 && (
               <div className="empty-state">
-                {quietMode ? quietCopy.noMessages : "No conversations yet"}
+                {quietMode ? quietCopy.noMessages : 'No conversations yet'}
               </div>
             )}
           </>

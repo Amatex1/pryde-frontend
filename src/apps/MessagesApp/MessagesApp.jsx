@@ -9,7 +9,6 @@ import React, { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import CustomModal from '../../components/CustomModal';
-import MessageSearch from '../../components/MessageSearch';
 import ReportModal from '../../components/ReportModal';
 import ThreadList from './components/ThreadList';
 import ChatColumn from './components/ChatColumn';
@@ -38,7 +37,7 @@ const EmojiPicker = lazy(() => import('../../components/EmojiPicker'));
 
 export default function MessagesApp() {
   const { modalState, closeModal, showAlert, showConfirm } = useModal();
-  const { onlineUsers, isUserOnline } = useOnlineUsers();
+  const { onlineUsers } = useOnlineUsers();
   const { user: currentUser, authReady } = useAuth();
   const { onMenuOpen } = useOutletContext() || {};
 
@@ -58,10 +57,8 @@ export default function MessagesApp() {
 
   // Conversations
   const {
-    conversations,
     setConversations,
     groupChats,
-    setGroupChats,
     loading,
     filteredConversations,
     activeTab,
@@ -103,7 +100,7 @@ export default function MessagesApp() {
   } = useOptimisticMessages({ showAlert, setMessages });
 
   // Socket handlers
-  const { isTyping, setIsTyping } = useMessageSocket({
+  const { isTyping } = useMessageSocket({
     selectedChat,
     currentUser,
     setMessages,
@@ -113,8 +110,6 @@ export default function MessagesApp() {
 
   // Scroll behavior
   const {
-    isAtBottom,
-    scrollToBottom,
     onScroll,
     handleNewMessage,
     showNewMessageIndicator,
@@ -160,16 +155,91 @@ export default function MessagesApp() {
   const [reportModal, setReportModal] = useState({ isOpen: false, type: '', contentId: null, userId: null });
 
   // Theme
-  const [currentTheme, setCurrentTheme] = useState(document.documentElement.getAttribute('data-theme') || 'light');
-  const [quietMode, setQuietMode] = useState(document.documentElement.getAttribute('data-quiet') === 'true');
+  const [currentTheme] = useState(document.documentElement.getAttribute('data-theme') || 'light');
+  const [quietMode] = useState(document.documentElement.getAttribute('data-quiet') === 'true');
 
   // Message density (persisted to localStorage)
-  const [density, setDensity] = useState(() => {
+  const [density] = useState(() => {
     return localStorage.getItem('messages-density') || 'cozy';
   });
 
   // Mobile view state
   const mobileView = selectedChat ? 'chat' : 'threads';
+
+  const resetComposerState = () => {
+    setSelectedFile(null);
+    setSelectedGif(null);
+    setContentWarning('');
+    setShowContentWarning(false);
+    setShowVoiceRecorder(false);
+    setShowGifPicker(false);
+    setReplyingTo(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleCloseInfoPanel = () => setShowInfoPanel(false);
+
+  const handleToggleInfoPanel = () => {
+    if (!selectedChat) return;
+    setShowInfoPanel(prev => !prev);
+  };
+
+  const handleToggleGifPicker = () => {
+    if (!selectedChat) return;
+    setShowVoiceRecorder(false);
+    setShowContentWarning(false);
+    setShowGifPicker(prev => !prev);
+  };
+
+  const handleToggleVoiceRecorder = () => {
+    if (!selectedChat) return;
+    setShowGifPicker(false);
+    setShowContentWarning(false);
+    setShowVoiceRecorder(prev => !prev);
+  };
+
+  const handleToggleContentWarning = () => {
+    if (!selectedChat) return;
+    setShowGifPicker(false);
+    setShowVoiceRecorder(false);
+    setShowContentWarning(prev => !prev);
+  };
+
+  const handleGifSelect = (gifUrl) => {
+    setSelectedGif(gifUrl);
+    setShowGifPicker(false);
+  };
+
+  const handleRemoveGif = () => setSelectedGif(null);
+
+  const handleCancelReply = () => setReplyingTo(null);
+
+  const handleReplyToMessage = (msg) => {
+    setShowGifPicker(false);
+    setShowVoiceRecorder(false);
+    setReplyingTo(msg);
+  };
+
+  const handleRecordingComplete = async ({ url, duration }) => {
+    try {
+      await handleSendMessage(null, { url, duration });
+      setShowVoiceRecorder(false);
+    } catch (error) {
+      logger.error('Failed to send voice note:', error);
+      showAlert('Failed to send voice note', 'Voice Note Failed');
+    }
+  };
+
+  const handleSelectChat = (id, type) => {
+    setOpenDropdown(null);
+    setOpenMessageMenu(null);
+    setShowInfoPanel(false);
+    setSelectedChat(id);
+    setSelectedChatType(type);
+  };
 
   // Restore message draft when chat changes
   useEffect(() => {
@@ -182,6 +252,13 @@ export default function MessagesApp() {
         setMessage('');
       }
     }
+  }, [selectedChat, selectedChatType]);
+
+  useEffect(() => {
+    setShowInfoPanel(false);
+    setOpenDropdown(null);
+    setOpenMessageMenu(null);
+    resetComposerState();
   }, [selectedChat, selectedChatType]);
 
   // Reset textarea height when message is cleared
@@ -558,8 +635,7 @@ export default function MessagesApp() {
   };
 
   const handleStartChat = (userId) => {
-    setSelectedChat(userId);
-    setSelectedChatType('user');
+    handleSelectChat(userId, 'user');
     setShowNewChatModal(false);
     setSearchQuery('');
     setSearchResults([]);
@@ -571,6 +647,10 @@ export default function MessagesApp() {
   };
 
   const handleBackToThreads = () => {
+    setShowInfoPanel(false);
+    setOpenDropdown(null);
+    setOpenMessageMenu(null);
+    resetComposerState();
     setSelectedChat(null);
     setSelectedChatType(null);
   };
@@ -586,10 +666,7 @@ export default function MessagesApp() {
           loading={loading}
           selectedChat={selectedChat}
           selectedChatType={selectedChatType}
-          onSelectChat={(id, type) => {
-            setSelectedChat(id);
-            setSelectedChatType(type);
-          }}
+          onSelectChat={handleSelectChat}
           activeTab={activeTab}
           onTabChange={setActiveTab}
           conversationFilter={conversationFilter}
@@ -633,7 +710,7 @@ export default function MessagesApp() {
           onBack={handleBackToThreads}
           onMute={handleMuteConversation}
           onUnmute={handleUnmuteConversation}
-          onToggleInfoPanel={() => setShowInfoPanel(!showInfoPanel)}
+          onToggleInfoPanel={handleToggleInfoPanel}
           lastReadMessageId={selectedChat ? lastReadMessageIds[selectedChat] : null}
           onUpdateLastRead={handleUpdateLastRead}
           // Composer props
@@ -648,27 +725,19 @@ export default function MessagesApp() {
           uploadingFile={uploadingFile}
           uploadProgress={uploadProgress}
           selectedGif={selectedGif}
-          onRemoveGif={() => setSelectedGif(null)}
+          onRemoveGif={handleRemoveGif}
           showGifPicker={showGifPicker}
-          onToggleGifPicker={() => setShowGifPicker(!showGifPicker)}
-          onGifSelect={(gifUrl) => { setSelectedGif(gifUrl); setShowGifPicker(false); }}
+          onToggleGifPicker={handleToggleGifPicker}
+          onGifSelect={handleGifSelect}
           contentWarning={contentWarning}
           onContentWarningChange={setContentWarning}
           showContentWarning={showContentWarning}
-          onToggleContentWarning={() => setShowContentWarning(!showContentWarning)}
+          onToggleContentWarning={handleToggleContentWarning}
           showVoiceRecorder={showVoiceRecorder}
-          onToggleVoiceRecorder={() => setShowVoiceRecorder(!showVoiceRecorder)}
-         onRecordingComplete={async ({ url, duration }) => {
-  try {
-    await handleSendMessage(null, { url, duration });
-    setShowVoiceRecorder(false);
-  } catch (error) {
-    logger.error('Failed to send voice note:', error);
-    showAlert('Failed to send voice note', 'Voice Note Failed');
-  }
-}}
+          onToggleVoiceRecorder={handleToggleVoiceRecorder}
+          onRecordingComplete={handleRecordingComplete}
           replyingTo={replyingTo}
-          onCancelReply={() => setReplyingTo(null)}
+          onCancelReply={handleCancelReply}
           // Message actions
           editingMessageId={editingMessageId}
           editMessageText={editMessageText}
@@ -678,15 +747,14 @@ export default function MessagesApp() {
           onCancelEdit={handleCancelEdit}
           openMessageMenu={openMessageMenu}
           setOpenMessageMenu={setOpenMessageMenu}
-          onReply={(msg) => setReplyingTo(msg)}
+          onReply={handleReplyToMessage}
           onReact={handleReactToMessage}
           onRemoveReaction={handleRemoveReaction}
           onDeleteMessage={openDeleteModal}
         />
 
-        {/* Mobile info panel backdrop */}
-        {showInfoPanel && (
-          <div className="info-panel-backdrop" onClick={() => setShowInfoPanel(false)} aria-hidden="true" />
+        {selectedChat && showInfoPanel && (
+          <div className="info-panel-backdrop" onClick={handleCloseInfoPanel} aria-hidden="true" />
         )}
         <InfoPanel
           selectedChat={selectedChat}
@@ -698,7 +766,7 @@ export default function MessagesApp() {
           onBlockUser={(userId) => handleBlockUser(userId, false)}
           onReportUser={(userId) => setReportModal({ isOpen: true, type: 'user', contentId: null, userId })}
           isOpen={showInfoPanel}
-          onClose={() => setShowInfoPanel(false)}
+          onClose={handleCloseInfoPanel}
         />
       </div>
 
