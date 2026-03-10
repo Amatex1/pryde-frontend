@@ -15,7 +15,7 @@
  * - Layout decisions handled by CSS in PageLayout
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Outlet } from 'react-router-dom';
 import PageViewport from './PageViewport';
 import PageContainer from './PageContainer';
@@ -30,6 +30,7 @@ export default function AppLayout() {
   // Hamburger button and drawer both controlled here
   // ======================================
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const mobileNavTriggerRef = useRef(null);
 
   const handleMenuOpen = useCallback(() => {
     setIsMobileNavOpen(true);
@@ -44,7 +45,12 @@ export default function AppLayout() {
       <PageErrorBoundary pageName="App Layout">
         <PageContainer>
           {/* Pass menu handlers to child routes via context or outlet context */}
-          <Outlet context={{ onMenuOpen: handleMenuOpen }} />
+          <Outlet context={{
+            onMenuOpen: handleMenuOpen,
+            onMenuClose: handleMenuClose,
+            isMobileNavOpen,
+            mobileNavTriggerRef,
+          }} />
         </PageContainer>
       </PageErrorBoundary>
 
@@ -52,7 +58,11 @@ export default function AppLayout() {
       <MobileNav />
 
       {/* Mobile navigation drawer - controlled by AppLayout state */}
-      <MobileNavDrawer open={isMobileNavOpen} onClose={handleMenuClose} />
+      <MobileNavDrawer
+        open={isMobileNavOpen}
+        onClose={handleMenuClose}
+        returnFocusRef={mobileNavTriggerRef}
+      />
     </PageViewport>
   );
 }

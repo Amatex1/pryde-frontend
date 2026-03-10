@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import {
   Menu, Search, MessageCircle, Bell,
@@ -33,6 +33,11 @@ import './Navbar.css';
  */
 function Navbar({ onMenuClick }) {
   const navigate = useNavigate();
+  const {
+    isMobileNavOpen = false,
+    onMenuClose,
+    mobileNavTriggerRef,
+  } = useOutletContext() ?? {};
   const isDesktop = useMediaQuery({ minWidth: 1024 });
   const { user, updateUser, clearUser } = useAuth(); // Use centralized auth context
   const [showDropdown, setShowDropdown] = useState(false);
@@ -49,6 +54,23 @@ function Navbar({ onMenuClick }) {
 
   // Determine if we're using external control
   const isExternallyControlled = typeof onMenuClick === 'function';
+  const isMobileMenuOpen = isExternallyControlled ? isMobileNavOpen : showMobileMenu;
+
+  const handleHamburgerClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isExternallyControlled) {
+      if (isMobileNavOpen && typeof onMenuClose === 'function') {
+        onMenuClose();
+      } else {
+        onMenuClick();
+      }
+      return;
+    }
+
+    setShowMobileMenu(prev => !prev);
+  };
 
   const handleLogout = () => {
     // Clear AuthContext first
@@ -186,18 +208,12 @@ function Navbar({ onMenuClick }) {
 
             {/* Hamburger — opens side drawer */}
             <button
+              ref={isExternallyControlled ? mobileNavTriggerRef : null}
               className="mobile-hamburger-btn"
-              onPointerUp={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (isExternallyControlled) {
-                  onMenuClick();
-                } else {
-                  setShowMobileMenu(prev => !prev);
-                }
-              }}
-              aria-label="Open menu"
-              aria-expanded={false}
+              type="button"
+              onClick={handleHamburgerClick}
+              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-menu"
               data-tooltip="Menu"
             >

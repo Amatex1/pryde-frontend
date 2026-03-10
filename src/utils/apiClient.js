@@ -115,14 +115,9 @@ export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = fal
 
   // 🔥 AUTH GUARD: Check if we're logging out or not authenticated
   if (!skipAuth) {
-    try {
-      const { getIsLoggingOut } = await import('./auth');
-      if (getIsLoggingOut()) {
-        logger.debug(`[API] Skipping request during logout: ${url}`);
-        return null;
-      }
-    } catch (error) {
-      // Function might not exist - continue
+    if (getIsLoggingOut()) {
+      logger.debug(`[API] Skipping request during logout: ${url}`);
+      return null;
     }
 
     // Check if we have a token for authenticated requests
@@ -351,14 +346,9 @@ export async function apiFetch(url, options = {}, { cacheTtl = 0, skipAuth = fal
       }
 
       // Silence 401 errors if we're logging out (expected)
-      try {
-        const { getIsLoggingOut } = await import('./auth');
-        if (getIsLoggingOut && getIsLoggingOut() && error.message?.includes('401')) {
-          logger.debug(`[API] Suppressing 401 during logout: ${url}`);
-          return null;
-        }
-      } catch (e) {
-        // If auth module isn't available for any reason, continue with normal error handling
+      if (getIsLoggingOut() && error.message?.includes('401')) {
+        logger.debug(`[API] Suppressing 401 during logout: ${url}`);
+        return null;
       }
 
       // Parse status from error message if available

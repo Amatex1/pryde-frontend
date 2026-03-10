@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
 import './legal/Legal.css';
 
 /**
@@ -15,16 +14,6 @@ import './legal/Legal.css';
  * - "Severe violation reporting" clause
  */
 function SafetyModeration() {
-  // Apply user's dark mode preference
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem('darkMode');
-    if (savedDarkMode === 'true') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-    }
-  }, []);
-
   return (
     <div className="legal-page">
       <div className="legal-header">

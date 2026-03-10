@@ -10,6 +10,9 @@
 // maintaining XSS protection for active sessions.
 // ═══════════════════════════════════════════════════════════════════════════
 
+import { markUnauthenticated } from '../state/authStatus';
+import { broadcastLogout } from './authSync';
+
 // Module-level in-memory store (not accessible to XSS)
 let inMemoryAccessToken = null;
 let tokenSetTime = null;
@@ -170,7 +173,6 @@ export const logout = async () => {
 
   // 🔥 STEP 0: Broadcast logout to other tabs
   try {
-    const { broadcastLogout } = await import('./authSync');
     broadcastLogout();
     console.log('✅ Broadcasted logout to other tabs');
   } catch (error) {
@@ -179,7 +181,6 @@ export const logout = async () => {
 
   // 🔥 STEP 1: Mark as unauthenticated FIRST to prevent new requests
   try {
-    const { markUnauthenticated } = await import('../state/authStatus');
     markUnauthenticated();
     console.log('✅ Marked as unauthenticated');
   } catch (error) {
@@ -194,51 +195,12 @@ export const logout = async () => {
     console.error('Failed to clear auth context:', error);
   }
 
-  // 🔥 STEP 3: Abort all in-flight requests
+  // 🔥 STEP 3-6: Run deferred shared-module logout work before clearing tokens
   try {
-    const { abortAllRequests } = await import('./apiClient');
-    if (abortAllRequests) {
-      abortAllRequests();
-      console.log('✅ Aborted in-flight requests');
-    }
+    const { runPreTokenClearLogoutWork } = await import('./authDeferred');
+    await runPreTokenClearLogoutWork();
   } catch (error) {
-    // Function might not exist yet - that's okay
-    console.debug('No abort function available');
-  }
-
-  // 🔥 STEP 4: Disconnect socket to prevent reconnection
-  try {
-    const { disconnectSocketForLogout } = await import('./socket');
-    disconnectSocketForLogout();
-    console.log('✅ Socket disconnected');
-  } catch (error) {
-    // Silently fail - socket might not be initialized
-    console.debug('Socket disconnect skipped');
-  }
-
-  // 🔥 STEP 5: Stop auth lifecycle refresh interval
-  try {
-    const { cleanupAuthLifecycle } = await import('./authLifecycle');
-    cleanupAuthLifecycle();
-    console.log('✅ Auth lifecycle stopped');
-  } catch (error) {
-    console.debug('Auth lifecycle cleanup skipped');
-  }
-
-  // 🔧 FIX: Call backend logout BEFORE clearing local tokens
-  // The backend needs the auth token to identify the session to invalidate
-  // and to clear the httpOnly refresh token cookie
-  // 🔥 STEP 6: Call backend logout endpoint (MUST happen before clearing tokens)
-  try {
-    const { default: api } = await import('./api');
-    await api.post('/auth/logout').catch((err) => {
-      // Log the error but continue - we'll still clear local state
-      console.warn('Backend logout request failed:', err.message);
-    });
-    console.log('✅ Backend logout called (cookie should be cleared)');
-  } catch (error) {
-    // Silently fail - we'll still clear local state
-    console.debug('Backend logout skipped');
+    console.debug('Deferred logout preparation skipped');
   }
 
   // 🔥 STEP 7: Clear all local auth state AFTER backend call
@@ -246,33 +208,12 @@ export const logout = async () => {
   localStorage.removeItem('user');
   console.log('✅ Local auth state cleared');
 
-  // 🔥 STEP 8: Clear all caches
+  // 🔥 STEP 8-10: Clear deferred caches and client-side artifacts
   try {
-    const { clearCache } = await import('./apiClient');
-    if (clearCache) {
-      clearCache();
-      console.log('✅ API cache cleared');
-    }
+    const { runPostTokenClearLogoutWork } = await import('./authDeferred');
+    runPostTokenClearLogoutWork();
   } catch (error) {
-    console.debug('Cache clear skipped');
-  }
-
-  // 🔥 STEP 9: Clear all draft data
-  try {
-    const { clearAllDrafts } = await import('./draftStore');
-    clearAllDrafts();
-    console.log('✅ Draft data cleared');
-  } catch (error) {
-    console.error('Failed to clear drafts:', error);
-  }
-
-  // 🔥 STEP 10: Clear all mutation guard tracked entities
-  try {
-    const { clearAllEntities } = await import('./mutationGuard');
-    clearAllEntities();
-    console.log('✅ Mutation guard cleared');
-  } catch (error) {
-    console.error('Failed to clear mutation guard:', error);
+    console.debug('Deferred logout cleanup skipped');
   }
 
   // 🔥 STEP 11: Clear session storage
@@ -326,19 +267,9 @@ export const isAuthenticated = () => {
  */
 export async function refreshBeforeUpdate() {
   try {
-    // Import global single-flight refresh to avoid circular dependency
-    const { refreshAccessToken } = await import('./tokenRefresh');
-
-    // 🔐 CRITICAL: Use global single-flight refresh to prevent race conditions
-    const accessToken = await refreshAccessToken();
-
-    if (accessToken) {
-      console.log('✅ Token refreshed before update via global single-flight');
-    } else {
-      console.warn('⚠️ Token refresh returned null before update');
-    }
+    const { refreshBeforeUpdateWithSingleFlight } = await import('./authDeferred');
+    await refreshBeforeUpdateWithSingleFlight();
   } catch (err) {
-    console.warn('⚠️ Token refresh failed during update:', err.message);
-    // Don't throw - we still want to reload even if refresh fails
+    console.warn('⚠️ Token refresh helper failed during update:', err.message);
   }
 }

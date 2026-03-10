@@ -6,8 +6,7 @@ import { useEffect } from 'react';
  */
 function LegalPageWrapper({ children }) {
   useEffect(() => {
-    // Check localStorage for saved dark mode preference
-    const savedDarkMode = localStorage.getItem('darkMode');
+    const savedDarkMode = window.localStorage.getItem('darkMode');
     
     if (savedDarkMode === 'true') {
       document.documentElement.setAttribute('data-theme', 'dark');

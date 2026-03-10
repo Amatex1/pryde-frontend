@@ -8,12 +8,15 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import api from '../utils/api';
+import AsyncStateWrapper from '../components/AsyncStateWrapper';
+import EmptyState from '../components/EmptyState';
 import Navbar from '../components/Navbar';
 import './Discover.css';
 
 function Discover() {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   // Get menu handler from AppLayout outlet context
   const { onMenuOpen } = useOutletContext() || {};
@@ -25,10 +28,12 @@ function Discover() {
   const fetchGroups = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await api.get('/groups');
       setGroups(response.data.groups || response.data || []);
     } catch (error) {
       console.error('Failed to fetch groups:', error);
+      setError(error);
     } finally {
       setLoading(false);
     }
@@ -47,20 +52,29 @@ function Discover() {
           <p className="discover-subtitle">Find your space and connect with like-minded people</p>
         </div>
 
-        {loading ? (
-          <div className="loading">Loading groups...</div>
-        ) : groups.length === 0 ? (
-          <div className="no-groups" style={{ textAlign: 'center', padding: '3rem' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👥</div>
-            <p>No groups here — this is a fresh start.</p>
-          </div>
-        ) : (
+        <AsyncStateWrapper
+          isLoading={loading}
+          isError={Boolean(error)}
+          isEmpty={!loading && !error && groups.length === 0}
+          error={error}
+          onRetry={fetchGroups}
+          loadingMessage="Loading groups..."
+          emptyComponent={(
+            <EmptyState
+              type="groups"
+              title="No groups available yet"
+              description="This space is ready for the first community to join."
+            />
+          )}
+        >
           <div className="discover-groups-grid">
             {groups.map(group => (
-              <div
+              <button
                 key={group._id}
                 className="discover-group-card glossy"
+                type="button"
                 onClick={() => handleGroupClick(group.slug)}
+                aria-label={`Open group ${group.name}`}
               >
                 <div className="group-icon">👥</div>
                 <h3 className="group-label">{group.name}</h3>
@@ -69,10 +83,10 @@ function Discover() {
                   <span className="group-member-count">{group.memberCount || 0} members</span>
                   {group.isPrivate && <span className="visibility-badge">🔒 Private</span>}
                 </div>
-              </div>
+              </button>
             ))}
           </div>
-        )}
+        </AsyncStateWrapper>
       </div>
     </>
   );
