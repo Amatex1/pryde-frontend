@@ -1250,7 +1250,7 @@ function BadgeManagementModal({ user, badges = [], onAssignBadge, onRevokeBadge,
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose} aria-hidden="true">
+    <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal-content badge-modal"
         onClick={e => e.stopPropagation()}
@@ -2278,7 +2278,7 @@ function PostModal({ post, onClose }) {
   if (!post) return null;
 
   return (
-    <div className="admin-post-modal-overlay" onClick={onClose} aria-hidden="true">
+    <div className="admin-post-modal-overlay" onClick={onClose}>
       <div
         className="admin-post-modal"
         onClick={(e) => e.stopPropagation()}

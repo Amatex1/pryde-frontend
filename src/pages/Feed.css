@@ -1942,7 +1942,7 @@ html:not([data-theme]) .post-actions {
 
 /* Replies MUST shift right as a unit */
 .comment-row.reply {
-  padding-left: 40px !important;
+  padding-left: 0 !important;
 }
 
 /* Prevent parent containers from double-indenting */
@@ -2136,8 +2136,8 @@ html:not([data-theme]) .post-actions {
 
 .comment-menu-btn,
 .post-menu-btn {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -2177,8 +2177,8 @@ html:not([data-theme]) .post-actions {
 /* Icon size */
 .comment-menu-btn svg,
 .post-menu-btn svg {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
 }
 
 /* ========================================
@@ -5617,7 +5617,7 @@ select.privacy-selector:focus {
 
   /* 4️⃣ Fix comment/reply text breaking into 1-2 words */
   .comment-row.reply {
-    padding-left: 16px !important; /* Reduced from 40px */
+    padding-left: 0 !important;
   }
 
   .comment-bubble {

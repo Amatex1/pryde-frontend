@@ -85,6 +85,35 @@ describe('PhotoRepositionInline', () => {
     expect(screen.getByTestId('mock-cropper')).toHaveAttribute('data-zoom', '1.6');
   });
 
+  it('saves position-only updates for an existing remote image without re-uploading it', async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+
+    render(
+      <PhotoRepositionInline
+        type="avatar"
+        imageUrl="https://example.com/photo.jpg"
+        onSave={onSave}
+        onCancel={vi.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /trigger crop complete/i }));
+    fireEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    await waitFor(() => {
+      expect(onSave).toHaveBeenCalledWith({
+        type: 'avatar',
+        position: {
+          x: 0,
+          y: 0,
+          scale: 1,
+          bgX: 30,
+          bgY: 50
+        }
+      });
+    });
+  });
+
   it('shows save errors inline and re-enables the button', async () => {
     const onSave = vi.fn().mockRejectedValue({
       response: { data: { message: 'Profile photo upload failed. Please try again or use a smaller image.' } }

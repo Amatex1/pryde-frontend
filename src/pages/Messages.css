@@ -4649,4 +4649,23 @@ body:has(.messages-page) {
     border-radius: 24px !important;
     padding: 6px 12px !important;
   }
+
+  /* Legacy desktop: keep the composer visible inside the fixed viewport shell */
+  .messages-page .chat-area,
+  .messages-page .chat-messages {
+    min-height: 0 !important;
+  }
+
+  .messages-page .chat-area {
+    overflow: hidden !important;
+  }
+
+  .messages-page .chat-messages {
+    flex: 1 1 auto !important;
+    height: auto !important;
+  }
+
+  .messages-page .chat-input-area {
+    flex-shrink: 0 !important;
+  }
 }

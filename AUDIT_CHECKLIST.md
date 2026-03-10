@@ -48,6 +48,14 @@
 - [x] Re-check secondary pages for consistent empty/error messaging
 - [x] Re-score the site after major remediation waves
 
+## Post-Push Regression Fixes
+
+- [x] Restore the legacy desktop `/messages` composer layout so the textbox remains visible on PC
+- [x] Remove duplicate reply indentation so threaded replies no longer shift too far right
+- [x] Normalize the feed/comment three-dot menu button sizing across desktop and mobile breakpoints
+- [x] Allow profile/cover reposition saves to update position metadata without re-uploading existing remote media
+- [x] Remove invalid `aria-hidden` usage from admin modal overlays containing focused controls
+
 ## Verification Log
 
 - [x] Phase 1 targeted frontend tests executed and passing
@@ -59,3 +67,5 @@
 - [x] Focused import-graph validation: `npm test -- src/context/__tests__/AuthContext.test.js src/components/Footer.test.jsx` (2/2 tests passing on 2026-03-10)
 - [x] Focused production build re-check: `npm run build` passed on 2026-03-10 with mixed static/dynamic import warnings eliminated
 - [x] Bundle note: the remaining performance opportunity is chunk sizing rather than import-graph warnings (`assets/js/index` ~275 KB, `react-vendor` ~162 KB, with medium/large route chunks like `Feed`, `Profile`, `MessagesApp`, and `Admin`)
+- [x] Focused `/messages` desktop regression validation: `npm test -- src/pages/__tests__/Messages.desktopLayout.test.js` (1/1 tests passing on 2026-03-10)
+- [x] Focused photo editor regression validation: `npm test -- src/components/PhotoRepositionFullscreen.test.jsx` (6/6 tests passing on 2026-03-10)
