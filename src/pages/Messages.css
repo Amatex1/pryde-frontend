@@ -4651,21 +4651,75 @@ body:has(.messages-page) {
   }
 
   /* Legacy desktop: keep the composer visible inside the fixed viewport shell */
-  .messages-page .chat-area,
-  .messages-page .chat-messages {
+  .messages-page > .messages-container {
+    display: flex !important;
     min-height: 0 !important;
   }
 
-  .messages-page .chat-area {
+  .messages-page .messages-layout {
+    display: grid !important;
+    grid-template-columns: 300px minmax(0, 1fr) !important;
+    align-items: stretch !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    width: 100% !important;
     overflow: hidden !important;
+  }
+
+  .messages-page .conversations-sidebar,
+  .messages-page .chat-area,
+  .messages-page .messages-info {
+    grid-row: 1 !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+  }
+
+  .messages-page .conversations-sidebar {
+    grid-column: 1 !important;
+  }
+
+  .messages-page .chat-area {
+    grid-column: 2 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .messages-page .messages-info {
+    grid-column: 3 !important;
   }
 
   .messages-page .chat-messages {
     flex: 1 1 auto !important;
     height: auto !important;
+    min-height: 0 !important;
+    padding-left: clamp(16px, 2vw, 24px) !important;
+    padding-right: clamp(16px, 2vw, 24px) !important;
+  }
+
+  .messages-page .conversation-wrapper {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .messages-page .conversation-inner {
+    width: 100% !important;
+    max-width: 880px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
   }
 
   .messages-page .chat-input-area {
+    position: relative !important;
+    bottom: auto !important;
+    z-index: auto !important;
     flex-shrink: 0 !important;
+    align-items: stretch !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .messages-page .messages-layout {
+    grid-template-columns: 300px minmax(0, 1fr) 320px !important;
   }
 }
