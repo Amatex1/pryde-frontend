@@ -21,9 +21,21 @@ import PostSkeleton from '../components/PostSkeleton';
 import OptimizedImage from '../components/OptimizedImage';
 import EmptyState from '../components/EmptyState';
 import ProfilePostSearch from '../components/ProfilePostSearch';
+import ProfileLibraryPanels from '../components/profile/ProfileLibraryPanels';
+import ProfileOwnRail from '../components/profile/ProfileOwnRail';
+import ProfileTabs from '../components/profile/ProfileTabs';
 import CommentThread from '../components/CommentThread';
 import { CommentProvider } from '../components/comments/CommentContext';
 import CommentSheet from '../components/comments/CommentSheet';
+import { buildCommentContextValue } from '../components/comments/buildCommentContextValue';
+import {
+  appendUniqueCommentToBucket,
+  mapCommentsInBuckets,
+  removeBucket,
+  removeCommentFromAllBuckets,
+  removeCommentFromBucket,
+  replaceCommentInBuckets,
+} from '../components/comments/commentBucketState';
 import ReactionButton from '../components/ReactionButton';
 import FeedPostDropdown from '../components/feed/FeedPostDropdown';
 import FeedComposer from '../components/feed/FeedComposer';
@@ -35,6 +47,7 @@ import PostHeader from '../components/PostHeader';
 import Poll from '../components/Poll';
 import GifPicker from '../components/GifPicker';
 
+import { useCommentThreadState } from '../hooks/useCommentThreadState';
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
@@ -173,6 +186,46 @@ function Profile() {
   const isMobile = useMediaQuery('(max-width: 768px)');
   const isMobileSheet = useMediaQuery('(max-width: 600px)'); // For CommentSheet mobile detection
   const actionsMenuRef = useRef(null);
+
+  const loadCommentsForPost = useCallback(async (postId) => {
+    try {
+      const response = await api.get(`/posts/${postId}/comments`);
+      return response.data || [];
+    } catch (error) {
+      logger.error('Failed to fetch comments:', error);
+      return [];
+    }
+  }, []);
+
+  const loadRepliesForComment = useCallback(async (commentId) => {
+    try {
+      const response = await api.get(`/comments/${commentId}/replies`);
+      return response.data || [];
+    } catch (error) {
+      logger.error('Failed to fetch replies:', error);
+      return [];
+    }
+  }, []);
+
+  const {
+    fetchCommentsForPost,
+    toggleReplies,
+    openComments,
+    toggleCommentBox,
+  } = useCommentThreadState({
+    fetchComments: loadCommentsForPost,
+    fetchReplies: loadRepliesForComment,
+    postComments,
+    commentReplies,
+    showReplies,
+    showCommentBox,
+    isSheetMobile: isMobileSheet,
+    setPostComments,
+    setCommentReplies,
+    setShowReplies,
+    setShowCommentBox,
+    setCommentSheetOpen,
+  });
   const isOwnProfile = currentUser?.username === id;
   const [canSendMessage, setCanSendMessage] = useState(false);
   const [permissionsChecked, setPermissionsChecked] = useState(false); // Hide buttons until permissions are determined
@@ -450,27 +503,8 @@ function Profile() {
         logger.debug('💜 Real-time comment reaction received:', data);
         const updatedComment = data.comment;
 
-        // Update in postComments
-        setPostComments(prev => {
-          const updated = { ...prev };
-          Object.keys(updated).forEach(postId => {
-            updated[postId] = updated[postId].map(c =>
-              c._id === updatedComment._id ? updatedComment : c
-            );
-          });
-          return updated;
-        });
-
-        // Update in commentReplies
-        setCommentReplies(prev => {
-          const updated = { ...prev };
-          Object.keys(updated).forEach(parentId => {
-            updated[parentId] = updated[parentId].map(c =>
-              c._id === updatedComment._id ? updatedComment : c
-            );
-          });
-          return updated;
-        });
+        setPostComments(prev => replaceCommentInBuckets(prev, updatedComment));
+        setCommentReplies(prev => replaceCommentInBuckets(prev, updatedComment));
       };
       socket.on('comment_reaction_added', handleCommentReactionRT);
       cleanupFunctions.push(() => socket.off('comment_reaction_added', handleCommentReactionRT));
@@ -483,30 +517,10 @@ function Profile() {
 
         if (newComment.parentCommentId) {
           // It's a reply
-          setCommentReplies(prev => {
-            const existing = prev[newComment.parentCommentId] || [];
-            // Check if comment already exists to prevent duplicates
-            if (existing.some(c => c._id === newComment._id)) {
-              return prev;
-            }
-            return {
-              ...prev,
-              [newComment.parentCommentId]: [...existing, newComment]
-            };
-          });
+          setCommentReplies(prev => appendUniqueCommentToBucket(prev, newComment.parentCommentId, newComment));
         } else {
           // It's a top-level comment
-          setPostComments(prev => {
-            const existing = prev[postId] || [];
-            // Check if comment already exists to prevent duplicates
-            if (existing.some(c => c._id === newComment._id)) {
-              return prev;
-            }
-            return {
-              ...prev,
-              [postId]: [...existing, newComment]
-            };
-          });
+          setPostComments(prev => appendUniqueCommentToBucket(prev, postId, newComment));
         }
       };
       socket.on('comment_added', handleCommentAddedRT);
@@ -985,83 +999,6 @@ function Profile() {
     setShowDraftManager(false);
   }, []);
 
-  // Fetch comments for a post
-  const fetchCommentsForPost = async (postId) => {
-    try {
-      const response = await api.get(`/posts/${postId}/comments`);
-      const comments = response.data || [];
-      setPostComments(prev => ({
-        ...prev,
-        [postId]: comments
-      }));
-
-      // Auto-fetch and show replies for comments that have them
-      const commentsWithReplies = comments.filter(c => c.replyCount > 0);
-      if (commentsWithReplies.length > 0) {
-        // Fetch all replies in parallel
-        const replyPromises = commentsWithReplies.map(async (comment) => {
-          try {
-            const replyResponse = await api.get(`/comments/${comment._id}/replies`);
-            return { commentId: comment._id, replies: replyResponse.data || [] };
-          } catch (err) {
-            logger.error(`Failed to fetch replies for comment ${comment._id}:`, err);
-            return { commentId: comment._id, replies: [] };
-          }
-        });
-
-        const replyResults = await Promise.all(replyPromises);
-
-        // Batch update replies state
-        setCommentReplies(prev => {
-          const updated = { ...prev };
-          replyResults.forEach(({ commentId, replies }) => {
-            updated[commentId] = replies;
-          });
-          return updated;
-        });
-
-        // Auto-show all replies
-        setShowReplies(prev => {
-          const updated = { ...prev };
-          commentsWithReplies.forEach(comment => {
-            updated[comment._id] = true;
-          });
-          return updated;
-        });
-      }
-    } catch (error) {
-      logger.error('Failed to fetch comments:', error);
-    }
-  };
-
-  // Fetch replies for a comment
-  const fetchRepliesForComment = async (commentId) => {
-    try {
-      const response = await api.get(`/comments/${commentId}/replies`);
-      setCommentReplies(prev => ({
-        ...prev,
-        [commentId]: response.data
-      }));
-    } catch (error) {
-      logger.error('Failed to fetch replies:', error);
-    }
-  };
-
-  // Toggle replies visibility and fetch if needed
-  const toggleReplies = async (commentId) => {
-    const isCurrentlyShown = showReplies[commentId];
-
-    setShowReplies(prev => ({
-      ...prev,
-      [commentId]: !isCurrentlyShown
-    }));
-
-    // Fetch replies if showing and not already loaded
-    if (!isCurrentlyShown && !commentReplies[commentId]) {
-      await fetchRepliesForComment(commentId);
-    }
-  };
-
   const handleCommentReaction = async (commentId, emoji) => {
     try {
       // Optimistic update
@@ -1087,47 +1024,18 @@ function Profile() {
       };
 
       // Update in postComments
-      setPostComments(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(postId => {
-          updated[postId] = updated[postId].map(updateCommentReaction);
-        });
-        return updated;
-      });
+      setPostComments(prev => mapCommentsInBuckets(prev, updateCommentReaction));
 
       // Update in commentReplies
-      setCommentReplies(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(parentId => {
-          updated[parentId] = updated[parentId].map(updateCommentReaction);
-        });
-        return updated;
-      });
+      setCommentReplies(prev => mapCommentsInBuckets(prev, updateCommentReaction));
 
       // API call
       const response = await api.post(`/comments/${commentId}/react`, { emoji });
 
       // Update with server response to ensure consistency
       const serverComment = response.data;
-      setPostComments(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(postId => {
-          updated[postId] = updated[postId].map(c =>
-            c._id === commentId ? serverComment : c
-          );
-        });
-        return updated;
-      });
-
-      setCommentReplies(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(parentId => {
-          updated[parentId] = updated[parentId].map(c =>
-            c._id === commentId ? serverComment : c
-          );
-        });
-        return updated;
-      });
+      setPostComments(prev => replaceCommentInBuckets(prev, serverComment));
+      setCommentReplies(prev => replaceCommentInBuckets(prev, serverComment));
 
       setShowReactionPicker(null);
     } catch (error) {
@@ -1137,32 +1045,6 @@ function Profile() {
         postComments[pid].some(c => c._id === commentId)
       );
       if (postId) await fetchCommentsForPost(postId);
-    }
-  };
-
-  // Toggle comment box and fetch comments if needed
-  const toggleCommentBox = async (postId) => {
-    // Use centralized hook for mobile detection (matches CommentSheet design contract)
-    if (isMobileSheet) {
-      setCommentSheetOpen(postId);
-      // Fetch comments if not already loaded
-      if (!postComments[postId]) {
-        await fetchCommentsForPost(postId);
-      }
-      return;
-    }
-
-    // Desktop: use inline comment box
-    const isCurrentlyShown = showCommentBox[postId];
-
-    setShowCommentBox(prev => ({
-      ...prev,
-      [postId]: !isCurrentlyShown
-    }));
-
-    // Fetch comments if opening and not already loaded
-    if (!isCurrentlyShown && !postComments[postId]) {
-      await fetchCommentsForPost(postId);
     }
   };
 
@@ -1223,21 +1105,8 @@ function Profile() {
       const updateComment = (comment) =>
         comment._id === commentId ? response.data : comment;
 
-      setPostComments(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(postId => {
-          updated[postId] = updated[postId].map(updateComment);
-        });
-        return updated;
-      });
-
-      setCommentReplies(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(parentId => {
-          updated[parentId] = updated[parentId].map(updateComment);
-        });
-        return updated;
-      });
+      setPostComments(prev => mapCommentsInBuckets(prev, updateComment));
+      setCommentReplies(prev => mapCommentsInBuckets(prev, updateComment));
 
       setEditingCommentId(null);
       setEditCommentText('');
@@ -1267,25 +1136,12 @@ function Profile() {
       // Remove comment from state (soft delete shows as "removed")
       if (isReply) {
         // Remove from replies
-        setCommentReplies(prev => {
-          const updated = { ...prev };
-          Object.keys(updated).forEach(parentId => {
-            updated[parentId] = updated[parentId].filter(r => r._id !== commentId);
-          });
-          return updated;
-        });
+        setCommentReplies(prev => removeCommentFromAllBuckets(prev, commentId));
       } else {
         // Remove from top-level comments
-        setPostComments(prev => ({
-          ...prev,
-          [postId]: prev[postId].filter(c => c._id !== commentId)
-        }));
+        setPostComments(prev => removeCommentFromBucket(prev, postId, commentId));
         // Also remove its replies
-        setCommentReplies(prev => {
-          const updated = { ...prev };
-          delete updated[commentId];
-          return updated;
-        });
+        setCommentReplies(prev => removeBucket(prev, commentId));
       }
 
       showToast(`${isReply ? 'Reply' : 'Comment'} deleted successfully`, 'success');
@@ -2145,206 +2001,18 @@ function Profile() {
 
           {/* Mobile Sidebar - Shown under cover photo on mobile only */}
           {isOwnProfile && activeTab === 'posts' && (
-            <div className="mobile-profile-sidebar">
-              {/* Interests */}
-              {user.interests && user.interests.length > 0 && (
-                <div className="profile-rail-section">
-                  <h3 className="profile-rail-section-title">🏷️ Interests</h3>
-                  <div className="looking-for-grid">
-                    {user.interests.map((interest, index) => (
-                      <div key={index} className="looking-for-item">
-                        <span className="looking-for-icon">🏷️</span>
-                        <span className="looking-for-label">{interest}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="profile-rail-divider"></div>
-                </div>
-              )}
-
-              {/* Looking For */}
-              {user.lookingFor && user.lookingFor.length > 0 && (
-                <div className="profile-rail-section">
-                  <h3 className="profile-rail-section-title"><Search size={14} strokeWidth={1.75} aria-hidden="true" /> Looking For</h3>
-                  <div className="looking-for-grid">
-                    {user.lookingFor.map((item, index) => (
-                      <div key={index} className="looking-for-item">
-                        <span className="looking-for-icon">
-                          {item === 'friends' && <Users size={14} strokeWidth={1.75} aria-hidden="true" />}
-                          {item === 'support' && <MessageCircle size={14} strokeWidth={1.75} aria-hidden="true" />}
-                          {item === 'community' && <Globe size={14} strokeWidth={1.75} aria-hidden="true" />}
-                          {item === 'networking' && <UserPlus size={14} strokeWidth={1.75} aria-hidden="true" />}
-                        </span>
-                        <span className="looking-for-label">
-                          {item === 'friends' && 'Friends'}
-                          {item === 'support' && 'Support'}
-                          {item === 'community' && 'Community'}
-                          {item === 'networking' && 'Networking'}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="profile-rail-divider"></div>
-                </div>
-              )}
-
-              {/* Social Links */}
-              {user.socialLinks && user.socialLinks.length > 0 && (
-                <div className="profile-rail-section">
-                  <h3 className="profile-rail-section-title">Social Links</h3>
-                  <div className="social-links-inline">
-                    {user.socialLinks.map((link, index) => (
-                      <a
-                        key={index}
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="social-link-item"
-                      >
-                        <span className="social-platform-label">{link.platform}</span>
-                        <ChevronRight size={14} strokeWidth={1.75} className="social-external-arrow" aria-hidden="true" />
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            <ProfileOwnRail user={user} variant="mobile" />
           )}
 
         <div className="profile-layout">
           {/* Sidebar for Create Post Section */}
           {isOwnProfile && activeTab === 'posts' && (
-            <div className="create-post-sidebar">
-              {/* Interests */}
-              {user.interests && user.interests.length > 0 && (
-                <div className="sidebar-card glossy fade-in">
-                  <h3 className="sidebar-title">🏷️ Interests</h3>
-                  <div className="looking-for-list">
-                    {user.interests.map((interest, index) => (
-                      <span key={index} className="looking-for-item">
-                        🏷️ {interest}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Looking For */}
-              {user.lookingFor && user.lookingFor.length > 0 && (
-                <div className="sidebar-card glossy fade-in">
-                  <h3 className="sidebar-title"><Search size={14} strokeWidth={1.75} aria-hidden="true" /> Looking For</h3>
-                  <div className="looking-for-list">
-                    {user.lookingFor.map((item, index) => (
-                      <span key={index} className="looking-for-item">
-                        {item === 'friends' && 'Friends'}
-                        {item === 'support' && 'Support'}
-                        {item === 'community' && 'Community'}
-                        {item === 'networking' && 'Networking'}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Social Links */}
-              {user.socialLinks && user.socialLinks.length > 0 && (
-                <div className="sidebar-card glossy fade-in">
-                  <h3 className="sidebar-title">Social Links</h3>
-                  <div className="social-links-list">
-                    {user.socialLinks.map((link, index) => (
-                      <a
-                        key={index}
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="social-link"
-                      >
-                        <strong>{link.platform}</strong>
-                        <ChevronRight size={14} strokeWidth={1.75} className="link-arrow" aria-hidden="true" />
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            <ProfileOwnRail user={user} />
           )}
 
           <div className="profile-main">
             {/* Profile content tabs - available to all users */}
-            <div className="profile-tabs glossy" style={{ marginBottom: '20px', padding: '10px', borderRadius: '12px', display: 'flex', gap: '10px', overflowX: 'auto' }}>
-              <button
-                className={`tab-button ${activeTab === 'posts' ? 'active' : ''}`}
-                onClick={() => setActiveTab('posts')}
-                style={{
-                  padding: '10px 20px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  background: activeTab === 'posts' ? 'var(--pryde-purple)' : 'var(--background-light)',
-                  color: activeTab === 'posts' ? 'white' : 'var(--text-main)',
-                  cursor: 'pointer',
-                  fontWeight: activeTab === 'posts' ? 'bold' : 'normal',
-                  transition: 'all 0.3s ease',
-                  flexShrink: 0,
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                <FileText size={20} strokeWidth={1.75} aria-hidden="true" /> Posts
-              </button>
-              <button
-                className={`tab-button ${activeTab === 'journals' ? 'active' : ''}`}
-                onClick={() => setActiveTab('journals')}
-                style={{
-                  padding: '10px 20px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  background: activeTab === 'journals' ? 'var(--pryde-purple)' : 'var(--background-light)',
-                  color: activeTab === 'journals' ? 'white' : 'var(--text-main)',
-                  cursor: 'pointer',
-                  fontWeight: activeTab === 'journals' ? 'bold' : 'normal',
-                  transition: 'all 0.3s ease',
-                  flexShrink: 0,
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                📔 Journals
-              </button>
-              <button
-                className={`tab-button ${activeTab === 'longform' ? 'active' : ''}`}
-                onClick={() => setActiveTab('longform')}
-                style={{
-                  padding: '10px 20px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  background: activeTab === 'longform' ? 'var(--pryde-purple)' : 'var(--background-light)',
-                  color: activeTab === 'longform' ? 'white' : 'var(--text-main)',
-                  cursor: 'pointer',
-                  fontWeight: activeTab === 'longform' ? 'bold' : 'normal',
-                  transition: 'all 0.3s ease',
-                  flexShrink: 0,
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                📖 Stories
-              </button>
-              <button
-                className={`tab-button ${activeTab === 'photoEssays' ? 'active' : ''}`}
-                onClick={() => setActiveTab('photoEssays')}
-                style={{
-                  padding: '10px 20px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  background: activeTab === 'photoEssays' ? 'var(--pryde-purple)' : 'var(--background-light)',
-                  color: activeTab === 'photoEssays' ? 'white' : 'var(--text-main)',
-                  cursor: 'pointer',
-                  fontWeight: activeTab === 'photoEssays' ? 'bold' : 'normal',
-                  transition: 'all 0.3s ease',
-                  flexShrink: 0,
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                <Image size={16} strokeWidth={1.75} aria-hidden="true" /> Photo Essays
-              </button>
-            </div>
+            <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
             {/* Create Post Section - Uses shared FeedComposer component */}
             {isOwnProfile && activeTab === 'posts' && (
@@ -2400,11 +2068,14 @@ function Profile() {
             )}
 
             <div className="profile-posts">
-            {activeTab !== 'posts' && (
-              <h2 className="section-title" style={{ marginBottom: '20px' }}>
-                {activeTab === 'journals' ? 'Journals' : activeTab === 'longform' ? 'Stories' : 'Photo Essays'}
-              </h2>
-            )}
+            <ProfileLibraryPanels
+              activeTab={activeTab}
+              journals={journals}
+              longformPosts={longformPosts}
+              photoEssays={photoEssays}
+              searchResults={searchResults}
+              getImageUrl={getImageUrl}
+            />
 
             {/* OPTIONAL FEATURES: Conditional rendering based on active tab */}
             {activeTab === 'posts' && (
@@ -2632,26 +2303,56 @@ function Profile() {
 
                       {/* Comments Section - Facebook Style */}
                       {postComments[post._id] && postComments[post._id].length > 0 && (
-                        <CommentProvider value={{
-                          currentUser, postId: post._id, viewerRole: role,
-                          showReplies, editingCommentId, editCommentText,
-                          showReactionPicker, commentRefs, getUserReactionEmoji,
-                          handleEditComment, handleSaveEditComment, handleCancelEditComment,
-                          handleDeleteComment, handleCommentReaction, toggleReplies,
-                          handleReplyToComment, setShowReactionPicker,
-                          setReactionDetailsModal, setReportModal,
-                        }}>
+                        <CommentProvider value={buildCommentContextValue({
+                          currentUser,
+                          postId: post._id,
+                          viewerRole: role,
+                          showReplies,
+                          editingCommentId,
+                          editCommentText,
+                          showReactionPicker,
+                          commentRefs,
+                          getUserReactionEmoji,
+                          handleEditComment,
+                          handleSaveEditComment,
+                          handleCancelEditComment,
+                          handleDeleteComment,
+                          handleCommentReaction,
+                          toggleReplies,
+                          handleReplyToComment,
+                          setShowReactionPicker,
+                          setReactionDetailsModal,
+                          setReportModal,
+                        })}>
                           <div className="post-comments">
-                            {postComments[post._id]
-                              .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)
-                              .slice(-3)
-                              .map((comment) => (
-                                <CommentThread
-                                  key={comment._id}
-                                  comment={comment}
-                                  replies={commentReplies[comment._id] || []}
-                                />
-                              ))}
+                            {(() => {
+                              const topLevelComments = postComments[post._id]
+                                .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined);
+                              const isExpanded = Boolean(showCommentBox[post._id]);
+                              const hiddenCount = isExpanded ? 0 : Math.max(0, topLevelComments.length - 3);
+                              const visibleComments = isExpanded ? topLevelComments : topLevelComments.slice(-3);
+
+                              return (
+                                <>
+                                  {hiddenCount > 0 && (
+                                    <button
+                                      className="comment-action-btn view-all-comments-btn"
+                                      onClick={() => openComments(post._id)}
+                                      style={{ display: 'block', marginBottom: '4px', color: 'var(--color-brand)', fontWeight: 500 }}
+                                    >
+                                      View all {topLevelComments.length} comments
+                                    </button>
+                                  )}
+                                  {visibleComments.map((comment) => (
+                                    <CommentThread
+                                      key={comment._id}
+                                      comment={comment}
+                                      replies={commentReplies[comment._id] || []}
+                                    />
+                                  ))}
+                                </>
+                              );
+                            })()}
                           </div>
                         </CommentProvider>
                       )}
@@ -2790,108 +2491,6 @@ function Profile() {
               </>
             )}
 
-            {/* OPTIONAL FEATURES: Journals tab */}
-            {activeTab === 'journals' && (
-              <div className="journals-list">
-                {(searchResults ? searchResults.journals : journals).length === 0 ? (
-                  <div className="empty-state glossy">
-                    <p>{searchResults ? 'No journals found' : 'No journal entries yet'}</p>
-                  </div>
-                ) : (
-                  (searchResults ? searchResults.journals : journals).map((journal) => (
-                    <div key={journal._id} className="journal-card glossy fade-in" style={{ marginBottom: '20px', padding: '20px', borderRadius: '12px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
-                        <div>
-                          <h3 style={{ margin: '0 0 10px 0', color: 'var(--pryde-purple)' }}>{journal.title || 'Untitled Entry'}</h3>
-                          <div style={{ display: 'flex', gap: '10px', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                            <span><Calendar size={14} strokeWidth={1.75} aria-hidden="true" /> {new Date(journal.createdAt).toLocaleDateString()}</span>
-                            {journal.mood && <span><Smile size={14} strokeWidth={1.75} aria-hidden="true" /> {journal.mood}</span>}
-                            <span><Lock size={14} strokeWidth={1.75} aria-hidden="true" /> {journal.visibility}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>{journal.content}</p>
-                      {journal.tags && journal.tags.length > 0 && (
-                        <div style={{ marginTop: '15px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                          {journal.tags.map((tag, idx) => (
-                            <span key={idx} style={{ padding: '4px 12px', background: 'var(--soft-lavender)', borderRadius: '12px', fontSize: '0.85rem', color: 'var(--pryde-purple)' }}>
-                              #{tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-
-            {/* OPTIONAL FEATURES: Longform tab */}
-            {activeTab === 'longform' && (
-              <div className="longform-list">
-                {(searchResults ? searchResults.longforms : longformPosts).length === 0 ? (
-                  <div className="empty-state glossy">
-                    <p>{searchResults ? 'No stories found' : 'No stories yet'}</p>
-                  </div>
-                ) : (
-                  (searchResults ? searchResults.longforms : longformPosts).map((longform) => (
-                    <div key={longform._id} className="longform-card glossy fade-in" style={{ marginBottom: '20px', padding: '20px', borderRadius: '12px' }}>
-                      {longform.coverImage && (
-                        <img src={getImageUrl(longform.coverImage)} alt={longform.title} style={{ width: '100%', borderRadius: '8px', marginBottom: '15px' }} />
-                      )}
-                      <h2 style={{ margin: '0 0 10px 0', color: 'var(--pryde-purple)' }}>{longform.title}</h2>
-                      <div style={{ display: 'flex', gap: '10px', fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '15px' }}>
-                        <span><Calendar size={14} strokeWidth={1.75} aria-hidden="true" /> {new Date(longform.createdAt).toLocaleDateString()}</span>
-                        {longform.readTime && <span>⏱️ {longform.readTime} min read</span>}
-                        <span><Lock size={14} strokeWidth={1.75} aria-hidden="true" /> {longform.visibility}</span>
-                      </div>
-                      <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>{longform.body.substring(0, 300)}...</p>
-                      <Link to={`/longform/${longform._id}`} style={{ color: 'var(--pryde-purple)', fontWeight: 'bold', textDecoration: 'none' }}>
-                        Read more <ChevronRight size={14} strokeWidth={1.75} aria-hidden="true" />
-                      </Link>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-
-            {/* OPTIONAL FEATURES: Photo Essays tab */}
-            {activeTab === 'photoEssays' && (
-              <div className="photo-essays-list">
-                {photoEssays.length === 0 ? (
-                  <div className="empty-state glossy">
-                    <p>No photo essays yet</p>
-                  </div>
-                ) : (
-                  photoEssays.map((essay) => (
-                    <div key={essay._id} className="photo-essay-card glossy fade-in" style={{ marginBottom: '20px', padding: '20px', borderRadius: '12px' }}>
-                      <h3 style={{ margin: '0 0 15px 0', color: 'var(--pryde-purple)' }}>{essay.title}</h3>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px', marginBottom: '15px' }}>
-                        {essay.photos && essay.photos.slice(0, 4).map((photo, idx) => (
-                          <div key={idx} style={{ position: 'relative' }}>
-                            <OptimizedImage
-                              src={getImageUrl(photo.url)}
-                              alt={photo.caption || `Photo ${idx + 1}`}
-                              style={{ width: '100%', borderRadius: '8px', aspectRatio: '1', objectFit: 'cover' }}
-                            />
-                            {photo.caption && (
-                              <p style={{ marginTop: '8px', fontSize: '0.85rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>{photo.caption}</p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                      {essay.photos && essay.photos.length > 4 && (
-                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>+{essay.photos.length - 4} more photos</p>
-                      )}
-                      <div style={{ display: 'flex', gap: '10px', fontSize: '0.9rem', color: 'var(--text-muted)', marginTop: '10px' }}>
-                        <span><Calendar size={14} strokeWidth={1.75} aria-hidden="true" /> {new Date(essay.createdAt).toLocaleDateString()}</span>
-                        <span><Lock size={14} strokeWidth={1.75} aria-hidden="true" /> {essay.visibility}</span>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
             </div>
             {/* End of profile-posts */}
           </div>
@@ -3111,15 +2710,27 @@ function Profile() {
           )}
 
           {/* All Comments with Full Replies */}
-          <CommentProvider value={{
-            currentUser, postId: commentSheetOpen, viewerRole: role,
-            showReplies, editingCommentId, editCommentText,
-            showReactionPicker, commentRefs, getUserReactionEmoji,
-            handleEditComment, handleSaveEditComment, handleCancelEditComment,
-            handleDeleteComment, handleCommentReaction, toggleReplies,
-            handleReplyToComment, setShowReactionPicker,
-            setReactionDetailsModal, setReportModal,
-          }}>
+          <CommentProvider value={buildCommentContextValue({
+            currentUser,
+            postId: commentSheetOpen,
+            viewerRole: role,
+            showReplies,
+            editingCommentId,
+            editCommentText,
+            showReactionPicker,
+            commentRefs,
+            getUserReactionEmoji,
+            handleEditComment,
+            handleSaveEditComment,
+            handleCancelEditComment,
+            handleDeleteComment,
+            handleCommentReaction,
+            toggleReplies,
+            handleReplyToComment,
+            setShowReactionPicker,
+            setReactionDetailsModal,
+            setReportModal,
+          })}>
             <div className="comment-sheet-threads">
               {postComments[commentSheetOpen] && postComments[commentSheetOpen]
                 .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)

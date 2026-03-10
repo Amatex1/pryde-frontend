@@ -37,10 +37,22 @@ import Toast from '../components/Toast';
 import FormattedText from '../components/FormattedText';
 import CommentThread from '../components/CommentThread';
 import { CommentProvider } from '../components/comments/CommentContext';
+import CommentSheet from '../components/comments/CommentSheet';
+import { buildCommentContextValue } from '../components/comments/buildCommentContextValue';
+import {
+  appendUniqueCommentToBucket,
+  removeBucket,
+  removeCommentFromAllBuckets,
+  removeCommentFromBucket,
+  replaceCommentInBuckets,
+} from '../components/comments/commentBucketState';
 import GifPicker from '../components/GifPicker';
 import GroupPostDropdown from '../components/groups/GroupPostDropdown';
 import GroupActionsDropdown from '../components/groups/GroupActionsDropdown';
+import ReactionDetailsModal from '../components/ReactionDetailsModal';
 import ReportModal from '../components/ReportModal';
+import { useCommentThreadState } from '../hooks/useCommentThreadState';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useToast } from '../hooks/useToast';
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
@@ -69,6 +81,7 @@ function Groups() {
   const [leaving, setLeaving] = useState(false);
   const [error, setError] = useState(null);
   const currentUser = getCurrentUser();
+  const isMobileSheet = useMediaQuery('(max-width: 600px)');
 
   // Phase 2C: Toast notifications for UX feedback
   const { toasts, showToast, removeToast } = useToast();
@@ -120,6 +133,7 @@ function Groups() {
   const [showGifPicker, setShowGifPicker] = useState(null);
   const [postComments, setPostComments] = useState({});
   const [commentReplies, setCommentReplies] = useState({});
+  const [commentSheetOpen, setCommentSheetOpen] = useState(null);
   const [showReplies, setShowReplies] = useState({});
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editCommentText, setEditCommentText] = useState('');
@@ -133,8 +147,8 @@ function Groups() {
   // Dropdown and report modal state
   const [openPostDropdown, setOpenPostDropdown] = useState(null); // Track which post dropdown is open
   const [showGroupActionsDropdown, setShowGroupActionsDropdown] = useState(false);
-  const [showReportModal, setShowReportModal] = useState(false);
-  const [reportingPost, setReportingPost] = useState(null); // { postId, authorId }
+  const [reportModal, setReportModal] = useState({ isOpen: false, type: '', contentId: null, userId: null });
+  const [reactionDetailsModal, setReactionDetailsModal] = useState({ isOpen: false, targetType: null, targetId: null });
 
   // Edit group modal state
   const [showEditGroupModal, setShowEditGroupModal] = useState(false);
@@ -481,13 +495,11 @@ function Groups() {
 
   // Report post handler
   const handleReportPost = (postId, authorId) => {
-    setReportingPost({ postId, authorId });
-    setShowReportModal(true);
+    setReportModal({ isOpen: true, type: 'post', contentId: postId, userId: authorId });
   };
 
   const closeReportModal = () => {
-    setShowReportModal(false);
-    setReportingPost(null);
+    setReportModal({ isOpen: false, type: '', contentId: null, userId: null });
   };
 
   // Toggle post dropdown
@@ -564,63 +576,43 @@ function Groups() {
   // COMMENT SYSTEM FUNCTIONS
   // ============================================
 
-  // Fetch comments for a post
-  const fetchCommentsForPost = useCallback(async (postId) => {
+  const loadCommentsForPost = useCallback(async (postId) => {
     try {
       const response = await api.get(`/posts/${postId}/comments`);
-      const comments = response.data || [];
-      setPostComments(prev => ({
-        ...prev,
-        [postId]: comments
-      }));
-
-      // Auto-fetch replies for comments that have them
-      const commentsWithReplies = comments.filter(c => c.replyCount > 0);
-      if (commentsWithReplies.length > 0) {
-        const replyPromises = commentsWithReplies.map(async (comment) => {
-          try {
-            const replyResponse = await api.get(`/comments/${comment._id}/replies`);
-            return { commentId: comment._id, replies: replyResponse.data || [] };
-          } catch (err) {
-            console.error(`Failed to fetch replies for comment ${comment._id}:`, err);
-            return { commentId: comment._id, replies: [] };
-          }
-        });
-
-        const replyResults = await Promise.all(replyPromises);
-        setCommentReplies(prev => {
-          const updated = { ...prev };
-          replyResults.forEach(({ commentId, replies }) => {
-            updated[commentId] = replies;
-          });
-          return updated;
-        });
-
-        setShowReplies(prev => {
-          const updated = { ...prev };
-          commentsWithReplies.forEach(comment => {
-            updated[comment._id] = true;
-          });
-          return updated;
-        });
-      }
+      return response.data || [];
     } catch (error) {
       console.error('Failed to fetch comments:', error);
+      return [];
     }
   }, []);
 
-  // Toggle comment box visibility
-  const toggleCommentBox = async (postId) => {
-    const isCurrentlyShown = showCommentBox[postId];
-    setShowCommentBox(prev => ({
-      ...prev,
-      [postId]: !isCurrentlyShown
-    }));
-
-    if (!isCurrentlyShown && !postComments[postId]) {
-      await fetchCommentsForPost(postId);
+  const loadRepliesForComment = useCallback(async (commentId) => {
+    try {
+      const response = await api.get(`/comments/${commentId}/replies`);
+      return response.data || [];
+    } catch (error) {
+      console.error('Failed to fetch replies:', error);
+      return [];
     }
-  };
+  }, []);
+
+  const {
+    toggleReplies,
+    toggleCommentBox,
+  } = useCommentThreadState({
+    fetchComments: loadCommentsForPost,
+    fetchReplies: loadRepliesForComment,
+    postComments,
+    commentReplies,
+    showReplies,
+    showCommentBox,
+    isSheetMobile: isMobileSheet,
+    setPostComments,
+    setCommentReplies,
+    setShowReplies,
+    setShowCommentBox,
+    setCommentSheetOpen,
+  });
 
   // Handle comment submission
   const handleCommentSubmit = async (postId, e) => {
@@ -638,10 +630,7 @@ function Groups() {
       });
 
       // Add new comment to state
-      setPostComments(prev => ({
-        ...prev,
-        [postId]: [...(prev[postId] || []), response.data]
-      }));
+      setPostComments(prev => appendUniqueCommentToBucket(prev, postId, response.data));
 
       // Update post comment count
       setPosts(prev => prev.map(p =>
@@ -655,27 +644,6 @@ function Groups() {
     } catch (error) {
       console.error('Failed to create comment:', error);
       showToast('Failed to post comment', 'error');
-    }
-  };
-
-  // Toggle replies visibility
-  const toggleReplies = async (commentId) => {
-    const isCurrentlyShown = showReplies[commentId];
-    setShowReplies(prev => ({
-      ...prev,
-      [commentId]: !isCurrentlyShown
-    }));
-
-    if (!isCurrentlyShown && !commentReplies[commentId]) {
-      try {
-        const response = await api.get(`/comments/${commentId}/replies`);
-        setCommentReplies(prev => ({
-          ...prev,
-          [commentId]: response.data
-        }));
-      } catch (error) {
-        console.error('Failed to fetch replies:', error);
-      }
     }
   };
 
@@ -695,25 +663,8 @@ function Groups() {
 
       const updatedComment = response.data;
 
-      setPostComments(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(postId => {
-          updated[postId] = updated[postId].map(c =>
-            c._id === commentId ? updatedComment : c
-          );
-        });
-        return updated;
-      });
-
-      setCommentReplies(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(parentId => {
-          updated[parentId] = updated[parentId].map(c =>
-            c._id === commentId ? updatedComment : c
-          );
-        });
-        return updated;
-      });
+      setPostComments(prev => replaceCommentInBuckets(prev, updatedComment));
+      setCommentReplies(prev => replaceCommentInBuckets(prev, updatedComment));
 
       setEditingCommentId(null);
       setEditCommentText('');
@@ -737,23 +688,10 @@ function Groups() {
       await api.delete(`/comments/${commentId}`);
 
       if (isReply) {
-        setCommentReplies(prev => {
-          const updated = { ...prev };
-          Object.keys(updated).forEach(parentId => {
-            updated[parentId] = updated[parentId].filter(c => c._id !== commentId);
-          });
-          return updated;
-        });
+        setCommentReplies(prev => removeCommentFromAllBuckets(prev, commentId));
       } else {
-        setPostComments(prev => ({
-          ...prev,
-          [postId]: (prev[postId] || []).filter(c => c._id !== commentId)
-        }));
-        setCommentReplies(prev => {
-          const updated = { ...prev };
-          delete updated[commentId];
-          return updated;
-        });
+        setPostComments(prev => removeCommentFromBucket(prev, postId, commentId));
+        setCommentReplies(prev => removeBucket(prev, commentId));
       }
 
       setPosts(prev => prev.map(p =>
@@ -773,25 +711,8 @@ function Groups() {
       const response = await api.post(`/comments/${commentId}/react`, { emoji });
       const serverComment = response.data;
 
-      setPostComments(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(postId => {
-          updated[postId] = updated[postId].map(c =>
-            c._id === commentId ? serverComment : c
-          );
-        });
-        return updated;
-      });
-
-      setCommentReplies(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(parentId => {
-          updated[parentId] = updated[parentId].map(c =>
-            c._id === commentId ? serverComment : c
-          );
-        });
-        return updated;
-      });
+      setPostComments(prev => replaceCommentInBuckets(prev, serverComment));
+      setCommentReplies(prev => replaceCommentInBuckets(prev, serverComment));
 
       setShowReactionPicker(null);
     } catch (error) {
@@ -821,10 +742,7 @@ function Groups() {
         isAnonymous: replyIsAnonymous
       });
 
-      setCommentReplies(prev => ({
-        ...prev,
-        [commentId]: [...(prev[commentId] || []), response.data]
-      }));
+      setCommentReplies(prev => appendUniqueCommentToBucket(prev, commentId, response.data));
 
       setReplyingToComment(null);
       setReplyText('');
@@ -1439,17 +1357,28 @@ function Groups() {
                       )}
 
                       {/* Comments Section */}
-                      {postComments[post._id] && postComments[post._id].length > 0 && (
-                        <CommentProvider value={{
-                          currentUser, postId: post._id, viewerRole: currentUser?.role,
-                          showReplies, editingCommentId, editCommentText,
-                          showReactionPicker, commentRefs, getUserReactionEmoji,
-                          handleEditComment, handleSaveEditComment, handleCancelEditComment,
-                          handleDeleteComment, handleCommentReaction, toggleReplies,
-                          handleReplyToComment, setShowReactionPicker,
-                          setReactionDetailsModal: () => {},
-                          setReportModal: () => {},
-                        }}>
+                      {!isMobileSheet && postComments[post._id] && postComments[post._id].length > 0 && (
+                        <CommentProvider value={buildCommentContextValue({
+                          currentUser,
+                          postId: post._id,
+                          viewerRole: currentUser?.role,
+                          showReplies,
+                          editingCommentId,
+                          editCommentText,
+                          showReactionPicker,
+                          commentRefs,
+                          getUserReactionEmoji,
+                          handleEditComment,
+                          handleSaveEditComment,
+                          handleCancelEditComment,
+                          handleDeleteComment,
+                          handleCommentReaction,
+                          toggleReplies,
+                          handleReplyToComment,
+                          setShowReactionPicker,
+                          setReactionDetailsModal,
+                          setReportModal,
+                        })}>
                           <div className="post-comments">
                             {postComments[post._id]
                               .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)
@@ -1465,7 +1394,7 @@ function Groups() {
                       )}
 
                       {/* Reply Input Box */}
-                      {replyingToComment?.postId === post._id && (
+                      {!isMobileSheet && replyingToComment?.postId === post._id && (
                         <form onSubmit={handleSubmitReply} className="reply-input-box">
                           <div className="reply-input-wrapper">
                             <input
@@ -1499,7 +1428,7 @@ function Groups() {
                       )}
 
                       {/* Comment Input Box */}
-                      {showCommentBox[post._id] && (
+                      {!isMobileSheet && showCommentBox[post._id] && (
                         <form onSubmit={(e) => handleCommentSubmit(post._id, e)} className="comment-input-box">
                           <div className="comment-input-wrapper">
                             <input
@@ -1891,12 +1820,136 @@ function Groups() {
 
         {/* Report Modal */}
         <ReportModal
-          isOpen={showReportModal}
+          isOpen={reportModal.isOpen}
           onClose={closeReportModal}
-          reportType="post"
-          contentId={reportingPost?.postId}
-          userId={reportingPost?.authorId}
+          reportType={reportModal.type}
+          contentId={reportModal.contentId}
+          userId={reportModal.userId}
         />
+
+        {reactionDetailsModal.isOpen && (
+          <ReactionDetailsModal
+            targetType={reactionDetailsModal.targetType}
+            targetId={reactionDetailsModal.targetId}
+            onClose={() => setReactionDetailsModal({ isOpen: false, targetType: null, targetId: null })}
+          />
+        )}
+
+        {commentSheetOpen && (
+          <CommentSheet onClose={() => { setCommentSheetOpen(null); handleCancelReply(); }}>
+            <form onSubmit={(e) => handleCommentSubmit(commentSheetOpen, e)} className="comment-input-box">
+              <div className="comment-input-wrapper">
+                <input
+                  type="text"
+                  value={commentText[commentSheetOpen] || ''}
+                  onChange={(e) => setCommentText(prev => ({ ...prev, [commentSheetOpen]: e.target.value }))}
+                  placeholder="Write a comment..."
+                  className="comment-input"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowGifPicker(showGifPicker === `sheet-comment-${commentSheetOpen}` ? null : `sheet-comment-${commentSheetOpen}`)}
+                  className="btn-gif"
+                  title="Add GIF"
+                >
+                  GIF
+                </button>
+                <button type="submit" className="comment-submit-btn" disabled={!commentText[commentSheetOpen]?.trim() && !commentGif[commentSheetOpen]}>
+                  ➤
+                </button>
+              </div>
+              {commentGif[commentSheetOpen] && (
+                <div className="comment-gif-preview">
+                  <img src={commentGif[commentSheetOpen]} alt="Selected GIF" />
+                  <button
+                    type="button"
+                    className="btn-remove-gif"
+                    onClick={() => setCommentGif(prev => ({ ...prev, [commentSheetOpen]: null }))}
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+              {showGifPicker === `sheet-comment-${commentSheetOpen}` && (
+                <GifPicker
+                  onGifSelect={(gifUrl) => {
+                    setCommentGif(prev => ({ ...prev, [commentSheetOpen]: gifUrl }));
+                    setShowGifPicker(null);
+                  }}
+                  onClose={() => setShowGifPicker(null)}
+                />
+              )}
+            </form>
+
+            {replyingToComment?.postId === commentSheetOpen && (
+              <form onSubmit={handleSubmitReply} className="reply-input-box">
+                <div className="reply-input-wrapper">
+                  <input
+                    type="text"
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    placeholder="Write a reply..."
+                    className="reply-input"
+                    autoFocus
+                  />
+                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={replyIsAnonymous}
+                      onChange={(e) => setReplyIsAnonymous(e.target.checked)}
+                      style={{ margin: 0 }}
+                    />
+                    <span style={{ opacity: 0.7 }}>Anon</span>
+                  </label>
+                  {replyIsAnonymous && (
+                    <span style={{ fontSize: '10px', color: 'var(--color-brand)', background: 'var(--color-brand-muted)', padding: '1px 6px', borderRadius: '999px', fontWeight: 500 }}>🔒 Mods only</span>
+                  )}
+                  <button type="button" onClick={handleCancelReply} className="btn-cancel-reply">
+                    ✕
+                  </button>
+                  <button type="submit" className="reply-submit-btn" disabled={!replyText?.trim() && !replyGif}>
+                    ➤
+                  </button>
+                </div>
+              </form>
+            )}
+
+            <CommentProvider value={buildCommentContextValue({
+              currentUser,
+              postId: commentSheetOpen,
+              viewerRole: currentUser?.role,
+              showReplies,
+              editingCommentId,
+              editCommentText,
+              showReactionPicker,
+              commentRefs,
+              getUserReactionEmoji,
+              handleEditComment,
+              handleSaveEditComment,
+              handleCancelEditComment,
+              handleDeleteComment,
+              handleCommentReaction,
+              toggleReplies,
+              handleReplyToComment,
+              setShowReactionPicker,
+              setReactionDetailsModal,
+              setReportModal,
+            })}>
+              <div className="post-comments">
+                {(postComments[commentSheetOpen] || [])
+                  .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)
+                  .map((comment) => (
+                    <CommentThread
+                      key={comment._id}
+                      comment={comment}
+                      replies={commentReplies[comment._id] || []}
+                      isFullSheet={true}
+                    />
+                  ))}
+              </div>
+            </CommentProvider>
+          </CommentSheet>
+        )}
 
         {/* Edit Group Settings Modal */}
         {showEditGroupModal && (

@@ -212,7 +212,9 @@ function CommentRow({ item, isReply = false, parentCommentId = null, openMenuId,
               {showReplies[item._id]
                 ? <ChevronUp size={12} aria-hidden="true" />
                 : <ChevronDown size={12} aria-hidden="true" />}
-              {' '}{item.replyCount}{' '}{item.replyCount === 1 ? 'reply' : 'replies'}
+              {showReplies[item._id]
+                ? ' Hide replies'
+                : ` View replies (${item.replyCount})`}
             </button>
           )}
         </div>
@@ -291,6 +293,7 @@ const CommentThread = ({ comment, replies = [], isFullSheet = false }) => {
   const MAX_INLINE_REPLIES = isMobileInline ? 2 : Infinity;
 
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [showAllInlineReplies, setShowAllInlineReplies] = useState(false);
 
   useEffect(() => {
     if (!openMenuId) return;
@@ -301,10 +304,22 @@ const CommentThread = ({ comment, replies = [], isFullSheet = false }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [openMenuId]);
 
+  useEffect(() => {
+    if (!showReplies[comment._id]) {
+      setShowAllInlineReplies(false);
+    }
+  }, [comment._id, showReplies]);
+
   // Skip reply items — they are rendered via their parent thread
   if (comment.parentCommentId !== null && comment.parentCommentId !== undefined) {
     return null;
   }
+
+  const isReplySectionOpen = !!showReplies[comment._id];
+  const visibleReplies = isMobileInline && !showAllInlineReplies
+    ? replies.slice(0, MAX_INLINE_REPLIES)
+    : replies;
+  const hiddenReplyCount = Math.max(0, replies.length - visibleReplies.length);
 
   return (
     <div className="comment-thread">
@@ -320,9 +335,9 @@ const CommentThread = ({ comment, replies = [], isFullSheet = false }) => {
         />
       </div>
 
-      {showReplies[comment._id] && replies.length > 0 && (
+      {isReplySectionOpen && replies.length > 0 && (
         <div className="comment-replies">
-          {replies.slice(0, MAX_INLINE_REPLIES).map((reply) => (
+          {visibleReplies.map((reply) => (
             <div
               key={reply._id}
               className="comment-row reply"
@@ -337,6 +352,17 @@ const CommentThread = ({ comment, replies = [], isFullSheet = false }) => {
               />
             </div>
           ))}
+          {isMobileInline && replies.length > MAX_INLINE_REPLIES && (
+            <button
+              type="button"
+              className="comment-replies-more-btn"
+              onClick={() => setShowAllInlineReplies(prev => !prev)}
+            >
+              {showAllInlineReplies
+                ? 'Show fewer replies'
+                : `Show ${hiddenReplyCount} more ${hiddenReplyCount === 1 ? 'reply' : 'replies'}`}
+            </button>
+          )}
         </div>
       )}
     </div>

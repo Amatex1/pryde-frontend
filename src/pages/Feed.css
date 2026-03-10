@@ -2437,6 +2437,23 @@ html:not([data-theme]) .post-actions {
   text-decoration: underline;
 }
 
+.comment-replies-more-btn {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--electric-blue);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.comment-replies-more-btn:hover {
+  color: var(--color-brand);
+  text-decoration: underline;
+}
+
 /* Delete button styling */
 .delete-btn {
   color: var(--color-danger) !important;

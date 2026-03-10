@@ -6,6 +6,7 @@ import GifPicker from '../GifPicker';
 import OptimizedImage from '../OptimizedImage';
 import { getImageUrl } from '../../utils/imageUrl';
 import { CommentProvider } from '../comments/CommentContext';
+import { buildCommentContextValue } from '../comments/buildCommentContextValue';
 
 /**
  * FeedPostComments - Renders the comments section of a post.
@@ -39,6 +40,7 @@ const FeedPostComments = memo(function FeedPostComments({
   onCommentReaction,
   onToggleReplies,
   onReplyToComment,
+  onOpenComments,
   onSetShowReactionPicker,
   onSetReactionDetailsModal,
   onSetReportModal,
@@ -61,7 +63,7 @@ const FeedPostComments = memo(function FeedPostComments({
   useAutoResize(replyTextareaRef, replyText);
 
   // Build context value once per render — all handlers + state CommentThread needs
-  const contextValue = useMemo(() => ({
+  const contextValue = useMemo(() => buildCommentContextValue({
     currentUser,
     postId: post._id,
     viewerRole,
@@ -93,8 +95,9 @@ const FeedPostComments = memo(function FeedPostComments({
   const topLevelComments = comments.filter(
     (c) => c.parentCommentId === null || c.parentCommentId === undefined
   );
-  const hiddenCount = Math.max(0, topLevelComments.length - 3);
-  const visibleComments = topLevelComments.slice(-3);
+  const isExpanded = Boolean(showCommentBox[post._id]);
+  const hiddenCount = isExpanded ? 0 : Math.max(0, topLevelComments.length - 3);
+  const visibleComments = isExpanded ? topLevelComments : topLevelComments.slice(-3);
 
   // "Replying to @username" indicator — search top-level comments first, then replies
   const replyTarget = replyingToComment?.commentId
@@ -114,7 +117,7 @@ const FeedPostComments = memo(function FeedPostComments({
           {hiddenCount > 0 && (
             <button
               className="comment-action-btn view-all-comments-btn"
-              onClick={() => onReplyToComment(post._id, null)}
+              onClick={() => onOpenComments(post._id)}
               style={{ display: 'block', marginBottom: '4px', color: 'var(--color-brand)', fontWeight: 500 }}
             >
               View all {topLevelComments.length} comments
@@ -240,7 +243,7 @@ const FeedPostComments = memo(function FeedPostComments({
               type="text"
               value={commentText[post._id] || ''}
               onChange={(e) => onCommentChange(post._id, e.target.value)}
-              placeholder="Reply, if you feel like it."
+              placeholder={commentGif[post._id] ? 'Add a caption (optional)...' : 'Write a comment...'}
               className="comment-input glossy"
             />
             <button

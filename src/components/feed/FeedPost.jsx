@@ -86,6 +86,7 @@ const FeedPost = memo(forwardRef(function FeedPost({
   
   // Handlers - Comments
   onToggleCommentBox,
+  onOpenComments,
   onCommentChange,
   onCommentSubmit,
   onCommentGifSelect,
@@ -249,6 +250,7 @@ const FeedPost = memo(forwardRef(function FeedPost({
         onCommentReaction={onCommentReaction}
         onToggleReplies={onToggleReplies}
         onReplyToComment={onReplyToComment}
+        onOpenComments={onOpenComments}
         onSetShowReactionPicker={onSetShowReactionPicker}
         onSetReactionDetailsModal={onSetReactionDetailsModal}
         onSetReportModal={onSetReportModal}

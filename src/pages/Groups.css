@@ -1240,29 +1240,7 @@
   color: var(--color-brand);
 }
 
-.post-comments {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-light);
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.comment-input-box {
-  padding: 1rem;
-  border-top: 1px solid var(--border-light);
-  margin-top: 0.5rem;
-}
-
-.comment-input-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
 .comment-input {
-  flex: 1;
   padding: 0.75rem 1rem;
   border-radius: 20px;
   border: 1px solid var(--border-light);
@@ -1312,13 +1290,10 @@
 }
 
 .comment-gif-preview {
-  position: relative;
-  margin-top: 0.75rem;
   max-width: 200px;
 }
 
 .comment-gif-preview img {
-  width: 100%;
   border-radius: 8px;
 }
 
