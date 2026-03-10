@@ -6,7 +6,8 @@ import {
 import GifPicker from '../GifPicker';
 import PollCreator from '../PollCreator';
 import DraftManager from '../DraftManager';
-import { getImageUrl } from '../../utils/imageUrl';
+import FeedComposerContentWarning from './FeedComposerContentWarning';
+import FeedComposerMediaPreview from './FeedComposerMediaPreview';
 import './FeedComposer.css';
 
 /**
@@ -117,87 +118,6 @@ const FeedComposer = memo(function FeedComposer({
     };
   }, [showMobileComposer]);
 
-  // Shared content warning options
-  const contentWarningOptions = [
-    { value: '', label: 'Select a content warning...' },
-    { value: 'Artistic Nudity', label: 'Artistic Nudity' },
-    { value: 'Suggestive (Non-Explicit)', label: 'Suggestive (Non-Explicit)' },
-    { value: 'Sexual Discussion', label: 'Sexual Discussion' },
-    { value: 'Mental Health', label: 'Mental Health' },
-    { value: 'Violence', label: 'Violence' },
-    { value: 'Self-Harm', label: 'Self-Harm' },
-    { value: 'Substance Use', label: 'Substance Use' },
-    { value: 'Death/Grief', label: 'Death/Grief' },
-    { value: 'Eating Disorders', label: 'Eating Disorders' },
-    { value: 'Abuse', label: 'Abuse' },
-    { value: 'Discrimination', label: 'Discrimination' },
-    { value: 'Medical Content', label: 'Medical Content' },
-    { value: 'Flashing Lights', label: 'Flashing Lights' },
-    { value: 'Spoilers', label: 'Spoilers' },
-    { value: 'Other', label: 'Other (describe below)' },
-  ];
-
-  // Shared media preview component
-  const renderMediaPreview = () => {
-    if (selectedMedia.length === 0) return null;
-    return (
-      <div className="media-preview">
-        {selectedMedia.map((media, index) => (
-          <div key={index} className="media-preview-item">
-            {media.type === 'video' ? (
-              <video src={getImageUrl(media.url)} controls />
-            ) : (
-              <img src={getImageUrl(media.url)} alt={`Upload ${index + 1}`} />
-            )}
-            <button
-              type="button"
-              className="remove-media"
-              onClick={() => onRemoveMedia(index)}
-              aria-label="Remove media"
-              title="Remove"
-            >
-              <X size={14} strokeWidth={1.75} aria-hidden="true" />
-            </button>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  // Shared content warning selector
-  const renderContentWarning = (idPrefix = '') => {
-    if (!showContentWarning) return null;
-    const knownValues = contentWarningOptions.map(o => o.value);
-    const isCustom = contentWarning && !knownValues.includes(contentWarning);
-    const selectValue = isCustom ? 'Other' : contentWarning;
-    return (
-      <div className="content-warning-input">
-        <select
-          id={`${idPrefix}content-warning-select`}
-          name={`${idPrefix}contentWarning`}
-          value={selectValue}
-          onChange={(e) => onSetContentWarning(e.target.value)}
-          className={`cw-input ${!isMobile ? 'glossy' : ''}`}
-        >
-          {contentWarningOptions.map(opt => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
-          ))}
-        </select>
-        {(selectValue === 'Other' || isCustom) && (
-          <input
-            type="text"
-            className="cw-custom-input"
-            placeholder="Describe the content warning..."
-            value={isCustom ? contentWarning : ''}
-            onChange={(e) => onSetContentWarning(e.target.value || 'Other')}
-            maxLength={100}
-            autoFocus
-          />
-        )}
-      </div>
-    );
-  };
-
   // Shared poll creator
   const renderPollCreator = () => {
     if (!showPollCreator) return null;
@@ -254,8 +174,16 @@ const FeedComposer = memo(function FeedComposer({
           style={{ overflow: 'hidden', resize: 'none', minHeight: '120px' }}
         />
 
-        {renderMediaPreview()}
-        {renderContentWarning()}
+        <FeedComposerMediaPreview
+          selectedMedia={selectedMedia}
+          onRemoveMedia={onRemoveMedia}
+        />
+        <FeedComposerContentWarning
+          isMobile={isMobile}
+          showContentWarning={showContentWarning}
+          contentWarning={contentWarning}
+          onSetContentWarning={onSetContentWarning}
+        />
         {renderPollCreator()}
 
         <div className="composer-actions">
@@ -506,7 +434,10 @@ const FeedComposer = memo(function FeedComposer({
               style={{ overflow: 'hidden', resize: 'none' }}
             />
 
-            {renderMediaPreview()}
+            <FeedComposerMediaPreview
+              selectedMedia={selectedMedia}
+              onRemoveMedia={onRemoveMedia}
+            />
 
             {/* Toolbar — always visible at bottom of content area */}
             <div className="mobile-composer-actions">
@@ -621,7 +552,13 @@ const FeedComposer = memo(function FeedComposer({
             </div>
 
             {/* CW and Poll expand below toolbar so they're visible where user looks */}
-            {renderContentWarning('mobile-')}
+            <FeedComposerContentWarning
+              isMobile={isMobile}
+              showContentWarning={showContentWarning}
+              contentWarning={contentWarning}
+              idPrefix="mobile-"
+              onSetContentWarning={onSetContentWarning}
+            />
             {renderPollCreator()}
           </form>
         </div>

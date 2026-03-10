@@ -1,10 +1,8 @@
 import { useRef, useMemo } from 'react';
 import PostSkeleton from '../PostSkeleton';
-import FeedPost from './FeedPost';
 import EmptyState from '../EmptyState';
-import { ActivityTag } from '../ui/ActivityTag';
 import VirtualizedFeed from '../VirtualizedFeed';
-import VirtualizedFeedList from './VirtualizedFeedList';
+import FeedListPostItem from './FeedListPostItem';
 
 /**
  * FeedList — renders the scrollable post list with skeleton, empty, and loaded states.
@@ -108,94 +106,86 @@ export default function FeedList({
   const useVirtualization = false;
   const useNewVirtualization = false;
   
-  // Render a single post item
-  const renderPostItem = (post, postIndex, style, measureRef) => {
-    const isFirstPost = postIndex === 0;
-    const shouldEagerLoad = postIndex < 3;
-    
-    return (
-      <div ref={measureRef} key={post._id} style={style} className="post-wrapper">
-        {post.activityTag && (
-          <div className="post-activity-tag">
-            <ActivityTag type={post.activityTag} />
-          </div>
-        )}
-        
-        <FeedPost
-          post={post}
-          postIndex={postIndex}
-          currentUser={currentUser}
-          isFirstPost={isFirstPost}
-          shouldEagerLoad={shouldEagerLoad}
-          openDropdownId={openDropdownId}
-          editingPostId={editingPostId}
-          editPostText={editPostText}
-          editPostVisibility={editPostVisibility}
-          editPostMedia={editPostMedia}
-          editPostTextareaRef={editPostTextareaRef}
-          expandedPosts={expandedPosts}
-          revealedPosts={revealedPosts}
-          autoHideContentWarnings={autoHideContentWarnings}
-          bookmarkedPosts={bookmarkedPosts}
-          postComments={postComments}
-          commentReplies={commentReplies}
-          showReplies={showReplies}
-          showCommentBox={showCommentBox}
-          commentText={commentText}
-          commentGif={commentGif}
-          showGifPicker={showGifPicker}
-          replyingToComment={replyingToComment}
-          replyText={replyText}
-          replyGif={replyGif}
-          editingCommentId={editingCommentId}
-          editCommentText={editCommentText}
-          showReactionPicker={showReactionPicker}
-          commentRefs={commentRefs}
-          onToggleDropdown={onToggleDropdown}
-          onPinPost={onPinPost}
-          onEditPost={onEditPost}
-          onDeletePost={onDeletePost}
-          onReportPost={onReportPost}
-          onBookmark={onBookmark}
-          onReactionChange={onReactionChange}
-          onReactionCountClick={onReactionCountClick}
-          onEditPostTextChange={onEditPostTextChange}
-          onEditPostVisibilityChange={onEditPostVisibilityChange}
-          onRemoveEditMedia={onRemoveEditMedia}
-          onSaveEditPost={onSaveEditPost}
-          onCancelEditPost={onCancelEditPost}
-          onEditPostKeyDown={onEditPostKeyDown}
-          onExpandPost={onExpandPost}
-          onRevealPost={onRevealPost}
-          onPhotoClick={onPhotoClick}
-          onPollVote={onPollVote}
-          onToggleCommentBox={onToggleCommentBox}
-          onCommentChange={onCommentChange}
-          onCommentSubmit={onCommentSubmit}
-          onCommentGifSelect={onCommentGifSelect}
-          onToggleGifPicker={onToggleGifPicker}
-          onEditComment={onEditComment}
-          onSaveEditComment={onSaveEditComment}
-          onCancelEditComment={onCancelEditComment}
-          onDeleteComment={onDeleteComment}
-          onCommentReaction={onCommentReaction}
-          onToggleReplies={onToggleReplies}
-          onReplyToComment={onReplyToComment}
-          onSetShowReactionPicker={onSetShowReactionPicker}
-          onSetReactionDetailsModal={onSetReactionDetailsModal}
-          onSetReportModal={onSetReportModal}
-          onReplyTextChange={onReplyTextChange}
-          onReplyGifSelect={onReplyGifSelect}
-          onSubmitReply={onSubmitReply}
-          onCancelReply={onCancelReply}
-          getUserReactionEmoji={getUserReactionEmoji}
-          viewerRole={viewerRole}
-          replyIsAnonymous={replyIsAnonymous}
-          onReplyIsAnonymousChange={onReplyIsAnonymousChange}
-        />
-      </div>
-    );
+  const feedPostProps = {
+    openDropdownId,
+    editingPostId,
+    editPostText,
+    editPostVisibility,
+    editPostMedia,
+    editPostTextareaRef,
+    expandedPosts,
+    revealedPosts,
+    autoHideContentWarnings,
+    bookmarkedPosts,
+    postComments,
+    commentReplies,
+    showReplies,
+    showCommentBox,
+    commentText,
+    commentGif,
+    showGifPicker,
+    replyingToComment,
+    replyText,
+    replyGif,
+    editingCommentId,
+    editCommentText,
+    showReactionPicker,
+    commentRefs,
+    onToggleDropdown,
+    onPinPost,
+    onEditPost,
+    onDeletePost,
+    onReportPost,
+    onBookmark,
+    onReactionChange,
+    onReactionCountClick,
+    onEditPostTextChange,
+    onEditPostVisibilityChange,
+    onRemoveEditMedia,
+    onSaveEditPost,
+    onCancelEditPost,
+    onEditPostKeyDown,
+    onExpandPost,
+    onRevealPost,
+    onPhotoClick,
+    onPollVote,
+    onToggleCommentBox,
+    onCommentChange,
+    onCommentSubmit,
+    onCommentGifSelect,
+    onToggleGifPicker,
+    onEditComment,
+    onSaveEditComment,
+    onCancelEditComment,
+    onDeleteComment,
+    onCommentReaction,
+    onToggleReplies,
+    onReplyToComment,
+    onSetShowReactionPicker,
+    onSetReactionDetailsModal,
+    onSetReportModal,
+    onReplyTextChange,
+    onReplyGifSelect,
+    onSubmitReply,
+    onCancelReply,
+    getUserReactionEmoji,
+    viewerRole,
+    replyIsAnonymous,
+    onReplyIsAnonymousChange,
   };
+
+  // Render a single post item
+  const renderPostItem = (post, postIndex, style, measureRef) => (
+    <FeedListPostItem
+      key={post._id}
+      post={post}
+      postIndex={postIndex}
+      currentUser={currentUser}
+      wrapperRef={measureRef}
+      wrapperStyle={style}
+      {...feedPostProps}
+    />
+  );
 
   const loadingIndicator = (
     <div className="load-more-container">
@@ -275,91 +265,17 @@ export default function FeedList({
         )}
         
         {filteredPosts.map((post, postIndex) => {
-          const isFirstPost = postIndex === 0;
-          const shouldEagerLoad = postIndex < 3;
-
           return (
-            <div key={post._id} className="post-wrapper">
-              {post.activityTag && (
-                <div className="post-activity-tag">
-                  <ActivityTag type={post.activityTag} />
-                </div>
-              )}
-              
-              <FeedPost
-                ref={(el) => postRefs.current[post._id] = el}
-                post={post}
-                postIndex={postIndex}
-                currentUser={currentUser}
-                isFirstPost={isFirstPost}
-                shouldEagerLoad={shouldEagerLoad}
-                openDropdownId={openDropdownId}
-                editingPostId={editingPostId}
-                editPostText={editPostText}
-                editPostVisibility={editPostVisibility}
-                editPostMedia={editPostMedia}
-                editPostTextareaRef={editPostTextareaRef}
-                expandedPosts={expandedPosts}
-                revealedPosts={revealedPosts}
-                autoHideContentWarnings={autoHideContentWarnings}
-                bookmarkedPosts={bookmarkedPosts}
-                postComments={postComments}
-                commentReplies={commentReplies}
-                showReplies={showReplies}
-                showCommentBox={showCommentBox}
-                commentText={commentText}
-                commentGif={commentGif}
-                showGifPicker={showGifPicker}
-                replyingToComment={replyingToComment}
-                replyText={replyText}
-                replyGif={replyGif}
-                editingCommentId={editingCommentId}
-                editCommentText={editCommentText}
-                showReactionPicker={showReactionPicker}
-                commentRefs={commentRefs}
-                onToggleDropdown={onToggleDropdown}
-                onPinPost={onPinPost}
-                onEditPost={onEditPost}
-                onDeletePost={onDeletePost}
-                onReportPost={onReportPost}
-                onBookmark={onBookmark}
-                onReactionChange={onReactionChange}
-                onReactionCountClick={onReactionCountClick}
-                onEditPostTextChange={onEditPostTextChange}
-                onEditPostVisibilityChange={onEditPostVisibilityChange}
-                onRemoveEditMedia={onRemoveEditMedia}
-                onSaveEditPost={onSaveEditPost}
-                onCancelEditPost={onCancelEditPost}
-                onEditPostKeyDown={onEditPostKeyDown}
-                onExpandPost={onExpandPost}
-                onRevealPost={onRevealPost}
-                onPhotoClick={onPhotoClick}
-                onPollVote={onPollVote}
-                onToggleCommentBox={onToggleCommentBox}
-                onCommentChange={onCommentChange}
-                onCommentSubmit={onCommentSubmit}
-                onCommentGifSelect={onCommentGifSelect}
-                onToggleGifPicker={onToggleGifPicker}
-                onEditComment={onEditComment}
-                onSaveEditComment={onSaveEditComment}
-                onCancelEditComment={onCancelEditComment}
-                onDeleteComment={onDeleteComment}
-                onCommentReaction={onCommentReaction}
-                onToggleReplies={onToggleReplies}
-                onReplyToComment={onReplyToComment}
-                onSetShowReactionPicker={onSetShowReactionPicker}
-                onSetReactionDetailsModal={onSetReactionDetailsModal}
-                onSetReportModal={onSetReportModal}
-                onReplyTextChange={onReplyTextChange}
-                onReplyGifSelect={onReplyGifSelect}
-                onSubmitReply={onSubmitReply}
-                onCancelReply={onCancelReply}
-                getUserReactionEmoji={getUserReactionEmoji}
-                viewerRole={viewerRole}
-                replyIsAnonymous={replyIsAnonymous}
-                onReplyIsAnonymousChange={onReplyIsAnonymousChange}
-              />
-            </div>
+            <FeedListPostItem
+              key={post._id}
+              post={post}
+              postIndex={postIndex}
+              currentUser={currentUser}
+              postRef={(el) => {
+                postRefs.current[post._id] = el;
+              }}
+              {...feedPostProps}
+            />
           );
         })}
       </div>

@@ -1,20 +1,8 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link, useSearchParams, useNavigate, useOutletContext } from 'react-router-dom';
-import Navbar from '../components/Navbar';
 import { safeKeys, safeEntries } from '../utils/safeObject';
-import PasskeyBanner from '../components/PasskeyBanner';
-import EmailVerificationBanner from '../components/EmailVerificationBanner';
-import ReportModal from '../components/ReportModal';
-import PhotoViewer from '../components/PhotoViewer';
-import CustomModal from '../components/CustomModal';
-import ReactionDetailsModal from '../components/ReactionDetailsModal';
 import FormattedText from '../components/FormattedText';
-import OptimizedImage from '../components/OptimizedImage';
-import CommentThread from '../components/CommentThread';
-import CommentSheet from '../components/comments/CommentSheet';
-import { CommentProvider } from '../components/comments/CommentContext';
 import ReactionButton from '../components/ReactionButton';
-import GifPicker from '../components/GifPicker';
 import PollCreator from '../components/PollCreator';
 import Poll from '../components/Poll';
 import PinnedPostBadge from '../components/PinnedPostBadge';
@@ -22,12 +10,18 @@ import PostHeader from '../components/PostHeader';
 import PausableGif from '../components/PausableGif';
 import FeedPost from '../components/feed/FeedPost';
 import FeedComposer from '../components/feed/FeedComposer';
+import FeedCommentSheet from '../components/feed/FeedCommentSheet';
+import FeedFilterTabs from '../components/feed/FeedFilterTabs';
 import FeedList from '../components/feed/FeedList';
+import FeedMobileCommentModal from '../components/feed/FeedMobileCommentModal';
+import FeedOverlayStack from '../components/feed/FeedOverlayStack';
+import FeedPageHeader from '../components/feed/FeedPageHeader';
+import FeedPullToRefresh from '../components/feed/FeedPullToRefresh';
+import FeedScrollTopButton from '../components/feed/FeedScrollTopButton';
 import FeedSidebar from '../components/feed/FeedSidebar';
 import CommunityBanner from '../components/CommunityBanner';
 import { useBadges } from '../hooks/useBadges';
 import DraftManager from '../components/DraftManager';
-import Toast from '../components/Toast';
 import { useModal } from '../hooks/useModal';
 import { useOnlineUsers } from '../hooks/useOnlineUsers';
 import { useMediaQuery } from '../hooks/useMediaQuery';
@@ -37,10 +31,8 @@ import { useUnreadMessages } from '../hooks/useUnreadMessages'; // ✅ Use singl
 import { useToast } from '../hooks/useToast';
 import { useAuth } from '../context/AuthContext'; // ✅ Use auth context (single source of truth)
 import api, { getCsrfToken } from '../utils/api';
-import { getImageUrl } from '../utils/imageUrl';
 import { getSocket, setupSocketListeners } from '../utils/socketHelpers';
 import { convertEmojiShortcuts } from '../utils/textFormatting';
-import { getDisplayName } from '../utils/getDisplayName';
 import logger from '../utils/logger';
 import { compressPostMedia } from '../utils/compressImage';
 import { uploadMultipleWithProgress } from '../utils/uploadWithProgress';
@@ -49,7 +41,6 @@ import { withOptimisticUpdate } from '../utils/consistencyGuard';
 import { createEventBatcher, createKeyedBatcher } from '../utils/socketBatcher';
 import { quietCopy } from '../config/uiCopy';
 import { getQuietMode } from '../utils/themeManager';
-import PageTitle from '../components/PageTitle';
 import { getCachedPosts } from '../utils/resourcePreloader';
 import './Feed.css';
 import './Feed.calm.css'; // PHASE C: Calm mode overrides
@@ -216,6 +207,17 @@ function Feed() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const handleFeedFilterChange = useCallback((nextFilter) => {
+    if (nextFilter === feedFilter) {
+      return;
+    }
+
+    setFeedFilter(nextFilter);
+    setPage(1);
+    setLoadedPostIds(new Set());
+    setPosts([]);
+  }, [feedFilter, setFeedFilter, setLoadedPostIds, setPage, setPosts]);
 
   // Auto-fetch comments for posts that have comments
   // Uses a ref to track in-flight fetches so we don't fire duplicate requests
@@ -2201,6 +2203,41 @@ function Feed() {
     setReplyGif(gifUrl);
   }, []);
 
+  const activeReplyTarget = replyingToComment?.postId === commentSheetOpen
+    ? postComments[commentSheetOpen]?.find(
+      (comment) => String(comment._id) === String(replyingToComment.commentId)
+    ) ?? Object.values(commentReplies).flat().find(
+      (reply) => String(reply._id) === String(replyingToComment.commentId)
+    )
+    : null;
+
+  const activeReplyTargetName =
+    activeReplyTarget?.authorId?.displayName
+    || activeReplyTarget?.authorId?.username
+    || 'comment';
+
+  const commentSheetContextValue = {
+    currentUser,
+    postId: commentSheetOpen,
+    viewerRole: role,
+    editingCommentId,
+    editCommentText,
+    showReplies,
+    showReactionPicker,
+    commentRefs,
+    getUserReactionEmoji,
+    handleEditComment,
+    handleSaveEditComment,
+    handleCancelEditComment,
+    handleDeleteComment,
+    handleCommentReaction,
+    toggleReplies,
+    handleReplyToComment,
+    setShowReactionPicker,
+    setReactionDetailsModal,
+    setReportModal,
+  };
+
   return (
     <div
       className="page-container feed-page"
@@ -2208,74 +2245,21 @@ function Feed() {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      <Navbar onMenuClick={onMenuOpen} />
-      <EmailVerificationBanner />
-      <PasskeyBanner />
+      <FeedPageHeader onMenuOpen={onMenuOpen} />
 
-      {/* One Header Rule: quiet in-content title, first-visit only */}
-      <PageTitle
-        title="Feed"
-        subtitle="Updates from people and spaces you follow."
-        pageKey="feed"
-        firstVisitOnly
-      />
+      <FeedPullToRefresh isPulling={isPulling} pullDistance={pullDistance} />
 
-      {/* Pull-to-refresh indicator */}
-      {isPulling && (
-        <div
-          className="pull-to-refresh-indicator"
-          style={{
-            transform: `translateY(${pullDistance}px)`,
-            opacity: pullDistance / 100
-          }}
-        >
-          <div className="refresh-spinner">
-            {pullDistance > 60 ? '🔄 Release to refresh' : '⬇️ Pull to refresh'}
-          </div>
-        </div>
-      )}
-
-      {/* Scroll-to-top button - hidden when composer open or typing */}
-      <button
-        className={`scroll-to-top-btn glossy floating-layer ${
-          showScrollTop && !showMobileComposer && !isTyping ? 'visible' : 'hidden'
-        }`}
+      <FeedScrollTopButton
+        visible={showScrollTop && !showMobileComposer && !isTyping}
         onClick={scrollToTop}
-        aria-label="Scroll to top"
-        aria-hidden={!showScrollTop || showMobileComposer || isTyping}
-      >
-        ⬆️
-      </button>
+      />
 
       <div className={`feed-layout ${isMobile ? 'feed-mobile' : 'feed-desktop'}`}>
         <main className="feed-main">
-          {/* Feed Filter Tabs */}
-          <div className="feed-tabs glossy">
-            <button
-              className={`feed-tab ${feedFilter === 'followers' ? 'active' : ''}`}
-              onClick={() => {
-                setFeedFilter('followers');
-                setPage(1);
-                setLoadedPostIds(new Set());
-                setPosts([]);
-              }}
-            >
-              <span className="tab-icon">👥</span>
-              <span className="tab-label">Following</span>
-            </button>
-            <button
-              className={`feed-tab ${feedFilter === 'public' ? 'active' : ''}`}
-              onClick={() => {
-                setFeedFilter('public');
-                setPage(1);
-                setLoadedPostIds(new Set());
-                setPosts([]);
-              }}
-            >
-              <span className="tab-icon">🌍</span>
-              <span className="tab-label">Everyone</span>
-            </button>
-          </div>
+          <FeedFilterTabs
+            activeFilter={feedFilter}
+            onChange={handleFeedFilterChange}
+          />
 
           <CommunityBanner />
 
@@ -2405,424 +2389,107 @@ function Feed() {
         <FeedSidebar showMobileSidebar={showMobileSidebar} />
       </div>
 
-      <ReportModal
-        isOpen={reportModal.isOpen}
-        onClose={() => setReportModal({ isOpen: false, type: '', contentId: null, userId: null })}
-        reportType={reportModal.type}
-        contentId={reportModal.contentId}
-        userId={reportModal.userId}
+      <FeedOverlayStack
+        reportModal={reportModal}
+        onCloseReportModal={() => setReportModal({ isOpen: false, type: '', contentId: null, userId: null })}
+        photoViewerImage={photoViewerImage}
+        onClosePhotoViewer={() => setPhotoViewerImage(null)}
+        showPrivacyModal={showPrivacyModal}
+        friends={friends}
+        hiddenFromUsers={hiddenFromUsers}
+        onHiddenUsersChange={setHiddenFromUsers}
+        onClosePrivacyModal={() => setShowPrivacyModal(false)}
+        modalState={modalState}
+        onCloseModal={closeModal}
+        reactionDetailsModal={reactionDetailsModal}
+        onCloseReactionDetails={() => setReactionDetailsModal({ isOpen: false, targetType: null, targetId: null })}
+        toasts={toasts}
+        onRemoveToast={removeToast}
       />
 
-      {photoViewerImage && (
-        <PhotoViewer
-          imageUrl={photoViewerImage}
-          onClose={() => setPhotoViewerImage(null)}
-        />
-      )}
-
-      {/* Privacy Settings Modal */}
-      {showPrivacyModal && (
-        <div className="modal-overlay" onClick={() => setShowPrivacyModal(false)} aria-hidden="true">
-          <div
-            className="modal-content privacy-modal"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Custom Privacy Settings"
-            onKeyDown={(e) => { if (e.key === 'Escape') setShowPrivacyModal(false); }}
-          >
-            <div className="modal-header">
-              <h2>Custom Privacy Settings</h2>
-              <button className="btn-close" onClick={() => setShowPrivacyModal(false)}>×</button>
-            </div>
-
-            <div className="privacy-modal-body">
-              <div className="privacy-section">
-                <h3>Hide from specific friends</h3>
-                <p className="privacy-description">Select friends who won't see this post</p>
-                <div className="friends-checklist">
-                  {friends.map(friend => (
-                    <label key={friend._id} className="friend-checkbox-item">
-                      <input
-                        id={`hide-from-${friend._id}`}
-                        name={`hideFrom-${friend._id}`}
-                        type="checkbox"
-                        checked={hiddenFromUsers.includes(friend._id)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setHiddenFromUsers([...hiddenFromUsers, friend._id]);
-                          } else {
-                            setHiddenFromUsers(hiddenFromUsers.filter(id => id !== friend._id));
-                          }
-                        }}
-                      />
-                      <div className="friend-info">
-                        <div className="friend-avatar-small">
-                          {friend.profilePhoto ? (
-                            <OptimizedImage
-                              src={getImageUrl(friend.profilePhoto)}
-                              alt={getDisplayName(friend)}
-                              className="avatar-image"
-                              imageSize="avatar"
-                            />
-                          ) : (
-                            <span>{getDisplayName(friend).charAt(0).toUpperCase()}</span>
-                          )}
-                        </div>
-                        <span>{getDisplayName(friend)}</span>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-            </div>
-
-            <div className="modal-footer">
-              <button className="btn-secondary" onClick={() => {
-                setHiddenFromUsers([]);
-                setShowPrivacyModal(false);
-              }}>
-                Clear All
-              </button>
-              <button className="btn-primary glossy-gold" onClick={() => setShowPrivacyModal(false)}>
-                Done
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <CustomModal
-        isOpen={modalState.isOpen}
-        onClose={closeModal}
-        type={modalState.type}
-        title={modalState.title}
-        message={modalState.message}
-        placeholder={modalState.placeholder}
-        confirmText={modalState.confirmText}
-        cancelText={modalState.cancelText}
-        onConfirm={modalState.onConfirm}
-        inputType={modalState.inputType}
-        defaultValue={modalState.defaultValue}
+      <FeedMobileCommentModal
+        isOpen={Boolean(commentModalOpen)}
+        postId={commentModalOpen}
+        currentUser={currentUser}
+        value={commentText[commentModalOpen] || ''}
+        selectedGif={commentGif[commentModalOpen] || null}
+        isGifPickerOpen={showGifPicker === `modal-comment-${commentModalOpen}`}
+        onClose={() => {
+          setCommentModalOpen(null);
+          setShowGifPicker(null);
+        }}
+        onSubmit={(e) => {
+          handleCommentSubmit(commentModalOpen, e);
+          setCommentModalOpen(null);
+        }}
+        onChange={(value) => handleCommentChange(commentModalOpen, value)}
+        onKeyDown={handleKeyDown}
+        onGifSelect={(gifUrl) => {
+          setCommentGif((prev) => ({ ...prev, [commentModalOpen]: gifUrl }));
+          setShowGifPicker(null);
+        }}
+        onGifPickerClose={() => setShowGifPicker(null)}
+        onGifToggle={() => setShowGifPicker(
+          showGifPicker === `modal-comment-${commentModalOpen}`
+            ? null
+            : `modal-comment-${commentModalOpen}`
+        )}
+        onGifClear={() => setCommentGif((prev) => ({ ...prev, [commentModalOpen]: null }))}
       />
 
-      {reactionDetailsModal.isOpen && (
-        <ReactionDetailsModal
-          targetType={reactionDetailsModal.targetType}
-          targetId={reactionDetailsModal.targetId}
-          onClose={() => setReactionDetailsModal({ isOpen: false, targetType: null, targetId: null })}
-        />
-      )}
+      <FeedCommentSheet
+        isOpen={Boolean(commentSheetOpen)}
+        postId={commentSheetOpen}
+        currentUser={currentUser}
+        commentValue={commentText[commentSheetOpen] || ''}
+        selectedCommentGif={commentGif[commentSheetOpen] || null}
+        isCommentGifPickerOpen={showGifPicker === `sheet-comment-${commentSheetOpen}`}
+        onClose={() => {
+          setCommentSheetOpen(null);
+          setReplyingToComment(null);
+          setShowGifPicker(null);
+        }}
+        onCommentSubmit={(e) => {
+          handleCommentSubmit(commentSheetOpen, e);
+        }}
+        onCommentChange={(value) => handleCommentChange(commentSheetOpen, value)}
+        onCommentGifToggle={() => setShowGifPicker(
+          showGifPicker === `sheet-comment-${commentSheetOpen}`
+            ? null
+            : `sheet-comment-${commentSheetOpen}`
+        )}
+        onCommentGifSelect={(gifUrl) => {
+          setCommentGif((prev) => ({ ...prev, [commentSheetOpen]: gifUrl }));
+          setShowGifPicker(null);
+        }}
+        onCommentGifClear={() => setCommentGif((prev) => ({ ...prev, [commentSheetOpen]: null }))}
+        onCommentGifPickerClose={() => setShowGifPicker(null)}
+        replyingToComment={replyingToComment}
+        replyTargetName={activeReplyTargetName}
+        replyIsAnonymous={replyIsAnonymous}
+        onReplyAnonymousChange={setReplyIsAnonymous}
+        onReplyCancel={handleCancelReply}
+        replyText={replyText}
+        onReplyTextChange={handleReplyTextChange}
+        onReplySubmit={handleSubmitReply}
+        replyGif={replyGif}
+        isReplyGifPickerOpen={showGifPicker === `sheet-reply-${replyingToComment?.commentId}`}
+        onReplyGifToggle={() => setShowGifPicker(
+          showGifPicker === `sheet-reply-${replyingToComment?.commentId}`
+            ? null
+            : `sheet-reply-${replyingToComment?.commentId}`
+        )}
+        onReplyGifSelect={(gifUrl) => {
+          handleReplyGifSelect(gifUrl);
+          setShowGifPicker(null);
+        }}
+        onReplyGifClear={() => setReplyGif(null)}
+        onReplyGifPickerClose={() => setShowGifPicker(null)}
+        commentContextValue={commentSheetContextValue}
+        comments={postComments[commentSheetOpen] || []}
+        commentReplies={commentReplies}
+      />
 
-      {/* Comment Modal for Mobile */}
-      {commentModalOpen && (
-        <div className="comment-modal-overlay" onClick={() => setCommentModalOpen(null)} aria-hidden="true">
-          <div
-            className="comment-modal"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Reply"
-            onKeyDown={(e) => { if (e.key === 'Escape') setCommentModalOpen(null); }}
-          >
-            <div className="comment-modal-header">
-              <h3>Reply</h3>
-              <button className="btn-close-modal" onClick={() => setCommentModalOpen(null)}>✕</button>
-            </div>
-            <div className="comment-modal-body">
-              <form onSubmit={(e) => {
-                handleCommentSubmit(commentModalOpen, e);
-                setCommentModalOpen(null);
-              }}>
-                <div className="comment-modal-input-wrapper">
-                  <div className="comment-user-avatar">
-                    {currentUser?.profilePhoto ? (
-                      <OptimizedImage
-                        src={getImageUrl(currentUser.profilePhoto)}
-                        alt="You"
-                        className="avatar-image"
-                        imageSize="avatar"
-                      />
-                    ) : (
-                      <span>{currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                    )}
-                  </div>
-                  <textarea
-                    id={`modal-comment-${commentModalOpen}`}
-                    name="modalComment"
-                    value={commentText[commentModalOpen] || ''}
-                    onChange={(e) => {
-                      handleCommentChange(commentModalOpen, e.target.value);
-                      // Auto-expand textarea
-                      e.target.style.height = 'auto';
-                      e.target.style.height = e.target.scrollHeight + 'px';
-                    }}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Reply, if you feel like it."
-                    className="comment-modal-textarea"
-                    autoFocus
-                    rows="3"
-                  />
-                </div>
-                {commentGif[commentModalOpen] && (
-                  <div className="comment-gif-preview">
-                    <img src={commentGif[commentModalOpen]} alt="Selected GIF" />
-                    <button
-                      type="button"
-                      className="btn-remove-gif"
-                      onClick={() => setCommentGif(prev => ({ ...prev, [commentModalOpen]: null }))}
-                    >
-                      ✕
-                    </button>
-                  </div>
-                )}
-                {showGifPicker === `modal-comment-${commentModalOpen}` && (
-                  <GifPicker
-                    onGifSelect={(gifUrl) => {
-                      setCommentGif(prev => ({ ...prev, [commentModalOpen]: gifUrl }));
-                      setShowGifPicker(null);
-                    }}
-                    onClose={() => setShowGifPicker(null)}
-                  />
-                )}
-                <div className="comment-modal-actions">
-                  <button
-                    type="button"
-                    onClick={() => setShowGifPicker(showGifPicker === `modal-comment-${commentModalOpen}` ? null : `modal-comment-${commentModalOpen}`)}
-                    className="btn-gif"
-                    title="Add GIF"
-                  >
-                    GIF
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn-submit-comment"
-                    disabled={!commentText[commentModalOpen]?.trim() && !commentGif[commentModalOpen]}
-                  >
-                    Reply
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Mobile Comment Sheet - Full Discussion */}
-      {commentSheetOpen && (
-        <CommentSheet onClose={() => { setCommentSheetOpen(null); setReplyingToComment(null); }}>
-          {/* Comment Input at Top */}
-          <form
-            onSubmit={(e) => {
-              handleCommentSubmit(commentSheetOpen, e);
-            }}
-            className="comment-sheet-input-form"
-          >
-            <div className="comment-input-wrapper">
-              <div className="comment-user-avatar">
-                {currentUser?.profilePhoto ? (
-                  <OptimizedImage
-                    src={getImageUrl(currentUser.profilePhoto)}
-                    alt="You"
-                    className="avatar-image"
-                    imageSize="avatar"
-                  />
-                ) : (
-                  <span>{currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                )}
-              </div>
-              <input
-                type="text"
-                value={commentText[commentSheetOpen] || ''}
-                onChange={(e) => handleCommentChange(commentSheetOpen, e.target.value)}
-                placeholder="Add a comment..."
-                className="comment-input"
-              />
-              <button
-                type="button"
-                onClick={() => setShowGifPicker(showGifPicker === `sheet-comment-${commentSheetOpen}` ? null : `sheet-comment-${commentSheetOpen}`)}
-                className="btn-gif"
-                title="Add GIF"
-              >
-                GIF
-              </button>
-              <button
-                type="submit"
-                className="comment-submit-btn"
-                disabled={!commentText[commentSheetOpen]?.trim() && !commentGif[commentSheetOpen]}
-              >
-                ➤
-              </button>
-            </div>
-            {/* GIF Preview */}
-            {commentGif[commentSheetOpen] && (
-              <div className="comment-gif-preview">
-                <img src={commentGif[commentSheetOpen]} alt="Selected GIF" />
-                <button
-                  type="button"
-                  className="btn-remove-gif"
-                  onClick={() => setCommentGif(prev => ({ ...prev, [commentSheetOpen]: null }))}
-                >
-                  ✕
-                </button>
-              </div>
-            )}
-            {/* GIF Picker */}
-            {showGifPicker === `sheet-comment-${commentSheetOpen}` && (
-              <GifPicker
-                onGifSelect={(gifUrl) => {
-                  setCommentGif(prev => ({ ...prev, [commentSheetOpen]: gifUrl }));
-                  setShowGifPicker(null);
-                }}
-                onClose={() => setShowGifPicker(null)}
-              />
-            )}
-          </form>
-
-          {/* Reply Input Box - Shown when replying to a comment in the sheet */}
-          {replyingToComment?.postId === commentSheetOpen && (
-            <form onSubmit={handleSubmitReply} className="comment-sheet-reply-form">
-              <div className="reply-input-header">
-                <span>↩ Replying to <strong>
-                  {(() => {
-                    const target =
-                      postComments[commentSheetOpen]?.find(c => String(c._id) === String(replyingToComment.commentId))
-                      ?? Object.values(commentReplies).flat().find(r => String(r._id) === String(replyingToComment.commentId));
-                    return target?.authorId?.displayName || target?.authorId?.username || 'comment';
-                  })()}
-                </strong></span>
-                <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', cursor: 'pointer', marginLeft: 'auto', marginRight: '8px' }}>
-                  <input
-                    type="checkbox"
-                    checked={replyIsAnonymous}
-                    onChange={(e) => setReplyIsAnonymous(e.target.checked)}
-                    style={{ margin: 0 }}
-                  />
-                  <span style={{ opacity: 0.7 }}>Anon</span>
-                </label>
-                {replyIsAnonymous && (
-                  <span style={{ fontSize: '10px', color: 'var(--color-primary)', background: 'var(--color-primary-soft)', padding: '1px 6px', borderRadius: '999px', fontWeight: 500, marginRight: '8px' }}>🔒 Mods only</span>
-                )}
-                <button type="button" onClick={handleCancelReply} className="btn-cancel-reply-small">✕</button>
-              </div>
-              <div className="comment-input-wrapper">
-                <div className="comment-user-avatar">
-                  {currentUser?.profilePhoto ? (
-                    <OptimizedImage
-                      src={getImageUrl(currentUser.profilePhoto)}
-                      alt="You"
-                      className="avatar-image"
-                      imageSize="avatar"
-                    />
-                  ) : (
-                    <span>{currentUser?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                  )}
-                </div>
-                <textarea
-                  value={replyText}
-                  onChange={(e) => {
-                    setReplyText(e.target.value);
-                    e.target.style.height = 'auto';
-                    e.target.style.height = `${e.target.scrollHeight}px`;
-                  }}
-                  onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmitReply(e); } }}
-                  placeholder={replyGif ? "Caption, if you'd like" : "Write a reply..."}
-                  className="comment-input reply-textarea"
-                  enterKeyHint="send"
-                  rows={1}
-                  autoFocus
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowGifPicker(showGifPicker === `sheet-reply-${replyingToComment.commentId}` ? null : `sheet-reply-${replyingToComment.commentId}`)}
-                  className="btn-gif"
-                  title="Add GIF"
-                >
-                  GIF
-                </button>
-                <button
-                  type="submit"
-                  className="comment-submit-btn"
-                  disabled={!replyText?.trim() && !replyGif}
-                >
-                  ➤
-                </button>
-              </div>
-              {/* Reply GIF Preview */}
-              {replyGif && (
-                <div className="comment-gif-preview">
-                  <img src={replyGif} alt="Selected GIF" />
-                  <button
-                    type="button"
-                    className="btn-remove-gif"
-                    onClick={() => setReplyGif(null)}
-                  >
-                    ✕
-                  </button>
-                </div>
-              )}
-              {/* Reply GIF Picker */}
-              {showGifPicker === `sheet-reply-${replyingToComment.commentId}` && (
-                <GifPicker
-                  onGifSelect={(gifUrl) => {
-                    setReplyGif(gifUrl);
-                    setShowGifPicker(null);
-                  }}
-                  onClose={() => setShowGifPicker(null)}
-                />
-              )}
-            </form>
-          )}
-
-          {/* All Comments with Full Replies */}
-          <CommentProvider value={{
-            currentUser,
-            postId: commentSheetOpen,
-            viewerRole: role,
-            editingCommentId,
-            editCommentText,
-            showReplies,
-            showReactionPicker,
-            commentRefs,
-            getUserReactionEmoji,
-            handleEditComment,
-            handleSaveEditComment,
-            handleCancelEditComment,
-            handleDeleteComment,
-            handleCommentReaction,
-            toggleReplies,
-            handleReplyToComment,
-            setShowReactionPicker,
-            setReactionDetailsModal,
-            setReportModal,
-          }}>
-            <div className="comment-sheet-threads">
-              {postComments[commentSheetOpen] && postComments[commentSheetOpen]
-                .filter(comment => comment.parentCommentId === null || comment.parentCommentId === undefined)
-                .map((comment) => (
-                  <CommentThread
-                    key={comment._id}
-                    comment={comment}
-                    replies={commentReplies[comment._id] || []}
-                    isFullSheet={true}
-                  />
-                ))}
-            </div>
-          </CommentProvider>
-        </CommentSheet>
-      )}
-
-      {/* Toast Notifications */}
-      {toasts.map(toast => (
-        <Toast
-          key={toast.id}
-          message={toast.message}
-          type={toast.type}
-          duration={toast.duration}
-          onClose={() => removeToast(toast.id)}
-        />
-      ))}
     </div>
   );
 }
