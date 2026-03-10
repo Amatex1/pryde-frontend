@@ -84,8 +84,9 @@ Features are self-contained modules in `src/features/`:
 ## Build & Deploy
 
 - **Build**: `npm run build` (Vite production build)
-- **Deploy**: Cloudflare Pages (automatic on push to main)
-- **Preview**: PR preview deployments
+- **Deploy**: Vercel (production deploys from Git)
+- **Preview**: Vercel preview deployments
+- **Production API target**: `VITE_API_DOMAIN=https://api.prydeapp.com`
 
 ## Key Files
 

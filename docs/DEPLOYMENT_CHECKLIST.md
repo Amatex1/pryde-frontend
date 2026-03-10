@@ -10,6 +10,9 @@ Use this checklist to ensure a smooth deployment of Pryde Social.
 - [ ] IP whitelist set to allow all (0.0.0.0/0)
 - [ ] MongoDB connection string obtained
 - [ ] JWT secret generated (`node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`)
+- [ ] JWT refresh secret generated
+- [ ] CSRF secret generated
+- [ ] Message encryption key generated
 - [ ] VAPID keys generated (`npx web-push generate-vapid-keys`)
 - [ ] Code pushed to GitHub repository
 
@@ -42,6 +45,8 @@ Use this checklist to ensure a smooth deployment of Pryde Social.
 - [ ] `MESSAGE_ENCRYPTION_KEY` = Generated encryption key
 - [ ] `BASE_URL` = Render service URL (e.g., https://pryde-backend.onrender.com)
 - [ ] `FRONTEND_URL` = Your domain (e.g., https://prydeapp.com)
+- [ ] `API_DOMAIN` = `https://api.prydeapp.com`
+- [ ] `ROOT_DOMAIN` = `prydeapp.com`
 - [ ] `VAPID_PUBLIC_KEY` = Generated VAPID public key
 - [ ] `VAPID_PRIVATE_KEY` = Generated VAPID private key
 - [ ] `RESEND_API_KEY` = Resend.com API key
@@ -50,6 +55,7 @@ Use this checklist to ensure a smooth deployment of Pryde Social.
 - [ ] Deployment completed successfully
 - [ ] No errors in Render logs
 - [ ] Health check endpoint works: `https://pryde-backend.onrender.com/api/health`
+- [ ] Custom API domain works: `https://api.prydeapp.com/api/health`
 - [ ] Backend URL saved for frontend configuration
 
 ## Frontend Deployment (Vercel)
@@ -62,9 +68,10 @@ Use this checklist to ensure a smooth deployment of Pryde Social.
 - [ ] Output directory: `dist`
 
 ### Environment Variables (set in Vercel Dashboard → Settings → Environment Variables)
+- [ ] `VITE_API_DOMAIN` = `https://api.prydeapp.com`
 - [ ] `VITE_HCAPTCHA_SITE_KEY` = hCaptcha site key
 - [ ] `VITE_VAPID_PUBLIC_KEY` = VAPID public key (same as backend)
-- [ ] `VITE_API_DOMAIN` = Custom backend domain if using one (e.g., https://api.prydeapp.com)
+- [ ] `VITE_API_URL` and `VITE_SOCKET_URL` left unset unless an intentional override is required
 
 ### Custom Domain
 - [ ] Domain added in Vercel Dashboard → Domains
@@ -82,16 +89,19 @@ Use this checklist to ensure a smooth deployment of Pryde Social.
 
 ### Backend Tests
 - [ ] Health endpoint: `curl https://pryde-backend.onrender.com/api/health`
+- [ ] Health endpoint: `curl https://api.prydeapp.com/api/health`
 - [ ] No errors in Render logs
 - [ ] Database connection successful (check logs)
 
 ### Frontend Tests
 - [ ] Website loads: `https://prydeapp.com`
+- [ ] `www` domain behavior verified if enabled
 - [ ] Login page loads
 - [ ] Register page loads
 - [ ] Navigation works
 - [ ] Page refresh works (no 404 errors)
 - [ ] API calls successful (F12 → Network tab)
+- [ ] Auth requests go to `https://api.prydeapp.com`
 
 ### Integration Tests
 - [ ] User registration works
@@ -121,7 +131,8 @@ Use this checklist to ensure a smooth deployment of Pryde Social.
 ### Backend
 - [ ] All secrets set in Render environment variables (not in code)
 - [ ] JWT_SECRET is strong and unique
-- [ ] CORS configured for prydeapp.com only
+- [ ] CORS configured for the real production frontend origins
+- [ ] `API_DOMAIN` and `ROOT_DOMAIN` set for shared-domain cookies
 - [ ] HTTPS enforced
 - [ ] Database credentials secure
 - [ ] No sensitive data in logs

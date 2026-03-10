@@ -1,9 +1,0 @@
-services:
-  # Backend API Web Service
-  - type: web
-    name: pryde-backend
-    env: node
-    region: oregon
-    buildCommand: cd server && npm install
-    startCommand: cd server && node server.js
-    healthCheckPath: /api/health

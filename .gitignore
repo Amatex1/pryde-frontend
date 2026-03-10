@@ -23,6 +23,7 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 *.log
+*.har
 
 # Editor directories and files
 .vscode/*
@@ -42,6 +43,7 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+*.env
 
 # Build files
 *.tsbuildinfo
@@ -75,4 +77,15 @@ wrangler.toml
 !index.html
 *.py
 *.js.map
+
+# Secret and certificate material
+*.pem
+*.key
+*.crt
+*.cer
+*.der
+*.p12
+*.pfx
+firebase-adminsdk*.json
+service-account*.json
 
