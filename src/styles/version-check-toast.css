@@ -1,0 +1,83 @@
+.version-update-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 999999;
+  max-width: 400px;
+  animation: version-toast-slide-in 0.3s ease-out;
+}
+
+.version-update-toast__panel {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.version-update-toast__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.version-update-toast__icon {
+  font-size: 24px;
+}
+
+.version-update-toast__content {
+  flex: 1;
+}
+
+.version-update-toast__title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.version-update-toast__message {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.version-update-toast__actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.version-update-toast__button {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.version-update-toast__button:hover {
+  transform: scale(1.05);
+}
+
+.version-update-toast__button--primary {
+  background: #fff;
+  color: #667eea;
+  font-weight: 600;
+  flex: 1;
+}
+
+.version-update-toast__button--secondary {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+@keyframes version-toast-slide-in {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

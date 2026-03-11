@@ -18,32 +18,22 @@ const STATIC_ASSETS = [
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing service worker...');
-  
   event.waitUntil(
     caches.open(STATIC_CACHE)
-      .then((cache) => {
-        console.log('[SW] Caching static assets');
-        return cache.addAll(STATIC_ASSETS);
-      })
+      .then((cache) => cache.addAll(STATIC_ASSETS))
       .then(() => self.skipWaiting())
   );
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating service worker...');
-  
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
         return Promise.all(
           cacheNames
             .filter((name) => name !== STATIC_CACHE && name !== DYNAMIC_CACHE)
-            .map((name) => {
-              console.log('[SW] Deleting old cache:', name);
-              return caches.delete(name);
-            })
+            .map((name) => caches.delete(name))
         );
       })
       .then(() => self.clients.claim())
@@ -145,8 +135,6 @@ function isMedia(pathname) {
 
 // Background sync for offline actions
 self.addEventListener('sync', (event) => {
-  console.log('[SW] Background sync:', event.tag);
-  
   if (event.tag === 'sync-posts') {
     event.waitUntil(syncPosts());
   }
@@ -158,12 +146,10 @@ self.addEventListener('sync', (event) => {
 
 async function syncPosts() {
   // Get pending posts from IndexedDB and send to server
-  console.log('[SW] Syncing offline posts...');
 }
 
 async function syncMessages() {
   // Get pending messages from IndexedDB and send to server
-  console.log('[SW] Syncing offline messages...');
 }
 
 // Push notifications
@@ -208,5 +194,3 @@ self.addEventListener('notificationclick', (event) => {
       })
   );
 });
-
-console.log('[SW] Service worker loaded');

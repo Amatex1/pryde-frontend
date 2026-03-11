@@ -14,17 +14,20 @@
  * - No zombie PWA state
  */
 
+import { createLogger } from './logger';
+
 const EXPECTED_SW_URL = '/sw.js';
 const EXPECTED_SCOPE = '/';
 const CACHE_VERSION_KEY = 'pwa_cache_version';
 const CURRENT_VERSION = import.meta.env.VITE_APP_VERSION || '1.0.0';
+const logger = createLogger('serviceWorkerManager');
 
 /**
  * Unregister all existing service workers
  */
 async function unregisterAllServiceWorkers() {
   if (!('serviceWorker' in navigator)) {
-    console.log('[SW Manager] Service workers not supported');
+    logger.debug('Service workers not supported');
     return [];
   }
 
@@ -32,27 +35,30 @@ async function unregisterAllServiceWorkers() {
     const registrations = await navigator.serviceWorker.getRegistrations();
     
     if (registrations.length === 0) {
-      console.log('[SW Manager] ✅ No existing service workers to unregister');
+      logger.debug('No existing service workers to unregister');
       return [];
     }
 
-    console.log(`[SW Manager] 🗑️ Found ${registrations.length} existing service worker(s), unregistering...`);
+    logger.debug('Unregistering existing service workers', { count: registrations.length });
     
     const unregisterPromises = registrations.map(async (registration) => {
       const scope = registration.scope;
       const success = await registration.unregister();
-      console.log(`[SW Manager] ${success ? '✅' : '❌'} Unregistered SW with scope: ${scope}`);
+      logger.debug('Service worker unregister attempt finished', { scope, success });
       return { scope, success };
     });
 
     const results = await Promise.all(unregisterPromises);
     
     const successCount = results.filter(r => r.success).length;
-    console.log(`[SW Manager] ✅ Unregistered ${successCount}/${registrations.length} service workers`);
+    logger.debug('Service worker cleanup complete', {
+      successCount,
+      total: registrations.length
+    });
     
     return results;
   } catch (error) {
-    console.error('[SW Manager] ❌ Error unregistering service workers:', error);
+    logger.error('Error unregistering service workers', error);
     return [];
   }
 }
@@ -62,7 +68,7 @@ async function unregisterAllServiceWorkers() {
  */
 async function clearOrphanedCaches() {
   if (!('caches' in window)) {
-    console.log('[SW Manager] Cache API not supported');
+    logger.debug('Cache API not supported');
     return;
   }
 
@@ -70,21 +76,24 @@ async function clearOrphanedCaches() {
     const cacheNames = await caches.keys();
     
     if (cacheNames.length === 0) {
-      console.log('[SW Manager] ✅ No caches to clear');
+      logger.debug('No caches to clear');
       return;
     }
 
-    console.log(`[SW Manager] 🗑️ Found ${cacheNames.length} cache(s), checking for orphans...`);
+    logger.debug('Checking caches for cleanup', { count: cacheNames.length });
     
     const storedVersion = localStorage.getItem(CACHE_VERSION_KEY);
     
     // If version mismatch, clear all caches
     if (storedVersion && storedVersion !== CURRENT_VERSION) {
-      console.log(`[SW Manager] 🔄 Version mismatch (${storedVersion} → ${CURRENT_VERSION}), clearing all caches...`);
+      logger.debug('Version mismatch detected while clearing caches', {
+        storedVersion,
+        currentVersion: CURRENT_VERSION
+      });
       
       const deletePromises = cacheNames.map(async (cacheName) => {
         const success = await caches.delete(cacheName);
-        console.log(`[SW Manager] ${success ? '✅' : '❌'} Deleted cache: ${cacheName}`);
+        logger.debug('Cache delete attempt finished', { cacheName, success });
         return { cacheName, success };
       });
       
@@ -92,12 +101,12 @@ async function clearOrphanedCaches() {
       
       // Update stored version
       localStorage.setItem(CACHE_VERSION_KEY, CURRENT_VERSION);
-      console.log(`[SW Manager] ✅ All caches cleared, version updated to ${CURRENT_VERSION}`);
+      logger.debug('Caches cleared and version updated', { currentVersion: CURRENT_VERSION });
     } else {
-      console.log(`[SW Manager] ✅ Cache version matches (${CURRENT_VERSION}), no cleanup needed`);
+      logger.debug('Cache version matches current build', { currentVersion: CURRENT_VERSION });
     }
   } catch (error) {
-    console.error('[SW Manager] ❌ Error clearing caches:', error);
+    logger.error('Error clearing caches', error);
   }
 }
 
@@ -106,29 +115,33 @@ async function clearOrphanedCaches() {
  */
 async function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) {
-    console.log('[SW Manager] Service workers not supported');
+    logger.debug('Service workers not supported');
     return null;
   }
 
   try {
-    console.log(`[SW Manager] 📝 Registering service worker: ${EXPECTED_SW_URL} with scope: ${EXPECTED_SCOPE}`);
+    logger.debug('Registering service worker', {
+      url: EXPECTED_SW_URL,
+      scope: EXPECTED_SCOPE
+    });
     
     const registration = await navigator.serviceWorker.register(EXPECTED_SW_URL, {
       scope: EXPECTED_SCOPE,
       updateViaCache: 'none' // Always check for updates
     });
 
-    console.log(`[SW Manager] ✅ Service worker registered successfully`);
-    console.log(`[SW Manager] 📍 Scope: ${registration.scope}`);
-    console.log(`[SW Manager] 🔄 Update found: ${registration.waiting ? 'Yes' : 'No'}`);
-    console.log(`[SW Manager] ⚡ Active: ${registration.active ? 'Yes' : 'No'}`);
+    logger.debug('Service worker registered successfully', {
+      scope: registration.scope,
+      hasWaitingWorker: Boolean(registration.waiting),
+      hasActiveWorker: Boolean(registration.active)
+    });
     
     // Store current version
     localStorage.setItem(CACHE_VERSION_KEY, CURRENT_VERSION);
     
     return registration;
   } catch (error) {
-    console.error('[SW Manager] ❌ Error registering service worker:', error);
+    logger.error('Error registering service worker', error);
     return null;
   }
 }
@@ -144,12 +157,13 @@ function logServiceWorkerState() {
   const controller = navigator.serviceWorker.controller;
   
   if (controller) {
-    console.log('[SW Manager] 🎯 Active Service Worker:');
-    console.log(`  - Script URL: ${controller.scriptURL}`);
-    console.log(`  - State: ${controller.state}`);
-    console.log(`  - Cache Version: ${localStorage.getItem(CACHE_VERSION_KEY) || 'unknown'}`);
+    logger.debug('Active service worker detected', {
+      scriptUrl: controller.scriptURL,
+      state: controller.state,
+      cacheVersion: localStorage.getItem(CACHE_VERSION_KEY) || 'unknown'
+    });
   } else {
-    console.log('[SW Manager] ⚠️ No active service worker controller');
+    logger.debug('No active service worker controller');
   }
 }
 
@@ -157,8 +171,7 @@ function logServiceWorkerState() {
  * Initialize clean PWA lifecycle
  */
 export async function initializeServiceWorker() {
-  console.log('[SW Manager] 🚀 Initializing clean PWA lifecycle...');
-  console.log(`[SW Manager] 📦 App Version: ${CURRENT_VERSION}`);
+  logger.debug('Initializing clean PWA lifecycle', { currentVersion: CURRENT_VERSION });
   
   // Step 1: Unregister all existing service workers
   await unregisterAllServiceWorkers();
@@ -172,7 +185,7 @@ export async function initializeServiceWorker() {
   // Step 4: Log active state
   logServiceWorkerState();
   
-  console.log('[SW Manager] ✅ Clean PWA lifecycle initialized');
+  logger.debug('Clean PWA lifecycle initialized');
   
   return registration;
 }

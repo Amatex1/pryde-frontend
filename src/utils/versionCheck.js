@@ -3,8 +3,97 @@
  * Automatically detects new deployments and prompts user to refresh
  */
 
+import { createLogger } from './logger';
+import '../styles/version-check-toast.css';
+
 const VERSION_CHECK_INTERVAL = 5 * 60 * 1000; // Check every 5 minutes
 const BUILD_VERSION_KEY = 'app_build_version';
+const DISMISSED_VERSION_KEY = 'version_update_dismissed';
+const TOAST_ID = 'version-update-toast';
+const logger = createLogger('versionCheck');
+
+const createToastButton = (id, text, className) => {
+  const button = document.createElement('button');
+  button.id = id;
+  button.type = 'button';
+  button.className = className;
+  button.textContent = text;
+  return button;
+};
+
+const createUpdateToast = () => {
+  const toast = document.createElement('div');
+  toast.id = TOAST_ID;
+  toast.className = 'version-update-toast';
+
+  const panel = document.createElement('div');
+  panel.className = 'version-update-toast__panel';
+
+  const header = document.createElement('div');
+  header.className = 'version-update-toast__header';
+
+  const icon = document.createElement('div');
+  icon.className = 'version-update-toast__icon';
+  icon.textContent = '🎉';
+
+  const content = document.createElement('div');
+  content.className = 'version-update-toast__content';
+
+  const title = document.createElement('div');
+  title.className = 'version-update-toast__title';
+  title.textContent = 'New Update Available!';
+
+  const message = document.createElement('div');
+  message.className = 'version-update-toast__message';
+  message.textContent = 'A new version of Pryde Social is ready.';
+
+  const actions = document.createElement('div');
+  actions.className = 'version-update-toast__actions';
+
+  const refreshNowBtn = createToastButton(
+    'refresh-now-btn',
+    'Refresh Now',
+    'version-update-toast__button version-update-toast__button--primary'
+  );
+  const refreshLaterBtn = createToastButton(
+    'refresh-later-btn',
+    'Later',
+    'version-update-toast__button version-update-toast__button--secondary'
+  );
+
+  content.append(title, message);
+  header.append(icon, content);
+  actions.append(refreshNowBtn, refreshLaterBtn);
+  panel.append(header, actions);
+  toast.appendChild(panel);
+
+  return { toast, refreshNowBtn, refreshLaterBtn };
+};
+
+const clearSiteCaches = async () => {
+  try {
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      logger.debug('Unregistering service workers before refresh', {
+        count: registrations.length
+      });
+
+      for (const registration of registrations) {
+        await registration.unregister();
+      }
+    }
+
+    if ('caches' in window) {
+      const cacheNames = await caches.keys();
+      logger.debug('Clearing caches before refresh', { count: cacheNames.length });
+      await Promise.all(cacheNames.map(name => caches.delete(name)));
+    }
+
+    logger.debug('Client caches cleared before refresh');
+  } catch (error) {
+    logger.error('Error clearing caches before refresh', error);
+  }
+};
 
 /**
  * Get the current build version from the HTML meta tag
@@ -25,7 +114,7 @@ export const getStoredBuildVersion = () => {
 /**
  * Store the current build version
  */
-export const storeBuildVersion = (version) => {
+export const storeBuildVersion = version => {
   localStorage.setItem(BUILD_VERSION_KEY, version);
 };
 
@@ -36,14 +125,12 @@ export const storeBuildVersion = (version) => {
 export const isNewVersionAvailable = () => {
   const currentVersion = getCurrentBuildVersion();
   const storedVersion = getStoredBuildVersion();
-  
-  // First time visiting - store version and return false
+
   if (!storedVersion) {
     storeBuildVersion(currentVersion);
     return false;
   }
-  
-  // Version changed - new deployment detected
+
   return currentVersion !== storedVersion && currentVersion !== 'unknown';
 };
 
@@ -51,153 +138,46 @@ export const isNewVersionAvailable = () => {
  * Show a toast notification prompting user to refresh
  */
 export const promptUserToRefresh = () => {
-  // ✅ Check if user already dismissed this version
-  const dismissed = localStorage.getItem('version_update_dismissed');
+  const dismissed = localStorage.getItem(DISMISSED_VERSION_KEY);
   const currentVersion = getCurrentBuildVersion();
+
   if (dismissed === currentVersion) {
-    console.log('⏰ User already dismissed this version update');
+    logger.debug('Version update prompt already dismissed for current version', {
+      currentVersion
+    });
     return;
   }
 
-  // Prevent duplicate toasts
-  const existingToast = document.getElementById('version-update-toast');
-  if (existingToast) {
-    console.log('⚠️ Update notification already showing');
+  if (document.getElementById(TOAST_ID)) {
+    logger.debug('Version update prompt already visible');
     return;
   }
 
-  // Create a custom toast notification
-  const toast = document.createElement('div');
-  toast.id = 'version-update-toast';
-  toast.innerHTML = `
-    <div style="
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 16px 24px;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-      z-index: 999999;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      max-width: 400px;
-      animation: slideIn 0.3s ease-out;
-    ">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <div style="font-size: 24px;">🎉</div>
-        <div style="flex: 1;">
-          <div style="font-weight: 600; margin-bottom: 4px;">New Update Available!</div>
-          <div style="font-size: 14px; opacity: 0.9;">A new version of Pryde Social is ready.</div>
-        </div>
-      </div>
-      <div style="margin-top: 12px; display: flex; gap: 8px;">
-        <button id="refresh-now-btn" style="
-          background: white;
-          color: #667eea;
-          border: none;
-          padding: 8px 16px;
-          border-radius: 6px;
-          font-weight: 600;
-          cursor: pointer;
-          flex: 1;
-          transition: transform 0.2s;
-        ">
-          Refresh Now
-        </button>
-        <button id="refresh-later-btn" style="
-          background: rgba(255,255,255,0.2);
-          color: white;
-          border: none;
-          padding: 8px 16px;
-          border-radius: 6px;
-          cursor: pointer;
-          transition: transform 0.2s;
-        ">
-          Later
-        </button>
-      </div>
-    </div>
-    <style>
-      @keyframes slideIn {
-        from {
-          transform: translateX(400px);
-          opacity: 0;
-        }
-        to {
-          transform: translateX(0);
-          opacity: 1;
-        }
-      }
-      #refresh-now-btn:hover {
-        transform: scale(1.05);
-      }
-      #refresh-later-btn:hover {
-        transform: scale(1.05);
-      }
-    </style>
-  `;
-  
+  const { toast, refreshNowBtn, refreshLaterBtn } = createUpdateToast();
   document.body.appendChild(toast);
 
-  // Add event listeners after DOM insertion
-  // Use setTimeout to ensure DOM is ready
-  setTimeout(() => {
-    const refreshNowBtn = document.getElementById('refresh-now-btn');
-    const refreshLaterBtn = document.getElementById('refresh-later-btn');
+  refreshNowBtn.addEventListener('click', async () => {
+    logger.debug('Refreshing page after version update prompt accepted');
+    storeBuildVersion(getCurrentBuildVersion());
+    localStorage.removeItem(DISMISSED_VERSION_KEY);
 
-    if (refreshNowBtn) {
-      refreshNowBtn.addEventListener('click', async () => {
-        console.log('🔄 Refreshing page and clearing all caches...');
+    await clearSiteCaches();
 
-        // Update stored version before reload to prevent loop
-        storeBuildVersion(getCurrentBuildVersion());
+    const nextUrl = new URL(window.location.href);
+    nextUrl.searchParams.set('v', String(Date.now()));
+    window.location.assign(nextUrl.toString());
+  });
 
-        // CRITICAL: Clear ALL caches to force fresh content
-        try {
-          // 1. Unregister all service workers
-          if ('serviceWorker' in navigator) {
-            const registrations = await navigator.serviceWorker.getRegistrations();
-            console.log(`🗑️ Unregistering ${registrations.length} service workers...`);
-            for (const registration of registrations) {
-              await registration.unregister();
-            }
-          }
+  refreshLaterBtn.addEventListener('click', () => {
+    logger.debug('User deferred version refresh prompt');
+    localStorage.setItem(DISMISSED_VERSION_KEY, getCurrentBuildVersion());
+    toast.remove();
+  });
 
-          // 2. Clear all caches
-          if ('caches' in window) {
-            const cacheNames = await caches.keys();
-            console.log(`🗑️ Clearing ${cacheNames.length} caches...`);
-            await Promise.all(cacheNames.map(name => caches.delete(name)));
-          }
-
-          console.log('✅ All caches cleared');
-        } catch (error) {
-          console.error('⚠️ Error clearing caches:', error);
-        }
-
-        // 3. Force reload with cache-busting parameter
-        // This ensures Cloudflare and browser fetch fresh content
-        const timestamp = Date.now();
-        window.location.href = `${window.location.origin}${window.location.pathname}?v=${timestamp}`;
-      });
-    }
-
-    if (refreshLaterBtn) {
-      refreshLaterBtn.addEventListener('click', () => {
-        console.log('⏰ User chose to refresh later');
-        // ✅ Store dismissed version to prevent showing again
-        localStorage.setItem('version_update_dismissed', getCurrentBuildVersion());
-        toast.remove();
-      });
-    }
-  }, 0);
-  
-  // Auto-remove after 30 seconds if user doesn't interact
-  setTimeout(() => {
-    const existingToast = document.getElementById('version-update-toast');
+  window.setTimeout(() => {
+    const existingToast = document.getElementById(TOAST_ID);
     if (existingToast) {
-      console.log('⏰ Auto-dismissing update notification');
+      logger.debug('Auto-dismissing version update prompt');
       existingToast.remove();
     }
   }, 30000);
@@ -208,22 +188,21 @@ export const promptUserToRefresh = () => {
  * Used by startVersionCheck and can be called manually for testing
  */
 export const checkForUpdate = () => {
-  console.log('🔍 Checking for new version...');
-
   const currentVersion = getCurrentBuildVersion();
   const storedVersion = getStoredBuildVersion();
+  const isNewVersion = currentVersion !== storedVersion && currentVersion !== 'unknown';
 
-  console.log('📊 Version info:', {
-    current: currentVersion,
-    stored: storedVersion,
-    isNew: currentVersion !== storedVersion && currentVersion !== 'unknown'
+  logger.debug('Checking for new version', {
+    currentVersion,
+    storedVersion,
+    isNewVersion
   });
 
   if (isNewVersionAvailable()) {
-    console.log('🎉 New version detected!');
+    logger.debug('New version detected during local version check');
     promptUserToRefresh();
   } else {
-    console.log('✅ Already on latest version');
+    logger.debug('Already on latest known version');
   }
 };
 
@@ -232,44 +211,45 @@ export const checkForUpdate = () => {
  * Call this once when the app initializes
  */
 export const startVersionCheck = () => {
-  // Check immediately on load
   checkForUpdate();
 
-  // Check on tab focus (user returning to app)
   const onFocus = () => {
-    console.log('👁️ Tab focused - checking for updates...');
+    logger.debug('Window focus triggered version check');
     checkForUpdate();
   };
   window.addEventListener('focus', onFocus);
 
-  // Then check periodically by fetching fresh index.html
-  setInterval(() => {
-    console.log('🔍 Periodic version check...');
+  window.setInterval(() => {
+    logger.debug('Running periodic version check');
 
-    // Fetch the current index.html to check meta tag
     fetch('/', {
       cache: 'no-cache',
       headers: { 'Cache-Control': 'no-cache' }
     })
       .then(response => response.text())
       .then(html => {
-        // Parse the HTML to extract build version
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         const metaTag = doc.querySelector('meta[name="build-version"]');
-        const newVersion = metaTag?.content;
+        const fetchedVersion = metaTag?.content;
+        const currentVersion = getCurrentBuildVersion();
 
-        console.log('📊 Fetched version:', newVersion, 'Current:', getCurrentBuildVersion());
+        logger.debug('Fetched version metadata during periodic check', {
+          fetchedVersion,
+          currentVersion
+        });
 
-        if (newVersion && newVersion !== getCurrentBuildVersion()) {
-          console.log('✅ New version available:', newVersion);
+        if (fetchedVersion && fetchedVersion !== currentVersion) {
+          logger.debug('New version available from periodic check', { fetchedVersion });
           promptUserToRefresh();
         } else {
-          console.log('✅ Already on latest version');
+          logger.debug('Periodic check found no new version');
         }
       })
-      .catch(err => {
-        console.error('❌ Version check failed:', err);
+      .catch(error => {
+        logger.debug('Periodic version check failed safely', {
+          message: error?.message
+        });
       });
   }, VERSION_CHECK_INTERVAL);
 };

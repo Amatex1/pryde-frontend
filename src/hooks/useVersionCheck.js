@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import api from '../utils/api'
+import { createLogger } from '../utils/logger'
 
 /**
  * SAFE VERSION CHECK
@@ -12,6 +13,7 @@ import api from '../utils/api'
  */
 
 const SESSION_KEY = 'pryde_version_checked'
+const logger = createLogger('useVersionCheck')
 
 const useVersionCheck = () => {
   const [updateAvailable, setUpdateAvailable] = useState(false)
@@ -55,7 +57,9 @@ const useVersionCheck = () => {
         }
       } catch (err) {
         // Silent failure — NEVER reload
-        console.warn('[VersionCheck] Failed safely:', err)
+        logger.debug('Version check failed safely', {
+          message: err?.message
+        })
       }
     }
 

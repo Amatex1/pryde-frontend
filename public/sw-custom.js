@@ -17,6 +17,16 @@ importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox
 const CACHE_VERSION = '{{BUILD_VERSION}}'; // Replaced at build time
 const isDev = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
 
+function emitDebugMessage(message) {
+  if (!isDev) {
+    return;
+  }
+  notifyClients({
+    type: 'SW_DEBUG',
+    ...message
+  });
+}
+
 /**
  * Check if request is a navigation request
  * Navigation requests MUST bypass SW completely
@@ -70,7 +80,10 @@ self.addEventListener('fetch', (event) => {
   // This fixes ERR_FAILED on reload and auth redirect failures
   if (isNavigationRequest(request)) {
     if (isDev) {
-      console.warn('[SW Custom] ⚠️ Navigation request - bypassing:', url);
+      emitDebugMessage({
+        event: 'NAVIGATION_BYPASS',
+        url
+      });
     }
     return; // Browser handles it
   }
@@ -104,7 +117,11 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(error => {
-          console.error('[SW] Auth endpoint fetch failed:', url, error);
+          emitDebugMessage({
+            event: 'AUTH_ENDPOINT_FETCH_FAILED',
+            url,
+            error: error?.message || String(error)
+          });
           throw error;
         })
     );
@@ -169,9 +186,11 @@ self.addEventListener('activate', (event) => {
         const cachedVersion = await versionResponse.json();
         
         if (cachedVersion.version !== CACHE_VERSION) {
-          console.log('[SW] Version mismatch detected - clearing all caches');
-          console.log(`   Cached: ${cachedVersion.version}`);
-          console.log(`   Current: ${CACHE_VERSION}`);
+          emitDebugMessage({
+            event: 'VERSION_MISMATCH',
+            cachedVersion: cachedVersion.version,
+            currentVersion: CACHE_VERSION
+          });
           
           // Clear all caches
           await Promise.all(
@@ -203,7 +222,11 @@ self.addEventListener('activate', (event) => {
  * On install, skip waiting to activate immediately
  */
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing new service worker version:', CACHE_VERSION);
+  emitDebugMessage({
+    event: 'INSTALL',
+    version: CACHE_VERSION
+  });
   self.skipWaiting();
 });
+
 

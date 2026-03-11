@@ -7,13 +7,14 @@
     <meta name="color-scheme" content="dark light" />
 
     <!-- CSP must be FIRST in head, before any resource-loading elements -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pryde-backend.onrender.com https://hcaptcha.com https://*.hcaptcha.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob: https://media.giphy.com https://*.giphy.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' blob: http://localhost:9000 ws://localhost:9000 https://pryde-backend.onrender.com wss://pryde-backend.onrender.com https://api.prydeapp.com wss://api.prydeapp.com https://hcaptcha.com https://*.hcaptcha.com https://tenor.googleapis.com https://api.giphy.com https://media.giphy.com https://*.giphy.com https://ipapi.co https://ip-api.com https://ipwhois.app https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://fcm.googleapis.com https://*.googleapis.com; frame-src https://hcaptcha.com https://*.hcaptcha.com; media-src 'self' blob: https://media.giphy.com https://*.giphy.com; object-src 'none'; base-uri 'self'; form-action 'self';" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://hcaptcha.com https://*.hcaptcha.com; script-src-elem 'self' https://hcaptcha.com https://*.hcaptcha.com; script-src-attr 'none'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob: https://media.giphy.com https://*.giphy.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' blob: http://localhost:9000 ws://localhost:9000 https://pryde-backend.onrender.com wss://pryde-backend.onrender.com https://api.prydeapp.com wss://api.prydeapp.com https://hcaptcha.com https://*.hcaptcha.com https://tenor.googleapis.com https://api.giphy.com https://media.giphy.com https://*.giphy.com https://ipapi.co https://ip-api.com https://ipwhois.app https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://fcm.googleapis.com https://*.googleapis.com; frame-src https://hcaptcha.com https://*.hcaptcha.com; media-src 'self' blob: https://media.giphy.com https://*.giphy.com; object-src 'none'; base-uri 'self'; form-action 'self';" />
 
     <!-- Performance: DNS Prefetch & Preconnect -->
     <link rel="dns-prefetch" href="https://pryde-backend.onrender.com" />
     <link rel="preconnect" href="https://pryde-backend.onrender.com" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" href="/theme-init.js" as="script" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" />
 
     <!-- PWA Manifest -->
@@ -82,23 +83,7 @@
 
     <!-- Theme anti-flash: runs synchronously before first paint -->
     <!-- Sets data-theme + background-color from localStorage before React loads -->
-    <script>
-      (function () {
-        try {
-          var dark = localStorage.getItem('darkMode');
-          // Default is dark unless explicitly set to 'false'
-          var theme = dark === 'false' ? 'light' : 'dark';
-          document.documentElement.setAttribute('data-theme', theme);
-          // Lock the background immediately so no white flash occurs
-          document.documentElement.style.backgroundColor =
-            theme === 'dark' ? '#0F1021' : '#F5F6FA';
-        } catch (e) {
-          // localStorage blocked (private browsing, etc.) — default dark
-          document.documentElement.setAttribute('data-theme', 'dark');
-          document.documentElement.style.backgroundColor = '#0F1021';
-        }
-      })();
-    </script>
+    <script src="/theme-init.js"></script>
 
     <!-- Inline critical CSS to prevent theme flash on mobile/PWA load -->
     <style>
@@ -183,32 +168,7 @@
     <div id="root"></div>
     <div id="overlay-root"></div>
 
-    <!-- Service Worker Registration (Production Only) -->
-    <script>
-      // Register in production (not localhost or dev)
-      var isProduction = window.location.hostname !== 'localhost' &&
-                         window.location.hostname !== '127.0.0.1' &&
-                         !window.location.hostname.includes('.local');
-      if (isProduction) {
-        if ('serviceWorker' in navigator) {
-          window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js', {
-              scope: '/',
-              updateViaCache: 'none'
-            }).then(reg => {
-              console.log('[PWA] ✅ Service worker registered from index.html');
-              console.log('[PWA] 📍 Scope:', reg.scope);
-              console.log('[PWA] 🌐 Hostname:', window.location.hostname);
-            }).catch(err => {
-              console.error('[PWA] Service worker registration failed:', err);
-            });
-          });
-        }
-      } else {
-        console.log('[PWA] ⏭️ Skipping SW registration (development)');
-      }
-    </script>
-
+    <script src="/register-sw.js" defer></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
