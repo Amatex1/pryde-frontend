@@ -1,13 +1,9 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// 🔐 SECURITY HARDENING: Hybrid Token Storage
+// 🔐 SECURITY HARDENING: Memory-Only Access Tokens
 // ═══════════════════════════════════════════════════════════════════════════
-// Access tokens are stored in BOTH memory AND localStorage:
-// - Primary: in-memory (protects against XSS)
-// - Fallback: localStorage (survives page refresh, enables silent refresh)
-//
-// On page reload, we first check localStorage for a fallback token,
-// then attempt refresh if needed. This provides UX continuity while
-// maintaining XSS protection for active sessions.
+// Access tokens are stored only in module memory to reduce XSS exposure.
+// Page reload/session restoration is handled via httpOnly refresh cookies
+// and the silent refresh flow, not localStorage token fallback.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { markUnauthenticated } from '../state/authStatus';
@@ -17,43 +13,37 @@ import { broadcastLogout } from './authSync';
 let inMemoryAccessToken = null;
 let tokenSetTime = null;
 
-// Fallback: localStorage token (for page reload survival)
+// Deprecated persisted access-token keys retained for cleanup only.
 const FALLBACK_TOKEN_KEY = 'pryde_access_token';
 const FALLBACK_TOKEN_TIME_KEY = 'pryde_access_token_time';
+const LEGACY_TOKEN_KEY = 'token';
+const LEGACY_TOKEN_TIME_KEY = 'tokenSetTime';
+
+const clearPersistedAccessTokenArtifacts = () => {
+  try {
+    localStorage.removeItem(FALLBACK_TOKEN_KEY);
+    localStorage.removeItem(FALLBACK_TOKEN_TIME_KEY);
+    localStorage.removeItem(LEGACY_TOKEN_KEY);
+    localStorage.removeItem(LEGACY_TOKEN_TIME_KEY);
+  } catch (e) {
+    console.warn('Failed to clear persisted token artifacts:', e);
+  }
+};
 
 export const setAuthToken = (token) => {
   if (token) {
-    console.log('🔑 Setting access token (memory + localStorage fallback)');
+    console.log('🔑 Setting access token in memory only');
     inMemoryAccessToken = token;
     tokenSetTime = Date.now();
-    
-    // Store in localStorage as fallback for page reload survival
-    try {
-      localStorage.setItem(FALLBACK_TOKEN_KEY, token);
-      localStorage.setItem(FALLBACK_TOKEN_TIME_KEY, tokenSetTime.toString());
-    } catch (e) {
-      console.warn('Failed to store token fallback:', e);
-    }
-    
-    // Also clear any legacy localStorage token
-    localStorage.removeItem('token');
-    localStorage.removeItem('tokenSetTime');
+
+    // Clear any deprecated persisted token artifacts.
+    clearPersistedAccessTokenArtifacts();
   } else {
     console.log('🗑️ Clearing access token from memory');
     inMemoryAccessToken = null;
     tokenSetTime = null;
-    
-    // Clear localStorage fallback
-    try {
-      localStorage.removeItem(FALLBACK_TOKEN_KEY);
-      localStorage.removeItem(FALLBACK_TOKEN_TIME_KEY);
-    } catch (e) {
-      console.warn('Failed to clear token fallback:', e);
-    }
-    
-    // Also clear any legacy localStorage token
-    localStorage.removeItem('token');
-    localStorage.removeItem('tokenSetTime');
+
+    clearPersistedAccessTokenArtifacts();
   }
 };
 
@@ -86,26 +76,16 @@ export const getAuthToken = () => {
     return inMemoryAccessToken;
   }
 
-  // Fallback: Check for new localStorage token (hybrid storage)
-  const fallbackToken = localStorage.getItem(FALLBACK_TOKEN_KEY);
-  if (fallbackToken) {
-    console.log('📦 Restoring token from localStorage fallback');
-    inMemoryAccessToken = fallbackToken;
-    tokenSetTime = parseInt(localStorage.getItem(FALLBACK_TOKEN_TIME_KEY) || Date.now().toString());
-    return inMemoryAccessToken;
-  }
-
-  // Fallback: Check for legacy localStorage token (migration path)
-  // This handles the case where user had token in localStorage before upgrade
-  const legacyToken = localStorage.getItem('token');
-  if (legacyToken) {
-    console.log('📦 Migrating legacy token from localStorage to memory');
-    inMemoryAccessToken = legacyToken;
-    tokenSetTime = parseInt(localStorage.getItem('tokenSetTime') || Date.now().toString());
-    // Clear localStorage after migration
-    localStorage.removeItem('token');
-    localStorage.removeItem('tokenSetTime');
-    return inMemoryAccessToken;
+  // Do not restore access tokens from localStorage.
+  // If stale persisted tokens exist from older builds, clear them.
+  if (
+    localStorage.getItem(FALLBACK_TOKEN_KEY) ||
+    localStorage.getItem(FALLBACK_TOKEN_TIME_KEY) ||
+    localStorage.getItem(LEGACY_TOKEN_KEY) ||
+    localStorage.getItem(LEGACY_TOKEN_TIME_KEY)
+  ) {
+    console.warn('Clearing deprecated persisted access-token state');
+    clearPersistedAccessTokenArtifacts();
   }
 
   return null;
@@ -115,10 +95,7 @@ export const getAuthToken = () => {
 export const clearAllTokens = () => {
   inMemoryAccessToken = null;
   tokenSetTime = null;
-  localStorage.removeItem(FALLBACK_TOKEN_KEY);
-  localStorage.removeItem(FALLBACK_TOKEN_TIME_KEY);
-  localStorage.removeItem('token');
-  localStorage.removeItem('tokenSetTime');
+  clearPersistedAccessTokenArtifacts();
   localStorage.removeItem('refreshToken');
 };
 

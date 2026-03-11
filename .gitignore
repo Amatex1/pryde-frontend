@@ -88,4 +88,7 @@ wrangler.toml
 *.pfx
 firebase-adminsdk*.json
 service-account*.json
+pryde-social-firebase-adminsdk-*.json
+R2_ACCESS_KEY_ID=*.txt
+temp_test.json
 
