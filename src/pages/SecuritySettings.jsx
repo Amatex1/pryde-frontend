@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import TwoFactorSetup from '../components/security/TwoFactorSetup';
@@ -9,71 +9,113 @@ import CustomModal from '../components/CustomModal';
 import { useModal } from '../hooks/useModal';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
+import {
+  isPushNotificationSubscribed,
+  subscribeToPushNotifications,
+  unsubscribeFromPushNotifications
+} from '../utils/pushNotifications';
 import './Settings.css';
+
+const DEFAULT_LOGIN_ALERTS = {
+  enabled: true,
+  emailOnNewDevice: true,
+  emailOnSuspiciousLogin: true
+};
+
+function getPushNotificationSupport() {
+  return typeof window !== 'undefined'
+    && typeof navigator !== 'undefined'
+    && 'Notification' in window
+    && 'serviceWorker' in navigator
+    && 'PushManager' in window;
+}
+
+function buildPushLoginStatus(overrides = {}) {
+  return {
+    supported: getPushNotificationSupport(),
+    deviceSubscribed: false,
+    accountEnabled: false,
+    accountHasSubscription: false,
+    preferPushTwoFactor: true,
+    ...overrides
+  };
+}
 
 function SecuritySettings() {
   const navigate = useNavigate();
-  // Get menu handler from AppLayout outlet context
   const { onMenuOpen } = useOutletContext() || {};
   const { modalState, closeModal, showPrompt } = useModal();
-  const { user: currentUser, refreshUser } = useAuth(); // Use centralized auth context
+  const { user: currentUser, refreshUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('success');
   const [twoFactorStatus, setTwoFactorStatus] = useState({
     enabled: false,
     backupCodesRemaining: 0
   });
-  const [loginAlerts, setLoginAlerts] = useState({
-    enabled: true,
-    emailOnNewDevice: true,
-    emailOnSuspiciousLogin: true
-  });
+  const [loginAlerts, setLoginAlerts] = useState(DEFAULT_LOGIN_ALERTS);
+  const [pushLoginStatus, setPushLoginStatus] = useState(buildPushLoginStatus());
+  const [pushActionLoading, setPushActionLoading] = useState(false);
   const [showTwoFactorSetup, setShowTwoFactorSetup] = useState(false);
 
-  useEffect(() => {
-    fetchSecuritySettings();
+  const showStatusMessage = useCallback((text, type = 'success', durationMs = 3000) => {
+    setMessage(text);
+    setMessageType(type);
+
+    if (durationMs > 0) {
+      setTimeout(() => setMessage(''), durationMs);
+    }
   }, []);
 
-  const fetchSecuritySettings = async () => {
+  const syncAuthDerivedSecurityState = useCallback(async () => {
+    const [authResult, deviceSubscribed] = await Promise.all([
+      refreshUser(),
+      isPushNotificationSubscribed()
+    ]);
+
+    const refreshedUser = authResult?.user ?? currentUser;
+
+    setLoginAlerts({
+      ...DEFAULT_LOGIN_ALERTS,
+      ...(refreshedUser?.loginAlerts || {})
+    });
+
+    setPushLoginStatus(buildPushLoginStatus({
+      deviceSubscribed,
+      accountEnabled: refreshedUser?.pushTwoFactorEnabled ?? false,
+      accountHasSubscription: refreshedUser?.hasPushSubscription ?? false,
+      preferPushTwoFactor: refreshedUser?.preferPushTwoFactor ?? true
+    }));
+  }, [currentUser, refreshUser]);
+
+  const fetchSecuritySettings = useCallback(async () => {
     try {
       setLoading(true);
 
-      // Fetch 2FA status with safe defaults
       const twoFactorResponse = await api.get('/2fa/status');
       setTwoFactorStatus({
         enabled: twoFactorResponse.data?.enabled ?? false,
         backupCodesRemaining: twoFactorResponse.data?.backupCodesRemaining ?? 0
       });
 
-      // Refresh user data from API (bypasses cache)
-      await refreshUser();
-
-      // Use user data from context for login alerts
-      if (currentUser?.loginAlerts) {
-        setLoginAlerts({
-          enabled: currentUser.loginAlerts.enabled ?? true,
-          emailOnNewDevice: currentUser.loginAlerts.emailOnNewDevice ?? true,
-          emailOnSuspiciousLogin: currentUser.loginAlerts.emailOnSuspiciousLogin ?? true
-        });
-      }
+      await syncAuthDerivedSecurityState();
     } catch (error) {
       console.error('Failed to fetch security settings:', error);
-      setMessage('Failed to load security settings. Using default values.');
-      // Set safe defaults on error
+      showStatusMessage('Failed to load security settings. Using default values.', 'error');
       setTwoFactorStatus({
         enabled: false,
         backupCodesRemaining: 0
       });
-      setLoginAlerts({
-        enabled: true,
-        emailOnNewDevice: true,
-        emailOnSuspiciousLogin: true
-      });
+      setLoginAlerts(DEFAULT_LOGIN_ALERTS);
+      setPushLoginStatus(buildPushLoginStatus());
     } finally {
-      // CRITICAL: Always set loading to false to prevent infinite loading
       setLoading(false);
     }
-  };
+  }, [showStatusMessage, syncAuthDerivedSecurityState]);
+
+  useEffect(() => {
+    fetchSecuritySettings();
+  }, [fetchSecuritySettings]);
 
   const handleLoginAlertsChange = async (field, value) => {
     try {
@@ -81,11 +123,10 @@ function SecuritySettings() {
       setLoginAlerts(updatedAlerts);
 
       await api.put('/users/profile', { loginAlerts: updatedAlerts });
-      setMessage('Login alert settings updated successfully');
-      setTimeout(() => setMessage(''), 3000);
+      showStatusMessage('Login alert settings updated successfully');
     } catch (error) {
       console.error('Failed to update login alerts:', error);
-      setMessage('Failed to update login alert settings');
+      showStatusMessage('Failed to update login alert settings', 'error');
     }
   };
 
@@ -95,12 +136,11 @@ function SecuritySettings() {
 
     try {
       await api.post('/2fa/disable', { password });
-      setMessage('Two-factor authentication disabled successfully');
       setTwoFactorStatus({ enabled: false, backupCodesRemaining: 0 });
-      setTimeout(() => setMessage(''), 3000);
+      showStatusMessage('Two-factor authentication disabled successfully');
     } catch (error) {
       console.error('Failed to disable 2FA:', error);
-      setMessage(error.response?.data?.message || 'Failed to disable 2FA');
+      showStatusMessage(error.response?.data?.message || 'Failed to disable 2FA', 'error');
     }
   };
 
@@ -110,24 +150,116 @@ function SecuritySettings() {
 
     try {
       const response = await api.post('/2fa/regenerate-backup-codes', { password });
-      
-      // Download backup codes
       const blob = new Blob([response.data.backupCodes.join('\n')], { type: 'text/plain' });
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'pryde-backup-codes.txt';
-      a.click();
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'pryde-backup-codes.txt';
+      link.click();
       window.URL.revokeObjectURL(url);
 
-      setMessage('Backup codes regenerated successfully. Please save them in a secure location.');
-      setTwoFactorStatus({ ...twoFactorStatus, backupCodesRemaining: 10 });
-      setTimeout(() => setMessage(''), 5000);
+      setTwoFactorStatus(prev => ({ ...prev, backupCodesRemaining: 10 }));
+      showStatusMessage('Backup codes regenerated successfully. Please save them in a secure location.', 'success', 5000);
     } catch (error) {
       console.error('Failed to regenerate backup codes:', error);
-      setMessage(error.response?.data?.message || 'Failed to regenerate backup codes');
+      showStatusMessage(error.response?.data?.message || 'Failed to regenerate backup codes', 'error');
     }
   };
+
+  const handleEnablePushNotifications = async () => {
+    try {
+      setPushActionLoading(true);
+      const subscribed = await subscribeToPushNotifications();
+
+      if (!subscribed) {
+        showStatusMessage('Failed to enable notifications on this device', 'error');
+        return;
+      }
+
+      await syncAuthDerivedSecurityState();
+      showStatusMessage('Push notifications enabled on this device');
+    } catch (error) {
+      console.error('Failed to enable push notifications:', error);
+      showStatusMessage('Failed to enable notifications on this device', 'error');
+    } finally {
+      setPushActionLoading(false);
+    }
+  };
+
+  const handleDisablePushNotifications = async () => {
+    try {
+      setPushActionLoading(true);
+      const unsubscribed = await unsubscribeFromPushNotifications();
+
+      if (!unsubscribed) {
+        showStatusMessage('Failed to disable notifications on this device', 'error');
+        return;
+      }
+
+      await syncAuthDerivedSecurityState();
+      showStatusMessage('Push notifications disabled on this device');
+    } catch (error) {
+      console.error('Failed to disable push notifications:', error);
+      showStatusMessage('Failed to disable notifications on this device', 'error');
+    } finally {
+      setPushActionLoading(false);
+    }
+  };
+
+  const handleEnablePushLogin = async () => {
+    if (!pushLoginStatus.accountHasSubscription) {
+      showStatusMessage(
+        'Enable notifications on at least one signed-in device before enabling Push Login Approval.',
+        'error',
+        5000
+      );
+      return;
+    }
+
+    try {
+      setPushActionLoading(true);
+      await api.post('/login-approval/enable');
+      await syncAuthDerivedSecurityState();
+      showStatusMessage('Push login approval enabled successfully');
+    } catch (error) {
+      console.error('Failed to enable push login approval:', error);
+      showStatusMessage(error.response?.data?.message || 'Failed to enable Push Login Approval', 'error');
+    } finally {
+      setPushActionLoading(false);
+    }
+  };
+
+  const handleDisablePushLogin = async () => {
+    try {
+      setPushActionLoading(true);
+      await api.post('/login-approval/disable');
+      await syncAuthDerivedSecurityState();
+      showStatusMessage('Push login approval disabled successfully');
+    } catch (error) {
+      console.error('Failed to disable push login approval:', error);
+      showStatusMessage(error.response?.data?.message || 'Failed to disable Push Login Approval', 'error');
+    } finally {
+      setPushActionLoading(false);
+    }
+  };
+
+  let pushStatusClassName = 'security-status-card alert-warning';
+  let pushStatusIcon = '⚠️';
+  let pushStatusTitle = 'Push login approval is not enabled yet';
+  let pushStatusDescription = 'Enable notifications on a signed-in device, then turn on Push Login Approval for your account.';
+
+  if (!pushLoginStatus.supported) {
+    pushStatusTitle = 'This browser cannot receive push login approvals';
+    pushStatusDescription = 'Use a browser or device with notifications enabled to approve sign-ins with the 2-digit code flow.';
+  } else if (pushLoginStatus.accountEnabled && pushLoginStatus.accountHasSubscription) {
+    pushStatusClassName = 'security-status-card alert-success';
+    pushStatusIcon = '✅';
+    pushStatusTitle = 'Push login approval is enabled and ready';
+    pushStatusDescription = 'New sign-ins can use the 2-digit push approval flow instead of falling back to the 6-digit code.';
+  } else if (pushLoginStatus.accountEnabled && !pushLoginStatus.accountHasSubscription) {
+    pushStatusTitle = 'Push login approval is on, but no subscribed device is available';
+    pushStatusDescription = 'Enable notifications on at least one signed-in device or login will keep falling back to the 6-digit code.';
+  }
 
   if (loading) {
     return (
@@ -150,7 +282,7 @@ function SecuritySettings() {
         <div className="settings-card glossy fade-in">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
             <button
-              onClick={() => navigate('/settings')} 
+              onClick={() => navigate('/settings')}
               className="btn-secondary"
               style={{ padding: '8px 12px' }}
             >
@@ -160,17 +292,15 @@ function SecuritySettings() {
           </div>
 
           {message && (
-            <div className={`message ${message.includes('success') ? 'success' : 'error'}`}>
+            <div className={`message ${messageType === 'success' ? 'success' : 'error'}`}>
               {message}
             </div>
           )}
 
-          {/* Passkeys Section */}
           <div className="settings-section">
             <PasskeyManager />
           </div>
 
-          {/* Two-Factor Authentication Section */}
           <div className="settings-section">
             <h2 className="section-title">Two-Factor Authentication (2FA)</h2>
             <p style={{ color: 'var(--color-text-secondary)', marginBottom: '15px' }}>
@@ -227,14 +357,92 @@ function SecuritySettings() {
                 onSuccess={() => {
                   setShowTwoFactorSetup(false);
                   fetchSecuritySettings();
-                  setMessage('Two-factor authentication enabled successfully!');
-                  setTimeout(() => setMessage(''), 5000);
+                  showStatusMessage('Two-factor authentication enabled successfully!', 'success', 5000);
                 }}
               />
             )}
           </div>
 
-          {/* Login Alerts Section */}
+          <div className="settings-section">
+            <h2 className="section-title">Push Login Approval</h2>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '15px' }}>
+              Approve sign-ins from another device by matching a 2-digit code instead of typing a 6-digit authenticator code.
+            </p>
+
+            <div className={pushStatusClassName} style={{ padding: '15px', borderRadius: '8px', marginBottom: '15px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                <span style={{ fontSize: '24px' }}>{pushStatusIcon}</span>
+                <div>
+                  <strong>{pushStatusTitle}</strong>
+                  <p style={{ margin: '5px 0 0 0', fontSize: '14px' }}>
+                    {pushStatusDescription}
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ marginTop: '10px', fontSize: '14px', display: 'grid', gap: '6px' }}>
+                <div><strong>This device notifications:</strong> {pushLoginStatus.deviceSubscribed ? 'Enabled' : 'Not enabled'}</div>
+                <div><strong>Account ready for push login:</strong> {pushLoginStatus.accountHasSubscription ? 'Yes' : 'No'}</div>
+                <div><strong>Push login approval:</strong> {pushLoginStatus.accountEnabled ? 'Enabled' : 'Disabled'}</div>
+                {pushLoginStatus.accountEnabled && pushLoginStatus.preferPushTwoFactor && (
+                  <div><strong>Login preference:</strong> Push approval is preferred over the 6-digit code when a subscribed device is available.</div>
+                )}
+              </div>
+
+              {pushLoginStatus.supported && (
+                <div style={{ marginTop: '15px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                  {pushLoginStatus.deviceSubscribed ? (
+                    <button
+                      onClick={handleDisablePushNotifications}
+                      className="btn-secondary"
+                      disabled={pushActionLoading}
+                    >
+                      🔕 Disable Notifications on This Device
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleEnablePushNotifications}
+                      className="btn-secondary"
+                      disabled={pushActionLoading}
+                    >
+                      🔔 Enable Notifications on This Device
+                    </button>
+                  )}
+
+                  {pushLoginStatus.accountEnabled ? (
+                    <button
+                      onClick={handleDisablePushLogin}
+                      className="btn-danger"
+                      disabled={pushActionLoading}
+                    >
+                      ❌ Disable Push Login Approval
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleEnablePushLogin}
+                      className="btn-primary"
+                      disabled={pushActionLoading || !pushLoginStatus.accountHasSubscription}
+                    >
+                      🔐 Enable Push Login Approval
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {!pushLoginStatus.accountHasSubscription && pushLoginStatus.supported && (
+                <p style={{ marginTop: '12px', fontSize: '14px', color: 'var(--text-muted)' }}>
+                  Enable notifications on at least one signed-in device first, then turn on Push Login Approval.
+                </p>
+              )}
+
+              {pushActionLoading && (
+                <p style={{ marginTop: '12px', fontSize: '14px', color: 'var(--text-muted)' }}>
+                  Updating push login settings...
+                </p>
+              )}
+            </div>
+          </div>
+
           <div className="settings-section">
             <h2 className="section-title">Login Alerts</h2>
             <p style={{ color: 'var(--text-muted)', marginBottom: '15px' }}>
@@ -243,12 +451,12 @@ function SecuritySettings() {
 
             <div className="setting-item toggle-item">
               <div className="toggle-info">
-                <label>Enable login alerts</label>
+                <span>Enable login alerts</span>
                 <p className="setting-description">
                   Receive email notifications when you log in
                 </p>
               </div>
-              <label className="toggle-switch">
+              <label className="toggle-switch" aria-label="Enable login alerts">
                 <input
                   type="checkbox"
                   checked={loginAlerts.enabled}
@@ -260,12 +468,12 @@ function SecuritySettings() {
 
             <div className={`setting-item toggle-item ${!loginAlerts.enabled ? 'disabled' : ''}`}>
               <div className="toggle-info">
-                <label>Email on new device login</label>
+                <span>Email on new device login</span>
                 <p className="setting-description">
                   Get notified when you log in from a device we don't recognize
                 </p>
               </div>
-              <label className="toggle-switch">
+              <label className="toggle-switch" aria-label="Email on new device login">
                 <input
                   type="checkbox"
                   checked={loginAlerts.emailOnNewDevice}
@@ -278,12 +486,12 @@ function SecuritySettings() {
 
             <div className={`setting-item toggle-item ${!loginAlerts.enabled ? 'disabled' : ''}`}>
               <div className="toggle-info">
-                <label>Email on suspicious login</label>
+                <span>Email on suspicious login</span>
                 <p className="setting-description">
                   Get alerted if we detect unusual login activity
                 </p>
               </div>
-              <label className="toggle-switch">
+              <label className="toggle-switch" aria-label="Email on suspicious login">
                 <input
                   type="checkbox"
                   checked={loginAlerts.emailOnSuspiciousLogin}
@@ -295,12 +503,10 @@ function SecuritySettings() {
             </div>
           </div>
 
-          {/* Recovery Contacts Section */}
           <div className="settings-section">
             <RecoveryContacts />
           </div>
 
-          {/* Active Sessions Section */}
           <div className="settings-section">
             <h2 className="section-title">Active Sessions</h2>
             <p style={{ color: 'var(--text-muted)', marginBottom: '15px' }}>
