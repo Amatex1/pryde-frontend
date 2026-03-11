@@ -32,13 +32,14 @@
 
 .navbar-inner,
 .navbar-container {
-  max-width: 1400px;
+  width: 100%;
+  max-width: var(--page-max-width, 1140px);
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  padding: 0 var(--space-4);
+  padding: 0;
   /* Overflow visible for dropdowns */
   overflow: visible;
 }
@@ -730,8 +731,8 @@
   }
 }
 
-/* Tablet - hide nav button labels, show only icons */
-@media (max-width: 1024px) {
+/* Compact navbar - hide nav button labels through the shared mobile/tablet contract */
+@media (max-width: 1280px) {
   .nav-button .nav-label {
     display: none;
   }
@@ -751,8 +752,8 @@
   }
 }
 
-/* Mobile & Tablet - Show mobile group up to 1023px (matches MobileNavDrawer visibility) */
-@media (max-width: 1023px) {
+/* Mobile & Tablet - Shared navigation contract up to 1280px */
+@media (max-width: 1280px) {
   /* Show the mobile right group (messages + bell + hamburger) */
   .navbar-mobile-right {
     display: flex;
@@ -1149,7 +1150,7 @@
    DESKTOP NAVBAR — AUTHORITATIVE LAYOUT OVERRIDE
    ===================================================== */
 
-@media (min-width: 1024px) {
+@media (min-width: 1281px) {
 
   /* --- Base navbar grid --- */
   .navbar {
@@ -1200,6 +1201,10 @@
   }
 
   /* --- Kill hamburger completely on desktop --- */
+  .navbar-mobile-right,
+  .mobile-hamburger-btn,
+  .mobile-menu,
+  .mobile-menu-overlay,
   .hamburger,
   .menu-toggle,
   .mobile-menu-button,

@@ -12,6 +12,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { Outlet } from 'react-router-dom';
 import PageErrorBoundary from '../components/PageErrorBoundary';
+import PageViewport from './PageViewport';
 import MobileNav from '../mobile/MobileNav';
 import MobileNavDrawer from './MobileNavDrawer';
 import './FullViewportLayout.css';
@@ -29,7 +30,7 @@ export default function FullViewportLayout() {
   }, []);
 
   return (
-    <div className="full-viewport-layout">
+    <PageViewport className="full-viewport-layout">
       <PageErrorBoundary pageName="Full Viewport Layout">
         <Outlet context={{
           onMenuOpen: handleMenuOpen,
@@ -48,7 +49,7 @@ export default function FullViewportLayout() {
         onClose={handleMenuClose}
         returnFocusRef={mobileNavTriggerRef}
       />
-    </div>
+    </PageViewport>
   );
 }
 

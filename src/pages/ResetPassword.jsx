@@ -43,7 +43,7 @@ function ResetPassword() {
     }
 
     // Validate password complexity (must match signup requirements)
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/])/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_+\-=[\]{};':"\\|,.<>/])/;
     if (!passwordRegex.test(newPassword)) {
       setError('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character');
       setLoading(false);

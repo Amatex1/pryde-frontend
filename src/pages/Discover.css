@@ -3,9 +3,8 @@
    ======================================== */
 
 .discover-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: var(--space-6) var(--space-4);
+  width: 100%;
+  padding-block: var(--space-6) var(--space-8);
 }
 
 .discover-header {
@@ -28,8 +27,9 @@
 /* Phase 2C: Renamed from tags-grid to discover-groups-grid */
 .discover-groups-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
   gap: var(--space-4);
+  align-items: stretch;
 }
 
 .discover-group-card {
@@ -155,34 +155,9 @@
   padding: var(--space-6);
 }
 
-/* Tablet: 2 columns */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .discover-groups-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Desktop: 3 columns */
-@media (min-width: 1025px) and (max-width: 1440px) {
-  .discover-groups-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* Large monitors: 4 columns max */
-@media (min-width: 1441px) {
-  .discover-groups-grid {
-    grid-template-columns: repeat(4, 1fr);
-    max-width: 1600px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
-/* Mobile: 1 column */
 @media (max-width: 768px) {
-  .discover-groups-grid {
-    grid-template-columns: 1fr;
+  .discover-container {
+    padding-block: var(--space-5) var(--space-7);
   }
 
   .discover-header h1 {

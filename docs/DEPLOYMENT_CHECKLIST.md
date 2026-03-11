@@ -25,14 +25,16 @@ Use this checklist to ensure a smooth deployment of Pryde Social.
 
 ### Setup
 - [ ] Render account created
-- [ ] New Web Service created (Standard plan — $7/mo)
+- [ ] New Web Service created (current live service uses the Starter plan)
 - [ ] GitHub repository connected
 - [ ] Service configured:
   - [ ] Name: pryde-backend
-  - [ ] Build Command: `node scripts/update-version.js && cd server && npm install`
-  - [ ] Start Command: `cd server && npm start`
+  - [ ] Root Directory: `server`
+  - [ ] Build Command: `npm install && node scripts/update-version.js`
+  - [ ] Start Command: `node server.js`
   - [ ] Environment: Node
-  - [ ] Region: Oregon
+  - [ ] Region: Singapore
+  - [ ] Auto-Deploy Branch: `main`
 
 ### Environment Variables (set in Render Dashboard → Environment tab)
 - [ ] `NODE_ENV` = `production`
@@ -50,6 +52,8 @@ Use this checklist to ensure a smooth deployment of Pryde Social.
 - [ ] `VAPID_PUBLIC_KEY` = Generated VAPID public key
 - [ ] `VAPID_PRIVATE_KEY` = Generated VAPID private key
 - [ ] `RESEND_API_KEY` = Resend.com API key
+- [ ] `REDIS_URL` connected if using the Render Redis instance
+- [ ] `R2_ENABLED` and `R2_PUBLIC_URL` set if media should be served from Cloudflare R2/CDN
 
 ### Verification
 - [ ] Deployment completed successfully
@@ -72,6 +76,7 @@ Use this checklist to ensure a smooth deployment of Pryde Social.
 - [ ] `VITE_HCAPTCHA_SITE_KEY` = hCaptcha site key
 - [ ] `VITE_VAPID_PUBLIC_KEY` = VAPID public key (same as backend)
 - [ ] `VITE_API_URL` and `VITE_SOCKET_URL` left unset unless an intentional override is required
+- [ ] `VITE_CDN_URL` left unset unless media is intentionally served from Cloudflare; if set, it matches backend `R2_PUBLIC_URL` (for example `https://media.prydeapp.com`)
 
 ### Custom Domain
 - [ ] Domain added in Vercel Dashboard → Domains
@@ -102,6 +107,7 @@ Use this checklist to ensure a smooth deployment of Pryde Social.
 - [ ] Page refresh works (no 404 errors)
 - [ ] API calls successful (F12 → Network tab)
 - [ ] Auth requests go to `https://api.prydeapp.com`
+- [ ] Avatar/cover media loads from the expected backend or CDN origin
 
 ### Integration Tests
 - [ ] User registration works
@@ -148,7 +154,7 @@ Use this checklist to ensure a smooth deployment of Pryde Social.
 ### Backend (Render)
 - [ ] Render dashboard bookmarked
 - [ ] Email notifications enabled in Render account settings
-- [ ] Health check path configured: `/api/health`
+- [ ] Health endpoint monitored: `GET /api/health`
 - [ ] Log monitoring set up
 
 ### Frontend (Vercel)

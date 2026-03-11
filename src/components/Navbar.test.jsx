@@ -3,17 +3,12 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import Navbar from './Navbar';
 
 const mockNavigate = vi.fn();
-const mockUseMediaQuery = vi.fn();
 const mockUseOutletContext = vi.fn();
 
 vi.mock('react-router-dom', () => ({
   Link: ({ children, to, ...props }) => <a href={to} {...props}>{children}</a>,
   useNavigate: () => mockNavigate,
   useOutletContext: () => mockUseOutletContext(),
-}));
-
-vi.mock('react-responsive', () => ({
-  useMediaQuery: (...args) => mockUseMediaQuery(...args),
 }));
 
 vi.mock('../utils/auth', () => ({ logout: vi.fn() }));
@@ -43,7 +38,6 @@ vi.mock('../hooks/useUnreadMessages', () => ({ useUnreadMessages: () => ({ total
 describe('Navbar', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseMediaQuery.mockReturnValue(false);
     mockUseOutletContext.mockReturnValue({
       isMobileNavOpen: false,
       onMenuClose: vi.fn(),

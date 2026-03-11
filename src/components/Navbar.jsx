@@ -7,7 +7,6 @@ import {
   Telescope, Palette, User, LogOut,
   ChevronUp, ChevronDown, Check,
 } from 'lucide-react';
-import { useMediaQuery } from 'react-responsive';
 import { logout } from '../utils/auth';
 import { getImageUrl } from '../utils/imageUrl';
 import { prefetchRoute, prefetchOnIdle } from '../utils/routePrefetch';
@@ -38,7 +37,6 @@ function Navbar({ onMenuClick }) {
     onMenuClose,
     mobileNavTriggerRef,
   } = useOutletContext() ?? {};
-  const isDesktop = useMediaQuery({ minWidth: 1024 });
   const { user, updateUser, clearUser } = useAuth(); // Use centralized auth context
   const [showDropdown, setShowDropdown] = useState(false);
   // Internal mobile menu state - only used if onMenuClick is not provided
@@ -176,54 +174,52 @@ function Navbar({ onMenuClick }) {
       </div>
 
         {/* Mobile right group: Messages + Notifications + Hamburger */}
-        {!isDesktop && (
-          <div className="navbar-mobile-right">
-            {/* Quick-access: Messages with unread badge */}
-            <Link
-              to="/messages"
-              className="navbar-mobile-icon-btn"
-              aria-label={totalUnread > 0 ? `Messages, ${totalUnread} unread` : 'Messages'}
-              data-tooltip="Messages"
-            >
-              <MessageCircle {...LUCIDE_DEFAULTS} aria-hidden="true" className="navbar-mobile-icon" />
-              {totalUnread > 0 && (
-                <span className="navbar-mobile-badge" aria-hidden="true">
-                  {totalUnread > 9 ? '9+' : totalUnread}
-                </span>
-              )}
-            </Link>
+        <div className="navbar-mobile-right">
+          {/* Quick-access: Messages with unread badge */}
+          <Link
+            to="/messages"
+            className="navbar-mobile-icon-btn"
+            aria-label={totalUnread > 0 ? `Messages, ${totalUnread} unread` : 'Messages'}
+            data-tooltip="Messages"
+          >
+            <MessageCircle {...LUCIDE_DEFAULTS} aria-hidden="true" className="navbar-mobile-icon" />
+            {totalUnread > 0 && (
+              <span className="navbar-mobile-badge" aria-hidden="true">
+                {totalUnread > 9 ? '9+' : totalUnread}
+              </span>
+            )}
+          </Link>
 
-            {/* Quick-access: Notification bell (reuses existing component with its live badge) */}
-            <NotificationBell />
+          {/* Quick-access: Notification bell (reuses existing component with its live badge) */}
+          <NotificationBell />
 
-            {/* Search icon — navigates to full search page */}
-            <button
-              className="navbar-mobile-icon-btn"
-              onClick={() => navigate('/search')}
-              aria-label="Search"
-              data-tooltip="Search"
-            >
-              <Search {...LUCIDE_DEFAULTS} aria-hidden="true" className="navbar-mobile-icon" />
-            </button>
+          {/* Search icon — navigates to full search page */}
+          <button
+            className="navbar-mobile-icon-btn"
+            onClick={() => navigate('/search')}
+            aria-label="Search"
+            data-tooltip="Search"
+          >
+            <Search {...LUCIDE_DEFAULTS} aria-hidden="true" className="navbar-mobile-icon" />
+          </button>
 
-            {/* Hamburger — opens side drawer */}
-            <button
-              ref={isExternallyControlled ? mobileNavTriggerRef : null}
-              className="mobile-hamburger-btn"
-              type="button"
-              onClick={handleHamburgerClick}
-              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={isMobileMenuOpen}
-              aria-controls="mobile-menu"
-              data-tooltip="Menu"
-            >
-              <Menu {...LUCIDE_DEFAULTS} aria-hidden="true" />
-            </button>
-          </div>
-        )}
+          {/* Hamburger — opens side drawer */}
+          <button
+            ref={isExternallyControlled ? mobileNavTriggerRef : null}
+            className="mobile-hamburger-btn"
+            type="button"
+            onClick={handleHamburgerClick}
+            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-menu"
+            data-tooltip="Menu"
+          >
+            <Menu {...LUCIDE_DEFAULTS} aria-hidden="true" />
+          </button>
+        </div>
 
         {/* Mobile Menu Overlay - Only render when using internal state (legacy) */}
-        {!isExternallyControlled && !isDesktop && showMobileMenu && (
+        {!isExternallyControlled && showMobileMenu && (
           <div
             className="mobile-menu-overlay"
             onClick={() => setShowMobileMenu(false)}
@@ -233,7 +229,7 @@ function Navbar({ onMenuClick }) {
 
         {/* Mobile Menu - Only render when using internal state (legacy) */}
         {/* When externally controlled, MobileNavDrawer handles the menu */}
-        {!isExternallyControlled && !isDesktop && (
+        {!isExternallyControlled && (
         <div
           id="mobile-menu"
           className={`mobile-menu ${showMobileMenu ? 'mobile-menu-visible' : ''}`}

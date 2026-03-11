@@ -86,6 +86,7 @@ function Messages() {
   const [isTyping, setIsTyping] = useState(false);
   const [showNewChatModal, setShowNewChatModal] = useState(false);
   const [showNewGroupModal, setShowNewGroupModal] = useState(false);
+  const isGroupChatCreationEnabled = false;
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -2526,7 +2527,7 @@ function Messages() {
         )}
 
         {/* New Group Modal - Hidden for Plan A */}
-        {false && showNewGroupModal && (
+        {isGroupChatCreationEnabled && showNewGroupModal && (
           <div className="modal-overlay" onClick={() => setShowNewGroupModal(false)}>
             <div className="modal-content glossy" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">

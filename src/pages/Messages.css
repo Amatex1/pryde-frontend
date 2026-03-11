@@ -4276,78 +4276,19 @@
 }
 
 /* =========================================================
-   MESSAGES PAGE - FULL VIEWPORT LAYOUT
-   No page-container class - direct viewport control
+   MESSAGES SHELL NORMALIZATION
+   Keep Messages inside the shared FullViewportLayout shell.
+   Feature CSS may shape the chat lanes, but must not own
+   body/#root or force a separate viewport.
    ========================================================= */
 
-/* Override #root padding when Messages page is showing */
-#root:has(.messages-page) {
-  padding: 0 !important;
-}
-
-/* Override body padding in PWA mode */
-body:has(.messages-page) {
-  padding: 0 !important;
-}
-
-/* Messages page fills entire viewport */
-.messages-page {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  height: 100dvh !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  overflow: hidden !important;
-  display: flex !important;
-  flex-direction: column !important;
-  background: var(--bg-page, #1a1a2e) !important;
-}
-
-/* NAVBAR: First child, flush at top */
-.messages-page > nav.navbar,
-.messages-page > nav.navbar.glossy {
-  position: relative !important;
-  flex-shrink: 0 !important;
-  width: 100% !important;
-  margin: 0 !important;
-  padding: 0 16px !important;
-  border-radius: 0 !important;
-  z-index: 100 !important;
-}
-
-@media (min-width: 1024px) {
-  .messages-page > nav.navbar,
-  .messages-page > nav.navbar.glossy {
-    padding: 0 24px !important;
-    min-height: 60px !important;
-  }
-}
-
-/* Messages container fills remaining space */
-.messages-page > .messages-container {
-  flex: 1 !important;
-  overflow: hidden !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  height: auto !important;
-}
-
-/* COMPOSER CONTAINER: Truly full width */
+/* Composer helpers stay lane-scoped and do not change shell ownership */
 .messages-page .chat-input-area,
 .messages-page .chat-input-wrapper,
 .messages-page .composer-container {
   max-width: none !important;
   width: 100% !important;
   margin: 0 !important;
-  padding: 8px 12px !important;
-  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0)) !important;
   box-sizing: border-box !important;
 }
 
@@ -4648,78 +4589,5 @@ body:has(.messages-page) {
     border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08)) !important;
     border-radius: 24px !important;
     padding: 6px 12px !important;
-  }
-
-  /* Legacy desktop: keep the composer visible inside the fixed viewport shell */
-  .messages-page > .messages-container {
-    display: flex !important;
-    min-height: 0 !important;
-  }
-
-  .messages-page .messages-layout {
-    display: grid !important;
-    grid-template-columns: 300px minmax(0, 1fr) !important;
-    align-items: stretch !important;
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
-    width: 100% !important;
-    overflow: hidden !important;
-  }
-
-  .messages-page .conversations-sidebar,
-  .messages-page .chat-area,
-  .messages-page .messages-info {
-    grid-row: 1 !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
-  }
-
-  .messages-page .conversations-sidebar {
-    grid-column: 1 !important;
-  }
-
-  .messages-page .chat-area {
-    grid-column: 2 !important;
-    min-height: 0 !important;
-    overflow: hidden !important;
-  }
-
-  .messages-page .messages-info {
-    grid-column: 3 !important;
-  }
-
-  .messages-page .chat-messages {
-    flex: 1 1 auto !important;
-    height: auto !important;
-    min-height: 0 !important;
-    padding-left: clamp(16px, 2vw, 24px) !important;
-    padding-right: clamp(16px, 2vw, 24px) !important;
-  }
-
-  .messages-page .conversation-wrapper {
-    width: 100% !important;
-    max-width: none !important;
-  }
-
-  .messages-page .conversation-inner {
-    width: 100% !important;
-    max-width: 880px !important;
-    margin: 0 auto !important;
-    padding: 0 !important;
-  }
-
-  .messages-page .chat-input-area {
-    position: relative !important;
-    bottom: auto !important;
-    z-index: auto !important;
-    flex-shrink: 0 !important;
-    align-items: stretch !important;
-  }
-}
-
-@media (min-width: 1280px) {
-  .messages-page .messages-layout {
-    grid-template-columns: 300px minmax(0, 1fr) 320px !important;
   }
 }

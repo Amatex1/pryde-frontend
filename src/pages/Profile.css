@@ -246,9 +246,9 @@
   gap: var(--profile-layout-gap);
   align-items: start;
 
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: var(--profile-layout-padding-y) var(--profile-layout-padding-x);
+  max-width: none;
+  margin: 0;
+  padding: var(--profile-layout-padding-y) 0;
 
   width: 100%;
   box-sizing: border-box;
@@ -276,16 +276,17 @@
       "main"
       "sidebar";
     gap: 20px;
-    padding: 16px 20px;
+    padding: 16px 0;
   }
 }
 
 /* Profile container uses fluid max-width */
 .profile-page .profile-container,
 .profile-container {
-  max-width: 1400px; /* Limit width on large monitors for readability */
-  margin: 0 auto;
-  padding: 0 var(--fluid-space-md);
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
 }
 
 /* ========================================
@@ -1612,9 +1613,9 @@
   align-items: start;
   margin-bottom: 24px;
   width: 100%;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 /* Desktop: Two column layout with sidebar */
@@ -1622,7 +1623,7 @@
   .create-post-layout {
     grid-template-columns: 1fr 320px;
     gap: 24px;
-    max-width: 1400px;
+    max-width: none;
   }
 }
 
@@ -1631,7 +1632,7 @@
   .create-post-layout {
     grid-template-columns: 1fr 360px;
     gap: 32px;
-    max-width: 1600px;
+    max-width: none;
   }
 }
 
@@ -3007,7 +3008,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   }
 
   .profile-container {
-    padding: 0 1rem 1rem;
+    padding: 0 0 1rem;
     min-height: auto;
     height: auto;
     max-height: none;
@@ -3064,7 +3065,7 @@ html:not([data-theme="dark"]):not([data-quiet-mode="true"]) .section-title {
   /* Ensure create-post-layout doesn't squish */
   .create-post-layout {
     width: 100%;
-    max-width: 100%;
+    max-width: none;
     padding: 0;
   }
 

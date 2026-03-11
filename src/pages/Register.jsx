@@ -116,7 +116,7 @@ function Register({ onLoginSuccess }) {
     if (/[a-z]/.test(password)) score += 1;
     if (/[A-Z]/.test(password)) score += 1;
     if (/[0-9]/.test(password)) score += 1;
-    if (/[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/]/.test(password)) score += 1;
+    if (/[@$!%*?&#^()_+\-=[\]{};':"\\|,.<>/]/.test(password)) score += 1;
 
     // Determine label and color
     if (score <= 2) {
@@ -234,7 +234,7 @@ function Register({ onLoginSuccess }) {
     }
 
     // Validate password complexity - must match backend requirements
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/])/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_+\-=[\]{};':"\\|,.<>/])/;
     if (!passwordRegex.test(formData.password)) {
       setError('Your password needs at least one uppercase letter, one lowercase letter, one number, and one special character.');
       return;

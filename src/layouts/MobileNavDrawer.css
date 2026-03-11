@@ -2,7 +2,7 @@
  * MobileNavDrawer - Mobile navigation drawer styles
  * 
  * VISIBILITY: Controlled by CSS media queries
- * - Hidden on desktop (min-width: 1024px)
+ * - Hidden on desktop (min-width: 1281px)
  * - Visible on mobile/tablet
  */
 
@@ -212,7 +212,7 @@
 /* ======================================
    DESKTOP: Hide drawer completely
    ====================================== */
-@media (min-width: 1024px) {
+@media (min-width: 1281px) {
   .mobile-nav-overlay,
   .mobile-nav-drawer {
     display: none !important;
@@ -256,7 +256,7 @@
 }
 
 /* Ensure mobile-only triggers never appear on desktop */
-@media (min-width: 1024px) {
+@media (min-width: 1281px) {
   .admin-mobile-toggle,
   .mobile-hamburger-btn {
     display: none;

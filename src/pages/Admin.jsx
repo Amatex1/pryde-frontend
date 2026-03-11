@@ -45,6 +45,7 @@ function Admin() {
   const [broadcastResult, setBroadcastResult] = useState(null);
   const [maintenanceStatus, setMaintenanceStatus] = useState(null);
   const [maintenanceLoading, setMaintenanceLoading] = useState(false);
+  const [securityLoading, setSecurityLoading] = useState(() => getTabFromUrl() === 'security');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
@@ -69,6 +70,7 @@ function Admin() {
   useEffect(() => {
     const tab = getTabFromUrl();
     if (tab !== activeTab) {
+      setSecurityLoading(tab === 'security');
       setActiveTab(tab);
     }
   }, [location.search]);
@@ -190,6 +192,7 @@ function Admin() {
   }, [activeTab, stats]);
 
   const handleTabChange = (tab) => {
+    setSecurityLoading(tab === 'security');
     setActiveTab(tab);
     navigate(`/admin?tab=${tab}`);
   };
@@ -243,6 +246,12 @@ function Admin() {
   };
 
   const loadTabData = async () => {
+    const isSecurityTab = activeTab === 'security';
+
+    if (isSecurityTab) {
+      setSecurityLoading(true);
+    }
+
     try {
       if (activeTab === 'dashboard') {
         const response = await api.get('/admin/stats');
@@ -256,7 +265,6 @@ function Admin() {
           api.get('/admin/users'),
           api.get('/badges/admin/catalog').catch(() => api.get('/badges'))
         ]);
-        console.log('Users data:', usersResponse.data.users);
         setUsers(usersResponse.data.users);
         // Flatten badges catalog if needed
         const allBadges = badgesResponse.data?.automatic?.badges
@@ -314,6 +322,10 @@ function Admin() {
     } catch (error) {
       console.error('Load data error:', error);
       setError('Failed to load data');
+    } finally {
+      if (isSecurityTab) {
+        setSecurityLoading(false);
+      }
     }
   };
 
@@ -542,87 +554,39 @@ function Admin() {
     return (
       <div className="page-container">
         <Navbar onMenuClick={onMenuOpen} />
-        <div className="admin-loading">🔒 Verifying admin access...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="page-container">
-        <Navbar onMenuClick={onMenuOpen} />
-        <div className="admin-error">
-          <h2>⛔ {error}</h2>
-          <p>Redirecting to home...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Loading state
-  if (loading) {
-    return (
-      <div className="page-container">
-        <Navbar onMenuClick={onMenuOpen} />
-        <div className="admin-container">
-          <div className="admin-header">
-            <h1>🛡️ Admin Panel</h1>
-            <p className="admin-subtitle">Verifying admin access...</p>
-          </div>
-          <div style={{ textAlign: 'center', padding: '3rem' }}>
-            <div className="loading-spinner" style={{
-              border: '4px solid #f3f3f3',
-              borderTop: '4px solid #6C5CE7',
-              borderRadius: '50%',
-              width: '50px',
-              height: '50px',
-              animation: 'spin 1s linear infinite',
-              margin: '0 auto'
-            }}></div>
-            <p style={{ marginTop: '1rem', color: 'var(--text-muted)' }}>Loading admin panel...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Error state
-  if (error) {
-    return (
-      <div className="page-container">
-        <Navbar onMenuClick={onMenuOpen} />
-        <div className="admin-container">
-          <div className="admin-header">
-            <h1>🛡️ Admin Panel</h1>
-            <p className="admin-subtitle">Access Denied</p>
-          </div>
-          <div style={{
-            textAlign: 'center',
-            padding: '3rem',
-            background: 'var(--warning)',
-            borderRadius: '12px',
-            margin: '2rem 0',
-            border: '2px solid var(--warning)'
-          }}>
-            <h2 style={{ color: 'white', marginBottom: '1rem' }}>⚠️ {error}</h2>
-            <p style={{ color: 'white', marginBottom: '1rem' }}>
-              Redirecting to home page in 5 seconds...
+        <div className="admin-container admin-state-shell">
+          <section className="admin-card admin-state admin-state--loading" role="status" aria-live="polite">
+            <p className="admin-state__eyebrow">Admin Panel</p>
+            <h1 className="admin-state__title">🔒 Verifying admin access...</h1>
+            <p className="admin-state__message">
+              Checking your session and loading the admin workspace.
             </p>
-            <button
-              onClick={() => navigate('/')}
-              style={{
-                padding: '0.75rem 1.5rem',
-                background: '#6C5CE7',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '1rem'
-              }}
-            >
-              Go to Home Page
-            </button>
-          </div>
+          </section>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="page-container">
+        <Navbar onMenuClick={onMenuOpen} />
+        <div className="admin-container admin-state-shell">
+          <section className="admin-card admin-state admin-state--error" role="alert">
+            <p className="admin-state__eyebrow">Admin Panel</p>
+            <h1 className="admin-state__title">⛔ Access issue</h1>
+            <p className="admin-state__message">{error}</p>
+            <p className="admin-state__meta">Redirecting to home in a few seconds, or you can leave now.</p>
+            <div className="admin-state__actions">
+              <button
+                type="button"
+                className="admin-state__button"
+                onClick={() => navigate('/')}
+              >
+                Go to Home
+              </button>
+            </div>
+          </section>
         </div>
       </div>
     );
@@ -754,12 +718,18 @@ function Admin() {
           <ActivityTab activity={activity} onViewPost={handleViewPost} />
         )}
         {activeTab === 'security' && (
-          loading ? (
-            <div className="loading-state">
-              <div className="shimmer" style={{ height: '100px', borderRadius: '12px', marginBottom: '1rem' }}></div>
-              <div className="shimmer" style={{ height: '60px', borderRadius: '12px', marginBottom: '1rem' }}></div>
-              <div className="shimmer" style={{ height: '60px', borderRadius: '12px', marginBottom: '1rem' }}></div>
-              <div className="shimmer" style={{ height: '60px', borderRadius: '12px' }}></div>
+          securityLoading ? (
+            <div
+              className="loading-state loading-state--stack security-loading-state"
+              role="status"
+              aria-live="polite"
+              aria-label="Loading security logs"
+            >
+              <p className="loading-state__message">Loading security logs...</p>
+              <div className="security-loading-skeleton security-loading-skeleton--hero" aria-hidden="true"></div>
+              <div className="security-loading-skeleton security-loading-skeleton--row" aria-hidden="true"></div>
+              <div className="security-loading-skeleton security-loading-skeleton--row" aria-hidden="true"></div>
+              <div className="security-loading-skeleton security-loading-skeleton--row" aria-hidden="true"></div>
             </div>
           ) : (
             <SecurityTab
@@ -800,23 +770,17 @@ function Admin() {
               </p>
 
               {/* Status Card */}
-              <div style={{
-                background: 'var(--card-surface)',
-                padding: '1.5rem',
-                borderRadius: '12px',
-                marginBottom: '1.5rem',
-                border: `2px solid ${maintenanceStatus?.enabled ? '#ef4444' : '#10b981'}`
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                  <span style={{ fontSize: '2rem' }}>
+              <div className={`maintenance-status ${maintenanceStatus?.enabled ? 'maintenance-status--enabled' : 'maintenance-status--disabled'}`}>
+                <div className="maintenance-status__header">
+                  <span className="maintenance-status__icon" aria-hidden="true">
                     {maintenanceStatus?.enabled ? '🚫' : '✅'}
                   </span>
                   <div>
-                    <h3 style={{ margin: 0 }}>
+                    <h3 className="maintenance-status__title">
                       {maintenanceStatus?.enabled ? 'Maintenance Mode Active' : 'Site is Live'}
                     </h3>
                     {maintenanceStatus?.enabled && maintenanceStatus.message && (
-                      <p style={{ margin: '0.5rem 0 0', color: 'var(--text-muted)' }}>
+                      <p className="maintenance-status__message">
                         Message: {maintenanceStatus.message}
                       </p>
                     )}
@@ -825,9 +789,10 @@ function Admin() {
               </div>
 
               {/* Toggle Button */}
-              <div style={{ marginBottom: '1.5rem' }}>
+              <div className="maintenance-actions">
                 {maintenanceStatus?.enabled ? (
                   <button
+                    className="maintenance-action-button maintenance-action-button--disable"
                     onClick={async () => {
                       setMaintenanceLoading(true);
                       try {
@@ -841,22 +806,12 @@ function Admin() {
                       }
                     }}
                     disabled={maintenanceLoading}
-                    style={{
-                      padding: '1rem 2rem',
-                      background: 'linear-gradient(135deg, #10b981, #059669)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '12px',
-                      cursor: maintenanceLoading ? 'not-allowed' : 'pointer',
-                      fontSize: '1rem',
-                      fontWeight: '600',
-                      opacity: maintenanceLoading ? 0.7 : 1
-                    }}
                   >
                     {maintenanceLoading ? 'Disabling...' : '🟢 Disable Maintenance Mode'}
                   </button>
                 ) : (
                   <button
+                    className="maintenance-action-button maintenance-action-button--enable"
                     onClick={async () => {
                       const message = await showPrompt(
                         'Enter a message to show users (optional):',
@@ -876,17 +831,6 @@ function Admin() {
                       }
                     }}
                     disabled={maintenanceLoading}
-                    style={{
-                      padding: '1rem 2rem',
-                      background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '12px',
-                      cursor: maintenanceLoading ? 'not-allowed' : 'pointer',
-                      fontSize: '1rem',
-                      fontWeight: '600',
-                      opacity: maintenanceLoading ? 0.7 : 1
-                    }}
                   >
                     {maintenanceLoading ? 'Enabling...' : '🔴 Enable Maintenance Mode'}
                   </button>
@@ -1131,8 +1075,8 @@ function ReportsTab({ reports, onResolve }) {
               )}
               <div>
                 <div><strong>{user.displayName || user.username}</strong></div>
-                <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.9em' }}>@{user.username}</div>
-                <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.9em' }}>{user.email}</div>
+                <div className="preview-meta">@{user.username}</div>
+                <div className="preview-meta">{user.email}</div>
               </div>
             </div>
             {user.bio && <p className="preview-content">{user.bio}</p>}
@@ -1148,7 +1092,9 @@ function ReportsTab({ reports, onResolve }) {
     <div className="reports-list">
       <h2>Pending Reports</h2>
       {reports.length === 0 ? (
-        <p className="empty-state">No pending reports</p>
+        <div className="no-data" role="status" aria-live="polite">
+          <p>No pending reports.</p>
+        </div>
       ) : (
         reports.map(report => (
           <div key={report._id} className="report-card">
@@ -1165,15 +1111,6 @@ function ReportsTab({ reports, onResolve }) {
               <button
                 className="btn-preview"
                 onClick={() => setExpandedReport(expandedReport === report._id ? null : report._id)}
-                style={{
-                  marginTop: '10px',
-                  padding: '8px 16px',
-                  background: 'var(--pryde-purple)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer'
-                }}
               >
                 {expandedReport === report._id ? '🔼 Hide Preview' : '🔽 Show Content Preview'}
               </button>
@@ -1207,12 +1144,30 @@ function ReportsTab({ reports, onResolve }) {
   );
 }
 
+function useEscapeToClose(onClose) {
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+}
+
 // Badge Management Modal Component
 function BadgeManagementModal({ user, badges = [], onAssignBadge, onRevokeBadge, onClose }) {
+  useEscapeToClose(onClose);
   const [selectedBadge, setSelectedBadge] = useState('');
   const [reason, setReason] = useState('');
   const [isAssigning, setIsAssigning] = useState(false);
   const [isRevoking, setIsRevoking] = useState(null);
+  const badgeSelectId = `badge-select-${user._id}`;
+  const badgeReasonId = `badge-reason-${user._id}`;
+  const badgeReasonHelpId = `badge-reason-help-${user._id}`;
+  const badgeReasonCountId = `badge-reason-count-${user._id}`;
 
   const userBadges = user.badges || [];
   // Handle both string IDs and full badge objects from resolveBadges()
@@ -1257,11 +1212,10 @@ function BadgeManagementModal({ user, badges = [], onAssignBadge, onRevokeBadge,
         role="dialog"
         aria-modal="true"
         aria-label={`Manage Badges for ${user.username}`}
-        onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
       >
         <div className="modal-header">
           <h3>Manage Badges for {user.username}</h3>
-          <button className="modal-close" onClick={onClose}>×</button>
+          <button type="button" className="modal-close" onClick={onClose} aria-label="Close badge management">×</button>
         </div>
 
         <div className="modal-body">
@@ -1277,10 +1231,12 @@ function BadgeManagementModal({ user, badges = [], onAssignBadge, onRevokeBadge,
                     <span className="badge-icon">{badge.icon}</span>
                     <span className="badge-label">{badge.label}</span>
                     <button
+                      type="button"
                       className="badge-revoke-btn"
                       onClick={() => handleRevoke(badge.id)}
                       disabled={isRevoking === badge.id}
                       title={`Revoke ${badge.label}`}
+                      aria-label={`Revoke ${badge.label}`}
                     >
                       {isRevoking === badge.id ? '...' : '×'}
                     </button>
@@ -1297,37 +1253,47 @@ function BadgeManagementModal({ user, badges = [], onAssignBadge, onRevokeBadge,
               <p className="empty-badges">All badges already assigned</p>
             ) : (
               <div className="badge-assign-form">
-                <select
-                  value={selectedBadge}
-                  onChange={(e) => setSelectedBadge(e.target.value)}
-                  className="badge-select"
-                >
-                  <option value="">Select a badge...</option>
-                  {availableBadges.map(badge => (
-                    <option key={badge.id} value={badge.id}>
-                      {badge.icon} {badge.label} {badge.assignmentType === 'manual' ? '(requires reason)' : ''}
-                    </option>
-                  ))}
-                </select>
+                <div className="badge-reason-input">
+                  <label className="badge-select-label" htmlFor={badgeSelectId}>Choose a badge to assign</label>
+                  <select
+                    id={badgeSelectId}
+                    value={selectedBadge}
+                    onChange={(e) => setSelectedBadge(e.target.value)}
+                    className="badge-select"
+                  >
+                    <option value="">Select a badge...</option>
+                    {availableBadges.map(badge => (
+                      <option key={badge.id} value={badge.id}>
+                        {badge.icon} {badge.label} {badge.assignmentType === 'manual' ? '(requires reason)' : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
                 {/* Reason input for manual badges */}
                 {selectedBadge && isManualBadge && (
                   <div className="badge-reason-input">
-                    <label>Reason for assignment (required, min 10 chars):</label>
+                    <label htmlFor={badgeReasonId}>Reason for assignment (required, min 10 chars):</label>
                     <textarea
+                      id={badgeReasonId}
                       value={reason}
                       onChange={(e) => setReason(e.target.value)}
                       placeholder="Why is this badge being assigned? This is logged for accountability."
                       rows="2"
                       className="badge-reason-textarea"
+                      aria-describedby={`${badgeReasonHelpId} ${badgeReasonCountId}`}
                     />
-                    <small className={reason.trim().length >= 10 ? 'valid' : 'invalid'}>
+                    <small id={badgeReasonHelpId}>
+                      Manual badge assignments require a short audit note for accountability.
+                    </small>
+                    <small id={badgeReasonCountId} className={reason.trim().length >= 10 ? 'valid' : 'invalid'}>
                       {reason.trim().length}/10 characters minimum
                     </small>
                   </div>
                 )}
 
                 <button
+                  type="button"
                   className="badge-assign-btn"
                   onClick={handleAssign}
                   disabled={!selectedBadge || isAssigning || !reasonValid}
@@ -1356,7 +1322,9 @@ function UsersTab({ users, badges = [], onSuspend, onBan, onUnsuspend, onUnban, 
     <div className="users-list">
       <h2>User Management ({users.length} total users)</h2>
       {users.length === 0 ? (
-        <p className="empty-state">No users found</p>
+        <div className="no-data" role="status" aria-live="polite">
+          <p>No users found.</p>
+        </div>
       ) : (
         <div className="admin-table-container">
           <table className="admin-table">
@@ -1377,7 +1345,7 @@ function UsersTab({ users, badges = [], onSuspend, onBan, onUnsuspend, onUnban, 
               {users.map(user => (
                 <tr key={user._id}>
                   <td data-label="Username">{user.username}</td>
-                  <td data-label="Full Name">{user.fullName || <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Not provided</span>}</td>
+                  <td data-label="Full Name">{user.fullName || <span className="identity-muted">Not provided</span>}</td>
                   <td data-label="Identity">
                     {user.identity ? (
                       <span className={`identity-badge ${user.identity === 'LGBTQ+' ? 'identity-lgbtq' : 'identity-ally'}`}>
@@ -1390,13 +1358,12 @@ function UsersTab({ users, badges = [], onSuspend, onBan, onUnsuspend, onUnban, 
                     )}
                   </td>
                   <td data-label="Email">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span>{user.email}</span>
+                    <div className="user-email-cell">
+                      <span className="user-email-text">{user.email}</span>
                       <button
                         className="btn-action btn-small"
                         onClick={() => onUpdateEmail(user._id, user.email, user.username)}
                         title="Update email address"
-                        style={{ fontSize: '0.75rem', padding: '0.15rem 0.4rem' }}
                       >
                         ✏️ Edit
                       </button>
@@ -1460,13 +1427,8 @@ function UsersTab({ users, badges = [], onSuspend, onBan, onUnsuspend, onUnban, 
                   </td>
                   <td data-label="Joined">{new Date(user.createdAt).toLocaleDateString()}</td>
                   <td data-label="Actions" className="actions-cell">
-                    {(() => {
-                      console.log(`User ${user.username}: role="${user.role}", checking super_admin...`);
-                      const isSuperAdmin = user.role?.toLowerCase() === 'super_admin';
-                      console.log(`Is super admin: ${isSuperAdmin}`);
-                      return isSuperAdmin;
-                    })() ? (
-                      <span style={{ color: 'var(--color-brand)', fontWeight: 'bold' }}>
+                    {user.role?.toLowerCase() === 'super_admin' ? (
+                      <span className="platform-owner-label">
                         🛡️ Platform Owner (Protected)
                       </span>
                     ) : (
@@ -1559,7 +1521,9 @@ function BlocksTab({ blocks }) {
     <div className="blocks-list">
       <h2>User Blocks</h2>
       {blocks.length === 0 ? (
-        <p className="empty-state">No blocks found</p>
+        <div className="no-data" role="status" aria-live="polite">
+          <p>No blocks found.</p>
+        </div>
       ) : (
         <table className="blocks-table">
           <thead>
@@ -1608,14 +1572,12 @@ function ActivityTab({ activity, onViewPost }) {
                 <span
                   className="activity-user-link"
                   onClick={() => navigate(`/profile/${post.author?._id}`)}
-                  style={{ cursor: 'pointer' }}
                 >
                   {post.author?.displayName || post.author?.username}
                 </span>
                 <span
                   className="activity-post-link"
                   onClick={() => onViewPost(post._id)}
-                  style={{ cursor: 'pointer' }}
                   title="Click to view full post in modal"
                 >
                   {post.content?.substring(0, 100)}{post.content?.length > 100 ? '...' : ''}
@@ -1643,7 +1605,6 @@ function ActivityTab({ activity, onViewPost }) {
                 <span
                   className="activity-user-link"
                   onClick={() => navigate(`/profile/${user._id}`)}
-                  style={{ cursor: 'pointer' }}
                   title="View profile"
                 >
                   {user.username}
@@ -1670,7 +1631,6 @@ function ActivityTab({ activity, onViewPost }) {
                 <span
                   className="activity-user-link"
                   onClick={() => navigate(`/profile/${report.reporter?._id}`)}
-                  style={{ cursor: 'pointer' }}
                   title="View reporter profile"
                 >
                   {report.reporter?.displayName || report.reporter?.username}
@@ -1733,13 +1693,28 @@ function SecurityTab({ logs, stats, onResolve }) {
     }
   };
 
-  const getSeverityColor = (severity) => {
+  const getSeverityClassName = (severity) => {
     switch (severity) {
-      case 'critical': return 'var(--color-danger)';
-      case 'high': return 'var(--color-warning)';
-      case 'medium': return 'var(--color-warning)';
-      case 'low': return 'var(--color-success)';
-      default: return 'var(--color-text-secondary)';
+      case 'critical':
+        return 'log-severity log-severity--critical';
+      case 'high':
+      case 'medium':
+        return 'log-severity log-severity--warning';
+      case 'low':
+        return 'log-severity log-severity--success';
+      default:
+        return 'log-severity log-severity--neutral';
+    }
+  };
+
+  const getActionBadgeClassName = (action) => {
+    switch (action) {
+      case 'banned':
+        return 'log-action-badge log-action-badge--danger';
+      case 'blocked':
+        return 'log-action-badge log-action-badge--warning';
+      default:
+        return 'log-action-badge log-action-badge--neutral';
     }
   };
 
@@ -1766,17 +1741,17 @@ function SecurityTab({ logs, stats, onResolve }) {
           </div>
           <div className="stat-card">
             <h3>Unresolved</h3>
-            <p className="stat-number" style={{ color: 'var(--color-warning)' }}>{stats.unresolved}</p>
+            <p className="stat-number stat-number--warning">{stats.unresolved}</p>
           </div>
           <div className="stat-card">
             <h3>Underage Attempts</h3>
-            <p className="stat-number" style={{ color: 'var(--color-danger)' }}>
+            <p className="stat-number stat-number--danger">
               {stats.byType.underage_registration + stats.byType.underage_login + stats.byType.underage_access}
             </p>
           </div>
           <div className="stat-card">
             <h3>Critical</h3>
-            <p className="stat-number" style={{ color: 'var(--color-danger)' }}>{stats.bySeverity.critical}</p>
+            <p className="stat-number stat-number--danger">{stats.bySeverity.critical}</p>
           </div>
         </div>
       )}
@@ -1845,23 +1820,15 @@ function SecurityTab({ logs, stats, onResolve }) {
 
       <div className="security-logs-list">
         {filteredLogs.length === 0 ? (
-          <div className="empty-state">No security logs found</div>
+          <div className="no-data" role="status" aria-live="polite">
+            <p>No security logs found.</p>
+          </div>
         ) : (
           filteredLogs.map(log => (
             <div key={log._id} className={`security-log-item ${log.resolved ? 'resolved' : 'unresolved'}`}>
               <div className="log-header">
                 <span className="log-type">{getTypeLabel(log.type)}</span>
-                <span
-                  className="log-severity"
-                  style={{
-                    background: getSeverityColor(log.severity),
-                    color: 'white',
-                    padding: '0.25rem 0.75rem',
-                    borderRadius: '12px',
-                    fontSize: '0.75rem',
-                    fontWeight: 'bold'
-                  }}
-                >
+                <span className={getSeverityClassName(log.severity)}>
                   {log.severity.toUpperCase()}
                 </span>
                 <span className="log-date">{new Date(log.createdAt).toLocaleString()}</span>
@@ -1877,14 +1844,7 @@ function SecurityTab({ logs, stats, onResolve }) {
                 {log.action && (
                   <p>
                     <strong>Action:</strong>
-                    <span style={{
-                      marginLeft: '0.5rem',
-                      padding: '0.25rem 0.5rem',
-                      background: log.action === 'banned' ? 'var(--color-danger)' : log.action === 'blocked' ? 'var(--color-warning)' : 'var(--color-text-secondary)',
-                      color: 'white',
-                      borderRadius: '4px',
-                      fontSize: '0.875rem'
-                    }}>
+                    <span className={getActionBadgeClassName(log.action)}>
                       {log.action.toUpperCase()}
                     </span>
                   </p>
@@ -2011,49 +1971,27 @@ function BadgesTab({ badges, onRefresh }) {
       <div className="tab-header">
         <h2>🏅 Badge Management</h2>
         <p className="tab-subtitle">Create and manage platform badges. Assign badges to users in the Users tab.</p>
-        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+        <div className="badges-toolbar">
           <button
-            className="btn-create-badge"
+            type="button"
+            className="badges-toolbar__button badges-toolbar__button--primary"
             onClick={() => setShowForm(!showForm)}
-            style={{
-              padding: '0.75rem 1.5rem',
-              background: 'var(--gradient-primary)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: '600'
-            }}
           >
             {showForm ? '✕ Cancel' : '+ Create Badge'}
           </button>
           <button
+            type="button"
+            className="badges-toolbar__button badges-toolbar__button--success"
             onClick={handleSeedAutoBadges}
-            style={{
-              padding: '0.75rem 1.5rem',
-              background: 'linear-gradient(135deg, #10b981, #059669)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: '600'
-            }}
           >
             🌱 Seed Auto Badges
           </button>
           <button
+            type="button"
+            className="badges-toolbar__button badges-toolbar__button--info"
             onClick={() => {
               setShowAuditLog(!showAuditLog);
               if (!showAuditLog) loadAuditLog();
-            }}
-            style={{
-              padding: '0.75rem 1.5rem',
-              background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: '600'
             }}
           >
             {showAuditLog ? '✕ Hide Log' : '📋 Audit Log'}
@@ -2062,84 +2000,73 @@ function BadgesTab({ badges, onRefresh }) {
       </div>
 
       {showForm && (
-        <form onSubmit={handleCreateBadge} className="badge-form" style={{
-          background: 'var(--card-surface)',
-          padding: '1.5rem',
-          borderRadius: '12px',
-          marginBottom: '1.5rem',
-          border: '1px solid var(--border-light)'
-        }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Badge ID</label>
+        <form onSubmit={handleCreateBadge} className="admin-card badge-form">
+          <div className="badge-form-grid">
+            <div className="badge-field">
+              <label htmlFor="badge-id">Badge ID</label>
               <input
+                id="badge-id"
                 type="text"
+                className="badge-form-input"
                 value={newBadge.id}
                 onChange={(e) => setNewBadge({ ...newBadge, id: e.target.value.toLowerCase().replace(/\s/g, '_') })}
                 placeholder="early_member"
                 required
-                style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-light)' }}
               />
             </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Label</label>
+            <div className="badge-field">
+              <label htmlFor="badge-label">Label</label>
               <input
+                id="badge-label"
                 type="text"
+                className="badge-form-input"
                 value={newBadge.label}
                 onChange={(e) => setNewBadge({ ...newBadge, label: e.target.value })}
                 placeholder="Early Member"
                 required
-                style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-light)' }}
               />
             </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Icon (emoji)</label>
+            <div className="badge-field">
+              <label htmlFor="badge-icon">Icon (emoji)</label>
               <input
+                id="badge-icon"
                 type="text"
+                className="badge-form-input"
                 value={newBadge.icon}
                 onChange={(e) => setNewBadge({ ...newBadge, icon: e.target.value })}
                 placeholder="⭐"
-                style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-light)' }}
               />
             </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Type</label>
+            <div className="badge-field">
+              <label htmlFor="badge-type">Type</label>
               <select
+                id="badge-type"
+                className="badge-form-input"
                 value={newBadge.type}
                 onChange={(e) => setNewBadge({ ...newBadge, type: e.target.value })}
-                style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-light)' }}
               >
                 <option value="platform">Platform (Official)</option>
                 <option value="community">Community</option>
                 <option value="activity">Activity</option>
               </select>
             </div>
-            <div style={{ gridColumn: 'span 2' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Tooltip</label>
+            <div className="badge-field badge-field--wide">
+              <label htmlFor="badge-tooltip">Tooltip</label>
               <input
+                id="badge-tooltip"
                 type="text"
+                className="badge-form-input"
                 value={newBadge.tooltip}
                 onChange={(e) => setNewBadge({ ...newBadge, tooltip: e.target.value })}
                 placeholder="Joined during beta launch"
                 required
-                style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-light)' }}
               />
             </div>
           </div>
           <button
             type="submit"
             disabled={creating}
-            style={{
-              marginTop: '1rem',
-              padding: '0.75rem 2rem',
-              background: 'linear-gradient(135deg, #10b981, #059669)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: creating ? 'not-allowed' : 'pointer',
-              fontWeight: '600',
-              opacity: creating ? 0.6 : 1
-            }}
+            className="badge-form-submit"
           >
             {creating ? 'Creating...' : 'Create Badge'}
           </button>
@@ -2148,55 +2075,28 @@ function BadgesTab({ badges, onRefresh }) {
 
       {/* Audit Log Section */}
       {showAuditLog && (
-        <div style={{
-          background: 'var(--card-surface)',
-          padding: '1.5rem',
-          borderRadius: '12px',
-          marginBottom: '1.5rem',
-          border: '1px solid var(--border-light)'
-        }}>
-          <h3 style={{ marginBottom: '1rem' }}>📋 Badge Assignment Audit Log</h3>
+        <div className="admin-card badge-audit-card">
+          <h3 className="badge-audit-heading">📋 Badge Assignment Audit Log</h3>
           {loadingAudit ? (
-            <p>Loading audit log...</p>
+            <div className="loading-state">Loading audit log...</div>
           ) : auditLog.length === 0 ? (
-            <p style={{ color: 'var(--text-muted)' }}>No badge assignments recorded yet.</p>
+            <div className="no-data">
+              <p>No badge assignments recorded yet.</p>
+            </div>
           ) : (
-            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+            <div className="badge-audit-list">
               {auditLog.map((log, index) => (
-                <div key={log._id || index} style={{
-                  padding: '0.75rem',
-                  borderBottom: '1px solid var(--border-light)',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: '1rem'
-                }}>
-                  <div>
-                    <span style={{
-                      padding: '2px 6px',
-                      borderRadius: '4px',
-                      fontSize: '0.75rem',
-                      background: log.action === 'assigned' ? '#10b981' : '#ef4444',
-                      color: 'white',
-                      marginRight: '0.5rem'
-                    }}>
+                <div key={log._id || index} className="badge-audit-row">
+                  <div className="badge-audit-main">
+                    <span className={`badge-pill ${log.action === 'assigned' ? 'badge-pill--success' : 'badge-pill--danger'}`}>
                       {log.action}
                     </span>
                     <strong>{log.badgeLabel}</strong> → @{log.username}
                     {log.isAutomatic && (
-                      <span style={{
-                        marginLeft: '0.5rem',
-                        padding: '2px 6px',
-                        background: '#6366f1',
-                        color: 'white',
-                        borderRadius: '4px',
-                        fontSize: '0.7rem'
-                      }}>
-                        AUTO
-                      </span>
+                      <span className="badge-pill badge-pill--info">AUTO</span>
                     )}
                   </div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                  <div className="badge-audit-meta">
                     {new Date(log.createdAt).toLocaleString()}
                     {log.assignedBy && ` by @${log.assignedByUsername}`}
                   </div>
@@ -2207,59 +2107,35 @@ function BadgesTab({ badges, onRefresh }) {
         </div>
       )}
 
-      <div className="badges-list" style={{ display: 'grid', gap: '1rem' }}>
+      <div className="badges-list">
         {badges.length === 0 ? (
           <div className="no-data">
             <p>No badges created yet. Create your first badge above!</p>
           </div>
         ) : (
           badges.map(badge => (
-            <div key={badge._id || badge.id} className="badge-card" style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '1rem',
-              padding: '1rem 1.5rem',
-              background: 'var(--card-surface)',
-              borderRadius: '10px',
-              border: '1px solid var(--border-light)'
-            }}>
-              <span style={{ fontSize: '2rem' }}>{badge.icon}</span>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: '600', fontSize: '1.1rem' }}>
-                  {badge.label}
+            <div key={badge._id || badge.id} className="badge-card">
+              <span className="badge-card__icon" aria-hidden="true">{badge.icon}</span>
+              <div className="badge-card__content">
+                <div className="badge-card__heading">
+                  <span className="badge-card__label">{badge.label}</span>
                   {badge.assignmentType === 'automatic' && (
-                    <span style={{
-                      marginLeft: '0.5rem',
-                      padding: '2px 6px',
-                      background: '#6366f1',
-                      color: 'white',
-                      borderRadius: '4px',
-                      fontSize: '0.7rem'
-                    }}>
-                      AUTO
-                    </span>
+                    <span className="badge-pill badge-pill--info">AUTO</span>
                   )}
                 </div>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{badge.tooltip}</div>
+                <div className="badge-card__tooltip">{badge.tooltip}</div>
                 {badge.description && (
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                  <div className="badge-card__description">
                     {badge.description}
                   </div>
                 )}
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
-                  <span style={{
-                    padding: '2px 8px',
-                    background: badge.type === 'platform' ? 'var(--pryde-purple)' : badge.type === 'community' ? '#10b981' : '#f59e0b',
-                    color: 'white',
-                    borderRadius: '4px',
-                    fontSize: '0.75rem',
-                    textTransform: 'uppercase'
-                  }}>
+                <div className="badge-card__meta">
+                  <span className={`badge-pill badge-pill--${badge.type || 'default'}`}>
                     {badge.type}
                   </span>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>ID: {badge.id}</span>
+                  <span className="badge-meta-text">ID: {badge.id}</span>
                   {badge.automaticRule && (
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                    <span className="badge-meta-text">
                       Rule: {badge.automaticRule}
                     </span>
                   )}
@@ -2275,6 +2151,7 @@ function BadgesTab({ badges, onRefresh }) {
 
 // Post Modal Component for Admin Content Viewing
 function PostModal({ post, onClose }) {
+  useEscapeToClose(onClose);
   if (!post) return null;
 
   return (
@@ -2285,11 +2162,10 @@ function PostModal({ post, onClose }) {
         role="dialog"
         aria-modal="true"
         aria-label="Post Details"
-        onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
       >
         <div className="admin-post-modal-header">
           <h2>Post Details</h2>
-          <button className="admin-modal-close" onClick={onClose}>✕</button>
+          <button className="admin-modal-close" onClick={onClose} aria-label="Close post details">✕</button>
         </div>
 
         <div className="admin-post-modal-content">
@@ -2451,6 +2327,24 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
   const [selectedCategory, setSelectedCategory] = useState('custom');
   const [isUpdating, setIsUpdating] = useState(false);
   const [localSettings, setLocalSettings] = useState(null);
+  const autoMuteEnabledId = 'moderation-auto-mute-enabled';
+  const autoMuteEnabledHelpId = 'moderation-auto-mute-enabled-help';
+  const violationThresholdId = 'moderation-violation-threshold';
+  const violationThresholdHelpId = 'moderation-violation-threshold-help';
+  const minutesPerViolationId = 'moderation-minutes-per-violation';
+  const minutesPerViolationHelpId = 'moderation-minutes-per-violation-help';
+  const maxMuteDurationId = 'moderation-max-mute-duration';
+  const maxMuteDurationHelpId = 'moderation-max-mute-duration-help';
+  const spamMuteDurationId = 'moderation-spam-mute-duration';
+  const spamMuteDurationHelpId = 'moderation-spam-mute-duration-help';
+  const pointsPerBlockedWordId = 'moderation-points-per-blocked-word';
+  const pointsPerBlockedWordHelpId = 'moderation-points-per-blocked-word-help';
+  const pointsForSpamId = 'moderation-points-for-spam';
+  const pointsForSpamHelpId = 'moderation-points-for-spam-help';
+  const blockedWordId = 'moderation-blocked-word';
+  const blockedWordHelpId = 'moderation-blocked-word-help';
+  const blockedWordCategoryId = 'moderation-blocked-word-category';
+  const blockedWordCategoryHelpId = 'moderation-blocked-word-category-help';
 
   useEffect(() => {
     if (settings) {
@@ -2514,7 +2408,11 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
   };
 
   if (!localSettings) {
-    return <div className="loading-state">Loading moderation settings...</div>;
+    return (
+      <div className="loading-state loading-state--stack" role="status" aria-live="polite">
+        <p className="loading-state__message">Loading moderation settings...</p>
+      </div>
+    );
   }
 
   return (
@@ -2523,18 +2421,21 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
 
       <div className="moderation-sections">
         <button
+          type="button"
           className={`section-tab ${activeSection === 'settings' ? 'active' : ''}`}
           onClick={() => setActiveSection('settings')}
         >
           ⚙️ Settings
         </button>
         <button
+          type="button"
           className={`section-tab ${activeSection === 'words' ? 'active' : ''}`}
           onClick={() => setActiveSection('words')}
         >
           🚫 Blocked Words
         </button>
         <button
+          type="button"
           className={`section-tab ${activeSection === 'history' ? 'active' : ''}`}
           onClick={() => setActiveSection('history')}
         >
@@ -2548,23 +2449,26 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
             <h3>🔇 Auto-Mute Configuration</h3>
 
             <div className="setting-row setting-row-checkbox">
-              <label className="checkbox-label">
+              <label className="checkbox-label" htmlFor={autoMuteEnabledId}>
                 <input
+                  id={autoMuteEnabledId}
                   type="checkbox"
                   checked={localSettings.autoMute?.enabled ?? true}
                   onChange={(e) => setLocalSettings({
                     ...localSettings,
                     autoMute: { ...localSettings.autoMute, enabled: e.target.checked }
                   })}
+                  aria-describedby={autoMuteEnabledHelpId}
                 />
                 <span>Enable Auto-Mute</span>
               </label>
-              <p className="setting-help">When enabled, users are automatically muted after repeated violations.</p>
+              <p id={autoMuteEnabledHelpId} className="setting-help">When enabled, users are automatically muted after repeated violations.</p>
             </div>
 
             <div className="setting-row">
-              <label>Violation Threshold (mute after X violations):</label>
+              <label htmlFor={violationThresholdId}>Violation Threshold (mute after X violations):</label>
               <input
+                id={violationThresholdId}
                 type="number"
                 min="1"
                 max="10"
@@ -2573,13 +2477,15 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
                   ...localSettings,
                   autoMute: { ...localSettings.autoMute, violationThreshold: parseInt(e.target.value) }
                 })}
+                aria-describedby={violationThresholdHelpId}
               />
-              <p className="setting-help">Number of violations before a user gets automatically muted. Lower = stricter.</p>
+              <p id={violationThresholdHelpId} className="setting-help">Number of violations before a user gets automatically muted. Lower = stricter.</p>
             </div>
 
             <div className="setting-row">
-              <label>Minutes per Violation:</label>
+              <label htmlFor={minutesPerViolationId}>Minutes per Violation:</label>
               <input
+                id={minutesPerViolationId}
                 type="number"
                 min="5"
                 max="1440"
@@ -2588,13 +2494,15 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
                   ...localSettings,
                   autoMute: { ...localSettings.autoMute, minutesPerViolation: parseInt(e.target.value) }
                 })}
+                aria-describedby={minutesPerViolationHelpId}
               />
-              <p className="setting-help">Mute duration = violations × this value. E.g., 3 violations × 30 min = 90 min mute.</p>
+              <p id={minutesPerViolationHelpId} className="setting-help">Mute duration = violations × this value. E.g., 3 violations × 30 min = 90 min mute.</p>
             </div>
 
             <div className="setting-row">
-              <label>Max Mute Duration (minutes):</label>
+              <label htmlFor={maxMuteDurationId}>Max Mute Duration (minutes):</label>
               <input
+                id={maxMuteDurationId}
                 type="number"
                 min="60"
                 max="10080"
@@ -2603,13 +2511,15 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
                   ...localSettings,
                   autoMute: { ...localSettings.autoMute, maxMuteDuration: parseInt(e.target.value) }
                 })}
+                aria-describedby={maxMuteDurationHelpId}
               />
-              <p className="setting-help">Maximum mute time regardless of violation count. 1440 min = 24 hours.</p>
+              <p id={maxMuteDurationHelpId} className="setting-help">Maximum mute time regardless of violation count. 1440 min = 24 hours.</p>
             </div>
 
             <div className="setting-row">
-              <label>Spam Mute Duration (minutes):</label>
+              <label htmlFor={spamMuteDurationId}>Spam Mute Duration (minutes):</label>
               <input
+                id={spamMuteDurationId}
                 type="number"
                 min="15"
                 max="1440"
@@ -2618,8 +2528,9 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
                   ...localSettings,
                   autoMute: { ...localSettings.autoMute, spamMuteDuration: parseInt(e.target.value) }
                 })}
+                aria-describedby={spamMuteDurationHelpId}
               />
-              <p className="setting-help">Immediate mute duration when spam is detected (excessive links, caps, etc.).</p>
+              <p id={spamMuteDurationHelpId} className="setting-help">Immediate mute duration when spam is detected (excessive links, caps, etc.).</p>
             </div>
           </div>
 
@@ -2628,8 +2539,9 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
             <p className="section-help">Toxicity score is calculated per-post. Higher scores = more toxic content.</p>
 
             <div className="setting-row">
-              <label>Points per Blocked Word:</label>
+              <label htmlFor={pointsPerBlockedWordId}>Points per Blocked Word:</label>
               <input
+                id={pointsPerBlockedWordId}
                 type="number"
                 min="1"
                 max="50"
@@ -2638,13 +2550,15 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
                   ...localSettings,
                   toxicity: { ...localSettings.toxicity, pointsPerBlockedWord: parseInt(e.target.value) }
                 })}
+                aria-describedby={pointsPerBlockedWordHelpId}
               />
-              <p className="setting-help">Points added to toxicity score for each blocked word found in content.</p>
+              <p id={pointsPerBlockedWordHelpId} className="setting-help">Points added to toxicity score for each blocked word found in content.</p>
             </div>
 
             <div className="setting-row">
-              <label>Points for Spam:</label>
+              <label htmlFor={pointsForSpamId}>Points for Spam:</label>
               <input
+                id={pointsForSpamId}
                 type="number"
                 min="5"
                 max="50"
@@ -2653,12 +2567,14 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
                   ...localSettings,
                   toxicity: { ...localSettings.toxicity, pointsForSpam: parseInt(e.target.value) }
                 })}
+                aria-describedby={pointsForSpamHelpId}
               />
-              <p className="setting-help">Points added when content is flagged as spam (excessive caps, links, emojis).</p>
+              <p id={pointsForSpamHelpId} className="setting-help">Points added when content is flagged as spam (excessive caps, links, emojis).</p>
             </div>
           </div>
 
           <button
+            type="button"
             className="btn-save-settings"
             onClick={handleUpdateSettings}
             disabled={isUpdating}
@@ -2672,17 +2588,29 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
         <div className="blocked-words-section">
           <div className="add-word-form">
             <h3>Add Blocked Word</h3>
+            <p className="section-help">Add a word or phrase and choose the moderation category it belongs to.</p>
             <div className="add-word-row">
+              <label className="sr-only" htmlFor={blockedWordId}>Blocked word or phrase</label>
               <input
+                id={blockedWordId}
                 type="text"
                 placeholder="Enter word or phrase..."
                 value={newWord}
                 onChange={(e) => setNewWord(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleAddWord()}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAddWord();
+                  }
+                }}
+                aria-describedby={blockedWordHelpId}
               />
+              <label className="sr-only" htmlFor={blockedWordCategoryId}>Blocked word category</label>
               <select
+                id={blockedWordCategoryId}
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
+                aria-describedby={blockedWordCategoryHelpId}
               >
                 <option value="custom">Custom</option>
                 <option value="profanity">Profanity</option>
@@ -2690,8 +2618,10 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
                 <option value="sexual">Sexual</option>
                 <option value="spam">Spam</option>
               </select>
-              <button onClick={handleAddWord}>➕ Add</button>
+              <button type="button" onClick={handleAddWord} aria-label={`Add blocked word to ${selectedCategory} category`}>➕ Add</button>
             </div>
+            <p id={blockedWordHelpId} className="setting-help">Use this field to add a word or phrase that should be moderated automatically.</p>
+            <p id={blockedWordCategoryHelpId} className="setting-help">Choose which moderation category this word should be saved under.</p>
           </div>
 
           {['profanity', 'slurs', 'sexual', 'spam', 'custom'].map(category => (
@@ -2702,9 +2632,11 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
                   <span key={word} className="word-tag">
                     {word}
                     <button
+                      type="button"
                       className="remove-word-btn"
                       onClick={() => handleRemoveWord(word, category)}
                       title="Remove word"
+                      aria-label={`Remove ${word} from ${category}`}
                     >
                       ×
                     </button>
@@ -2723,7 +2655,9 @@ function ModerationTab({ settings, history, onRefresh, showAlert, showConfirm, s
         <div className="moderation-history">
           <h3>Recent Moderation Actions</h3>
           {history.length === 0 ? (
-            <p className="empty-state">No moderation history found</p>
+            <div className="no-data" role="status" aria-live="polite">
+              <p>No moderation history found.</p>
+            </div>
           ) : (
             <div className="history-cards">
               {history.map((entry, index) => (

@@ -312,15 +312,10 @@ function GroupsList() {
               <article
                 key={group._id}
                 className={`group-card glossy ${group.status === 'pending' ? 'pending' : ''}`}
-                onClick={(e) => handleGroupClick(group.slug, group.status, group.isOwner, e)}
+                onClick={group.status !== 'pending'
+                  ? (e) => handleGroupClick(group.slug, group.status, group.isOwner, e)
+                  : undefined}
                 role="listitem"
-                tabIndex={group.status !== 'pending' ? 0 : -1}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleGroupClick(group.slug, group.status, group.isOwner, e);
-                  }
-                }}
                 aria-label={`${group.name}${group.isOwner ? ', you are the owner' : group.isMember ? ', you are a member' : ''}`}
               >
                 <div className="group-card-header">

@@ -339,7 +339,7 @@ function PhotoEssay() {
               <div className="photos-grid">
                 {photos.map((photo, index) => (
                   <div key={index} className="photo-item glossy">
-                    <img src={getImageUrl(photo.url)} alt={`Photo ${index + 1}`} />
+                    <img src={getImageUrl(photo.url)} alt={`Selection ${index + 1}`} />
                     <button
                       type="button"
                       className="remove-photo-btn"
