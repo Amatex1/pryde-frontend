@@ -266,7 +266,7 @@ function MessageBubble({
                     <video src={getImageUrl(message.media.url)} controls className="message-media" />
                   )
                 ) : (
-                  <span dangerouslySetInnerHTML={{ __html: sanitizeMessage(message.content) }} />
+                  <span>{sanitizeMessage(message.content)}</span>
                 )}
 
                 {/* Reactions */}

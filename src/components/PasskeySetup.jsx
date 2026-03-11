@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { startRegistration } from '@simplewebauthn/browser';
 import api from '../utils/api';
+import logger from '../utils/logger';
 import './PasskeySetup.css';
 
 function PasskeySetup({ onSuccess }) {
@@ -15,26 +16,21 @@ function PasskeySetup({ onSuccess }) {
       setError('');
 
       // Step 1: Start registration
-      console.log('🔐 Starting passkey registration...');
+      logger.debug('Starting passkey registration flow');
       const { data: options } = await api.post('/passkey/register-start');
-      console.log('✅ Received registration options:', options);
 
       // Step 2: Prompt user for biometric/PIN
       let credential;
       try {
-        console.log('🔐 Calling startRegistration with options...');
         // @simplewebauthn/browser v13+ requires optionsJSON wrapper
         credential = await startRegistration({ optionsJSON: options });
-        console.log('✅ Credential created:', credential);
       } catch (err) {
-        console.error('❌ startRegistration error:', err);
-        console.error('   Error name:', err.name);
-        console.error('   Error message:', err.message);
-        console.error('   Error stack:', err.stack);
         if (err.name === 'NotAllowedError') {
+          logger.debug('Passkey registration cancelled by user');
           throw new Error('Passkey creation was cancelled');
         }
-        throw new Error(`Failed to create passkey: ${err.message}`);
+        logger.error('Passkey browser registration failed', err);
+        throw new Error('Failed to create passkey. Please try again.');
       }
 
       // Step 3: Show device name input
@@ -44,7 +40,9 @@ function PasskeySetup({ onSuccess }) {
       // Wait for user to enter device name
       return { credential, options };
     } catch (err) {
-      console.error('❌ handleAddPasskey error:', err);
+      if (!['Passkey creation was cancelled', 'Failed to create passkey. Please try again.'].includes(err.message)) {
+        logger.error('Passkey setup start failed', err);
+      }
       setError(err.message || 'Failed to create passkey');
       setLoading(false);
     }
@@ -69,6 +67,7 @@ function PasskeySetup({ onSuccess }) {
         onSuccess(data.passkey);
       }
     } catch (err) {
+      logger.error('Passkey setup completion failed', err);
       setError(err.response?.data?.message || 'Failed to save passkey');
       setLoading(false);
     }

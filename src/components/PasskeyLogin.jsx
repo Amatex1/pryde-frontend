@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { startAuthentication } from '@simplewebauthn/browser';
 import api from '../utils/api';
+import logger from '../utils/logger';
 import './PasskeyLogin.css';
 
 function PasskeyLogin({ onSuccess, email }) {
@@ -28,7 +29,7 @@ function PasskeyLogin({ onSuccess, email }) {
         await api.get('/auth/status');
       } catch (csrfError) {
         // Ignore errors - we just need the CSRF token from the response header
-        console.debug('CSRF token fetch completed');
+        logger.debug('Passkey login CSRF preflight completed');
       }
 
       // Step 1: Start authentication

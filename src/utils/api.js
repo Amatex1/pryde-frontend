@@ -72,7 +72,7 @@ api.interceptors.request.use(
     // Cloudflare API should NEVER be called directly from browser
     const url = config.url || '';
     if (url.includes('/api/v4/accounts') || url.includes('/api/v4/user') || url.includes('cloudflare.com/client/v4')) {
-      logger.error('[SECURITY] Blocked Cloudflare API call from frontend:', url);
+      logger.error('[SECURITY] Blocked Cloudflare API call from frontend');
       throw new Error(`Blocked illegal Cloudflare API call: ${url}`);
     }
 
@@ -85,9 +85,6 @@ api.interceptors.request.use(
     const token = getAuthToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      logger.debug('🔑 Token attached to request:', config.url);
-    } else {
-      logger.warn('⚠️ No token found for request:', config.url);
     }
 
     // Add CSRF token for state-changing requests (POST, PUT, PATCH, DELETE)
@@ -96,10 +93,6 @@ api.interceptors.request.use(
       const csrfToken = getCsrfToken();
       if (csrfToken) {
         config.headers['X-XSRF-TOKEN'] = csrfToken;
-        logger.debug(`🛡️ CSRF token attached to ${method} ${config.url} (redacted)`);
-      } else {
-        logger.warn(`⚠️ No CSRF token found for ${method} ${config.url}`);
-        // CSRF: cookie logging removed
       }
     }
 
@@ -115,7 +108,7 @@ api.interceptors.response.use(
     const csrfTokenHeader = response.headers['x-csrf-token'];
     if (csrfTokenHeader) {
       setCsrfToken(csrfTokenHeader);
-      logger.debug('🛡️ CSRF token updated from response header');
+      logger.debug('CSRF token updated from response header');
     }
     return response;
   },
@@ -127,7 +120,7 @@ api.interceptors.response.use(
     // These must be treated as resolved, terminal states.
     // Never retry 410 responses. Never trigger auth or loading state changes.
     if (error.response?.status === 410) {
-      logger.info(`[API] 410 Gone: ${originalRequest?.url} - Feature intentionally removed`);
+      logger.debug('Received terminal 410 response for intentionally removed endpoint');
       // Return a resolved response instead of rejecting - prevents retry loops
       return Promise.resolve({
         data: { removed: true, status: 410, url: originalRequest?.url },
@@ -144,7 +137,7 @@ api.interceptors.response.use(
       // CRITICAL: Handle account deactivation - redirect to reactivate screen
       // DO NOT logout - keep tokens so user can reactivate
       if (errorCode === 'ACCOUNT_DEACTIVATED' || errorMessage.includes('deactivated')) {
-        logger.warn('🔒 Account deactivated - redirecting to reactivate screen');
+        logger.warn('Account deactivated - redirecting to reactivate screen');
         // Only redirect if not already on reactivate page
         if (!window.location.pathname.includes('/reactivate')) {
           window.location.href = '/reactivate';
@@ -154,9 +147,7 @@ api.interceptors.response.use(
 
       // Check if it's a CSRF error
       if (errorMessage.includes('CSRF') || errorMessage.includes('csrf')) {
-        logger.error('🛡️ CSRF token error:', errorMessage);
-        logger.error('CSRF token error: cookies data redacted for security');
-        logger.error('📋 Request headers:', originalRequest.headers);
+        logger.debug('CSRF validation failed - attempting token refresh');
 
         // If CSRF token is missing or expired, make a GET request to get a new token
         // The backend's setCsrfToken middleware will set a new cookie on any request
@@ -165,7 +156,7 @@ api.interceptors.response.use(
 
           try {
             // Make a lightweight GET request to trigger CSRF token refresh
-            logger.debug('🔄 Requesting new CSRF token...');
+            logger.debug('Requesting refreshed CSRF token');
             await api.get('/posts?limit=1');
 
             // Wait a moment for the cookie to be set
@@ -174,21 +165,21 @@ api.interceptors.response.use(
             // Check if we now have a CSRF token
             const newCsrfToken = getCsrfToken();
             if (newCsrfToken) {
-              logger.debug('✅ New CSRF token obtained, retrying request');
+              logger.debug('CSRF token refresh succeeded; retrying request');
               // Retry the original request with the new CSRF token
               return api(originalRequest);
             } else {
-              logger.error('❌ Failed to obtain new CSRF token');
+              logger.error('CSRF token refresh failed');
               return Promise.reject(new Error('Security token expired. Please refresh the page and try again.'));
             }
           } catch (refreshError) {
-            logger.error('❌ Failed to refresh CSRF token:', refreshError);
+            logger.error('CSRF recovery request failed');
             return Promise.reject(new Error('Security token expired. Please refresh the page and try again.'));
           }
         }
 
         // If retry failed, show user-friendly error
-        logger.error('❌ CSRF protection failed after retry. Please refresh the page.');
+        logger.error('CSRF protection failed after retry');
         return Promise.reject(new Error('Security token expired. Please refresh the page and try again.'));
       }
     }
@@ -197,20 +188,16 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       const errorCode = error.response?.data?.code || '';
       const errorMessage = error.response?.data?.message || '';
-      const endpoint = originalRequest?.url || 'unknown';
-
-      // Log 401 for debugging (only once per endpoint to reduce spam)
-      logger.debug(`🔐 401 on ${endpoint}: ${errorMessage || 'No auth token'}`);
 
       // 🔥 CRITICAL: Skip refresh if logout is in progress
       if (getIsLoggingOut()) {
-        logger.debug('⏸️ Skipping refresh - logout in progress');
+        logger.debug('Skipping refresh because logout is already in progress');
         return Promise.reject(error);
       }
 
       // CRITICAL: Handle account deletion - force logout immediately, no refresh attempt
       if (errorCode === 'ACCOUNT_DELETED' || errorMessage.includes('deleted')) {
-        logger.warn('🔒 Account deleted - forcing logout');
+        logger.warn('Account deleted - forcing logout');
         logout();
         window.location.href = '/login?reason=deleted';
         return Promise.reject(new Error('Account deleted'));
@@ -219,13 +206,13 @@ api.interceptors.response.use(
       // CRITICAL: Never attempt refresh on login/register pages
       const currentPath = window.location.pathname;
       if (currentPath === '/login' || currentPath === '/register' || currentPath === '/') {
-        logger.debug('⏸️ Skipping refresh on public page:', currentPath);
+        logger.debug('Skipping refresh on a public page');
         return Promise.reject(error);
       }
 
       // 🔥 SINGLE-FLIGHT REFRESH: If already refreshing, await existing promise
       if (isRefreshInProgress()) {
-        logger.debug('🔄 Refresh already in progress - awaiting existing promise');
+        logger.debug('Refresh already in progress; awaiting existing promise');
         try {
           const token = await getRefreshPromise();
           if (token) {
@@ -242,12 +229,12 @@ api.interceptors.response.use(
 
       // 🔥 Use global single-flight refresh from tokenRefresh.js
       try {
-        logger.debug('🔄 Token expired, attempting refresh via global single-flight...');
+        logger.debug('Token expired; attempting refresh via single-flight flow');
 
         const accessToken = await refreshAccessToken();
 
         if (accessToken) {
-          logger.debug('✅ Token refreshed successfully');
+          logger.debug('Token refreshed successfully');
 
           // Reconnect socket with new token
           try {
@@ -257,7 +244,7 @@ api.interceptors.response.use(
               initializeSocket(currentUser.id);
             }
           } catch (socketError) {
-            logger.error('⚠️ Failed to reconnect socket:', socketError);
+            logger.error('Failed to reconnect socket after token refresh');
           }
 
           // Update the failed request with new token
@@ -272,7 +259,7 @@ api.interceptors.response.use(
         // Refresh failed - no token returned
         throw new Error('No access token from refresh');
       } catch (refreshError) {
-        logger.error('❌ Token refresh failed:', refreshError.message);
+        logger.error('Token refresh failed');
 
         processQueue(refreshError, null);
 
@@ -280,7 +267,7 @@ api.interceptors.response.use(
         const wasManualLogout = isManualLogout();
 
         // Token refresh failed - logout
-        logger.warn('🔒 Authentication failed - logging out');
+        logger.warn('Authentication failed - logging out');
         logout();
 
         // Only redirect if not already on login/register page

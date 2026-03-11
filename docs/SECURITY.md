@@ -1,108 +1,68 @@
-# 🔐 Security Guidelines for Pryde Social
+# Frontend Security Guide
 
-## ⚠️ NEVER COMMIT SECRETS TO GIT
+This guide covers the security rules for the Pryde frontend.
 
-### **What NOT to Commit:**
-- ❌ MongoDB connection strings
-- ❌ API keys
-- ❌ JWT secrets
-- ❌ Passwords
-- ❌ OAuth client secrets
-- ❌ Any credentials or tokens
+## Non-negotiable rules
 
-### **Where Secrets Should Be Stored:**
+- Never commit secrets or provider credentials to the frontend repo.
+- Only truly public values belong in `VITE_` variables.
+- Treat every `VITE_` value as browser-visible.
+- Keep access tokens out of persistent browser storage unless a reviewed design explicitly requires otherwise.
+- Do not introduce new `dangerouslySetInnerHTML` usage without a documented review.
 
-#### **Local Development:**
-- Store in `server/.env` file (already in `.gitignore`)
-- Never commit `.env` files
+## Current repo protections
 
-#### **Production (Render):**
-- Add secrets as **Environment Variables** in Render Dashboard
-- Go to: https://dashboard.render.com/web/srv-d4f8tp75r7bs73ci67o0
-- Click **Environment** tab
-- Add variables there
+- [x] `npm run security:scan` checks for likely leaked secrets.
+- [x] CI includes a required frontend secret-scan job.
+- [x] A tracked pre-commit hook is available via `npm run hooks:install`.
+- [x] Auth/CSRF request helpers have focused regression coverage.
+- [x] Message rendering is covered by a regression test that keeps user content as plain text.
 
-#### **Production (Vercel — frontend):**
-- Add public vars in Vercel Dashboard → Project → Settings → Environment Variables
-- Only `VITE_` prefixed variables are safe to add here (they are bundled into the client)
-- Never add secret keys here — Vercel frontend env vars are visible in the browser bundle
+## Environment variable rules
 
----
+### Safe for the frontend bundle
 
-## 🚨 If You Accidentally Commit Secrets:
+- public API origin
+- public push key
+- public captcha site key
+- public CDN/media origin when intentionally exposed
 
-### **Step 1: Rotate Credentials IMMEDIATELY**
-1. **MongoDB:** Delete the exposed user, create a new one with a new password
-2. **JWT Secret:** Generate a new secret and update in Render environment variables
-3. **API Keys:** Revoke and regenerate
+### Never put in the frontend bundle
 
-### **Step 2: Remove from Git History**
-```bash
-# Remove file from all commits
-git filter-branch --force --index-filter \
-  "git rm --cached --ignore-unmatch path/to/file" \
-  --prune-empty --tag-name-filter cat -- --all
+- database credentials
+- JWT or refresh secrets
+- API provider private keys
+- email provider secrets
+- storage provider private credentials
 
-# Force push to remote
-git push origin --force --all
-```
+If a value would be dangerous in browser devtools, it does not belong in a frontend env var.
 
-### **Step 3: Notify Team**
-- Inform all team members that credentials were rotated
-- Update environment variables in all environments
+## Secure coding expectations
 
----
+- Use shared request helpers for auth and CSRF-sensitive API calls.
+- Keep recovery logging low-noise and non-sensitive in production paths.
+- Render user-generated content as text or with reviewed context-aware sanitization.
+- Re-check service worker, push, and socket changes for token leakage or unsafe caching.
 
-## ✅ Best Practices:
+## Before committing frontend changes
 
-1. **Use Environment Variables**
-   - Never hardcode secrets in code
-   - Use `process.env.VARIABLE_NAME`
+- Run `npm run security:scan` if docs, config, env handling, auth, or network code changed.
+- Run the smallest relevant test scope first, then the broader affected suite.
+- Review the browser bundle assumptions for any new `VITE_` variable.
+- Confirm no console output leaks token presence, cookie state, or provider configuration.
 
-2. **Check Before Committing**
-   - Run `git diff` before `git add`
-   - Review what you're committing
+## If something sensitive is committed
 
-3. **Use `.gitignore`**
-   - Ensure `.env` files are in `.gitignore`
-   - Never remove `.env` from `.gitignore`
+1. Rotate the affected credential set immediately.
+2. Update the managed environment variables in the relevant platform.
+3. Review build logs, PRs, screenshots, and copied snippets for the same exposure.
+4. Clean history only after rotation and communication are complete.
+5. Add a regression control if the leak bypassed existing review or scanning.
 
-4. **Documentation**
-   - Use placeholders like `<YOUR_SECRET_HERE>` in documentation
-   - Never include actual credentials in README or docs
+## Useful commands
 
-5. **Code Reviews**
-   - Review PRs for accidentally committed secrets
-   - Use automated tools to scan for secrets
-
----
-
-## 🛡️ MongoDB Atlas Security:
-
-1. **Network Access**
-   - Whitelist only necessary IP addresses
-   - Use Render's IP addresses for production
-
-2. **Database Access**
-   - Use strong, unique passwords
-   - Rotate credentials regularly
-   - Use least-privilege principle
-
-3. **Connection Strings**
-   - Never commit connection strings
-   - Store in environment variables only
-
----
-
-## 📞 Security Incident Response:
-
-If you discover a security vulnerability:
-1. **DO NOT** create a public GitHub issue
-2. Contact the repository owner directly
-3. Rotate any compromised credentials immediately
-4. Document the incident and remediation steps
-
----
-
-**Remember: Security is everyone's responsibility!** 🔒
+- `npm run security:scan`
+- `npm run hooks:install`
+- `npm test`
+- `npm run build`
 

@@ -51,6 +51,22 @@ jobs:
           CI: true
         run: npm run build
 
+  security-scan:
+    name: Frontend Secret Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Run secret scan
+        run: npm run security:scan
+
   lint-advisory:
     name: Frontend Lint (Advisory)
     runs-on: ubuntu-latest
@@ -80,18 +96,19 @@ jobs:
   status-check:
     name: All Required Frontend Checks Passed
     runs-on: ubuntu-latest
-    needs: [test, build, lint-advisory]
+    needs: [test, build, security-scan, lint-advisory]
     if: always()
     env:
       TEST_RESULT: ${{ needs.test.result }}
       BUILD_RESULT: ${{ needs.build.result }}
+      SECURITY_SCAN_RESULT: ${{ needs.security-scan.result }}
       LINT_RESULT: ${{ needs.lint-advisory.result }}
 
     steps:
       - name: Enforce required results
         run: |
           failures=0
-          for item in "Run Frontend Tests:$TEST_RESULT" "Build Frontend:$BUILD_RESULT"; do
+          for item in "Run Frontend Tests:$TEST_RESULT" "Build Frontend:$BUILD_RESULT" "Frontend Secret Scan:$SECURITY_SCAN_RESULT"; do
             name="${item%%:*}"
             result="${item##*:}"
             if [ "$result" != "success" ]; then

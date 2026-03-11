@@ -2,7 +2,7 @@
   "name": "pryde-social-client",
   "private": true,
   "version": "1.0.0",
-  "buildVersion": "2026.03.10-2348",
+  "buildVersion": "2026.03.12-0036",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,6 +13,7 @@
     "lint": "eslint . --ext .js,.jsx",
     "lint:features": "eslint src/features/ src/pages/",
     "lint:fix": "eslint . --ext .js,.jsx --fix",
+    "security:scan": "node scripts/security-scan.js",
     "audit": "npm audit",
     "audit-fix": "npm audit fix",
     "server:dev": "cd server && npm run dev",
@@ -21,7 +22,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "hooks:install": "git config core.hooksPath .githooks"
   },
   "overrides": {
     "serialize-javascript": "^7.0.4"
