@@ -10,6 +10,7 @@ import { preloadCriticalResources, preloadFeedData } from './utils/resourcePrelo
 import { checkForUpdate } from './utils/versionCheck';
 import { API_AUTH_URL } from './config/api';
 import logger from './utils/logger';
+import { cleanupPushNotifications, initializePushNotifications } from './utils/pushNotifications';
 import { AuthProvider, useAuth, AUTH_STATES } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 import { executePWASafetyChecks } from './utils/pwaSafety';
@@ -309,6 +310,21 @@ function AppContent() {
       cleanupNewMessage?.();
     };
   }, [isAuthReady, isAuthenticated, user]);
+
+  useEffect(() => {
+    if (!isAuthReady || !isAuthenticated) {
+      cleanupPushNotifications();
+      return undefined;
+    }
+
+    initializePushNotifications().catch((error) => {
+      logger.warn('[App] Push initialization failed:', error);
+    });
+
+    return () => {
+      cleanupPushNotifications();
+    };
+  }, [isAuthReady, isAuthenticated]);
 
   useEffect(() => {
     if (authStatus === AUTH_STATES.UNAUTHENTICATED) {

@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import AsyncStateWrapper from '../components/AsyncStateWrapper';
 import EmptyState from '../components/EmptyState';
+import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
+import { getSocket } from '../utils/socket';
 import logger from '../utils/logger';
 import { sendTestNotification } from '../utils/pushNotifications';
 import './Notifications.css';
@@ -18,14 +20,39 @@ function Notifications() {
   const [testPushStatus, setTestPushStatus] = useState(null); // null | 'sending' | 'ok' | 'error' | 'no-sub'
   const [testPushError, setTestPushError] = useState(null);
   const navigate = useNavigate();
+  const { isAuthReady, isAuthenticated } = useAuth();
   // Get menu handler from AppLayout outlet context
   const { onMenuOpen } = useOutletContext() || {};
 
-  useEffect(() => {
-    fetchNotifications();
+  const isVisibleNotification = useCallback((notification) => {
+    return notification?.type !== 'message';
   }, []);
 
-  const fetchNotifications = async () => {
+  const upsertNotification = useCallback((prevNotifications, nextNotification) => {
+    if (!nextNotification?._id || !isVisibleNotification(nextNotification)) {
+      return prevNotifications;
+    }
+
+    const dedupedNotifications = prevNotifications.filter(
+      notification => notification._id !== nextNotification._id
+    );
+
+    return [nextNotification, ...dedupedNotifications];
+  }, [isVisibleNotification]);
+
+  const fetchNotifications = useCallback(async () => {
+    if (!isAuthReady) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      setNotifications([]);
+      setPendingApprovalIds(new Set());
+      setFetchError(null);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setFetchError(null);
@@ -41,7 +68,7 @@ function Notifications() {
 
       const response = notificationsResult.value;
       // Filter out message notifications - they should only appear in Messages page
-      const filteredNotifications = response.data.filter(n => n.type !== 'message');
+      const filteredNotifications = response.data.filter(isVisibleNotification);
       setNotifications(filteredNotifications);
 
       if (pendingApprovalsResult.status === 'fulfilled') {
@@ -59,7 +86,117 @@ function Notifications() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isAuthReady, isAuthenticated, isVisibleNotification]);
+
+  useEffect(() => {
+    if (!isAuthReady) {
+      return;
+    }
+
+    fetchNotifications();
+  }, [fetchNotifications, isAuthReady]);
+
+  useEffect(() => {
+    if (!isAuthReady || !isAuthenticated) {
+      return undefined;
+    }
+
+    let socket = getSocket();
+    let retryInterval = null;
+    let stopRetryTimeout = null;
+    let cleanupFn = null;
+
+    const handleNewNotification = (data) => {
+      const nextNotification = data?.notification || data;
+
+      if (!nextNotification?._id || !isVisibleNotification(nextNotification)) {
+        return;
+      }
+
+      setNotifications(prevNotifications => upsertNotification(prevNotifications, nextNotification));
+
+      if (nextNotification.type === 'login_approval') {
+        const approvalId = String(
+          nextNotification.loginApprovalId?._id || nextNotification.loginApprovalId || ''
+        );
+
+        if (approvalId) {
+          setPendingApprovalIds(prevPendingIds => {
+            const nextPendingIds = new Set(prevPendingIds);
+            nextPendingIds.add(approvalId);
+            return nextPendingIds;
+          });
+        }
+      }
+    };
+
+    const handleNotificationRead = (data) => {
+      setNotifications(prevNotifications => prevNotifications.map(notification => (
+        notification._id === data?.notificationId
+          ? { ...notification, read: true }
+          : notification
+      )));
+    };
+
+    const handleNotificationReadAll = () => {
+      setNotifications(prevNotifications => prevNotifications.map(notification => ({
+        ...notification,
+        read: true,
+      })));
+    };
+
+    const handleNotificationDeleted = (data) => {
+      setNotifications(prevNotifications => prevNotifications.filter(
+        notification => notification._id !== data?.notificationId
+      ));
+    };
+
+    const attachListeners = (activeSocket) => {
+      activeSocket.on('notification:new', handleNewNotification);
+      activeSocket.on('notification:read', handleNotificationRead);
+      activeSocket.on('notification:read_all', handleNotificationReadAll);
+      activeSocket.on('notification:deleted', handleNotificationDeleted);
+
+      cleanupFn = () => {
+        activeSocket.off('notification:new', handleNewNotification);
+        activeSocket.off('notification:read', handleNotificationRead);
+        activeSocket.off('notification:read_all', handleNotificationReadAll);
+        activeSocket.off('notification:deleted', handleNotificationDeleted);
+      };
+    };
+
+    if (socket) {
+      attachListeners(socket);
+    } else {
+      retryInterval = setInterval(() => {
+        socket = getSocket();
+
+        if (socket) {
+          clearInterval(retryInterval);
+          retryInterval = null;
+          attachListeners(socket);
+        }
+      }, 500);
+
+      stopRetryTimeout = setTimeout(() => {
+        if (retryInterval) {
+          clearInterval(retryInterval);
+          retryInterval = null;
+          logger.warn('Notifications page socket listeners were not attached within 10 seconds');
+        }
+      }, 10000);
+    }
+
+    return () => {
+      if (retryInterval) {
+        clearInterval(retryInterval);
+      }
+      if (stopRetryTimeout) {
+        clearTimeout(stopRetryTimeout);
+      }
+      cleanupFn?.();
+    };
+  }, [isAuthReady, isAuthenticated, isVisibleNotification, upsertNotification]);
 
   const getApprovalId = (notification) => {
     if (!notification?.loginApprovalId) {

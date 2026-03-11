@@ -15,8 +15,7 @@
 
 .notifications-header,
 .notifications-list {
-  width: min(100%, 880px);
-  margin-inline: auto;
+  width: 100%;
 }
 
 .notifications-header {

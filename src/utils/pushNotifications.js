@@ -4,6 +4,7 @@ import { isFirebaseConfigured, getFCMToken, onForegroundMessage, detectDevicePla
 
 let isSubscribed = false;
 let fcmToken = null;
+let foregroundMessageUnsubscribe = null;
 
 /* -------------------------------------------
    CHECK SUBSCRIPTION STATE
@@ -181,6 +182,14 @@ async function unregisterFCMToken() {
   }
 }
 
+export function cleanupPushNotifications() {
+  if (typeof foregroundMessageUnsubscribe === 'function') {
+    foregroundMessageUnsubscribe();
+  }
+
+  foregroundMessageUnsubscribe = null;
+}
+
 /* -------------------------------------------
    INITIALIZE PUSH NOTIFICATIONS
 --------------------------------------------*/
@@ -193,43 +202,38 @@ export const initializePushNotifications = async () => {
 
   if ('serviceWorker' in navigator && 'PushManager' in window) {
     try {
-      // Get existing service worker registration (already registered in main.jsx)
+      // Get existing service worker registration (already registered by app bootstrap)
       const registration = await navigator.serviceWorker.ready;
 
       // Check current subscription status (will respect circuit breaker)
       const subscriptionStatus = await isPushNotificationSubscribed();
 
-      // Set up push event listener
-      registration.addEventListener('push', (event) => {
-        const data = event.data.json();
-        const options = {
-          body: data.body,
-          icon: data.icon || '/pryde-logo-small.webp',
-          badge: data.badge || '/pryde-logo-small.webp',
-          data: data.data || {}
-        };
-
-        registration.showNotification(data.title || 'Pryde Social', options);
-      });
-
       // Initialize FCM for native Android/iOS push
       if (isFirebaseConfigured()) {
         try {
-          // Register the FCM service worker
-          await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
+          const fcmRegistration = await navigator.serviceWorker.getRegistration('/firebase-messaging-sw.js');
+          if (!fcmRegistration) {
+            await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
+          }
+
           // Register FCM token with backend
           await registerFCMToken();
+
           // Listen for foreground FCM messages
-          onForegroundMessage((payload) => {
-            const title = payload.notification?.title || 'Pryde Social';
-            const options = {
-              body: payload.notification?.body || 'New notification',
-              icon: payload.notification?.icon || '/pryde-logo-small.webp',
-              badge: '/pryde-logo-small.webp',
-              data: payload.data || {},
-            };
-            registration.showNotification(title, options);
-          });
+          if (!foregroundMessageUnsubscribe) {
+            foregroundMessageUnsubscribe = await onForegroundMessage((payload) => {
+              const title = payload.notification?.title || 'Pryde Social';
+              const options = {
+                body: payload.notification?.body || 'New notification',
+                icon: payload.notification?.icon || '/pryde-logo-small.webp',
+                badge: '/pryde-logo-small.webp',
+                data: payload.data || {},
+              };
+
+              registration.showNotification(title, options);
+            });
+          }
+
           console.log('[Push] FCM initialized for native push notifications');
         } catch (fcmError) {
           console.debug('[Push] FCM initialization failed (falling back to VAPID only):', fcmError.message);
