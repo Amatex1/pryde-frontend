@@ -10,6 +10,9 @@ import './Notifications.css';
 
 function Notifications() {
   const [notifications, setNotifications] = useState([]);
+  const [pendingApprovalIds, setPendingApprovalIds] = useState(new Set());
+  const [approvalActionId, setApprovalActionId] = useState('');
+  const [approvalStateById, setApprovalStateById] = useState(() => new Map());
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [testPushStatus, setTestPushStatus] = useState(null); // null | 'sending' | 'ok' | 'error' | 'no-sub'
@@ -26,16 +29,44 @@ function Notifications() {
     try {
       setLoading(true);
       setFetchError(null);
-      const response = await api.get('/notifications');
+
+      const [notificationsResult, pendingApprovalsResult] = await Promise.allSettled([
+        api.get('/notifications'),
+        api.get('/login-approval/pending')
+      ]);
+
+      if (notificationsResult.status !== 'fulfilled') {
+        throw notificationsResult.reason;
+      }
+
+      const response = notificationsResult.value;
       // Filter out message notifications - they should only appear in Messages page
       const filteredNotifications = response.data.filter(n => n.type !== 'message');
       setNotifications(filteredNotifications);
+
+      if (pendingApprovalsResult.status === 'fulfilled') {
+        const nextPendingIds = new Set(
+          (pendingApprovalsResult.value.data?.approvals || []).map(approval => String(approval._id))
+        );
+        setPendingApprovalIds(nextPendingIds);
+      } else {
+        logger.error('Failed to fetch pending login approvals:', pendingApprovalsResult.reason);
+        setPendingApprovalIds(new Set());
+      }
     } catch (error) {
       logger.error('Failed to fetch notifications:', error);
       setFetchError(error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const getApprovalId = (notification) => {
+    if (!notification?.loginApprovalId) {
+      return null;
+    }
+
+    return String(notification.loginApprovalId._id || notification.loginApprovalId);
   };
 
   const markAsRead = async (id) => {
@@ -59,6 +90,11 @@ function Notifications() {
   };
 
   const handleNotificationClick = (notification) => {
+    if (notification.type === 'login_approval') {
+      markAsRead(notification._id);
+      return;
+    }
+
     markAsRead(notification._id);
 
     // Navigate based on notification type
@@ -103,6 +139,7 @@ function Notifications() {
       case 'group_post': return '📝';
       case 'group_mention': return '💬';
       case 'announcement': return '📢';
+      case 'login_approval': return '🔐';
       default: return '🔔';
     }
   };
@@ -134,8 +171,59 @@ function Notifications() {
         return `${senderName} mentioned you in ${groupName}`;
       case 'announcement':
         return notification.message || `${senderName} sent an @everyone announcement`;
+      case 'login_approval':
+        return `Approve sign in from ${notification.loginApprovalData?.deviceInfo || 'another device'}`;
       default:
         return notification.message || 'New notification';
+    }
+  };
+
+  const getLoginApprovalLocation = (notification) => {
+    const location = notification.loginApprovalData?.location;
+    return [location?.city, location?.region, location?.country].filter(Boolean).join(', ');
+  };
+
+  const handleLoginApprovalAction = async (notification, action, event) => {
+    event.stopPropagation();
+
+    const approvalId = getApprovalId(notification);
+    if (!approvalId) {
+      return;
+    }
+
+    setApprovalActionId(approvalId);
+    setApprovalStateById(prev => new Map(prev).set(approvalId, {
+        status: 'pending',
+        message: action === 'approve' ? 'Approving login…' : 'Denying login…'
+      }));
+
+    try {
+      const response = await api.post(`/login-approval/${action}`, { approvalId });
+
+      setPendingApprovalIds(prev => {
+        const next = new Set(prev);
+        next.delete(approvalId);
+        return next;
+      });
+
+      setNotifications(prev => prev.map(n => (
+        n._id === notification._id ? { ...n, read: true } : n
+      )));
+
+      setApprovalStateById(prev => new Map(prev).set(approvalId, {
+          status: action === 'approve' ? 'approved' : 'denied',
+          message: response.data?.message || (action === 'approve' ? 'Login approved successfully' : 'Login denied successfully')
+        }));
+
+      await markAsRead(notification._id);
+    } catch (error) {
+      logger.error(`Failed to ${action} login approval:`, error);
+      setApprovalStateById(prev => new Map(prev).set(approvalId, {
+          status: 'error',
+          message: error.response?.data?.message || `Could not ${action} this login request.`
+        }));
+    } finally {
+      setApprovalActionId('');
     }
   };
 
@@ -223,20 +311,104 @@ function Notifications() {
         >
           <div className="notifications-list">
             {notifications.map(notification => (
-              <button
-                key={notification._id}
-                className={`notification-card ${!notification.read ? 'unread' : ''} ${notification.type === 'announcement' ? 'announcement' : ''}`}
-                type="button"
-                onClick={() => handleNotificationClick(notification)}
-                aria-label={getNotificationText(notification)}
-              >
-                <div className="notification-icon">{getNotificationIcon(notification.type)}</div>
-                <div className="notification-content">
-                  <p className="notification-text">{getNotificationText(notification)}</p>
-                  <span className="notification-time">{getTimeAgo(notification.createdAt)}</span>
-                </div>
-                {!notification.read && <div className="unread-indicator"></div>}
-              </button>
+              notification.type === 'login_approval' ? (() => {
+                const approvalId = getApprovalId(notification);
+                const approvalState = approvalId ? approvalStateById.get(approvalId) : null;
+                const isPendingApproval = approvalId ? pendingApprovalIds.has(approvalId) : false;
+                const loginApprovalLocation = getLoginApprovalLocation(notification);
+                const loginApprovalDetails = [
+                  notification.loginApprovalData?.browser,
+                  notification.loginApprovalData?.os
+                ].filter(Boolean).join(' • ');
+
+                return (
+                  <div
+                    key={notification._id}
+                    className={`notification-card notification-card-static login-approval-card ${!notification.read ? 'unread' : ''}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => handleNotificationClick(notification)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        handleNotificationClick(notification);
+                      }
+                    }}
+                    aria-label={getNotificationText(notification)}
+                  >
+                    <div className="notification-icon">{getNotificationIcon(notification.type)}</div>
+                    <div className="notification-content">
+                      <p className="notification-text">{getNotificationText(notification)}</p>
+
+                      <div className="login-approval-meta">
+                        <div className="login-approval-code-row">
+                          <span className="login-approval-label">Verification code</span>
+                          <span className="login-approval-code">
+                            {notification.loginApprovalData?.verificationCode || '--'}
+                          </span>
+                        </div>
+
+                        {loginApprovalDetails && (
+                          <p className="login-approval-detail">{loginApprovalDetails}</p>
+                        )}
+
+                        {notification.loginApprovalData?.ipAddress && (
+                          <p className="login-approval-detail">IP: {notification.loginApprovalData.ipAddress}</p>
+                        )}
+
+                        {loginApprovalLocation && (
+                          <p className="login-approval-detail">{loginApprovalLocation}</p>
+                        )}
+                      </div>
+
+                      <span className="notification-time">{getTimeAgo(notification.createdAt)}</span>
+
+                      {approvalState?.message && (
+                        <p className={`login-approval-feedback ${approvalState.status || 'info'}`}>
+                          {approvalState.message}
+                        </p>
+                      )}
+
+                      {isPendingApproval && (
+                        <div className="login-approval-actions">
+                          <button
+                            type="button"
+                            className="login-approval-btn login-approval-btn-approve"
+                            disabled={approvalActionId === approvalId}
+                            onClick={(event) => handleLoginApprovalAction(notification, 'approve', event)}
+                          >
+                            {approvalActionId === approvalId ? 'Working…' : 'Approve'}
+                          </button>
+                          <button
+                            type="button"
+                            className="login-approval-btn login-approval-btn-deny"
+                            disabled={approvalActionId === approvalId}
+                            onClick={(event) => handleLoginApprovalAction(notification, 'deny', event)}
+                          >
+                            {approvalActionId === approvalId ? 'Working…' : 'Deny'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    {!notification.read && <div className="unread-indicator"></div>}
+                  </div>
+                );
+              })() : (
+                <button
+                  key={notification._id}
+                  className={`notification-card ${!notification.read ? 'unread' : ''} ${notification.type === 'announcement' ? 'announcement' : ''}`}
+                  type="button"
+                  onClick={() => handleNotificationClick(notification)}
+                  aria-label={getNotificationText(notification)}
+                >
+                  <div className="notification-icon">{getNotificationIcon(notification.type)}</div>
+                  <div className="notification-content">
+                    <p className="notification-text">{getNotificationText(notification)}</p>
+                    <span className="notification-time">{getTimeAgo(notification.createdAt)}</span>
+                  </div>
+                  {!notification.read && <div className="unread-indicator"></div>}
+                </button>
+              )
             ))}
           </div>
         </AsyncStateWrapper>

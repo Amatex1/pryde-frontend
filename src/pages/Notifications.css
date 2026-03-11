@@ -123,6 +123,15 @@
   flex: 1;
 }
 
+.notification-card-static {
+  cursor: default;
+}
+
+.notification-card-static:hover,
+.notification-card-static:focus-visible {
+  transform: none;
+}
+
 .notification-text {
   margin: 0 0 0.25rem 0;
   color: var(--text-main);
@@ -133,6 +142,107 @@
 .notification-time {
   font-size: 0.85rem;
   color: var(--text-muted);
+}
+
+.login-approval-card {
+  align-items: flex-start;
+}
+
+.login-approval-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0.65rem 0 0.75rem;
+}
+
+.login-approval-code-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.login-approval-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.login-approval-code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.login-approval-detail {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.login-approval-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.9rem;
+}
+
+.login-approval-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.login-approval-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.login-approval-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.login-approval-btn-approve {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.login-approval-btn-deny {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.login-approval-feedback {
+  margin: 0.75rem 0 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.login-approval-feedback.approved {
+  color: var(--color-success, #059669);
+}
+
+.login-approval-feedback.denied,
+.login-approval-feedback.error {
+  color: var(--color-danger, #dc2626);
+}
+
+.login-approval-feedback.pending,
+.login-approval-feedback.info {
+  color: var(--color-primary, #6C5CE7);
 }
 
 .unread-indicator {
@@ -201,6 +311,14 @@
 
   .notification-card {
     padding: 0.75rem;
+  }
+
+  .login-approval-actions {
+    flex-direction: column;
+  }
+
+  .login-approval-btn {
+    width: 100%;
   }
 
   .notification-icon {

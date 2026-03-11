@@ -41,6 +41,7 @@ export default [
       // React
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
+      'react/jsx-uses-vars': 'warn',
 
       // Hooks (STRICT)
       ...reactHooks.configs.recommended.rules,
