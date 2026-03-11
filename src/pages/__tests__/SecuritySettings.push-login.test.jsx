@@ -111,6 +111,33 @@ describe('SecuritySettings push login approval', () => {
     expect(enableButton).not.toBeDisabled();
   });
 
+  it('does not refetch security settings in a loop when auth context user changes after refresh', async () => {
+    let authUser = buildUser({ hasPushSubscription: false });
+
+    mockUseAuth.mockImplementation(() => ({
+      user: authUser,
+      refreshUser: mockRefreshUser,
+    }));
+
+    mockRefreshUser.mockImplementation(async () => {
+      authUser = buildUser({ hasPushSubscription: true });
+
+      return {
+        authenticated: true,
+        user: authUser
+      };
+    });
+
+    render(<SecuritySettings />);
+
+    await screen.findByRole('button', { name: /enable push login approval/i });
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    expect(mockApiGet).toHaveBeenCalledTimes(1);
+    expect(mockRefreshUser).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText(/failed to load security settings/i)).not.toBeInTheDocument();
+  });
+
   it('enables push login approval and refreshes the visible account status', async () => {
     mockRefreshUser
       .mockResolvedValueOnce({

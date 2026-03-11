@@ -45,7 +45,7 @@ function SecuritySettings() {
   const navigate = useNavigate();
   const { onMenuOpen } = useOutletContext() || {};
   const { modalState, closeModal, showPrompt } = useModal();
-  const { user: currentUser, refreshUser } = useAuth();
+  const { refreshUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('success');
@@ -73,7 +73,7 @@ function SecuritySettings() {
       isPushNotificationSubscribed()
     ]);
 
-    const refreshedUser = authResult?.user ?? currentUser;
+    const refreshedUser = authResult?.user;
 
     setLoginAlerts({
       ...DEFAULT_LOGIN_ALERTS,
@@ -86,7 +86,7 @@ function SecuritySettings() {
       accountHasSubscription: refreshedUser?.hasPushSubscription ?? false,
       preferPushTwoFactor: refreshedUser?.preferPushTwoFactor ?? true
     }));
-  }, [currentUser, refreshUser]);
+  }, [refreshUser]);
 
   const fetchSecuritySettings = useCallback(async () => {
     try {
