@@ -6,11 +6,26 @@
   min-height: 100vh; /* Fallback */
   min-height: 100dvh; /* Fixes iOS Safari bottom bar */
   background: var(--bg);
+  /* Ensure proper stacking context and full viewport */
+  position: relative;
+  z-index: 1;
+  /* Ensure full height and proper layout */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.notifications-page > * {
+  /* Ensure children don't get squished */
+  flex-shrink: 0;
 }
 
 .notifications-container {
   width: 100%;
   padding-block: var(--space-6) var(--space-8);
+  /* Ensure container takes available space */
+  flex: 1;
+  min-height: 0;
 }
 
 .notifications-header,
