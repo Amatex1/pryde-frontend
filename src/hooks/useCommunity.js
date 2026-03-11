@@ -9,16 +9,29 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import api from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 import logger from '../utils/logger';
 
 export function useCommunity() {
+  const { isAuthReady, isAuthenticated } = useAuth();
   const [spotlight, setSpotlight] = useState(null);
   const [themes, setThemes] = useState([]);
   const [activeMembers, setActiveMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const resetCommunityData = useCallback(() => {
+    setSpotlight(null);
+    setThemes([]);
+    setActiveMembers([]);
+    setError(null);
+  }, []);
+
   const fetchCommunityData = useCallback(async () => {
+    if (!isAuthReady || !isAuthenticated) {
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -60,19 +73,33 @@ export function useCommunity() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isAuthReady, isAuthenticated]);
 
   useEffect(() => {
+    if (!isAuthReady) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      resetCommunityData();
+      setLoading(false);
+      return;
+    }
+
     fetchCommunityData();
-  }, [fetchCommunityData]);
+  }, [fetchCommunityData, isAuthReady, isAuthenticated, resetCommunityData]);
 
   const dismissSpotlight = useCallback(() => {
     setSpotlight(null);
   }, []);
 
   const refresh = useCallback(() => {
+    if (!isAuthReady || !isAuthenticated) {
+      return;
+    }
+
     fetchCommunityData();
-  }, [fetchCommunityData]);
+  }, [fetchCommunityData, isAuthReady, isAuthenticated]);
 
   return {
     spotlight,

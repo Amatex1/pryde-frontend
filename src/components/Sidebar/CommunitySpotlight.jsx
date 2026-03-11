@@ -18,8 +18,7 @@ import './CommunitySpotlight.css';
 /**
  * Member Spotlight Card
  */
-export function CommunitySpotlight({ onDismiss }) {
-  const { spotlight, loading } = useCommunity();
+export function CommunitySpotlight({ spotlight = null, loading = false, onDismiss }) {
 
   if (loading) {
     return (
@@ -101,8 +100,7 @@ export function CommunitySpotlight({ onDismiss }) {
 /**
  * Weekly Themes Display
  */
-export function CommunityThemes() {
-  const { themes, loading } = useCommunity();
+export function CommunityThemes({ themes = [], loading = false }) {
 
   if (loading || !themes || themes.length === 0) {
     return null;
@@ -127,8 +125,7 @@ export function CommunityThemes() {
 /**
  * Active Members Display
  */
-export function ActiveMembers() {
-  const { activeMembers, loading } = useCommunity();
+export function ActiveMembers({ activeMembers = [], loading = false }) {
 
   if (loading || !activeMembers || activeMembers.length === 0) {
     return null;
@@ -176,22 +173,30 @@ export function ActiveMembers() {
  * Combined Community Sidebar Component
  */
 export default function CommunitySidebar({ showSpotlight = true }) {
-  const { spotlight, dismissSpotlight } = useCommunity();
+  const {
+    spotlight,
+    themes,
+    activeMembers,
+    loading,
+    dismissSpotlight
+  } = useCommunity();
 
   return (
     <div className="community-sidebar">
       {/* Member Spotlight - only show if not dismissed */}
       {showSpotlight && (
         <CommunitySpotlight 
+          spotlight={spotlight}
+          loading={loading}
           onDismiss={spotlight ? dismissSpotlight : null}
         />
       )}
 
       {/* Weekly Themes */}
-      <CommunityThemes />
+      <CommunityThemes themes={themes} loading={loading} />
 
       {/* Active Members */}
-      <ActiveMembers />
+      <ActiveMembers activeMembers={activeMembers} loading={loading} />
     </div>
   );
 }

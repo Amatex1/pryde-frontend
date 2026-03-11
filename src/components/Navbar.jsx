@@ -190,8 +190,15 @@ function Navbar({ onMenuClick }) {
             )}
           </Link>
 
-          {/* Quick-access: Notification bell (reuses existing component with its live badge) */}
-          <NotificationBell />
+          {/* Quick-access: Notifications link - keep only one mounted bell instance overall */}
+          <Link
+            to="/notifications"
+            className="navbar-mobile-icon-btn"
+            aria-label="Notifications"
+            data-tooltip="Notifications"
+          >
+            <Bell {...LUCIDE_DEFAULTS} aria-hidden="true" className="navbar-mobile-icon" />
+          </Link>
 
           {/* Search icon — navigates to full search page */}
           <button

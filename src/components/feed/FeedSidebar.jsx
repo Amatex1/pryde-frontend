@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import CommunityResources from '../Sidebar/CommunityResources';
 import SuggestedConnections from '../Sidebar/SuggestedConnections';
-import CommunitySidebar, { CommunitySpotlight, CommunityThemes, ActiveMembers } from '../Sidebar/CommunitySpotlight';
+import CommunitySidebar from '../Sidebar/CommunitySpotlight';
 
 /**
  * FeedSidebar — static right-hand panel shown on desktop.
@@ -14,9 +14,7 @@ export default function FeedSidebar({ showMobileSidebar }) {
           Community Features (Spotlight, Themes, Active Members)
          ========================================= */}
       <div className="sidebar-card community-features glossy">
-        <CommunitySpotlight />
-        <CommunityThemes />
-        <ActiveMembers />
+        <CommunitySidebar />
       </div>
 
       {/* =========================================

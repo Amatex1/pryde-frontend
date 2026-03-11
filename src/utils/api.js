@@ -58,6 +58,15 @@ const getCsrfToken = () => {
   return csrfToken;
 };
 
+const shouldAwaitInFlightRefresh = () => {
+  if (getIsLoggingOut() || !isRefreshInProgress()) {
+    return false;
+  }
+
+  const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+  return currentPath !== '/login' && currentPath !== '/register' && currentPath !== '/';
+};
+
 /**
  * Set CSRF token from response header
  */
@@ -67,7 +76,7 @@ const setCsrfToken = (token) => {
 
 // Add auth token and CSRF token to requests
 api.interceptors.request.use(
-  (config) => {
+  async (config) => {
     // 🚨 SECURITY: Block accidental Cloudflare API calls from frontend
     // Cloudflare API should NEVER be called directly from browser
     const url = config.url || '';
@@ -81,9 +90,24 @@ api.interceptors.request.use(
       config.headers = {};
     }
 
+    if (shouldAwaitInFlightRefresh()) {
+      logger.debug('Refresh already in progress; waiting before sending protected request');
+
+      try {
+        const refreshPromise = getRefreshPromise();
+        const refreshedToken = refreshPromise ? await refreshPromise : null;
+
+        if (refreshedToken) {
+          config.headers.Authorization = `Bearer ${refreshedToken}`;
+        }
+      } catch (refreshError) {
+        logger.debug('Protected request continuing after refresh wait failed');
+      }
+    }
+
     // Add JWT token for authentication
     const token = getAuthToken();
-    if (token) {
+    if (!config.headers.Authorization && token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 

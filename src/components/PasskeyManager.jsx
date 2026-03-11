@@ -1,22 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 import PasskeySetup from './PasskeySetup';
 import './PasskeyManager.css';
 
 function PasskeyManager() {
+  const { isAuthReady, isAuthenticated } = useAuth();
   const [passkeys, setPasskeys] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showAddPasskey, setShowAddPasskey] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
-  useEffect(() => {
-    fetchPasskeys();
-  }, []);
+  const fetchPasskeys = useCallback(async () => {
+    if (!isAuthReady) {
+      return;
+    }
 
-  const fetchPasskeys = async () => {
+    if (!isAuthenticated) {
+      setPasskeys([]);
+      setError('');
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
+      setError('');
       const { data } = await api.get('/passkey/list');
       // Safe array default to prevent undefined errors
       setPasskeys(data?.passkeys ?? []);
@@ -28,13 +38,21 @@ function PasskeyManager() {
       // CRITICAL: Always set loading to false to prevent infinite loading
       setLoading(false);
     }
-  };
+  }, [isAuthReady, isAuthenticated]);
+
+  useEffect(() => {
+    if (!isAuthReady) {
+      return;
+    }
+
+    fetchPasskeys();
+  }, [fetchPasskeys, isAuthReady]);
 
   const handleDeletePasskey = async (credentialId) => {
     try {
       await api.delete(`/passkey/${credentialId}`);
       // Safe array filter with default
-      setPasskeys((passkeys ?? []).filter(pk => pk.id !== credentialId));
+      setPasskeys((currentPasskeys = []) => currentPasskeys.filter(pk => pk.id !== credentialId));
       setDeleteConfirm(null);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete passkey');
@@ -42,8 +60,7 @@ function PasskeyManager() {
   };
 
   const handlePasskeyAdded = (newPasskey) => {
-    // Safe array spread with default
-    setPasskeys([...(passkeys ?? []), newPasskey]);
+    setPasskeys((currentPasskeys = []) => [...currentPasskeys, newPasskey]);
     setShowAddPasskey(false);
   };
 

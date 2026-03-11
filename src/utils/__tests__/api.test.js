@@ -125,10 +125,24 @@ describe('api interceptors', () => {
   it('blocks direct Cloudflare API calls from the frontend', async () => {
     await loadApiModule();
 
-    expect(() => state.requestFulfilled({ url: 'https://api.cloudflare.com/client/v4/zones', headers: {} })).toThrow(
+    await expect(state.requestFulfilled({ url: 'https://api.cloudflare.com/client/v4/zones', headers: {} })).rejects.toThrow(
       /Blocked illegal Cloudflare API call/
     );
     expect(state.logger.error).toHaveBeenCalledWith('[SECURITY] Blocked Cloudflare API call from frontend');
+  });
+
+  it('waits for an in-flight refresh before sending protected requests on protected pages', async () => {
+    await loadApiModule();
+    window.history.replaceState({}, '', '/feed');
+    state.refresh.isRefreshInProgress.mockReturnValue(true);
+    state.refresh.getRefreshPromise.mockResolvedValue('fresh-after-wait');
+    state.auth.getAuthToken.mockReturnValue('stale-token');
+
+    const config = await state.requestFulfilled({ url: '/notifications', method: 'get', headers: {} });
+
+    expect(state.refresh.getRefreshPromise).toHaveBeenCalledTimes(1);
+    expect(config.headers.Authorization).toBe('Bearer fresh-after-wait');
+    expect(state.logger.debug).toHaveBeenCalledWith('Refresh already in progress; waiting before sending protected request');
   });
 
   it('treats 410 responses as terminal resolved states', async () => {

@@ -78,4 +78,10 @@ describe('Navbar', () => {
     expect(onMenuClose).toHaveBeenCalledTimes(1);
     expect(onMenuClick).not.toHaveBeenCalled();
   });
+
+  it('mounts a single live notification bell instance', () => {
+    render(<Navbar onMenuClick={vi.fn()} />);
+
+    expect(screen.getAllByTestId('notification-bell')).toHaveLength(1);
+  });
 });

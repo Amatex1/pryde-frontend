@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useRef, memo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef, memo, useCallback } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Bell, Heart, MessageCircle, UserPlus, UserCheck,
   AtSign, Repeat2, Smile, FileText,
 } from 'lucide-react';
 import api from '../utils/api';
-import { getImageUrl } from '../utils/imageUrl';
-import { getCurrentUser } from '../utils/auth';
 import { getSocket } from '../utils/socket';
+import { useAuth } from '../context/AuthContext';
 import logger from '../utils/logger';
 import {
   filterSocialNotifications,
@@ -27,16 +26,21 @@ const NotificationBell = memo(() => {
   const dropdownRef = useRef(null);
   const listenersSetupRef = useRef(false); // Prevent duplicate listener setup
   const navigate = useNavigate();
-  const user = getCurrentUser();
-  // Support both `id` (from login response) and `_id` (from /auth/me response)
-  const userId = user?.id || user?._id;
+  const { pathname } = useLocation();
+  const { isAuthReady, isAuthenticated, user } = useAuth();
+  const userId = user?._id || user?.id;
+  const isNotificationsRoute = pathname === '/notifications';
 
   // NOTE: Push notification subscription is now handled in Settings page
   // where users can explicitly enable/disable notifications with a user gesture.
   // This prevents browser console violations about requesting permission
   // without user interaction.
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
+    if (!isAuthReady || !isAuthenticated || !userId) {
+      return;
+    }
+
     try {
       const response = await api.get('/notifications');
       // Filter to SOCIAL types only - MESSAGE types go to Messages badge
@@ -46,23 +50,23 @@ const NotificationBell = memo(() => {
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
     }
-  };
+  }, [isAuthReady, isAuthenticated, userId]);
 
   useEffect(() => {
-    // Only fetch if user is logged in
-    if (!userId) {
-      return;
-    }
-
-    // 🔐 RACE CONDITION FIX: BOOT GUARD - Do NOT fetch if auth not ready
-    const authReady = typeof window !== 'undefined' ? window.__PRYDE_AUTH__?.isAuthReady : false;
-    if (!authReady) {
+    if (!isAuthReady) {
       logger.debug('⏳ NotificationBell waiting for auth ready');
       return;
     }
 
-    // ✅ Fetch once on mount (NO POLLING!)
-    fetchNotifications();
+    if (!isAuthenticated || !userId) {
+      setNotifications([]);
+      setUnreadCount(0);
+      return;
+    }
+
+    if (!isNotificationsRoute) {
+      fetchNotifications();
+    }
 
     let socket = getSocket();
     let retryInterval = null;
@@ -172,7 +176,7 @@ const NotificationBell = memo(() => {
       if (retryInterval) clearInterval(retryInterval);
       if (cleanupFn) cleanupFn();
     };
-  }, [userId]); // ✅ Use userId instead of user object to prevent infinite loop
+  }, [fetchNotifications, isAuthReady, isAuthenticated, isNotificationsRoute, userId]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
