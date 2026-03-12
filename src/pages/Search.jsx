@@ -4,15 +4,20 @@
  * Provides the same search functionality as GlobalSearch on desktop
  *
  * PHASE 4C: Hashtag search removed - groups are the only topic-based container
+ * 
+ * IMPROVED: Added hero header, filter tabs, skeleton loading, trending section,
+ * recent searches, and premium styling to match Pryde Social design standards
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 // PERFORMANCE: Tree-shake lucide-react - import only used icons
 import ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left';
 import SearchIcon from 'lucide-react/dist/esm/icons/search';
 import X from 'lucide-react/dist/esm/icons/x';
 import Users from 'lucide-react/dist/esm/icons/users';
+import Clock from 'lucide-react/dist/esm/icons/clock';
+import TrendingUp from 'lucide-react/dist/esm/icons/trending-up';
 import AsyncStateWrapper from '../components/AsyncStateWrapper';
 import EmptyState from '../components/EmptyState';
 import api from '../utils/api';
@@ -25,7 +30,41 @@ function Search() {
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('all');
+  const [recentSearches, setRecentSearches] = useState([]);
   const navigate = useNavigate();
+  const searchInputRef = useRef(null);
+
+  // Load recent searches from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('pryde_recent_searches');
+    if (saved) {
+      try {
+        setRecentSearches(JSON.parse(saved));
+      } catch (e) {
+        // Invalid JSON, ignore
+      }
+    }
+  }, []);
+
+  // Save recent searches to localStorage
+  const saveRecentSearch = (query) => {
+    if (!query.trim()) return;
+    const updated = [query, ...recentSearches.filter(s => s !== query)].slice(0, 10);
+    setRecentSearches(updated);
+    localStorage.setItem('pryde_recent_searches', JSON.stringify(updated));
+  };
+
+  const clearHistory = () => {
+    setRecentSearches([]);
+    localStorage.removeItem('pryde_recent_searches');
+  };
+
+  const removeFromHistory = (query) => {
+    const updated = recentSearches.filter(s => s !== query);
+    setRecentSearches(updated);
+    localStorage.setItem('pryde_recent_searches', JSON.stringify(updated));
+  };
 
   useEffect(() => {
     const delaySearch = setTimeout(() => {
@@ -57,7 +96,7 @@ function Search() {
 
       let groups = [];
       if (groupsResponse.status === 'fulfilled') {
-        const allGroups = groupsResponse.value.data.groups || groupsResponse.value.data || [];
+        const allGroups = groupsResponse.value.data?.groups || groupsResponse.value.data || [];
         const query = searchQuery.toLowerCase();
         groups = allGroups.filter(g =>
           g.name?.toLowerCase().includes(query) ||
@@ -65,12 +104,13 @@ function Search() {
         ).slice(0, 5);
       }
 
-      setError(searchResponse.status === 'rejected'
-        ? searchResponse.reason || new Error('Search failed. Please try again.')
-        : null);
-
       setSearchResults({ ...mainResults, groups });
       setHasSearched(true);
+      
+      // Save to recent searches on successful search
+      if (mainResults.users?.length > 0 || mainResults.posts?.length > 0 || groups.length > 0) {
+        saveRecentSearch(searchQuery);
+      }
     } catch (err) {
       console.error('Search error:', err);
       setError(err);
@@ -97,14 +137,42 @@ function Search() {
     setSearchResults({ users: [], posts: [], groups: [] });
     setHasSearched(false);
     setError(null);
+    searchInputRef.current?.focus();
+  };
+
+  const handleRecentSearchClick = (query) => {
+    setSearchQuery(query);
   };
 
   const hasResults = searchResults.users.length > 0 ||
                      searchResults.posts.length > 0 ||
                      searchResults.groups?.length > 0;
 
+  // Filter results based on active tab
+  const getFilteredResults = () => {
+    if (activeTab === 'users') return { users: searchResults.users, posts: [], groups: [] };
+    if (activeTab === 'posts') return { users: [], posts: searchResults.posts, groups: [] };
+    if (activeTab === 'groups') return { users: [], posts: [], groups: searchResults.groups };
+    return searchResults;
+  };
+
+  const filteredResults = getFilteredResults();
+  const filteredHasResults = filteredResults.users.length > 0 ||
+                             filteredResults.posts.length > 0 ||
+                             filteredResults.groups?.length > 0;
+
+  // Trending topics (simulated)
+  const trendingTopics = ['photography', 'music', 'travel', 'food', 'art', 'fitness', 'tech', 'gaming'];
+
   return (
     <div className="search-page">
+      {/* Hero Header */}
+      <div className="search-hero">
+        <h1 className="search-title">🔍 Discover</h1>
+        <p className="search-subtitle">Find people, posts, and communities</p>
+      </div>
+
+      {/* Search Header */}
       <div className="search-header">
         <button className="back-btn" onClick={() => navigate(-1)} aria-label="Go back">
           <ArrowLeft size={20} strokeWidth={1.75} />
@@ -112,6 +180,7 @@ function Search() {
         <div className="search-input-container">
           <SearchIcon size={20} className="search-icon" aria-hidden="true" />
           <input
+            ref={searchInputRef}
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -129,111 +198,222 @@ function Search() {
         </div>
       </div>
 
+      {/* Filter Tabs */}
+      <div className="search-tabs">
+        <button
+          className={`search-tab ${activeTab === 'all' ? 'active' : ''}`}
+          onClick={() => setActiveTab('all')}
+        >
+          All
+        </button>
+        <button
+          className={`search-tab ${activeTab === 'users' ? 'active' : ''}`}
+          onClick={() => setActiveTab('users')}
+        >
+          Users
+        </button>
+        <button
+          className={`search-tab ${activeTab === 'posts' ? 'active' : ''}`}
+          onClick={() => setActiveTab('posts')}
+        >
+          Posts
+        </button>
+        <button
+          className={`search-tab ${activeTab === 'groups' ? 'active' : ''}`}
+          onClick={() => setActiveTab('groups')}
+        >
+          Groups
+        </button>
+      </div>
+
       <div className="search-results">
-        {!searchQuery.trim() && !loading && (
-          <div className="search-hints">
-            <p>Search for users by name or username</p>
-            <p>Search posts by content</p>
-            <p>Search groups by name</p>
+        {/* Loading State with Skeletons */}
+        {loading && (
+          <div className="search-skeletons">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="skeleton-item">
+                <div className="skeleton-avatar" />
+                <div className="skeleton-content">
+                  <div className="skeleton-line skeleton-line-short" />
+                  <div className="skeleton-line" />
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
-        {searchQuery.trim() && (
-          <AsyncStateWrapper
-            isLoading={loading}
-            isError={Boolean(error)}
-            isEmpty={hasSearched && !error && !hasResults}
-            error={error}
-            onRetry={performSearch}
-            loadingMessage="Searching across Pryde..."
-            emptyComponent={(
-              <EmptyState
-                type="search"
-                title={`No results for "${searchQuery}"`}
-                description="Try searching for users, posts, or groups."
-              />
-            )}
-          >
-            {/* PHASE 4C: Groups replace hashtags */}
-            {searchResults.groups?.length > 0 && (
-              <div className="results-section">
-                <h3 className="section-title">Groups</h3>
-                {searchResults.groups.map((group) => (
-                  <button
-                    key={group._id}
-                    type="button"
-                    className="result-item group-item"
-                    onClick={() => handleGroupClick(group.slug)}
-                    aria-label={`Group: ${group.name}`}
-                  >
-                    <div className="group-icon" aria-hidden="true">
-                      <Users size={20} strokeWidth={1.75} />
-                    </div>
-                    <div className="group-info">
-                      <span className="group-name">{group.name}</span>
-                      {group.description && (
-                        <span className="group-description">
-                          {group.description.substring(0, 60)}{group.description.length > 60 ? '...' : ''}
-                        </span>
-                      )}
-                    </div>
+        {/* Empty Search State - Show Suggestions */}
+        {!searchQuery.trim() && !loading && (
+          <div className="search-suggestions">
+            {/* Recent Searches */}
+            {recentSearches.length > 0 && (
+              <div className="recent-searches">
+                <div className="recent-header">
+                  <h3 className="section-title">
+                    <Clock size={16} />
+                    Recent Searches
+                  </h3>
+                  <button onClick={clearHistory} className="clear-history">
+                    Clear all
                   </button>
-                ))}
+                </div>
+                <div className="recent-list">
+                  {recentSearches.map((item, index) => (
+                    <button
+                      key={index}
+                      className="recent-item"
+                      onClick={() => handleRecentSearchClick(item)}
+                    >
+                      <Clock size={16} className="recent-icon" />
+                      <span>{item}</span>
+                      <X 
+                        size={16} 
+                        className="remove-icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeFromHistory(item);
+                        }}
+                      />
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 
-            {searchResults.users.length > 0 && (
-              <div className="results-section">
-                <h3 className="section-title">Users</h3>
-                {searchResults.users.map((user) => (
+            {/* Trending Topics */}
+            <div className="trending-section">
+              <h3 className="section-title">
+                <TrendingUp size={16} />
+                Trending Topics
+              </h3>
+              <div className="trending-tags">
+                {trendingTopics.map((tag) => (
                   <button
-                    key={user._id}
-                    type="button"
-                    className="result-item user-item"
-                    onClick={() => handleUserClick(user.username)}
-                    aria-label={`User: ${user.displayName || user.username}`}
+                    key={tag}
+                    className="trending-tag"
+                    onClick={() => setSearchQuery(tag)}
                   >
-                    <div className="user-avatar" aria-hidden="true">
-                      {user.profilePhoto ? (
-                        <img src={getImageUrl(user.profilePhoto)} alt="" />
-                      ) : (
-                        <span>{user.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                      )}
-                    </div>
-                    <div className="user-info">
-                      <span className="user-name">{user.displayName || user.username}</span>
-                      <span className="user-username">@{user.username}</span>
-                    </div>
+                    #{tag}
                   </button>
                 ))}
+              </div>
+            </div>
+
+            {/* Search Hints */}
+            <div className="search-hints">
+              <p>Search for users by name or username</p>
+              <p>Search posts by content</p>
+              <p>Search groups by name</p>
+            </div>
+          </div>
+        )}
+
+        {/* Search Results */}
+        {searchQuery.trim() && !loading && (
+          <>
+            {error && (
+              <div className="search-error">
+                <p>Something went wrong. Please try again.</p>
+                <button onClick={performSearch} className="retry-btn">
+                  Retry
+                </button>
               </div>
             )}
 
-            {searchResults.posts.length > 0 && (
-              <div className="results-section">
-                <h3 className="section-title">Posts</h3>
-                {searchResults.posts.slice(0, 10).map((post) => (
-                  <button
-                    key={post._id}
-                    type="button"
-                    className="result-item post-item"
-                    onClick={() => handlePostClick(post._id)}
-                    aria-label={`Post by ${post.author?.displayName || post.author?.username}`}
-                  >
-                    <div className="post-preview">
-                      <span className="post-author">
-                        {post.author?.displayName || post.author?.username}
-                      </span>
-                      <p className="post-content">
-                        {post.content?.substring(0, 100)}
-                        {post.content?.length > 100 && '...'}
-                      </p>
-                    </div>
-                  </button>
-                ))}
+            {!error && hasSearched && !filteredHasResults && (
+              <div className="no-results">
+                <div className="no-results-icon">🔍</div>
+                <h3>No results found</h3>
+                <p>Try different keywords or browse suggested users</p>
               </div>
             )}
-          </AsyncStateWrapper>
+
+            {!error && filteredHasResults && (
+              <div className="results-list">
+                {/* Groups Results */}
+                {filteredResults.groups?.length > 0 && (
+                  <div className="results-section">
+                    <h3 className="section-title">Groups</h3>
+                    {filteredResults.groups.map((group) => (
+                      <button
+                        key={group._id}
+                        type="button"
+                        className="result-item group-item"
+                        onClick={() => handleGroupClick(group.slug)}
+                        aria-label={`Group: ${group.name}`}
+                      >
+                        <div className="group-icon" aria-hidden="true">
+                          <Users size={20} strokeWidth={1.75} />
+                        </div>
+                        <div className="group-info">
+                          <span className="group-name">{group.name}</span>
+                          {group.description && (
+                            <span className="group-description">
+                              {group.description.substring(0, 60)}{group.description.length > 60 ? '...' : ''}
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Users Results */}
+                {filteredResults.users.length > 0 && (
+                  <div className="results-section">
+                    <h3 className="section-title">Users</h3>
+                    {filteredResults.users.map((user) => (
+                      <button
+                        key={user._id}
+                        type="button"
+                        className="result-item user-item"
+                        onClick={() => handleUserClick(user.username)}
+                        aria-label={`User: ${user.displayName || user.username}`}
+                      >
+                        <div className="user-avatar" aria-hidden="true">
+                          {user.profilePhoto ? (
+                            <img src={getImageUrl(user.profilePhoto)} alt="" />
+                          ) : (
+                            <span>{user.displayName?.charAt(0).toUpperCase() || 'U'}</span>
+                          )}
+                        </div>
+                        <div className="user-info">
+                          <span className="user-name">{user.displayName || user.username}</span>
+                          <span className="user-username">@{user.username}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Posts Results */}
+                {filteredResults.posts.length > 0 && (
+                  <div className="results-section">
+                    <h3 className="section-title">Posts</h3>
+                    {filteredResults.posts.slice(0, 10).map((post) => (
+                      <button
+                        key={post._id}
+                        type="button"
+                        className="result-item post-item"
+                        onClick={() => handlePostClick(post._id)}
+                        aria-label={`Post by ${post.author?.displayName || post.author?.username}`}
+                      >
+                        <div className="post-preview">
+                          <span className="post-author">
+                            {post.author?.displayName || post.author?.username}
+                          </span>
+                          <p className="post-content">
+                            {post.content?.substring(0, 100)}
+                            {post.content?.length > 100 && '...'}
+                          </p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
