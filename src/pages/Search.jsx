@@ -1,373 +1,379 @@
 /**
- * Phase 4C: Mobile Search Page
- * Full-page search experience for mobile users
- * Provides the same search functionality as GlobalSearch on desktop
- *
- * PHASE 4C: Hashtag search removed - groups are the only topic-based container
- * 
- * IMPROVED: Added hero header, filter tabs, skeleton loading, trending section,
- * recent searches, and premium styling to match Pryde Social design standards
+ * Search Page — Redesigned
+ * Clean, modern layout inspired by top social platforms.
+ * Features preserved: recent searches, trending topics, tabs, skeleton loading.
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search as SearchIcon, X, Users, Clock, TrendingUp } from 'lucide-react';
-import SearchSkeleton from '../components/SearchSkeleton';
-import SearchTabs from '../components/SearchTabs';
+import { ArrowLeft, Search as SearchIcon, X, Clock, TrendingUp, Users, FileText } from 'lucide-react';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import './Search.css';
 
+const TABS = [
+  { id: 'all',    label: 'All' },
+  { id: 'users',  label: 'People' },
+  { id: 'posts',  label: 'Posts' },
+  { id: 'groups', label: 'Groups' },
+];
+
+const TRENDING = ['photography', 'music', 'travel', 'food', 'art', 'fitness', 'tech', 'gaming'];
+
+function SkeletonRows({ count = 5 }) {
+  return (
+    <div className="search-skeletons">
+      {Array.from({ length: count }).map((_, i) => (
+        <div className="skeleton-row" key={i}>
+          <div className="skeleton-avatar" />
+          <div className="skeleton-lines">
+            <div className="skeleton-line" />
+            <div className="skeleton-line skeleton-line-short" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function Search() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState({ users: [], posts: [], groups: [] });
-  const [loading, setLoading] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
-  const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('all');
-  const [recentSearches, setRecentSearches] = useState([]);
-  const navigate = useNavigate();
-  const searchInputRef = useRef(null);
+  const [query, setQuery]               = useState('');
+  const [results, setResults]           = useState({ users: [], posts: [], groups: [] });
+  const [loading, setLoading]           = useState(false);
+  const [hasSearched, setHasSearched]   = useState(false);
+  const [error, setError]               = useState(null);
+  const [activeTab, setActiveTab]       = useState('all');
+  const [recents, setRecents]           = useState([]);
+  const navigate    = useNavigate();
+  const inputRef    = useRef(null);
 
-  // Load recent searches from localStorage
+  // Load recent searches
   useEffect(() => {
-    const saved = localStorage.getItem('pryde_recent_searches');
-    if (saved) {
-      try {
-        setRecentSearches(JSON.parse(saved));
-      } catch {
-        // Invalid JSON, ignore
-      }
-    }
+    try {
+      const saved = localStorage.getItem('pryde_recent_searches');
+      if (saved) setRecents(JSON.parse(saved));
+    } catch { /* ignore */ }
+    inputRef.current?.focus();
   }, []);
 
-  useEffect(() => {
-    searchInputRef.current?.focus();
-  }, []);
-
-  // Save recent searches to localStorage
-  const saveRecentSearch = useCallback((query) => {
-    if (!query.trim()) return;
-    setRecentSearches((current) => {
-      const updated = [query, ...current.filter((s) => s !== query)].slice(0, 10);
-      localStorage.setItem('pryde_recent_searches', JSON.stringify(updated));
-      return updated;
+  const saveRecent = useCallback((q) => {
+    if (!q.trim()) return;
+    setRecents((prev) => {
+      const next = [q, ...prev.filter((s) => s !== q)].slice(0, 10);
+      localStorage.setItem('pryde_recent_searches', JSON.stringify(next));
+      return next;
     });
   }, []);
 
-  const clearHistory = () => {
-    setRecentSearches([]);
+  const removeRecent = (q, e) => {
+    e.stopPropagation();
+    setRecents((prev) => {
+      const next = prev.filter((s) => s !== q);
+      localStorage.setItem('pryde_recent_searches', JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const clearRecents = () => {
+    setRecents([]);
     localStorage.removeItem('pryde_recent_searches');
   };
 
-  const removeFromHistory = (query) => {
-    const updated = recentSearches.filter(s => s !== query);
-    setRecentSearches(updated);
-    localStorage.setItem('pryde_recent_searches', JSON.stringify(updated));
-  };
-
-  const performSearch = useCallback(async () => {
+  const performSearch = useCallback(async (q) => {
     setLoading(true);
     setError(null);
     try {
-      // Fetch users/posts and all groups in parallel
-      const [searchResponse, groupsResponse] = await Promise.allSettled([
-        api.get(`/search?q=${encodeURIComponent(searchQuery)}`),
+      const [searchRes, groupsRes] = await Promise.allSettled([
+        api.get(`/search?q=${encodeURIComponent(q)}`),
         api.get('/groups'),
       ]);
 
-      const mainResults = searchResponse.status === 'fulfilled'
-        ? searchResponse.value.data
+      const main = searchRes.status === 'fulfilled'
+        ? searchRes.value.data
         : { users: [], posts: [] };
 
       let groups = [];
-      if (groupsResponse.status === 'fulfilled') {
-        const allGroups = groupsResponse.value.data?.groups || groupsResponse.value.data || [];
-        const query = searchQuery.toLowerCase();
-        groups = allGroups.filter(g =>
-          g.name?.toLowerCase().includes(query) ||
-          g.description?.toLowerCase().includes(query)
-        ).slice(0, 5);
+      if (groupsRes.status === 'fulfilled') {
+        const all = groupsRes.value.data?.groups || groupsRes.value.data || [];
+        const lower = q.toLowerCase();
+        groups = all
+          .filter((g) => g.name?.toLowerCase().includes(lower) || g.description?.toLowerCase().includes(lower))
+          .slice(0, 5);
       }
 
-      setSearchResults({ ...mainResults, groups });
+      const merged = { ...main, groups };
+      setResults(merged);
       setHasSearched(true);
-      
-      // Save to recent searches on successful search
-      if (mainResults.users?.length > 0 || mainResults.posts?.length > 0 || groups.length > 0) {
-        saveRecentSearch(searchQuery);
+
+      if (main.users?.length || main.posts?.length || groups.length) {
+        saveRecent(q);
       }
     } catch (err) {
-      console.error('Search error:', err);
       setError(err);
       setHasSearched(true);
     } finally {
       setLoading(false);
     }
-  }, [saveRecentSearch, searchQuery]);
+  }, [saveRecent]);
 
   useEffect(() => {
-    const delaySearch = setTimeout(() => {
-      if (searchQuery.trim().length > 0) {
-        performSearch();
+    const timer = setTimeout(() => {
+      if (query.trim()) {
+        performSearch(query.trim());
       } else {
-        setSearchResults({ users: [], posts: [], groups: [] });
+        setResults({ users: [], posts: [], groups: [] });
         setHasSearched(false);
         setError(null);
       }
     }, 300);
-
-    return () => clearTimeout(delaySearch);
-  }, [performSearch, searchQuery]);
-
-  const handleUserClick = (username) => {
-    navigate(`/profile/${username}`);
-  };
-
-  const handleGroupClick = (slug) => {
-    navigate(`/groups/${slug}`);
-  };
-
-  const handlePostClick = (postId) => {
-    navigate(`/feed?post=${postId}`);
-  };
+    return () => clearTimeout(timer);
+  }, [query, performSearch]);
 
   const clearSearch = () => {
-    setSearchQuery('');
-    setSearchResults({ users: [], posts: [], groups: [] });
+    setQuery('');
+    setResults({ users: [], posts: [], groups: [] });
     setHasSearched(false);
     setError(null);
-    searchInputRef.current?.focus();
+    inputRef.current?.focus();
   };
 
-  const handleRecentSearchClick = (query) => {
-    setSearchQuery(query);
-  };
+  // Filtered results for active tab
+  const filtered = (() => {
+    if (activeTab === 'users')  return { users: results.users,  posts: [],           groups: [] };
+    if (activeTab === 'posts')  return { users: [],             posts: results.posts, groups: [] };
+    if (activeTab === 'groups') return { users: [],             posts: [],           groups: results.groups };
+    return results;
+  })();
 
-  // Filter results based on active tab
-  const getFilteredResults = () => {
-    if (activeTab === 'users') return { users: searchResults.users, posts: [], groups: [] };
-    if (activeTab === 'posts') return { users: [], posts: searchResults.posts, groups: [] };
-    if (activeTab === 'groups') return { users: [], posts: [], groups: searchResults.groups };
-    return searchResults;
-  };
-
-  const filteredResults = getFilteredResults();
-  const filteredHasResults = filteredResults.users.length > 0 ||
-                             filteredResults.posts.length > 0 ||
-                             filteredResults.groups?.length > 0;
-
-  // Trending topics (simulated)
-  const trendingTopics = ['photography', 'music', 'travel', 'food', 'art', 'fitness', 'tech', 'gaming'];
+  const hasResults = filtered.users.length || filtered.posts.length || filtered.groups?.length;
 
   return (
     <div className="search-page">
-      {/* Hero Header */}
-      <div className="search-hero">
-        <h1 className="search-title">🔍 Discover</h1>
-        <p className="search-subtitle">Find people, posts, and communities</p>
-      </div>
 
-      {/* Search Header */}
+      {/* ── Search Bar ── */}
       <div className="search-header">
         <button className="back-btn" onClick={() => navigate(-1)} aria-label="Go back">
-          <ArrowLeft size={20} strokeWidth={1.75} />
+          <ArrowLeft size={20} strokeWidth={2} />
         </button>
-        <div className="search-input-container">
-          <SearchIcon size={20} className="search-icon" aria-hidden="true" />
+        <div className="search-input-wrapper">
+          <SearchIcon size={16} className="search-icon" aria-hidden="true" />
           <input
-            ref={searchInputRef}
+            ref={inputRef}
             type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search users, posts, groups..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search people, posts, groups..."
             className="search-input"
             autoComplete="off"
-            aria-label="Search users, posts, and groups"
+            aria-label="Search"
           />
-          {searchQuery && (
+          {query && (
             <button className="clear-btn" onClick={clearSearch} aria-label="Clear search">
-              <X size={16} />
+              <X size={12} strokeWidth={2.5} />
             </button>
           )}
         </div>
       </div>
 
-      <SearchTabs activeTab={activeTab} onTabChange={setActiveTab} />
+      {/* ── Tabs ── */}
+      <div className="search-tabs-bar" role="tablist">
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            role="tab"
+            aria-selected={activeTab === tab.id}
+            className={`search-tab${activeTab === tab.id ? ' active' : ''}`}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
-      <div className="search-results">
-        {/* Loading State with Skeletons */}
-{loading && <SearchSkeleton />}
+      {/* ── Body ── */}
+      <div className="search-body">
 
-        {/* Empty Search State - Show Suggestions */}
-        {!searchQuery.trim() && !loading && (
+        {/* Loading */}
+        {loading && <SkeletonRows count={6} />}
+
+        {/* Empty query — show recents + trending */}
+        {!query.trim() && !loading && (
           <div className="search-suggestions">
-            {/* Recent Searches */}
-            {recentSearches.length > 0 && (
-              <div className="recent-searches">
-                <div className="recent-header">
-                  <h3 className="section-title">
-                    <Clock size={16} />
-                    Recent Searches
+            {recents.length > 0 && (
+              <>
+                <div className="suggestions-section-header">
+                  <h3 className="suggestions-section-title">
+                    <Clock size={14} />
+                    Recent
                   </h3>
-                  <button onClick={clearHistory} className="clear-history">
-                    Clear all
-                  </button>
+                  <button className="clear-history" onClick={clearRecents}>Clear all</button>
                 </div>
-                <div className="recent-list">
-                  {recentSearches.map((item, index) => (
-                    <button
-                      key={index}
-                      className="recent-item"
-                      onClick={() => handleRecentSearchClick(item)}
-                    >
-                      <Clock size={16} className="recent-icon" />
-                      <span>{item}</span>
-                      <X 
-                        size={16} 
-                        className="remove-icon"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeFromHistory(item);
-                        }}
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
 
-            {/* Trending Topics */}
-            <div className="trending-section">
-              <h3 className="section-title">
-                <TrendingUp size={16} />
-                Trending Topics
-              </h3>
-              <div className="trending-tags">
-                {trendingTopics.map((tag) => (
+                {recents.map((item) => (
                   <button
-                    key={tag}
-                    className="trending-tag"
-                    onClick={() => setSearchQuery(tag)}
+                    key={item}
+                    className="recent-item"
+                    onClick={() => setQuery(item)}
                   >
-                    #{tag}
+                    <span className="recent-item-icon">
+                      <Clock size={16} />
+                    </span>
+                    <span className="recent-item-text">{item}</span>
+                    <button
+                      className="recent-remove-btn"
+                      aria-label={`Remove ${item}`}
+                      onClick={(e) => removeRecent(item, e)}
+                    >
+                      <X size={14} strokeWidth={2} />
+                    </button>
                   </button>
                 ))}
-              </div>
-            </div>
 
-            {/* Search Hints */}
-            <div className="search-hints">
-              <p>Search for users by name or username</p>
-              <p>Search posts by content</p>
-              <p>Search groups by name</p>
+                <div className="suggestions-divider" />
+              </>
+            )}
+
+            <div className="suggestions-section-header">
+              <h3 className="suggestions-section-title">
+                <TrendingUp size={14} />
+                Trending
+              </h3>
+            </div>
+            <div className="trending-chips">
+              {TRENDING.map((tag) => (
+                <button
+                  key={tag}
+                  className="trending-chip"
+                  onClick={() => setQuery(tag)}
+                >
+                  #{tag}
+                </button>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Search Results */}
-        {searchQuery.trim() && !loading && (
+        {/* Results */}
+        {query.trim() && !loading && (
           <>
+            {/* Error */}
             {error && (
-              <div className="search-error">
-                <p>Something went wrong. Please try again.</p>
-                <button onClick={performSearch} className="retry-btn">
-                  Retry
-                </button>
+              <div className="search-state-center">
+                <div className="search-state-icon">
+                  <SearchIcon size={24} />
+                </div>
+                <p className="search-state-title">Something went wrong</p>
+                <p className="search-state-sub">Check your connection and try again.</p>
+                <button className="retry-btn" onClick={() => performSearch(query.trim())}>Retry</button>
               </div>
             )}
 
-            {!error && hasSearched && !filteredHasResults && (
-              <div className="no-results">
-                <div className="no-results-icon">🔍</div>
-                <h3>No results found</h3>
-                <p>Try different keywords or browse suggested users</p>
+            {/* No results */}
+            {!error && hasSearched && !hasResults && (
+              <div className="search-state-center">
+                <div className="search-state-icon">
+                  <SearchIcon size={24} />
+                </div>
+                <p className="search-state-title">No results for "{query}"</p>
+                <p className="search-state-sub">Try different keywords or check the spelling.</p>
               </div>
             )}
 
-            {!error && filteredHasResults && (
+            {/* Results list */}
+            {!error && hasResults > 0 && (
               <div className="results-list">
-                {/* Groups Results */}
-                {filteredResults.groups?.length > 0 && (
-                  <div className="results-section">
-                    <h3 className="section-title">Groups</h3>
-                    {filteredResults.groups.map((group) => (
+
+                {/* Groups */}
+                {filtered.groups?.length > 0 && (
+                  <>
+                    {activeTab === 'all' && (
+                      <div className="results-section-label">Groups</div>
+                    )}
+                    {filtered.groups.map((group) => (
                       <button
                         key={group._id}
                         type="button"
-                        className="result-item group-item"
-                        onClick={() => handleGroupClick(group.slug)}
+                        className="result-row"
+                        onClick={() => navigate(`/groups/${group.slug}`)}
                         aria-label={`Group: ${group.name}`}
                       >
-                        <div className="group-icon" aria-hidden="true">
+                        <div className="result-group-icon">
                           <Users size={20} strokeWidth={1.75} />
                         </div>
-                        <div className="group-info">
-                          <span className="group-name">{group.name}</span>
+                        <div className="result-text">
+                          <span className="result-primary">{group.name}</span>
                           {group.description && (
-                            <span className="group-description">
-                              {group.description.substring(0, 60)}{group.description.length > 60 ? '...' : ''}
+                            <span className="result-secondary">
+                              {group.description.length > 65
+                                ? group.description.substring(0, 65) + '…'
+                                : group.description}
                             </span>
                           )}
                         </div>
                       </button>
                     ))}
-                  </div>
+                  </>
                 )}
 
-                {/* Users Results */}
-                {filteredResults.users.length > 0 && (
-                  <div className="results-section">
-                    <h3 className="section-title">Users</h3>
-                    {filteredResults.users.map((user) => (
+                {/* Users */}
+                {filtered.users.length > 0 && (
+                  <>
+                    {activeTab === 'all' && (
+                      <div className="results-section-label">People</div>
+                    )}
+                    {filtered.users.map((user) => (
                       <button
                         key={user._id}
                         type="button"
-                        className="result-item user-item"
-                        onClick={() => handleUserClick(user.username)}
+                        className="result-row"
+                        onClick={() => navigate(`/profile/${user.username}`)}
                         aria-label={`User: ${user.displayName || user.username}`}
                       >
-                        <div className="user-avatar" aria-hidden="true">
-                          {user.profilePhoto ? (
-                            <img src={getImageUrl(user.profilePhoto)} alt="" />
-                          ) : (
-                            <span>{user.displayName?.charAt(0).toUpperCase() || 'U'}</span>
-                          )}
+                        <div className="result-avatar">
+                          {user.profilePhoto
+                            ? <img src={getImageUrl(user.profilePhoto)} alt="" />
+                            : <span>{(user.displayName || user.username || 'U').charAt(0).toUpperCase()}</span>
+                          }
                         </div>
-                        <div className="user-info">
-                          <span className="user-name">{user.displayName || user.username}</span>
-                          <span className="user-username">@{user.username}</span>
+                        <div className="result-text">
+                          <span className="result-primary">{user.displayName || user.username}</span>
+                          <span className="result-secondary">@{user.username}</span>
                         </div>
                       </button>
                     ))}
-                  </div>
+                  </>
                 )}
 
-                {/* Posts Results */}
-                {filteredResults.posts.length > 0 && (
-                  <div className="results-section">
-                    <h3 className="section-title">Posts</h3>
-                    {filteredResults.posts.slice(0, 10).map((post) => (
+                {/* Posts */}
+                {filtered.posts.length > 0 && (
+                  <>
+                    {activeTab === 'all' && (
+                      <div className="results-section-label">Posts</div>
+                    )}
+                    {filtered.posts.slice(0, 10).map((post) => (
                       <button
                         key={post._id}
                         type="button"
-                        className="result-item post-item"
-                        onClick={() => handlePostClick(post._id)}
+                        className="result-row"
+                        onClick={() => navigate(`/feed?post=${post._id}`)}
                         aria-label={`Post by ${post.author?.displayName || post.author?.username}`}
                       >
-                        <div className="post-preview">
-                          <span className="post-author">
+                        <div className="result-post-icon">
+                          <FileText size={20} strokeWidth={1.75} />
+                        </div>
+                        <div className="result-text">
+                          <span className="result-primary">
                             {post.author?.displayName || post.author?.username}
                           </span>
-                          <p className="post-content">
-                            {post.content?.substring(0, 100)}
-                            {post.content?.length > 100 && '...'}
-                          </p>
+                          <span className="result-secondary">
+                            {post.content?.length > 80
+                              ? post.content.substring(0, 80) + '…'
+                              : post.content}
+                          </span>
                         </div>
                       </button>
                     ))}
-                  </div>
+                  </>
                 )}
               </div>
             )}
