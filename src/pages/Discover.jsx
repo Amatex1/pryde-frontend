@@ -185,5 +185,3 @@ function Discover() {
 }
 
 export default Discover;
-</parameter>
-</create_file>

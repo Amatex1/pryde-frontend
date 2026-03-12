@@ -9,13 +9,11 @@
  * recent searches, and premium styling to match Pryde Social design standards
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search as SearchIcon, X, Users, Clock, TrendingUp } from 'lucide-react';
 import SearchSkeleton from '../components/SearchSkeleton';
 import SearchTabs from '../components/SearchTabs';
-import AsyncStateWrapper from '../components/AsyncStateWrapper';
-import EmptyState from '../components/EmptyState';
 import api from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import './Search.css';
@@ -38,19 +36,25 @@ function Search() {
     if (saved) {
       try {
         setRecentSearches(JSON.parse(saved));
-      } catch (e) {
+      } catch {
         // Invalid JSON, ignore
       }
     }
   }, []);
 
+  useEffect(() => {
+    searchInputRef.current?.focus();
+  }, []);
+
   // Save recent searches to localStorage
-  const saveRecentSearch = (query) => {
+  const saveRecentSearch = useCallback((query) => {
     if (!query.trim()) return;
-    const updated = [query, ...recentSearches.filter(s => s !== query)].slice(0, 10);
-    setRecentSearches(updated);
-    localStorage.setItem('pryde_recent_searches', JSON.stringify(updated));
-  };
+    setRecentSearches((current) => {
+      const updated = [query, ...current.filter((s) => s !== query)].slice(0, 10);
+      localStorage.setItem('pryde_recent_searches', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
   const clearHistory = () => {
     setRecentSearches([]);
@@ -63,21 +67,7 @@ function Search() {
     localStorage.setItem('pryde_recent_searches', JSON.stringify(updated));
   };
 
-  useEffect(() => {
-    const delaySearch = setTimeout(() => {
-      if (searchQuery.trim().length > 0) {
-        performSearch();
-      } else {
-        setSearchResults({ users: [], posts: [], groups: [] });
-        setHasSearched(false);
-        setError(null);
-      }
-    }, 300);
-
-    return () => clearTimeout(delaySearch);
-  }, [searchQuery]);
-
-  const performSearch = async () => {
+  const performSearch = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -115,7 +105,21 @@ function Search() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [saveRecentSearch, searchQuery]);
+
+  useEffect(() => {
+    const delaySearch = setTimeout(() => {
+      if (searchQuery.trim().length > 0) {
+        performSearch();
+      } else {
+        setSearchResults({ users: [], posts: [], groups: [] });
+        setHasSearched(false);
+        setError(null);
+      }
+    }, 300);
+
+    return () => clearTimeout(delaySearch);
+  }, [performSearch, searchQuery]);
 
   const handleUserClick = (username) => {
     navigate(`/profile/${username}`);
@@ -140,10 +144,6 @@ function Search() {
   const handleRecentSearchClick = (query) => {
     setSearchQuery(query);
   };
-
-  const hasResults = searchResults.users.length > 0 ||
-                     searchResults.posts.length > 0 ||
-                     searchResults.groups?.length > 0;
 
   // Filter results based on active tab
   const getFilteredResults = () => {
@@ -183,7 +183,6 @@ function Search() {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search users, posts, groups..."
             className="search-input"
-            autoFocus
             autoComplete="off"
             aria-label="Search users, posts, and groups"
           />
