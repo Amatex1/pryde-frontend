@@ -3,16 +3,9 @@
    ======================================== */
 
 .notifications-page {
-  min-height: 100vh; /* Fallback */
-  min-height: 100dvh; /* Fixes iOS Safari bottom bar */
+  width: 100%;
   background: var(--bg);
-  /* Ensure proper stacking context and full viewport */
-  position: relative;
-  z-index: 1;
-  /* Ensure full height and proper layout */
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  display: block;
 }
 
 .notifications-page > * {
@@ -23,13 +16,8 @@
 .notifications-container {
   width: 100%;
   max-width: 680px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
   padding: var(--space-6) 16px var(--space-8);
-  /* Ensure container takes available space */
-  flex: 1;
-  min-height: 0;
-  box-sizing: border-box;
 }
 
 .notifications-header {
@@ -149,7 +137,8 @@
 .notifications-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.4rem;
+  width: 100%;
 }
 
 .notification-card {
@@ -157,17 +146,23 @@
   width: 100%;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-card);
-  padding: 12px 14px;
+  padding: 10px 12px;
   display: flex;
-  align-items: flex-start;
-  gap: var(--space-4);
+  width: 100%;
+  align-items: center;
+  gap: 12px;
   cursor: pointer;
   appearance: none;
   font: inherit;
   text-align: left;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease, background 0.15s ease;
   position: relative;
   overflow: hidden;
+  white-space: normal;
+}
+
+.notification-card * {
+  overflow: visible;
 }
 
 .notification-card:hover,
@@ -223,7 +218,7 @@
 }
 
 .login-approval-card {
-  align-items: flex-start;
+  align-items: center;
 }
 
 .login-approval-meta {
