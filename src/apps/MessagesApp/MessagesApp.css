@@ -262,12 +262,19 @@
 /* FIX 1: Inner wrappers become layout-only (no nested boxes) */
 .messages-app__composer .message-composer,
 .messages-app__composer .calm-composer,
-.messages-app__composer .message-composer-inner,
-.messages-app__composer .composer-input-row {
+.messages-app__composer .message-composer-inner {
   width: 100%;
   max-width: none;
   background: transparent;
   border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Composer input row needs to stay visible on desktop */
+.messages-app__composer .composer-input-row {
+  width: 100%;
+  max-width: none;
   box-shadow: none;
   padding: 0;
 }
