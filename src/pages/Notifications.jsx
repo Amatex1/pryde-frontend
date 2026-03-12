@@ -10,8 +10,19 @@ import logger from '../utils/logger';
 import { sendTestNotification } from '../utils/pushNotifications';
 import './Notifications.css';
 
+// ── Filter config ────────────────────────────────────────────────────────────
+const FILTER_LABELS = { all: 'All', activity: 'Activity', security: 'Security', mentions: 'Mentions', follows: 'Follows' };
+
+function getNotifCategory(type) {
+  if (type === 'login_approval' || type === 'moderation') return 'security';
+  if (type === 'mention' || type === 'group_mention') return 'mentions';
+  if (type === 'friend_request' || type === 'friend_accept' || type === 'system') return 'follows';
+  return 'activity';
+}
+
 function Notifications() {
   const [notifications, setNotifications] = useState([]);
+  const [activeFilter, setActiveFilter] = useState('all');
   const [pendingApprovalIds, setPendingApprovalIds] = useState(new Set());
   const [approvalActionId, setApprovalActionId] = useState('');
   const [approvalStateById, setApprovalStateById] = useState(() => new Map());
@@ -315,6 +326,27 @@ function Notifications() {
     }
   };
 
+  const getBundledText = (notification) => {
+    const actors = notification.actorIds;
+    if (!actors || actors.length <= 1) return getNotificationText(notification);
+    const first = actors[0];
+    const firstName = first?.displayName || first?.username || 'Someone';
+    const others = actors.length - 1;
+    const othersLabel = `${others} ${others === 1 ? 'other' : 'others'}`;
+    switch (notification.type) {
+      case 'like':
+        return notification.commentId
+          ? `${firstName} and ${othersLabel} reacted to your comment`
+          : `${firstName} and ${othersLabel} liked your post`;
+      case 'comment':
+        return `${firstName} and ${othersLabel} commented on your post`;
+      case 'friend_request':
+        return `${firstName} and ${othersLabel} sent you friend requests`;
+      default:
+        return getNotificationText(notification);
+    }
+  };
+
   const getLoginApprovalLocation = (notification) => {
     const location = notification.loginApprovalData?.location;
     return [location?.city, location?.region, location?.country].filter(Boolean).join(', ');
@@ -395,6 +427,117 @@ function Notifications() {
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
+  // ── Filtered + sectioned data ──────────────────────────────────────────────
+  const filtered = activeFilter === 'all'
+    ? notifications
+    : notifications.filter(n => getNotifCategory(n.type) === activeFilter);
+
+  const showSections   = activeFilter === 'all';
+  const securityNotifs = showSections ? filtered.filter(n => getNotifCategory(n.type) === 'security') : [];
+  const unreadNotifs   = showSections ? filtered.filter(n => !n.read && getNotifCategory(n.type) !== 'security') : [];
+  const earlierNotifs  = showSections ? filtered.filter(n => n.read  && getNotifCategory(n.type) !== 'security') : [];
+
+  const renderCard = (notification) => (
+    notification.type === 'login_approval' ? (() => {
+      const approvalId = getApprovalId(notification);
+      const approvalState = approvalId ? approvalStateById.get(approvalId) : null;
+      const isPendingApproval = approvalId ? pendingApprovalIds.has(approvalId) : false;
+      const loginApprovalLocation = getLoginApprovalLocation(notification);
+      const loginApprovalDetails = [
+        notification.loginApprovalData?.browser,
+        notification.loginApprovalData?.os
+      ].filter(Boolean).join(' • ');
+
+      return (
+        <div
+          key={notification._id}
+          className={`notification-card notification-card-static login-approval-card security ${!notification.read ? 'unread' : ''}`}
+          role="button"
+          tabIndex={0}
+          onClick={() => handleNotificationClick(notification)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              handleNotificationClick(notification);
+            }
+          }}
+          aria-label={getBundledText(notification)}
+        >
+          <div className="notification-icon">{getNotificationIcon(notification.type)}</div>
+          <div className="notification-content">
+            <p className="notification-text">{getBundledText(notification)}</p>
+
+            <div className="login-approval-meta">
+              <div className="login-approval-code-row">
+                <span className="login-approval-label">Verification code</span>
+                <span className="login-approval-code">
+                  {notification.loginApprovalData?.verificationCode || '--'}
+                </span>
+              </div>
+
+              {loginApprovalDetails && (
+                <p className="login-approval-detail">{loginApprovalDetails}</p>
+              )}
+
+              {notification.loginApprovalData?.ipAddress && (
+                <p className="login-approval-detail">IP: {notification.loginApprovalData.ipAddress}</p>
+              )}
+
+              {loginApprovalLocation && (
+                <p className="login-approval-detail">{loginApprovalLocation}</p>
+              )}
+            </div>
+
+            <span className="notification-time">{getTimeAgo(notification.createdAt)}</span>
+
+            {approvalState?.message && (
+              <p className={`login-approval-feedback ${approvalState.status || 'info'}`}>
+                {approvalState.message}
+              </p>
+            )}
+
+            {isPendingApproval && (
+              <div className="login-approval-actions">
+                <button
+                  type="button"
+                  className="login-approval-btn login-approval-btn-approve"
+                  disabled={approvalActionId === approvalId}
+                  onClick={(event) => handleLoginApprovalAction(notification, 'approve', event)}
+                >
+                  {approvalActionId === approvalId ? 'Working…' : 'Approve'}
+                </button>
+                <button
+                  type="button"
+                  className="login-approval-btn login-approval-btn-deny"
+                  disabled={approvalActionId === approvalId}
+                  onClick={(event) => handleLoginApprovalAction(notification, 'deny', event)}
+                >
+                  {approvalActionId === approvalId ? 'Working…' : 'Deny'}
+                </button>
+              </div>
+            )}
+          </div>
+          {!notification.read && <div className="unread-indicator"></div>}
+        </div>
+      );
+    })() : (
+      <button
+        key={notification._id}
+        className={`notification-card ${!notification.read ? 'unread' : ''} ${notification.type === 'announcement' ? 'announcement' : ''}`}
+        type="button"
+        onClick={() => handleNotificationClick(notification)}
+        aria-label={getBundledText(notification)}
+      >
+        <div className="notification-icon">{getNotificationIcon(notification.type)}</div>
+        <div className="notification-content">
+          <p className="notification-text">{getBundledText(notification)}</p>
+          <span className="notification-time">{getTimeAgo(notification.createdAt)}</span>
+        </div>
+        {!notification.read && <div className="unread-indicator"></div>}
+      </button>
+    )
+  );
+
   return (
     <div className="notifications-page">
       <Navbar onMenuClick={onMenuOpen} />
@@ -431,10 +574,22 @@ function Notifications() {
           </div>
         </div>
 
+        <div className="notif-filter-tabs">
+          {Object.entries(FILTER_LABELS).map(([key, label]) => (
+            <button
+              key={key}
+              className={`notif-filter-tab${activeFilter === key ? ' active' : ''}`}
+              onClick={() => setActiveFilter(key)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
         <AsyncStateWrapper
           isLoading={loading}
           isError={Boolean(fetchError)}
-          isEmpty={!loading && !fetchError && notifications.length === 0}
+          isEmpty={!loading && !fetchError && filtered.length === 0}
           error={fetchError}
           onRetry={fetchNotifications}
           loadingMessage="Loading notifications..."
@@ -447,106 +602,32 @@ function Notifications() {
           )}
         >
           <div className="notifications-list">
-            {notifications.map(notification => (
-              notification.type === 'login_approval' ? (() => {
-                const approvalId = getApprovalId(notification);
-                const approvalState = approvalId ? approvalStateById.get(approvalId) : null;
-                const isPendingApproval = approvalId ? pendingApprovalIds.has(approvalId) : false;
-                const loginApprovalLocation = getLoginApprovalLocation(notification);
-                const loginApprovalDetails = [
-                  notification.loginApprovalData?.browser,
-                  notification.loginApprovalData?.os
-                ].filter(Boolean).join(' • ');
-
-                return (
-                  <div
-                    key={notification._id}
-                    className={`notification-card notification-card-static login-approval-card ${!notification.read ? 'unread' : ''}`}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => handleNotificationClick(notification)}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        handleNotificationClick(notification);
-                      }
-                    }}
-                    aria-label={getNotificationText(notification)}
-                  >
-                    <div className="notification-icon">{getNotificationIcon(notification.type)}</div>
-                    <div className="notification-content">
-                      <p className="notification-text">{getNotificationText(notification)}</p>
-
-                      <div className="login-approval-meta">
-                        <div className="login-approval-code-row">
-                          <span className="login-approval-label">Verification code</span>
-                          <span className="login-approval-code">
-                            {notification.loginApprovalData?.verificationCode || '--'}
-                          </span>
-                        </div>
-
-                        {loginApprovalDetails && (
-                          <p className="login-approval-detail">{loginApprovalDetails}</p>
-                        )}
-
-                        {notification.loginApprovalData?.ipAddress && (
-                          <p className="login-approval-detail">IP: {notification.loginApprovalData.ipAddress}</p>
-                        )}
-
-                        {loginApprovalLocation && (
-                          <p className="login-approval-detail">{loginApprovalLocation}</p>
-                        )}
-                      </div>
-
-                      <span className="notification-time">{getTimeAgo(notification.createdAt)}</span>
-
-                      {approvalState?.message && (
-                        <p className={`login-approval-feedback ${approvalState.status || 'info'}`}>
-                          {approvalState.message}
-                        </p>
-                      )}
-
-                      {isPendingApproval && (
-                        <div className="login-approval-actions">
-                          <button
-                            type="button"
-                            className="login-approval-btn login-approval-btn-approve"
-                            disabled={approvalActionId === approvalId}
-                            onClick={(event) => handleLoginApprovalAction(notification, 'approve', event)}
-                          >
-                            {approvalActionId === approvalId ? 'Working…' : 'Approve'}
-                          </button>
-                          <button
-                            type="button"
-                            className="login-approval-btn login-approval-btn-deny"
-                            disabled={approvalActionId === approvalId}
-                            onClick={(event) => handleLoginApprovalAction(notification, 'deny', event)}
-                          >
-                            {approvalActionId === approvalId ? 'Working…' : 'Deny'}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    {!notification.read && <div className="unread-indicator"></div>}
+            {showSections ? (
+              <>
+                {securityNotifs.length > 0 && (
+                  <div className="notif-section">
+                    <div className="notif-section-label security">Security</div>
+                    {securityNotifs.map(renderCard)}
                   </div>
-                );
-              })() : (
-                <button
-                  key={notification._id}
-                  className={`notification-card ${!notification.read ? 'unread' : ''} ${notification.type === 'announcement' ? 'announcement' : ''}`}
-                  type="button"
-                  onClick={() => handleNotificationClick(notification)}
-                  aria-label={getNotificationText(notification)}
-                >
-                  <div className="notification-icon">{getNotificationIcon(notification.type)}</div>
-                  <div className="notification-content">
-                    <p className="notification-text">{getNotificationText(notification)}</p>
-                    <span className="notification-time">{getTimeAgo(notification.createdAt)}</span>
+                )}
+                {unreadNotifs.length > 0 && (
+                  <div className="notif-section">
+                    <div className="notif-section-label new">New</div>
+                    {unreadNotifs.map(renderCard)}
                   </div>
-                  {!notification.read && <div className="unread-indicator"></div>}
-                </button>
-              )
-            ))}
+                )}
+                {earlierNotifs.length > 0 && (
+                  <div className="notif-section">
+                    {(securityNotifs.length > 0 || unreadNotifs.length > 0) && (
+                      <div className="notif-section-label">Earlier</div>
+                    )}
+                    {earlierNotifs.map(renderCard)}
+                  </div>
+                )}
+              </>
+            ) : (
+              filtered.map(renderCard)
+            )}
           </div>
         </AsyncStateWrapper>
       </div>
