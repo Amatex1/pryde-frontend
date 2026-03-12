@@ -134,7 +134,7 @@ button:not(.emoji-button):not(.reaction-btn) {
   padding: var(--space-2, 8px) var(--space-4, 16px);
 
   /* Consistent radius */
-  border-radius: var(--radius-md, 12px);
+  /*border-radius: var(--radius-md, 12px);  - Edited out
 
   /* Centered content — icon + text always vertically and horizontally aligned */
   display: inline-flex;
