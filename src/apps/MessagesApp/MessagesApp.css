@@ -173,6 +173,9 @@
   display: flex;
   flex-direction: column;
   padding: var(--msg-pad, 16px);
+  
+  /* CRITICAL FIX: Constrain flex children to stay within scroll container */
+  height: 100%;
 }
 
 /* (duplicate removed — grid layout defined above) */
@@ -188,6 +191,10 @@
   margin-top: auto; /* pushes wrapper to bottom of scroll area when chat is short */
   display: flex;
   flex-direction: column;
+  
+  /* CRITICAL: Prevent wrapper from expanding beyond scroll container */
+  min-height: 0;
+  overflow: hidden;
 }
 
 .messages-app .conversation-inner {
@@ -204,6 +211,9 @@
   background: none;
   border-radius: 0;
   box-shadow: none;
+  
+  /* CRITICAL: Constrain inner content */
+  min-height: 0;
 }
 
 /* Optional: constrain only on ultra-wide screens */
@@ -1274,6 +1284,10 @@
     top: 0;
     z-index: 100;
     background: var(--bg-app);
+    /* CRITICAL: Use grid for proper scroll containment on mobile */
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
   }
 
   /* Show chat when active */
@@ -1282,7 +1296,14 @@
   }
 
   .messages-app__layout.chat-active .messages-app__chat {
-    display: flex;
+    display: grid;
+  }
+  
+  /* Ensure messages scroll container works properly on mobile */
+  .messages-app__layout.chat-active .messages-app__messages-scroll {
+    overflow-y: auto;
+    min-height: 0;
+    height: 100%;
   }
 
   /* Back button for mobile chat */
