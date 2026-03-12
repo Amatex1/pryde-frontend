@@ -169,10 +169,6 @@
 
   display: block;
   padding: var(--msg-pad, 16px);
-  
-  /* CRITICAL: Ensure scroll container takes proper space */
-  height: 100%;
-  box-sizing: border-box;
 }
 
 /* Ensure the scroll container has proper flex behavior */
@@ -412,11 +408,11 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  width: fit-content;
 }
 
 .messages-app .message-group-cluster.received {
   align-items: flex-start;
+  align-self: flex-start;
   max-width: min(78%, 720px);
 }
 
