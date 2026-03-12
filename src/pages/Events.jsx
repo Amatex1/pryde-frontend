@@ -119,6 +119,36 @@ function Events() {
     });
   };
 
+  const getDateBadge = (dateString) => {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    const month = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+    const day = date.getDate();
+    return (
+      <div className="event-date-badge" aria-hidden="true">
+        <span className="badge-month">{month}</span>
+        <span className="badge-day">{day}</span>
+      </div>
+    );
+  };
+
+  const getRsvpBar = (event) => {
+    if (!event.maxAttendees) return null;
+    const count = event.attendees?.length ?? 0;
+    const pct = Math.min(100, Math.round((count / event.maxAttendees) * 100));
+    return (
+      <div className="rsvp-bar-wrapper">
+        <div className="rsvp-bar-label">
+          <span>{count} going</span>
+          <span>{event.maxAttendees} capacity</span>
+        </div>
+        <div className="rsvp-bar-track">
+          <div className="rsvp-bar-fill" style={{ width: `${pct}%` }} />
+        </div>
+      </div>
+    );
+  };
+
   const getEventCard = (event) => {
     const hasCover = !!event.coverImage;
     return (
@@ -129,8 +159,9 @@ function Events() {
           </div>
         )}
         <div className="event-content">
-          <div className="event-badges">
-            <span className="event-badge category">{/* emoji can be added later */} {event.category}</span>
+          <div className="event-badges" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            {getDateBadge(event.startDate)}
+            <span className="event-badge category">{event.category}</span>
             <span className="event-badge type">{event.eventType}</span>
           </div>
           <h3 className="event-title">{event.title}</h3>
@@ -156,6 +187,7 @@ function Events() {
             </Link>
           </div>
           <EventRSVP event={event} currentUserId={currentUser?._id} onRSVPChange={() => fetchEvents()} />
+          {getRsvpBar(event)}
           <EventAttendees event={event} />
         </div>
       </div>

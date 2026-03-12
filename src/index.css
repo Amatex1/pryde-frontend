@@ -6,7 +6,7 @@
 /* GLOBAL FONTS: Inter (UI) + IBM Plex Sans (Brand Headers) */
 /* Loaded via <link> in index.html for faster parallel fetching (avoids @import render-blocking cascade) */
 
-/* FOUNDATION: tokens, typography, layout, theme — now in core/ via main.jsx */
+/* FOUNDATION: tokens, typography, layout, theme ï¿½ now in core/ via main.jsx */
 
 /* BASE STYLES */
 @import './styles/design-system.css';       /* Design system */
@@ -14,24 +14,27 @@
 /* CORE - Architecture guards (must be first) */
 @import './styles/core/layout-guards.css';  /* Layout safety */
 
-/* LAYOUT SYSTEM — consolidated into core/layout.css */
+/* LAYOUT SYSTEM ï¿½ consolidated into core/layout.css */
 
 /* COMPONENTS */
 @import './styles/components.css';          /* Reusable components */
 @import './styles/tooltip.css';              /* Tooltip fallback system */
 @import './components/IconButton.css';      /* IconButton with tooltips */
-/* styles/navbar.css loaded in main.jsx — not duplicated here */
+/* styles/navbar.css loaded in main.jsx ï¿½ not duplicated here */
 
 /* UTILITIES */
 @import './styles/utilities.css';           /* Reusable utility classes */
 @import './styles/accessibility.css';       /* Accessibility */
-/* hardening.css — consolidated into core/utilities.css */
+/* hardening.css ï¿½ consolidated into core/utilities.css */
 
 /* CALM MODE: Platform-grade transformation (PHASE A-F) */
 @import './components/Navbar.calm.css';     /* Quiet chrome */
 @import './pages/Profile.calm.css';         /* Profile layout spine */
 /* Feed.calm.css and Mobile.calm.css loaded per-page, not globally */
 @import './pages/Messages.calm.css';        /* Messages DM experience */
+
+/* DESIGN IMPROVEMENTS: loaded last so overrides take effect */
+@import './styles/design-improvements.css';
 
 /* ========================================
    GLOBAL RESETS & SCROLL PREVENTION
@@ -270,7 +273,7 @@ button {
   transform: translateX(-50%);
 }
 
-/* iOS scroll containment — allow native swipe-to-refresh only inside feed */
+/* iOS scroll containment ï¿½ allow native swipe-to-refresh only inside feed */
 .feed-scroll-container {
   overscroll-behavior: contain;
 }

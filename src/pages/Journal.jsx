@@ -340,7 +340,7 @@ function Journal() {
           </div>
         ) : (
           journals.map(journal => (
-            <div key={journal._id} className="journal-card glossy">
+            <div key={journal._id} className="journal-card glossy" data-mood={journal.mood || undefined}>
               <div className="journal-card-header">
                 {journal.title && <h3>{journal.title}</h3>}
                 <span className="journal-date">{new Date(journal.createdAt).toLocaleDateString()}</span>

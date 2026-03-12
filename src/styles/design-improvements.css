@@ -1,0 +1,896 @@
+/* ============================================================
+   PRYDE SOCIAL — DESIGN IMPROVEMENTS
+   Applied across all pages. Loaded last so these take effect.
+   ============================================================ */
+
+
+/* ============================================================
+   1. GLOBAL — TRANSITIONS, FOCUS, TOAST, BOTTOM NAV
+   ============================================================ */
+
+/* Standardise all modal/sheet/dialog transitions */
+[role="dialog"],
+.modal-overlay,
+.sheet,
+.drawer {
+  animation-timing-function: var(--ease-enter);
+  animation-duration: var(--duration-enter);
+}
+
+/* Focus rings — consistent brand purple in both themes */
+:focus-visible {
+  outline: 2px solid var(--color-brand, #6C5CE7) !important;
+  outline-offset: 3px !important;
+  border-radius: 4px;
+}
+
+/* Toast positioning — bottom-center on mobile, top-right on desktop */
+.toast-container,
+.Toastify__toast-container,
+[class*="toast-container"] {
+  position: fixed !important;
+  bottom: calc(var(--navbar-height, 70px) + 16px) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  right: auto !important;
+  top: auto !important;
+  z-index: var(--z-toast, 2000) !important;
+  width: auto !important;
+  max-width: min(420px, calc(100vw - 32px)) !important;
+}
+
+@media (min-width: 1024px) {
+  .toast-container,
+  .Toastify__toast-container,
+  [class*="toast-container"] {
+    top: 20px !important;
+    right: 24px !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+  }
+}
+
+/* Bottom nav active icon — filled state via filter */
+.bottom-nav-item.active svg,
+.mobile-nav-item.active svg,
+.nav-item.active svg {
+  filter: drop-shadow(0 0 4px rgba(108, 92, 231, 0.5));
+}
+
+/* Micro-interaction: button press scale */
+button:active:not(:disabled),
+.btn:active:not(:disabled) {
+  transform: scale(0.96) !important;
+  transition: transform 80ms ease !important;
+}
+
+
+/* ============================================================
+   2. HOME PAGE — HERO + FEATURE CARDS
+   ============================================================ */
+
+/* Subtle ambient gradient behind the hero (non-galaxy users) */
+.home-hero {
+  background: linear-gradient(
+    170deg,
+    rgba(108, 92, 231, 0.05) 0%,
+    var(--color-surface, #fff) 40%,
+    var(--color-bg, #F5F6FA) 100%
+  ) !important;
+}
+
+/* Sticky CTA strip — appears after hero via scroll-driven class */
+.sticky-cta-bar {
+  position: sticky;
+  top: 0;
+  z-index: calc(var(--z-sticky, 200) - 1);
+  background: var(--color-surface, #fff);
+  border-bottom: 1px solid var(--color-border, rgba(0,0,0,0.08));
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: slideDown 0.25s var(--ease-enter) both;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.sticky-cta-bar .sticky-cta-tagline {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sticky-cta-bar .btn-hero-primary,
+.sticky-cta-bar .sticky-cta-btn {
+  flex-shrink: 0;
+  padding: 8px 20px;
+  font-size: 14px;
+  white-space: nowrap;
+  background: var(--gradient-brand, linear-gradient(135deg, #6C5CE7, #0984E3));
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Feature card (why-card) entrance animations — staggered slide-up */
+.why-card {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: cardSlideUp 0.5s var(--ease-enter) forwards;
+}
+
+.why-card:nth-child(1) { animation-delay: 0.05s; }
+.why-card:nth-child(2) { animation-delay: 0.12s; }
+.why-card:nth-child(3) { animation-delay: 0.19s; }
+.why-card:nth-child(4) { animation-delay: 0.26s; }
+.why-card:nth-child(5) { animation-delay: 0.33s; }
+.why-card:nth-child(6) { animation-delay: 0.40s; }
+
+@keyframes cardSlideUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Hover lift on why-cards */
+@media (hover: hover) {
+  .why-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg, 0 10px 30px rgba(108, 92, 231, 0.12));
+    border-color: var(--color-brand, #6C5CE7);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .why-card {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
+
+
+/* ============================================================
+   3. FEED PAGE — COMPOSER PROMINENCE + TAB ANIMATION + SPACING
+   ============================================================ */
+
+/* Composer: left accent border + elevated shadow */
+.create-post {
+  border-left: 3px solid var(--color-brand, #6C5CE7) !important;
+  box-shadow:
+    0 4px 20px rgba(108, 92, 231, 0.12),
+    0 1px 4px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Post card spacing — a bit more breathing room on desktop */
+@media (min-width: 1024px) {
+  .feed-main {
+    gap: 20px !important;
+  }
+}
+
+/* "New posts" pill — floats at top of feed */
+.new-posts-pill {
+  position: sticky;
+  top: calc(var(--navbar-height, 72px) + 8px);
+  z-index: var(--z-sticky, 200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 8px;
+  width: fit-content;
+  padding: 8px 20px;
+  background: var(--gradient-brand, linear-gradient(135deg, #6C5CE7, #0984E3));
+  color: #fff;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(108, 92, 231, 0.35);
+  animation: pillPopIn 0.3s var(--ease-enter) both;
+  user-select: none;
+}
+
+@keyframes pillPopIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.92); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.new-posts-pill:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+/* Feed filter tab — animated sliding indicator */
+.feed-filter-tabs,
+.filter-tabs {
+  position: relative;
+}
+
+.feed-filter-tab.active,
+.filter-tab.active {
+  position: relative;
+}
+
+.feed-filter-tab.active::after,
+.filter-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-brand, linear-gradient(135deg, #6C5CE7, #0984E3));
+  border-radius: 3px 3px 0 0;
+  animation: tabSlideIn 0.2s var(--ease-enter) both;
+}
+
+@keyframes tabSlideIn {
+  from { transform: scaleX(0); opacity: 0; }
+  to   { transform: scaleX(1); opacity: 1; }
+}
+
+
+/* ============================================================
+   4. PROFILE PAGE — COVER GRADIENT + BADGE STRIP + STATS
+   ============================================================ */
+
+/* Cover photo: bottom-to-transparent gradient so name always reads */
+.cover-photo-wrapper,
+.profile-cover,
+.cover-photo-container {
+  position: relative;
+}
+
+.cover-photo-wrapper::after,
+.profile-cover::after,
+.cover-photo-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.45) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Badge strip — horizontal scroll with fade hint */
+.badges-container,
+.badge-list,
+.user-badges {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  gap: 8px !important;
+  padding-bottom: 4px !important;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* Right-side fade hint */
+  -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  mask-image: linear-gradient(to right, black 85%, transparent 100%);
+}
+
+.badges-container::-webkit-scrollbar,
+.badge-list::-webkit-scrollbar,
+.user-badges::-webkit-scrollbar {
+  display: none;
+}
+
+/* Stats row — larger numbers, better visual weight */
+.profile-stats,
+.stat-row {
+  display: flex;
+  align-items: stretch;
+}
+
+.profile-stat,
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 16px;
+}
+
+.profile-stat + .profile-stat,
+.stat-item + .stat-item {
+  border-left: 1px solid var(--color-border, rgba(0,0,0,0.08));
+}
+
+.profile-stat .stat-number,
+.stat-item .stat-number,
+.stat-count {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: var(--color-text) !important;
+  line-height: 1 !important;
+}
+
+.profile-stat .stat-label,
+.stat-item .stat-label,
+.stat-name {
+  font-size: 11px !important;
+  color: var(--color-text-secondary) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+}
+
+
+/* ============================================================
+   5. SEARCH PAGE — TRENDING CARDS + TIMESTAMP ON RECENT
+   ============================================================ */
+
+/* Trending tags — small icon-card style */
+.trending-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px !important;
+  background: var(--color-surface, #fff) !important;
+  border: 1px solid var(--color-border-subtle, #E2E4EC) !important;
+  border-radius: 12px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--color-text, #1E1E26) !important;
+  transition: all 0.15s ease !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.trending-tag::before {
+  content: '#';
+  color: var(--color-brand, #6C5CE7);
+  font-weight: 700;
+}
+
+.trending-tag:hover {
+  background: var(--color-brand, #6C5CE7) !important;
+  color: #fff !important;
+  border-color: var(--color-brand, #6C5CE7) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.25) !important;
+}
+
+.trending-tag:hover::before {
+  color: #fff;
+}
+
+/* Recent searches — subtle timestamp */
+.recent-item-time {
+  font-size: 11px;
+  color: var(--color-meta, #9CA0B3);
+  margin-left: auto;
+  flex-shrink: 0;
+  padding-right: 4px;
+}
+
+/* Search empty state SVG illustration placeholder */
+.no-results-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto var(--space-4) !important;
+  font-size: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: var(--color-brand-muted, rgba(108,92,231,0.12));
+  border-radius: 50%;
+}
+
+
+/* ============================================================
+   6. NOTIFICATIONS — UNREAD LEFT ACCENT + MARK-ALL-READ
+   ============================================================ */
+
+/* Notification items — unread: 3px brand-color left bar */
+.notification-item,
+.notification-card,
+[class*="notification-row"] {
+  position: relative;
+  border-left: 3px solid transparent;
+  padding-left: calc(var(--space-4, 16px) - 3px) !important;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.notification-item.unread,
+.notification-card.unread,
+.notification-item[data-unread="true"] {
+  border-left-color: var(--color-brand, #6C5CE7) !important;
+  background: var(--color-brand-muted, rgba(108,92,231,0.06)) !important;
+}
+
+/* Mark-all-read button — ensure it's in the flex header row */
+.notifications-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between !important;
+  flex-wrap: nowrap !important;
+}
+
+.mark-all-read-btn {
+  margin-left: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Group similar notifications fade */
+.notification-group-count {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+/* Unread dot indicator */
+.notification-unread-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--color-brand, #6C5CE7);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+
+/* ============================================================
+   7. DISCOVER / GROUPS — STICKY FILTER + GRID + AVATAR STACK
+   ============================================================ */
+
+/* Category filter strip — sticky */
+.discover-filters,
+.category-filters,
+.group-filters {
+  position: sticky;
+  top: calc(var(--navbar-height, 72px) + 0px);
+  z-index: var(--z-sticky, 200);
+  background: var(--color-bg, #F5F6FA);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border, rgba(0,0,0,0.06));
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.discover-filters::-webkit-scrollbar,
+.category-filters::-webkit-scrollbar {
+  display: none;
+}
+
+/* Group card grid — 2-col mobile, 3-col desktop */
+.discover-groups-grid {
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: var(--space-3, 12px) !important;
+}
+
+@media (min-width: 768px) {
+  .discover-groups-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: var(--space-4, 16px) !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .discover-groups-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+/* Group card cover gradient */
+.discover-group-card {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Avatar stack for member count */
+.member-avatar-stack {
+  display: flex;
+  align-items: center;
+}
+
+.member-avatar-stack .member-avatar-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--color-surface, #fff);
+  margin-left: -8px;
+  background: var(--color-brand-muted, rgba(108,92,231,0.15));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-brand, #6C5CE7);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.member-avatar-stack .member-avatar-thumb:first-child {
+  margin-left: 0;
+}
+
+.member-avatar-stack .member-count-label {
+  margin-left: 6px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+
+/* ============================================================
+   8. SETTINGS — DANGER ZONE + STICKY SECTION HEADERS
+   ============================================================ */
+
+/* Settings section headers — sticky while scrolling */
+.settings-section-title,
+.settings-section > h2,
+.settings-section > h3 {
+  position: sticky;
+  top: calc(var(--navbar-height, 72px) + 0px);
+  z-index: 10;
+  background: var(--color-bg, #F5F6FA);
+  padding: 10px 0;
+  margin-top: 0;
+  border-bottom: 1px solid var(--color-border, rgba(0,0,0,0.06));
+}
+
+/* Full-width divider between sections */
+.settings-section + .settings-section {
+  margin-top: var(--space-6, 32px);
+  padding-top: var(--space-4, 16px);
+  border-top: 1px solid var(--color-border, rgba(0,0,0,0.08));
+}
+
+/* Danger zone — visually isolated red-tinted section */
+.settings-danger-zone,
+.danger-zone,
+[data-section="danger"] {
+  margin-top: var(--space-6, 32px) !important;
+  padding: var(--space-5, 24px) !important;
+  background: rgba(255, 118, 117, 0.04) !important;
+  border: 1px solid rgba(255, 118, 117, 0.25) !important;
+  border-radius: var(--radius-md, 12px) !important;
+  border-top: 3px solid var(--color-danger, #FF7675) !important;
+}
+
+.settings-danger-zone h2,
+.settings-danger-zone h3,
+.danger-zone h2,
+.danger-zone h3 {
+  color: var(--color-danger-text, #B83030) !important;
+  font-size: 14px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  margin-bottom: var(--space-3, 12px) !important;
+}
+
+/* Settings search bar */
+.settings-search-bar {
+  width: 100%;
+  padding: 10px 16px;
+  border: 1px solid var(--color-border-subtle, #E2E4EC);
+  border-radius: 999px;
+  background: var(--color-surface, #fff);
+  font-size: 14px;
+  color: var(--color-text);
+  margin-bottom: var(--space-5, 24px);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.settings-search-bar:focus {
+  outline: none;
+  border-color: var(--color-brand, #6C5CE7);
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.12);
+}
+
+
+/* ============================================================
+   9. EVENTS — CALENDAR DATE BADGE + RSVP BAR
+   ============================================================ */
+
+/* Calendar-style date badge on event cards */
+.event-date-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  min-width: 52px;
+  height: 58px;
+  border-radius: 10px;
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border-subtle, #E2E4EC);
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.event-date-badge .badge-month {
+  width: 100%;
+  background: var(--color-brand, #6C5CE7);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 0;
+  line-height: 1;
+}
+
+.event-date-badge .badge-day {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text, #1E1E26);
+  line-height: 1;
+  padding: 4px 0 2px;
+}
+
+/* RSVP progress bar */
+.rsvp-bar-wrapper {
+  margin-top: 8px;
+}
+
+.rsvp-bar-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+.rsvp-bar-track {
+  width: 100%;
+  height: 6px;
+  background: var(--color-border-subtle, #E2E4EC);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.rsvp-bar-fill {
+  height: 100%;
+  background: var(--gradient-brand, linear-gradient(135deg, #6C5CE7, #0984E3));
+  border-radius: 999px;
+  transition: width 0.6s var(--ease-standard);
+}
+
+
+/* ============================================================
+   10. JOURNAL — MOOD COLOR CARDS + CREAM WRITING AREA
+   ============================================================ */
+
+/* Entry cards with mood-tinted left border */
+.journal-entry,
+.journal-card,
+[class*="journal-entry"] {
+  border-left: 4px solid var(--journal-mood-color, var(--color-border-strong, #B8BAC9)) !important;
+  transition: border-left-color 0.2s ease !important;
+}
+
+/* Mood color tokens */
+.journal-entry[data-mood="happy"],
+.journal-card[data-mood="happy"]      { --journal-mood-color: #FDCB6E; }
+.journal-entry[data-mood="calm"],
+.journal-card[data-mood="calm"]       { --journal-mood-color: #74B9FF; }
+.journal-entry[data-mood="sad"],
+.journal-card[data-mood="sad"]        { --journal-mood-color: #A29BFE; }
+.journal-entry[data-mood="anxious"],
+.journal-card[data-mood="anxious"]    { --journal-mood-color: #FF7675; }
+.journal-entry[data-mood="grateful"],
+.journal-card[data-mood="grateful"]   { --journal-mood-color: #00B894; }
+.journal-entry[data-mood="angry"],
+.journal-card[data-mood="angry"]      { --journal-mood-color: #D63031; }
+.journal-entry[data-mood="excited"],
+.journal-card[data-mood="excited"]    { --journal-mood-color: #E17055; }
+
+/* Writing area — off-white/cream in light mode, soft dark in dark mode */
+.journal-editor,
+.journal-textarea,
+textarea.journal-input {
+  background: #FAFAF8 !important;
+  border-radius: var(--radius-md, 12px);
+}
+
+[data-theme="dark"] .journal-editor,
+[data-theme="dark"] .journal-textarea,
+[data-theme="dark"] textarea.journal-input {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Live word count */
+.journal-word-count {
+  font-size: 11px;
+  color: var(--color-meta, #9CA0B3);
+  text-align: right;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ============================================================
+   11. MESSAGES — DATE DIVIDERS + COMPOSER ICON HOVER
+   ============================================================ */
+
+/* Date group dividers */
+.message-date-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  color: var(--color-meta, #9CA0B3);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  user-select: none;
+}
+
+.message-date-divider::before,
+.message-date-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-border, rgba(0,0,0,0.08));
+}
+
+/* Message composer icon buttons — visible hover background */
+.message-input-actions button,
+.composer-actions button,
+.chat-toolbar button {
+  border-radius: 8px !important;
+  padding: 6px !important;
+  transition: background 0.15s ease !important;
+  min-height: unset !important;
+  height: 32px !important;
+  width: 32px !important;
+}
+
+.message-input-actions button:hover,
+.composer-actions button:hover,
+.chat-toolbar button:hover {
+  background: var(--color-surface-muted, #F4F5FA) !important;
+  color: var(--color-brand, #6C5CE7) !important;
+}
+
+[data-theme="dark"] .message-input-actions button:hover,
+[data-theme="dark"] .composer-actions button:hover,
+[data-theme="dark"] .chat-toolbar button:hover {
+  background: rgba(255, 255, 255, 0.07) !important;
+}
+
+/* Read receipts */
+.message-receipt {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--color-meta, #9CA0B3);
+  margin-top: 2px;
+}
+
+.message-receipt.read {
+  color: var(--color-brand, #6C5CE7);
+}
+
+
+/* ============================================================
+   12. ADMIN — ALTERNATING TABLE ROWS + STATUS DOTS
+   ============================================================ */
+
+/* Alternating row shading */
+.admin-table tr:nth-child(even),
+.data-table tr:nth-child(even),
+table.admin tr:nth-child(even) {
+  background: var(--color-surface-muted, #F4F5FA);
+}
+
+[data-theme="dark"] .admin-table tr:nth-child(even),
+[data-theme="dark"] .data-table tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+/* Sortable column headers */
+.admin-table th[data-sortable],
+.data-table th[data-sortable] {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.admin-table th[data-sortable]:hover,
+.data-table th[data-sortable]:hover {
+  background: var(--color-brand-muted, rgba(108,92,231,0.08));
+  color: var(--color-brand, #6C5CE7);
+}
+
+/* Status indicator dots */
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.status-dot.active,
+.status-dot.online    { background: var(--color-success, #00B894); }
+.status-dot.warning   { background: var(--color-warning, #FDCB6E); }
+.status-dot.inactive,
+.status-dot.offline   { background: var(--color-meta, #9CA0B3); }
+.status-dot.danger,
+.status-dot.banned    { background: var(--color-danger, #FF7675); }
+
+
+/* ============================================================
+   13. GLOBAL SKELETON IMPROVEMENTS
+       Ensure skeletons match content shape
+   ============================================================ */
+
+/* Standard shimmer animation */
+@keyframes skeletonShimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton,
+.skeleton-line,
+.skeleton-avatar,
+.skeleton-text,
+[class*="skeleton-"] {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-muted, #F4F5FA) 25%,
+    var(--color-border, rgba(0,0,0,0.06)) 50%,
+    var(--color-surface-muted, #F4F5FA) 75%
+  ) !important;
+  background-size: 800px 100% !important;
+  animation: skeletonShimmer 1.6s ease-in-out infinite !important;
+  border-radius: 6px;
+}
+
+[data-theme="dark"] .skeleton,
+[data-theme="dark"] .skeleton-line,
+[data-theme="dark"] .skeleton-avatar,
+[data-theme="dark"] .skeleton-text,
+[data-theme="dark"] [class*="skeleton-"] {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.05) 25%,
+    rgba(255,255,255,0.10) 50%,
+    rgba(255,255,255,0.05) 75%
+  ) !important;
+  background-size: 800px 100% !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton,
+  .skeleton-line,
+  .skeleton-avatar,
+  .skeleton-text,
+  [class*="skeleton-"] {
+    animation: none !important;
+  }
+}

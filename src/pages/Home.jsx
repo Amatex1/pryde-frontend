@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { isAuthenticated } from '../utils/auth';
 import Footer from '../components/Footer';
 import WhatYoullFind from '../components/WhatYoullFind';
@@ -7,6 +7,20 @@ import './Home.css';
 
 function Home() {
   const isAuth = isAuthenticated();
+  const heroActionsRef = useRef(null);
+  const [showStickyCta, setShowStickyCta] = useState(false);
+
+  // Show sticky CTA bar after hero actions scroll out of view
+  useEffect(() => {
+    const el = heroActionsRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowStickyCta(!entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   // Apply Galaxy layer on homepage only if user hasn't explicitly disabled it
   // Respects user's saved preference — galaxy is the default but not forced on those who opted out
@@ -28,6 +42,18 @@ function Home() {
     <>
       <div className="home-root">
 
+        {/* ── STICKY CTA BAR — appears after hero scrolls away ── */}
+        {showStickyCta && (
+          <div className="sticky-cta-bar" role="complementary" aria-label="Join Pryde">
+            <span className="sticky-cta-tagline">A quieter kind of social</span>
+            {isAuth ? (
+              <Link to="/feed" className="btn-hero-primary">Go to Feed</Link>
+            ) : (
+              <Link to="/register" className="btn-hero-primary">Join Pryde</Link>
+            )}
+          </div>
+        )}
+
         {/* ── HERO ── */}
         <section className="home-hero">
           <div className="hero-glow" aria-hidden="true" />
@@ -41,7 +67,7 @@ function Home() {
               — without algorithms, clout chasing, or the pressure to perform.
             </p>
 
-            <div className="hero-actions">
+            <div className="hero-actions" ref={heroActionsRef}>
               {isAuth ? (
                 <>
                   <Link to="/feed" className="btn-hero-primary">Go to Feed</Link>

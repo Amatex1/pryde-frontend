@@ -401,7 +401,30 @@ function Notifications() {
       
       <div className="notifications-container">
         <div className="notifications-header">
-          <h1>Notifications</h1>
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            Notifications
+            {unreadCount > 0 && (
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minWidth: '22px',
+                  height: '22px',
+                  padding: '0 6px',
+                  background: 'var(--color-brand, #6C5CE7)',
+                  color: '#fff',
+                  borderRadius: '999px',
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  lineHeight: 1,
+                }}
+                aria-label={`${unreadCount} unread`}
+              >
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
+          </h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {unreadCount > 0 && (
               <button onClick={markAllAsRead} className="mark-all-read-btn">

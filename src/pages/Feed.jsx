@@ -169,6 +169,9 @@ function Feed() {
   // Scroll-to-top state
   const [showScrollTop, setShowScrollTop] = useState(false);
 
+  // New-posts pill — counts posts that arrive while user is scrolled down
+  const [newPostCount, setNewPostCount] = useState(0);
+
   // Ref for edit post textarea auto-resize
   const editPostTextareaRef = useRef(null);
 
@@ -260,6 +263,11 @@ function Feed() {
   // Scroll to top
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNewPostsPill = () => {
+    setNewPostCount(0);
+    scrollToTop();
   };
 
   const handleFeedFilterChange = useCallback((nextFilter) => {
@@ -693,6 +701,10 @@ function Feed() {
       (events) => {
         logger.debug(`⚡ Batched ${events.length} new posts`);
         const newPosts = events.map(e => e.post);
+        // Show pill if user is scrolled down, otherwise prepend silently
+        if (window.scrollY > 300) {
+          setNewPostCount(n => n + newPosts.length);
+        }
         setPosts(prevPosts => {
           const existingIds = new Set(prevPosts.map(p => p._id));
           const uniqueNew = newPosts.filter(p => !existingIds.has(p._id));
@@ -2080,6 +2092,16 @@ function Feed() {
 
       <div className={`feed-layout ${isMobile ? 'feed-mobile' : 'feed-desktop'}`}>
         <main className="feed-main">
+          {newPostCount > 0 && (
+            <button
+              className="new-posts-pill"
+              onClick={handleNewPostsPill}
+              aria-live="polite"
+              aria-label={`${newPostCount} new post${newPostCount > 1 ? 's' : ''} — scroll to top`}
+            >
+              ↑ {newPostCount} new post{newPostCount > 1 ? 's' : ''}
+            </button>
+          )}
           <FeedFilterTabs
             activeFilter={feedFilter}
             onChange={handleFeedFilterChange}

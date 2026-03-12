@@ -100,6 +100,11 @@
   resize: vertical;
   min-height: 200px;
   line-height: 1.6;
+  background: #FAFAF8 !important; /* cream — easier on eyes than pure white */
+}
+
+[data-theme="dark"] .journal-body-input {
+  background: rgba(255, 255, 255, 0.04) !important;
 }
 
 .journal-form-footer {
@@ -139,7 +144,22 @@
   padding: 1.5rem;
   border-radius: 12px;
   border: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--border-subtle);
+  transition: border-left-color 0.2s ease, box-shadow 0.2s ease;
 }
+
+.journal-card:hover {
+  box-shadow: var(--shadow-soft);
+}
+
+/* Mood-tinted left border */
+.journal-card[data-mood="happy"]    { border-left-color: #FDCB6E; }
+.journal-card[data-mood="calm"]     { border-left-color: #74B9FF; }
+.journal-card[data-mood="sad"]      { border-left-color: #A29BFE; }
+.journal-card[data-mood="anxious"]  { border-left-color: #FF7675; }
+.journal-card[data-mood="grateful"] { border-left-color: #00B894; }
+.journal-card[data-mood="angry"]    { border-left-color: #D63031; }
+.journal-card[data-mood="excited"]  { border-left-color: #E17055; }
 
 .journal-card-header {
   display: flex;

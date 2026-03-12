@@ -40,6 +40,7 @@ function Settings() {
   const { onMenuOpen } = useOutletContext() || {};
   const [loading, setLoading] = useState(true); // ✅ Start with loading state
   const [message, setMessage] = useState('');
+  const [settingsSearch, setSettingsSearch] = useState('');
   // APPEARANCE: Theme and Galaxy state
   const [currentTheme, setCurrentTheme] = useState(() => getTheme());
   const [galaxyEnabled, setGalaxyEnabled] = useState(() => getGalaxyMode());
@@ -452,6 +453,15 @@ function Settings() {
       <div className="settings-container">
         <div className="settings-card glossy fade-in">
           <h1 className="settings-title text-shadow">⚙️ Settings</h1>
+
+          <input
+            type="search"
+            className="settings-search-bar"
+            placeholder="Search settings…"
+            value={settingsSearch}
+            onChange={(e) => setSettingsSearch(e.target.value)}
+            aria-label="Search settings"
+          />
 
           {message && (
             <div className={`message ${message.toLowerCase().includes('failed') || message.toLowerCase().includes('error') ? 'error' : 'success'}`}>

@@ -164,9 +164,14 @@ function Discover() {
                 <h3 className="group-label">{group.name}</h3>
                 <p className="group-description">{group.description}</p>
                 <div className="group-stats">
-                  <span className="group-member-count">
-                    {group.memberCount || 0} {group.memberCount === 1 ? 'member' : 'members'}
-                  </span>
+                  <div className="member-avatar-stack" aria-label={`${group.memberCount || 0} members`}>
+                    {[...Array(Math.min(3, group.memberCount || 0))].map((_, i) => (
+                      <div key={i} className="member-avatar-thumb" aria-hidden="true" />
+                    ))}
+                    <span className="member-count-label">
+                      {group.memberCount || 0} {group.memberCount === 1 ? 'member' : 'members'}
+                    </span>
+                  </div>
                   {group.isPrivate && <span className="visibility-badge">🔒 Private</span>}
                 </div>
               </button>
