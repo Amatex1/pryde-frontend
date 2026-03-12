@@ -157,12 +157,7 @@
   text-align: left;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease, background 0.15s ease;
   position: relative;
-  overflow: hidden;
   white-space: normal;
-}
-
-.notification-card * {
-  overflow: visible;
 }
 
 .notification-card:hover,
@@ -220,7 +215,11 @@
 }
 
 .login-approval-card {
-  align-items: center;
+  align-items: flex-start;
+}
+
+.login-approval-card .notification-icon {
+  margin-top: 2px;
 }
 
 .login-approval-meta {
