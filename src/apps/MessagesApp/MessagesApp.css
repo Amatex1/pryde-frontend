@@ -1235,10 +1235,15 @@
 
 @media (max-width: 1023px) {
   .messages-app {
+    /* REMOVED: bottom was pushing composer off-screen
     bottom: calc(
       var(--mobile-nav-height, 64px) +
       env(safe-area-inset-bottom, 0px)
     );
+    */
+    /* Use top/left/right only, let height be auto */
+    top: env(safe-area-inset-top, 0);
+    bottom: env(safe-area-inset-bottom, 0);
   }
 }
 
