@@ -21,7 +21,11 @@
 }
 
 .notification-bubble {
-  max-width}
+  max-width: 320px;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
 
 .bell-button:hover {
   transform: scale(1.1);
