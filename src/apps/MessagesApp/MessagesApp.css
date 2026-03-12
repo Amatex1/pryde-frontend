@@ -1298,7 +1298,6 @@
   .messages-app__layout.chat-active .messages-app__messages-scroll {
     overflow-y: auto;
     min-height: 0;
-    height: 100%;
   }
 
   /* Back button for mobile chat */
