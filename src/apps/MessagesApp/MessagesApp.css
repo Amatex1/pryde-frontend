@@ -200,7 +200,9 @@
 
 .messages-app .conversation-wrapper {
   width: 100%;
+  min-height: 100%;
   display: flex;
+  flex-direction: column;
 }
 
 .messages-app .conversation-inner {
@@ -211,6 +213,8 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  min-height: 100%;
+  flex: 1;
 }
 
 /* Optional: constrain only on ultra-wide screens */
