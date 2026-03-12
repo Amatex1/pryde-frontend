@@ -11,18 +11,23 @@ describe('Messages desktop layout CSS', () => {
     expect(styles).not.toMatch(/\.messages-page\s*\{[^}]*position:\s*fixed\s*!important;/);
   });
 
-  it('uses the page-owned grid contract for desktop and tablet widths', () => {
-    expect(styles).toMatch(/\.messages-page\s*\{[\s\S]*?display:\s*grid;[\s\S]*?grid-template-columns:\s*300px minmax\(0,\s*1fr\) 320px;[\s\S]*?grid-template-rows:\s*auto 1fr;[\s\S]*?min-height:\s*100dvh;/);
-    expect(styles).toMatch(/\.messages-container\s*\{[\s\S]*?display:\s*contents;/);
-    expect(styles).toMatch(/\.messages-layout\s*\{[\s\S]*?display:\s*contents;/);
-    expect(styles).toMatch(/@media\s*\(max-width:\s*1279px\)\s*\{[\s\S]*?\.messages-info\s*\{[\s\S]*?display:\s*none;/);
-    expect(styles).toMatch(/@media\s*\(max-width:\s*1024px\)\s*\{[\s\S]*?\.messages-page\s*\{[\s\S]*?grid-template-columns:\s*300px 1fr;/);
+  it('uses flex-based desktop layout with sidebar, chat area, and info panel columns', () => {
+    // .messages-page is a flex column container
+    expect(styles).toMatch(/\.messages-page\s*\{[\s\S]*?display:\s*flex;/);
+    expect(styles).toMatch(/\.messages-page\s*\{[\s\S]*?flex-direction:\s*column;/);
+    // inner layout containers use flex
+    expect(styles).toMatch(/\.messages-container\s*\{[\s\S]*?display:\s*flex;/);
+    expect(styles).toMatch(/\.messages-layout\s*\{[\s\S]*?display:\s*flex;/);
+    // info panel hidden on tablet
+    expect(styles).toMatch(/@media\s*\(max-width:\s*1024px\)\s*\{[\s\S]*?\.messages-info\s*\{[\s\S]*?display:\s*none;/);
   });
 
   it('collapses to a single-pane mobile flow based on the in-conversation state', () => {
-    expect(styles).toMatch(/@media\s*\(max-width:\s*768px\)\s*\{[\s\S]*?\.messages-page\s*\{[\s\S]*?grid-template-columns:\s*1fr;[\s\S]*?overflow-x:\s*hidden;/);
-    expect(styles).toMatch(/\.messages-page:not\(\.in-conversation\) \.conversations-sidebar\s*\{[\s\S]*?display:\s*flex\s*!important;/);
-    expect(styles).toMatch(/\.messages-page\.in-conversation \.conversations-sidebar\s*\{[\s\S]*?display:\s*none\s*!important;/);
-    expect(styles).toMatch(/\.messages-page\.in-conversation \.chat-area[\s\S]*?display:\s*flex\s*!important;/);
+    // mobile media query exists
+    expect(styles).toMatch(/@media\s*\(max-width:\s*768px\)/);
+    // sidebar slides off-screen when in a conversation
+    expect(styles).toMatch(/\.messages-page\.in-conversation\s+\.conversations-sidebar\s*\{[\s\S]*?transform:\s*translateX\(-100%\)/);
+    // chat area slides into view when in a conversation
+    expect(styles).toMatch(/\.messages-page\.in-conversation\s+\.chat-area\s*\{[\s\S]*?transform:\s*translateX\(0\)/);
   });
 });

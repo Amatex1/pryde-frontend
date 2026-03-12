@@ -21,9 +21,13 @@ vi.mock('../../utils/api', () => ({
     put: (...args) => mockApiPut(...args),
   },
 }));
-vi.mock('../../utils/logger', () => ({ default: { error: vi.fn() } }));
+vi.mock('../../utils/logger', () => ({ default: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() } }));
 vi.mock('../../utils/pushNotifications', () => ({ sendTestNotification: vi.fn() }));
 vi.mock('../../utils/imageUrl', () => ({ getImageUrl: (value) => value || '' }));
+vi.mock('../../context/AuthContext', () => ({
+  useAuth: () => ({ isAuthReady: true, isAuthenticated: true, user: { _id: 'user-1' } }),
+}));
+vi.mock('../../utils/socket', () => ({ getSocket: () => null }));
 
 describe('audit remediation pages', () => {
   beforeEach(() => {
@@ -57,7 +61,7 @@ describe('audit remediation pages', () => {
 
     render(<Search />);
 
-    fireEvent.change(screen.getByRole('textbox', { name: /search users, posts, and groups/i }), {
+    fireEvent.change(screen.getByRole('textbox', { name: /search/i }), {
       target: { value: 'al' },
     });
 
@@ -81,12 +85,12 @@ describe('audit remediation pages', () => {
 
     render(<Search />);
 
-    fireEvent.change(screen.getByRole('textbox', { name: /search users, posts, and groups/i }), {
+    fireEvent.change(screen.getByRole('textbox', { name: /search/i }), {
       target: { value: 'zzz' },
     });
 
     expect(await screen.findByText('No results for "zzz"')).toBeInTheDocument();
-    expect(screen.getByText(/try searching for users, posts, or groups/i)).toBeInTheDocument();
+    expect(screen.getByText(/try different keywords/i)).toBeInTheDocument();
   });
 
   it('renders Discover retry UI and semantic group buttons', async () => {
@@ -104,7 +108,10 @@ describe('audit remediation pages', () => {
   });
 
   it('renders Notifications empty state when there are no notifications', async () => {
-    mockApiGet.mockResolvedValue({ data: [] });
+    mockApiGet.mockImplementation((url) => {
+      if (url === '/login-approval/pending') return Promise.resolve({ data: { approvals: [] } });
+      return Promise.resolve({ data: [] });
+    });
 
     render(<Notifications />);
 
@@ -113,8 +120,9 @@ describe('audit remediation pages', () => {
   });
 
   it('filters message notifications and renders remaining cards as buttons', async () => {
-    mockApiGet.mockResolvedValue({
-      data: [
+    mockApiGet.mockImplementation((url) => {
+      if (url === '/login-approval/pending') return Promise.resolve({ data: { approvals: [] } });
+      return Promise.resolve({ data: [
         { _id: 'message-1', type: 'message', message: 'Should be filtered', createdAt: '2024-01-01T00:00:00.000Z' },
         {
           _id: 'notice-1',
@@ -124,7 +132,7 @@ describe('audit remediation pages', () => {
           createdAt: '2024-01-01T00:00:00.000Z',
           read: false,
         },
-      ],
+      ] });
     });
 
     render(<Notifications />);

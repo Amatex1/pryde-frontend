@@ -143,21 +143,25 @@
 
 .notification-card {
   background: var(--bg-card);
-  width: 100%;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-card);
-  padding: 10px 12px;
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: 12px;
+  /* Override global button/[role=button] height constraints */
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  padding: 10px 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+  white-space: normal !important;
   cursor: pointer;
   appearance: none;
   font: inherit;
   text-align: left;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease, background 0.15s ease;
   position: relative;
-  white-space: normal;
 }
 
 .notification-card:hover,
@@ -219,7 +223,7 @@
 }
 
 .login-approval-card {
-  align-items: flex-start;
+  align-items: flex-start !important;
 }
 
 .login-approval-card .notification-icon {
