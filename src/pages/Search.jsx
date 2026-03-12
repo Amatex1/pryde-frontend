@@ -15,11 +15,7 @@ import { ArrowLeft, Search as SearchIcon, X, Users, Clock, TrendingUp } from 'lu
 import SearchSkeleton from '../components/SearchSkeleton';
 import SearchTabs from '../components/SearchTabs';
 import api from '../utils/api';
-import { getImageUrl } from '../utils/imageUrl';
-import './Search.css';
-
-
-function Search() {
+import { getImageUrl } from '../utils/imageUrl';\nimport SearchFilters from '../components/SearchFilters';\nimport SearchAutocomplete from '../components/SearchAutocomplete';\nimport { Mic, Filter as FilterIcon, ChevronLeft, Loader2 } from 'lucide-react';\nimport './Search.css';\n\n\nfunction Search() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState({ users: [], posts: [], groups: [] });
   const [loading, setLoading] = useState(false);
@@ -27,10 +23,7 @@ function Search() {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('all');
   const [recentSearches, setRecentSearches] = useState([]);
-  const navigate = useNavigate();
-  const searchInputRef = useRef(null);
-
-  // Load recent searches from localStorage
+  const navigate = useNavigate();\n  const searchInputRef = useRef(null);\n  const loaderRef = useRef(null);\n  const autocompleteRef = useRef(null);\n\n  // New SOTA states\n  const [filters, setFilters] = useState({\n    tab: 'all',\n    sort: 'relevance',\n    verified: false,\n    media: false,\n    dateFrom: '',\n    dateTo: ''\n  });\n  const [suggestions, setSuggestions] = useState([]);\n  const [autocompleteLoading, setAutocompleteLoading] = useState(false);\n  const [isFiltersOpen, setIsFiltersOpen] = useState(false);\n  const [savedSearches, setSavedSearches] = useState([]);\n  const [page, setPage] = useState(1);\n  const [hasMore, setHasMore] = useState(true);\n  const [voiceActive, setVoiceActive] = useState(false);\n\n  // Load recent searches from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('pryde_recent_searches');
     if (saved) {
@@ -175,8 +168,7 @@ function Search() {
           <ArrowLeft size={20} strokeWidth={1.75} />
         </button>
         <div className="search-input-container">
-          <SearchIcon size={20} className="search-icon" aria-hidden="true" />
-          <input
+          <SearchIcon size={20} className="search-icon" aria-hidden="true" />\n          <input
             ref={searchInputRef}
             type="text"
             value={searchQuery}
