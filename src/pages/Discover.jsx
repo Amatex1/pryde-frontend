@@ -98,6 +98,7 @@ function Discover() {
               </button>
             )}
           </div>
+        </div>
 
         <div className="category-filters">
           {CATEGORIES.map(category => (
