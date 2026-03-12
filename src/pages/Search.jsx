@@ -4,18 +4,22 @@
  * Provides the same search functionality as GlobalSearch on desktop
  *
  * PHASE 4C: Hashtag search removed - groups are the only topic-based container
- * 
+ *
  * IMPROVED: Added hero header, filter tabs, skeleton loading, trending section,
  * recent searches, and premium styling to match Pryde Social design standards
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search as SearchIcon, X, Users, Clock, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Search as SearchIcon, X, Users, Clock, TrendingUp, Mic, Filter as FilterIcon, ChevronLeft, Loader2 } from 'lucide-react';
 import SearchSkeleton from '../components/SearchSkeleton';
 import SearchTabs from '../components/SearchTabs';
 import api from '../utils/api';
-import { getImageUrl } from '../utils/imageUrl';\nimport SearchFilters from '../components/SearchFilters';\nimport SearchAutocomplete from '../components/SearchAutocomplete';\nimport { Mic, Filter as FilterIcon, ChevronLeft, Loader2 } from 'lucide-react';\nimport './Search.css';\n\n\nfunction Search() {
+import { getImageUrl } from '../utils/imageUrl';
+import './Search.css';
+
+
+function Search() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState({ users: [], posts: [], groups: [] });
   const [loading, setLoading] = useState(false);
@@ -23,7 +27,29 @@ import { getImageUrl } from '../utils/imageUrl';\nimport SearchFilters from '../
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('all');
   const [recentSearches, setRecentSearches] = useState([]);
-  const navigate = useNavigate();\n  const searchInputRef = useRef(null);\n  const loaderRef = useRef(null);\n  const autocompleteRef = useRef(null);\n\n  // New SOTA states\n  const [filters, setFilters] = useState({\n    tab: 'all',\n    sort: 'relevance',\n    verified: false,\n    media: false,\n    dateFrom: '',\n    dateTo: ''\n  });\n  const [suggestions, setSuggestions] = useState([]);\n  const [autocompleteLoading, setAutocompleteLoading] = useState(false);\n  const [isFiltersOpen, setIsFiltersOpen] = useState(false);\n  const [savedSearches, setSavedSearches] = useState([]);\n  const [page, setPage] = useState(1);\n  const [hasMore, setHasMore] = useState(true);\n  const [voiceActive, setVoiceActive] = useState(false);\n\n  // Load recent searches from localStorage
+  const navigate = useNavigate();
+  const searchInputRef = useRef(null);
+  const loaderRef = useRef(null);
+  const autocompleteRef = useRef(null);
+
+  // New SOTA states
+  const [filters, setFilters] = useState({
+    tab: 'all',
+    sort: 'relevance',
+    verified: false,
+    media: false,
+    dateFrom: '',
+    dateTo: ''
+  });
+  const [suggestions, setSuggestions] = useState([]);
+  const [autocompleteLoading, setAutocompleteLoading] = useState(false);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [savedSearches, setSavedSearches] = useState([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [voiceActive, setVoiceActive] = useState(false);
+
+  // Load recent searches from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('pryde_recent_searches');
     if (saved) {
@@ -86,7 +112,7 @@ import { getImageUrl } from '../utils/imageUrl';\nimport SearchFilters from '../
 
       setSearchResults({ ...mainResults, groups });
       setHasSearched(true);
-      
+
       // Save to recent searches on successful search
       if (mainResults.users?.length > 0 || mainResults.posts?.length > 0 || groups.length > 0) {
         saveRecentSearch(searchQuery);
@@ -168,7 +194,8 @@ import { getImageUrl } from '../utils/imageUrl';\nimport SearchFilters from '../
           <ArrowLeft size={20} strokeWidth={1.75} />
         </button>
         <div className="search-input-container">
-          <SearchIcon size={20} className="search-icon" aria-hidden="true" />\n          <input
+          <SearchIcon size={20} className="search-icon" aria-hidden="true" />
+          <input
             ref={searchInputRef}
             type="text"
             value={searchQuery}
@@ -216,8 +243,8 @@ import { getImageUrl } from '../utils/imageUrl';\nimport SearchFilters from '../
                     >
                       <Clock size={16} className="recent-icon" />
                       <span>{item}</span>
-                      <X 
-                        size={16} 
+                      <X
+                        size={16}
                         className="remove-icon"
                         onClick={(e) => {
                           e.stopPropagation();
