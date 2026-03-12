@@ -363,6 +363,17 @@ function AdminPage() {
     }
   };
 
+  const handleUnlockUser = async (userId) => {
+    try {
+      await api.put(`/admin/users/${userId}/unlock`);
+      showAlert('User account unlocked successfully', 'Success');
+      loadTabData();
+    } catch (error) {
+      console.error('Unlock user error:', error);
+      showAlert('Failed to unlock user account', 'Error');
+    }
+  };
+
   const handleChangeRole = async (userId, newRole) => {
     const confirmed = await showConfirm(
       `Are you sure you want to change this user's role to ${newRole}?`,
@@ -558,6 +569,7 @@ function AdminPage() {
             onBan={handleBanUser}
             onUnsuspend={handleUnsuspendUser}
             onUnban={handleUnbanUser}
+            onUnlock={handleUnlockUser}
             onChangeRole={handleChangeRole}
             onSendPasswordReset={handleSendPasswordReset}
             onUpdateEmail={handleUpdateEmail}

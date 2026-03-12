@@ -136,6 +136,7 @@ function AdminUsers({
   onBan,
   onUnsuspend,
   onUnban,
+  onUnlock,
   onChangeRole,
   onSendPasswordReset,
   onUpdateEmail,
@@ -238,6 +239,7 @@ function AdminUsers({
                   <td data-label="Status">
                     {user.isBanned && <span className="status-badge banned">Banned</span>}
                     {user.isSuspended && <span className="status-badge suspended">Suspended</span>}
+                    {user.lockoutUntil && new Date(user.lockoutUntil) > new Date() && <span className="status-badge suspended">Locked</span>}
                     {!user.isBanned && !user.isSuspended && user.isActive && <span className="status-badge active">Active</span>}
                     {!user.isActive && !user.isBanned && <span className="status-badge inactive">Inactive</span>}
                   </td>
@@ -260,6 +262,11 @@ function AdminUsers({
                             ) : (
                               <button onClick={() => { onSuspend(user._id); setOpenMenuId(null); }}>
                                 ⏸️ Suspend
+                              </button>
+                            )}
+                            {user.lockoutUntil && new Date(user.lockoutUntil) > new Date() && (
+                              <button onClick={() => { onUnlock(user._id); setOpenMenuId(null); }}>
+                                🔓 Unlock Account
                               </button>
                             )}
                             {user.isBanned ? (
