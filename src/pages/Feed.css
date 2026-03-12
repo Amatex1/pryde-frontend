@@ -1906,6 +1906,7 @@ html:not([data-theme]) .post-actions {
 
 .comment-thread {
   display: flex;
+  align-items: center;
   flex-direction: column;
   gap: 0.25rem;  /* Reduced from var(--space-2) for tighter spacing */
   align-items: flex-end;
