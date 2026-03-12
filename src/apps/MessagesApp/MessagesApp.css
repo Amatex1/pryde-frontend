@@ -38,6 +38,7 @@
   flex: 1;
   display: grid;
   grid-template-columns: 320px minmax(0, 1fr) 360px;
+  grid-template-rows: 1fr; /* CRITICAL: explicit row height so children can resolve height: 100% */
   min-height: 0;
   overflow: hidden;
 }
@@ -113,6 +114,7 @@
   display: grid;
   grid-template-rows: auto 1fr auto;
   height: 100%;
+  min-height: 0; /* CRITICAL: prevents the chat column from growing beyond its grid area */
   min-width: 0;
   overflow: hidden;
   background: var(--bg-app);
