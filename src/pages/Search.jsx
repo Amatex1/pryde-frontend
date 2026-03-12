@@ -9,7 +9,16 @@
  * recent searches, and premium styling to match Pryde Social design standards
  */
 
-import { useState, useEffect, useRef } from 'react';\nimport { useNavigate } from 'react-router-dom';\nimport ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left';\nimport SearchIcon from 'lucide-react/dist/esm/icons/search';\nimport X from 'lucide-react/dist/esm/icons/x';\nimport Users from 'lucide-react/dist/esm/icons/users';\nimport Clock from 'lucide-react/dist/esm/icons/clock';\nimport TrendingUp from 'lucide-react/dist/esm/icons/trending-up';\nimport SearchSkeleton from '../components/SearchSkeleton';\nimport SearchTabs from '../components/SearchTabs';\nimport AsyncStateWrapper from '../components/AsyncStateWrapper';\nimport EmptyState from '../components/EmptyState';\nimport api from '../utils/api';\nimport { getImageUrl } from '../utils/imageUrl';\nimport './Search.css';\n"
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Search as SearchIcon, X, Users, Clock, TrendingUp } from 'lucide-react';
+import SearchSkeleton from '../components/SearchSkeleton';
+import SearchTabs from '../components/SearchTabs';
+import AsyncStateWrapper from '../components/AsyncStateWrapper';
+import EmptyState from '../components/EmptyState';
+import api from '../utils/api';
+import { getImageUrl } from '../utils/imageUrl';
+import './Search.css';
 
 
 function Search() {
