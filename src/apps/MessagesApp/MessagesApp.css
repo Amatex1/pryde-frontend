@@ -197,19 +197,26 @@
 
 .messages-app .conversation-wrapper {
   width: 100%;
-  /* NO flex: 1 — wrapper is only as tall as its content */
-  /* margin-top: auto pushes it to the bottom of messages-scroll when there are few messages */
-  margin-top: auto;
+  flex: none; /* override any flex:1 from other stylesheets */
+  margin-top: auto; /* pushes wrapper to bottom of scroll area when chat is short */
   display: flex;
   flex-direction: column;
 }
 
 .messages-app .conversation-inner {
   width: 100%;
+  /* flex:1 from Messages-DYhzgUR4.css (old Messages page CSS) bleeds through because we
+     never set flex here — that flex:1 is what grows the inner to fill messages-scroll,
+     which then prevents the composer from being visible. Cancel it explicitly: */
+  flex: none;
   max-width: none;
   padding: 0 12px;
   display: flex;
   flex-direction: column;
+  gap: 0;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 /* Optional: constrain only on ultra-wide screens */
