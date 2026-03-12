@@ -8,4 +8,5 @@ export { default as AdminActivity } from './AdminActivity';
 export { default as AdminSecurity } from './AdminSecurity';
 export { default as AdminBadges } from './AdminBadges';
 export { default as AdminModeration } from './AdminModeration';
+export { default as AdminEmails } from './AdminEmails';
 

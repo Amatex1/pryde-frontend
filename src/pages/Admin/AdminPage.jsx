@@ -15,6 +15,7 @@ import AdminActivity from './AdminActivity';
 import AdminSecurity from './AdminSecurity';
 import AdminBadges from './AdminBadges';
 import AdminModeration from './AdminModeration';
+import AdminEmails from './AdminEmails';
 import './Admin.css';
 import '../../styles/admin-layout.css';
 
@@ -539,6 +540,7 @@ function AdminPage() {
       <div className="admin-section">
         <div className="admin-section-title">Platform & Security</div>
         <button className={`admin-nav-item ${activeTab === 'security' ? 'active' : ''}`} onClick={() => handleNavClick('security')}>🔒 Security</button>
+        <button className={`admin-nav-item ${activeTab === 'emails' ? 'active' : ''}`} onClick={() => handleNavClick('emails')}>📧 Emails</button>
         <button className={`admin-nav-item ${activeTab === 'maintenance' ? 'active' : ''}`} onClick={() => handleNavClick('maintenance')}>🔧 Maintenance</button>
       </div>
 
@@ -609,6 +611,9 @@ function AdminPage() {
           />
         );
       
+      case 'emails':
+        return <AdminEmails />;
+
       case 'moderation-v3':
         return <ModerationV3Panel showAlert={showAlert} showConfirm={showConfirm} />;
       
