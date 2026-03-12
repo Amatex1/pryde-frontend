@@ -205,19 +205,21 @@
 .messages-app .conversation-inner {
   width: 100%;
   max-width: none;
-  margin: 0;
+  margin-top: auto; /* pushes messages to bottom when chat is short */
+  margin-bottom: 0;
   padding: 0 12px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  flex: 1;
+  /* NO flex: 1 — must grow with content so scroll container can scroll */
+  /* NO justify-content: flex-end — margin-top: auto handles bottom-pinning */
 }
 
 /* Optional: constrain only on ultra-wide screens */
 @media (min-width: 1400px) {
   .messages-app .conversation-inner {
     max-width: 1100px;
-    margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
@@ -408,18 +410,15 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  width: 100%; /* full width — no circular dependency */
 }
 
 .messages-app .message-group-cluster.received {
   align-items: flex-start;
-  align-self: flex-start;
-  max-width: min(78%, 720px);
 }
 
 .messages-app .message-group-cluster.sent {
   align-items: flex-end;
-  align-self: flex-end;
-  max-width: min(74%, 680px);
 }
 
 .messages-app .message-group-cluster.has-header {
@@ -480,6 +479,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  max-width: min(78%, 720px); /* constraint lives here — references full-width parent, no circular dep */
 }
 
 .messages-app .message-group.received .message-content {
@@ -488,6 +488,7 @@
 
 .messages-app .message-group.sent .message-content {
   align-items: flex-end;
+  max-width: min(74%, 680px);
 }
 
 .messages-app .message-bubble {
@@ -791,15 +792,19 @@
 }
 
 @media (max-width: 768px) {
-  .messages-app .message-group-cluster.received,
-  .messages-app .message-group-cluster.sent {
+  .messages-app .message-content {
+    max-width: 86%;
+  }
+  .messages-app .message-group.sent .message-content {
     max-width: 86%;
   }
 }
 
 @media (max-width: 480px) {
-  .messages-app .message-group-cluster.received,
-  .messages-app .message-group-cluster.sent {
+  .messages-app .message-content {
+    max-width: 91%;
+  }
+  .messages-app .message-group.sent .message-content {
     max-width: 91%;
   }
 }
