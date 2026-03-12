@@ -9,20 +9,8 @@
  * recent searches, and premium styling to match Pryde Social design standards
  */
 
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-// PERFORMANCE: Tree-shake lucide-react - import only used icons
-import ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left';
-import SearchIcon from 'lucide-react/dist/esm/icons/search';
-import X from 'lucide-react/dist/esm/icons/x';
-import Users from 'lucide-react/dist/esm/icons/users';
-import Clock from 'lucide-react/dist/esm/icons/clock';
-import TrendingUp from 'lucide-react/dist/esm/icons/trending-up';
-import AsyncStateWrapper from '../components/AsyncStateWrapper';
-import EmptyState from '../components/EmptyState';
-import api from '../utils/api';
-import { getImageUrl } from '../utils/imageUrl';
-import './Search.css';
+import { useState, useEffect, useRef } from 'react';\nimport { useNavigate } from 'react-router-dom';\nimport ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left';\nimport SearchIcon from 'lucide-react/dist/esm/icons/search';\nimport X from 'lucide-react/dist/esm/icons/x';\nimport Users from 'lucide-react/dist/esm/icons/users';\nimport Clock from 'lucide-react/dist/esm/icons/clock';\nimport TrendingUp from 'lucide-react/dist/esm/icons/trending-up';\nimport SearchSkeleton from '../components/SearchSkeleton';\nimport SearchTabs from '../components/SearchTabs';\nimport AsyncStateWrapper from '../components/AsyncStateWrapper';\nimport EmptyState from '../components/EmptyState';\nimport api from '../utils/api';\nimport { getImageUrl } from '../utils/imageUrl';\nimport './Search.css';\n"
+
 
 function Search() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -198,49 +186,11 @@ function Search() {
         </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="search-tabs">
-        <button
-          className={`search-tab ${activeTab === 'all' ? 'active' : ''}`}
-          onClick={() => setActiveTab('all')}
-        >
-          All
-        </button>
-        <button
-          className={`search-tab ${activeTab === 'users' ? 'active' : ''}`}
-          onClick={() => setActiveTab('users')}
-        >
-          Users
-        </button>
-        <button
-          className={`search-tab ${activeTab === 'posts' ? 'active' : ''}`}
-          onClick={() => setActiveTab('posts')}
-        >
-          Posts
-        </button>
-        <button
-          className={`search-tab ${activeTab === 'groups' ? 'active' : ''}`}
-          onClick={() => setActiveTab('groups')}
-        >
-          Groups
-        </button>
-      </div>
+      <SearchTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
       <div className="search-results">
         {/* Loading State with Skeletons */}
-        {loading && (
-          <div className="search-skeletons">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="skeleton-item">
-                <div className="skeleton-avatar" />
-                <div className="skeleton-content">
-                  <div className="skeleton-line skeleton-line-short" />
-                  <div className="skeleton-line" />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+{loading && <SearchSkeleton />}
 
         {/* Empty Search State - Show Suggestions */}
         {!searchQuery.trim() && !loading && (
