@@ -663,6 +663,12 @@ function Admin() {
             🔒 Security
           </button>
           <button
+            className={`admin-nav-item ${activeTab === 'emails' ? 'active' : ''}`}
+            onClick={() => handleNavClick('emails')}
+          >
+            📧 Emails
+          </button>
+          <button
             className={`admin-nav-item ${activeTab === 'maintenance' ? 'active' : ''}`}
             onClick={() => handleNavClick('maintenance')}
           >
@@ -760,6 +766,9 @@ function Admin() {
             showAlert={showAlert}
             showConfirm={showConfirm}
           />
+        )}
+        {activeTab === 'emails' && (
+          <EmailsTab />
         )}
         {activeTab === 'maintenance' && (
           <section id="content-maintenance" aria-labelledby="tab-maintenance">
@@ -1644,6 +1653,224 @@ function ActivityTab({ activity, onViewPost }) {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Emails Tab Component
+function EmailsTab() {
+  const [emails, setEmails] = useState([]);
+  const [pagination, setPagination] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedEmail, setSelectedEmail] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [mailboxFilter, setMailboxFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [page, setPage] = useState(1);
+  const [notes, setNotes] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [statusUpdating, setStatusUpdating] = useState(false);
+
+  const STATUS_COLORS = { new: 'var(--color-primary)', read: '#6c757d', replied: 'var(--color-success)', archived: '#adb5bd', spam: 'var(--color-danger)' };
+  const STATUS_LABELS = { new: '🔵 New', read: '👁️ Read', replied: '↩️ Replied', archived: '📦 Archived', spam: '🚫 Spam' };
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '—';
+    return new Date(dateStr).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  };
+
+  const fetchEmails = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({ page, limit: 20 });
+      if (mailboxFilter !== 'all') params.set('mailbox', mailboxFilter);
+      if (statusFilter !== 'all') params.set('status', statusFilter);
+      if (search) params.set('search', search);
+      const res = await api.get(`/admin/emails?${params}`);
+      setEmails(res.data.emails);
+      setPagination(res.data.pagination);
+    } catch (err) {
+      console.error('Failed to fetch emails:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchEmails(); }, [mailboxFilter, statusFilter, search, page]);
+
+  const handleSelectEmail = async (emailId) => {
+    setDetailLoading(true);
+    try {
+      const res = await api.get(`/admin/emails/${emailId}`);
+      setSelectedEmail(res.data);
+      setNotes(res.data.adminNotes || '');
+      setEmails(prev => prev.map(e => e._id === emailId && e.status === 'new' ? { ...e, status: 'read' } : e));
+    } catch (err) {
+      console.error('Failed to fetch email:', err);
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
+  const handleStatusChange = async (newStatus) => {
+    setStatusUpdating(true);
+    try {
+      await api.patch(`/admin/emails/${selectedEmail._id}`, { status: newStatus });
+      setSelectedEmail(prev => ({ ...prev, status: newStatus }));
+      setEmails(prev => prev.map(e => e._id === selectedEmail._id ? { ...e, status: newStatus } : e));
+    } catch (err) {
+      console.error('Failed to update status:', err);
+    } finally {
+      setStatusUpdating(false);
+    }
+  };
+
+  const handleSaveNotes = async () => {
+    setSaving(true);
+    try {
+      await api.patch(`/admin/emails/${selectedEmail._id}`, { adminNotes: notes });
+      setSelectedEmail(prev => ({ ...prev, adminNotes: notes }));
+    } catch (err) {
+      console.error('Failed to save notes:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSearch = (e) => { e.preventDefault(); setSearch(searchInput); setPage(1); };
+  const changeFilter = (setter, val) => { setter(val); setPage(1); };
+
+  if (detailLoading || selectedEmail) {
+    return (
+      <div className="admin-tab-content">
+        <h2 className="admin-section-heading">📧 Inbound Emails</h2>
+        {detailLoading ? (
+          <div className="loading-state">
+            <div className="shimmer" style={{ height: '200px', borderRadius: '12px' }}></div>
+          </div>
+        ) : (
+          <div className="email-detail-panel">
+            <div className="email-detail-header">
+              <button className="email-detail-back" onClick={() => setSelectedEmail(null)}>← Back</button>
+              <span className="email-status-badge" style={{ background: STATUS_COLORS[selectedEmail.status] || '#6c757d' }}>
+                {STATUS_LABELS[selectedEmail.status] || selectedEmail.status}
+              </span>
+            </div>
+            <h3 className="email-detail-subject">{selectedEmail.subject || '(no subject)'}</h3>
+            <div className="email-detail-meta">
+              <div><strong>From:</strong> {selectedEmail.sender?.name ? `${selectedEmail.sender.name} <${selectedEmail.sender.email}>` : selectedEmail.sender?.email}</div>
+              <div><strong>To:</strong> {selectedEmail.mailbox === 'noreply' ? 'noreply@prydeapp.com' : 'support@prydeapp.com'}</div>
+              <div><strong>Received:</strong> {formatDate(selectedEmail.createdAt)}</div>
+              {selectedEmail.attachments?.length > 0 && <div><strong>Attachments:</strong> {selectedEmail.attachments.length}</div>}
+            </div>
+            <div className="email-detail-body">
+              {selectedEmail.bodyHtml
+                ? <div className="email-html-body" dangerouslySetInnerHTML={{ __html: selectedEmail.bodyHtml }} />
+                : <pre className="email-text-body">{selectedEmail.bodyText || '(empty body)'}</pre>}
+            </div>
+            <div className="email-detail-actions">
+              <div className="email-action-row">
+                <span style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Mark as:</span>
+                {['replied', 'archived', 'spam'].map(s => (
+                  <button key={s} className={`email-action-btn ${selectedEmail.status === s ? 'active' : ''}`}
+                    onClick={() => handleStatusChange(s)} disabled={statusUpdating || selectedEmail.status === s}>
+                    {STATUS_LABELS[s]}
+                  </button>
+                ))}
+              </div>
+              <div className="email-notes-section">
+                <label className="email-notes-label">Admin Notes</label>
+                <textarea className="email-notes-input" value={notes} onChange={e => setNotes(e.target.value)}
+                  placeholder="Internal notes visible only to admins..." rows={3} />
+                <button className="email-save-notes-btn" onClick={handleSaveNotes} disabled={saving}>
+                  {saving ? 'Saving...' : 'Save Notes'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="admin-tab-content">
+      <h2 className="admin-section-heading">
+        📧 Inbound Emails
+        {pagination?.unreadCount > 0 && (
+          <span className="email-unread-badge">{pagination.unreadCount} new</span>
+        )}
+      </h2>
+      <div className="email-filters">
+        <div className="email-filter-group">
+          <label>Mailbox</label>
+          <div className="filter-btn-group">
+            {['all', 'noreply', 'support'].map(m => (
+              <button key={m} className={`filter-btn ${mailboxFilter === m ? 'active' : ''}`}
+                onClick={() => changeFilter(setMailboxFilter, m)}>
+                {m === 'all' ? 'All' : m === 'noreply' ? 'noreply@' : 'support@'}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="email-filter-group">
+          <label>Status</label>
+          <div className="filter-btn-group">
+            {['all', 'new', 'read', 'replied', 'archived', 'spam'].map(s => (
+              <button key={s} className={`filter-btn ${statusFilter === s ? 'active' : ''}`}
+                onClick={() => changeFilter(setStatusFilter, s)}>
+                {s === 'all' ? 'All' : STATUS_LABELS[s]}
+              </button>
+            ))}
+          </div>
+        </div>
+        <form className="email-search-form" onSubmit={handleSearch}>
+          <input type="text" className="email-search-input" placeholder="Search sender or subject..."
+            value={searchInput} onChange={e => setSearchInput(e.target.value)} />
+          <button type="submit" className="email-search-btn">Search</button>
+          {search && <button type="button" className="email-search-btn" onClick={() => { setSearch(''); setSearchInput(''); setPage(1); }}>Clear</button>}
+        </form>
+      </div>
+      {loading ? (
+        <div className="loading-state">
+          {[1,2,3,4,5].map(i => <div key={i} className="shimmer" style={{ height: '60px', borderRadius: '8px', marginBottom: '0.5rem' }}></div>)}
+        </div>
+      ) : emails.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
+          <p style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📭</p>
+          <p>No emails found</p>
+        </div>
+      ) : (
+        <>
+          <div className="email-list">
+            {emails.map(email => (
+              <button key={email._id} className={`email-list-item ${email.status === 'new' ? 'email-list-item--unread' : ''}`}
+                onClick={() => handleSelectEmail(email._id)}>
+                <div className="email-list-item-left">
+                  <span className="email-status-dot" style={{ background: STATUS_COLORS[email.status] || '#6c757d' }} title={email.status} />
+                  <div className="email-list-item-info">
+                    <span className="email-list-sender">{email.sender?.name || email.sender?.email || 'Unknown'}</span>
+                    <span className="email-list-subject">{email.subject || '(no subject)'}</span>
+                  </div>
+                </div>
+                <div className="email-list-item-right">
+                  <span className="email-mailbox-tag">{email.mailbox === 'noreply' ? 'noreply@' : 'support@'}</span>
+                  <span className="email-list-date">{formatDate(email.createdAt)}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+          {pagination?.pages > 1 && (
+            <div className="email-pagination">
+              <button className="filter-btn" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>← Prev</button>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Page {page} of {pagination.pages} · {pagination.total} total</span>
+              <button className="filter-btn" disabled={page >= pagination.pages} onClick={() => setPage(p => p + 1)}>Next →</button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
