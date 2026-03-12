@@ -21,7 +21,7 @@ import PostSkeleton from '../components/PostSkeleton';
 import OptimizedImage from '../components/OptimizedImage';
 import EmptyState from '../components/EmptyState';
 import ProfilePostSearch from '../components/ProfilePostSearch';
-// import ProfileLibraryPanels from '../components/profile/ProfileLibraryPanels';
+import ProfileLibraryPanels from '../components/profile/ProfileLibraryPanels';
 import ProfileOwnRail from '../components/profile/ProfileOwnRail';
 import ProfileTabs from '../components/profile/ProfileTabs';
 import CommentThread from '../components/CommentThread';
