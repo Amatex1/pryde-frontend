@@ -14,8 +14,10 @@ import {
   ArrowLeft, Search as SearchIcon, X,
   Clock, TrendingUp, Users, FileText,
 } from 'lucide-react';
-import SuggestedPeople     from '../components/search/SuggestedPeople';
-import ActiveConversations from '../components/search/ActiveConversations';
+import SuggestedPeople      from '../components/search/SuggestedPeople';
+import PopularCommunities   from '../components/discovery/PopularCommunities';
+import ActiveConversations  from '../components/discovery/ActiveConversations';
+import NewCommunities       from '../components/discovery/NewCommunities';
 import api        from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import './Search.css';
@@ -57,16 +59,31 @@ function Search() {
   const [error, setError]             = useState(null);
   const [activeTab, setActiveTab]     = useState('all');
   const [recents, setRecents]         = useState([]);
+  // Discovery engine — groups fetched once for Popular & New Communities
+  const [discGroups, setDiscGroups]   = useState([]);
+  const [discLoading, setDiscLoading] = useState(true);
   const navigate  = useNavigate();
   const inputRef  = useRef(null);
 
-  /* Load recent searches from localStorage */
+  /* Load recent searches + prefetch groups for discovery engine */
   useEffect(() => {
     try {
       const saved = localStorage.getItem('pryde_recent_searches');
       if (saved) setRecents(JSON.parse(saved));
     } catch { /* ignore bad JSON */ }
     inputRef.current?.focus();
+
+    // Fetch groups once — shared by PopularCommunities & NewCommunities
+    api.get('/groups')
+      .then((res) => {
+        const list = res.data?.groups || res.data || [];
+        // Only show listed/public groups in discovery
+        setDiscGroups(list.filter(g =>
+          !g.visibility || g.visibility === 'listed' || g.visibility === 'public'
+        ));
+      })
+      .catch(() => { /* discovery fails silently */ })
+      .finally(() => setDiscLoading(false));
   }, []);
 
   const saveRecent = useCallback((q) => {
@@ -297,8 +314,15 @@ function Search() {
               </div>
             </div>
 
-            {/* STEPS 5 & 6 — Active Conversations */}
-            <ActiveConversations />
+            {/* ════════════════════════════════════════
+                STEPS 5-13 — Community Discovery Engine
+                Only rendered when query is empty
+                ════════════════════════════════════════ */}
+            <div className="discovery-engine">
+              <PopularCommunities groups={discGroups} loading={discLoading} />
+              <ActiveConversations />
+              <NewCommunities groups={discGroups} loading={discLoading} />
+            </div>
 
           </div>
         )}
