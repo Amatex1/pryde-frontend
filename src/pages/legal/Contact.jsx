@@ -16,7 +16,7 @@ function Contact() {
         <section className="legal-section">
           <h2>General Support</h2>
           <div className="contact-info">
-            <p><strong>📧</strong> <span className="contact-email">prydeapp-team@outlook.com</span></p>
+            <p><strong>📧</strong> <span className="contact-email">support@prydeapp.com</span></p>
           </div>
           <p>
             For general questions, account issues, or platform feedback.
@@ -26,7 +26,7 @@ function Contact() {
         <section className="legal-section">
           <h2>Abuse or Harassment Reports</h2>
           <div className="contact-info">
-            <p><strong>📧</strong> <span className="contact-email">prydeapp-team@outlook.com</span></p>
+            <p><strong>📧</strong> <span className="contact-email">support@prydeapp.com</span></p>
           </div>
           <p>
             Report violations of our <Link to="/community-guidelines" className="legal-link">Community Guidelines</Link>.
@@ -36,7 +36,7 @@ function Contact() {
         <section className="legal-section">
           <h2>DMCA Requests</h2>
           <div className="contact-info">
-            <p><strong>📧</strong> <span className="contact-email">prydeapp-team@outlook.com</span></p>
+            <p><strong>📧</strong> <span className="contact-email">support@prydeapp.com</span></p>
           </div>
           <p>
             Submit copyright takedown requests. See our <Link to="/dmca" className="legal-link">DMCA Policy</Link> for details.

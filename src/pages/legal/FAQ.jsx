@@ -235,7 +235,7 @@ function FAQ() {
               Go to <strong>Settings → Account Management</strong> and choose <strong>Delete Account</strong>. You can also request deletion by emailing:
             </p>
             <div className="contact-info">
-              <p><strong>📧</strong> <span className="contact-email">prydeapp-team@outlook.com</span></p>
+              <p><strong>📧</strong> <span className="contact-email">support@prydeapp.com</span></p>
             </div>
           </div>
 
@@ -284,7 +284,7 @@ function FAQ() {
               Yes. Email a clear explanation to:
             </p>
             <div className="contact-info">
-              <p><strong>📧</strong> <span className="contact-email">prydeapp-team@outlook.com</span></p>
+              <p><strong>📧</strong> <span className="contact-email">support@prydeapp.com</span></p>
             </div>
           </div>
         </section>
@@ -309,7 +309,7 @@ function FAQ() {
               Please report it so it can be fixed:
             </p>
             <div className="contact-info">
-              <p><strong>📧</strong> <span className="contact-email">prydeapp-team@outlook.com</span></p>
+              <p><strong>📧</strong> <span className="contact-email">support@prydeapp.com</span></p>
             </div>
           </div>
 
@@ -327,13 +327,13 @@ function FAQ() {
             If you need help with anything not covered here, contact:
           </p>
           <div className="contact-info">
-            <p><strong>📧 Email:</strong> <span className="contact-email">prydeapp-team@outlook.com</span></p>
+            <p><strong>📧 Email:</strong> <span className="contact-email">support@prydeapp.com</span></p>
           </div>
         </section>
 
         <div className="legal-footer-note">
           <p>
-            <strong>Still have questions?</strong> Email us at <span className="contact-email">prydeapp-team@outlook.com</span>
+            <strong>Still have questions?</strong> Email us at <span className="contact-email">support@prydeapp.com</span>
           </p>
           <p className="last-updated">
             Last Updated: November 26, 2025

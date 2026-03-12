@@ -234,7 +234,7 @@ function Safety() {
         <section className="legal-section">
           <h2>8. Contact</h2>
           <div className="contact-info">
-            <p><strong>📧</strong> <span className="contact-email">prydeapp-team@outlook.com</span></p>
+            <p><strong>📧</strong> <span className="contact-email">support@prydeapp.com</span></p>
           </div>
         </section>
 

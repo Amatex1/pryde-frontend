@@ -252,7 +252,7 @@ function Terms() {
             For questions or concerns:
           </p>
           <div className="contact-info">
-            <p><strong>📧</strong> <span className="contact-email">prydeapp-team@outlook.com</span></p>
+            <p><strong>📧</strong> <span className="contact-email">support@prydeapp.com</span></p>
           </div>
         </section>
 

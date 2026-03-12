@@ -199,7 +199,7 @@ function Community() {
           <ul>
             <li><strong>Block the user:</strong> Go to their profile → three-dot menu → Block User</li>
             <li><strong>Report the content:</strong> Use the report button on posts, comments, or messages</li>
-            <li><strong>Reach out:</strong> Contact us at <span className="contact-email">prydeapp-team@outlook.com</span></li>
+            <li><strong>Reach out:</strong> Contact us at <span className="contact-email">support@prydeapp.com</span></li>
             <li><strong>Use privacy tools:</strong> Adjust your privacy settings, enable Quiet Mode, or make your account private</li>
           </ul>
           <p>
@@ -236,7 +236,7 @@ function Community() {
             If you have questions about these guidelines or need support:
           </p>
           <div className="contact-info">
-            <p><strong>📧 Email:</strong> <span className="contact-email">prydeapp-team@outlook.com</span></p>
+            <p><strong>📧 Email:</strong> <span className="contact-email">support@prydeapp.com</span></p>
           </div>
           <p>
             We're here to help create a safer, kinder space for everyone.

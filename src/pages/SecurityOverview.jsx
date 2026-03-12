@@ -161,7 +161,7 @@ function SecurityOverview() {
           <ul>
             <li><strong>Email Verification:</strong> Password resets require email verification</li>
             <li><strong>Secure Reset Links:</strong> Reset links expire after 1 hour</li>
-            <li><strong>Account Support:</strong> Contact us at <span className="contact-email">prydeapp-team@outlook.com</span> for account issues</li>
+            <li><strong>Account Support:</strong> Contact us at <span className="contact-email">support@prydeapp.com</span> for account issues</li>
           </ul>
         </section>
 
@@ -208,7 +208,7 @@ function SecurityOverview() {
             If you discover a security vulnerability, please report it responsibly:
           </p>
           <ul>
-            <li><strong>Email:</strong> <span className="contact-email">prydeapp-team@outlook.com</span> with subject "Security Vulnerability"</li>
+            <li><strong>Email:</strong> <span className="contact-email">support@prydeapp.com</span> with subject "Security Vulnerability"</li>
             <li><strong>Include:</strong> Detailed description, steps to reproduce, and potential impact</li>
             <li><strong>Do Not:</strong> Publicly disclose the vulnerability before we've had time to fix it</li>
             <li><strong>Response Time:</strong> We aim to respond within 48 hours</li>
@@ -228,7 +228,7 @@ function SecurityOverview() {
             If you have security concerns or questions:
           </p>
           <div className="contact-info">
-            <p><strong>📧 Email:</strong> <span className="contact-email">prydeapp-team@outlook.com</span></p>
+            <p><strong>📧 Email:</strong> <span className="contact-email">support@prydeapp.com</span></p>
             <p><strong>Subject Line:</strong> "Security Inquiry" or "Security Vulnerability"</p>
           </div>
 

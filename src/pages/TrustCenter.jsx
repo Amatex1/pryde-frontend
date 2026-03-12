@@ -101,7 +101,7 @@ function TrustCenter() {
         <div className="legal-footer-note">
           <p>
             <strong>Questions or concerns?</strong> Contact us at{' '}
-            <span className="contact-email">prydeapp-team@outlook.com</span>
+            <span className="contact-email">support@prydeapp.com</span>
           </p>
         </div>
       </div>

@@ -164,7 +164,7 @@ function Privacy() {
           </ul>
           <div className="contact-info">
             <p>
-              <strong>Contact:</strong> <span className="contact-email">prydeapp-team@outlook.com</span>
+              <strong>Contact:</strong> <span className="contact-email">support@prydeapp.com</span>
             </p>
           </div>
         </section>
@@ -311,7 +311,7 @@ function Privacy() {
         <section className="legal-section">
           <h2>13. Contact</h2>
           <div className="contact-info">
-            <p><strong>📧</strong> <span className="contact-email">prydeapp-team@outlook.com</span></p>
+            <p><strong>📧</strong> <span className="contact-email">support@prydeapp.com</span></p>
           </div>
         </section>
 

@@ -419,7 +419,7 @@ function SafetyModeration() {
             <p>
               <strong>Want to export or delete your data?</strong><br />
               See our <Link to="/privacy" className="legal-link">Privacy Policy</Link> or
-              contact us at <strong>prydeapp-team@outlook.com</strong>
+              contact us at <strong>support@prydeapp.com</strong>
             </p>
           </div>
         </section>
@@ -428,7 +428,7 @@ function SafetyModeration() {
         <section className="legal-section">
           <h2>13. Contact</h2>
           <div className="contact-info">
-            <p><strong>📧</strong> <span className="contact-email">prydeapp-team@outlook.com</span></p>
+            <p><strong>📧</strong> <span className="contact-email">support@prydeapp.com</span></p>
           </div>
         </section>
 
@@ -436,7 +436,7 @@ function SafetyModeration() {
         <div className="legal-footer-note">
           <p>
             <strong>Questions?</strong> Reach out to us at{' '}
-            <strong>prydeapp-team@outlook.com</strong>
+            <strong>support@prydeapp.com</strong>
           </p>
           <p className="last-updated">
             Last Updated: December 2025

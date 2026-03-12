@@ -43,7 +43,7 @@ function DMCA() {
           </p>
           <div className="contact-info">
             <p>
-              <strong>📧 Email:</strong> <span className="contact-email">prydeapp-team@outlook.com</span><br />
+              <strong>📧 Email:</strong> <span className="contact-email">support@prydeapp.com</span><br />
               <strong>Subject Line:</strong> DMCA Takedown Notice – [Your Name]
             </p>
           </div>
@@ -119,7 +119,7 @@ function DMCA() {
           </p>
           <div className="contact-info">
             <p>
-              <strong>📧 Email:</strong> <span className="contact-email">prydeapp-team@outlook.com</span><br />
+              <strong>📧 Email:</strong> <span className="contact-email">support@prydeapp.com</span><br />
               <strong>Subject Line:</strong> DMCA Counter-Notification – [Your Username]
             </p>
           </div>
@@ -208,7 +208,7 @@ function DMCA() {
           </p>
           <div className="contact-info">
             <p>
-              <strong>📧 Email:</strong> <span className="contact-email">prydeapp-team@outlook.com</span>
+              <strong>📧 Email:</strong> <span className="contact-email">support@prydeapp.com</span>
             </p>
           </div>
           <p className="legal-note">
@@ -218,7 +218,7 @@ function DMCA() {
 
         <div className="legal-footer-note">
           <p>
-            <strong>Questions about DMCA or copyright?</strong> Contact <span className="contact-email">prydeapp-team@outlook.com</span> or consult with a copyright attorney.
+            <strong>Questions about DMCA or copyright?</strong> Contact <span className="contact-email">support@prydeapp.com</span> or consult with a copyright attorney.
           </p>
           <p className="last-updated">
             Last Updated: November 26, 2025

@@ -243,7 +243,7 @@ function TrustAndSafety() {
             <p>
               <strong>Want to export or delete your data?</strong><br />
               See our <Link to="/privacy" className="legal-link">Privacy Policy</Link> or
-              contact us at <strong>prydeapp-team@outlook.com</strong>
+              contact us at <strong>support@prydeapp.com</strong>
             </p>
           </div>
         </section>
@@ -279,7 +279,7 @@ function TrustAndSafety() {
         <div className="legal-footer-note">
           <p>
             <strong>Questions?</strong> Reach out to us at{' '}
-            <strong>prydeapp-team@outlook.com</strong>
+            <strong>support@prydeapp.com</strong>
           </p>
           <p className="last-updated">
             Last Updated: December 2025

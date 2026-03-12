@@ -23,8 +23,10 @@ function AdminSecurity({ logs, stats, onResolve }) {
 
     if (typeFilter === 'all') return true;
     if (typeFilter === 'underage') return log.type && log.type.includes('underage');
-    if (typeFilter === 'email_verification') return log.type === 'email_verification';
-    if (typeFilter === 'failed_login') return log.type === 'failed_login';
+    if (typeFilter === 'failed_login') return log.type === 'failed_login' || log.type === 'account_locked';
+    if (typeFilter === 'account_changes') return ['password_changed', 'email_changed', 'email_verified', 'two_factor_enabled', 'two_factor_disabled', 'passkey_added', 'passkey_removed', 'account_deleted', 'profile_updated', 'privacy_settings_changed'].includes(log.type);
+    if (typeFilter === 'attacks') return ['suspicious_activity', 'rate_limit_exceeded', 'injection_attempt', 'xss_attempt'].includes(log.type);
+    if (typeFilter === 'invites') return log.type && log.type.includes('invite');
     return log.type === typeFilter;
   });
 
@@ -60,7 +62,27 @@ function AdminSecurity({ logs, stats, onResolve }) {
       case 'underage_login': return '🔒 Underage Login';
       case 'underage_access': return '⚠️ Underage Access';
       case 'failed_login': return '❌ Failed Login';
+      case 'account_locked': return '🔐 Account Locked';
       case 'suspicious_activity': return '🔍 Suspicious Activity';
+      case 'rate_limit_exceeded': return '⏱️ Rate Limit Exceeded';
+      case 'injection_attempt': return '💉 Injection Attempt';
+      case 'xss_attempt': return '🕷️ XSS Attempt';
+      case 'password_changed': return '🔑 Password Changed';
+      case 'email_changed': return '✉️ Email Changed';
+      case 'email_verified': return '✅ Email Verified';
+      case 'two_factor_enabled': return '🛡️ 2FA Enabled';
+      case 'two_factor_disabled': return '⚠️ 2FA Disabled';
+      case 'passkey_added': return '🔏 Passkey Added';
+      case 'passkey_removed': return '🗑️ Passkey Removed';
+      case 'account_deleted': return '🗑️ Account Deleted';
+      case 'profile_updated': return '✏️ Profile Updated';
+      case 'privacy_settings_changed': return '🔒 Privacy Settings Changed';
+      case 'account_recovery_2fa_reset': return '🔄 2FA Reset via Recovery';
+      case 'recovery_contact_notified': return '📧 Recovery Contact Notified';
+      case 'login_after_inactivity': return '⏰ Login After Inactivity';
+      case 'invite_created': return '📨 Invite Created';
+      case 'invite_used': return '🎟️ Invite Used';
+      case 'invite_revoked': return '🚫 Invite Revoked';
       default: return type;
     }
   };
@@ -112,13 +134,19 @@ function AdminSecurity({ logs, stats, onResolve }) {
             All Types
           </button>
           <button className={`filter-btn ${typeFilter === 'underage' ? 'active' : ''}`} onClick={() => setTypeFilter('underage')}>
-            Underage ({logs.filter(l => l.type && l.type.includes('underage')).length})
-          </button>
-          <button className={`filter-btn ${typeFilter === 'email_verification' ? 'active' : ''}`} onClick={() => setTypeFilter('email_verification')}>
-            Email Verification ({logs.filter(l => l.type === 'email_verification').length})
+            🚫 Underage ({logs.filter(l => l.type && l.type.includes('underage')).length})
           </button>
           <button className={`filter-btn ${typeFilter === 'failed_login' ? 'active' : ''}`} onClick={() => setTypeFilter('failed_login')}>
-            Failed Logins ({logs.filter(l => l.type === 'failed_login').length})
+            ❌ Failed Logins ({logs.filter(l => l.type === 'failed_login' || l.type === 'account_locked').length})
+          </button>
+          <button className={`filter-btn ${typeFilter === 'attacks' ? 'active' : ''}`} onClick={() => setTypeFilter('attacks')}>
+            🕷️ Attacks ({logs.filter(l => ['suspicious_activity', 'rate_limit_exceeded', 'injection_attempt', 'xss_attempt'].includes(l.type)).length})
+          </button>
+          <button className={`filter-btn ${typeFilter === 'account_changes' ? 'active' : ''}`} onClick={() => setTypeFilter('account_changes')}>
+            🔑 Account Changes ({logs.filter(l => ['password_changed', 'email_changed', 'email_verified', 'two_factor_enabled', 'two_factor_disabled', 'passkey_added', 'passkey_removed', 'account_deleted', 'profile_updated', 'privacy_settings_changed'].includes(l.type)).length})
+          </button>
+          <button className={`filter-btn ${typeFilter === 'invites' ? 'active' : ''}`} onClick={() => setTypeFilter('invites')}>
+            📨 Invites ({logs.filter(l => l.type && l.type.includes('invite')).length})
           </button>
         </div>
 
