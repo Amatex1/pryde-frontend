@@ -104,6 +104,7 @@
   text-align: left;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   position: relative;
+  overflow: hidden;
 }
 
 .notification-card:hover,
@@ -133,6 +134,8 @@
 
 .notification-content {
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .notification-card-static {
