@@ -107,8 +107,11 @@
 ------------------------------ */
 
 .messages-app__chat {
-  display: flex;
-  flex-direction: column;
+  /* Grid is more reliable than flex for "header + scroll + composer" layouts.
+     A grid 1fr row is STRICTLY bounded — unlike flex: 1, it cannot be grown
+     by its contents, which is what was causing the composer to be pushed off-screen. */
+  display: grid;
+  grid-template-rows: auto 1fr auto;
   height: 100%;
   min-width: 0;
   overflow: hidden;
@@ -118,7 +121,7 @@
 
 /* Header */
 .messages-app__chat-header {
-  flex: 0 0 auto;
+  grid-row: 1; /* explicit placement so layout works even when header is absent */
   display: flex;
   align-items: center;
   gap: 12px;
@@ -159,8 +162,8 @@
 ------------------------------ */
 
 .messages-app__messages-scroll {
-  flex: 1;
-  min-height: 0;
+  grid-row: 2;  /* explicit placement — always the middle row */
+  min-height: 0; /* CRITICAL: prevents grid item from growing to content size */
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -172,23 +175,7 @@
   padding: var(--msg-pad, 16px);
 }
 
-/* Ensure the scroll container has proper flex behavior */
-.messages-app__chat {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-width: 0;
-  overflow: hidden;
-  background: var(--bg-app);
-  position: relative;
-}
-
-/* CRITICAL: Fix for scroll container - ensure it's not constrained */
-.messages-app__messages-scroll {
-  /* Allow scroll to work properly */
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-}
+/* (duplicate removed — grid layout defined above) */
 
 /* -----------------------------
    FIX 3: ALIGN CONVERSATION CONTENT
@@ -252,7 +239,7 @@
 ------------------------------ */
 
 .messages-app__composer {
-  flex: 0 0 auto;
+  grid-row: 3; /* explicit placement — always the bottom row */
   background: var(--bg-subtle);
   border-top: 1px solid var(--border-subtle);
   padding: 8px 12px;
