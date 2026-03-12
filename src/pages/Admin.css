@@ -3692,6 +3692,37 @@ table.admin-table td[data-label="Email"] .user-email-text {
 
 /* ===================== AdminEmails ===================== */
 
+.email-direction-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.email-direction-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 10px;
+  border: 2px solid var(--border-color, #e0e0e0);
+  background: var(--card-surface, #fff);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.email-direction-btn:hover {
+  border-color: var(--color-primary, #6C5CE7);
+}
+
+.email-direction-btn.active {
+  background: var(--color-primary, #6C5CE7);
+  border-color: var(--color-primary, #6C5CE7);
+  color: #fff;
+}
+
 .email-unread-badge {
   display: inline-block;
   margin-left: 0.75rem;

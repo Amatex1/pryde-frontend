@@ -1659,13 +1659,21 @@ function ActivityTab({ activity, onViewPost }) {
 
 // Emails Tab Component
 function EmailsTab() {
+  const [direction, setDirection] = useState('inbound'); // 'inbound' | 'outbound'
   const [emails, setEmails] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedEmail, setSelectedEmail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
+
+  // Inbound filters
   const [mailboxFilter, setMailboxFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+
+  // Outbound filters
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [successFilter, setSuccessFilter] = useState('all');
+
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [page, setPage] = useState(1);
@@ -1675,6 +1683,7 @@ function EmailsTab() {
 
   const STATUS_COLORS = { new: 'var(--color-primary)', read: '#6c757d', replied: 'var(--color-success)', archived: '#adb5bd', spam: 'var(--color-danger)' };
   const STATUS_LABELS = { new: '🔵 New', read: '👁️ Read', replied: '↩️ Replied', archived: '📦 Archived', spam: '🚫 Spam' };
+  const TYPE_LABELS = { password_reset: '🔑 Password Reset', login_alert: '🔐 Login Alert', suspicious_login: '⚠️ Suspicious Login', verification: '✅ Verification', password_changed: '🔒 Password Changed', recovery_contact: '🛟 Recovery Contact', account_deletion: '🗑️ Account Deletion', other: 'Other' };
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '—';
@@ -1685,12 +1694,21 @@ function EmailsTab() {
     setLoading(true);
     try {
       const params = new URLSearchParams({ page, limit: 20 });
-      if (mailboxFilter !== 'all') params.set('mailbox', mailboxFilter);
-      if (statusFilter !== 'all') params.set('status', statusFilter);
-      if (search) params.set('search', search);
-      const res = await api.get(`/admin/emails?${params}`);
-      setEmails(res.data.emails);
-      setPagination(res.data.pagination);
+      if (direction === 'inbound') {
+        if (mailboxFilter !== 'all') params.set('mailbox', mailboxFilter);
+        if (statusFilter !== 'all') params.set('status', statusFilter);
+        if (search) params.set('search', search);
+        const res = await api.get(`/admin/emails?${params}`);
+        setEmails(res.data.emails);
+        setPagination(res.data.pagination);
+      } else {
+        if (typeFilter !== 'all') params.set('type', typeFilter);
+        if (successFilter !== 'all') params.set('success', successFilter);
+        if (search) params.set('search', search);
+        const res = await api.get(`/admin/emails/outbound?${params}`);
+        setEmails(res.data.emails);
+        setPagination(res.data.pagination);
+      }
     } catch (err) {
       console.error('Failed to fetch emails:', err);
     } finally {
@@ -1698,9 +1716,15 @@ function EmailsTab() {
     }
   };
 
-  useEffect(() => { fetchEmails(); }, [mailboxFilter, statusFilter, search, page]);
+  useEffect(() => { fetchEmails(); }, [direction, mailboxFilter, statusFilter, typeFilter, successFilter, search, page]);
 
   const handleSelectEmail = async (emailId) => {
+    if (direction === 'outbound') {
+      // Outbound: just show inline, no detail endpoint needed
+      const email = emails.find(e => e._id === emailId);
+      setSelectedEmail(email);
+      return;
+    }
     setDetailLoading(true);
     try {
       const res = await api.get(`/admin/emails/${emailId}`);
@@ -1741,14 +1765,32 @@ function EmailsTab() {
 
   const handleSearch = (e) => { e.preventDefault(); setSearch(searchInput); setPage(1); };
   const changeFilter = (setter, val) => { setter(val); setPage(1); };
+  const switchDirection = (dir) => { setDirection(dir); setEmails([]); setPagination(null); setPage(1); setSearch(''); setSearchInput(''); setSelectedEmail(null); };
 
   if (detailLoading || selectedEmail) {
     return (
       <div className="admin-tab-content">
-        <h2 className="admin-section-heading">📧 Inbound Emails</h2>
+        <h2 className="admin-section-heading">📧 {direction === 'inbound' ? 'Inbound' : 'Outbound'} Emails</h2>
         {detailLoading ? (
           <div className="loading-state">
             <div className="shimmer" style={{ height: '200px', borderRadius: '12px' }}></div>
+          </div>
+        ) : direction === 'outbound' ? (
+          <div className="email-detail-panel">
+            <div className="email-detail-header">
+              <button className="email-detail-back" onClick={() => setSelectedEmail(null)}>← Back</button>
+              <span className="email-status-badge" style={{ background: selectedEmail.success ? 'var(--color-success)' : 'var(--color-danger)' }}>
+                {selectedEmail.success ? '✅ Sent' : '❌ Failed'}
+              </span>
+            </div>
+            <h3 className="email-detail-subject">{selectedEmail.subject || '(no subject)'}</h3>
+            <div className="email-detail-meta">
+              <div><strong>To:</strong> {selectedEmail.to}</div>
+              <div><strong>Type:</strong> {TYPE_LABELS[selectedEmail.type] || selectedEmail.type}</div>
+              <div><strong>Sent:</strong> {formatDate(selectedEmail.createdAt)}</div>
+              {selectedEmail.resendId && <div><strong>Resend ID:</strong> <code style={{ fontSize: '0.82rem' }}>{selectedEmail.resendId}</code></div>}
+              {!selectedEmail.success && selectedEmail.errorMessage && <div><strong>Error:</strong> <span style={{ color: 'var(--color-danger)' }}>{selectedEmail.errorMessage}</span></div>}
+            </div>
           </div>
         ) : (
           <div className="email-detail-panel">
@@ -1797,42 +1839,81 @@ function EmailsTab() {
 
   return (
     <div className="admin-tab-content">
-      <h2 className="admin-section-heading">
-        📧 Inbound Emails
-        {pagination?.unreadCount > 0 && (
-          <span className="email-unread-badge">{pagination.unreadCount} new</span>
-        )}
-      </h2>
+      <div className="email-direction-toggle">
+        <button className={`email-direction-btn ${direction === 'inbound' ? 'active' : ''}`} onClick={() => switchDirection('inbound')}>
+          📥 Inbound
+          {direction === 'inbound' && pagination?.unreadCount > 0 && (
+            <span className="email-unread-badge">{pagination.unreadCount}</span>
+          )}
+        </button>
+        <button className={`email-direction-btn ${direction === 'outbound' ? 'active' : ''}`} onClick={() => switchDirection('outbound')}>
+          📤 Outbound
+          {direction === 'outbound' && pagination?.failedCount > 0 && (
+            <span className="email-unread-badge" style={{ background: 'var(--color-danger)' }}>{pagination.failedCount} failed</span>
+          )}
+        </button>
+      </div>
+
       <div className="email-filters">
-        <div className="email-filter-group">
-          <label>Mailbox</label>
-          <div className="filter-btn-group">
-            {['all', 'noreply', 'support'].map(m => (
-              <button key={m} className={`filter-btn ${mailboxFilter === m ? 'active' : ''}`}
-                onClick={() => changeFilter(setMailboxFilter, m)}>
-                {m === 'all' ? 'All' : m === 'noreply' ? 'noreply@' : 'support@'}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="email-filter-group">
-          <label>Status</label>
-          <div className="filter-btn-group">
-            {['all', 'new', 'read', 'replied', 'archived', 'spam'].map(s => (
-              <button key={s} className={`filter-btn ${statusFilter === s ? 'active' : ''}`}
-                onClick={() => changeFilter(setStatusFilter, s)}>
-                {s === 'all' ? 'All' : STATUS_LABELS[s]}
-              </button>
-            ))}
-          </div>
-        </div>
+        {direction === 'inbound' ? (
+          <>
+            <div className="email-filter-group">
+              <label>Mailbox</label>
+              <div className="filter-btn-group">
+                {['all', 'noreply', 'support'].map(m => (
+                  <button key={m} className={`filter-btn ${mailboxFilter === m ? 'active' : ''}`}
+                    onClick={() => changeFilter(setMailboxFilter, m)}>
+                    {m === 'all' ? 'All' : m === 'noreply' ? 'noreply@' : 'support@'}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="email-filter-group">
+              <label>Status</label>
+              <div className="filter-btn-group">
+                {['all', 'new', 'read', 'replied', 'archived', 'spam'].map(s => (
+                  <button key={s} className={`filter-btn ${statusFilter === s ? 'active' : ''}`}
+                    onClick={() => changeFilter(setStatusFilter, s)}>
+                    {s === 'all' ? 'All' : STATUS_LABELS[s]}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="email-filter-group">
+              <label>Type</label>
+              <div className="filter-btn-group">
+                {['all', 'password_reset', 'login_alert', 'suspicious_login', 'verification', 'password_changed', 'recovery_contact', 'account_deletion'].map(t => (
+                  <button key={t} className={`filter-btn ${typeFilter === t ? 'active' : ''}`}
+                    onClick={() => changeFilter(setTypeFilter, t)}>
+                    {t === 'all' ? 'All' : TYPE_LABELS[t]}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="email-filter-group">
+              <label>Status</label>
+              <div className="filter-btn-group">
+                {[['all', 'All'], ['true', '✅ Sent'], ['false', '❌ Failed']].map(([val, label]) => (
+                  <button key={val} className={`filter-btn ${successFilter === val ? 'active' : ''}`}
+                    onClick={() => changeFilter(setSuccessFilter, val)}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
         <form className="email-search-form" onSubmit={handleSearch}>
-          <input type="text" className="email-search-input" placeholder="Search sender or subject..."
+          <input type="text" className="email-search-input" placeholder={direction === 'inbound' ? 'Search sender or subject...' : 'Search recipient or subject...'}
             value={searchInput} onChange={e => setSearchInput(e.target.value)} />
           <button type="submit" className="email-search-btn">Search</button>
           {search && <button type="button" className="email-search-btn" onClick={() => { setSearch(''); setSearchInput(''); setPage(1); }}>Clear</button>}
         </form>
       </div>
+
       {loading ? (
         <div className="loading-state">
           {[1,2,3,4,5].map(i => <div key={i} className="shimmer" style={{ height: '60px', borderRadius: '8px', marginBottom: '0.5rem' }}></div>)}
@@ -1846,17 +1927,28 @@ function EmailsTab() {
         <>
           <div className="email-list">
             {emails.map(email => (
-              <button key={email._id} className={`email-list-item ${email.status === 'new' ? 'email-list-item--unread' : ''}`}
+              <button key={email._id}
+                className={`email-list-item ${direction === 'inbound' && email.status === 'new' ? 'email-list-item--unread' : ''}`}
                 onClick={() => handleSelectEmail(email._id)}>
                 <div className="email-list-item-left">
-                  <span className="email-status-dot" style={{ background: STATUS_COLORS[email.status] || '#6c757d' }} title={email.status} />
+                  {direction === 'inbound' ? (
+                    <span className="email-status-dot" style={{ background: STATUS_COLORS[email.status] || '#6c757d' }} title={email.status} />
+                  ) : (
+                    <span className="email-status-dot" style={{ background: email.success ? 'var(--color-success)' : 'var(--color-danger)' }} title={email.success ? 'sent' : 'failed'} />
+                  )}
                   <div className="email-list-item-info">
-                    <span className="email-list-sender">{email.sender?.name || email.sender?.email || 'Unknown'}</span>
+                    <span className="email-list-sender">
+                      {direction === 'inbound' ? (email.sender?.name || email.sender?.email || 'Unknown') : email.to}
+                    </span>
                     <span className="email-list-subject">{email.subject || '(no subject)'}</span>
                   </div>
                 </div>
                 <div className="email-list-item-right">
-                  <span className="email-mailbox-tag">{email.mailbox === 'noreply' ? 'noreply@' : 'support@'}</span>
+                  {direction === 'inbound' ? (
+                    <span className="email-mailbox-tag">{email.mailbox === 'noreply' ? 'noreply@' : 'support@'}</span>
+                  ) : (
+                    <span className="email-mailbox-tag">{TYPE_LABELS[email.type] || email.type}</span>
+                  )}
                   <span className="email-list-date">{formatDate(email.createdAt)}</span>
                 </div>
               </button>
