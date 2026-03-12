@@ -44,6 +44,12 @@
     transparent 70%
   );
   margin-bottom: 4px;
+  /* Inner content stays readable — background still bleeds full width */
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .search-title {
@@ -188,6 +194,11 @@
 .search-body {
   flex: 1;
   padding-bottom: 16px;
+  /* Constrain all body content to a readable width, centred */
+  max-width: 760px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* ── Discovery wrapper ── */
