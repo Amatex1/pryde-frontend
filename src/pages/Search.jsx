@@ -1,16 +1,27 @@
 /**
- * Search Page — Redesigned
- * Clean, modern layout inspired by top social platforms.
- * Features preserved: recent searches, trending topics, tabs, skeleton loading.
+ * Search Page — Modern Discovery Layout
+ *
+ * Empty state  → Hero + discovery grid (Recents, Suggested People,
+ *                Trending Topics, Active Conversations)
+ * Active query → existing search results (users / posts / groups)
+ *
+ * All original search logic and API calls are preserved unchanged.
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search as SearchIcon, X, Clock, TrendingUp, Users, FileText } from 'lucide-react';
-import api from '../utils/api';
+import {
+  ArrowLeft, Search as SearchIcon, X,
+  Clock, TrendingUp, Users, FileText,
+} from 'lucide-react';
+import SuggestedPeople     from '../components/search/SuggestedPeople';
+import ActiveConversations from '../components/search/ActiveConversations';
+import api        from '../utils/api';
 import { getImageUrl } from '../utils/imageUrl';
 import './Search.css';
+import '../styles/searchDiscovery.css';
 
+/* ── Constants ── */
 const TABS = [
   { id: 'all',    label: 'All' },
   { id: 'users',  label: 'People' },
@@ -20,6 +31,7 @@ const TABS = [
 
 const TRENDING = ['photography', 'music', 'travel', 'food', 'art', 'fitness', 'tech', 'gaming'];
 
+/* ── Skeleton rows (shown while searching) ── */
 function SkeletonRows({ count = 5 }) {
   return (
     <div className="search-skeletons">
@@ -36,23 +48,24 @@ function SkeletonRows({ count = 5 }) {
   );
 }
 
+/* ── Main component ── */
 function Search() {
-  const [query, setQuery]               = useState('');
-  const [results, setResults]           = useState({ users: [], posts: [], groups: [] });
-  const [loading, setLoading]           = useState(false);
-  const [hasSearched, setHasSearched]   = useState(false);
-  const [error, setError]               = useState(null);
-  const [activeTab, setActiveTab]       = useState('all');
-  const [recents, setRecents]           = useState([]);
-  const navigate    = useNavigate();
-  const inputRef    = useRef(null);
+  const [query, setQuery]             = useState('');
+  const [results, setResults]         = useState({ users: [], posts: [], groups: [] });
+  const [loading, setLoading]         = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [error, setError]             = useState(null);
+  const [activeTab, setActiveTab]     = useState('all');
+  const [recents, setRecents]         = useState([]);
+  const navigate  = useNavigate();
+  const inputRef  = useRef(null);
 
-  // Load recent searches
+  /* Load recent searches from localStorage */
   useEffect(() => {
     try {
       const saved = localStorage.getItem('pryde_recent_searches');
       if (saved) setRecents(JSON.parse(saved));
-    } catch { /* ignore */ }
+    } catch { /* ignore bad JSON */ }
     inputRef.current?.focus();
   }, []);
 
@@ -79,6 +92,7 @@ function Search() {
     localStorage.removeItem('pryde_recent_searches');
   };
 
+  /* ── Search (unchanged logic) ── */
   const performSearch = useCallback(async (q) => {
     setLoading(true);
     setError(null);
@@ -94,10 +108,13 @@ function Search() {
 
       let groups = [];
       if (groupsRes.status === 'fulfilled') {
-        const all = groupsRes.value.data?.groups || groupsRes.value.data || [];
+        const all   = groupsRes.value.data?.groups || groupsRes.value.data || [];
         const lower = q.toLowerCase();
         groups = all
-          .filter((g) => g.name?.toLowerCase().includes(lower) || g.description?.toLowerCase().includes(lower))
+          .filter((g) =>
+            g.name?.toLowerCase().includes(lower) ||
+            g.description?.toLowerCase().includes(lower)
+          )
           .slice(0, 5);
       }
 
@@ -137,24 +154,33 @@ function Search() {
     inputRef.current?.focus();
   };
 
-  // Filtered results for active tab
+  /* Filtered results for active tab */
   const filtered = (() => {
-    if (activeTab === 'users')  return { users: results.users,  posts: [],           groups: [] };
+    if (activeTab === 'users')  return { users: results.users,  posts: [],            groups: [] };
     if (activeTab === 'posts')  return { users: [],             posts: results.posts, groups: [] };
-    if (activeTab === 'groups') return { users: [],             posts: [],           groups: results.groups };
+    if (activeTab === 'groups') return { users: [],             posts: [],            groups: results.groups };
     return results;
   })();
 
   const hasResults = filtered.users.length || filtered.posts.length || filtered.groups?.length;
 
+  /* ── Render ── */
   return (
     <div className="search-page">
 
-      {/* ── Search Bar ── */}
-      <div className="search-header">
-        <button className="back-btn" onClick={() => navigate(-1)} aria-label="Go back">
-          <ArrowLeft size={20} strokeWidth={2} />
-        </button>
+      {/* ── Back button ── */}
+      <button className="back-btn" onClick={() => navigate(-1)} aria-label="Go back">
+        <ArrowLeft size={20} strokeWidth={2} />
+      </button>
+
+      {/* ════════════════════════════════════════
+          STEP 1 — Search Hero
+          ════════════════════════════════════════ */}
+      <div className="search-hero">
+        <h1 className="search-title">Search Pryde</h1>
+        <p className="search-subtitle">Find people, posts, and communities</p>
+
+        {/* Search input */}
         <div className="search-input-wrapper">
           <SearchIcon size={16} className="search-icon" aria-hidden="true" />
           <input
@@ -173,90 +199,118 @@ function Search() {
             </button>
           )}
         </div>
-      </div>
 
-      {/* ── Tabs ── */}
-      <div className="search-tabs-bar" role="tablist">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            role="tab"
-            aria-selected={activeTab === tab.id}
-            className={`search-tab${activeTab === tab.id ? ' active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {tab.label}
-          </button>
-        ))}
+        {/* Filter tabs */}
+        <div className="search-tabs" role="tablist">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              className={`search-tab${activeTab === tab.id ? ' active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
+      {/* ── end hero ── */}
 
       {/* ── Body ── */}
       <div className="search-body">
 
-        {/* Loading */}
+        {/* Loading skeletons */}
         {loading && <SkeletonRows count={6} />}
 
-        {/* Empty query — show recents + trending */}
+        {/* ════════════════════════════════════════
+            EMPTY STATE — Discovery sections
+            Only shown when no active query
+            ════════════════════════════════════════ */}
         {!query.trim() && !loading && (
-          <div className="search-suggestions">
-            {recents.length > 0 && (
-              <>
-                <div className="suggestions-section-header">
-                  <h3 className="suggestions-section-title">
-                    <Clock size={14} />
-                    Recent
-                  </h3>
-                  <button className="clear-history" onClick={clearRecents}>Clear all</button>
-                </div>
+          <div className="search-discovery">
 
-                {recents.map((item) => (
-                  <button
-                    key={item}
-                    className="recent-item"
-                    onClick={() => setQuery(item)}
-                  >
-                    <span className="recent-item-icon">
-                      <Clock size={16} />
-                    </span>
-                    <span className="recent-item-text">{item}</span>
-                    <button
-                      className="recent-remove-btn"
-                      aria-label={`Remove ${item}`}
-                      onClick={(e) => removeRecent(item, e)}
-                    >
-                      <X size={14} strokeWidth={2} />
+            {/* STEPS 2 & 3 — Discovery grid */}
+            <div className="search-discovery-grid">
+
+              {/* Recent searches card */}
+              <div className="search-card recent-searches-card">
+                <h3 className="search-card-title">
+                  <Clock size={14} style={{ verticalAlign: 'middle', marginRight: 6 }} />
+                  Recent
+                </h3>
+
+                {recents.length === 0 ? (
+                  <p className="search-card-empty">No recent searches yet.</p>
+                ) : (
+                  <>
+                    <div className="recent-list">
+                      {recents.map((item) => (
+                        <button
+                          key={item}
+                          className="recent-item"
+                          onClick={() => setQuery(item)}
+                        >
+                          <Clock size={14} className="recent-icon" />
+                          <span className="recent-item-text">{item}</span>
+                          <button
+                            className="recent-remove-btn"
+                            aria-label={`Remove ${item}`}
+                            onClick={(e) => removeRecent(item, e)}
+                          >
+                            <X size={13} strokeWidth={2} />
+                          </button>
+                        </button>
+                      ))}
+                    </div>
+                    <button className="clear-history" onClick={clearRecents}>
+                      Clear all
                     </button>
+                  </>
+                )}
+              </div>
+
+              {/* STEP 3 — Suggested people card */}
+              <div className="search-card suggested-people-card">
+                <h3 className="search-card-title">People to Follow</h3>
+                <SuggestedPeople />
+              </div>
+            </div>
+            {/* end discovery grid */}
+
+            {/* STEP 4 — Trending Topics */}
+            <div className="trending-topics">
+              <h3 className="discovery-section-title">
+                <TrendingUp size={14} style={{ verticalAlign: 'middle', marginRight: 6 }} />
+                Trending Topics
+              </h3>
+              <div className="topic-chip-grid">
+                {TRENDING.map((tag) => (
+                  <button
+                    key={tag}
+                    className="topic-chip"
+                    onClick={() => setQuery(tag)}
+                  >
+                    #{tag}
                   </button>
                 ))}
-
-                <div className="suggestions-divider" />
-              </>
-            )}
-
-            <div className="suggestions-section-header">
-              <h3 className="suggestions-section-title">
-                <TrendingUp size={14} />
-                Trending
-              </h3>
+              </div>
             </div>
-            <div className="trending-chips">
-              {TRENDING.map((tag) => (
-                <button
-                  key={tag}
-                  className="trending-chip"
-                  onClick={() => setQuery(tag)}
-                >
-                  #{tag}
-                </button>
-              ))}
-            </div>
+
+            {/* STEPS 5 & 6 — Active Conversations */}
+            <ActiveConversations />
+
           </div>
         )}
+        {/* end discovery */}
 
-        {/* Results */}
+        {/* ════════════════════════════════════════
+            ACTIVE QUERY — Search Results
+            (original logic, untouched)
+            ════════════════════════════════════════ */}
         {query.trim() && !loading && (
           <>
-            {/* Error */}
+            {/* Error state */}
             {error && (
               <div className="search-state-center">
                 <div className="search-state-icon">
@@ -264,7 +318,9 @@ function Search() {
                 </div>
                 <p className="search-state-title">Something went wrong</p>
                 <p className="search-state-sub">Check your connection and try again.</p>
-                <button className="retry-btn" onClick={() => performSearch(query.trim())}>Retry</button>
+                <button className="retry-btn" onClick={() => performSearch(query.trim())}>
+                  Retry
+                </button>
               </div>
             )}
 
@@ -279,7 +335,7 @@ function Search() {
               </div>
             )}
 
-            {/* Results list */}
+            {/* Results */}
             {!error && hasResults > 0 && (
               <div className="results-list">
 
@@ -375,11 +431,14 @@ function Search() {
                     ))}
                   </>
                 )}
+
               </div>
             )}
           </>
         )}
+
       </div>
+      {/* end search-body */}
     </div>
   );
 }
