@@ -17,9 +17,7 @@
   padding-bottom: calc(var(--navbar-height, 70px) + env(safe-area-inset-bottom, 0));
 }
 
-/* ========================================
-   HERO HEADER
-   ======================================== */
+/* Hero Header */
 .search-hero {
   text-align: center;
   padding: var(--space-6) var(--space-4);
@@ -44,9 +42,7 @@
   margin: 0;
 }
 
-/* ========================================
-   SEARCH HEADER
-   ======================================== */
+/* Search Header */
 .search-header {
   display: flex;
   align-items: center;
@@ -56,6 +52,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .search-page .back-btn {
@@ -134,9 +131,7 @@
   margin: calc(-1 * var(--space-sm));
 }
 
-/* ========================================
-   FILTER TABS
-   ======================================== */
+/* Filter Tabs */
 .search-tabs {
   display: flex;
   gap: var(--space-2);
@@ -174,9 +169,7 @@
   box-shadow: 0 4px 12px rgba(108, 92, 231, 0.25);
 }
 
-/* ========================================
-   SEARCH RESULTS
-   ======================================== */
+/* Search Results */
 .search-results {
   padding: 0 1rem 1rem;
 }
@@ -581,16 +574,8 @@
   overflow: hidden;
 }
 
-/* ========================================
-   RESPONSIVE - DESKTOP
-   ======================================== */
+/* Responsive - Desktop */
 @media (min-width: 1024px) {
-  .search-page {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: var(--space-6);
-  }
-
   .search-hero {
     padding: var(--space-8) var(--space-4);
   }
@@ -614,18 +599,12 @@
     margin: 0 0 var(--space-6);
   }
 
-  .search-results {
-    padding: 0;
-  }
-
   .result-item {
     padding: var(--space-4) var(--space-5);
   }
 }
 
-/* ========================================
-   REDUCED MOTION
-   ======================================== */
+/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .result-item,
   .trending-tag,
