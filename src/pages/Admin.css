@@ -628,7 +628,8 @@
 .blocks-list {
   max-width: 100%;
   overflow-x: auto;
-  overflow-y: visible; /* Allow vertical content to show fully */
+  /* overflow-y intentionally omitted: setting overflow-x:auto forces overflow-y to auto
+     per CSS spec, so explicitly setting visible here has no effect and is misleading */
   -webkit-overflow-scrolling: touch;
   /* Step 1 — Elevated container */
   border-radius: 16px;
@@ -1081,7 +1082,8 @@
   max-width: 100%;
   padding: 0;
   overflow-x: auto;
-  overflow-y: visible;
+  /* overflow-y intentionally omitted: dropdowns inside this table use position:fixed
+     to escape the clipping context created by overflow-x:auto */
   -webkit-overflow-scrolling: touch;
 }
 

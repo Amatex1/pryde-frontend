@@ -147,6 +147,7 @@ function CommentRow({ item, isReply = false, parentCommentId = null, openMenuId,
           {isEditing ? (
             <div className="comment-edit-box">
               <textarea
+                name="edit-comment"
                 value={editCommentText}
                 onChange={(e) => handleEditComment(item._id, e.target.value)}
                 onKeyDown={handleEditKeyDown}

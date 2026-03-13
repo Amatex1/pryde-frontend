@@ -60,7 +60,7 @@ export default function Composer({
     <form onSubmit={selectedChat ? onSendMessage : (e) => e.preventDefault()} className="messages-app__composer">
       {showContentWarning && (
         <div className="content-warning-input">
-          <select value={contentWarning} onChange={(e) => onContentWarningChange(e.target.value)} className="cw-input glossy">
+          <select name="content-warning" value={contentWarning} onChange={(e) => onContentWarningChange(e.target.value)} className="cw-input glossy">
             <option value="">Select a content warning...</option>
             <option value="Mental Health">Mental Health</option>
             <option value="Violence">Violence</option>
@@ -79,6 +79,7 @@ export default function Composer({
           {(['Other'].includes(contentWarning) || (contentWarning && !['', 'Mental Health', 'Violence', 'Sexual Content', 'Substance Use', 'Self-Harm', 'Death/Grief', 'Eating Disorders', 'Abuse', 'Discrimination', 'Medical Content', 'Flashing Lights', 'Spoilers', 'Other'].includes(contentWarning))) && (
             <input
               type="text"
+              name="content-warning-text"
               className="cw-custom-input"
               placeholder="Describe the content warning..."
               value={contentWarning === 'Other' ? '' : contentWarning}
@@ -160,6 +161,7 @@ export default function Composer({
           </button>
           <textarea
             ref={textareaRef}
+            name="message"
             rows="1"
             value={message}
             onChange={onMessageChange}

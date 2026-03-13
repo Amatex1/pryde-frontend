@@ -76,6 +76,7 @@ const AudioPlayer = ({ url, duration }) => {
         <div className="audio-progress-bar">
           <input
             type="range"
+            name="playback-position"
             className="audio-seek-slider"
             min={0}
             max={audioDuration || 0}

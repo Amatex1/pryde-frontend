@@ -118,7 +118,7 @@ export default function MessageList({
                               </div>
                             ) : isEditing ? (
                               <div className="message-edit-box">
-                                <input type="text" value={editMessageText} onChange={(e) => onEditMessageTextChange(e.target.value)} className="message-edit-input" autoFocus />
+                                <input type="text" name="edit-message" value={editMessageText} onChange={(e) => onEditMessageTextChange(e.target.value)} className="message-edit-input" autoFocus />
                                 <div className="message-edit-actions">
                                   <button onClick={() => onSaveEdit(msg._id)} className="btn-save-edit" aria-label="Save"><Check size={14} strokeWidth={2} aria-hidden="true" /></button>
                                   <button onClick={onCancelEdit} className="btn-cancel-edit" aria-label="Cancel"><X size={14} strokeWidth={1.75} aria-hidden="true" /></button>

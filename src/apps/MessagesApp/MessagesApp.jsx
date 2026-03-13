@@ -788,6 +788,7 @@ export default function MessagesApp() {
             <form onSubmit={handleSearchUsers} className="search-form">
               <input
                 type="text"
+                name="user-search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search for users..."

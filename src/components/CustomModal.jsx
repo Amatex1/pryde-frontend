@@ -143,6 +143,7 @@ function CustomModal({
             {type === 'prompt' && (
               <input
                 type={inputType}
+                name="modal-input"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder={placeholder}
