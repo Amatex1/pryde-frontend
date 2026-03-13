@@ -43,7 +43,7 @@ function DMCA() {
           </p>
           <div className="contact-info">
             <p>
-              <strong>📧 Email:</strong> <span className="contact-email">support@prydeapp.com</span><br />
+              <strong>📧 Email:</strong> <span className="contact-email">legal@prydeapp.com</span><br />
               <strong>Subject Line:</strong> DMCA Takedown Notice – [Your Name]
             </p>
           </div>
@@ -119,7 +119,7 @@ function DMCA() {
           </p>
           <div className="contact-info">
             <p>
-              <strong>📧 Email:</strong> <span className="contact-email">support@prydeapp.com</span><br />
+              <strong>📧 Email:</strong> <span className="contact-email">legal@prydeapp.com</span><br />
               <strong>Subject Line:</strong> DMCA Counter-Notification – [Your Username]
             </p>
           </div>

@@ -41,7 +41,7 @@ function LegalRequests() {
         <section className="legal-section">
           <h2>3. How to Submit a Legal Request</h2>
           <p>
-            <strong>Email:</strong> legal@prydesocial.com<br />
+            <strong>Email:</strong> legal@prydeapp.com<br />
             <strong>Subject Line:</strong> Law Enforcement Request - [Case Number]
           </p>
           <p>
@@ -76,7 +76,7 @@ function LegalRequests() {
             If you believe there is an <strong>imminent threat of death or serious physical injury</strong>, we will expedite your request.
           </p>
           <p>
-            <strong>Emergency Contact:</strong> legal@prydesocial.com (Subject: EMERGENCY REQUEST)
+            <strong>Emergency Contact:</strong> legal@prydeapp.com (Subject: EMERGENCY REQUEST)
           </p>
           <p>
             <strong>What Qualifies as an Emergency:</strong>
@@ -146,7 +146,7 @@ function LegalRequests() {
             <strong>How to Submit a Preservation Request:</strong>
           </p>
           <ul>
-            <li>Email legal@prydesocial.com with "Preservation Request" in the subject line</li>
+            <li>Email legal@prydeapp.com with "Preservation Request" in the subject line</li>
             <li>Include the username, profile URL, or specific content to preserve</li>
             <li>Explain the legal basis and pending investigation</li>
             <li>Provide your agency contact information</li>
@@ -173,7 +173,7 @@ function LegalRequests() {
 
         <div className="legal-footer-note">
           <p>
-            <strong>Questions?</strong> Contact our Legal Department at legal@prydesocial.com or call [Phone Number - Coming Soon].
+            <strong>Questions?</strong> Contact our Legal Department at legal@prydeapp.com or call [Phone Number - Coming Soon].
           </p>
           <p className="last-updated">
             Last Updated: November 26, 2025

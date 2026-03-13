@@ -1,4 +1,5 @@
 import FeedPost from './FeedPost';
+import CommunitySignalCard from './CommunitySignalCard';
 import { ActivityTag } from '../ui/ActivityTag';
 
 export default function FeedListPostItem({
@@ -12,6 +13,15 @@ export default function FeedListPostItem({
 }) {
   const isFirstPost = postIndex === 0;
   const shouldEagerLoad = postIndex < 3;
+
+  // Render lightweight signal card instead of a full FeedPost
+  if (post.type === 'community_signal') {
+    return (
+      <div ref={wrapperRef} style={wrapperStyle} className="post-wrapper">
+        <CommunitySignalCard signal={post} />
+      </div>
+    );
+  }
 
   return (
     <div ref={wrapperRef} style={wrapperStyle} className="post-wrapper">

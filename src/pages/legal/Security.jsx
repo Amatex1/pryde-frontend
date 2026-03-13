@@ -251,7 +251,7 @@ function Security() {
             If you discover a security vulnerability, please report it responsibly:
           </p>
           <ul>
-            <li><strong>Email:</strong> <span className="contact-email">support@prydeapp.com</span> with subject "Security Vulnerability"</li>
+            <li><strong>Email:</strong> <span className="contact-email">security@prydeapp.com</span> with subject "Security Vulnerability"</li>
             <li><strong>Include:</strong> Detailed description, steps to reproduce, and potential impact</li>
             <li><strong>Do Not:</strong> Publicly disclose the vulnerability before we've had time to fix it</li>
             <li><strong>Response Time:</strong> We aim to respond within 48 hours</li>
@@ -271,7 +271,7 @@ function Security() {
             If you have security concerns or questions:
           </p>
           <div className="contact-info">
-            <p><strong>📧 Email:</strong> <span className="contact-email">support@prydeapp.com</span></p>
+            <p><strong>📧 Email:</strong> <span className="contact-email">security@prydeapp.com</span></p>
             <p><strong>Subject Line:</strong> "Security Inquiry" or "Security Vulnerability"</p>
           </div>
 
