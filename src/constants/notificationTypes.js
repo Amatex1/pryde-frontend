@@ -26,6 +26,8 @@ export const SOCIAL_NOTIFICATION_TYPES = Object.freeze([
   'circle_invite',
   'circle_post',
   'login_approval',
+  // Conversation resurfacing
+  'conversation_resurface',
   // Legacy types (deprecated but still supported)
   'friend_request',
   'friend_accept',

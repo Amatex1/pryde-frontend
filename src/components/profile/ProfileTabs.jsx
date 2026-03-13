@@ -7,6 +7,8 @@ const tabContainerStyle = {
   display: 'flex',
   gap: '10px',
   overflowX: 'auto',
+  width: 'fit-content',
+  maxWidth: '100%',
 };
 
 const tabButtonStyle = {

@@ -45,7 +45,13 @@ const NotificationBell = memo(() => {
       const response = await api.get('/notifications');
       // Filter to SOCIAL types only - MESSAGE types go to Messages badge
       const socialNotifications = filterSocialNotifications(response.data);
-      setNotifications(socialNotifications.slice(0, 10)); // Show only latest 10
+      // Section 10: Sort by engagementScore desc, then createdAt desc
+      const sorted = [...socialNotifications].sort((a, b) => {
+        const scoreDiff = (b.engagementScore || 0) - (a.engagementScore || 0);
+        if (scoreDiff !== 0) return scoreDiff;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+      setNotifications(sorted.slice(0, 10));
       setUnreadCount(socialNotifications.filter(n => !n.read).length);
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
@@ -122,10 +128,20 @@ const NotificationBell = memo(() => {
       setUnreadCount(prev => Math.max(0, prev - 1));
     };
 
+    // Section 4: Replace existing notification when aggregated update arrives
+    const handleNotificationUpdate = (updatedNotif) => {
+      if (!updatedNotif?._id) return;
+      logger.debug('🔄 Notification updated (aggregated):', updatedNotif._id);
+      setNotifications(prev =>
+        prev.map(n => n._id === updatedNotif._id ? updatedNotif : n)
+      );
+    };
+
     // ✅ Attach listeners to socket
     const attachListeners = (s) => {
       logger.debug('🔔 Attaching NotificationBell socket listeners');
       s.on('notification:new', handleNewNotification);
+      s.on('notification:update', handleNotificationUpdate);
       s.on('notification:read', handleNotificationRead);
       s.on('notification:read_all', handleNotificationReadAll);
       s.on('notification:deleted', handleNotificationDeleted);
@@ -137,6 +153,7 @@ const NotificationBell = memo(() => {
       if (s && typeof s.off === 'function') {
         logger.debug('🧹 Cleaning up NotificationBell socket listeners');
         s.off('notification:new', handleNewNotification);
+        s.off('notification:update', handleNotificationUpdate);
         s.off('notification:read', handleNotificationRead);
         s.off('notification:read_all', handleNotificationReadAll);
         s.off('notification:deleted', handleNotificationDeleted);
@@ -215,16 +232,20 @@ const NotificationBell = memo(() => {
     markAsRead(notification._id);
     setShowDropdown(false);
 
-    // Navigate based on notification type
+    // Section 7: Prefer server-generated deep link url when available
+    if (notification.url) {
+      navigate(notification.url);
+      return;
+    }
+
+    // Fallback navigation for older notifications without url field
     if (notification.type === 'friend_request' || notification.type === 'friend_accept') {
-      // Navigate to the sender's profile instead of non-existent /friends page
       if (notification.sender?._id) {
         navigate(`/profile/${notification.sender._id}`);
       } else {
         navigate('/feed');
       }
     } else if (notification.type === 'group_post' || notification.type === 'group_mention') {
-      // Phase 4B: Group notifications - navigate to the group
       if (notification.groupSlug) {
         navigate(`/groups/${notification.groupSlug}`);
       } else if (notification.link) {
@@ -281,9 +302,21 @@ const NotificationBell = memo(() => {
     }
   };
 
+  // Section 9: Format aggregated notification text when multiple actors contributed
+  const getAggregatedActorLabel = (notification) => {
+    const actors = notification.actorIds;
+    if (!actors || actors.length <= 1) return null;
+    const first = actors[0];
+    const firstName = first?.displayName || first?.username || 'Someone';
+    const others = actors.length - 1;
+    return `${firstName} and ${others} ${others === 1 ? 'other' : 'others'}`;
+  };
+
   // CALM-FIRST: Notification text with no exclamation marks or urgency language
   const getNotificationText = (notification) => {
-    const senderName = notification.sender?.displayName || notification.sender?.username || 'Someone';
+    const aggregatedLabel = getAggregatedActorLabel(notification);
+    const senderName = aggregatedLabel ||
+      notification.sender?.displayName || notification.sender?.username || 'Someone';
     const groupName = notification.groupName || 'a group';
 
     switch (notification.type) {
@@ -293,7 +326,12 @@ const NotificationBell = memo(() => {
           : `${senderName} liked your post`;
       }
       case 'comment': {
-        return `${senderName} commented on your post`;
+        return aggregatedLabel
+          ? `${senderName} commented on your post`
+          : `${senderName} commented on your post`;
+      }
+      case 'conversation_resurface': {
+        return 'Conversation heating up on a post you commented on';
       }
       case 'friend_request': {
         return `${senderName} sent you a connection request`;
@@ -397,6 +435,9 @@ const NotificationBell = memo(() => {
                     <p className="notif-text">{getNotificationText(notification)}</p>
                     <span className="notif-time">{getTimeAgo(notification.createdAt)}</span>
                   </div>
+                  {notification.count > 1 && (
+                    <span className="notif-count-badge">{notification.count}</span>
+                  )}
                   {!notification.read && <div className="unread-dot"></div>}
                 </div>
               ))

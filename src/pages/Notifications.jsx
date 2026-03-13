@@ -80,6 +80,12 @@ function Notifications() {
       const response = notificationsResult.value;
       // Filter out message notifications - they should only appear in Messages page
       const filteredNotifications = response.data.filter(isVisibleNotification);
+      // Section 10: Sort by engagementScore desc, then createdAt desc
+      filteredNotifications.sort((a, b) => {
+        const scoreDiff = (b.engagementScore || 0) - (a.engagementScore || 0);
+        if (scoreDiff !== 0) return scoreDiff;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
       setNotifications(filteredNotifications);
 
       if (pendingApprovalsResult.status === 'fulfilled') {
@@ -162,14 +168,24 @@ function Notifications() {
       ));
     };
 
+    // Section 4: Replace notification in list when aggregation update arrives
+    const handleNotificationUpdate = (updatedNotif) => {
+      if (!updatedNotif?._id || !isVisibleNotification(updatedNotif)) return;
+      setNotifications(prevNotifications =>
+        prevNotifications.map(n => n._id === updatedNotif._id ? updatedNotif : n)
+      );
+    };
+
     const attachListeners = (activeSocket) => {
       activeSocket.on('notification:new', handleNewNotification);
+      activeSocket.on('notification:update', handleNotificationUpdate);
       activeSocket.on('notification:read', handleNotificationRead);
       activeSocket.on('notification:read_all', handleNotificationReadAll);
       activeSocket.on('notification:deleted', handleNotificationDeleted);
 
       cleanupFn = () => {
         activeSocket.off('notification:new', handleNewNotification);
+        activeSocket.off('notification:update', handleNotificationUpdate);
         activeSocket.off('notification:read', handleNotificationRead);
         activeSocket.off('notification:read_all', handleNotificationReadAll);
         activeSocket.off('notification:deleted', handleNotificationDeleted);
@@ -245,16 +261,20 @@ function Notifications() {
 
     markAsRead(notification._id);
 
-    // Navigate based on notification type
+    // Section 7: Prefer server-generated deep link url when available
+    if (notification.url) {
+      navigate(notification.url);
+      return;
+    }
+
+    // Fallback navigation for older notifications without url field
     if (notification.type === 'friend_request' || notification.type === 'friend_accept') {
-      // Navigate to the sender's profile
       if (notification.sender?._id) {
         navigate(`/profile/${notification.sender._id}`);
       } else {
         navigate('/feed');
       }
     } else if (notification.type === 'group_post' || notification.type === 'group_mention') {
-      // Phase 4B: Group notifications - navigate to the group
       if (notification.groupSlug) {
         navigate(`/groups/${notification.groupSlug}`);
       } else if (notification.link) {
@@ -321,6 +341,8 @@ function Notifications() {
         return notification.message || `${senderName} sent an @everyone announcement`;
       case 'login_approval':
         return `Approve sign in from ${notification.loginApprovalData?.deviceInfo || 'another device'}`;
+      case 'conversation_resurface':
+        return 'Conversation heating up on a post you commented on';
       default:
         return notification.message || 'New notification';
     }

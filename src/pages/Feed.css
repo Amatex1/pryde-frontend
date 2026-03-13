@@ -5306,11 +5306,13 @@ select.privacy-selector:focus {
   border: 2px solid var(--color-brand) !important;
 }
 
-.highlighted-comment {
+.highlighted-comment,
+.highlight-comment {
   animation: highlightPulse 3s ease-in-out;
   background: rgba(108, 92, 231, 0.1) !important;
   border-left: 3px solid var(--color-brand) !important;
   padding-left: 1rem !important;
+  transition: background 1s ease;
 }
 
 @keyframes highlightPulse {
