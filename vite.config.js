@@ -47,7 +47,7 @@ export default defineConfig({
 
         // Only precache static assets (NO HTML!)
         // HTML must always come from network to prevent ERR_FAILED on navigation.
-        globPatterns: ['**/*.{js,css,ico,png,svg,webp,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'], // Added HTML for offline.html
 
         // Disable navigation fallback completely — browser handles navigation.
         navigateFallback: null,
