@@ -427,6 +427,27 @@ function AdminPage() {
     }
   };
 
+  // Stage 1: validate + send verification code — modal advances to step 2 on success
+  const handleSuperAdminOverride = async (userId, action, reason) => {
+    await api.post('/admin/super-admin-override', {
+      action,
+      targetUserId: userId,
+      reason,
+      confirmText: 'OVERRIDE'
+    });
+    // Response is { verificationRequired: true } — the modal handles step transition
+  };
+
+  // Stage 2: submit 6-digit code — executes the action
+  const handleSuperAdminOverrideConfirm = async (code) => {
+    await api.post('/admin/super-admin-override/confirm', {
+      code,
+      confirmText: 'OVERRIDE'
+    });
+    showAlert('Override executed successfully.', 'Success');
+    loadTabData();
+  };
+
   const handleAssignBadge = async (userId, badgeId, reason) => {
     try {
       await api.post('/badges/admin/assign', { userId, badgeId, reason });
@@ -577,6 +598,9 @@ function AdminPage() {
             onUpdateEmail={handleUpdateEmail}
             onAssignBadge={handleAssignBadge}
             onRevokeBadge={handleRevokeBadge}
+            onSuperAdminOverride={handleSuperAdminOverride}
+            onSuperAdminOverrideConfirm={handleSuperAdminOverrideConfirm}
+            currentUserRole={currentUser?.role}
           />
         );
       
