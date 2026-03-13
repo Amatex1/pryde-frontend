@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import OptimizedImage from '../../components/OptimizedImage';
 import { getImageUrl } from '../../utils/imageUrl';
 
@@ -418,12 +418,34 @@ function AdminUsers({
 }) {
   const [badgeModalUser, setBadgeModalUser] = useState(null);
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
   const [pendingAction, setPendingAction] = useState(null);
   const [overrideTarget, setOverrideTarget] = useState(null);
 
-  const toggleActionMenu = (id) => {
-    setOpenMenuId(prev => prev === id ? null : id);
+  const toggleActionMenu = (id, e) => {
+    if (openMenuId === id) {
+      setOpenMenuId(null);
+      return;
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMenuPos({
+      top: rect.bottom + 4,
+      right: window.innerWidth - rect.right,
+    });
+    setOpenMenuId(id);
   };
+
+  // Close menu on outside click or scroll
+  useEffect(() => {
+    if (!openMenuId) return;
+    const close = () => setOpenMenuId(null);
+    document.addEventListener('click', close, true);
+    window.addEventListener('scroll', close, true);
+    return () => {
+      document.removeEventListener('click', close, true);
+      window.removeEventListener('scroll', close, true);
+    };
+  }, [openMenuId]);
 
   // Queue a destructive action for confirmation
   const requestConfirm = (type, user, extra = {}) => {
@@ -550,9 +572,9 @@ function AdminUsers({
                       </div>
                     ) : (
                       <div className="admin-actions">
-                        <button className="admin-action-trigger" onClick={() => toggleActionMenu(user._id)}>⋯</button>
+                        <button className="admin-action-trigger" onClick={(e) => { e.stopPropagation(); toggleActionMenu(user._id, e); }}>⋯</button>
                         {openMenuId === user._id && (
-                          <div className="admin-action-menu">
+                          <div className="admin-action-menu" style={{ position: 'fixed', top: menuPos.top, right: menuPos.right, left: 'auto' }}>
                             <button onClick={() => { onSendPasswordReset(user._id, user.email, user.username); setOpenMenuId(null); }}>
                               🔑 Reset Password
                             </button>
