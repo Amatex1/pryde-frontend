@@ -16,6 +16,7 @@ import AdminSecurity from './AdminSecurity';
 import AdminBadges from './AdminBadges';
 import AdminModeration from './AdminModeration';
 import AdminEmails from './AdminEmails';
+import PlatformBrain from './PlatformBrain';
 import './Admin.css';
 import '../../styles/admin-layout.css';
 
@@ -560,6 +561,7 @@ function AdminPage() {
 
       <div className="admin-section">
         <div className="admin-section-title">Platform & Security</div>
+        <button className={`admin-nav-item ${activeTab === 'platform-brain' ? 'active' : ''}`} onClick={() => handleNavClick('platform-brain')}>🧠 Platform Brain</button>
         <button className={`admin-nav-item ${activeTab === 'security' ? 'active' : ''}`} onClick={() => handleNavClick('security')}>🔒 Security</button>
         <button className={`admin-nav-item ${activeTab === 'emails' ? 'active' : ''}`} onClick={() => handleNavClick('emails')}>📧 Emails</button>
         <button className={`admin-nav-item ${activeTab === 'maintenance' ? 'active' : ''}`} onClick={() => handleNavClick('maintenance')}>🔧 Maintenance</button>
@@ -637,6 +639,9 @@ function AdminPage() {
       
       case 'emails':
         return <AdminEmails />;
+
+      case 'platform-brain':
+        return <PlatformBrain />;
 
       case 'moderation-v3':
         return <ModerationV3Panel showAlert={showAlert} showConfirm={showConfirm} />;

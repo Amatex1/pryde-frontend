@@ -40,6 +40,8 @@ function Footer() {
           <span className="separator">•</span>
           <Link to="/community-guidelines">Community Guidelines</Link>
           <span className="separator">•</span>
+          <Link to="/safety">Safety</Link>
+          <span className="separator">•</span>
           <Link to="/security">Security</Link>
           <span className="separator">•</span>
           <Link to="/faq">FAQ</Link>

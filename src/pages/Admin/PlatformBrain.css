@@ -1,0 +1,304 @@
+/* PlatformBrain.css — Platform Brain admin dashboard */
+
+/* ── Root ─────────────────────────────────────────────────────────────────── */
+
+.pb-root {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 0.25rem 0 3rem;
+}
+
+/* ── Page header ──────────────────────────────────────────────────────────── */
+
+.pb-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.pb-header__left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.pb-header__right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pb-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-main, #1a1a2e);
+  margin: 0;
+}
+
+.pb-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted, #888);
+}
+
+.pb-timestamp {
+  font-size: 0.78rem;
+  color: var(--text-muted, #888);
+}
+
+/* ── Refresh button ───────────────────────────────────────────────────────── */
+
+.pb-refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-subtle, #e0e0e0);
+  background: var(--bg-card, #ffffff);
+  color: var(--text-main, #1a1a2e);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.pb-refresh-btn:hover {
+  background: var(--bg-hover, #f5f5f5);
+  border-color: var(--color-brand, #7c3aed);
+}
+
+/* ── Card grid ────────────────────────────────────────────────────────────── */
+
+.pb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* ── Card ─────────────────────────────────────────────────────────────────── */
+
+.pb-card {
+  background: var(--bg-card, #ffffff);
+  border: 1.5px solid var(--border-subtle, #e8e8e8);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pb-card:hover {
+  border-color: var(--color-brand, #7c3aed);
+  box-shadow: 0 2px 16px rgba(124, 58, 237, 0.07);
+}
+
+.pb-card--warn {
+  border-color: var(--color-warning, #f59e0b);
+}
+
+.pb-card--danger {
+  border-color: var(--color-danger, #ef4444);
+}
+
+/* ── Card header ──────────────────────────────────────────────────────────── */
+
+.pb-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.pb-card__icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.pb-card__title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-main, #1a1a2e);
+  margin: 0;
+  flex: 1;
+}
+
+/* ── Badges ───────────────────────────────────────────────────────────────── */
+
+.pb-card__badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.pb-card__badge--subtle {
+  background: var(--bg-subtle, #f3f3f7);
+  color: var(--text-muted, #888);
+  border: 1px solid var(--border-subtle, #e0e0e0);
+}
+
+.pb-card__badge--green {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.pb-card__badge--red {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.pb-card__badge--orange {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* ── Card body / stat rows ────────────────────────────────────────────────── */
+
+.pb-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.pb-stat-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.pb-stat-row--total {
+  border-top: 1px solid var(--border-subtle, #e8e8e8);
+  padding-top: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.pb-stat-label {
+  font-size: 0.82rem;
+  color: var(--text-muted, #888);
+}
+
+.pb-stat-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main, #1a1a2e);
+  text-align: right;
+}
+
+.pb-stat-value--bold {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.pb-stat-value--accent {
+  color: var(--color-brand, #7c3aed);
+}
+
+.pb-stat-value--green {
+  color: #16a34a;
+}
+
+.pb-stat-value--warn {
+  color: #d97706;
+}
+
+.pb-stat-value--danger {
+  color: #dc2626;
+}
+
+.pb-stat-na {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--text-muted, #888);
+}
+
+/* ── Skeleton loader ──────────────────────────────────────────────────────── */
+
+.pb-card--skeleton {
+  pointer-events: none;
+}
+
+.pb-skeleton {
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--bg-subtle, #f0f0f0) 25%, var(--bg-hover, #e8e8e8) 50%, var(--bg-subtle, #f0f0f0) 75%);
+  background-size: 200% 100%;
+  animation: pb-shimmer 1.4s infinite;
+}
+
+.pb-skeleton--title {
+  height: 14px;
+  width: 60%;
+  margin-bottom: 0.5rem;
+}
+
+.pb-skeleton--row {
+  height: 11px;
+  width: 100%;
+  margin-bottom: 0.35rem;
+}
+
+.pb-skeleton--short {
+  width: 70%;
+}
+
+@keyframes pb-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Error state ──────────────────────────────────────────────────────────── */
+
+.pb-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--text-muted, #888);
+}
+
+.pb-error__icon {
+  font-size: 2rem;
+}
+
+.pb-error p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ── Footer timestamp ─────────────────────────────────────────────────────── */
+
+.pb-generated-at {
+  font-size: 0.75rem;
+  color: var(--text-muted, #888);
+  text-align: right;
+  margin: 0;
+  padding-top: 0.25rem;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .pb-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pb-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pb-header__right {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

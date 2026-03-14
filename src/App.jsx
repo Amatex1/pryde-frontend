@@ -123,7 +123,7 @@ const ReactivateAccount = lazyWithReload(() => import('./pages/ReactivateAccount
 const Terms = lazyWithReload(() => import('./pages/legal/Terms'));
 const Privacy = lazyWithReload(() => import('./pages/legal/Privacy'));
 const Community = lazyWithReload(() => import('./pages/legal/Community'));
-const Safety = lazyWithReload(() => import('./pages/legal/Safety'));
+const Safety = lazyWithReload(() => import('./pages/Safety'));
 const Security = lazyWithReload(() => import('./pages/legal/Security'));
 const Contact = lazyWithReload(() => import('./pages/legal/Contact'));
 const FAQ = lazyWithReload(() => import('./pages/legal/FAQ'));
@@ -225,11 +225,11 @@ const legalPageRoutes = [
   ['/legal-requests', LegalRequests],
   ['/helplines', Helplines],
   ['/guarantees', PlatformGuarantees],
+  ['/safety', Safety],
 ];
 
 const legalRedirectRoutes = [
   ['/acceptable-use', '/community-guidelines'],
-  ['/safety', '/safety-moderation'],
   ['/safety-center', '/safety-moderation'],
   ['/trust-safety', '/safety-moderation'],
   ['/trust-and-safety', '/safety-moderation'],
