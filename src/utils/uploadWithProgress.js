@@ -1,5 +1,6 @@
 import { getCsrfToken } from './api';
 import { getAuthToken } from './auth';
+import { refreshAccessToken } from './tokenRefresh';
 
 /**
  * DEV-MODE WARNING: Log warning for unauthenticated upload attempts
@@ -29,10 +30,7 @@ export function uploadWithProgress({
   onProgress,
   additionalData = {}
 }) {
-  return new Promise((resolve, reject) => {
-    // Get auth token using centralized auth utility
-    const token = getAuthToken();
-
+  const executeUpload = (token, isRetry = false) => new Promise((resolve, reject) => {
     // CRITICAL: Block upload if no auth token
     if (!token) {
       warnUnauthenticatedUpload(url);
@@ -70,7 +68,7 @@ export function uploadWithProgress({
     };
 
     // Handle successful upload
-    xhr.onload = () => {
+    xhr.onload = async () => {
       if (xhr.status >= 200 && xhr.status < 300) {
         try {
           const response = JSON.parse(xhr.responseText);
@@ -78,11 +76,21 @@ export function uploadWithProgress({
         } catch (error) {
           reject(new Error('Invalid upload response'));
         }
-      } else if (xhr.status === 401) {
-        // Auth failure - surface clearly
+      } else if (xhr.status === 401 && !isRetry) {
+        // Token may be expired — attempt a single token refresh then retry
         if (import.meta.env.DEV) {
-          console.error('❌ Upload auth failed (401):', url);
-          console.error('📋 Token was:', token ? 'Present' : 'Missing');
+          console.warn('⚠️ Upload got 401, attempting token refresh before retry:', url);
+        }
+        const newToken = await refreshAccessToken();
+        if (newToken) {
+          executeUpload(newToken, true).then(resolve).catch(reject);
+        } else {
+          reject(new Error('Authentication failed. Please log in again.'));
+        }
+      } else if (xhr.status === 401) {
+        // Already retried — surface the failure
+        if (import.meta.env.DEV) {
+          console.error('❌ Upload auth failed after token refresh (401):', url);
         }
         reject(new Error('Authentication failed. Please log in again.'));
       } else if (xhr.status === 403) {
@@ -133,6 +141,8 @@ export function uploadWithProgress({
     // Send the request
     xhr.send(formData);
   });
+
+  return executeUpload(getAuthToken());
 }
 
 /**
@@ -152,10 +162,7 @@ export function uploadMultipleWithProgress({
   onProgress,
   additionalData = {}
 }) {
-  return new Promise((resolve, reject) => {
-    // Get auth token using centralized auth utility
-    const token = getAuthToken();
-
+  const executeUpload = (token, isRetry = false) => new Promise((resolve, reject) => {
     // CRITICAL: Block upload if no auth token
     if (!token) {
       warnUnauthenticatedUpload(url);
@@ -193,7 +200,7 @@ export function uploadMultipleWithProgress({
     };
 
     // Handle successful upload
-    xhr.onload = () => {
+    xhr.onload = async () => {
       if (xhr.status >= 200 && xhr.status < 300) {
         try {
           const response = JSON.parse(xhr.responseText);
@@ -201,11 +208,21 @@ export function uploadMultipleWithProgress({
         } catch (error) {
           reject(new Error('Invalid upload response'));
         }
-      } else if (xhr.status === 401) {
-        // Auth failure - surface clearly
+      } else if (xhr.status === 401 && !isRetry) {
+        // Token may be expired — attempt a single token refresh then retry
         if (import.meta.env.DEV) {
-          console.error('❌ Upload auth failed (401):', url);
-          console.error('📋 Token was:', token ? 'Present' : 'Missing');
+          console.warn('⚠️ Upload got 401, attempting token refresh before retry:', url);
+        }
+        const newToken = await refreshAccessToken();
+        if (newToken) {
+          executeUpload(newToken, true).then(resolve).catch(reject);
+        } else {
+          reject(new Error('Authentication failed. Please log in again.'));
+        }
+      } else if (xhr.status === 401) {
+        // Already retried — surface the failure
+        if (import.meta.env.DEV) {
+          console.error('❌ Upload auth failed after token refresh (401):', url);
         }
         reject(new Error('Authentication failed. Please log in again.'));
       } else if (xhr.status === 403) {
@@ -259,5 +276,6 @@ export function uploadMultipleWithProgress({
     // Send the request
     xhr.send(formData);
   });
-}
 
+  return executeUpload(getAuthToken());
+}
