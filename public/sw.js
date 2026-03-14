@@ -154,16 +154,22 @@ async function syncMessages() {
 
 // Push notifications
 self.addEventListener('push', (event) => {
-  const data = event.data?.json() || {};
-  
+  let data = {};
+  try {
+    data = event.data?.json() || {};
+  } catch {
+    // Plain-text push (e.g. DevTools test) — use as body
+    data = { title: 'Pryde', body: event.data?.text() || 'New notification' };
+  }
+
+  const notifUrl = data.data?.url || data.url || '/';
+
   const options = {
     body: data.body || 'New notification',
-    icon: '/icons/icon-192.png',
-    badge: '/icons/badge-72.png',
+    icon: data.icon || '/icons/icon-192.png',
+    badge: data.badge || '/icons/badge-72.png',
     vibrate: [100, 50, 100],
-    data: {
-      url: data.url || '/'
-    },
+    data: { url: notifUrl },
     actions: data.actions || []
   };
 
