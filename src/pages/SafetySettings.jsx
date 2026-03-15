@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import api from '../utils/api';
+import Navbar from '../components/Navbar';
 import { useToast } from '../hooks/useToast';
 import { isHighRiskCountry } from '../utils/geolocation';
 import TrustBadge from '../components/TrustBadge';
@@ -30,6 +31,8 @@ const SectionCard = ({ icon, title, children }) => (
 );
 
 const SafetySettings = () => {
+  const navigate = useNavigate();
+  const { onMenuOpen } = useOutletContext() || {};
   const [safety, setSafety] = useState({
     showRealName: true,
     allowAnonymousPosts: true,
@@ -89,20 +92,32 @@ const SafetySettings = () => {
 
   if (loading) {
     return (
-      <div className="privacy-settings-page">
-        <div className="privacy-settings-container" style={{ maxWidth: '820px' }}>
-          <div className="loading">Loading safety settings...</div>
+      <div className="page-container">
+        <Navbar onMenuClick={onMenuOpen} />
+        <div className="settings-container">
+          <div className="settings-card glossy fade-in">
+            <p>Loading safety settings...</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="privacy-settings-page">
-      <div className="privacy-settings-container" style={{ maxWidth: '820px' }}>
-        <div className="privacy-header">
-          <Link to="/settings" className="back-link">← Back to Settings</Link>
-          <h1>🛡️ Safety & Privacy</h1>
+    <div className="page-container">
+      <Navbar onMenuClick={onMenuOpen} />
+      <div className="settings-container">
+      <div className="settings-card glossy fade-in">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+          <button
+            onClick={() => navigate('/settings')}
+            className="btn-secondary"
+            style={{ padding: '8px 12px' }}
+          >
+            ← Back to Settings
+          </button>
+          <h1 className="settings-title text-shadow">🛡️ Safety & Privacy</h1>
+        </div>
           <p className="privacy-subtitle">Control how your identity and data are exposed on Pryde.</p>
         </div>
 
@@ -180,6 +195,7 @@ const SafetySettings = () => {
             </div>
           )}
         </SectionCard>
+      </div>
       </div>
     </div>
   );

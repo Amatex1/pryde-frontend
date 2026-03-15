@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import api from '../utils/api';
 import { useToast } from '../hooks/useToast';
 import { isHighRiskCountry } from '../utils/geolocation';
 import Toast from '../components/Toast';
+import Navbar from '../components/Navbar';
 import './PrivacySettings.css';
 
 const ToggleRow = ({ label, desc, checked, onChange }) => (
@@ -20,6 +21,8 @@ const ToggleRow = ({ label, desc, checked, onChange }) => (
 );
 
 const PrivacySettings = () => {
+  const navigate = useNavigate();
+  const { onMenuOpen } = useOutletContext() || {};
   const [privacySettings, setPrivacySettings] = useState({
     profileVisibility: 'public',
     whoCanMessage: 'followers',
@@ -147,8 +150,20 @@ const PrivacySettings = () => {
 
   return (
     <>
-    <div className="privacy-settings-container">
-      <h1>Privacy & Safety</h1>
+    <div className="page-container">
+      <Navbar onMenuClick={onMenuOpen} />
+      <div className="settings-container">
+      <div className="settings-card glossy fade-in">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+        <button
+          onClick={() => navigate('/settings')}
+          className="btn-secondary"
+          style={{ padding: '8px 12px' }}
+        >
+          ← Back to Settings
+        </button>
+        <h1 className="settings-title text-shadow">🔒 Privacy & Safety</h1>
+      </div>
 
       {isHighRisk && (
         <div className="alert-info" style={{ borderRadius: '12px', padding: '14px 18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}>
@@ -390,6 +405,10 @@ const PrivacySettings = () => {
           </Link>
         </div>
       </section>
+    </div>
+
+      </div>
+      </div>
     </div>
 
       {toasts.map(toast => (
