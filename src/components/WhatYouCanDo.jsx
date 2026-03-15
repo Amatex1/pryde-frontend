@@ -41,11 +41,6 @@ function WhatYouCanDo() {
           ))}
         </div>
 
-        <div className="wycd-screenshot-wrap">
-          <p className="wycd-screenshot-label">See Pryde in action</p>
-          <div className="wycd-screenshot-placeholder" role="img" aria-label="Pryde social community feed preview" />
-        </div>
-
         <div className="wycd-cta">
           <p className="wycd-cta-text">Start sharing in minutes.</p>
           {!isAuth && (
