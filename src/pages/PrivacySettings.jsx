@@ -23,6 +23,8 @@ const PrivacySettings = () => {
     profileVisibility: 'public',
     whoCanMessage: 'followers',
     showLastSeen: true,
+    autoHideContentWarnings: false,
+    hideFromSuggestedConnections: false,
     blockedUsers: []
   });
   const [safety, setSafety] = useState({
@@ -246,6 +248,12 @@ const PrivacySettings = () => {
           onChange={(e) => updateSafetySetting('hideProfileFromSearch', e.target.checked)}
         />
         <ToggleRow
+          label="Hide from Suggested Connections"
+          desc="Stop your profile from appearing in the suggested friends sidebar on the feed."
+          checked={privacySettings.hideFromSuggestedConnections}
+          onChange={(e) => updatePrivacySetting('hideFromSuggestedConnections', e.target.checked)}
+        />
+        <ToggleRow
           label="Friends-Only Profile"
           desc="Only approved connections can view your full profile."
           checked={safety.friendOnlyProfile}
@@ -284,6 +292,16 @@ const PrivacySettings = () => {
             </label>
           </div>
         </div>
+      </section>
+
+      <section className="privacy-section">
+        <h2>Content</h2>
+        <ToggleRow
+          label="Auto-hide posts with content warnings"
+          desc="Posts marked with a content warning will be blurred until you choose to reveal them."
+          checked={privacySettings.autoHideContentWarnings}
+          onChange={(e) => updatePrivacySetting('autoHideContentWarnings', e.target.checked)}
+        />
       </section>
 
       <section className="privacy-section">
