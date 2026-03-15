@@ -406,8 +406,6 @@ const PrivacySettings = () => {
         </div>
       </section>
     </div>
-
-      </div>
       </div>
     </div>
 
