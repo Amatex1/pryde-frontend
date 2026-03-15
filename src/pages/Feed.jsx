@@ -161,6 +161,7 @@ function Feed() {
   const [draftSaveStatus, setDraftSaveStatus] = useState(''); // 'saving', 'saved', or ''
   const [showMobileComposer, setShowMobileComposer] = useState(false); // Mobile composer bottom sheet
   const [isTyping, setIsTyping] = useState(false); // Track typing state for floating UI hiding
+  const [linkPreview, setLinkPreview] = useState(null); // Link preview for new post
 
   // QUIET MODE: Collapse advanced posting options
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
@@ -1313,7 +1314,8 @@ function Feed() {
         poll: poll, // Include poll data if present
         hideMetrics: hideMetrics, // Include hideMetrics setting
         isAnonymous: isAnonymous, // Include anonymous flag
-        gifUrl: selectedPostGif // Include GIF if selected
+        gifUrl: selectedPostGif, // Include GIF if selected
+        linkPreview: linkPreview || undefined, // Include link preview if present
       };
 
       // PHASE 1 REFACTOR: Custom privacy removed
@@ -1352,6 +1354,7 @@ function Feed() {
       setShowPollCreator(false);
       setHideMetrics(false);
       setIsAnonymous(false);
+      setLinkPreview(null);
 
       // Mobile UX: Close composer and scroll to top to see the new post
       if (showMobileComposer) {
@@ -1971,6 +1974,29 @@ function Feed() {
     });
   }, []);
 
+  const handleRepost = useCallback(async (postId, type, quoteContent) => {
+    try {
+      if (type === 'undo') {
+        await api.delete(`/posts/${postId}/repost`);
+        setPosts(prev => prev.map(p =>
+          p._id === postId ? { ...p, repostCount: Math.max(0, (p.repostCount || 0) - 1), _hasReposted: false } : p
+        ));
+      } else if (type === 'repost') {
+        const { data } = await api.post(`/posts/${postId}/repost`, { quote: false });
+        setPosts(prev => [data, ...prev.map(p =>
+          p._id === postId ? { ...p, repostCount: (p.repostCount || 0) + 1, _hasReposted: true } : p
+        )]);
+      } else if (type === 'quote') {
+        const { data } = await api.post(`/posts/${postId}/repost`, { quote: true, content: quoteContent });
+        setPosts(prev => [data, ...prev.map(p =>
+          p._id === postId ? { ...p, repostCount: (p.repostCount || 0) + 1 } : p
+        )]);
+      }
+    } catch (err) {
+      logger.error('Repost failed:', err);
+    }
+  }, []);
+
   const handleEditPostTextChange = useCallback((value) => {
     setEditPostText(value);
   }, []);
@@ -2129,6 +2155,8 @@ function Feed() {
             onRestoreDraft={handleRestoreDraft}
             onSetShowMobileComposer={setShowMobileComposer}
             onSetShowAdvancedOptions={setShowAdvancedOptions}
+            linkPreview={linkPreview}
+            onLinkPreviewChange={setLinkPreview}
           />
 
           <FeedList
@@ -2170,6 +2198,7 @@ function Feed() {
             onDeletePost={handleDeletePost}
             onReportPost={handleReportPost}
             onBookmark={handleBookmark}
+            onRepost={handleRepost}
             onReactionChange={handlePostReactionChange}
             onReactionCountClick={handleReactionCountClick}
             onEditPostTextChange={handleEditPostTextChange}

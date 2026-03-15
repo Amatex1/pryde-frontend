@@ -1,14 +1,20 @@
-import { memo, useEffect, useState, useCallback } from 'react';
+import { memo, useEffect, useState, useCallback, useRef } from 'react';
 import {
   Upload, Camera, BarChart2, AlertTriangle,
-  VolumeX, FileText, Globe, Users, Lock, EyeOff,
+  VolumeX, FileText, Globe, Users, Lock, EyeOff, X,
 } from 'lucide-react';
 import PollCreator from '../PollCreator';
 import DraftManager from '../DraftManager';
 import FeedComposerContentWarning from './FeedComposerContentWarning';
 import FeedComposerDesktopActions from './FeedComposerDesktopActions';
 import FeedComposerMediaPreview from './FeedComposerMediaPreview';
+import api from '../../utils/api';
 import './FeedComposer.css';
+
+const extractUrl = (text) => {
+  const match = text.match(/https?:\/\/[^\s]+/);
+  return match ? match[0] : null;
+};
 
 /**
  * FeedComposer - Post creation component for both desktop and mobile
@@ -65,10 +71,19 @@ const FeedComposer = memo(function FeedComposer({
   onRestoreDraft,
   onSetShowMobileComposer,
   onSetShowAdvancedOptions,
+  // Link preview
+  linkPreview,
+  onLinkPreviewChange,
 }) {
   // Drag & drop state
   const [isDragging, setIsDragging] = useState(false);
   const dragCounter = { current: 0 };
+
+  // Link preview fetch state
+  const [fetchingPreview, setFetchingPreview] = useState(false);
+  const linkPreviewTimerRef = useRef(null);
+  const lastFetchedUrlRef = useRef(null);
+  const dismissedUrlRef = useRef(null);
 
   const handleDragEnter = useCallback((e) => {
     e.preventDefault();
@@ -118,6 +133,44 @@ const FeedComposer = memo(function FeedComposer({
     };
   }, [showMobileComposer]);
 
+  // Link preview card
+  const renderLinkPreview = () => {
+    if (fetchingPreview && !linkPreview) {
+      return (
+        <div className="composer-link-preview composer-link-preview--loading">
+          <div className="clp-content">
+            <div className="clp-domain clp-skeleton" style={{ width: '80px', height: '10px' }} />
+            <div className="clp-title clp-skeleton" style={{ width: '70%', height: '13px' }} />
+            <div className="clp-skeleton" style={{ width: '50%', height: '11px' }} />
+          </div>
+        </div>
+      );
+    }
+    if (!linkPreview) return null;
+    return (
+      <div className="composer-link-preview">
+        {linkPreview.image && (
+          <img src={linkPreview.image} alt="" className="clp-image" loading="lazy" />
+        )}
+        <div className="clp-content">
+          {linkPreview.domain && <div className="clp-domain">{linkPreview.domain}</div>}
+          {linkPreview.title && <div className="clp-title">{linkPreview.title}</div>}
+          {linkPreview.description && (
+            <div className="clp-description">{linkPreview.description}</div>
+          )}
+        </div>
+        <button
+          type="button"
+          className="clp-dismiss"
+          onClick={handleDismissLinkPreview}
+          aria-label="Remove link preview"
+        >
+          <X size={14} strokeWidth={1.75} />
+        </button>
+      </div>
+    );
+  };
+
   // Shared poll creator
   const renderPollCreator = () => {
     if (!showPollCreator) return null;
@@ -137,11 +190,50 @@ const FeedComposer = memo(function FeedComposer({
   const handleTextareaChange = (e, minHeight = null) => {
     const el = e.target;
     el.style.height = 'auto';
-    el.style.height = minHeight 
+    el.style.height = minHeight
       ? Math.max(el.scrollHeight, minHeight) + 'px'
       : el.scrollHeight + 'px';
-    onPostTextChange(el.value);
+    const value = el.value;
+    onPostTextChange(value);
+    handleLinkPreviewDetection(value);
   };
+
+  const handleLinkPreviewDetection = useCallback((text) => {
+    if (!onLinkPreviewChange) return;
+    const url = extractUrl(text);
+    if (!url) {
+      // No URL in text — clear preview
+      if (linkPreview) onLinkPreviewChange(null);
+      lastFetchedUrlRef.current = null;
+      return;
+    }
+    // URL was dismissed by the user — don't re-fetch it
+    if (url === dismissedUrlRef.current) return;
+    // Already showing preview for this URL
+    if (url === lastFetchedUrlRef.current) return;
+    clearTimeout(linkPreviewTimerRef.current);
+    linkPreviewTimerRef.current = setTimeout(async () => {
+      lastFetchedUrlRef.current = url;
+      setFetchingPreview(true);
+      try {
+        const { data } = await api.get(`/posts/link-preview?url=${encodeURIComponent(url)}`);
+        if (data && (data.title || data.description || data.image)) {
+          onLinkPreviewChange(data);
+        }
+      } catch {
+        // silently ignore preview fetch errors
+      } finally {
+        setFetchingPreview(false);
+      }
+    }, 800);
+  }, [linkPreview, onLinkPreviewChange]);
+
+  const handleDismissLinkPreview = useCallback(() => {
+    if (!onLinkPreviewChange) return;
+    dismissedUrlRef.current = lastFetchedUrlRef.current;
+    lastFetchedUrlRef.current = null;
+    onLinkPreviewChange(null);
+  }, [onLinkPreviewChange]);
 
   // ========== DESKTOP COMPOSER ==========
   const renderDesktopComposer = () => (
@@ -178,6 +270,7 @@ const FeedComposer = memo(function FeedComposer({
           selectedMedia={selectedMedia}
           onRemoveMedia={onRemoveMedia}
         />
+        {renderLinkPreview()}
         <FeedComposerContentWarning
           isMobile={isMobile}
           showContentWarning={showContentWarning}
@@ -291,6 +384,7 @@ const FeedComposer = memo(function FeedComposer({
               selectedMedia={selectedMedia}
               onRemoveMedia={onRemoveMedia}
             />
+            {renderLinkPreview()}
 
             {/* Toolbar — always visible at bottom of content area */}
             <div className="mobile-composer-actions">

@@ -246,8 +246,8 @@
   gap: var(--profile-layout-gap);
   align-items: start;
 
-  max-width: none;
-  margin: 0;
+  max-width: var(--page-max-width, 1140px); /* Match page-container — prevents stretching on wide screens */
+  margin: 0 auto;
   padding: var(--profile-layout-padding-y) 0;
 
   width: 100%;
@@ -280,12 +280,12 @@
   }
 }
 
-/* Profile container uses fluid max-width */
+/* Profile container — fixed max-width matches page-container and feed layout */
 .profile-page .profile-container,
 .profile-container {
   width: 100%;
-  max-width: none;
-  margin: 0;
+  max-width: var(--page-max-width, 1140px);
+  margin: 0 auto;
   padding: 0;
 }
 

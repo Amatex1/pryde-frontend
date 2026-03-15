@@ -67,9 +67,10 @@ const FeedPost = memo(forwardRef(function FeedPost({
   onDeletePost,
   onReportPost,
   onBookmark,
+  onRepost,
   onReactionChange,
   onReactionCountClick,
-  
+
   // Handlers - Post editing
   onEditPostTextChange,
   onEditPostVisibilityChange,
@@ -205,6 +206,7 @@ const FeedPost = memo(forwardRef(function FeedPost({
         onReactionCountClick={onReactionCountClick}
         onToggleCommentBox={onToggleCommentBox}
         onBookmark={onBookmark}
+        onRepost={onRepost}
         getUserReactionEmoji={getUserReactionEmoji}
       />
 

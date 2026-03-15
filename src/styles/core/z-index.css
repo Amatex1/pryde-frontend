@@ -48,14 +48,14 @@ This prevents stacking bugs across the UI.
   --z-raised: 10;
 
   /* ========================================
-     LAYER 1: FLOATING UI (100-199)
-     Dropdowns, tooltips, popovers
+     LAYER 1: FLOATING UI (100-299)
+     Dropdowns, tooltips, popovers — must be ABOVE sticky elements (200)
      ======================================== */
   --z-dropdown: 100;
-  --z-tooltip: 200;
   --z-popover: 120;
-  --z-emoji-picker: 130;
-  --z-reaction-picker: 140;
+  --z-emoji-picker: 250;    /* Above sticky navbar (200) */
+  --z-reaction-picker: 260; /* Above sticky navbar (200) */
+  --z-tooltip: 270;         /* Above pickers */
 
   /* ========================================
      LAYER 2: STICKY ELEMENTS (200-299)

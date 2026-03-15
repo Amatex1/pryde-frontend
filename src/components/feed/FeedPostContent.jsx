@@ -191,6 +191,46 @@ const FeedPostContent = memo(function FeedPostContent({
                       <PausableGif src={post.gifUrl} alt="GIF" loading="lazy" />
                     </div>
                   )}
+
+                  {/* Link Preview Card */}
+                  {post.linkPreview?.url && !post.media?.length && !post.gifUrl && (
+                    <a
+                      href={post.linkPreview.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="post-link-preview"
+                    >
+                      {post.linkPreview.image && (
+                        <img src={post.linkPreview.image} alt="" className="plp-image" loading="lazy" />
+                      )}
+                      <div className="plp-content">
+                        {post.linkPreview.domain && (
+                          <div className="plp-domain">{post.linkPreview.domain}</div>
+                        )}
+                        {post.linkPreview.title && (
+                          <div className="plp-title">{post.linkPreview.title}</div>
+                        )}
+                        {post.linkPreview.description && (
+                          <div className="plp-description">{post.linkPreview.description}</div>
+                        )}
+                      </div>
+                    </a>
+                  )}
+
+                  {/* Quoted post embed */}
+                  {post.quotedPost && typeof post.quotedPost === 'object' && (
+                    <div className="quoted-post-embed">
+                      <div className="quoted-post-author">
+                        {post.quotedPost.author?.profilePhoto
+                          ? <img src={getImageUrl(post.quotedPost.author.profilePhoto)} alt="" className="quoted-post-avatar" />
+                          : <span className="quoted-post-avatar-placeholder">{post.quotedPost.author?.displayName?.charAt(0)}</span>
+                        }
+                        <strong>{post.quotedPost.author?.displayName}</strong>
+                        <span className="quoted-post-username">@{post.quotedPost.author?.username}</span>
+                      </div>
+                      <p className="quoted-post-text">{post.quotedPost.content?.slice(0, 300)}{post.quotedPost.content?.length > 300 ? '…' : ''}</p>
+                    </div>
+                  )}
                 </div>
 
                 {isContentHidden && (
