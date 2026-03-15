@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "buildVersion": "2026.03.12-1330",
   "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "prebuild": "node scripts/update-version.js",

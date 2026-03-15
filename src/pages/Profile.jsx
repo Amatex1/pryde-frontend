@@ -374,7 +374,7 @@ function Profile() {
     try {
       const response = await api.get('/bookmarks');
       if (isMountedRef.current) {
-        setBookmarkedPosts(response.data.bookmarks.map(post => post._id));
+        setBookmarkedPosts((response.data?.bookmarks ?? []).map(post => post._id));
       }
     } catch (error) {
       logger.error('Failed to fetch bookmarks:', error);

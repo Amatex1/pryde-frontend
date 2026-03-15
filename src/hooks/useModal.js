@@ -28,7 +28,11 @@ export function useModal() {
   });
 
   const closeModal = () => {
-    setModalState(prev => ({ ...prev, isOpen: false }));
+    // Resolve any pending confirm/prompt promise as cancelled before closing
+    if (modalState.onCancel) {
+      modalState.onCancel();
+    }
+    setModalState(prev => ({ ...prev, isOpen: false, onCancel: null }));
   };
 
   const showAlert = (message, title = '') => {
@@ -58,16 +62,11 @@ export function useModal() {
         confirmText,
         cancelText,
         onConfirm: () => resolve(true),
+        onCancel: () => resolve(false),
         placeholder: '',
         inputType: 'text',
         defaultValue: ''
       });
-      // If user clicks outside or cancels, resolve with false
-      setTimeout(() => {
-        if (modalState.isOpen) {
-          resolve(false);
-        }
-      }, 100);
     });
   };
 
@@ -83,7 +82,8 @@ export function useModal() {
         inputType,
         confirmText: 'Submit',
         cancelText: 'Cancel',
-        onConfirm: (value) => resolve(value)
+        onConfirm: (value) => resolve(value),
+        onCancel: () => resolve(null)
       });
     });
   };

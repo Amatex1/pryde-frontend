@@ -449,7 +449,7 @@ function Messages() {
           // Mark all unread messages as read and remove manual unread status
           if (selectedChatType === 'user') {
             const unreadMessages = response.data.filter(
-              msg => msg.sender._id === selectedChat && !msg.read
+              msg => msg.sender?._id === selectedChat && !msg.read
             );
 
             for (const msg of unreadMessages) {
@@ -699,8 +699,8 @@ function Messages() {
             isRecipient,
             isSenderInSelectedChat,
             currentUserId: currentUser?._id,
-            recipientId: newMessage.recipient._id,
-            senderId: newMessage.sender._id,
+            recipientId: newMessage.recipient?._id,
+            senderId: newMessage.sender?._id,
             selectedChat
           });
         }
@@ -806,7 +806,8 @@ function Messages() {
 
         // Update conversations list with the sent message
         setConversations((prev) => {
-          const recipientId = sentMessage.recipient._id;
+          const recipientId = sentMessage.recipient?._id;
+          if (!recipientId) return prev;
           const updated = prev.filter(c => c._id !== recipientId);
           return [{ _id: recipientId, lastMessage: sentMessage, ...sentMessage.recipient }, ...updated];
         });
@@ -841,8 +842,7 @@ function Messages() {
       // 🔥 CRITICAL: Listen for message errors
       const handleMessageError = (error) => {
         logger.error('❌ Message error received:', error);
-        console.error('[Pryde] Message error:', error);
-        alert(`Message error: ${error.message || 'Unknown error'}`);
+        showAlert(error.message || 'An unknown message error occurred.', 'Message Error');
       };
       socket.on('message:error', handleMessageError);
 

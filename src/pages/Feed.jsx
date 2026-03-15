@@ -354,35 +354,39 @@ function Feed() {
     // Mark as handled BEFORE scrolling to prevent duplicate scrolls
     scrollHandledRef.current = true;
 
-    // Wait for DOM to update
-    setTimeout(() => {
+    // Wait for DOM to update — track all timers so they can be cancelled on unmount
+    const timers = [];
+
+    timers.push(setTimeout(() => {
       const postElement = postRefs.current[targetPostId];
       if (postElement) {
         postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
         postElement.classList.add('highlighted-post');
 
         // Remove highlight after 3 seconds
-        setTimeout(() => {
+        timers.push(setTimeout(() => {
           postElement.classList.remove('highlighted-post');
-        }, 3000);
+        }, 3000));
 
         // If there's a specific comment, scroll to it after the post scroll settles
         if (targetCommentId) {
-          setTimeout(() => {
+          timers.push(setTimeout(() => {
             const commentElement = commentRefs.current[targetCommentId];
             if (commentElement) {
               commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
               commentElement.classList.add('highlighted-comment');
 
               // Remove highlight after 3 seconds
-              setTimeout(() => {
+              timers.push(setTimeout(() => {
                 commentElement.classList.remove('highlighted-comment');
-              }, 3000);
+              }, 3000));
             }
-          }, 500);
+          }, 500));
         }
       }
-    }, 500);
+    }, 500));
+
+    return () => timers.forEach(clearTimeout);
   }, [targetPostId, targetCommentId, fetchingPosts, posts]);
 
   // Handle scroll detection for scroll-to-top button and infinite scroll
@@ -1184,7 +1188,7 @@ function Feed() {
       // Even if backend fails, localStorage backup is already saved
       setDraftSaveStatus('');
     }
-  }, [newPost, selectedMedia, postVisibility, contentWarning, hideMetrics, poll, selectedPostGif, currentDraftId]);
+  }, [newPost, selectedMedia, postVisibility, contentWarning, hideMetrics, poll, selectedPostGif, currentDraftId, currentUser, isAuthenticated]);
 
   // Auto-save on content change (debounced - not too aggressive)
   useEffect(() => {
