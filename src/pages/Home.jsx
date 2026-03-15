@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { isAuthenticated } from '../utils/auth';
 import Footer from '../components/Footer';
 import WhatYoullFind from '../components/WhatYoullFind';
+import WhatYouCanDo from '../components/WhatYouCanDo';
 import './Home.css';
 
 function Home() {
@@ -32,10 +33,10 @@ function Home() {
         <section className="home-hero">
           <div className="hero-glow" aria-hidden="true" />
           <div className="hero-content">
-            <p className="hero-eyebrow">A quiet online café for conversations that matter.</p>
             <h1 className="hero-title">
               Not everything needs<br />to be loud.
             </h1>
+            <p className="hero-eyebrow">A quiet online café for conversations that matter.</p>
             <p className="hero-sub">
               Pryde is a calmer social space for people who want real connection
               — without algorithms, clout chasing, or the pressure to perform.
@@ -59,12 +60,15 @@ function Home() {
           </div>
         </section>
 
+        {/* ── WHAT YOU CAN DO ── */}
+        <WhatYouCanDo />
+
         {/* ── WHY PRYDE ── */}
         <section className="home-why">
           <div className="container">
             <h2 className="section-heading">Why Pryde Exists</h2>
             <p className="section-sub">
-              We built this because we were tired of platforms that reward outrage and comparison.
+              We built Pryde because modern social media rewards outrage and comparison.
               Here, you're not a number.
             </p>
 
@@ -102,11 +106,6 @@ function Home() {
             </div>
             <div className="trust-divider" aria-hidden="true" />
             <div className="trust-item">
-              <span className="trust-icon" aria-hidden="true">🍪</span>
-              <span>No tracking cookies</span>
-            </div>
-            <div className="trust-divider" aria-hidden="true" />
-            <div className="trust-item">
               <span className="trust-icon" aria-hidden="true">🧑‍💻</span>
               <span>Human moderation</span>
             </div>
@@ -125,7 +124,7 @@ function Home() {
               You belong here,<br />exactly as you are.
             </h2>
             <p className="final-cta-sub">
-              Join thousands of queer adults building something quieter, kinder, and more real.
+              Join a growing community of queer adults building something quieter, kinder, and more real.
             </p>
             {isAuth ? (
               <Link to="/feed" className="btn-hero-primary">Go to Feed</Link>

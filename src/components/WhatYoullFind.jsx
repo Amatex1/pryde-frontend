@@ -4,7 +4,7 @@ const cards = [
   {
     icon: '💬',
     title: 'Real Conversations',
-    body: 'Authentic posts. Honest feelings. Shared experiences.',
+    body: 'Authentic posts. Honest thoughts. Shared experiences.',
   },
   {
     icon: '🛡️',
@@ -24,7 +24,7 @@ function WhatYoullFind() {
       <div className="wyf-container">
         <h2 className="wyf-heading">What You'll Find Here</h2>
         <p className="wyf-sub">
-          A space shaped around the people in it — not around engagement numbers.
+          A community shaped by its people — not engagement metrics.
         </p>
 
         <div className="wyf-grid">

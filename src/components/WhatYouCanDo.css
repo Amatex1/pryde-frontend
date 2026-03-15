@@ -1,0 +1,210 @@
+/* ========================================
+   WHAT YOU CAN DO ON PRYDE
+   Feature preview section — between Hero and Why Pryde
+   ======================================== */
+
+.wycd-section {
+  padding: 100px 24px;
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+}
+
+[data-galaxy="true"] .wycd-section {
+  background: transparent;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.wycd-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.wycd-heading {
+  font-size: clamp(26px, 3.5vw, 36px);
+  font-weight: 700;
+  color: var(--color-text);
+  text-align: center;
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+[data-galaxy="true"] .wycd-heading {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.wycd-sub {
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  max-width: 520px;
+  margin: 0 auto 52px;
+  line-height: 1.65;
+}
+
+[data-galaxy="true"] .wycd-sub {
+  color: rgba(255, 255, 255, 0.60);
+}
+
+/* ── Feature cards ── */
+
+.wycd-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 64px;
+}
+
+.wycd-card {
+  background: var(--color-surface);
+  border: 1px solid rgba(108, 92, 231, 0.15);
+  border-radius: 20px;
+  padding: 32px 26px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.wycd-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(108, 92, 231, 0.10);
+  border-color: rgba(108, 92, 231, 0.30);
+}
+
+[data-galaxy="true"] .wycd-card {
+  background: rgba(18, 16, 38, 0.55);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(108, 92, 231, 0.22);
+}
+
+[data-galaxy="true"] .wycd-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(108, 92, 231, 0.22);
+  border-color: rgba(108, 92, 231, 0.46);
+}
+
+.wycd-icon {
+  font-size: 28px;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.wycd-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 10px;
+}
+
+[data-galaxy="true"] .wycd-card-title {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.wycd-card-body {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+[data-galaxy="true"] .wycd-card-body {
+  color: rgba(255, 255, 255, 0.60);
+}
+
+/* ── Screenshot placeholder ── */
+
+.wycd-screenshot-wrap {
+  margin-bottom: 52px;
+  text-align: center;
+}
+
+.wycd-screenshot-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  margin-bottom: 20px;
+  opacity: 0.7;
+}
+
+[data-galaxy="true"] .wycd-screenshot-label {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.wycd-screenshot-placeholder {
+  width: 100%;
+  max-width: 860px;
+  height: 420px;
+  margin: 0 auto;
+  background: var(--color-surface);
+  border: 1px solid rgba(108, 92, 231, 0.18);
+  border-radius: 20px;
+}
+
+[data-galaxy="true"] .wycd-screenshot-placeholder {
+  background: rgba(18, 16, 38, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(108, 92, 231, 0.20);
+}
+
+/* ── CTA ── */
+
+.wycd-cta {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.wycd-cta-text {
+  font-size: 17px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+[data-galaxy="true"] .wycd-cta-text {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 900px) {
+  .wycd-section {
+    padding: 72px 20px;
+  }
+
+  .wycd-grid {
+    grid-template-columns: 1fr;
+    margin-bottom: 48px;
+  }
+
+  .wycd-screenshot-placeholder {
+    height: 280px;
+  }
+}
+
+@media (max-width: 600px) {
+  .wycd-section {
+    padding: 60px 16px;
+  }
+
+  .wycd-sub {
+    margin-bottom: 36px;
+  }
+
+  .wycd-screenshot-placeholder {
+    height: 220px;
+  }
+}
+
+/* ── Accessibility ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .wycd-card {
+    transition: none !important;
+  }
+
+  .wycd-card:hover {
+    transform: none !important;
+  }
+}
