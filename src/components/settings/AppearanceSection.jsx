@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { getCursorStyleOptions } from '../../utils/themeManager';
+import api from '../../utils/api';
+import { useToast } from '../../hooks/useToast';
+import Toast from '../Toast';
 
 const AppearanceSection = ({
   currentTheme,
@@ -19,6 +22,7 @@ const AppearanceSection = ({
   textDensity,
   onDensityChange,
 }) => {
+  const { toasts, showToast, removeToast } = useToast();
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(
     () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
@@ -48,62 +52,64 @@ const AppearanceSection = ({
     return () => mq.removeEventListener('change', handler);
   }, []);
 
+  useEffect(() => {
+    api.get('/privacy/settings').then(res => {
+      const d = res.data;
+      if (d.quietHoursEnabled !== undefined) setQuietHoursEnabled(d.quietHoursEnabled);
+      if (d.quietHoursStart !== undefined) setQuietHoursStart(d.quietHoursStart);
+      if (d.quietHoursEnd !== undefined) setQuietHoursEnd(d.quietHoursEnd);
+      if (d.quietContentFilter !== undefined) setQuietContentFilter(d.quietContentFilter);
+      if (d.quietHideViral !== undefined) setQuietHideViral(d.quietHideViral);
+      if (d.quietGentleTransitions !== undefined) setQuietGentleTransitions(d.quietGentleTransitions);
+      if (d.quietColorScheme !== undefined) setQuietColorScheme(d.quietColorScheme);
+      if (d.quietHideStories !== undefined) setQuietHideStories(d.quietHideStories);
+      if (d.quietDeepQuiet !== undefined) setQuietDeepQuiet(d.quietDeepQuiet);
+      if (d.quietMinimalUI !== undefined) setQuietMinimalUI(d.quietMinimalUI);
+      if (d.quietHideTrending !== undefined) setQuietHideTrending(d.quietHideTrending);
+      if (d.quietShowHiddenCount !== undefined) setQuietShowHiddenCount(d.quietShowHiddenCount);
+      if (d.quietHighContrast !== undefined) setQuietHighContrast(d.quietHighContrast);
+      if (d.quietHideMentions !== undefined) setQuietHideMentions(d.quietHideMentions);
+      if (d.quietMuteGroupSummary !== undefined) setQuietMuteGroupSummary(d.quietMuteGroupSummary);
+    }).catch(() => {});
+  }, []);
+
   const showReducedMotionNotice = prefersReducedMotion && cursorStyle !== 'system' && cursorStyle !== 'reduced-motion';
 
-  // Handler for quiet enhancement changes
+  // Handler for quiet enhancement changes — updates local state and persists to backend
   const handleQuietEnhancementChange = (setting, value) => {
-    // Update local state
     switch (setting) {
-      case 'quietHoursEnabled':
-        setQuietHoursEnabled(value);
-        break;
-      case 'quietHoursStart':
-        setQuietHoursStart(value);
-        break;
-      case 'quietHoursEnd':
-        setQuietHoursEnd(value);
-        break;
-      case 'quietContentFilter':
-        setQuietContentFilter(value);
-        break;
-      case 'quietHideViral':
-        setQuietHideViral(value);
-        break;
-      case 'quietGentleTransitions':
-        setQuietGentleTransitions(value);
-        break;
-      case 'quietColorScheme':
-        setQuietColorScheme(value);
-        break;
-      case 'quietHideStories':
-        setQuietHideStories(value);
-        break;
-      case 'quietDeepQuiet':
-        setQuietDeepQuiet(value);
-        break;
-      case 'quietMinimalUI':
-        setQuietMinimalUI(value);
-        break;
-      case 'quietHideTrending':
-        setQuietHideTrending(value);
-        break;
-      case 'quietShowHiddenCount':
-        setQuietShowHiddenCount(value);
-        break;
-      case 'quietHighContrast':
-        setQuietHighContrast(value);
-        break;
-      case 'quietHideMentions':
-        setQuietHideMentions(value);
-        break;
-      case 'quietMuteGroupSummary':
-        setQuietMuteGroupSummary(value);
-        break;
+      case 'quietHoursEnabled': setQuietHoursEnabled(value); break;
+      case 'quietHoursStart': setQuietHoursStart(value); break;
+      case 'quietHoursEnd': setQuietHoursEnd(value); break;
+      case 'quietContentFilter': setQuietContentFilter(value); break;
+      case 'quietHideViral': setQuietHideViral(value); break;
+      case 'quietGentleTransitions': setQuietGentleTransitions(value); break;
+      case 'quietColorScheme': setQuietColorScheme(value); break;
+      case 'quietHideStories': setQuietHideStories(value); break;
+      case 'quietDeepQuiet': setQuietDeepQuiet(value); break;
+      case 'quietMinimalUI': setQuietMinimalUI(value); break;
+      case 'quietHideTrending': setQuietHideTrending(value); break;
+      case 'quietShowHiddenCount': setQuietShowHiddenCount(value); break;
+      case 'quietHighContrast': setQuietHighContrast(value); break;
+      case 'quietHideMentions': setQuietHideMentions(value); break;
+      case 'quietMuteGroupSummary': setQuietMuteGroupSummary(value); break;
     }
+    api.patch('/privacy/settings', { [setting]: value })
+      .then(() => showToast('Setting saved', 'success'))
+      .catch(() => showToast('Failed to save setting', 'error'));
   };
 
   return (
     <>
+      {toasts.map(toast => (
+        <Toast
+          key={toast.id}
+          message={toast.message}
+          type={toast.type}
+          duration={toast.duration}
+          onClose={() => removeToast(toast.id)}
+        />
+      ))}
       {/* APPEARANCE: Light Mode + Galaxy Mode */}
       <div className="settings-section">
         <h2 className="section-title">🎨 Appearance</h2>

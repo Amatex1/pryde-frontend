@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import { useToast } from '../hooks/useToast';
 import { isHighRiskCountry } from '../utils/geolocation';
+import Toast from '../components/Toast';
 import './PrivacySettings.css';
 
 const ToggleRow = ({ label, desc, checked, onChange }) => (
@@ -38,7 +39,7 @@ const PrivacySettings = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isHighRisk, setIsHighRisk] = useState(false);
-  const { showToast } = useToast();
+  const { toasts, showToast, removeToast } = useToast();
 
   useEffect(() => {
     fetchPrivacySettings();
@@ -145,6 +146,7 @@ const PrivacySettings = () => {
   };
 
   return (
+    <>
     <div className="privacy-settings-container">
       <h1>Privacy & Safety</h1>
 
@@ -389,6 +391,17 @@ const PrivacySettings = () => {
         </div>
       </section>
     </div>
+
+      {toasts.map(toast => (
+        <Toast
+          key={toast.id}
+          message={toast.message}
+          type={toast.type}
+          duration={toast.duration}
+          onClose={() => removeToast(toast.id)}
+        />
+      ))}
+    </>
   );
 };
 
