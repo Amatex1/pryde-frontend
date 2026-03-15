@@ -217,7 +217,7 @@ const Poll = ({ poll, postId, currentUserId, onVote }) => {
           >
             <div className="poll-voter-modal-header">
               <h3>📊 {voterData.totalVotes} {voterData.totalVotes === 1 ? 'Vote' : 'Votes'}</h3>
-              <button className="poll-voter-modal-close" onClick={() => setShowVoterModal(false)}>×</button>
+              <button className="poll-voter-modal-close" onClick={() => setShowVoterModal(false)} aria-label="Close">×</button>
             </div>
             <div className="poll-voter-modal-content">
               {voterData.options.map((option) => (

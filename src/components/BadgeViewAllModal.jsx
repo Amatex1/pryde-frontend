@@ -87,6 +87,8 @@ export default function BadgeViewAllModal({ allBadges = [], isOwnProfile, onClos
       onClick={() => toggleBadge(badge.id)}
       role={isOwnProfile ? 'button' : undefined}
       tabIndex={isOwnProfile ? 0 : undefined}
+      aria-pressed={isOwnProfile ? isPublic(badge.id) : undefined}
+      aria-label={isOwnProfile ? `${badge.name || 'Badge'}, currently ${isPublic(badge.id) ? 'shown' : 'hidden'}` : undefined}
       onKeyDown={isOwnProfile ? (e) => { if (e.key === 'Enter' || e.key === ' ') toggleBadge(badge.id); } : undefined}
     >
       <UserBadge badge={badge} showLabel={true} />

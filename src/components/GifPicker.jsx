@@ -145,9 +145,9 @@ const GifPicker = ({ onGifSelect, onClose }) => {
 
   return (
     <div className="gif-picker-overlay">
-      <div className="gif-picker" ref={pickerRef}>
+      <div className="gif-picker" ref={pickerRef} role="dialog" aria-modal="true" aria-labelledby="gif-picker-title">
         <div className="gif-picker-header">
-          <h4>Choose a GIF</h4>
+          <h4 id="gif-picker-title">Choose a GIF</h4>
           <button type="button" className="gif-picker-close" onClick={onClose} aria-label="Close" data-tooltip="Close"><X size={18} strokeWidth={1.75} aria-hidden="true" /></button>
         </div>
 
@@ -157,12 +157,15 @@ const GifPicker = ({ onGifSelect, onClose }) => {
           className="gif-search-form"
           onClick={(e) => e.stopPropagation()}
         >
+          <label htmlFor="gif-search-input" className="sr-only">Search GIFs</label>
           <input
-            type="text"
+            id="gif-search-input"
+            type="search"
             placeholder="Search GIFs..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="gif-search-input"
+            aria-label="Search GIFs"
           />
           <button
             type="submit"

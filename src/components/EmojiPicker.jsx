@@ -24,10 +24,10 @@ const EmojiPicker = ({ onEmojiSelect, onClose }) => {
 
   return (
     <div className="emoji-picker-overlay">
-      <div className="emoji-picker" ref={pickerRef}>
+      <div className="emoji-picker" ref={pickerRef} role="dialog" aria-modal="true" aria-labelledby="emoji-picker-title">
         <div className="emoji-picker-header">
-          <h4>React with an emoji</h4>
-          <button className="emoji-picker-close" onClick={onClose}>✕</button>
+          <h4 id="emoji-picker-title">React with an emoji</h4>
+          <button className="emoji-picker-close" onClick={onClose} aria-label="Close">✕</button>
         </div>
         <div className="emoji-grid">
           {emojis.map((emoji, index) => (

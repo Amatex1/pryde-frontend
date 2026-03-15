@@ -542,9 +542,14 @@ textarea:focus {
   outline-offset: 1px;
 }
 
-/* Placeholder text contrast */
+/* Placeholder text contrast — #767676 meets WCAG AA minimum (4.5:1) on white */
 ::placeholder {
-  color: var(--text-tertiary, #999);
+  color: var(--text-secondary, #767676);
+  opacity: 1;
+}
+
+:root[data-theme="dark"] ::placeholder {
+  color: var(--text-secondary, #a0a0a0);
   opacity: 1;
 }
 

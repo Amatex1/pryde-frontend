@@ -170,12 +170,12 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-label="Edit Profile"
+        aria-labelledby="edit-profile-title"
         onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
       >
         <div className="edit-profile-header">
-          <h2>✏️ Edit Profile</h2>
-          <button className="btn-close" onClick={onClose}>×</button>
+          <h2 id="edit-profile-title">✏️ Edit Profile</h2>
+          <button className="btn-close" onClick={onClose} aria-label="Close">×</button>
         </div>
 
         <form onSubmit={handleSubmit} className="edit-profile-form">

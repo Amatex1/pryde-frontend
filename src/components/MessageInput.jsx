@@ -130,10 +130,13 @@ export default function MessageInput({
       {/* Content Warning Selector */}
       {showContentWarning && (
         <div className="input-addon cw-selector">
+          <label htmlFor="cw-select" className="sr-only">Select content warning</label>
           <select
+            id="cw-select"
             value={contentWarning}
             onChange={(e) => setContentWarning(e.target.value)}
             className="cw-select"
+            aria-label="Select content warning"
           >
             <option value="">Select content warning...</option>
             <option value="Mental Health">Mental Health</option>

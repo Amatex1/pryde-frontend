@@ -83,8 +83,10 @@ function ReactionDetailsModal({ targetType, targetId, onClose }) {
           </div>
         ) : (
           <>
-            <div className="reaction-tabs">
+            <div className="reaction-tabs" role="tablist" aria-label="Reactions by type">
               <button
+                role="tab"
+                aria-selected={selectedTab === 'all'}
                 className={`reaction-tab ${selectedTab === 'all' ? 'active' : ''}`}
                 onClick={() => setSelectedTab('all')}
               >
@@ -93,6 +95,8 @@ function ReactionDetailsModal({ targetType, targetId, onClose }) {
               {Object.entries(reactionsByEmoji).map(([emoji, users]) => (
                 <button
                   key={emoji}
+                  role="tab"
+                  aria-selected={selectedTab === emoji}
                   className={`reaction-tab ${selectedTab === emoji ? 'active' : ''}`}
                   onClick={() => setSelectedTab(emoji)}
                 >

@@ -66,7 +66,9 @@ const PollCreator = ({ onPollChange, onCancel, initialPoll = null }) => {
         <label>Options</label>
         {poll.options.map((option, index) => (
           <div key={index} className="poll-option-input">
+            <label htmlFor={`poll-option-${index}`} className="sr-only">Option {index + 1}</label>
             <input
+              id={`poll-option-${index}`}
               type="text"
               placeholder={`Option ${index + 1}`}
               value={option}
@@ -78,6 +80,7 @@ const PollCreator = ({ onPollChange, onCancel, initialPoll = null }) => {
                 type="button"
                 className="remove-option-btn"
                 onClick={() => removeOption(index)}
+                aria-label={`Remove option ${index + 1}`}
               >
                 ×
               </button>
