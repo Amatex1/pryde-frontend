@@ -32,12 +32,12 @@ function Home() {
         <section className="home-hero">
           <div className="hero-glow" aria-hidden="true" />
           <div className="hero-content">
-            <p className="hero-eyebrow">A quieter kind of social</p>
+            <p className="hero-eyebrow">A quiet online café for conversations that matter.</p>
             <h1 className="hero-title">
               Not everything needs<br />to be loud.
             </h1>
             <p className="hero-sub">
-              Pryde is a calmer, queer-centred space for adults who want real connection
+              Pryde is a calmer social space for people who want real connection
               — without algorithms, clout chasing, or the pressure to perform.
             </p>
 
@@ -49,7 +49,7 @@ function Home() {
                 </>
               ) : (
                 <>
-                  <Link to="/register" className="btn-hero-primary">Join as a Founding Member</Link>
+                  <Link to="/register" className="btn-hero-primary">Join Pryde</Link>
                   <Link to="/login" className="btn-hero-secondary">Sign In</Link>
                 </>
               )}
